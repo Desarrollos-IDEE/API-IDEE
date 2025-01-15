@@ -1,0 +1,100 @@
+{
+  "url": {
+    "name": "attributions",
+    "separator": "*"
+  },
+  "constructor": "M.plugin.Attributions",
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+        "type": "simple",
+        "name": "position",
+        "possibleValues": ["TL", "TR", "BL", "BR"],
+        "position": 0
+      }, {
+        "type": "simple",
+        "name": "tooltip",
+        "position": 1
+      }, {
+        "type": "number",
+        "name": "mode",
+        "position": 2,
+        "possibleValues": [1, 2]
+      }, {
+        "type": "number",
+        "name": "scale",
+        "position": 3
+      }, {
+        "type": "simple",
+        "name": "defaultAttribution",
+        "position": 4
+      }, {
+        "type": "simple",
+        "name": "defaultURL",
+        "position": 5
+      }, {
+        "type": "simple",
+        "name": "url",
+        "position": 6
+      }, {
+        "type": "simple",
+        "possibleValues": ["kml", "geojson"],
+        "name": "type",
+        "position": 7
+      }, {
+        "type": "simple",
+        "name": "layerName",
+        "position": 8
+      }, {
+        "type": "simple",
+        "name": "attributionParam",
+        "position": 9
+      }, {
+        "type": "simple",
+        "name": "urlParam",
+        "position": 10
+      }, {
+        "type": "number",
+        "name": "minWidth",
+        "position": 11
+      }, {
+        "type": "number",
+        "name": "maxWidth",
+        "position": 12
+      }, {
+        "type": "simple",
+        "name": "urlAttribute",
+        "position": 13
+      }
+    ]
+  }],
+  "files": {
+    "ol": {
+      "scripts": [
+        "attributions.ol.min.js"
+      ],
+      "styles": [
+        "attributions.ol.min.css"
+      ]
+    },
+    "cesium": {
+      "scripts": [
+        "attributions.cesium.min.js"
+      ],
+      "styles": [
+        "attributions.cesium.min.css"
+      ]
+    }
+  },
+  "metadata": {
+    "name": "attributions",
+    "description": "Shows attributtions on layer",
+    "text": "Attributions",
+    "version": "2.0.2",
+    "date": "04/06/2019",
+    "author": "CNIG",
+    "org": "CNIG",
+    "tags": "api-idee,plugin",
+    "icon": "./facade/assets/icons/icons.svg"
+  }
+}

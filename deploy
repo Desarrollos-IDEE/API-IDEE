@@ -52,12 +52,12 @@ const main = async () => {
     try {
       const code2 = await executeCommand('mvn', [
         'docker:build',
-        `-DdockerImageName=docker.guadaltel.es/cnig/api-cnig${ARGS_INPUT['tag']}`,
+        `-DdockerImageName=docker.guadaltel.es/cnig/api-idee${ARGS_INPUT['tag']}`,
         '-DdockerHost=http://docker.guadaltel.es:2375/'
       ], { cwd: './api-ign-rest' });
       const code3 = await executeCommand('mvn', [
         'docker:build',
-        `-DdockerImageName=docker.guadaltel.es/cnig/api-cnig${ARGS_INPUT['tag']}`,
+        `-DdockerImageName=docker.guadaltel.es/cnig/api-idee${ARGS_INPUT['tag']}`,
         '-DdockerHost=http://docker.guadaltel.es:2375/'
       ], { cwd: './api-ign-rest' });
 
@@ -65,14 +65,14 @@ const main = async () => {
         'docker',
         'build',
         `-t`,
-        `docker.guadaltel.es/cnig/api-cnig:${ARGS_INPUT['tag']}`,
+        `docker.guadaltel.es/cnig/api-idee:${ARGS_INPUT['tag']}`,
         'target/docker'
       ], { cwd: './api-ign-rest' });
 
       const code5 = await executeCommand('sudo', [
         'docker',
         'push',
-        `docker.guadaltel.es/cnig/api-cnig:${ARGS_INPUT['tag']}`,
+        `docker.guadaltel.es/cnig/api-idee:${ARGS_INPUT['tag']}`,
       ], { cwd: './api-ign-rest' });
 
       console.info('[SUCCESS] Everything is ok!');

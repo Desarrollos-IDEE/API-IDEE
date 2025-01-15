@@ -1,0 +1,151 @@
+{
+  "url": {
+    "name": "ignsearchlocator",
+    "separator": "*"
+  },
+  "constructor": "M.plugin.IGNSearchLocator",
+  "parameters": [{
+    "type": "object",
+    "properties": [
+      {
+        "type": "simple",
+        "name": "position",
+        "position": 0
+      },{
+        "type": "boolean",
+        "name": "collapsible",
+        "position": 1
+      }, {
+        "type": "boolean",
+        "name": "isCollapsed",
+        "position": 2
+      },
+      {
+        "type": "simple",
+        "name": "tooltip",
+        "position": 3
+      },{
+        "type": "simple",
+        "name": "servicesToSearch",
+        "position": 4
+      }, {
+        "type": "number",
+        "name": "maxResults",
+        "position": 5
+      }, {
+        "type": "simple",
+        "name": "noProcess",
+        "position": 6
+      }, {
+        "type": "boolean",
+        "name": "resultVisibility",
+        "position": 7
+      }, {
+        "type": "boolean",
+        "name": "reverse",
+        "position": 8
+      }, {
+        "type": "simple",
+        "name": "requestStreet",
+        "position": 9
+      }, {
+        "type": "simple",
+        "name": "locationID",
+        "position": 10
+      }, {
+        "type": "simple",
+        "name": "geocoderCoords",
+        "position": 11
+      }, {
+        "type": "number",
+        "name": "zoom",
+        "position": 12
+      }, {
+        "type": "simple",
+        "name": "searchPosition",
+        "position": 13
+      }, {
+        "type": "simple",
+        "name": "pointStyle",
+        "position": 14
+      }, {
+        "type": "simple",
+        "name": "helpUrl",
+        "position": 15
+      }, {
+        "type": "simple",
+        "name": "countryCode",
+        "position": 16
+      }, {
+        "type": "boolean",
+        "name": "cadastre",
+        "position": 17
+      }, {
+        "type": "boolean",
+        "name": "searchCoordinatesXYZ",
+        "position": 18
+      }, {
+        "type": "simple",
+        "name": "urlCandidates",
+        "position": 19
+      }, {
+        "type": "simple",
+        "name": "urlFind",
+        "position": 20
+      }, {
+        "type": "simple",
+        "name": "urlReverse",
+        "position": 21
+      }, {
+        "type": "simple",
+        "name": "urlPrefix",
+        "position": 22
+      }, {
+        "type": "simple",
+        "name": "urlAssistant",
+        "position": 23
+      }, {
+        "type": "simple",
+        "name": "urlDispatcher",
+        "position": 24
+      }, {
+        "type": "simple",
+        "name": "CMC_url",
+        "position": 25
+      }, {
+        "type": "simple",
+        "name": "DNPPP_url",
+        "position": 26
+      }, {
+        "type": "simple",
+        "name": "CPMRC_url",
+        "position": 27
+      }, {
+        "type": "simple",
+        "name": "catastroWMS",
+        "position": 28
+      }
+    ]
+  }],
+  "files": {
+    "ol": {
+      "scripts": ["ignsearchlocator.ol.min.js"],
+      "styles": ["ignsearchlocator.ol.min.css"]
+    },
+    "cesium": {
+      "scripts": ["ignsearchlocator.cesium.min.js"],
+      "styles": ["ignsearchlocator.cesium.min.css"]
+    }
+  },
+  "metadata": {
+    "name": "IGNSearchLocator",
+    "description": "Searches location on IGN geocoding services and locates coordinates",
+    "text": "Searches location on IGN geocoding services and locates coordinates",
+    "version": "2.0.2",
+    "date": "02/12/2019",
+    "author": "Guadaltel",
+    "org": "CNIG",
+    "tags": "api-idee,plugin",
+    "icon": "./facade/assets/icons/icons.svg"
+  }
+}

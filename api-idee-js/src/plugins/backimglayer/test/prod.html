@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="mapea" content="yes">
+    <title>BackImgLayer Production TEST</title>
+    <link href="https://mapea-lite.desarrollo.guadaltel.es/api-idee/assets/css/apiign.ol.min.css" rel="stylesheet" />
+    <link href="../dist/backimglayer.ol.min.css" rel="stylesheet" />
+    <style rel="stylesheet">
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="mapjs" class="container"></div>
+    <script type="text/javascript" src="https://mapea-lite.desarrollo.guadaltel.es/api-idee/js/apiign.ol.min.js"></script>
+    <script type="text/javascript" src="https://mapea-lite.desarrollo.guadaltel.es/api-idee/js/configuration.js"></script>
+    <script type="text/javascript" src="../dist/backimglayer.ol.min.js"></script>
+    <script type="text/javascript">
+        const map = M.map({
+            container: 'mapjs',
+        });
+        const mp = new M.plugin.BackImgLayer();
+        map.addPlugin(mp);
+    </script>
+</body>
+
+</html>

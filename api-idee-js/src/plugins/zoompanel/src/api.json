@@ -1,0 +1,53 @@
+{
+  "url": {
+    "name": "zoompanel",
+    "separator": "*"
+  },
+  "constructor": "M.plugin.ZoomPanel",
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+        "type": "simple",
+        "name": "position",
+        "position": 0,
+        "possibleValues": [
+          "TL",
+          "TR",
+          "BR",
+          "BL"
+        ]
+      },
+      {
+        "type": "boolean",
+        "name": "collapsed",
+        "position": 1
+      },
+      {
+        "type": "boolean",
+        "name": "collapsible",
+        "position": 2
+      }
+    ]
+  }],
+  "files": {
+    "ol": {
+      "scripts": ["zoompanel.ol.min.js"],
+      "styles": ["zoompanel.ol.min.css"]
+    },
+    "cesium": {
+      "scripts": ["zoompanel.cesium.min.js"],
+      "styles": ["zoompanel.cesium.min.css"]
+    }
+  },
+  "metadata": {
+    "name": "zoompanel",
+    "description": "Zoom tools",
+    "text": "The user can select different zoom tools.",
+    "version": "2.0.2",
+    "date": "3rd September 2019",
+    "author": "CNIG",
+    "org": "CNIG",
+    "tags": "api-idee,plugin",
+    "icon": "./facade/assets/icons/icons.svg"
+  }
+}
