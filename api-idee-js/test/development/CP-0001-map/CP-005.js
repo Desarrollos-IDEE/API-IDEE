@@ -327,7 +327,7 @@ if (listAllFunctions && listAllFunctions.length > 0) { // Confirmar que existen 
               collapsible: true, className: 'm-tools', collapsedButtonClass: 'g-cartografia-herramienta', position: '.m-top.m-left',
             }))); // M.ui.position.TL
           } else if (auxName === 'addPlugin') {
-            // POR PROBAR Hay que hacer la prueba de Plugin en api-ign-js/test/production
+            // POR PROBAR Hay que hacer la prueba de Plugin en api-idee-js/test/production
             // import GeometryDraw from 'M/plugin/GeometryDraw'; // Hay que crear el test de plugin en Poduction, ya que solo se tiene acceso a este desde ahí.
             // showResult(auxButton, 'ADD_PLUGIN_DRAW', mapa[auxName](new M.plugin.GeometryDraw()));
             // showResult(auxButton, 'ADD_PLUGIN_DRAW', mapa[auxName](new GeometryDraw()));
