@@ -66,7 +66,7 @@ M.language.setLang('es'); //Español
   layerVisibility: true,
   layerOpts: [{
       id: 'mapa',
-      preview: 'http://componentes.ign.es/api-core/plugins/backimglayer/images/svqmapa.png',
+      preview: 'http://componentes.ign.es/api-idee/plugins/backimglayer/images/svqmapa.png',
       title: 'Mapa',
       layers: [new M.layer.WMTS({
         url: 'http://www.ign.es/wmts/ign-base?',
@@ -83,7 +83,7 @@ M.language.setLang('es'); //Español
     {
       id: 'imagen',
       title: 'Imagen',
-      preview: 'http://componentes.ign.es/api-core/plugins/backimglayer/images/svqimagen.png',
+      preview: 'http://componentes.ign.es/api-idee/plugins/backimglayer/images/svqimagen.png',
       layers: [new M.layer.WMTS({
         url: 'http://www.ign.es/wmts/pnoa-ma?',
         name: 'OI.OrthoimageCoverage',
@@ -99,7 +99,7 @@ M.language.setLang('es'); //Español
     {
       id: 'hibrido',
       title: 'Híbrido',
-      preview: 'http://componentes.ign.es/api-core/plugins/backimglayer/images/svqhibrid.png',
+      preview: 'http://componentes.ign.es/api-idee/plugins/backimglayer/images/svqhibrid.png',
       layers: [new M.layer.WMTS({
           url: 'http://www.ign.es/wmts/pnoa-ma?',
           name: 'OI.OrthoimageCoverage',
@@ -126,7 +126,7 @@ M.language.setLang('es'); //Español
     },
     {
       id: 'lidar',
-      preview: 'http://componentes.ign.es/api-core/plugins/backimglayer/images/svqlidar.png',
+      preview: 'http://componentes.ign.es/api-idee/plugins/backimglayer/images/svqlidar.png',
       title: 'LIDAR',
       layers: [new M.layer.WMTS({
         url: 'https://wmts-mapa-lidar.idee.es/lidar?',

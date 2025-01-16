@@ -36,7 +36,7 @@ const mp = new ShareMap({
   // copyBtnHtml: 'TEST HTML BOTÓN', // Texto del botón de copiado de HTML
   // btn: 'TEST BOTÓN', // Botón de cerrado con texto "OK"
   // tooltip: 'TEST TOOLTIP', // Mensaje del Tooltip que confirma que se ha copiado elementos
-  baseUrl: 'https://componentes.cnig.es/api-core/',
+  baseUrl: 'https://componentes.cnig.es/api-idee/',
   urlAPI: true, // Controla si baseUrl se tiene que usar o si se usa la URL actual.
   minimize: false, // Solo se usa si "urlAPI" esta puesto a true, cambia el formato de URL o HTML a copiar.
   shareLayer: true, // Solo se usa si "urlAPI" es false, incluye los layers presentes en URL o HTML si esta puesto a true

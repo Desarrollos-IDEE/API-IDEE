@@ -10,9 +10,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="mapea" content="yes">
+    <meta name="idee" content="yes">
     <title>Visor base</title>
-    <link type="text/css" rel="stylesheet" href="assets/css/apiign.ol.min.css">
+    <link type="text/css" rel="stylesheet" href="assets/css/apiidee.ol.min.css">
     <link href="plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
     <link href="plugins/layerswitcher/layerswitcher.ol.min.css" rel="stylesheet" />
     <style type="text/css">
@@ -50,10 +50,10 @@
         <label for="inputTooltip">Parámetro tooltip</label>
         <input type="text" id="inputTooltip" value="¡Copiado!" />
         <label for="selectURL">Parámetro baseUrl</label>
-        <input type="text" id="selectURL" list="urlSug" value="https://mapea-lite.desarrollo.guadaltel.es/api-core/"/>
+        <input type="text" id="selectURL" list="urlSug" value="https://componentes-desarrollo.idee.es/api-idee/"/>
         <datalist id="urlSug">
-            <option value="https://mapea-lite.desarrollo.guadaltel.es/api-core/"></option>
-            <option value="https://componentes.ign.es/api-core/"></option>
+            <option value="https://componentes-desarrollo.idee.es/api-idee/"></option>
+            <option value="https://componentes.ign.es/api-idee/"></option>
         </datalist>
         <label for="selectMinimize">Selector minimize</label>
         <select name="selectMinimize" id="selectMinimize">
@@ -96,7 +96,7 @@
     </div>
     <div id="mapjs" class="m-container"></div>
     <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
-    <script type="text/javascript" src="js/apiign.ol.min.js"></script>
+    <script type="text/javascript" src="js/apiideee.ol.min.js"></script>
     <script type="text/javascript" src="js/configuration.js"></script>
     <script type="text/javascript" src="plugins/sharemap/sharemap.ol.min.js"></script>
     <script type="text/javascript" src="plugins/layerswitcher/layerswitcher.ol.min.js"></script>
@@ -201,7 +201,7 @@
         function cambiarTest() {
             let objeto = {};
             let styles = {};
-            (selectURL.value != "") ? objeto.baseUrl = selectURL.value : objeto.baseUrl = window.location.href.substring(0, window.location.href.indexOf('api-core')) + "api-core/";
+            (selectURL.value != "") ? objeto.baseUrl = selectURL.value : objeto.baseUrl = window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/";
             objeto.position = selectPosicion.options[selectPosicion.selectedIndex].value;
             (inputTooltip.value != "¡Copiado!") ? objeto.tooltip = inputTooltip.value : "¡Copiado!";
             objeto.minimize = (selectMinimize.options[selectMinimize.selectedIndex].value === 'true');

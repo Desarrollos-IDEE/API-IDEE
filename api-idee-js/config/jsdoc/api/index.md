@@ -11,11 +11,11 @@ Para adaptarse a las necesidades de los usuarios y ser mucho más flexible, API 
 
 La arquitectura de API IDEE está compuesta por los siguientes componentes:
 
-- [api-ign-js](https://github.com/IGN-CNIG/API-IDEE/tree/master/api-ign-js) Librería JavaScript que provee una API para facilitar la creación de visores de mapas.
-- [api-ign-parent](https://github.com/IGN-CNIG/API-IDEE/tree/master/api-ign-parent) Módulo padre que hace uso de maven para compilar y generar el war final de api-idee.
-- [api-ign-proxy](https://github.com/IGN-CNIG/API-IDEE/tree/master/api-ign-proxy) Proxy para realizar peticiones POST por si el [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS) no está habilitado.
-- [api-ign-rest](https://github.com/IGN-CNIG/API-IDEE/tree/master/api-ign-rest) Servicio Web con API RESTful que genera el código JS necesario para generar un visor con la configuración especificada por parámetros.
-- [api-ign-database](https://github.com/IGN-CNIG/API-IDEE/tree/master/api-ign-database) Proporciona un módulo de conexión a la base de datos (PostgreSQL). Realizando diferentes peticiones GET se puede obtener diferentes servicios (bases de datos disponibles, tablas disponibles, campos de una tabla, realizar consultas personalizadas, ...)..
+- [api-idee-js](https://github.com/IGN-CNIG/API-IDEE/tree/master/api-idee-js) Librería JavaScript que provee una API para facilitar la creación de visores de mapas.
+- [api-idee-parent](https://github.com/IGN-CNIG/API-IDEE/tree/master/api-idee-parent) Módulo padre que hace uso de maven para compilar y generar el war final de api-idee.
+- [api-idee-proxy](https://github.com/IGN-CNIG/API-IDEE/tree/master/api-idee-proxy) Proxy para realizar peticiones POST por si el [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS) no está habilitado.
+- [api-idee-rest](https://github.com/IGN-CNIG/API-IDEE/tree/master/api-idee-rest) Servicio Web con API RESTful que genera el código JS necesario para generar un visor con la configuración especificada por parámetros.
+- [api-idee-database](https://github.com/IGN-CNIG/API-IDEE/tree/master/api-idee-database) Proporciona un módulo de conexión a la base de datos (PostgreSQL). Realizando diferentes peticiones GET se puede obtener diferentes servicios (bases de datos disponibles, tablas disponibles, campos de una tabla, realizar consultas personalizadas, ...)..
 
 
 ## Navegadores soportados

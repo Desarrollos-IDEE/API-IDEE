@@ -27,10 +27,10 @@ module.exports = (config) => {
       watched: false,
       type: 'dom',
     }, {
-      pattern: path.resolve(__dirname, 'dist', 'js', 'apiign-1.0.0.ol.min.js'),
+      pattern: path.resolve(__dirname, 'dist', 'js', 'api-idee-1.0.0.ol.min.js'),
       watched: false,
     }, {
-      pattern: path.resolve(__dirname, 'dist', 'assets', 'css', 'apiign-1.0.0.ol.min.css'),
+      pattern: path.resolve(__dirname, 'dist', 'assets', 'css', 'api-idee-1.0.0.ol.min.css'),
       watched: false,
     }, {
       pattern: path.resolve(__dirname, 'test', 'configuration_filtered.js'),

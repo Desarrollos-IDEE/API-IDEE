@@ -19,7 +19,7 @@ const mp2 = new M.plugin.Attributions({
   scale: 10000,
 });
 const mp3 = new M.plugin.ShareMap({
-  baseUrl: 'https://mapea-lite.desarrollo.guadaltel.es/api-core/',
+  baseUrl: 'https://componentes-desarrollo.idee.es/api-idee/',
   position: 'BR',
 });
 const mp4 = new M.plugin.XYLocator({

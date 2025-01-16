@@ -64,12 +64,12 @@ const mp2 = new Attributions({
   scale: 10000,
   // defaultAttribution: 'Instituto Geográfico Nacional',
   // defaultURL: 'https://www.ign.es/',
-  // url: 'https://mapea-lite.desarrollo.guadaltel.es/api-core/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+  // url: 'https://componentes-desarrollo.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
   // type: 'kml',
 });
 
 const mp3 = new ShareMap({
-  baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-core')) + "api-core/",
+  baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
   position: 'BR',
 });
 

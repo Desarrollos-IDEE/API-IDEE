@@ -14,7 +14,7 @@ export const geotiff_001 = new GeoTIFF({
   //   name: 'GeoTIFF',
   //   description: 'Mi GeoTIFF',
   //   url: 'https://www.ign.es',
-  //   contentAttributions: 'https://componentes.cnig.es/api-core/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+  //   contentAttributions: 'https://componentes.cnig.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
   //   contentType: 'kml',
   // },
   // projection: 'EPSG:4326',

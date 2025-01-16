@@ -10,7 +10,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="mapea" content="yes">
+    <meta name="idee" content="yes">
     <title>API CNIG</title>
     <%
       Map<String, String[]> parameterMap = request.getParameterMap();
@@ -18,7 +18,7 @@
       Map<String, String[]> adaptedParams = ParametersAdapterV3ToV4.adapt(parameterMap);
       String library = ParametersAdapterV3ToV4.getImplementation(adaptedParams);
     %>
-    <link type="text/css" rel="stylesheet" href="assets/css/apiign.<%=library%>.min.css">
+    <link type="text/css" rel="stylesheet" href="assets/css/apiidee.<%=library%>.min.css">
     </link>
     <style type="text/css">
         html,
@@ -43,7 +43,7 @@
 <body>
     <div id="map" class="m-container"></div>
     <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
-    <script type="text/javascript" src="js/apiign.<%=library%>.min.js"></script>
+    <script type="text/javascript" src="js/apiideee.<%=library%>.min.js"></script>
     <script type="text/javascript" src="js/configuration.js"></script>
     <%
       String[] jsfiles = PluginsManager.getJSFiles(adaptedParams);

@@ -37,7 +37,7 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 
 # Uso del histórico de versiones
 
-Existe un histórico de versiones de todos los plugins de API-IDEE en [api-ign-legacy](https://github.com/IGN-CNIG/API-IDEE/tree/master/api-ign-legacy/plugins) para hacer uso de versiones anteriores.
+Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/IGN-CNIG/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
  <link href="https://componentes.cnig.es/api-idee/plugins/lyrcompare/lyrcompare-1.0.0.ol.min.css" rel="stylesheet" />
@@ -74,7 +74,7 @@ A esta/s capa/s se le aplicará el efecto de transparencia.
   - 2: arranca con el modo de comparación de cortina horizontal.
   - 3: arranca con el modo de comparación múltiple de cuatro capas.
 
-  Para ver el efecto de cada uno podemos acceder al test https://mapea-lite.desarrollo.guadaltel.es/api-idee/lyrcompare.jsp?language=es y cambiar las opciones.
+  Para ver el efecto de cada uno podemos acceder al test https://componentes-desarrollo.idee.es/api-idee/lyrcompare.jsp?language=es y cambiar las opciones.
 
 
 - **defaultLyrA**: Define la capa que se cargará en la primera posición. Valores de 0 al número de capas disponibles - 1 (Ejemplo: si hay 6 capas: de 0 a 5). No se puede repetir el valor, si en defaultLyrA se indica 0, no se puede indicar 0 en defaultLyrB, defaultLyrC o defaultLyrD. Por defecto: 0.

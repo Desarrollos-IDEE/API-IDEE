@@ -455,4 +455,4 @@ const mp1 = new Layerswitcher({
 map.addPlugin(mp1);
 window.mp1 = mp1;
 
-// Para pruebas locales, lanzar Tomcat del proyecto y usar "http://localhost:8080" en vez de "https://mapea-lite.desarrollo.guadaltel.es"
+// Para pruebas locales, lanzar Tomcat del proyecto y usar "http://localhost:8080" en vez de "https://componentes-desarrollo.idee.es"

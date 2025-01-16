@@ -34,7 +34,7 @@ const mp2 = new Attributions({
 });
 
 const mp3 = new ShareMap({
-  baseUrl: 'https://mapea-lite.desarrollo.guadaltel.es/api-idee/',
+  baseUrl: 'https://componentes-desarrollo.idee.es/api-idee/',
   position: 'BR',
 });
 

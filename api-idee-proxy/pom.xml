@@ -1,16 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
    <modelVersion>4.0.0</modelVersion>
-   <artifactId>api-ign-proxy</artifactId>
+   <artifactId>api-idee-proxy</artifactId>
    <packaging>jar</packaging>
-   <name>API IGN Proxy</name>
+   <name>API IDEE Proxy</name>
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
    </properties>
    <parent>
-      <groupId>es.ign.api</groupId>
-      <artifactId>api-ign-parent</artifactId>
+      <groupId>es.idee.api</groupId>
+      <artifactId>api-idee-parent</artifactId>
       <version>5.1.0</version>
-      <relativePath>../api-ign-parent/pom.xml</relativePath>
+      <relativePath>../api-idee-parent/pom.xml</relativePath>
    </parent>
    <licenses>
       <license>
@@ -61,7 +61,7 @@
                <archive>
                   <manifest>
                      <!-- Jar file entry point -->
-                     <mainClass>es.ign.api.proxy.ProxyRedirect</mainClass>
+                     <mainClass>es.idee.api.proxy.ProxyRedirect</mainClass>
                   </manifest>
                </archive>
             </configuration>

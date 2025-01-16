@@ -30,7 +30,7 @@ const mp = new Attributions({
   // layerName: 'AtribicionPNOA-3857',
   position: 'BL',
   tooltip: 'Plugin atribuciones',
-  // layer: new M.layer.KML({ name: 'attributions', url: 'https://mapea-lite.desarrollo.guadaltel.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml', displayInLayerSwitcher: false }),
+  // layer: new M.layer.KML({ name: 'attributions', url: 'https://componentes-desarrollo.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml', displayInLayerSwitcher: false }),
 });
 
 map.addPlugin(mp);

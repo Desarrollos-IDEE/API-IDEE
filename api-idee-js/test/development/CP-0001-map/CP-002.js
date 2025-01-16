@@ -48,7 +48,7 @@ mapa.createAttribution({
 // console.log(mapa.getAttributions(true));
 
 // ? 10. Caso de uso: Por URL.
-// https://mapea-lite.desarrollo.guadaltel.es/api-core/?controls=attributions*<p>holaa</p>
+// https://componentes-desarrollo.idee.es/api-idee/?controls=attributions*<p>holaa</p>
 
 // ? 11. Caso de uso: Crear control con addControls - String
 // mapa.addControls('Attributions')

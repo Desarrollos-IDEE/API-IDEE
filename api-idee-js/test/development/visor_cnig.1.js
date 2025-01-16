@@ -67,7 +67,7 @@ const mp2 = new Attributions({
   defaultURL: 'https://www.ign.es/',
 });
 const mp3 = new ShareMap({
-  baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-core')) + "api-core/",
+  baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
   position: 'BR',
 });
 const mp4 = new XYLocator({

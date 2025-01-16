@@ -13,7 +13,7 @@ import LayerGroup from 'M/layer/LayerGroup';
 import WMTS from 'M/layer/WMTS';
 import MapLibre from 'M/layer/MapLibre';
 import Point from 'M/style/Point';
-import 'assets/css/ign';
+import 'assets/css/idee';
 import { isUndefined, isNullOrEmpty } from './util/Utils';
 import Exception from './exception/exception';
 import './util/Window';

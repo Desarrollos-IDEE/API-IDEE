@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
-   <groupId>es.ign.api</groupId>
-   <artifactId>api-ign-parent</artifactId>
+   <groupId>es.idee.api</groupId>
+   <artifactId>api-idee-parent</artifactId>
    <version>5.1.0</version>
    <packaging>pom</packaging>
-   <name>API IGN PARENT</name>
+   <name>API IDEE PARENT</name>
    <description>Herramienta para desarrollo de mapas interactivos de forma sencilla</description>
    <properties>
       <project.release.date>${maven.build.timestamp}</project.release.date>
@@ -14,10 +14,10 @@
       <maven.build.timestamp.format>dd-MM-yyyy</maven.build.timestamp.format>
    </properties>
    <modules>
-      <module>../api-ign-js</module>
-      <module>../api-ign-proxy</module>
-      <module>../api-ign-database</module>
-      <module>../api-ign-rest</module>
+      <module>../api-idee-js</module>
+      <module>../api-idee-proxy</module>
+      <module>../api-idee-database</module>
+      <module>../api-idee-rest</module>
    </modules>
    <licenses>
       <license>
@@ -78,7 +78,7 @@
                <configuration>
                   <preparationGoals>clean package</preparationGoals>
                   <autoVersionSubmodules>true</autoVersionSubmodules>
-                  <tagNameFormat>APIIGN_v@{project.version}_@{maven.build.timestamp}</tagNameFormat>
+                  <tagNameFormat>APIIDEE_v@{project.version}_@{maven.build.timestamp}</tagNameFormat>
                </configuration>
             </plugin>
             <plugin>

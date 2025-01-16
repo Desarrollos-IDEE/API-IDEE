@@ -10,9 +10,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="mapea" content="yes">
+    <meta name="idee" content="yes">
     <title>Web Semantica</title>
-    <link type="text/css" rel="stylesheet" href="assets/css/apiign.ol.min.css">
+    <link type="text/css" rel="stylesheet" href="assets/css/apiidee.ol.min.css">
     <link href="plugins/ignsearch/ignsearch.ol.min.css" rel="stylesheet" />
     <link href="plugins/attributions/attributions.ol.min.css" rel="stylesheet" />
     <link href="plugins/xylocator/xylocator.ol.min.css" rel="stylesheet" />
@@ -48,7 +48,7 @@
 <body>
     <div id="mapjs" class="m-container"></div>
     <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
-    <script type="text/javascript" src="js/apiign.ol.min.js"></script>
+    <script type="text/javascript" src="js/apiideee.ol.min.js"></script>
     <script type="text/javascript" src="js/configuration.js"></script>
     <script type="text/javascript" src="plugins/ignsearch/ignsearch.ol.min.js"></script>
     <script type="text/javascript" src="plugins/attributions/attributions.ol.min.js"></script>

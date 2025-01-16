@@ -30,13 +30,13 @@ function fun(M_) {
   M_.config('MOBILE_WIDTH', 768);
 
   /**
-   * The Mapea URL
+   * The API IDEE URL
    * @const
    * @type {string}
    * @public
    * @api stable
    */
-  M_.config('MAPEA_URL', 'https://mapea-lite.desarrollo.guadaltel.es/api-idee/');
+  M_.config('API_IDEE_URL', 'https://componentes-desarrollo.idee.es/api-idee/');
 
   /**
    * The path to the Mapea proxy to send
@@ -46,7 +46,7 @@ function fun(M_) {
    * @public
    * @api stable
    */
-  M_.config('PROXY_URL', location.protocol + '//mapea-lite.desarrollo.guadaltel.es/api-idee/api/proxy');
+  M_.config('PROXY_URL', location.protocol + '//componentes-desarrollo.idee.es/api-idee/api/proxy');
 
   /**
    * The path to the Mapea proxy to send
@@ -56,10 +56,10 @@ function fun(M_) {
    * @public
    * @api stable
    */
-  M_.config('PROXY_POST_URL', location.protocol + '//mapea-lite.desarrollo.guadaltel.es/api-idee/proxyPost');
+  M_.config('PROXY_POST_URL', location.protocol + '//componentes-desarrollo.idee.es/api-idee/proxyPost');
 
   /**
-   * The path to the Mapea templates
+   * The path to the API IDEE templates
    * @const
    * @type {string}
    * @public
@@ -68,13 +68,13 @@ function fun(M_) {
   M_.config('TEMPLATES_PATH', '/files/templates/');
 
   /**
-   * The path to the Mapea theme
+   * The path to the API IDEE theme
    * @const
    * @type {string}
    * @public
    * @api stable
    */
-  M_.config('THEME_URL', location.protocol + '//mapea-lite.desarrollo.guadaltel.es/api-idee/assets/');
+  M_.config('THEME_URL', location.protocol + '//componentes-desarrollo.idee.es/api-idee/assets/');
 
   /**
    * TODO
@@ -184,7 +184,7 @@ function fun(M_) {
   M_.config('attributions', {
     defaultAttribution: 'Instituto Geográfico Nacional',
     defaultURL: 'https://www.ign.es/',
-    url: 'https://mapea-lite.desarrollo.guadaltel.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+    url: 'https://componentes-desarrollo.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
     type: 'kml',
   });
 

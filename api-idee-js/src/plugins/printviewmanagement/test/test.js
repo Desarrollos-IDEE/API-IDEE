@@ -97,7 +97,7 @@ const capaVector = new M.layer.Vector({
     url: 'https://www.google.es',
     nameLayer: 'Nombre capa',
     name: 'Otro nombre', // se puede llamar description?
-    contentAttributions: 'https://mapea-lite.desarrollo.guadaltel.es/api-core/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+    contentAttributions: 'https://componentes-desarrollo.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
     contentType: 'kml',
   },
 });

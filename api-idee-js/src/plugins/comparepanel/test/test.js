@@ -189,7 +189,7 @@ const getWMTSLyrs = () => {
       // LiDAR
       {
         id: 'lidar',
-        preview: 'https://componentes.ign.es/api-core/plugins/backimglayer/images/svqlidar.png',
+        preview: 'https://componentes.ign.es/api-idee/plugins/backimglayer/images/svqlidar.png',
         title: 'LiDAR',
         layers: [lyrLiDARWMTS],
       },

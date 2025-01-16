@@ -81,7 +81,7 @@ const back = new M.plugin.BackImgLayer({
        {
            id: 'imagen',
            title: 'PNOA Imagen',
-           preview: 'https://componentes.ign.es/api-core/plugins/backimglayer/images/svqimagen.png',
+           preview: 'https://componentes.ign.es/api-idee/plugins/backimglayer/images/svqimagen.png',
            layers: [new M.layer.WMTS({
                url: 'https://www.ign.es/wmts/pnoa-ma?',
                name: 'OI.OrthoimageCoverage',
@@ -97,7 +97,7 @@ const back = new M.plugin.BackImgLayer({
        {
            id: 'hibrido',
            title: 'PNOA Híbrido',
-           preview: 'https://componentes.ign.es/api-core/plugins/backimglayer/images/svqhibrid.png',
+           preview: 'https://componentes.ign.es/api-idee/plugins/backimglayer/images/svqhibrid.png',
            layers: [new M.layer.WMTS({
                    url: 'https://www.ign.es/wmts/pnoa-ma?',
                    name: 'OI.OrthoimageCoverage',
@@ -124,7 +124,7 @@ const back = new M.plugin.BackImgLayer({
        },
        {
            id: 'lidar',
-           preview: 'https://componentes.ign.es/api-core/plugins/backimglayer/images/svqlidar.png',
+           preview: 'https://componentes.ign.es/api-idee/plugins/backimglayer/images/svqlidar.png',
            title: 'LiDAR',
            layers: [new M.layer.WMTS({
                url: 'https://wmts-mapa-lidar.idee.es/lidar?',
@@ -141,7 +141,7 @@ const back = new M.plugin.BackImgLayer({
        },
        {
            id: 'lidarhibrido',
-           preview: 'https://componentes.ign.es/api-core/plugins/backimglayer/images/svqlidar.png',
+           preview: 'https://componentes.ign.es/api-idee/plugins/backimglayer/images/svqlidar.png',
            title: 'LiDAR Híbrido',
            layers: [new M.layer.WMTS({
                url: 'https://wmts-mapa-lidar.idee.es/lidar?',
@@ -169,7 +169,7 @@ const back = new M.plugin.BackImgLayer({
        },
        {
            id: 'mapa',
-           preview: 'https://componentes.ign.es/api-core/plugins/backimglayer/images/svqmapa.png',
+           preview: 'https://componentes.ign.es/api-idee/plugins/backimglayer/images/svqmapa.png',
            title: 'Cartociudad',
            layers: [new M.layer.WMTS({
                url: 'https://www.ign.es/wmts/ign-base?',

@@ -10,9 +10,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="mapea" content="yes">
+    <meta name="idee" content="yes">
     <title>Visor base</title>
-    <link type="text/css" rel="stylesheet" href="assets/css/apiign.ol.min.css" />
+    <link type="text/css" rel="stylesheet" href="assets/css/apiidee.ol.min.css" />
     <link href="plugins/attributions/attributions.ol.min.css" rel="stylesheet" />
     <link href="plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
     <style type="text/css">
@@ -91,9 +91,9 @@
         <input type="number" id="inputMaxWidth" value="200">
         <div id="divModo">
             <label for="inputUrl">Parámetro url</label>
-            <input type="text" name="url" id="inputUrl" list="urlSug" value="https://mapea-lite.desarrollo.guadaltel.es/api-core/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml">
+            <input type="text" name="url" id="inputUrl" list="urlSug" value="https://componentes-desarrollo.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml">
             <datalist id="urlSug">
-                <option value="https://mapea-lite.desarrollo.guadaltel.es/api-core/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml"></option>
+                <option value="https://componentes-desarrollo.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml"></option>
             </datalist>
             <label for="selectType">Selector de tipo</label>
             <select name="type" id="selectType">
@@ -120,7 +120,7 @@
     </div>
     <div id="mapjs" class="m-container"></div>
     <script type="text/javascript" src="vendor/browser-polyfill.js"></script>
-    <script type="text/javascript" src="js/apiign.ol.min.js"></script>
+    <script type="text/javascript" src="js/apiideee.ol.min.js"></script>
     <script type="text/javascript" src="js/configuration.js"></script>
     <script type="text/javascript" src="plugins/attributions/attributions.ol.min.js"></script>
     <script type="text/javascript" src="plugins/sharemap/sharemap.ol.min.js"></script>
@@ -222,7 +222,7 @@
             map.addPlugin(mp);
         }
         let mp2 = new M.plugin.ShareMap({
-            baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-core')) + "api-core/",
+            baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
             position: "TR",
         });
         map.addPlugin(mp2);

@@ -11,11 +11,11 @@ Para adaptarse a las necesidades de los usuarios y ser mucho más flexible, API 
 
 La arquitectura de API IDEE está compuesta por los siguientes componentes:
 
-- [api-ign-js](/api-ign-js) Librería JavaScript que provee una API para facilitar la creación de visores de mapas.
-- [api-ign-parent](/api-ign-parent) Módulo padre que hace uso de maven para compilar y generar el war final de api-idee.
-- [api-ign-proxy](/api-ign-proxy) Proxy para realizar peticiones POST por si el [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS) no está habilitado.
-- [api-ign-rest](/api-ign-rest) Servicio Web con API RESTful que genera el código JS necesario para generar un visor con la configuración especificada por parámetros.
-- [api-ign-database](/api-ign-database) Módulo de conexión a la base de datos (PostgreSQL). Realizando diferentes peticiones GET se puede obtener diferentes servicios.
+- [api-idee-js](/api-idee-js) Librería JavaScript que provee una API para facilitar la creación de visores de mapas.
+- [api-idee-parent](/api-idee-parent) Módulo padre que hace uso de maven para compilar y generar el war final de api-idee.
+- [api-idee-proxy](/api-idee-proxy) Proxy para realizar peticiones POST por si el [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS) no está habilitado.
+- [api-idee-rest](/api-idee-rest) Servicio Web con API RESTful que genera el código JS necesario para generar un visor con la configuración especificada por parámetros.
+- [api-idee-database](/api-idee-database) Módulo de conexión a la base de datos (PostgreSQL). Realizando diferentes peticiones GET se puede obtener diferentes servicios.
 
 ## Plugins
 
