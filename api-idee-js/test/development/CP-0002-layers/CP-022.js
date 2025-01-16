@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 import GeoJSON from 'M/layer/GeoJSON';
 import WFS from 'M/layer/WFS';
 

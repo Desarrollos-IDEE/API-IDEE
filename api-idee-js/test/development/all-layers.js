@@ -1,4 +1,4 @@
-import { map } from 'M/mapea';
+import { map } from 'M/api-idee';
 import WMS from 'M/layer/WMS';
 import WFS from 'M/layer/WFS';
 import KML from 'M/layer/KML';
@@ -22,7 +22,7 @@ const wfs = new WFS({
 });
 
 const kml = new KML({
-  url: 'http://mapea4-sigc.juntadeandalucia.es/files/kml/arbda_sing_se.kml',
+  url: 'https://componentes-desarrollo.idee.es/files/kml/arbda_sing_se.kml',
 });
 
 const geojson = new GeoJSON({

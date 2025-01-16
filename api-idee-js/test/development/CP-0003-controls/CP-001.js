@@ -1,4 +1,4 @@
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 import { generic_001 } from '../layers/generic/generic';
 
 M.config.backgroundlayers = [{

@@ -1,4 +1,4 @@
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 import Popup from 'M/Popup';
 
 const mapjs = Mmap({

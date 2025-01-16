@@ -8,7 +8,7 @@ const map = M.map({
 
 const mp = new ViewShed({
   position: 'TR',
-  url: 'http://sigc.desarrollo.guadaltel.es/geoprocess-services',
+  url: 'https://componentes-desarrollo.idee.es/geoprocess-services',
   collapsed: true,
   collapsible: true,
 });

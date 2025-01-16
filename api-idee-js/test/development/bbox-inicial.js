@@ -1,4 +1,4 @@
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 
 const mapjs = Mmap({
   container: 'map',

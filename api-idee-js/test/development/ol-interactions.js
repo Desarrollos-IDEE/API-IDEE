@@ -1,4 +1,4 @@
-import { map } from 'M/mapea';
+import { map } from 'M/api-idee';
 
 window.mapa = map({
   container: 'map',

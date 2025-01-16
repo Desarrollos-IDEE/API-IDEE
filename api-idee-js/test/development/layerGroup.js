@@ -1,4 +1,4 @@
-import { map } from 'M/mapea';
+import { map } from 'M/api-idee';
 // import WMC from 'M/layer/WMC';
 import LayerGroup from 'M/layer/LayerGroup';
 import GeoJSON from 'M/layer/GeoJSON';

@@ -2,7 +2,7 @@ const map = M.map({
   container: 'mapjs',
 });
 const mp = new M.plugin.ShareMap({
-  baseUrl: 'http://mapea4-sigc.juntadeandalucia.es/',
+  baseUrl: 'https://componentes-desarrollo.idee.es/',
 });
 map.addPlugin(mp);
 

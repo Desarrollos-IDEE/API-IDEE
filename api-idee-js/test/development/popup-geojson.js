@@ -1,4 +1,4 @@
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 import GeoJSON from 'M/layer/GeoJSON';
 import StylePoint from 'M/style/Point';
 import StylePolygon from 'M/style/Polygon';
@@ -30,7 +30,7 @@ mapjs.addLayers(new GeoJSON({
       properties: {
         estado: 1,
         vendor: {
-          mapea: {},
+          api_idee: {},
         },
         sede: '/Sevilla/CHGCOR003-Oficina de la zona regable del Genil',
         tipo: 'ADSL',
@@ -44,7 +44,7 @@ mapjs.addLayers(new GeoJSON({
     }, {
       properties: {
         estado: 0,
-        vendor: { mapea: {} },
+        vendor: { api_idee: {} },
         sede: '/Córdoba/CHGCOR014-Presa de Retortillo',
         tipo: 'VSAT',
         name: '/Córdoba/CHGCOR014-Presa de Retortillo',
@@ -57,7 +57,7 @@ mapjs.addLayers(new GeoJSON({
     }, {
       properties: {
         estado: 0,
-        vendor: { mapea: {} },
+        vendor: { api_idee: {} },
         sede: '/Córdoba/CHGCOR015-Presa de San Rafael de Navallana',
         tipo: '3G',
         name: '/Córdoba/CHGCOR015-Presa de San Rafael de Navallana',
@@ -70,7 +70,7 @@ mapjs.addLayers(new GeoJSON({
     }, {
       properties: {
         estado: 0,
-        vendor: { mapea: {} },
+        vendor: { api_idee: {} },
         sede: '/Granada/CHGGRA008-Presa de Colomera',
         tipo: 'ADSL',
         name: '/Granada/CHGGRA008-Presa de Colomera',

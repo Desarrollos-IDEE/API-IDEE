@@ -17,7 +17,7 @@ const vectorLayers = new M.layer.Vector({
 // Creamos feature
 const featurePolygon = new M.Feature('featurePrueba001', {
   type: 'Feature',
-  id: 'mapea_feature_4287706116785215',
+  id: 'apiidee_feature_4287706116785215',
   geometry: {
     type: 'Polygon',
     coordinates: [

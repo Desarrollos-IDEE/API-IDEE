@@ -1,4 +1,4 @@
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 import WFS from 'M/layer/WFS';
 import { LOAD as LoadEvt } from 'M/event/eventtype';
 import { GTE } from 'M/filter/Filter';

@@ -1,4 +1,4 @@
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 
 import WMS from 'M/layer/WMS';
 import WMTS from 'M/layer/WMTS';

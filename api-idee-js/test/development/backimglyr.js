@@ -1,4 +1,4 @@
-// import { map as Mmap } from 'M/mapea';
+// import { map as Mmap } from 'M/api-idee';
 import IGNSearch from 'plugins/ignsearch/src/facade/js/ignsearch';
 import Attributions from 'plugins/attributions/src/facade/js/attributions';
 import ShareMap from 'plugins/sharemap/src/facade/js/sharemap';

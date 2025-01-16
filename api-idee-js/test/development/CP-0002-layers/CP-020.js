@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 import {
   geotiff_001, geotiff_002, geotiff_003, geotiff_004,
 } from '../layers/geotiff/geotiff';

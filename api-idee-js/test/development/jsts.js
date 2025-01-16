@@ -1,4 +1,4 @@
-import { map } from 'M/mapea';
+import { map } from 'M/api-idee';
 import WFS from 'M/layer/WFS';
 import GeoJSON from 'M/layer/GeoJSON';
 import { SELECT_FEATURES } from 'M/event/eventtype';

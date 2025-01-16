@@ -1853,7 +1853,7 @@ export default class IGNSearchLocatorControl extends M.Control {
         }
       } else {
         success = false;
-        M.dialog.error(getValue('exception.apiIdeeerror'));
+        M.dialog.error(getValue('exception.apiideerror'));
       }
     } catch (err) {
       success = false;
@@ -1919,7 +1919,7 @@ export default class IGNSearchLocatorControl extends M.Control {
         document.querySelector('#m-searchParamsMunicipio-select').value = this.municipalityvalue;
       }
     } else {
-      M.dialog.error(getValue('exception.apiIdeeerror'));
+      M.dialog.error(getValue('exception.apiideerror'));
     }
   }
 

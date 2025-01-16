@@ -68,7 +68,7 @@ export default class ViewShed extends M.Plugin {
      * @private
      * @type {string}
      */
-    this.url_ = options.url || 'http://sigc.desarrollo.guadaltel.es/geoprocess-services';
+    this.url_ = options.url || 'https://componentes-desarrollo.idee.es/geoprocess-services';
 
     /**
      * Metadata from api.json

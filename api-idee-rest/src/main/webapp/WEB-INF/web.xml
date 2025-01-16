@@ -15,11 +15,11 @@
       <url-pattern>/*</url-pattern>
     </filter-mapping>
     <servlet>
-        <servlet-name>mapea-rest-api</servlet-name>
+        <servlet-name>apiIdee-rest-api</servlet-name>
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
         <init-param>
             <param-name>com.sun.jersey.config.property.packages</param-name>
-            <param-value>es.cnig.mapea</param-value>
+            <param-value>es.api_idee</param-value>
         </init-param>
 	    <init-param>
 	        <param-name>jersey.config.server.provider.classnames</param-name>
@@ -28,15 +28,15 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>mapea-rest-api</servlet-name>
+        <servlet-name>apiIdee-rest-api</servlet-name>
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
     <servlet>
-      <servlet-name>proxyMapea</servlet-name>
-      <servlet-class>es.cnig.mapea.proxy.ProxyRedirect</servlet-class>
+      <servlet-name>proxyApiIDEE</servlet-name>
+      <servlet-class>es.api_idee.proxy.ProxyRedirect</servlet-class>
     </servlet>
     <servlet-mapping>
-      <servlet-name>proxyMapea</servlet-name>
+      <servlet-name>proxyApiIDEE</servlet-name>
       <url-pattern>/proxyPost</url-pattern>
     </servlet-mapping>
 </web-app>

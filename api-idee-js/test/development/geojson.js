@@ -1,4 +1,4 @@
-import { map } from 'M/mapea';
+import { map } from 'M/api-idee';
 import GeoJSON from 'M/layer/GeoJSON';
 
 const mapjs = map({
@@ -14,7 +14,7 @@ const mapjs = map({
 //       properties: {
 //         estado: 1,
 //         vendor: {
-//           mapea: {},
+//           api_idee: {},
 //         },
 //         sede: '/Sevilla/CHGCOR003-Oficina de la zona regable del Genil',
 //         tipo: 'ADSL',

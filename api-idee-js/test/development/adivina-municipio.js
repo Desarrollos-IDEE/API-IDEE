@@ -1,4 +1,4 @@
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 import WFS from 'M/layer/WFS';
 import Polygon from 'M/style/Polygon';
 import Category from 'M/style/Category';
@@ -13,10 +13,9 @@ const mapajs = Mmap({
 
 window.mapjs = mapajs;
 
-
 const layer = new WFS({
   url: 'https://clientes.guadaltel.es/desarrollo/geossigc/wfs?',
-  namespace: 'mapea',
+  namespace: 'idee',
   name: 'da_municipio_pol',
   legend: 'Municipios - Plantilla Símbolo',
   geometry: 'POLYGON',
@@ -102,13 +101,11 @@ layer.on(SelectFeaturesEvt, (features) => {
   anteriores.push(features[0]);
 });
 
-
 function resetea() {
   anteriores = [];
   layer.setStyle(incognita);
   layer.redraw();
 }
-
 
 // Colores para categorizar
 const verdep = new Polygon({
@@ -128,7 +125,6 @@ const verdep = new Polygon({
     },
   },
 });
-
 
 const amarillop = new Polygon({
   fill: {
@@ -165,7 +161,6 @@ const rojop = new Polygon({
     },
   },
 });
-
 
 const azulp = new Polygon({
   fill: {

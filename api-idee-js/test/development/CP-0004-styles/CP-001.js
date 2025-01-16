@@ -1,5 +1,5 @@
 /* eslint-disable spaced-comment,no-loop-func,object-property-newline,no-param-reassign,no-proto,no-console,no-plusplus,object-curly-newline,max-len,camelcase */
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 import Feature from 'M/feature/Feature';
 import Point from 'M/style/Point';
 import Line from 'M/style/Line';

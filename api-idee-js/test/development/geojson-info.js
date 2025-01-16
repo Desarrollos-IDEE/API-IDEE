@@ -1,4 +1,4 @@
-import { map } from 'M/mapea';
+import { map } from 'M/api-idee';
 import GeoJSON from 'M/layer/GeoJSON';
 
 const mapajs = map({
@@ -25,7 +25,7 @@ mapajs.addLayers(new GeoJSON({
         properties: {
           estado: 1,
           vendor: {
-            mapea: {},
+            api_idee: {},
           },
           sede: '/Sevilla/CHGCOR003-Oficina de la zona regable del Genil',
           tipo: 'ADSL',
@@ -41,7 +41,7 @@ mapajs.addLayers(new GeoJSON({
         properties: {
           estado: 0,
           vendor: {
-            mapea: {},
+            api_idee: {},
           },
           sede: '/Córdoba/CHGCOR014-Presa de Retortillo',
           tipo: 'VSAT',
@@ -56,7 +56,7 @@ mapajs.addLayers(new GeoJSON({
         properties: {
           estado: 0,
           vendor: {
-            mapea: {},
+            api_idee: {},
           },
           sede: '/Córdoba/CHGCOR015-Presa de San Rafael de Navallana',
           tipo: '3G',
@@ -71,7 +71,7 @@ mapajs.addLayers(new GeoJSON({
         properties: {
           estado: 0,
           vendor: {
-            mapea: {},
+            api_idee: {},
           },
           sede: '/Granada/CHGGRA008-Presa de Colomera',
           tipo: 'ADSL',

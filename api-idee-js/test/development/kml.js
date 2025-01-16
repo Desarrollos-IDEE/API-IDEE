@@ -1,4 +1,4 @@
-import { map, proxy } from 'M/mapea';
+import { map, proxy } from 'M/api-idee';
 import KML from 'M/layer/KML';
 
 

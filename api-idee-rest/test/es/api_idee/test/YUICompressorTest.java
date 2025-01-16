@@ -1,4 +1,4 @@
-package es.cnig.mapea.test;
+package es.api_idee.test;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

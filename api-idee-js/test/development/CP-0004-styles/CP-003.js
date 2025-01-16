@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars,camelcase,max-len */
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 import Polygon from 'M/style/Polygon';
 import Generic from 'M/style/Generic';
 import {

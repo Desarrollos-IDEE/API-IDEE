@@ -12,8 +12,8 @@ window.putMapOnWindowScope = function putMapOnWindowScope(mapInstance) {
 };
 
 // gets parameters to use the API
-const MAPEA_API_URL = 'http://mapea4-sigc.juntadeandalucia.es/mapea/';
-const useCaseUrl = `${MAPEA_API_URL}api/js${window.location.search}&callback=putMapOnWindowScope`;
+const API_IDEE_URL = 'https://componentes-desarrollo.idee.es/api-idee/';
+const useCaseUrl = `${API_IDEE_URL}api/js${window.location.search}&callback=putMapOnWindowScope`;
 
 // creates the <script> element pointing the use case URL
 const scriptElement = document.createElement('script');

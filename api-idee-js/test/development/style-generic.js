@@ -1,4 +1,4 @@
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 import GeoJSON from 'M/layer/GeoJSON';
 import OLSourceVector from 'ol/source/Vector';
 import MVT from 'M/layer/MVT';

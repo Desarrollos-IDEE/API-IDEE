@@ -9,7 +9,6 @@ const backgroundlayersOpts = backgroundlayersIds.map((id, index) => {
   };
 });
 
-
 const config = (configKey, configValue) => {
   config[configKey] = configValue;
 };
@@ -39,24 +38,24 @@ function fun(M_) {
   M_.config('API_IDEE_URL', 'https://componentes-desarrollo.idee.es/api-idee/');
 
   /**
-   * The path to the Mapea proxy to send
+   * The path to the API-IDEE proxy to send
    * jsonp requests
    * @const
    * @type {string}
    * @public
    * @api stable
    */
-  M_.config('PROXY_URL', location.protocol + '//componentes-desarrollo.idee.es/api-idee/api/proxy');
+  M_.config('PROXY_URL', `${location.protocol}//componentes-desarrollo.idee.es/api-idee/api/proxy`);
 
   /**
-   * The path to the Mapea proxy to send
+   * The path to the API-IDEE proxy to send
    * jsonp requests
    * @const
    * @type {string}
    * @public
    * @api stable
    */
-  M_.config('PROXY_POST_URL', location.protocol + '//componentes-desarrollo.idee.es/api-idee/proxyPost');
+  M_.config('PROXY_POST_URL', `${location.protocol}//componentes-desarrollo.idee.es/api-idee/proxyPost`);
 
   /**
    * The path to the API IDEE templates
@@ -74,7 +73,7 @@ function fun(M_) {
    * @public
    * @api stable
    */
-  M_.config('THEME_URL', location.protocol + '//componentes-desarrollo.idee.es/api-idee/assets/');
+  M_.config('THEME_URL', `${location.protocol}//componentes-desarrollo.idee.es/api-idee/assets/`);
 
   /**
    * TODO
@@ -188,7 +187,6 @@ function fun(M_) {
     type: 'kml',
   });
 
-
   /**
    * Controls configuration
    *
@@ -206,7 +204,6 @@ function fun(M_) {
    */
   M_.config('SQL_WASM_URL', '../../../../node_modules/sql.js/dist/');
 
-
   /**
    * Mueve el mapa cuando se hace clic sobre un objeto
    * geográfico, (extract = true) o no (extract = false)
@@ -223,16 +220,16 @@ function fun(M_) {
    * @type {object}
    */
   M_.config('POPUP_INTELLIGENCE', {
-      activate: true,
-      sizes: {
-        images: ['120px', '75px'],
-        videos: ['500px', '300px'],
-        documents: ['500px', '300px'],
-        audios: ['250px', '40px'],
-      }
+    activate: true,
+    sizes: {
+      images: ['120px', '75px'],
+      videos: ['500px', '300px'],
+      documents: ['500px', '300px'],
+      audios: ['250px', '40px'],
+    },
   });
 
-      /**
+  /**
    * Hace el dialog inteligente
    *
    * @private
@@ -245,7 +242,7 @@ function fun(M_) {
       videos: ['500px', '300px'],
       documents: ['500px', '300px'],
       audios: ['250px', '40px'],
-    }
+    },
   });
 }
 

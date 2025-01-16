@@ -1,4 +1,4 @@
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 import MlayerWFS from 'M/layer/WFS';
 import MstylePolygon from 'M/style/Polygon';
 import MstylePoint from 'M/style/Point';

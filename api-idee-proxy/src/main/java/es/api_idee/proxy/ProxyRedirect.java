@@ -243,7 +243,7 @@ public class ProxyRedirect extends HttpServlet {
 						httppost.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
 								new DefaultHttpMethodRetryHandler(3, false));
 						// FIN_PATH
-						// PATH_apiIdeeEDITA_SECURITY - AP
+						// PATH_apiideeDITA_SECURITY - AP
 						// PATCH_TICKET_MJM-20112405-POST
 						String authorizationValue = request.getHeader(AUTHORIZATION); // ADD_SECURITY_20091210
 						if (authorizationValue == null) {
@@ -288,7 +288,7 @@ public class ProxyRedirect extends HttpServlet {
 							httppost.addRequestHeader(AUTHORIZATION, authorizationValue);
 						}
 						// FIN_PATH_TICKET_MJM-20112405-POST
-						// FIN_PATH_apiIdeeEDITA_SECURITY - AP
+						// FIN_PATH_apiideeDITA_SECURITY - AP
 						String body = inputStreamAsString(request.getInputStream());
 						StringRequestEntity bodyEntity = new StringRequestEntity(body, null, null);
 						if (0 == httppost.getParameters().length) {

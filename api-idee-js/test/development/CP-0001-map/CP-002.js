@@ -1,11 +1,11 @@
-import { map as Mmap } from 'M/mapea';
-import { wms_001 } from '../layers/wms/wms'
+import { map as Mmap } from 'M/api-idee';
+import { wms_001 } from '../layers/wms/wms';
 
 const mapa = Mmap({
   container: 'map',
   projection: 'EPSG:3857*m',
   // ? 01. Caso de uso: backgroundlayers
-  // ! Añadir attribution capas rápidas -> mapea.js
+  // ! Añadir attribution capas rápidas -> api-idee.js
   // ! Añadir capas rápidas al configuration.js, ejemplo:
   // const backgroundlayersLayers = 'QUICK*Base_IGNBaseTodo_TMS,QUICK*BASE_PNOA_MA_TMS,TMS*PNOA-MA*...;
   // controls: ['backgroundlayers'],
@@ -67,7 +67,7 @@ setTimeout(() => {
 setTimeout(() => {
   mapa.removeAttribution('Name Prueba WMS');
 }, 1000);
-*/ 
+*/
 
 // ? 14. Caso de uso: Eliminar atribución por id - string
 /*

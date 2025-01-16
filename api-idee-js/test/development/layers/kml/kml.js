@@ -7,7 +7,7 @@ import OLKMLFormat from 'ol/format/KML';
 export const kml_001 = new KML({
   // url: 'https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml',
   url: 'https://componentes.cnig.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
-  // url: 'http://mapea4-sigc.juntadeandalucia.es/files/kml/arbda_sing_se.kml',
+  // url: 'https://componentes-desarrollo.idee.es/files/kml/arbda_sing_se.kml',
   name: 'capaKML',
   // extract: false,
   extract: true,

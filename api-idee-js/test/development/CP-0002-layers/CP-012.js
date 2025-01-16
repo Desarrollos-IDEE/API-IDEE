@@ -1,4 +1,4 @@
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 // OKS
 // import { vector_001 } from '../layers/vector/vector';
 // import { wfs_001 } from '../layers/wfs/wfs';

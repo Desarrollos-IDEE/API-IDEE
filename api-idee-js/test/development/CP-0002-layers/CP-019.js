@@ -4,7 +4,7 @@ import ImageWMS from 'ol/source/ImageWMS';
 import VectorSource from 'ol/source/Vector';
 import { Fill, Stroke, Style } from 'ol/style';
 import { bbox as bboxStrategy } from 'ol/loadingstrategy';
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 import Generic from 'M/style/Generic';
 import { default as OlGeoJSON } from 'ol/format/GeoJSON';
 

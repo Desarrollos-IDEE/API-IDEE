@@ -1,5 +1,5 @@
 /* eslint-disable no-console,no-loop-func,no-param-reassign,no-proto,no-plusplus,object-property-newline,object-curly-newline,spaced-comment,camelcase,no-unused-vars,max-len */
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 import Generic from 'M/style/Generic';
 import GeoJSON from 'M/layer/GeoJSON';
 // import Vector from 'M/layer/Vector';
@@ -426,7 +426,7 @@ const sourceGeojson = {
   type: 'FeatureCollection',
   features: [
     {
-      id: 'mapea_feature_1840408885531848',
+      id: 'api-idee_feature_1840408885531848',
       type: 'Feature',
       geometry: {
         type: 'Point',
@@ -435,7 +435,7 @@ const sourceGeojson = {
       properties: {},
     },
     {
-      id: 'mapea_feature_46480286491644573',
+      id: 'api-idee_feature_46480286491644573',
       type: 'Feature',
       geometry: {
         type: 'LineString',
@@ -446,7 +446,7 @@ const sourceGeojson = {
       properties: {},
     },
     {
-      id: 'mapea_feature_578578836445871',
+      id: 'api-idee_feature_578578836445871',
       type: 'Feature',
       geometry: {
         type: 'Polygon',

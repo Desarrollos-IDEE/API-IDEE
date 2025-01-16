@@ -1,4 +1,4 @@
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 import OGCAPIFeatures from 'M/layer/OGCAPIFeatures';
 import WFS from 'M/layer/WFS';
 import Line from 'M/style/Line';

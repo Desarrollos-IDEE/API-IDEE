@@ -1,5 +1,5 @@
 /* eslint-disable no-console,no-underscore-dangle,max-len,camelcase,no-plusplus,no-param-reassign,no-proto,import/newline-after-import,object-property-newline,new-cap,object-curly-newline */
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 import Feature from 'M/feature/Feature';
 import Generic from 'M/style/Generic';
 import * as filterFunction from 'M/filter/Function';

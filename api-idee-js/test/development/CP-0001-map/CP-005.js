@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign,no-underscore-dangle,spaced-comment,max-len,no-proto,no-plusplus,no-console */
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 
 // Habilitar para pruebas Layers
 import KML from 'M/layer/KML'; // eslint-disable-line no-unused-vars

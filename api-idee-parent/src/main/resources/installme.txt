@@ -4,25 +4,25 @@
 	
 	2. Configuración de filtros mvn.
 	
-	mapea-parent/src/main/filters/mapea-<entorno>.properties
+	idee-parent/src/main/filters/<perfil>-<entorno>.properties
 	
-	Parámetro: mapea.url=http://<url_despliegue>/mapea
+	Parámetro: idee.url=http://<url_despliegue>/api-idee
 	
-	3. Compilación desde mapea-parent
+	3. Compilación desde idee-parent
 
-	apache-maven-3.3.3/bin/mvn clean package -P mapea-local
+	mvn clean package -P <perfil>
 
-	4. Si la compilación finaliza con éxito se debe generar mapea.war en:
+	4. Si la compilación finaliza con éxito se debe generar api-idee.war en:
 
-     /mapea-rest/target/mapea.war
+     /idee-rest/target/api-idee.war
 
-    5. Desplegar mapea.war en el servidor de aplicaciones siguiendo el procedimiento habitual.
+    5. Desplegar api-idee.war en el servidor de aplicaciones siguiendo el procedimiento habitual.
     
     6. Página de test
 
-    <url_mapea>/test/index.html
+    <url_idee>/test/index.html
     
-    En esta página se incluyen activos los casos de prueba que ya existían en mapea 3.x.x además de nuevos casos para probar las nuevas funcionalidades incorporadas.
+    En esta página se incluyen archivo de los casos de prueba. 
     
     Se muestran desactivados aquellos casos de prueba que no pueden validarse en la versión actual.
 

@@ -8,7 +8,7 @@
     "wrong_coords": "The coordinates entered are not correct.",
     "transforming": "Error performing the transformation.",
     "wrong_values": "Some value entered are not correct. Remember that minutes and seconds must be between 0 and 59 and degrees between 0 and 180.",
-    "apiIdeeerror": "It is not possible to establish a connection with the Cadastre server.",
+    "apiideerror": "It is not possible to establish a connection with the Cadastre server.",
     "no_province": "You must select a province.",
     "no_mun": "You must select a municipality.",
     "no_polygon": "You must select an polygon.",

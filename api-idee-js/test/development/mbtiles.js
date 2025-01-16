@@ -1,4 +1,4 @@
-import { map } from 'M/mapea';
+import { map } from 'M/api-idee';
 import MBTiles from 'M/layer/MBTiles';
 import MBTilesVector from 'M/layer/MBTilesVector';
 

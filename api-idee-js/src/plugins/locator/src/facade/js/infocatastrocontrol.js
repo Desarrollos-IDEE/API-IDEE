@@ -392,7 +392,7 @@ export default class InfoCatastroControl extends M.Control {
         this.selectMunicipios.value = this.municipalityvalue;
       }
     } else {
-      M.dialog.error(getValue('exception.apiIdeeerror'));
+      M.dialog.error(getValue('exception.apiideerror'));
     }
   }
 
@@ -474,7 +474,7 @@ export default class InfoCatastroControl extends M.Control {
         }
       } else {
         success = false;
-        M.dialog.error(getValue('exception.apiIdeeerror'));
+        M.dialog.error(getValue('exception.apiideerror'));
       }
     } catch (err) {
       success = false;
@@ -894,7 +894,7 @@ export default class InfoCatastroControl extends M.Control {
       }
     } else {
       this.map.removePopup();
-      M.dialog.error(getValue('exception.apiIdeeerror'));
+      M.dialog.error(getValue('exception.apiideerror'));
     }
   }
 

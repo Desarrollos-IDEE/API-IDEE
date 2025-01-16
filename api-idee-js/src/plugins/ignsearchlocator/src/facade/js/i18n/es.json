@@ -3,7 +3,7 @@
     "impl": "La implementación usada no puede crear controles IGNSearchLocator.",
     "wrong_coords": "Las coordenadas introducidas no son correctas.",
     "transforming": "Error realizando la transformación.",
-    "apiIdeeerror": "No es posible establecer la conexión con el servidor de Catastro.",
+    "apiideerror": "No es posible establecer la conexión con el servidor de Catastro.",
     "noresults": "No se han encontrado resultados",
     "noubi": "No existe dirección asociada para esta ubicación.",
     "wrong_values": "Algún valor introducido no es correcto. Recuerda que los minutos y los segundos tienen que tener un valor entre 0 y 59 y los grados entre 0 y 180.",

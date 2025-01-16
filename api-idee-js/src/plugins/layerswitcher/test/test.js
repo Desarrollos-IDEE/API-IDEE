@@ -162,7 +162,7 @@ const capaGeoJSON2 = new M.layer.GeoJSON({
       properties: {
         estado: 1,
         vendor: {
-          mapea: {},
+          api_idee: {},
         },
         sede: '/Sevilla/CHGCOR003-Oficina de la zona regable del Genil',
         tipo: 'ADSL',

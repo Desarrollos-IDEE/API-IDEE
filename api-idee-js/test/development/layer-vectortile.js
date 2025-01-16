@@ -1,4 +1,4 @@
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 import MVT from 'M/layer/MVT';
 import stylePolygon from 'M/style/Polygon';
 import stylePoint from 'M/style/Point';

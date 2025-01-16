@@ -1,5 +1,5 @@
 /* eslint-disable camelcase,max-len,no-unused-vars */
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 import { layerGroup_001, layerGroup_002 } from '../layers/layerGroup/layerGroup';
 
 

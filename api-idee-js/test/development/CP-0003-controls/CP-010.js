@@ -1,4 +1,4 @@
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 import WMS from 'M/layer/WMS';
 import WMTS from 'M/layer/WMTS';
 
@@ -379,4 +379,4 @@ generateAllFunctionsTest(controlPrueba.impl_, true); // El control seleccionado
 // Las funciones se generaron con "control" y "control.impl", porque por si solo había muy pocas funciones a probar por cada control.
 
 // [APUNTADO A REDMINE] ERROR control attributions, en el generado de atribuciones hay una opción de "closePanel", que tiene que ser una función. El problema es que se puede insertar algo que no es función.
-// [APUNTADO A REDMINE] ERROR control attributions, la función "getAttributionsFromMap" sufre error, parece que obtiene las atribuciones con "layer.getAttributions()", el problema es que los layers de API_CNIG solo tienen "getAttribution"(sin "s" final). Se ve que en el commit "https://github.com/IGN-CNIG/API-CNIG/commit/2c5759cd99d67d278f8cb89ace8e3551c9ce625b" se actualizo el nombre pero se olvido de arreglar esto.
+// [APUNTADO A REDMINE] ERROR control attributions, la función "getAttributionsFromMap" sufre error, parece que obtiene las atribuciones con "layer.getAttributions()", el problema es que los layers de API_CNIG solo tienen "getAttribution"(sin "s" final). Se ve que en el commit "https://github.com/IGN-CNIG/API-IDEE/commit/2c5759cd99d67d278f8cb89ace8e3551c9ce625b" se actualizo el nombre pero se olvido de arreglar esto.

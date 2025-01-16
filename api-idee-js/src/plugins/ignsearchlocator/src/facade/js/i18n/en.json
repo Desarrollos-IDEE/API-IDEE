@@ -3,7 +3,7 @@
     "impl": "The implementation used cannot create IGNSearchLocator.",
     "wrong_coords": "The coordinates entered are not correct.",
     "transforming": "Error performing the transformation.",
-    "apiIdeeerror": "It is not possible to establish a connection with the Cadastre server.",
+    "apiideerror": "It is not possible to establish a connection with the Cadastre server.",
     "noresults": "No results found",
     "noubi": "There is no associated address for this location.",
     "wrong_values": "Some value entered are not correct. Remember that minutes and seconds must be between 0 and 59 and degrees between 0 and 180.",

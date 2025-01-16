@@ -8,7 +8,7 @@
     "wrong_coords": "Las coordenadas introducidas no son correctas.",
     "transforming": "Error realizando la transformación.",
     "wrong_values": "Algún valor introducido no es correcto. Recuerda que los minutos y los segundos tienen que tener un valor entre 0 y 59 y los grados entre 0 y 180.",
-    "apiIdeeerror": "No es posible establecer la conexión con el servidor de Catastro.",
+    "apiideerror": "No es posible establecer la conexión con el servidor de Catastro.",
     "no_province": "Debe seleccionar una provincia.",
     "no_mun": "Debe seleccionar un municipio.",
     "no_polygon": "Debe seleccionar un polígono.",

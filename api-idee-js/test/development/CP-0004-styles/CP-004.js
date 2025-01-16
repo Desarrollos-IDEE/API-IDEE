@@ -1,5 +1,5 @@
 /* eslint-disable no-console,no-underscore-dangle,no-loop-func,no-proto,max-len,no-param-reassign,spaced-comment,no-plusplus,no-unused-vars,camelcase */
-import { map as Mmap } from 'M/mapea';
+import { map as Mmap } from 'M/api-idee';
 import Generic from 'M/style/Generic';
 import Choropleth from 'M/style/Choropleth';
 import Proportional from 'M/style/Proportional';
