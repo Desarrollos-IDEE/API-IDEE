@@ -21,7 +21,7 @@ La arquitectura de API IDEE está compuesta por los siguientes componentes:
 
 El API IDEE se puede extender en base al desarrollo de plugins.
 
-Podemos consultar el listado de plugins que por defecto vienen incorporados [aquí](https://github.com/IGN-CNIG/API-IDEE/wiki/2.3.-Plugins).
+Podemos consultar el listado de plugins que por defecto vienen incorporados [aquí](https://github.com/Desarrollos-IDEE/API-IDEE/wiki/2.3.-Plugins).
 
 
 ## Navegadores soportados
