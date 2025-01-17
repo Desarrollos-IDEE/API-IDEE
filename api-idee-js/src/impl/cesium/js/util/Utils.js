@@ -1011,37 +1011,63 @@ class Utils {
    * Este método obtiene el las coordenadas de un objeto geográfico.
    *
    * @param {Cesium.Entity} feature Objeto geográfico de Cesium.
+   * @param {Boolean} is2D Indica si las coordenadas del objeto
+   * geográfico están en 2D.
    * @returns Coordenadas del objeto geográfico.
    */
-  static getCoordinateEntity(feature) {
+  static getCoordinateEntity(feature, is2D = false) {
     let coord;
     if (!isUndefined(feature.polygon)) {
       const positions = feature.polygon.hierarchy.getValue().positions;
       const coordinates = [];
       positions.forEach((pos) => {
         const cartographic = Cartographic.fromCartesian(pos);
-        coordinates.push([
-          CesiumMath.toDegrees(cartographic.longitude),
-          CesiumMath.toDegrees(cartographic.latitude),
-        ]);
+        if (is2D) {
+          coordinates.push([
+            CesiumMath.toDegrees(cartographic.longitude),
+            CesiumMath.toDegrees(cartographic.latitude),
+          ]);
+        } else {
+          coordinates.push([
+            CesiumMath.toDegrees(cartographic.longitude),
+            CesiumMath.toDegrees(cartographic.latitude),
+            cartographic.height,
+          ]);
+        }
       });
       coord = [coordinates];
     } else if (!isUndefined(feature.point) || !isUndefined(feature.billboard)) {
       // eslint-disable-next-line no-underscore-dangle
       const cartographic = Cartographic.fromCartesian(feature.position._value);
-      coord = [
-        CesiumMath.toDegrees(cartographic.longitude),
-        CesiumMath.toDegrees(cartographic.latitude),
-      ];
+      if (is2D) {
+        coord = [
+          CesiumMath.toDegrees(cartographic.longitude),
+          CesiumMath.toDegrees(cartographic.latitude),
+        ];
+      } else {
+        coord = [
+          CesiumMath.toDegrees(cartographic.longitude),
+          CesiumMath.toDegrees(cartographic.latitude),
+          cartographic.height,
+        ];
+      }
     } else if (!isUndefined(feature.polyline)) {
       const positions = feature.polyline.positions.getValue();
       const coordinates = [];
       positions.forEach((pos) => {
         const cartographic = Cartographic.fromCartesian(pos);
-        coordinates.push([
-          CesiumMath.toDegrees(cartographic.longitude),
-          CesiumMath.toDegrees(cartographic.latitude),
-        ]);
+        if (is2D) {
+          coordinates.push([
+            CesiumMath.toDegrees(cartographic.longitude),
+            CesiumMath.toDegrees(cartographic.latitude),
+          ]);
+        } else {
+          coordinates.push([
+            CesiumMath.toDegrees(cartographic.longitude),
+            CesiumMath.toDegrees(cartographic.latitude),
+            cartographic.height,
+          ]);
+        }
       });
       coord = coordinates;
     }

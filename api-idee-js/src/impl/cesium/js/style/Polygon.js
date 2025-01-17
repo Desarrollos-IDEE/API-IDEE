@@ -3,6 +3,7 @@
  */
 import * as Baseline from 'M/style/Baseline';
 import * as Align from 'M/style/Align';
+import * as HeightReference from 'M/style/HeightReference';
 import {
   isNullOrEmpty,
   extend,
@@ -17,6 +18,7 @@ import {
   Cartesian2,
   HorizontalOrigin,
   VerticalOrigin,
+  HeightReference as CesiumHeightReference,
 } from 'cesium';
 import Simple from './Simple';
 
@@ -47,7 +49,13 @@ class Polygon extends Simple {
    * - renderer: Renderizado.
    *     - property: Propiedades.
    *     - stoke (color y width).
-   * - extrudedHeight: Extrusión del polígono. Solo disponible para Cesium.
+   * - heightReference: Posición relativa al terreno. Solo tendrá efecto si el
+   *   parámetro height de la capa tiene valor.
+   * - perPositionHeight: Indica si se utiliza o no la altura dada en las coordenadas
+   *   de la geometría.
+   * - extrudedHeight: Extrusión del polígono.
+   * - extrudedHeightReference: Posición relativa al terreno de la extrusión del
+   *   polígono. Solo tendrá efecto si extrudedHeight tiene valor.
    * @api stable
    */
   constructor(options) {
@@ -77,6 +85,25 @@ class Polygon extends Simple {
         outline: false,
         fill: false,
       };
+      if (!isNullOrEmpty(options.perPositionHeight)) {
+        const perPositionHeight = Simple.getValue(
+          options.perPositionHeight,
+          featureVariable,
+          this.layer_,
+        );
+        extend(style, { perPositionHeight });
+      }
+      if (!isNullOrEmpty(options.heightReference)) {
+        const heightReference = Simple.getValue(
+          options.heightReference,
+          featureVariable,
+          this.layer_,
+        );
+        extend(style, {
+          heightReference: Object.values(HeightReference).includes(heightReference)
+            ? CesiumHeightReference[heightReference] : CesiumHeightReference.NONE,
+        });
+      }
       if (!isNullOrEmpty(options.extrudedHeight)) {
         const extrudedHeight = Simple
           .getValue(options.extrudedHeight, featureVariable, this.layer_);
@@ -91,6 +118,17 @@ class Polygon extends Simple {
         extend(style, {
           extrudedHeight: extruded,
         }, true);
+      }
+      if (!isNullOrEmpty(options.extrudedHeightReference)) {
+        const extrudedHeightReference = Simple.getValue(
+          options.extrudedHeightReference,
+          featureVariable,
+          this.layer_,
+        );
+        extend(style, {
+          extrudedHeightReference: Object.values(HeightReference).includes(extrudedHeightReference)
+            ? CesiumHeightReference[extrudedHeightReference] : CesiumHeightReference.NONE,
+        });
       }
       if (!isNullOrEmpty(options.stroke) && isNullOrEmpty(options.stroke.pattern)) {
         const strokeColorValue = Simple

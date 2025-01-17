@@ -33,7 +33,14 @@ class Polygon extends Simple {
    * - renderer: Renderizado.
    *     - property: Propiedades.
    *     - stoke (color y width).
+   * - heightReference: Posición relativa al terreno. Solo tendrá efecto si el
+   *   parámetro height de la capa tiene valor. Solo disponible para Cesium.
+   * - perPositionHeight: Indica si se utiliza o no la altura dada en las coordenadas
+   *   de la geometría. Solo disponible para Cesium.
    * - extrudedHeight: Extrusión del polígono. Solo disponible para Cesium.
+   * - extrudedHeightReference: Posición relativa al terreno de la extrusión del
+   *   polígono. Solo tendrá efecto si extrudedHeight tiene valor.
+   *   Solo disponible para Cesium.
    * @param {Object} vendorOptions Opciones de proveedor para la biblioteca base.
    * @api
    */

@@ -35,7 +35,7 @@ class Terrain extends LayerBase {
    * de la capa, estos parámetros los proporciona el usuario.
    * - attribution: Atribución de la capa.
    * - url: Url del servicio de la capa.
-   * - isBase: Indica si la capa es base.
+   * - isBase: Este tipo de capa no podrá ser capa base.
    * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
    * - name: Nombre de la capa en la leyenda.
    * - legend: Indica el nombre que queremos que aparezca en el árbol de contenidos, si lo hay.

@@ -67,10 +67,10 @@ class GeoJSON {
       geoJSONFeature.id = generateRandom('geojson_');
     }
 
-    const array = this.getDeepestArray(geoJSONFeature.geometry.coordinates);
-    if (isUndefined(options.clampToGround) && array.length === 2) {
+    const is2D = this.is2D(geoJSONFeature.geometry.coordinates);
+    if (isUndefined(options.clampToGround) && is2D) {
       opts.clampToGround = true;
-    } else if (isUndefined(options.clampToGround) && array.length === 3) {
+    } else if (isUndefined(options.clampToGround) && !is2D) {
       opts.clampToGround = false;
     }
 
@@ -91,6 +91,8 @@ class GeoJSON {
             obj.heightReference = HeightReference.CLAMP_TO_GROUND;
           }
           feature.point = new PointGraphics(obj);
+        } else if (!isUndefined(feature.billboard) && object.isKMLBillboard && opts.clampToGround) {
+          feature.billboard.heightReference = HeightReference.CLAMP_TO_GROUND;
         }
 
         // click function
@@ -112,20 +114,30 @@ class GeoJSON {
     });
   }
 
-  getDeepestArray(arr) {
-    let deepest = null;
-    const findDeepest = (current) => {
+  /**
+   * Este método obtiene las primeras coordenadas de una geometría
+   * de Cesium.
+   *
+   * @function
+   * @param {Array<Array<Number>>|Array<Number>} coordinates Coordenadas de la geometría.
+   * @returns {Boolean} Verdadero si son coordenadas 2D, falso en caso contrario.
+   * @public
+   * @api
+   */
+  is2D(coordinates) {
+    let firstArray = null;
+    const findFirstArray = (current) => {
       if (Array.isArray(current)) {
-        current.forEach((element) => findDeepest(element));
+        current.forEach((element) => findFirstArray(element));
       } else {
         return;
       }
       if (current.every((element) => !Array.isArray(element))) {
-        deepest = current;
+        firstArray = current;
       }
     };
-    findDeepest(arr);
-    return deepest;
+    findFirstArray(coordinates);
+    return firstArray.length === 2;
   }
 
   /**

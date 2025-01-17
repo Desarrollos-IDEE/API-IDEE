@@ -12,6 +12,7 @@ import {
 } from 'M/util/Utils';
 import * as Align from 'M/style/Align';
 import * as Baseline from 'M/style/Baseline';
+import * as HeightReference from 'M/style/HeightReference';
 import {
   BillboardGraphics,
   BoundingRectangle,
@@ -22,6 +23,7 @@ import {
   LabelGraphics,
   LabelStyle,
   VerticalOrigin,
+  HeightReference as CesiumHeightReference,
 } from 'cesium';
 import Simple from './Simple';
 import PointFontSymbol from '../point/FontSymbol';
@@ -120,6 +122,18 @@ class Point extends Simple {
       }
 
       const style = { type: 'point', icon: undefined };
+
+      if (!isNullOrEmpty(options.heightReference)) {
+        const heightReference = Simple.getValue(
+          options.heightReference,
+          featureVariable,
+          this.layer_,
+        );
+        extend(style, {
+          heightReference: Object.values(HeightReference).includes(heightReference)
+            ? CesiumHeightReference[heightReference] : CesiumHeightReference.NONE,
+        });
+      }
 
       let fill = { color: Color.TRANSPARENT };
       if (!isNullOrEmpty(options.fill)) {

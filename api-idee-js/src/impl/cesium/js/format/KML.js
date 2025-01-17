@@ -1,7 +1,7 @@
 /**
  * @module M/impl/format/KML
  */
-import { decodeHtml } from 'M/util/Utils';
+import { decodeHtml, isUndefined } from 'M/util/Utils';
 import {
   KmlDataSource,
 } from 'cesium';
@@ -77,7 +77,7 @@ class KML {
    * - extent: Extensión de la tesela en unidades de mapa de la tesela leída.
    * - featureProjection: Proyección de las geometrías de los objetos geográficos creadas por el
    * lector de formato.
-   * @returns {M.Feature} Objetos geográficos personalizados.
+   * @returns {Object} Objeto que contiene "features" y la opción extractStyles.
    * @public
    * @api
    */
@@ -85,9 +85,11 @@ class KML {
     const kmlBlob = new Blob([textResponse], { type: 'application/vnd.google-earth.kml+xml' });
     const opt = {
       screenOverlayContainer: this.screenOverlayContainer_,
-      clampToGround: this.clampToGround,
       ...options,
     };
+    if (!isUndefined(this.clampToGround)) {
+      opt.clampToGround = this.clampToGround;
+    }
     const promise = new KmlDataSource().load(kmlBlob, opt);
     return promise.then((dataSource) => {
       const entities = dataSource.entities.values;
