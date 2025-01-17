@@ -53,7 +53,7 @@
       "help34": "Apart from the type of graph, you can choose the color ramp to use in the graph, an offset on the X and Y axes and the radius of the graph.",
       "help35": "In addition, for each added attribute, the label and its style can be displayed.",
       "help36": "Finally, in the case of copying a style from the copy button in the extension header, it can be used both to load styles to a layer at the javascript object level or by apirest.",
-      "help37": "To apply a serialized style to a layer in javascript you can follow the following workflow explained in the styles documentation: https://github.com/IGN-CNIG/API-IDEE/wiki/2.1. 2.-Symbolization%C3%B3n#serialization%C3%B3n-of-vector-styles",
+      "help37": "To apply a serialized style to a layer in javascript you can follow the following workflow explained in the styles documentation: https://github.com/Desarrollos-IDEE/API-IDEE/wiki/2.1. 2.-Symbolization%C3%B3n#serialization%C3%B3n-of-vector-styles",
       "help38": "In the case of use by api-rest, starting from:",
       "help39": "You can add the copied style at the end:",
       "help40": "Leaving the following URL:",

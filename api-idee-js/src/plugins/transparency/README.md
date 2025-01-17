@@ -15,7 +15,7 @@ Plugin que permite aplicar un efecto de transparencia a la capa seleccionada.
 
 # Uso del histórico de versiones
 
-Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/IGN-CNIG/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
+Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
  <link href="https://componentes.cnig.es//plugins/transparency/transparency-1.0.0.ol.min.css" rel="stylesheet" />

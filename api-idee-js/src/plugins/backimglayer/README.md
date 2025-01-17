@@ -20,7 +20,7 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 
 # Uso del histórico de versiones
 
-Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/IGN-CNIG/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
+Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
  <link href="https://componentes.cnig.es/api-idee/plugins/backimglayer/backimglayer-1.0.0.ol.min.css" rel="stylesheet" />
@@ -48,7 +48,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
     - **preview**: Ruta a la imagen de previsualización que se muestra.
     - **title**: Nombre identificativo de la capa que se mostrará sobre la previsualización.
     - **layers**: Array con las capas que se quieren cargar al seleccionar esta opción.
-       - [Como añadir las capas y qué parámetros se tienen que usar](https://github.com/IGN-CNIG/API-IDEE/wiki/Capas)
+       - [Como añadir las capas y qué parámetros se tienen que usar](https://github.com/Desarrollos-IDEE/API-IDEE/wiki/Capas)
 - **empty**: Habilita la posibilidad de mostrar el mapa sin las capas de fondo cargadas del plugin (capa de fondo "vacía"). Verdadero "true", se activa esta funcionalidad. Falso por defecto.
 
 - **ids**: (Cuando layerOpts no se define) ids de las capas separados por ','. Por defecto: 'wmts'

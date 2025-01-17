@@ -21,7 +21,7 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 
 # Uso del histórico de versiones
 
-Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/IGN-CNIG/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
+Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
  <link href="https://componentes.cnig.es/api-idee/plugins/modal/modal-1.0.0.ol.min.css" rel="stylesheet" />
@@ -62,7 +62,7 @@ Un ejemplo de la plantilla sería el siguiente:
     </div>
     <div class="popup-section">
         <p class="popup-title">Código API-IDEE</p>
-        <p>Enlace al repositorio: <a href="https://github.com/IGN-CNIG/API-IDEE">https://github.com/IGN-CNIG/API-IDEE</a></p>
+        <p>Enlace al repositorio: <a href="https://github.com/Desarrollos-IDEE/API-IDEE">https://github.com/Desarrollos-IDEE/API-IDEE</a></p>
     </div>
     <div class="popup-section">
         <p class="popup-title">Galería de plugins</p>
@@ -70,7 +70,7 @@ Un ejemplo de la plantilla sería el siguiente:
     </div>
     <div class="popup-section">
         <p class="popup-title">Wiki API-IDEE</p>
-        <p>Enlace a la Wiki de API-IDEE: <a href="https://github.com/IGN-CNIG/API-IDEE/wiki">https://github.com/IGN-CNIG/API-IDEE/wiki</a></p>
+        <p>Enlace a la Wiki de API-IDEE: <a href="https://github.com/Desarrollos-IDEE/API-IDEE/wiki">https://github.com/Desarrollos-IDEE/API-IDEE/wiki</a></p>
     </div>
     <div class="popup-section">
         <p class="popup-title">Galería de ejemplos API-IDEE</p>

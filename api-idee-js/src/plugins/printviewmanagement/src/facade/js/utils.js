@@ -173,6 +173,6 @@ export const LIST_SERVICES = `
         <li><b>KML: </b> ${getValue('layer_kml')}</li>
         <li><b>OGCAPIFeatures: </b> ${getValue('layer_OGCAPIFeatures')}</li>
       </ul>
-      <p><b>Más información:</b> <a href="https://github.com/IGN-CNIG/API-IDEE/wiki/2.1.-Capas">https://github.com/IGN-CNIG/API-IDEE/wiki/2.1.-Capas</a></p>
+      <p><b>Más información:</b> <a href="https://github.com/Desarrollos-IDEE/API-IDEE/wiki/2.1.-Capas">https://github.com/Desarrollos-IDEE/API-IDEE/wiki/2.1.-Capas</a></p>
     </section>
 `;

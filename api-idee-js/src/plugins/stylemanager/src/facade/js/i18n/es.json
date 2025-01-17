@@ -53,7 +53,7 @@
       "help34": "A parte del tipo de gráfico, se puede elegir la rampa de color a usar en el gráfico,un offset en los ejes X e Y y el radio del gráfico.",
       "help35": "Además, para cada atributo añadido, se puede mostrar la etiqueta y el estilo de la misma.",
       "help36": "Por último, en el caso de copiar un estilo desde el botón de copiar de la cabecera de la extensión, se puede utilizar tanto para cargar estilos a una capa a nivel de objeto javascript como por apirest.",
-      "help37": "Para aplicar un estilo serializado a una capa en javascript se puede seguir el siguiente flujo de trabajo explicado en la documentación de estilos: https://github.com/IGN-CNIG/API-IDEE/wiki/2.1.2.-Simbolizaci%C3%B3n#serializaci%C3%B3n-de-estilos-vectoriales",
+      "help37": "Para aplicar un estilo serializado a una capa en javascript se puede seguir el siguiente flujo de trabajo explicado en la documentación de estilos: https://github.com/Desarrollos-IDEE/API-IDEE/wiki/2.1.2.-Simbolizaci%C3%B3n#serializaci%C3%B3n-de-estilos-vectoriales",
       "help38": "En el caso de su utilización por api-rest, partiendo de:",
       "help39": "Se puede añadir al final el estilo copiado:",
       "help40": "Quedando la siguiente URL:",
