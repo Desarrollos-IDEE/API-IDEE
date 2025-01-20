@@ -68,6 +68,15 @@
             <environment>produccion</environment>
          </properties>
       </profile>
+       <profile>
+        <id>cnig-guadaltel</id>
+        <activation>
+           <activeByDefault>false</activeByDefault>
+        </activation>
+        <properties>
+           <environment>cnig-guadaltel</environment>
+        </properties>
+     </profile>
    </profiles>
    <build>
       <pluginManagement>
