@@ -1,0 +1,49 @@
+{
+  "url": {
+    "name": "measurebar",
+    "separator": "*"
+  },
+  "constructor": "M.plugin.MeasureBar",
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+      "type": "simple",
+      "name": "position",
+      "position": 0,
+      "possibleValues": ["TL", "TR", "BR", "BL"]
+    }, {
+      "type": "boolean",
+      "name": "collapsed",
+      "position": 1
+    }, {
+      "type": "boolean",
+      "name": "collapsible",
+      "position": 2
+    }, {
+      "type": "simple",
+      "name": "tooltip",
+      "position": 3
+    }]
+  }],
+  "files": {
+    "ol": {
+      "scripts": ["measurebar.ol.min.js"],
+      "styles": ["measurebar.ol.min.css"]
+    },
+    "cesium": {
+      "scripts": ["measurebar.cesium.min.js"],
+      "styles": ["measurebar.cesium.min.css"]
+    }
+  },
+  "metadata": {
+    "name": "measurebar",
+    "description": "Allows measures over map",
+    "text": "Allows measures over map",
+    "version": "2.0.2",
+    "date": "September 2019",
+    "author": "",
+    "org": "IGN",
+    "tags": "api-idee,plugin",
+    "icon": "./facade/assets/icons/icons.svg"
+  }
+}

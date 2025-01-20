@@ -1,0 +1,92 @@
+{
+  "url": {
+    "name": "viewmanagement",
+    "separator": "*"
+  },
+  "constructor": "M.plugin.ViewManagement",
+  "parameters": [{
+    "type": "object",
+    "properties": [
+    {
+      "type": "simple",
+      "name": "position",
+      "position": 0,
+      "possibleValues": [
+        "TL",
+        "TR",
+        "BR",
+        "BL"
+      ]
+    },
+    {
+      "type": "boolean",
+      "name": "collapsed",
+      "position": 1
+    },
+    {
+      "type": "boolean",
+      "name": "collapsible",
+      "position": 2
+    },
+    {
+      "type": "simple",
+      "name": "tooltip",
+      "position": 3
+    },
+    {
+      "type": "simple",
+      "name": "isDraggable",
+      "position": 4
+    },
+    {
+      "type": "boolean",
+      "name": "predefinedZoom",
+      "position": 5
+    },
+    {
+      "type": "boolean",
+      "name": "zoomExtent",
+      "position": 6
+    },
+    {
+      "type": "boolean",
+      "name": "viewhistory",
+      "position": 7
+    },
+    {
+      "type": "boolean",
+      "name": "zoompanel",
+      "position": 8
+    }
+  ]
+  }],
+  "files": {
+    "ol": {
+      "scripts": [
+        "viewmanagement.ol.min.js"
+      ],
+      "styles": [
+        "viewmanagement.ol.min.css"
+      ]
+    },
+    "cesium": {
+      "scripts": [
+        "viewmanagement.cesium.min.js"
+      ],
+      "styles": [
+        "viewmanagement.cesium.min.css"
+      ]
+    }
+  },
+  "metadata": {
+    "name": "viewmanagement",
+    "description": "Offer different zoom tools",
+    "text": "It offers different zoom tools.",
+    "version": "2.0.2",
+    "date": "27th April 2023",
+    "author": "CNIG",
+    "org": "CNIG",
+    "tags": "api-idee,plugin",
+    "icon": "./facade/assets/icons/icons.svg"
+  }
+}

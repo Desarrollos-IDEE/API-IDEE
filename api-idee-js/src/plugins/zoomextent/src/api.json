@@ -1,0 +1,36 @@
+{
+  "url": {
+    "name": "zoomextent",
+    "separator": "*"
+  },
+  "constructor": "M.plugin.ZoomExtent",
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+      "type": "simple",
+      "name": "position",
+      "position": 0
+    }]
+  }],
+  "files": {
+    "ol": {
+      "scripts": ["zoomextent.ol.min.js"],
+      "styles": ["zoomextent.ol.min.css"]
+    },
+    "cesium": {
+      "scripts": ["zoomextent.cesium.min.js"],
+      "styles": ["zoomextent.cesium.min.css"]
+    }
+  },
+  "metadata": {
+    "name": "ZoomExtent",
+    "description": "Description of the plugin",
+    "text": "A full text about plugin",
+    "version": "2.0.2",
+    "date": "",
+    "author": "",
+    "org": "",
+    "tags": "api-idee,plugin",
+    "icon": "./facade/assets/icons/icons.svg"
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "url": {
+    "name": "contactlink",
+    "separator": "*"
+  },
+  "constructor": "M.plugin.ContactLink",
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+      "type": "simple",
+      "name": "position",
+      "possibleValues": ["TL", "TR", "BL", "BR"],
+      "position": 0
+    }, {
+      "type": "boolean",
+      "name": "collapsed",
+      "position": 1
+    }, {
+      "type": "boolean",
+      "name": "collapsible",
+      "position": 2
+    }, {
+      "type": "simple",
+      "name": "tooltip",
+      "position": 3
+    }, {
+      "type": "simple",
+      "name": "descargascnig",
+      "position": 4
+    }, {
+      "type": "simple",
+      "name": "pnoa",
+      "position": 5
+    }, {
+      "type": "simple",
+      "name": "visualizador3d",
+      "position": 6
+    }, {
+      "type": "simple",
+      "name": "fototeca",
+      "position": 7
+    }, {
+      "type": "simple",
+      "name": "twitter",
+      "position": 8
+    }, {
+      "type": "simple",
+      "name": "instagram",
+      "position": 9
+    }, {
+      "type": "simple",
+      "name": "facebook",
+      "position": 10
+    }, {
+      "type": "simple",
+      "name": "pinterest",
+      "position": 11
+    }, {
+      "type": "simple",
+      "name": "youtube",
+      "position": 12
+    }, {
+      "type": "simple",
+      "name": "mail",
+      "position": 13
+    }]
+  }],
+  "files": {
+    "ol": {
+      "scripts": ["contactlink.ol.min.js"],
+      "styles": ["contactlink.ol.min.css"]
+    },
+    "cesium": {
+      "scripts": ["contactlink.cesium.min.js"],
+      "styles": ["contactlink.cesium.min.css"]
+    }
+  },
+  "metadata": {
+    "name": "ContactLink",
+    "description": "Acceso a enlaces",
+    "text": "Provee de enlaces a sitios, redes sociales y correo institucionales",
+    "version": "2.0.2",
+    "date": "Marzo 2020",
+    "author": "Pablo Perejón Linares",
+    "org": "",
+    "tags": "api-idee,plugin",
+    "icon": "./facade/assets/icons/icons.svg"
+  }
+}
