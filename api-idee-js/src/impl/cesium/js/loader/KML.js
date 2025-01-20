@@ -7,6 +7,7 @@ import { isNullOrEmpty, isUndefined, extend } from 'M/util/Utils';
 import FacadeFeature from 'M/feature/Feature';
 import Exception from 'M/exception/exception';
 import { getValue } from 'M/i18n/language';
+import { ArcType, HeightReference } from 'cesium';
 import ImplUtils from '../util/Utils';
 
 /**
@@ -72,8 +73,16 @@ class KML extends MObject {
       segregacion,
       removeFolderChildren,
       label,
+      clampToGround,
     ) => {
-      this.loadInternal_(projection, scaleLabel, segregacion, removeFolderChildren, label)
+      this.loadInternal_(
+        projection,
+        scaleLabel,
+        segregacion,
+        removeFolderChildren,
+        label,
+        clampToGround,
+      )
         .then((response) => {
           callback(response);
         });
@@ -90,16 +99,18 @@ class KML extends MObject {
    * @param {Array} layers Listado de nombres de carpetas para filtrar KML.
    * @param {boolean} removeFolderChildren Especifica si mostrar o no los hijos de las carpetas.
    * @param {boolean} showLabel Especifica si mostrar o no las etiquetas.
+   * @param {boolean} clampToGround Indica si la capa se ajusta al terreno.
    * @returns {Promise} Promesa con la obtención de los objetos geográficos.
    * @public
    * @api
    */
-  loadInternal_(projection, scaleLabel, layers, removeFolderChildren, showLabel) {
+  loadInternal_(projection, scaleLabel, layers, removeFolderChildren, showLabel, clampToGround) {
     return new Promise((success, fail) => {
       getRemote(this.url_).then((response) => {
         const parser = new DOMParser();
         const result = response.text.replace(/<extrude>.*?<\/extrude>/gs, '');
         const xmlDoc = parser.parseFromString(result, 'text/xml');
+        const is2D = this.is2D(xmlDoc.getElementsByTagName('coordinates'));
         let transformXMLtoText = false;
         if (!isUndefined(layers)) {
           const folders = xmlDoc.getElementsByTagName('Folder');
@@ -188,6 +199,13 @@ class KML extends MObject {
           response.text = xmlString;
         }
 
+        let clamp = clampToGround;
+        if (isUndefined(clampToGround) && is2D) {
+          clamp = true;
+        } else if (isUndefined(clampToGround) && !is2D) {
+          clamp = false;
+        }
+
         /*
             Fix: While the KML URL was being resolved the map projection
             might have been changed therefore the projection is readed again
@@ -196,11 +214,12 @@ class KML extends MObject {
         if (!isNullOrEmpty(response.text)) {
           this.format_.readCustomFeatures(response.text, {
             featureProjection: lastProjection,
+            clampToGround: clamp,
           }).then(({ features, extractStyles }) => {
             const screenOverlay = this.format_.getScreenOverlay();
             const mFeatures = [];
             features.forEach((cesiumFeature) => {
-              const coordinates = ImplUtils.getCoordinateEntity(cesiumFeature);
+              const coordinates = ImplUtils.getCoordinateEntity(cesiumFeature, is2D);
               const type = ImplUtils.getGeometryType(cesiumFeature);
               if (coordinates) {
                 let props = {};
@@ -237,6 +256,7 @@ class KML extends MObject {
                   },
                   properties: props,
                   isKMLBillboard,
+                  clampToGround: clamp,
                 });
 
                 if (extractStyles !== false) {
@@ -247,12 +267,24 @@ class KML extends MObject {
                     }
                     if (cesiumFeature.point) {
                       feature.getImpl().getFeature().point = cesiumFeature.point;
-                    } else if (cesiumFeature.billboard) {
+                      if (clamp) {
+                        feature.getImpl().getFeature().point
+                          .heightReference = HeightReference.CLAMP_TO_GROUND;
+                      }
+                    } else if (cesiumFeature.billboard && isKMLBillboard) {
                       feature.getImpl().getFeature().billboard = cesiumFeature.billboard;
+                      if (clamp) {
+                        feature.getImpl().getFeature().billboard
+                          .heightReference = HeightReference.CLAMP_TO_GROUND;
+                      }
                     } else if (cesiumFeature.polygon) {
                       feature.getImpl().getFeature().polygon = cesiumFeature.polygon;
                     } else if (cesiumFeature.polyline) {
                       feature.getImpl().getFeature().polyline = cesiumFeature.polyline;
+                      if (clamp) {
+                        feature.getImpl().getFeature().polyline.arcType = ArcType.RHUMB;
+                        feature.getImpl().getFeature().polyline.clampToGround = true;
+                      }
                     }
                   });
                 }
@@ -270,6 +302,27 @@ class KML extends MObject {
         }
       });
     });
+  }
+
+  /**
+   * Este método obtiene las primeras coordenadas de una geometría
+   * de Cesium.
+   *
+   * @function
+   * @param {Array<HTMLCollection>} coordinatesNodes Matriz de nodos "<coordinates>".
+   * @returns {Boolean} Verdadero si son coordenadas 2D, falso en caso contrario.
+   * @public
+   * @api
+   */
+  is2D(coordinatesNodes) {
+    let is2D;
+    if (coordinatesNodes.length > 0) {
+      const firstNode = coordinatesNodes[0];
+      const coordinatesText = firstNode.textContent.trim();
+      const coordinates = coordinatesText.split(/\s+/);
+      is2D = coordinates.some((point) => point.split(',').length === 2);
+    }
+    return is2D;
   }
 }
 

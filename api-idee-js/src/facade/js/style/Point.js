@@ -21,6 +21,7 @@ class Point extends Simple {
    * - fill: Color de fondo.
    * - stroke: Color del borde.
    * - icon: URL.
+   * - heightReference: Posición relativa al terreno. Solo disponible para Cesium.
    * @param {Object} vendorOptions Opciones de proveedor para la biblioteca base.
    * @api
    */

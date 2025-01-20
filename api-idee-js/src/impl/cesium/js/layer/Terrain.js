@@ -29,7 +29,7 @@ class Terrain extends Layer {
    * @param {Mx.parameters.Terrain} userParameters Parámetros para la construcción de la capa.
    * - attribution: Atribución de la capa.
    * - name: Nombre de la capa.
-   * - isBase: Indica si la capa es base.
+   * - isBase: Este tipo de capa no podrá ser capa base.
    * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
    * - legend: Nombre asociado en el árbol de contenidos, si usamos uno.
    * - visibility: Indica si la capa estará por defecto visible o no.

@@ -64,7 +64,8 @@ class GeoJSON extends LayerVector {
    * - height: Define la altura del objeto geográfico. Puede ser un número o una propiedad.
    *   Si se define la altura será constante para todos los puntos del objeto geográfico.
    *   Solo disponible para Cesium.
-   * - clampToGround: Define si el objeto geográfico se debe ajustar al suelo, por defecto falso.
+   * - clampToGround: Define si el objeto geográfico se debe ajustar al suelo. Si las coordenadas
+   *   son 3D, por defecto es falso, en caso contrario es verdadero.
    *   Solo disponible para Cesium.
    * @api
    */

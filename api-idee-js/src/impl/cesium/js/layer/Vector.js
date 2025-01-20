@@ -6,6 +6,7 @@ import {
   isFunction,
   includes,
   isString,
+  isUndefined,
 } from 'M/util/Utils';
 import { compileSync as compileTemplate } from 'M/util/Template';
 import Popup from 'M/Popup';
@@ -100,7 +101,7 @@ class Vector extends Layer {
      * Vector height. Define la altitud del objeto geográfico.
      * Puede ser un número o una propiedad del feature.
      */
-    this.height = options.height || undefined;
+    this.height = !isUndefined(options.height) ? options.height : undefined;
 
     // [WARN]
     // applyOLLayerSetStyleHook();

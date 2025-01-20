@@ -80,7 +80,8 @@ class OGCAPIFeatures extends Vector {
    *   Si se define la altura será constante para todos los puntos del objeto geográfico.
    *   Disponible para gemetrías poligonales.
    *   Solo disponible para Cesium.
-   * - clampToGround: Define si el objeto geográfico se debe ajustar al suelo, por defecto falso.
+   * - clampToGround: Define si el objeto geográfico se debe ajustar al suelo. Si las coordenadas
+   *   son 3D, por defecto es falso, en caso contrario es verdadero.
    *   Solo disponible para Cesium.
    * @param {Object} vendorOpts Opciones para la biblioteca base.
    * -cql: Declaración CQL para filtrar las características

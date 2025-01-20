@@ -10,6 +10,7 @@ import {
 } from 'M/util/Utils';
 import * as Align from 'M/style/Align';
 import * as Baseline from 'M/style/Baseline';
+import * as HeightReference from 'M/style/HeightReference';
 import {
   BillboardGraphics,
   BoundingRectangle,
@@ -23,6 +24,7 @@ import {
   LabelStyle,
   PolylineOutlineMaterialProperty,
   VerticalOrigin,
+  HeightReference as CesiumHeightReference,
 } from 'cesium';
 import PointFontSymbol from '../point/FontSymbol';
 import Simple from './Simple';
@@ -559,7 +561,59 @@ export const getLineText = (options, featureVariable, layer) => {
 };
 
 /**
- * Esta función devuelve el la extrusión del polígono.
+ * Esta función devuelve verdadero si se utiliza la altura dada en las coordenadas
+ * de la geometría, en caso contrario devuelve falso.
+ *
+ * @public
+ * @function
+ *
+ * @param {Object} options Opciones.
+ * @param {Object} featureVariable Objetos geográficos.
+ * @param {Object} layer Capas.
+ *
+ * @return {Object} Objeto que indica si se utiliza o no la altura de las coordenadas
+ * del polígono.
+ * @api stable
+ */
+export const getPerPositionHeight = (options, featureVariable, layer) => {
+  const opt = {};
+  if (!isNullOrEmpty(options.perPositionHeight)) {
+    const perPositionHeight = Simple.getValue(options.perPositionHeight, featureVariable, layer);
+    opt.perPositionHeight = perPositionHeight;
+  }
+  return opt;
+};
+
+/**
+ * Esta función devuelve la posición relativa al terreno.
+ * Solo tendrá efecto si el parámetro height de la capa tiene valor.
+ *
+ * @public
+ * @function
+ *
+ * @param {Object} options Opciones.
+ * @param {Object} featureVariable Objetos geográficos.
+ * @param {Object} layer Capas.
+ *
+ * @return {Object} Objeto que indica la posición relativa al terreno.
+ * @api stable
+ */
+export const getHeightReference = (options, featureVariable, layer) => {
+  const opt = { };
+  if (!isNullOrEmpty(options.heightReference)) {
+    const heightReference = Simple.getValue(
+      options.heightReference,
+      featureVariable,
+      layer,
+    );
+    opt.heightReference = Object.values(HeightReference).includes(heightReference)
+      ? CesiumHeightReference[heightReference] : CesiumHeightReference.NONE;
+  }
+  return opt;
+};
+
+/**
+ * Esta función devuelve la extrusión del polígono.
  * Solo disponible para Cesium.
  *
  * @public
@@ -569,7 +623,7 @@ export const getLineText = (options, featureVariable, layer) => {
  * @param {Object} featureVariable Objetos geográficos.
  * @param {Object} layer Capas.
  *
- * @return {Object} Devuelve el texto de la línea.
+ * @return {Object} Devuelve la extrusión del polígono
  * @api stable
  */
 export const getExtrudedHeight = (options, featureVariable, layer) => {
@@ -588,13 +642,41 @@ export const getExtrudedHeight = (options, featureVariable, layer) => {
 };
 
 /**
+ * Esta función devuelve la posición relativa al terreno de la extrusión del polígono.
+ * Solo tendrá efecto si extrudedHeight tiene valor.
+ *
+ * @public
+ * @function
+ *
+ * @param {Object} options Opciones.
+ * @param {Object} featureVariable Objetos geográficos.
+ * @param {Object} layer Capas.
+ *
+ * @return {Object} Objeto que indica la posición relativa al terreno de la extrusión del polígono.
+ * @api stable
+ */
+export const getExtrudedHeightReference = (options, featureVariable, layer) => {
+  const opt = { };
+  if (!isNullOrEmpty(options.extrudedHeightReference)) {
+    const extrudedHeightReference = Simple.getValue(
+      options.extrudedHeightReference,
+      featureVariable,
+      layer,
+    );
+    opt.extrudedHeightReference = Object.values(HeightReference).includes(extrudedHeightReference)
+      ? CesiumHeightReference[extrudedHeightReference] : CesiumHeightReference.NONE;
+  }
+  return opt;
+};
+
+/**
  * Esta función devuelve el estilo del punto.
  *
  * @public
  * @function
  *
  * @param {Object} options Opciones ("radius", "snapToPixel", "src",
- * "form" y "label").
+ * "form", "label" y "heightReference").
  * @param {Object} featureVariable Objetos geográficos.
  * @param {Object} layer Capas.
  *
@@ -603,6 +685,7 @@ export const getExtrudedHeight = (options, featureVariable, layer) => {
  */
 export const getPointStyle = (options, featureVariable, layer) => {
   const optionsVar = options || {};
+  const heightReference = getHeightReference(optionsVar, featureVariable, layer);
   let fill = { color: Color.TRANSPARENT };
   if (!isNullOrEmpty(options.fill)) {
     const fillColorValue = Simple.getValue(options.fill.color, featureVariable, layer);
@@ -637,6 +720,7 @@ export const getPointStyle = (options, featureVariable, layer) => {
   }
 
   extend(pointStyle, {
+    ...heightReference,
     ...fill,
     ...stroke,
     ...label,
@@ -690,7 +774,8 @@ export const getLineStyle = (options, featureVariable, layer) => {
  * @public
  * @function
  *
- * @param {Object} options Opciones ("fill", "stroke" y "label").
+ * @param {Object} options Opciones ("fill", "stroke", "label", "extrudedHeight",
+ * "extrudedHeightReference", "heightReference" y "perPositionHeight").
  * @param {Object} featureVariable Objetos geográficos.
  * @param {Object} layer Capas.
  *
@@ -701,7 +786,10 @@ export const getPolygonStyle = (options, featureVariable, layer) => {
   const optionsVar = options || {};
 
   const style = { type: 'polygon' };
+  const perPositionHeight = getPerPositionHeight(optionsVar, featureVariable, layer);
+  const heightReference = getHeightReference(optionsVar, featureVariable, layer);
   const extrudedHeight = getExtrudedHeight(optionsVar, featureVariable, layer);
+  const extrudedHeightReference = getExtrudedHeightReference(optionsVar, featureVariable, layer);
   const stroke = getStroke(optionsVar, featureVariable, layer);
   // if (optionsVar.stroke && !isNullOrEmpty(optionsVar.stroke.pattern)) {
   //   stroke = getStrokePatern(optionsVar, featureVariable, layer);
@@ -714,7 +802,10 @@ export const getPolygonStyle = (options, featureVariable, layer) => {
   // }
 
   extend(style, {
+    ...perPositionHeight,
+    ...heightReference,
     ...extrudedHeight,
+    ...extrudedHeightReference,
     ...stroke,
     ...fill,
     ...label,

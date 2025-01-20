@@ -53,10 +53,12 @@ class Feature {
         this.coordinates_ = geojson.geometry.coordinates;
       }
 
+      this.clampToGround_ = geojsonVariable.clampToGround;
+
       this.isLoadCesiumFeature_ = this.formatter_
         .readFeatureFromObject(
           geojsonVariable,
-          { clampToGround: geojsonVariable.clampToGround },
+          { clampToGround: this.clampToGround_ },
         ).then((feature) => {
           this.cesiumFeature_ = feature[0];
           if (!isNullOrEmpty(id)) {
@@ -484,7 +486,6 @@ class Feature {
 
     if (!isNullOrEmpty(h)) {
       if (this.cesiumFeature_.polygon) {
-        this.cesiumFeature_.polygon.perPositionHeight = false;
         this.cesiumFeature_.polygon.height = h;
       }
     }

@@ -45,7 +45,7 @@ class Tiles3D extends LayerBase {
    * - type: Tipo de la capa.
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
    * - attribution: Atribución de la capa.
-   * - isBase: Indica si la capa es base.
+   * - isBase: Este tipo de capa no podrá ser capa base.
    * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
    * - extract: Opcional, activa la consulta por click en el objeto geográfico, por defecto falso.
    * - infoEventType: Parametriza el método de activación del popup para obtener la información
