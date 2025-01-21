@@ -1,5 +1,5 @@
 /**
- * @module M/impl/style/Feature
+ * @module IDEE/impl/style/Feature
  */
 import Style from './Style';
 
@@ -7,7 +7,7 @@ import Style from './Style';
  * @classdesc
  * Esta clase se encarga de actualizar los objetos geográficos.
  * @api
- * @extends {M.impl.style.Style}
+ * @extends {IDEE.impl.style.Style}
  */
 
 class Feature extends Style {

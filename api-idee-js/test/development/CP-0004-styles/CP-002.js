@@ -1,16 +1,16 @@
 /* eslint-disable no-console,no-loop-func,no-param-reassign,no-proto,no-plusplus,object-property-newline,object-curly-newline,spaced-comment,camelcase,no-unused-vars,max-len */
-import { map as Mmap } from 'M/api-idee';
-import Generic from 'M/style/Generic';
-import GeoJSON from 'M/layer/GeoJSON';
-// import Vector from 'M/layer/Vector';
+import { map as Mmap } from 'IDEE/api-idee';
+import Generic from 'IDEE/style/Generic';
+import GeoJSON from 'IDEE/layer/GeoJSON';
+// import Vector from 'IDEE/layer/Vector';
 import {
   TOP, BOTTOM, MIDDLE, ALPHABETIC, HANGING, IDEOGRAPHIC,
-} from 'M/style/Baseline';
-import { RIGHT, LEFT, CENTER } from 'M/style/Align';
+} from 'IDEE/style/Baseline';
+import { RIGHT, LEFT, CENTER } from 'IDEE/style/Align';
 import {
   BAN, BLAZON, BUBBLE, CIRCLE, LOZENGE, MARKER, NONE, SHIELD, SIGN, SQUARE, TRIANGLE,
-} from 'M/style/Form';
-import { info } from 'M/dialog';
+} from 'IDEE/style/Form';
+import { info } from 'IDEE/dialog';
 import OLStyle from 'ol/style/Style';
 import OLStyleFill from 'ol/style/Fill';
 import OLStyleStroke from 'ol/style/Stroke';
@@ -19,7 +19,7 @@ import OLStyleIcon from 'ol/style/Icon';
 import OLStyleRegularShape from 'ol/style/RegularShape';
 import Centroid from '../../../src/impl/ol/js/style/Centroid';
 
-window.M.style = { Generic };
+window.IDEE.style = { Generic };
 window.ol = { style: { Style: OLStyle, Centroid, Fill: OLStyleFill, Stroke: OLStyleStroke, Circle: CircleStyle, Icon: OLStyleIcon, RegularShape: OLStyleRegularShape } };
 
 // START Pruebas con genericVendor
@@ -30,12 +30,12 @@ const genericVendor = undefined; // Sin vendorOptions
 // const genericVendor = [new OLStyle({ fill: new OLStyleFill({ color: '#F5470088' }), stroke: new OLStyleStroke({ color: '#0000ff88', width: 5, lineDash: [5, 5, 20], lineDashOffset: 5, lineCap: 'butt' }), image: new CircleStyle({ radius: 15, fill: new OLStyleFill({ color: '#F5470088', width: 20 }), stroke: new OLStyleStroke({ color: '#0000ff88', width: 5, lineDash: [5, 5, 20], lineDashOffset: 5, lineCap: 'butt' }) }) }), new OLStyle({ fill: new OLStyleFill({ color: '#00ff00' }), stroke: new OLStyleStroke({ color: '#ff0000', width: 2 }), image: new CircleStyle({ radius: 5, fill: new OLStyleFill({ color: '#00ffff', width: 20 }), stroke: new OLStyleStroke({ color: '#ff0000', width: 2, lineDash: [10, 10], lineDashOffset: 5, lineCap: 'butt' }) }) })];
 
 // Pruebas en consola
-// var consoleTestGeneric = new M.style.Generic({ "point": { "fill": { "color": "#F54700", "opacity": 0.5 }, "stroke": { "color": "blue", "width": 5, "linedash": [ 5, 5, 20 ], "linedashoffset": 5, "linecap": "butt", "opacity": 0.5 }, "radius": 15 }, "line": { "fill": { "color": "#F54700", "opacity": 0.5, "width": 20 }, "stroke": { "color": "blue", "width": 5, "linedash": [ 10, 10 ] } }, "polygon": { "fill": { "color": "#F54700", "opacity": 0.5, "pattern": { "name": "hexagon", "scale": 2, "color": "#F54700", "offset": 5 } }, "stroke": { "color": "blue", "width": 10, "linedash": [ 5, 5, 20 ], "linecap": "butt" }, "fill pattern": {} } }); window.mapa.getLayers()[1].setStyle(consoleTestGeneric);
-// var consoleTestGeneric = new M.style.Generic(undefined, new ol.style.Style({ fill: new ol.style.Fill({ color: '#F5470088' }), stroke: new ol.style.Stroke({ color: '#0000ff', width: 10, lineDash: [5, 5, 20], lineDashOffset: 5, lineCap: 'butt' }), image: new ol.style.Circle({ radius: 15, fill: new ol.style.Fill({ color: '#F5470088', width: 20 }), stroke: new ol.style.Stroke({ color: '#0000ff88', width: 5, lineDash: [5, 5, 20], lineDashOffset: 5, lineCap: 'butt' }) }) })); window.mapa.getLayers()[1].setStyle(consoleTestGeneric);
-// var consoleTestGeneric = new M.style.Generic(undefined, [new ol.style.Style({ fill: new ol.style.Fill({ color: '#F5470088' }), stroke: new ol.style.Stroke({ color: '#0000ff88', width: 5, lineDash: [5, 5, 20], lineDashOffset: 5, lineCap: 'butt' }), image: new ol.style.Circle({ radius: 15, fill: new ol.style.Fill({ color: '#F5470088', width: 20 }), stroke: new ol.style.Stroke({ color: '#0000ff88', width: 5, lineDash: [5, 5, 20], lineDashOffset: 5, lineCap: 'butt' }) }) }), new ol.style.Style({ fill: new ol.style.Fill({ color: '#00ff00' }), stroke: new ol.style.Stroke({ color: '#ff0000', width: 2 }), image: new ol.style.Circle({ radius: 5, fill: new ol.style.Fill({ color: '#00ffff', width: 20 }), stroke: new ol.style.Stroke({ color: '#ff0000', width: 2, lineDash: [10, 10], lineDashOffset: 5, lineCap: 'butt' }) }) })]); window.mapa.getLayers()[1].setStyle(consoleTestGeneric);
+// var consoleTestGeneric = new IDEE.style.Generic({ "point": { "fill": { "color": "#F54700", "opacity": 0.5 }, "stroke": { "color": "blue", "width": 5, "linedash": [ 5, 5, 20 ], "linedashoffset": 5, "linecap": "butt", "opacity": 0.5 }, "radius": 15 }, "line": { "fill": { "color": "#F54700", "opacity": 0.5, "width": 20 }, "stroke": { "color": "blue", "width": 5, "linedash": [ 10, 10 ] } }, "polygon": { "fill": { "color": "#F54700", "opacity": 0.5, "pattern": { "name": "hexagon", "scale": 2, "color": "#F54700", "offset": 5 } }, "stroke": { "color": "blue", "width": 10, "linedash": [ 5, 5, 20 ], "linecap": "butt" }, "fill pattern": {} } }); window.mapa.getLayers()[1].setStyle(consoleTestGeneric);
+// var consoleTestGeneric = new IDEE.style.Generic(undefined, new ol.style.Style({ fill: new ol.style.Fill({ color: '#F5470088' }), stroke: new ol.style.Stroke({ color: '#0000ff', width: 10, lineDash: [5, 5, 20], lineDashOffset: 5, lineCap: 'butt' }), image: new ol.style.Circle({ radius: 15, fill: new ol.style.Fill({ color: '#F5470088', width: 20 }), stroke: new ol.style.Stroke({ color: '#0000ff88', width: 5, lineDash: [5, 5, 20], lineDashOffset: 5, lineCap: 'butt' }) }) })); window.mapa.getLayers()[1].setStyle(consoleTestGeneric);
+// var consoleTestGeneric = new IDEE.style.Generic(undefined, [new ol.style.Style({ fill: new ol.style.Fill({ color: '#F5470088' }), stroke: new ol.style.Stroke({ color: '#0000ff88', width: 5, lineDash: [5, 5, 20], lineDashOffset: 5, lineCap: 'butt' }), image: new ol.style.Circle({ radius: 15, fill: new ol.style.Fill({ color: '#F5470088', width: 20 }), stroke: new ol.style.Stroke({ color: '#0000ff88', width: 5, lineDash: [5, 5, 20], lineDashOffset: 5, lineCap: 'butt' }) }) }), new ol.style.Style({ fill: new ol.style.Fill({ color: '#00ff00' }), stroke: new ol.style.Stroke({ color: '#ff0000', width: 2 }), image: new ol.style.Circle({ radius: 5, fill: new ol.style.Fill({ color: '#00ffff', width: 20 }), stroke: new ol.style.Stroke({ color: '#ff0000', width: 2, lineDash: [10, 10], lineDashOffset: 5, lineCap: 'butt' }) }) })]); window.mapa.getLayers()[1].setStyle(consoleTestGeneric);
 
 // Prueba de ambos parámetros solo en consola
-// var consoleTestGeneric = new M.style.Generic({ 'point': { 'fill': { 'color': 'black', 'opacity': 0.5 }, 'stroke': { 'color': 'black', 'width': 5, 'opacity': 0.5 }, 'radius': 15 }, 'line': { 'fill': { 'color': 'black', 'opacity': 0.5, 'width': 20 }, 'stroke': { 'color': 'black', 'width': 5 } }, 'polygon': { 'fill': { 'color': 'black', 'opacity': 0.5, 'pattern': { 'name': 'hexagon', 'scale': 2, 'color': 'white', 'offset': 5 } }, 'stroke': { 'color': 'black', 'width': 10 }, 'fill pattern': {} } }, new ol.style.Style({ fill: new ol.style.Fill({ color: '#F5470088' }), stroke: new ol.style.Stroke({ color: '#0000ff88', width: 5, lineDash: [5, 5, 20], lineDashOffset: 5, lineCap: 'butt' }), image: new ol.style.Circle({ radius: 15, fill: new ol.style.Fill({ color: '#F5470088', width: 20 }), stroke: new ol.style.Stroke({ color: '#0000ff88', width: 5, lineDash: [5, 5, 20], lineDashOffset: 5, lineCap: 'butt' }) }) })); window.mapa.getLayers()[1].setStyle(consoleTestGeneric);
+// var consoleTestGeneric = new IDEE.style.Generic({ 'point': { 'fill': { 'color': 'black', 'opacity': 0.5 }, 'stroke': { 'color': 'black', 'width': 5, 'opacity': 0.5 }, 'radius': 15 }, 'line': { 'fill': { 'color': 'black', 'opacity': 0.5, 'width': 20 }, 'stroke': { 'color': 'black', 'width': 5 } }, 'polygon': { 'fill': { 'color': 'black', 'opacity': 0.5, 'pattern': { 'name': 'hexagon', 'scale': 2, 'color': 'white', 'offset': 5 } }, 'stroke': { 'color': 'black', 'width': 10 }, 'fill pattern': {} } }, new ol.style.Style({ fill: new ol.style.Fill({ color: '#F5470088' }), stroke: new ol.style.Stroke({ color: '#0000ff88', width: 5, lineDash: [5, 5, 20], lineDashOffset: 5, lineCap: 'butt' }), image: new ol.style.Circle({ radius: 15, fill: new ol.style.Fill({ color: '#F5470088', width: 20 }), stroke: new ol.style.Stroke({ color: '#0000ff88', width: 5, lineDash: [5, 5, 20], lineDashOffset: 5, lineCap: 'butt' }) }) })); window.mapa.getLayers()[1].setStyle(consoleTestGeneric);
 
 // Pruebas de set (Si el vendorOptions esta presente es reemplazado)
 // var sVSet = window.mapa.getLayers()[1].getStyle(); sVSet.set('point.fill.color', 'red'); sVSet.set('point.stroke.color', 'yellow'); sVSet.set('line.stroke.color', 'yellow'); sVSet.set('line.stroke.linedash', [5, 5, 20]); sVSet.set('polygon.stroke.width', '5'); sVSet.set('polygon.fill.color', 'green'); sVSet.set('polygon.fill.pattern.name', 'hexagon');

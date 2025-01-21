@@ -1,7 +1,7 @@
 /**
  * Extensión de OpenLayers para calcular curvas de "spline" en geometrías.
- * @module M/impl/ol/js/ext/cspline
- * @example import 'M/impl/ol/js/ext/cspline';
+ * @module IDEE/impl/ol/js/ext/cspline
+ * @example import 'IDEE/impl/ol/js/ext/cspline';
  */
 
 import OLGeomGeometry from 'ol/geom/Geometry';

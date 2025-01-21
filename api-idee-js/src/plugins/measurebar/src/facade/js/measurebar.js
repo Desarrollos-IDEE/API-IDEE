@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/MeasureBar
+ * @module IDEE/plugin/MeasureBar
  */
 import MeasureLength from './measurelength';
 import MeasureArea from './measurearea';
@@ -11,14 +11,14 @@ import myhelp from '../../templates/myhelp';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class MeasureBar extends M.Plugin {
+export default class MeasureBar extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @api stable
    */
   constructor(options = {}) {
@@ -27,7 +27,7 @@ export default class MeasureBar extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
@@ -35,7 +35,7 @@ export default class MeasureBar extends M.Plugin {
      * Array of controls
      *
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -50,21 +50,21 @@ export default class MeasureBar extends M.Plugin {
     /**
      * Control MeasureLength
      * @private
-     * @type {M.control.MeasureLength}
+     * @type {IDEE.control.MeasureLength}
      */
     this.measureLength_ = null;
 
     /**
      * Control MeasureArea
      * @private
-     * @type {M.control.MeasureArea}
+     * @type {IDEE.control.MeasureArea}
      */
     this.measureArea_ = null;
 
     /**
      * Control MeasureClear
      * @private
-     * @type {M.control.MeasureClear}
+     * @type {IDEE.control.MeasureClear}
      */
     this.measureClear_ = null;
 
@@ -118,14 +118,14 @@ export default class MeasureBar extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).measurebar;
+    return IDEE.language.getTranslation(lang).measurebar;
   }
 
   /**
    * @inheritdoc
    * @public
    * @function
-   * @param {M.Map} map - Map to add the plugin
+   * @param {IDEE.Map} map - Map to add the plugin
    * @api stable
    */
   addTo(map) {
@@ -137,11 +137,11 @@ export default class MeasureBar extends M.Plugin {
 
     this.controls_.push(this.measureLength_, this.measureArea_, this.measureClear_);
 
-    this.panel_ = new M.ui.Panel('MeasureBar', {
+    this.panel_ = new IDEE.ui.Panel('MeasureBar', {
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,
       tooltip: this.tooltip_,
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       className: 'm-panel-measurebar',
       collapsedButtonClass: 'measurebar-regla',
       order: this.order,
@@ -181,7 +181,7 @@ export default class MeasureBar extends M.Plugin {
    * @api
    */
   getAPIRestBase64() {
-    return `${this.name}=base64=${M.utils.encodeBase64(this.options)}`;
+    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   /**
@@ -213,11 +213,11 @@ export default class MeasureBar extends M.Plugin {
   }
 
   /**
-   * This function compare if pluging recieved by param is instance of M.plugin.MeasureBar
+   * This function compare if pluging recieved by param is instance of IDEE.plugin.MeasureBar
    *
    * @public
    * @function
-   * @param {M.plugin} plugin to comapre
+   * @param {IDEE.plugin} plugin to comapre
    * @api stable
    */
   equals(plugin) {
@@ -235,9 +235,9 @@ export default class MeasureBar extends M.Plugin {
     return {
       title: this.name,
       content: new Promise((success) => {
-        const html = M.template.compileSync(myhelp, {
+        const html = IDEE.template.compileSync(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}plugins/measurebar/images/`,
+            urlImages: `${IDEE.config.API_IDEE_URL}plugins/measurebar/images/`,
             translations: {
               help1: getValue('textHelp.help1'),
               help2: getValue('textHelp.help2'),

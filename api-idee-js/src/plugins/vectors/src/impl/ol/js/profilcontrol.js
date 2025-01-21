@@ -78,8 +78,8 @@ var Profil = function(opt_options) {
     elementTitle.appendChild(buttonMove);
 
     setTimeout(() => {
-      M.utils.dragElement('containerTopo', 'buttonTopoMove');
-      M.utils.dragElement('containerTopo', 'titleTopo');
+      IDEE.utils.dragElement('containerTopo', 'buttonTopoMove');
+      IDEE.utils.dragElement('containerTopo', 'titleTopo');
     }, 3000);
   }
 
@@ -298,7 +298,7 @@ Profil.prototype.setGeometry = function(g, options) {
   // No Z
   if (!/Z/.test(g.getLayout())) return;
   // No time
-  if (/M/.test(g.getLayout())) this.element.querySelector('.time').parentElement.style.display = 'block';
+  if (/IDEE/.test(g.getLayout())) this.element.querySelector('.time').parentElement.style.display = 'block';
   else this.element.querySelector('.time').parentElement.style.display = 'none';
 
   // Coords

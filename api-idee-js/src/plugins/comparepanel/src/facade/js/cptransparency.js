@@ -1,19 +1,19 @@
 /**
- * @module M/plugin/Transparency
+ * @module IDEE/plugin/Transparency
  */
 import 'assets/css/cptransparency';
 import TransparencyControl from './cptransparencycontrol';
 import api from '../../api';
 import { getValue } from './i18n/language';
 
-export default class Transparency extends M.Plugin {
+export default class Transparency extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -30,14 +30,14 @@ export default class Transparency extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -71,7 +71,7 @@ export default class Transparency extends M.Plugin {
      * @type {string}
      */
     if (options.layers === undefined || options.layers === '') {
-      M.dialog.error(getValue('errorLayer'));
+      IDEE.dialog.error(getValue('errorLayer'));
       this.layers = [];
     } else if (Array.isArray(options.layers)) {
       this.layers = options.layers;
@@ -133,7 +133,7 @@ export default class Transparency extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
@@ -145,10 +145,10 @@ export default class Transparency extends M.Plugin {
     this.control_ = new TransparencyControl(values);
     this.controls_.push(this.control_);
     this.map_ = map;
-    this.panel_ = new M.ui.Panel('panelTransparency', {
+    this.panel_ = new IDEE.ui.Panel('panelTransparency', {
       collapsible: this.collapsible,
       collapsed: this.collapsed,
-      position: M.ui.position[this.position],
+      position: IDEE.ui.position[this.position],
       className: this.className,
       collapsedButtonClass: 'icon-gps4',
       tooltip: this.tooltip_,
@@ -258,11 +258,11 @@ export default class Transparency extends M.Plugin {
   /**
    * This
    function compare
-   if pluging recieved by param is instance of M.plugin.Transparency
+   if pluging recieved by param is instance of IDEE.plugin.Transparency
    *
    * @public
    * @function
-   * @param {M.plugin} plugin to compare
+   * @param {IDEE.plugin} plugin to compare
    * @api stable
    */
   equals(plugin) {

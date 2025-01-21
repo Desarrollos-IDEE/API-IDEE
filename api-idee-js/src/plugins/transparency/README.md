@@ -1,4 +1,4 @@
-# M.plugin.Transparency
+# IDEE.plugin.Transparency
 
 Plugin que permite aplicar un efecto de transparencia a la capa seleccionada.
 
@@ -46,7 +46,7 @@ El constructor se inicializa con un JSON de options con los siguientes atributos
 Insertar una capa a través de un servicio WMS. La URL en formato api-idee sigue la siguiente estructura:
   - Servicio,Leyenda,URL,Nombre. Separados por "*".
 ```javascript
-  const mp = new M.plugin.Transparency({
+  const mp = new IDEE.plugin.Transparency({
   position: 'TL',
   layers: ['WMS*IGN*http://www.ign.es/wms-inspire/ign-base*IGNBaseTodo'],
   collapsible: false
@@ -58,7 +58,7 @@ Insertar una capa a través de un servicio WMS. La URL en formato api-idee sigue
 ## Ejemplo 2
 Insertar dos capas a través de servicio WMS.
 ```javascript
-  const mp = new M.plugin.Transparency({
+  const mp = new IDEE.plugin.Transparency({
   position: 'TL',
   layers: ['WMS*Eventos sísmicos*https://www.ign.es/wms-inspire/geofisica*NZ.ObservedEvent', 'WMS*IGN*http://www.ign.es/wms-inspire/ign-base*IGNBaseTodo']
 });
@@ -69,14 +69,14 @@ Insertar dos capas a través de servicio WMS.
 ## Ejemplo 3
 Insertar una capa WMS por nombre.
 ```javascript
-const wms = new M.layer.WMS({
+const wms = new IDEE.layer.WMS({
   url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
   name: 'AU.AdministrativeBoundary',
   legend: 'Limite administrativo',
   tiled: false,
 }, {});
 map,addWMS(wms);
-const mp = new M.plugin.Transparency({
+const mp = new IDEE.plugin.Transparency({
   position: 'TL',
   layers: ['AU.AdministrativeBoundary'],
 });
@@ -87,14 +87,14 @@ const mp = new M.plugin.Transparency({
 ## Ejemplo 4
 Insertar una capa WMS como objeto.
 ```javascript
-const wms = new M.layer.WMS({
+const wms = new IDEE.layer.WMS({
   url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
   name: 'AU.AdministrativeBoundary',
   legend: 'Limite administrativo',
   tiled: false,
 }, {});
 map,addWMS(wms);
-const mp = new M.plugin.Transparency({
+const mp = new IDEE.plugin.Transparency({
   position: 'TL',
   layers: [wms],
 });
@@ -105,7 +105,7 @@ const mp = new M.plugin.Transparency({
 ## Ejemplo 5
 Insertar una capa a través de servicio WMTS. Sigue la misma estructura que las WMS.
 ```javascript
-  const mp = new M.plugin.Transparency({
+  const mp = new IDEE.plugin.Transparency({
   position: 'TL',
   layers: ['WMTS*http://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*imagen*true*image/jpeg*true*true*']
 });
@@ -116,7 +116,7 @@ Insertar una capa a través de servicio WMTS. Sigue la misma estructura que las 
 ## Ejemplo 6
 Insertar una capa WMTS por nombre.
 ```javascript
-let wmts = new M.layer.WMTS({
+let wmts = new IDEE.layer.WMTS({
   url: 'http://www.ign.es/wmts/pnoa-ma?',
   name: 'OI.OrthoimageCoverage',
   legend: 'Imagen (PNOA)',
@@ -129,7 +129,7 @@ let wmts = new M.layer.WMTS({
 });
 
 map.addWMTS(wmts);
-  const mp = new M.plugin.Transparency({
+  const mp = new IDEE.plugin.Transparency({
   position: 'TL',
   layers: ['toporaster'],
 });
@@ -140,7 +140,7 @@ map.addWMTS(wmts);
 ## Ejemplo 7
 Insertar una capa WMTS como objeto.
 ```javascript
-let wmts = new M.layer.WMTS({
+let wmts = new IDEE.layer.WMTS({
   url: 'http://www.ign.es/wmts/pnoa-ma?',
   name: 'OI.OrthoimageCoverage',
   legend: 'Imagen (PNOA)',
@@ -153,7 +153,7 @@ let wmts = new M.layer.WMTS({
 });
 
 map.addWMTS(wmts);
-  const mp = new M.plugin.Transparency({
+  const mp = new IDEE.plugin.Transparency({
   position: 'TL',
   layers: [wmts],
 });
@@ -164,7 +164,7 @@ map.addWMTS(wmts);
 ## Ejemplo 8
 Especificar radio.
 ```javascript
-let wmts = new M.layer.WMTS({
+let wmts = new IDEE.layer.WMTS({
   url: 'http://www.ign.es/wmts/pnoa-ma?',
   name: 'OI.OrthoimageCoverage',
   legend: 'Imagen (PNOA)',
@@ -177,7 +177,7 @@ let wmts = new M.layer.WMTS({
 });
 
 map.addWMTS(wmts);
-  const mp = new M.plugin.Transparency({
+  const mp = new IDEE.plugin.Transparency({
   position: 'TL',
   layers: ['toporaster'],
   radius: 200

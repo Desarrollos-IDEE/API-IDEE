@@ -1,8 +1,8 @@
 /**
- * @module M/impl/control/XYLocatorControl
+ * @module IDEE/impl/control/XYLocatorControl
  */
 
-export default class XYLocatorControl extends M.impl.Control {
+export default class XYLocatorControl extends IDEE.impl.Control {
   constructor(map) {
     super();
 

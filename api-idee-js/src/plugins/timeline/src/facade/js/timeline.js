@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/Timeline
+ * @module IDEE/plugin/Timeline
  */
 import 'assets/css/timeline';
 import TimelineControl from './timelinecontrol';
@@ -12,14 +12,14 @@ import en from './i18n/en';
 
 const typesTimeline = ['absoluteSimple', 'absolute', 'relative'];
 
-export default class Timeline extends M.Plugin {
+export default class Timeline extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -36,14 +36,14 @@ export default class Timeline extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -70,12 +70,12 @@ export default class Timeline extends M.Plugin {
      * @type {String}
      */
     if (options !== undefined) {
-      if (M.utils.isString(options.intervals)) {
+      if (IDEE.utils.isString(options.intervals)) {
         this.intervals = JSON.parse(options.intervals.replace(/!!/g, '[').replace(/¡¡/g, ']'));
-      } else if (M.utils.isArray(options.intervals)) {
+      } else if (IDEE.utils.isArray(options.intervals)) {
         this.intervals = options.intervals;
       } else {
-        // M.dialog.error(getValue('intervals_error'));
+        // IDEE.dialog.error(getValue('intervals_error'));
         this.intervals = [];
       }
     }
@@ -165,7 +165,7 @@ export default class Timeline extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).timeline;
+    return IDEE.language.getTranslation(lang).timeline;
   }
 
   /**
@@ -173,7 +173,7 @@ export default class Timeline extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
@@ -213,9 +213,9 @@ export default class Timeline extends M.Plugin {
     });
     this.controls_.push(this.control_);
     this.map_ = map;
-    this.panel_ = new M.ui.Panel('panelTimeline', {
+    this.panel_ = new IDEE.ui.Panel('panelTimeline', {
       collapsible: true,
-      position: M.ui.position[this.position],
+      position: IDEE.ui.position[this.position],
       className: this.className,
       collapsedButtonClass: 'timeline-gestion-reloj2',
       tooltip: this.tooltip_,
@@ -304,11 +304,11 @@ export default class Timeline extends M.Plugin {
   /**
    * This
    function compare
-   if pluging recieved by param is instance of M.plugin.Timeline
+   if pluging recieved by param is instance of IDEE.plugin.Timeline
    *
    * @public
    * @function
-   * @param {M.plugin} plugin to compare
+   * @param {IDEE.plugin} plugin to compare
    * @api stable
    */
   equals(plugin) {
@@ -326,9 +326,9 @@ export default class Timeline extends M.Plugin {
     return {
       title: this.name,
       content: new Promise((success) => {
-        const html = M.template.compileSync(myhelp, {
+        const html = IDEE.template.compileSync(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}plugins/timeline/images/`,
+            urlImages: `${IDEE.config.API_IDEE_URL}plugins/timeline/images/`,
             translations: {
               help1: getValue('textHelp.help1'),
               help2: getValue('textHelp.help2'),

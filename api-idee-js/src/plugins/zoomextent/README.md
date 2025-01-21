@@ -1,4 +1,4 @@
-# M.plugin.ZoomExtent
+# IDEE.plugin.ZoomExtent
 
 
 Plugin que permite realizar zoom con una caja sobre el mapa.
@@ -39,11 +39,11 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 # Ejemplos de uso
 
 ```javascript
-   const map = M.map({
+   const map = IDEE.map({
      container: 'map'
    });
 
-   const mp = new M.plugin.ZoomExtent({
+   const mp = new IDEE.plugin.ZoomExtent({
         postition: 'TL',
       });
 

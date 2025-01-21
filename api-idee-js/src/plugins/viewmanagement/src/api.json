@@ -3,7 +3,7 @@
     "name": "viewmanagement",
     "separator": "*"
   },
-  "constructor": "M.plugin.ViewManagement",
+  "constructor": "IDEE.plugin.ViewManagement",
   "parameters": [{
     "type": "object",
     "properties": [

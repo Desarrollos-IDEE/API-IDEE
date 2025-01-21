@@ -1,5 +1,5 @@
 /**
- * @module M/control/VectorsManagementControl
+ * @module IDEE/control/VectorsManagementControl
  */
 
 import template from '../../templates/vectorsmanagement';
@@ -20,21 +20,21 @@ import { changeStyleDialog } from './util';
  * This control can create vector layers, draw and edit features, edit styles,
  * calculate topographic profiles and buffers, and download a layer or feature.
  */
-export default class VectorsManagementControl extends M.Control {
+export default class VectorsManagementControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor({
     map, selection, addlayer, analysis, creation, download, edition, help, style,
     isDraggable, order,
   }) {
-    const impl = new M.impl.Control();
+    const impl = new IDEE.impl.Control();
     super(impl, 'VectorsManagement');
 
     const allLayers = map.getLayers().concat(map.getImpl().getAllLayerInGroup());
@@ -47,8 +47,8 @@ export default class VectorsManagementControl extends M.Control {
     this.edition_ = edition;
     this.help_ = help;
     this.style_ = style;
-    this.layers_ = allLayers.filter((l) => (l instanceof M.layer.Vector
-      || l instanceof M.layer.GenericVector) && l.displayInLayerSwitcher).map((l) => {
+    this.layers_ = allLayers.filter((l) => (l instanceof IDEE.layer.Vector
+      || l instanceof IDEE.layer.GenericVector) && l.displayInLayerSwitcher).map((l) => {
       return { value: l.name, text: l.legend || l.name, zIndex: l.getZIndex() };
     }).sort((a, b) => b.zIndex - a.zIndex);
     this.selectedLayer = null;
@@ -65,13 +65,13 @@ export default class VectorsManagementControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
     this.map = map;
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           selection: this.selection_,
           addlayer: this.addlayer_,
@@ -115,11 +115,11 @@ export default class VectorsManagementControl extends M.Control {
 
       html.querySelector('#m-selectionlayer').addEventListener('change', this.selectLayerEvent.bind(this));
 
-      this.map.on(M.evt.ADDED_LAYER, this.refreshLayers.bind(this));
-      this.map.on(M.evt.REMOVED_LAYER, this.refreshLayers.bind(this));
+      this.map.on(IDEE.evt.ADDED_LAYER, this.refreshLayers.bind(this));
+      this.map.on(IDEE.evt.REMOVED_LAYER, this.refreshLayers.bind(this));
 
       if (this.isDraggable_) {
-        M.utils.draggabillyPlugin(this.getPanel(), '#m-vectorsmanagement-titulo');
+        IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-vectorsmanagement-titulo');
       }
       this.accessibilityTab(html);
       success(html);
@@ -148,7 +148,7 @@ export default class VectorsManagementControl extends M.Control {
     this.selectedLayer = allLayers.filter((l) => l.name === selectedLayerName)[0];
 
     if (this.selectedLayer.type === 'MVT' || this.selectedLayer.type === 'MBTilesVector') {
-      M.toast.warning(getValue('exception.typeLayer'), null, 6000);
+      IDEE.toast.warning(getValue('exception.typeLayer'), null, 6000);
     }
 
     if (this.selection_) {
@@ -273,7 +273,7 @@ export default class VectorsManagementControl extends M.Control {
           this.downloadControl.active(html);
           event.target.classList.add('activated');
         } else {
-          M.dialog.info(getValue('exception.emptylayer'));
+          IDEE.dialog.info(getValue('exception.emptylayer'));
         }
       }
     });
@@ -473,7 +473,7 @@ export default class VectorsManagementControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Feature} feature
+   * @param {IDEE.Feature} feature
    * @api stable
    */
   addFeatureToSelection(feature) {
@@ -523,8 +523,8 @@ export default class VectorsManagementControl extends M.Control {
    */
   refreshLayers() {
     const allLayers = this.map.getLayers().concat(this.map.getImpl().getAllLayerInGroup());
-    this.layers_ = allLayers.filter((l) => (l instanceof M.layer.Vector
-      || l instanceof M.layer.GenericVector) && l.displayInLayerSwitcher).map((l) => {
+    this.layers_ = allLayers.filter((l) => (l instanceof IDEE.layer.Vector
+      || l instanceof IDEE.layer.GenericVector) && l.displayInLayerSwitcher).map((l) => {
       return { value: l.name, text: l.legend || l.name, zIndex: l.getZIndex() };
     });
     const selector = this.html.querySelector('#m-selectionlayer');
@@ -589,7 +589,7 @@ export default class VectorsManagementControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

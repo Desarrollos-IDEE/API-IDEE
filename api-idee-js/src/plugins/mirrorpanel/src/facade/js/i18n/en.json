@@ -12,5 +12,5 @@
   "modViz8": "One map above and two below",
   "modViz9": "Two maps above and one below",
   "backimglayersparams_undefined":"BackImgLayers' parameters are not defined correctly.",
-  "mirrorpanel_obsolete": "Message to developer: M.plugin.Mirrorpanel has been deprecated, please use M.plugin.Comparators instead"
+  "mirrorpanel_obsolete": "Message to developer: IDEE.plugin.Mirrorpanel has been deprecated, please use IDEE.plugin.Comparators instead"
 }

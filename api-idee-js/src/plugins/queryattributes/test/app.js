@@ -18,7 +18,7 @@ const COLORES_PROVINCIA = {
 /**
  * Creamos el objeto Mapa.APICNIG
  */
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   controls: ['panzoom', 'panzoombar', 'scale*true', 'scaleline', 'rotate', 'location', 'backgroundlayers'], // getfeatureinfo: este control es un poco coñazo, siempre está buscando información al hacer clic en el mapa.
   // controls: ['panzoom', 'scale*true', 'scaleline', 'rotate', 'location', 'backgroundlayers', 'getfeatureinfo'],
@@ -37,7 +37,7 @@ const map = M.map({
  * e2m:
  * Configuración del plugin
  */
-const mp = new M.plugin.QueryAttributes({
+const mp = new IDEE.plugin.QueryAttributes({
   position: 'TL',
   collapsed: true,
   collapsible: true,
@@ -113,7 +113,7 @@ const mp = new M.plugin.QueryAttributes({
 });
 
 // Capa de prueba
-const campamentos = new M.layer.WFS({
+const campamentos = new IDEE.layer.WFS({
   url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/sepim/ows?',
   namespace: 'sepim',
   name: 'campamentos',
@@ -126,14 +126,14 @@ const campamentos = new M.layer.WFS({
 map.addWFS(campamentos);
 
 // Capa on los vértices geodésicos
-const vertex = new M.layer.GeoJSON({
+const vertex = new IDEE.layer.GeoJSON({
   name: 'vertices',
   url: 'https://projects.develmap.com/apicnig-plugins/attributestable/roivertexcenterred.geojson',
   extract: true, // Con esta propiedad sale el popup standard con las propiedades
 });
 
 // Definimos unas reglas de estilo para aplicar a la capa de vértices
-const estiloPoint = new M.style.Point({
+const estiloPoint = new IDEE.style.Point({
   icon: {
     /**
            * e2m: En la propiedad form se decide quÃ© forma adopta el icon de las preconfiguradas
@@ -142,10 +142,10 @@ const estiloPoint = new M.style.Point({
     /**
            * Este es el punto. En vez de igualar el valor de la propiedad a unos de los valores, lo igualamos a una funciÃ³n anÃ³nima que pasa como como parÃ¡metros el feature y el mapa
            * Con el elemento (feature) puedo acceder a los atributos que tiene el geoJSON. La forma la determina el propietario de la estaciÃ³n.
-           * Como valor devuelto por el return es la clase de API-IDEE que representa a la forma: M.style.form.TRIANGLE para el triÃ¡ngulo y M.style.form.CIRCLE para el cÃ­rculo
+           * Como valor devuelto por el return es la clase de API-IDEE que representa a la forma: IDEE.style.form.TRIANGLE para el triÃ¡ngulo y IDEE.style.form.CIRCLE para el cÃ­rculo
            */
     form(feature, map) {
-      return M.style.form.CIRCLE;
+      return IDEE.style.form.CIRCLE;
     },
     // e2m: luego sigo definiendo el resto de propiedades comunes a todos los sÃ­mbolos
     radius(feature, map) {
@@ -179,7 +179,7 @@ map.addLayers(vertex);
 map.addPlugin(mp);
 
 // Este plugin con la información de coordenadas nos ayudará
-const plugMouse = new M.plugin.MouseSRS({
+const plugMouse = new IDEE.plugin.MouseSRS({
   tooltip: 'Muestra coordenadas',
   srs: 'EPSG:4326',
   label: 'WGS84',

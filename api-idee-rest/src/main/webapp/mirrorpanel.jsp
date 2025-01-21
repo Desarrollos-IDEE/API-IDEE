@@ -117,7 +117,7 @@
         "http://componentes.ign.es/api-idee/plugins/backimglayer/images/svqmapa.png",
       title: "Mapa",
       layers: [
-        new M.layer.WMTS({
+        new IDEE.layer.WMTS({
           url: "http://www.ign.es/wmts/ign-base?",
           name: "IGNBaseTodo",
           legend: "MapaIGN",
@@ -136,7 +136,7 @@
       preview:
         "http://componentes.ign.es/api-idee/plugins/backimglayer/images/svqimagen.png",
       layers: [
-        new M.layer.WMTS({
+        new IDEE.layer.WMTS({
           url: "http://www.ign.es/wmts/pnoa-ma?",
           name: "OI.OrthoimageCoverage",
           legend: "Imagen(PNOA)",
@@ -155,7 +155,7 @@
         "http://componentes.ign.es/api-idee/plugins/backimglayer/images/svqlidar.png",
       title: "LIDAR",
       layers: [
-        new M.layer.WMTS({
+        new IDEE.layer.WMTS({
           url: "https://wmts-mapa-lidar.idee.es/lidar?",
           name: "EL.GridCoverageDSM",
           legend: "ModeloDigitaldeSuperficiesLiDAR",
@@ -174,7 +174,7 @@
       preview:
         "http://componentes.ign.es/api-idee/plugins/backimglayer/images/svqhibrid.png",
       layers: [
-        new M.layer.WMTS({
+        new IDEE.layer.WMTS({
           url: "http://www.ign.es/wmts/pnoa-ma?",
           name: "OI.OrthoimageCoverage",
           legend: "Imagen(PNOA)",
@@ -185,7 +185,7 @@
           visible: true,
           format: "image/png",
         }),
-        new M.layer.WMTS({
+        new IDEE.layer.WMTS({
           url: "http://www.ign.es/wmts/ign-base?",
           name: "IGNBaseOrto",
           matrixSet: "GoogleMapsCompatible",
@@ -223,8 +223,8 @@
    %>
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
-        M.language.setLang(urlParams.get('language') || 'es');
-        const map = M.map({
+        IDEE.language.setLang(urlParams.get('language') || 'es');
+        const map = IDEE.map({
             container: 'mapjs',
             center: {
                 x: -667143.31,
@@ -253,7 +253,7 @@
         preview: 'https://www.ign.es/iberpix/static/media/raster.c7a904f3.png',
         title: 'Mapa',
         layers: [
-          new M.layer.TMS({
+          new IDEE.layer.TMS({
             url: 'https://tms-mapa-raster.ign.es/1.0.0/mapa-raster/{z}/{x}/{-y}.jpeg',
             name: 'MTN',
             legend: 'Mapa',
@@ -271,7 +271,7 @@
         preview: 'https://www.ign.es/iberpix/static/media/image.44c5b451.png',
         title: 'Imagen',
         layers: [
-          new M.layer.TMS({
+          new IDEE.layer.TMS({
             url: 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
             name: 'PNOA-MA',
             legend: 'Imagen',
@@ -289,7 +289,7 @@
         preview: 'https://www.ign.es/iberpix/static/media/mapa.98d45f00.png',
         title: 'Callejero',
         layers: [
-          new M.layer.TMS({
+          new IDEE.layer.TMS({
             url: 'https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/{z}/{x}/{-y}.jpeg',
             name: 'IGNBaseTodo',
             legend: 'Callejero',
@@ -307,7 +307,7 @@
         title: 'Híbrido',
         preview: 'https://www.ign.es/iberpix/static/media/hibrido.485e957e.png',
         layers: [
-          new M.layer.TMS({
+          new IDEE.layer.TMS({
             url: 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
             name: 'PNOA-MA',
             legend: 'Imagen',
@@ -318,7 +318,7 @@
             visible: true,
             tileGridMaxZoom: 19,
           }), 
-          new M.layer.TMS({
+          new IDEE.layer.TMS({
             url: 'https://tms-ign-base.idee.es/1.0.0/IGNBaseOrto/{z}/{x}/{-y}.png',
             name: 'IGNBaseOrto',
             legend: 'Topónimos',
@@ -334,9 +334,9 @@
     ]
   }
 
-        const mpBIL = new M.plugin.BackImgLayer(backImgLayerParams);
+        const mpBIL = new IDEE.plugin.BackImgLayer(backImgLayerParams);
         map.addPlugin(mpBIL);
-        const mpFullTOC = new M.plugin.FullTOC({
+        const mpFullTOC = new IDEE.plugin.FullTOC({
             position: 'TR',
             collapsed: true,
             http: true,
@@ -438,10 +438,10 @@
         }
 
         function crearPlugin(propiedades) {
-            mp = new M.plugin.Mirrorpanel(propiedades);
+            mp = new IDEE.plugin.Mirrorpanel(propiedades);
             map.addPlugin(mp);
         }
-        let mp2 = new M.plugin.ShareMap({
+        let mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
             position: "TR",
         });

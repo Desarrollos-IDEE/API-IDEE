@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/FullTOC
+ * @module IDEE/plugin/FullTOC
  */
 import '../assets/css/fulltoc';
 import '../assets/css/fonts';
@@ -392,10 +392,10 @@ const PRECHARGED = {
   ],
 };
 
-export default class FullTOC extends M.Plugin {
+export default class FullTOC extends IDEE.Plugin {
   /**
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api
    */
@@ -404,14 +404,14 @@ export default class FullTOC extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -485,7 +485,7 @@ export default class FullTOC extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).fulltoc;
+    return IDEE.language.getTranslation(lang).fulltoc;
   }
 
   /**
@@ -493,7 +493,7 @@ export default class FullTOC extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
@@ -505,34 +505,34 @@ export default class FullTOC extends M.Plugin {
       this.codsi,
       this.order,
     );
-    this.panel_ = new M.ui.Panel('FullTOC', {
+    this.panel_ = new IDEE.ui.Panel('FullTOC', {
       className: 'm-plugin-fulltoc',
       collapsed: this.collapsed_,
       collapsible: true,
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       collapsedButtonClass: 'icon-capas',
       tooltip: getValue('tooltip'),
       order: this.order,
     });
 
     this.controls_.push(this.control_);
-    this.control_.on(M.evt.ADDED_TO_MAP, () => {
-      this.fire(M.evt.ADDED_TO_MAP);
+    this.control_.on(IDEE.evt.ADDED_TO_MAP, () => {
+      this.fire(IDEE.evt.ADDED_TO_MAP);
     });
 
-    this.map_.on(M.evt.COMPLETED, () => {
+    this.map_.on(IDEE.evt.COMPLETED, () => {
       if (this.map_ !== null) {
         if (this.control_ !== null) {
           this.control_.render();
         }
 
-        this.map_.on(M.evt.ADDED_LAYER, () => {
+        this.map_.on(IDEE.evt.ADDED_LAYER, () => {
           if (this.control_ !== null) {
             this.control_.render();
           }
         });
 
-        this.map_.on(M.evt.REMOVED_LAYER, () => {
+        this.map_.on(IDEE.evt.REMOVED_LAYER, () => {
           if (this.control_ !== null) {
             this.control_.render();
           }

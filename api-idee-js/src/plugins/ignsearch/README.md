@@ -1,4 +1,4 @@
-# M.plugin.IGNSearch
+# IDEE.plugin.IGNSearch
 
 
 Plugin que permite la búsqueda de Direcciones postales (Geocoder de Cartociudad) y Topónimos (Nomenclátor del IGN)
@@ -84,11 +84,11 @@ mp.on('ignsearch:entityFound', (extent) => {
 # Ejemplo de uso
 
 ```javascript
-   const map = M.map({
+   const map = IDEE.map({
      container: 'map'
    });
 
-   const mp = new M.plugin.IGNSearch({
+   const mp = new IDEE.plugin.IGNSearch({
         servicesToSearch: 'gn',
         maxResults: 10,
         noProcess: 'poblacion',

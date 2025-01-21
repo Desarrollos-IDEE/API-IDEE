@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/IberpixCompareControl
+ * @module IDEE/impl/control/IberpixCompareControl
  */

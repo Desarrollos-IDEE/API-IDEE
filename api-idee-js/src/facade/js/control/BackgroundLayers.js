@@ -1,13 +1,13 @@
 /**
- * @module M/control/BackgroundLayers
+ * @module IDEE/control/BackgroundLayers
  */
 import template from 'templates/backgroundlayers';
 import myhelp from 'templates/backgroundlayershelp';
 import 'assets/css/controls/backgroundlayers';
 import ControlImpl from 'impl/control/Control';
-import WMS from 'M/layer/WMS';
-import WMTS from 'M/layer/WMTS';
-import TMS from 'M/layer/TMS';
+import WMS from 'IDEE/layer/WMS';
+import WMTS from 'IDEE/layer/WMTS';
+import TMS from 'IDEE/layer/TMS';
 import { getQuickLayers } from '../api-idee';
 import ControlBase from './Control';
 import { compileSync as compileTemplate } from '../util/Template';
@@ -28,22 +28,22 @@ const MAXIMUM_LAYERS = 5;
  * Selector de capas de fondo API-CING.
  * Añade un selector de capas base al mapa.
  *
- * @property {Array<Layer>} layer Proviene de "M.config.backgroundlayers".
+ * @property {Array<Layer>} layer Proviene de "IDEE.config.backgroundlayers".
  * @property {Array<Layer>} flattedLayers Concadena las capas generadas.
  * @property {Number} activeLayer Esta propiedad indica la capa que se activa.
  * @property {Number} idLayer Indica la capa que se mostrará primero.
  * @property {Boolean} visible Indica si sera visible o no.
  *
- * @extends {M.Control}
+ * @extends {IDEE.Control}
  * @api
  */
 class BackgroundLayers extends ControlBase {
   /**
    * Constructor principal de la clase.
-   * Las capas base provienen de "M.config.backgroundlayers".
+   * Las capas base provienen de "IDEE.config.backgroundlayers".
    *
    * @constructor
-   * @param {M.map} map Mapa.
+   * @param {IDEE.map} map Mapa.
    * @param {Number} idLayer Identificador de la capa.
    * @param {Boolean} visible Define si será visible.
    * @api
@@ -56,9 +56,9 @@ class BackgroundLayers extends ControlBase {
     });
 
     /**
-     * Control layers, proviene de "M.config.backgroundlayers".
+     * Control layers, proviene de "IDEE.config.backgroundlayers".
      */
-    this.layers = M.config.backgroundlayers.slice(0, MAXIMUM_LAYERS).map((layer) => {
+    this.layers = IDEE.config.backgroundlayers.slice(0, MAXIMUM_LAYERS).map((layer) => {
       return {
         id: layer.id,
         title: layer.title,
@@ -109,7 +109,7 @@ class BackgroundLayers extends ControlBase {
    *
    * @public
    * @function
-   * @param {M.Map} map Mapa donde se incluirá el control.
+   * @param {IDEE.Map} map Mapa donde se incluirá el control.
    * @api
    */
   createView(map) {
@@ -124,7 +124,7 @@ class BackgroundLayers extends ControlBase {
       this.on(ADDED_TO_MAP, () => {
         const visible = this.visible;
         if (this.idLayer > -1) {
-          if (window.innerWidth > M.config.MOBILE_WIDTH) {
+          if (window.innerWidth > IDEE.config.MOBILE_WIDTH) {
             this.activeLayer = this.idLayer;
           }
 
@@ -148,7 +148,7 @@ class BackgroundLayers extends ControlBase {
    *
    * @public
    * @function
-   * @param {M.Control} control Objeto control para comparar.
+   * @param {IDEE.Control} control Objeto control para comparar.
    * @returns {Boolean} Verdadero es igual, falso si no.
    * @api
    */
@@ -165,7 +165,7 @@ class BackgroundLayers extends ControlBase {
    */
   showBaseLayer(e, layersInfo, i) {
     let callback = this.handlerClickDesktop.bind(this);
-    if (window.innerWidth <= M.config.MOBILE_WIDTH) {
+    if (window.innerWidth <= IDEE.config.MOBILE_WIDTH) {
       callback = this.handlerClickMobile.bind(this);
     }
 
@@ -179,7 +179,7 @@ class BackgroundLayers extends ControlBase {
    * @api
    */
   changeStyleResponsive(change) {
-    M.config.MOBILE_WIDTH = (change) ? '2000' : '768';
+    IDEE.config.MOBILE_WIDTH = (change) ? '2000' : '768';
 
     const buttons = document.querySelectorAll('.m-plugin-baselayer .m-panel-controls #div-contenedor button');
     buttons.forEach((e) => {
@@ -197,7 +197,7 @@ class BackgroundLayers extends ControlBase {
    *
    * @Public
    * @param {Event} e Evento.
-   * @param {M.layer} layersInfo Capas.
+   * @param {IDEE.layer} layersInfo Capas.
    * @param {Number} i Índice.
    * @function
    * @api
@@ -289,7 +289,7 @@ class BackgroundLayers extends ControlBase {
       content: new Promise((success) => {
         const html = compileTemplate(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}assets/images`,
+            urlImages: `${IDEE.config.API_IDEE_URL}assets/images`,
             translations: {
               help1: textHelp.text1,
             },

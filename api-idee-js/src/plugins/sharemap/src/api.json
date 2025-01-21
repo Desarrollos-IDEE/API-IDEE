@@ -3,7 +3,7 @@
     "name": "sharemap",
     "separator": "*"
   },
-  "constructor": "M.plugin.ShareMap",
+  "constructor": "IDEE.plugin.ShareMap",
   "parameters": [{
     "type": "object",
     "properties": [{

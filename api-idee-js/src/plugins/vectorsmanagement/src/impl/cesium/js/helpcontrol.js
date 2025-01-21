@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/Helpcontrol
+ * @module IDEE/impl/control/Helpcontrol
  */

@@ -1,4 +1,4 @@
-const urlAPI = `${M.config.API_IDEE_URL}plugins/stereoscopic/`;
+const urlAPI = `${IDEE.config.API_IDEE_URL}plugins/stereoscopic/`;
 
 function loadAllScripts() {
   return new Promise((resolve1, reject1) => {

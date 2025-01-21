@@ -1,3 +1,3 @@
 /**
- * @module M/impl/layer/Terrain
+ * @module IDEE/impl/layer/Terrain
  */

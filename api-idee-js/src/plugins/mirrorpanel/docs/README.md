@@ -1,4 +1,4 @@
-# M.plugin.Mirrorpanel
+# IDEE.plugin.Mirrorpanel
 
 Plugin que permite comparar varias capas dividiendo la pantalla en varias partes. Los mapas tienen sus vistas sincronizadas, y podemos ver la representación de una misma zona por distintas capas.
 
@@ -51,7 +51,7 @@ El constructor se inicializa con un JSON de options con los siguientes atributos
   - 8: un mapa arriba y dos abajo.
   - 9: dos mapas arriba y uno abajo.
 
-- **enabledPlugins**: Si es *true*, los mapas espejo importan los plugins **M.plugin.FullTOC** y **M.plugin.BackImgLayer** si los hubiera, y en caso de hacerlos los añade a los mapas espejo. Por defecto tiene el valor *true*.
+- **enabledPlugins**: Si es *true*, los mapas espejo importan los plugins **IDEE.plugin.FullTOC** y **IDEE.plugin.BackImgLayer** si los hubiera, y en caso de hacerlos los añade a los mapas espejo. Por defecto tiene el valor *true*.
 
 - **enabledKeyFunctions**: Si es *true*, se pueden usar las combinaciones de teclas Ctrl + Shift + [F1-F8] para cambiar entre los distintos modos de visualización. Con la tecla *Escape* se destruye el plugin. Por defecto tiene el valor *true*.
 
@@ -59,9 +59,9 @@ El constructor se inicializa con un JSON de options con los siguientes atributos
 
 - **mirrorLayers**: Es un array de capas para mostrar en los mapas espejo y poder compararlas entre sí.
 
-- **defaultBaseLyrs**: Es un array de capas para mostrar como mapa por defecto cuando no se importa del mapa principal un plugin **M.plugin.BackImgLayer** o cuando la propiedad *enabledPlugins* es *false*.
+- **defaultBaseLyrs**: Es un array de capas para mostrar como mapa por defecto cuando no se importa del mapa principal un plugin **IDEE.plugin.BackImgLayer** o cuando la propiedad *enabledPlugins* es *false*.
 
-- **backImgLayersParams**: Es un objeto con todos los parámetros del plugin **M.plugin.BackImgLayer** de los mapas espejo.
+- **backImgLayersParams**: Es un objeto con todos los parámetros del plugin **IDEE.plugin.BackImgLayer** de los mapas espejo.
 
 - **interface**: Define si mostrar o no la interfaz del plugin.
 - **tooltip**. Tooltip que se muestra sobre el plugin.
@@ -71,8 +71,8 @@ El constructor se inicializa con un JSON de options con los siguientes atributos
 Actualmente viene preparado para español e inglés. Para definir con qué idioma arranca, hay que ir al fichero test.js y modificar.
 
 ```javascript
-M.language.setLang('es');//Idioma español
-M.language.setLang('en');//Idioma inglés
+IDEE.language.setLang('es');//Idioma español
+IDEE.language.setLang('en');//Idioma inglés
 ```
 Se pueden crear más ficheros de idioma. Basta con copiar la estructura de los ficheros **json** de la carpeta *\src\facade\js\i18n* , renombrar con la abreviatura del nuevo idioma (fr para el fránces), y cambiar los textos, manteniendo las *keywords*.
 
@@ -81,7 +81,7 @@ Se pueden crear más ficheros de idioma. Basta con copiar la estructura de los f
 ## Ejemplo base
 
 ```javascript
-const map = M.map({
+const map = IDEE.map({
    container: 'mapjs',
    center: {
       x: -667143.31,
@@ -91,14 +91,14 @@ const map = M.map({
    zoom: 15,
 });
 
-const mpMirrorPanel = new M.plugin.Mirrorpanel();
+const mpMirrorPanel = new IDEE.plugin.Mirrorpanel();
 map.addPlugin(mpMirrorPanel);
 ```
 
 ## Ejemplo 1
 
 ```javascript
-const map = M.map({
+const map = IDEE.map({
    container: 'mapjs',
    center: {
       x: -667143.31,
@@ -108,7 +108,7 @@ const map = M.map({
    zoom: 15,
 });
 
-const mpMirrorPanel = new M.plugin.Mirrorpanel({
+const mpMirrorPanel = new IDEE.plugin.Mirrorpanel({
   position: 'TR',
   collapsible: true,
   collapsed: false,
@@ -130,7 +130,7 @@ map.addPlugin(mpMirrorPanel);
 ### Con plugin BackImgLayers
 
 ```javascript
-const map = M.map({
+const map = IDEE.map({
    container: 'mapjs',
    center: {
       x: -667143.31,
@@ -151,7 +151,7 @@ let backImgLayerParams = {
       id: 'mapa',
       preview: 'http://componentes.ign.es/api-idee/plugins/backimglayer/images/svqmapa.png',
       title: 'Mapa',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'http://www.ign.es/wmts/ign-base?',
         name: 'IGNBaseTodo',
         legend: 'Mapa IGN',
@@ -167,7 +167,7 @@ let backImgLayerParams = {
       id: 'imagen',
       title: 'Imagen',
       preview: 'http://componentes.ign.es/api-idee/plugins/backimglayer/images/svqimagen.png',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'http://www.ign.es/wmts/pnoa-ma?',
         name: 'OI.OrthoimageCoverage',
         legend: 'Imagen (PNOA)',
@@ -183,7 +183,7 @@ let backImgLayerParams = {
       id: 'raster',
       preview: '../src/templates/img/svqmtn.png',
       title: 'Ráster',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'http://www.ign.es/wmts/mapa-raster?',
         name: 'MTN',
         legend: 'Mapa IGN',
@@ -199,7 +199,7 @@ let backImgLayerParams = {
       id: 'hibrido',
       title: 'Híbrido',
       preview: 'http://componentes.ign.es/api-idee/plugins/backimglayer/images/svqhibrid.png',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'http://www.ign.es/wmts/pnoa-ma?',
         name: 'OI.OrthoimageCoverage',
         legend: 'Imagen (PNOA)',
@@ -210,7 +210,7 @@ let backImgLayerParams = {
         visible: true,
         format: 'image/png',
       }),
-      new M.layer.WMTS({
+      new IDEE.layer.WMTS({
         url: 'http://www.ign.es/wmts/ign-base?',
         name: 'IGNBaseOrto',
         matrixSet: 'GoogleMapsCompatible',
@@ -225,10 +225,10 @@ let backImgLayerParams = {
     },
   ],
 }
-const mpBIL = new M.plugin.BackImgLayer(backImgLayerParams);
+const mpBIL = new IDEE.plugin.BackImgLayer(backImgLayerParams);
 map.addPlugin(mpBIL);
 
-const mpMirrorPanel = new M.plugin.Mirrorpanel({
+const mpMirrorPanel = new IDEE.plugin.Mirrorpanel({
   position: 'TR',
   collapsible: true,
   collapsed: false,

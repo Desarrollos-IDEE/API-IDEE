@@ -19,7 +19,7 @@
     "error_wfs": "No se ha podido cargar el servicio WFS",
     "wfs_zoom": "Aumente el nivel de zoom * niveles si quiere añadir este servicio WFS",
     "url_not_valid": "La URL introducida no es válida",
-    "obsolete": "Mensaje para el desarrollador: M.plugin.Vectors ha quedado obsoleto, utilice en su lugar M.plugin.VectorsManagement"
+    "obsolete": "Mensaje para el desarrollador: IDEE.plugin.Vectors ha quedado obsoleto, utilice en su lugar IDEE.plugin.VectorsManagement"
   },
   "help_template": {
     "help": "Ayuda",

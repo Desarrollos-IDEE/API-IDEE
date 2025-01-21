@@ -93,9 +93,9 @@
    %>
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
-        M.language.setLang(urlParams.get('language') || 'es');
+        IDEE.language.setLang(urlParams.get('language') || 'es');
 
-        const map = M.map({
+        const map = IDEE.map({
             container: 'mapjs',
             zoom: 5,
             maxZoom: 20,
@@ -104,28 +104,28 @@
         });
         let mp, mp2;
 
-        const layerinicial = new M.layer.WMS({
+        const layerinicial = new IDEE.layer.WMS({
             url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
             name: 'AU.AdministrativeBoundary',
             legend: 'Limite administrativo',
             tiled: false,
         }, {});
 
-        const layerUA = new M.layer.WMS({
+        const layerUA = new IDEE.layer.WMS({
             url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
             name: 'AU.AdministrativeUnit',
             legend: 'Unidad administrativa',
             tiled: false
         }, {});
 
-        const hidrografia = new M.layer.WMS({
+        const hidrografia = new IDEE.layer.WMS({
             url: 'http://servicios.idee.es/wms-inspire/hidrografia?',
             name: 'HY.PhysicalWaters.HydroPointOfInterest',
             legend: 'Hidrografía',
         });
 
         map.addLayers([layerinicial, layerUA, hidrografia]);
-        mp2 = new M.plugin.ShareMap({
+        mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
             position: "TR",
         });
@@ -174,10 +174,10 @@
         }
 
         function crearPlugin(propiedades) {
-            mp = new M.plugin.Information(propiedades);
+            mp = new IDEE.plugin.Information(propiedades);
             map.addPlugin(mp);
         }
-        mp2 = new M.plugin.ShareMap({
+        mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
             position: "TR",
         });

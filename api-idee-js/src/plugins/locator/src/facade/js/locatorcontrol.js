@@ -1,5 +1,5 @@
 /**
- * @module M/control/LocatorControl
+ * @module IDEE/control/LocatorControl
  */
 import LocatorImpl from 'impl/locator';
 import template from '../../templates/locator';
@@ -8,13 +8,13 @@ import XYLocatorControl from './xylocatorcontrol';
 import IGNSearchLocatorControl from './ignsearchlocatorcontrol';
 import InfoCatastroControl from './infocatastrocontrol';
 
-export default class LocatorControl extends M.Control {
+export default class LocatorControl extends IDEE.Control {
   /**
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor(
@@ -29,9 +29,9 @@ export default class LocatorControl extends M.Control {
     statusProxy,
     position,
   ) {
-    if (M.utils.isUndefined(LocatorImpl) || (M.utils.isObject(LocatorImpl)
-      && M.utils.isNullOrEmpty(Object.keys(LocatorImpl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(LocatorImpl) || (IDEE.utils.isObject(LocatorImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(LocatorImpl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
 
     const impl = new LocatorImpl();
@@ -121,13 +121,13 @@ export default class LocatorControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api
    */
   createView(map) {
     this.map_ = map;
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           showTitle: this.position !== 'TC',
           byParcelCadastre: this.byParcelCadastre_,
@@ -204,7 +204,7 @@ export default class LocatorControl extends M.Control {
           this.statusProxy,
           this.position,
         );
-        this.on(M.evt.ADDED_TO_MAP, () => {
+        this.on(IDEE.evt.ADDED_TO_MAP, () => {
           this.ignsearchControl.initializateAddress(html);
           this.control = this.ignsearchControl;
           html.querySelector('#m-locator-ignsearch').click();
@@ -225,13 +225,13 @@ export default class LocatorControl extends M.Control {
           this.fire('ignsearchlocator:entityFound', [extent]);
         });
       }
-      this.on(M.evt.ADDED_TO_MAP, () => {
+      this.on(IDEE.evt.ADDED_TO_MAP, () => {
         if (this.position === 'TC') {
           document.querySelector('.m-plugin-locator').classList.add('m-plugin-locator-tc');
         }
       });
       if (this.isDraggable_) {
-        M.utils.draggabillyPlugin(this.getPanel(), '#m-locator-title');
+        IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-locator-title');
       }
       this.accessibilityTab(html);
       success(html);
@@ -243,7 +243,7 @@ export default class LocatorControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {
@@ -298,13 +298,13 @@ export default class LocatorControl extends M.Control {
    * @api
    */
   destroy() {
-    if (!M.utils.isNullOrEmpty(this.infocatastroControl)) {
+    if (!IDEE.utils.isNullOrEmpty(this.infocatastroControl)) {
       this.infocatastroControl.destroy();
     }
-    if (!M.utils.isNullOrEmpty(this.ignsearchControl)) {
+    if (!IDEE.utils.isNullOrEmpty(this.ignsearchControl)) {
       this.ignsearchControl.destroy();
     }
-    if (!M.utils.isNullOrEmpty(this.xylocatorControl)) {
+    if (!IDEE.utils.isNullOrEmpty(this.xylocatorControl)) {
       this.xylocatorControl.destroy();
     }
   }

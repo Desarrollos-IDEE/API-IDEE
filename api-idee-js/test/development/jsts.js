@@ -1,8 +1,8 @@
-import { map } from 'M/api-idee';
-import WFS from 'M/layer/WFS';
-import GeoJSON from 'M/layer/GeoJSON';
-import { SELECT_FEATURES } from 'M/event/eventtype';
-import Feature from 'M/feature/Feature';
+import { map } from 'IDEE/api-idee';
+import WFS from 'IDEE/layer/WFS';
+import GeoJSON from 'IDEE/layer/GeoJSON';
+import { SELECT_FEATURES } from 'IDEE/event/eventtype';
+import Feature from 'IDEE/feature/Feature';
 
 const jsts = require('jsts/dist/jsts.js');
 

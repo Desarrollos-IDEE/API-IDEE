@@ -1,5 +1,5 @@
 /**
- * @module M/style/textoverflow
+ * @module IDEE/style/textoverflow
  */
 /**
  * Desbordamiento de texto de estilo izquierdo.

@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
 </p>
-<h1 align="center"><strong>API IDEE</strong> <small>🔌 M.plugin.BackImgLayer</small></h1>
+<h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.BackImgLayer</small></h1>
 
 # Descripción
 
@@ -146,10 +146,10 @@ https://componentes.cnig.es/api-idee/?backimglayer=TR*!true*!true*!Capas%20de%20
 ```
 ### Ejemplo de uso API-REST en base64
 
-Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad M.utils.encodeBase64.
+Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad IDEE.utils.encodeBase64.
 Ejemplo:
 ```javascript
-M.utils.encodeBase64(obj_params);
+IDEE.utils.encodeBase64(obj_params);
 ```
 
 Ejemplo de constructor:
@@ -190,11 +190,11 @@ pluginbackimglayer.on('backimglayer:activeChanges', (data) => {
 # Ejemplo de uso
 
 ```javascript
-const map = M.map({
+const map = IDEE.map({
     container: 'map'
 });
 
-const mp = new M.plugin.BackImgLayer({
+const mp = new IDEE.plugin.BackImgLayer({
     position: 'TR',
     collapsible: true,
     collapsed: true,
@@ -205,7 +205,7 @@ const mp = new M.plugin.BackImgLayer({
         id: 'mapa',
         preview: 'plugins/backimglayer/images/svqmapa.png', // ruta relativa, edite por la deseada
         title: 'Mapa',
-        layers: [new M.layer.WMTS({
+        layers: [new IDEE.layer.WMTS({
             url: 'http://www.ign.es/wmts/ign-base?',
             name: 'IGNBaseTodo',
             legend: 'Mapa IGN',
@@ -221,7 +221,7 @@ const mp = new M.plugin.BackImgLayer({
         id: 'imagen',
         title: 'Imagen',
         preview: 'plugins/backimglayer/images/svqimagen.png', // ruta relativa, edite por la deseada
-        layers: [new M.layer.WMTS({
+        layers: [new IDEE.layer.WMTS({
             url: 'http://www.ign.es/wmts/pnoa-ma?',
             name: 'OI.OrthoimageCoverage',
             legend: 'Imagen (PNOA)',
@@ -237,7 +237,7 @@ const mp = new M.plugin.BackImgLayer({
         id: 'hibrido',
         title: 'Híbrido',
         preview: 'plugins/backimglayer/images/svqhibrid.png', // ruta relativa, edite por la deseada
-        layers: [new M.layer.WMTS({
+        layers: [new IDEE.layer.WMTS({
                 url: 'http://www.ign.es/wmts/pnoa-ma?',
                 name: 'OI.OrthoimageCoverage',
                 legend: 'Imagen (PNOA)',
@@ -248,7 +248,7 @@ const mp = new M.plugin.BackImgLayer({
                 visible: true,
                 format: 'image/png',
             }),
-            new M.layer.WMTS({
+            new IDEE.layer.WMTS({
                 url: 'http://www.ign.es/wmts/ign-base?',
                 name: 'IGNBaseOrto',
                 matrixSet: 'GoogleMapsCompatible',
@@ -265,7 +265,7 @@ const mp = new M.plugin.BackImgLayer({
         id: 'lidar',
         preview: 'plugins/backimglayer/images/svqlidar.png', // ruta relativa, edite por la deseada
         title: 'LIDAR',
-        layers: [new M.layer.WMTS({
+        layers: [new IDEE.layer.WMTS({
             url: 'https://wmts-mapa-lidar.idee.es/lidar?',
             name: 'EL.GridCoverageDSM',
             legend: 'Modelo Digital de Superficies LiDAR',

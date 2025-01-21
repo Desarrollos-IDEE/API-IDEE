@@ -9,7 +9,7 @@
   },
   "extends": "eslint:recommended",
   "globals": {
-    "M": true,
+    "IDEE": true,
     "ol": true,
     "CustomEvent": true,
     "Handlebars": true,

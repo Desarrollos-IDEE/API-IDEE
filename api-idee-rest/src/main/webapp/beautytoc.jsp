@@ -76,7 +76,7 @@
    %>
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
-        M.language.setLang(urlParams.get('language') || 'es');
+        IDEE.language.setLang(urlParams.get('language') || 'es');
 
         let map;
 
@@ -109,7 +109,7 @@
 
         function crearPlugin(posicion, collapsed) {
 
-            map = M.map({
+            map = IDEE.map({
                 container: 'mapjs',
                 zoom: 5,
                 maxZoom: 20,
@@ -117,7 +117,7 @@
                 center: [-467062.8225, 4783459.6216],
             });
 
-            mp = new M.plugin.BeautyTOC({
+            mp = new IDEE.plugin.BeautyTOC({
                 position: posicion,
                 collapsed: collapsed,
             });
@@ -125,7 +125,7 @@
             map.addPlugin(mp);
 
             layersPlugin = [
-                new M.layer.WMS({
+                new IDEE.layer.WMS({
                     url: 'http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?',
                     name: 'Catastro',
                     legend: 'Catastro',
@@ -136,7 +136,7 @@
                     displayInLayerSwitcher: true,
                     queryable: true
                 }),
-                new M.layer.WMS({
+                new IDEE.layer.WMS({
                     url: 'https://www.ign.es/wms/pnoa-historico?',
                     name: 'Interministerial_1973-1986',
                     legend: 'Vuelo Interministerial (1973-1986)',
@@ -147,7 +147,7 @@
                     displayInLayerSwitcher: true,
                     queryable: false
                 }),
-                new M.layer.WMS({
+                new IDEE.layer.WMS({
                     url: 'https://www.ign.es/wms/pnoa-historico?',
                     name: 'Nacional_1981-1986',
                     legend: 'Vuelo Nacional (1981-1986)',
@@ -158,7 +158,7 @@
                     displayInLayerSwitcher: true,
                     queryable: false
                 }),
-                new M.layer.WMS({
+                new IDEE.layer.WMS({
                     url: 'https://www.ign.es/wms/pnoa-historico?',
                     name: 'OLISTAT',
                     legend: 'OLISTAT (1997-1998)',
@@ -169,7 +169,7 @@
                     displayInLayerSwitcher: true,
                     queryable: false
                 }),
-                new M.layer.WMS({
+                new IDEE.layer.WMS({
                     url: 'https://www.ign.es/wms/pnoa-historico?',
                     name: 'SIGPAC',
                     legend: 'SIGPAC (1997-2003)',
@@ -180,7 +180,7 @@
                     displayInLayerSwitcher: true,
                     queryable: false
                 }),
-                new M.layer.WMS({
+                new IDEE.layer.WMS({
                     url: 'https://www.ign.es/wms/pnoa-historico?',
                     name: 'PNOA2004',
                     legend: 'PNOA 2004',
@@ -191,7 +191,7 @@
                     displayInLayerSwitcher: true,
                     queryable: false
                 }),
-                new M.layer.WMS({
+                new IDEE.layer.WMS({
                     url: 'https://www.ign.es/wms/pnoa-historico?',
                     name: 'PNOA2005',
                     legend: 'PNOA 2005',
@@ -202,7 +202,7 @@
                     displayInLayerSwitcher: true,
                     queryable: false
                 }),
-                new M.layer.WMS({
+                new IDEE.layer.WMS({
                     url: 'https://www.ign.es/wms/pnoa-historico?',
                     name: 'PNOA2006',
                     legend: 'PNOA 2006',
@@ -213,7 +213,7 @@
                     displayInLayerSwitcher: true,
                     queryable: false
                 }),
-                new M.layer.WMS({
+                new IDEE.layer.WMS({
                     url: 'https://www.ign.es/wms/pnoa-historico?',
                     name: 'PNOA2007',
                     legend: 'PNOA 2007',
@@ -224,7 +224,7 @@
                     displayInLayerSwitcher: true,
                     queryable: false
                 }),
-                new M.layer.WMS({
+                new IDEE.layer.WMS({
                     url: 'https://www.ign.es/wms/pnoa-historico?',
                     name: 'PNOA2008',
                     legend: 'PNOA 2008',
@@ -235,7 +235,7 @@
                     displayInLayerSwitcher: true,
                     queryable: false
                 }),
-                new M.layer.WMS({
+                new IDEE.layer.WMS({
                     url: 'https://www.ign.es/wms/pnoa-historico?',
                     name: 'PNOA2009',
                     legend: 'PNOA 2009',
@@ -246,7 +246,7 @@
                     displayInLayerSwitcher: true,
                     queryable: false
                 }),
-                new M.layer.WMS({
+                new IDEE.layer.WMS({
                     url: 'https://www.ign.es/wms/pnoa-historico?',
                     name: 'PNOA2010',
                     legend: 'PNOA 2010',
@@ -257,7 +257,7 @@
                     displayInLayerSwitcher: true,
                     queryable: false
                 }),
-                new M.layer.WMS({
+                new IDEE.layer.WMS({
                     url: 'https://www.ign.es/wms/pnoa-historico?',
                     name: 'PNOA2011',
                     legend: 'PNOA 2011',
@@ -268,7 +268,7 @@
                     displayInLayerSwitcher: true,
                     queryable: false
                 }),
-                new M.layer.WMS({
+                new IDEE.layer.WMS({
                     url: 'https://www.ign.es/wms/pnoa-historico?',
                     name: 'PNOA2012',
                     legend: 'PNOA 2012',
@@ -279,7 +279,7 @@
                     displayInLayerSwitcher: true,
                     queryable: false
                 }),
-                new M.layer.WMS({
+                new IDEE.layer.WMS({
                     url: 'https://www.ign.es/wms/pnoa-historico?',
                     name: 'PNOA2013',
                     legend: 'PNOA 2013',
@@ -290,7 +290,7 @@
                     displayInLayerSwitcher: true,
                     queryable: false
                 }),
-                new M.layer.WMS({
+                new IDEE.layer.WMS({
                     url: 'https://www.ign.es/wms/pnoa-historico?',
                     name: 'PNOA2014',
                     legend: 'PNOA 2014',
@@ -301,7 +301,7 @@
                     displayInLayerSwitcher: true,
                     queryable: false
                 }),
-                new M.layer.WMS({
+                new IDEE.layer.WMS({
                     url: 'https://www.ign.es/wms/pnoa-historico?',
                     name: 'PNOA2015',
                     legend: 'PNOA 2015',
@@ -312,7 +312,7 @@
                     displayInLayerSwitcher: true,
                     queryable: false
                 }),
-                new M.layer.WMS({
+                new IDEE.layer.WMS({
                     url: 'https://www.ign.es/wms/pnoa-historico?',
                     name: 'PNOA2016',
                     legend: 'PNOA 2016',
@@ -323,7 +323,7 @@
                     displayInLayerSwitcher: true,
                     queryable: false
                 }),
-                new M.layer.WMS({
+                new IDEE.layer.WMS({
                     url: 'https://www.ign.es/wms/pnoa-historico?',
                     name: 'PNOA2017',
                     legend: 'PNOA 2017',
@@ -346,7 +346,7 @@
                 }
             });
             map.addLayers(layersPlugin)
-            let mp2 = new M.plugin.ShareMap({
+            let mp2 = new IDEE.plugin.ShareMap({
                 baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
                 position: "TR",
             });

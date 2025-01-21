@@ -1,5 +1,5 @@
 /**
- * @module M/filter/Function
+ * @module IDEE/filter/Function
  */
 import BaseFilter from './Base';
 import { isNullOrEmpty } from '../util/Utils';
@@ -7,7 +7,7 @@ import { isNullOrEmpty } from '../util/Utils';
 /**
   * @classdesc
   * Esta clase crea los métodos para los filtros.
-  * @extends {M.Base}
+  * @extends {IDEE.Base}
   * @api
   */
 class Function extends BaseFilter {
@@ -56,7 +56,7 @@ class Function extends BaseFilter {
     *
     * @public
     * @function
-    * @return {M.filter.Function} Filtro.
+    * @return {IDEE.filter.Function} Filtro.
     * @api
     */
   getFunctionFilter() {
@@ -68,8 +68,8 @@ class Function extends BaseFilter {
     *
     * @public
     * @function
-    * @param {Array<M.Feature>} features Objetos geográficos.
-    * @return {Array<M.Feature>} Objetos geográficos filtrados.
+    * @param {Array<IDEE.Feature>} features Objetos geográficos.
+    * @return {Array<IDEE.Feature>} Objetos geográficos filtrados.
     * @api
     */
   execute(features) {

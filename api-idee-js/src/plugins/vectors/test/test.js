@@ -1,6 +1,6 @@
 import Vectors from 'facade/vectors';
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   controls: ['scale'],
   center: {
@@ -33,20 +33,20 @@ const mp = new Vectors({
   // precharged,
 });
 
-const mp2 = new M.plugin.Infocoordinates({
+const mp2 = new IDEE.plugin.Infocoordinates({
   position: 'TR',
   decimalGEOcoord: 4,
   decimalUTMcoord: 4,
 });
 
-const mp3 = new M.plugin.Information({
+const mp3 = new IDEE.plugin.Information({
   position: 'TR',
   buffer: 100,
 });
 
-const mp4 = new M.plugin.MeasureBar({ position: 'TR' });
+const mp4 = new IDEE.plugin.MeasureBar({ position: 'TR' });
 
-const provincias = new M.layer.WFS({
+const provincias = new IDEE.layer.WFS({
   url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?',
   namespace: 'tematicos',
   name: 'Provincias',
@@ -54,7 +54,7 @@ const provincias = new M.layer.WFS({
   geometry: 'MPOLYGON',
 });
 
-const viales = new M.layer.WFS({
+const viales = new IDEE.layer.WFS({
   url: 'http://g-gis-online-lab.desarrollo.guadaltel.es/geoserver/ggiscloud_root/wms?',
   namespace: 'ggiscloud_root',
   name: 'a1585302352391_viales_almeria',
@@ -68,8 +68,8 @@ map.addPlugin(mp);
 // map.addPlugin(mp2);
 // map.addPlugin(mp3);
 // map.addPlugin(mp4);
-// map.addPlugin(new M.plugin.MeasureBar({ position: 'TR' }));
-map.addPlugin(new M.plugin.BackImgLayer({
+// map.addPlugin(new IDEE.plugin.MeasureBar({ position: 'TR' }));
+map.addPlugin(new IDEE.plugin.BackImgLayer({
   position: 'TR',
   layerId: 0,
   layerVisibility: true,
@@ -83,7 +83,7 @@ map.addPlugin(new M.plugin.BackImgLayer({
       preview: '',
       title: 'Imagen',
       layers: [
-        new M.layer.XYZ({
+        new IDEE.layer.XYZ({
           url: 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
           name: 'PNOA-MA',
           legend: 'Imagen',
@@ -101,7 +101,7 @@ map.addPlugin(new M.plugin.BackImgLayer({
       preview: '',
       title: 'Mapa',
       layers: [
-        new M.layer.WMTS({
+        new IDEE.layer.WMTS({
           url: 'https://www.ign.es/wmts/mapa-raster?',
           name: 'MTN',
           legend: 'Mapa',
@@ -119,7 +119,7 @@ map.addPlugin(new M.plugin.BackImgLayer({
       preview: '',
       title: 'Callejero',
       layers: [
-        new M.layer.WMTS({
+        new IDEE.layer.WMTS({
           url: 'https://www.ign.es/wmts/ign-base?',
           name: 'IGNBaseTodo',
           legend: 'Callejero',

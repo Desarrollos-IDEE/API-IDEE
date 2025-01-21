@@ -26,7 +26,7 @@ export class SimpleCategoryBinding extends Binding {
   /**
    * This function sets the layer of a binding class.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   setLayer(layer, refresh = true) {
@@ -162,7 +162,7 @@ export class SimpleCategoryBinding extends Binding {
   /**
    * This function sets the layer of a binding class.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   toggleCheckOptionSection(option) {
@@ -193,7 +193,7 @@ export class SimpleCategoryBinding extends Binding {
   /**
    * This function sets the layer of a binding class.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   activateOptionSection(option) {
@@ -206,7 +206,7 @@ export class SimpleCategoryBinding extends Binding {
   /**
    * This function sets the layer of a binding class.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   activateOption(option) {
@@ -221,7 +221,7 @@ export class SimpleCategoryBinding extends Binding {
   /**
    * This function sets the layer of a binding class.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   activateLabel(label) {
@@ -236,7 +236,7 @@ export class SimpleCategoryBinding extends Binding {
   /**
    * This function sets the layer of a binding class.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   displaySectionOption(option) {
@@ -337,7 +337,7 @@ export class SimpleCategoryBinding extends Binding {
    * @function
    */
   processOptions(styleOpts) {
-    const styleOptsClone = M.utils.extends({}, styleOpts);
+    const styleOptsClone = IDEE.utils.extends({}, styleOpts);
     const checkedFill = this.isChecked('fill');
     const checkedStroke = this.isChecked('stroke');
     const checkedLabel = this.isChecked('label');
@@ -364,7 +364,7 @@ export class SimpleCategoryBinding extends Binding {
 
   /**
    * This function generates the style simple.
-   * @return {M.style.Simple}
+   * @return {IDEE.style.Simple}
    */
   generateStyle() {
     let style;
@@ -373,17 +373,17 @@ export class SimpleCategoryBinding extends Binding {
 
     switch (geometry) {
       case 'point':
-        style = new M.style.Point(styleOptions);
+        style = new IDEE.style.Point(styleOptions);
         break;
       case 'line':
-        style = new M.style.Line(styleOptions);
+        style = new IDEE.style.Line(styleOptions);
         break;
       case 'polygon':
-        style = new M.style.Polygon(styleOptions);
+        style = new IDEE.style.Polygon(styleOptions);
         break;
 
       default:
-        M.dialog.error(getValue('exception.geomNotSupported'), 'Error');
+        IDEE.dialog.error(getValue('exception.geomNotSupported'), 'Error');
     }
 
     return style;
@@ -446,8 +446,8 @@ export class SimpleCategoryBinding extends Binding {
       if (this.style_.get('fill.pattern') != null) {
         options['patternflag'] = true;
       }
-      options = M.utils.extends({}, this.style_.getOptions());
-      options = M.utils.extends(options, SimpleCategoryBinding.DEFAULT_OPTIONS_STYLE);
+      options = IDEE.utils.extends({}, this.style_.getOptions());
+      options = IDEE.utils.extends(options, SimpleCategoryBinding.DEFAULT_OPTIONS_STYLE);
     }
 
     // transform color options to hex color for value inputs color
@@ -460,10 +460,10 @@ export class SimpleCategoryBinding extends Binding {
     options['icon']['gradientcolor'] = chroma(options['icon']['gradientcolor']).hex();
     // --
 
-    const patternValids = Object.keys(M.style.pattern).filter((name) => name !== 'ICON' && name !== 'IMAGE');
-    const alignValues = Object.values(M.style.align);
-    const baselineValues = Object.values(M.style.baseline);
-    const formValues = Object.values(M.style.form).filter((name) => name != null);
+    const patternValids = Object.keys(IDEE.style.pattern).filter((name) => name !== 'ICON' && name !== 'IMAGE');
+    const alignValues = Object.values(IDEE.style.align);
+    const baselineValues = Object.values(IDEE.style.baseline);
+    const formValues = Object.values(IDEE.style.form).filter((name) => name != null);
     const linejoins = [getValue('bevel'), getValue('miter'), getValue('rounded')];
     const linecapstrokes = [getValue('rounded'), getValue('extreme'), getValue('square')];
 
@@ -569,7 +569,7 @@ export class SimpleCategoryBinding extends Binding {
     if (style != null) {
       this.style_ = style;
       style = style.clone();
-      if (style instanceof M.style.Point) {
+      if (style instanceof IDEE.style.Point) {
         style.set('radius', SimpleCategoryBinding.RADIUS_OPTION);
         if (style.get('icon.radius') != null) {
           style.set('icon.radius', SimpleCategoryBinding.ICON_RADIUS_OPTION);

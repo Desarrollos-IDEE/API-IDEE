@@ -3,7 +3,7 @@
   "informacionCatastral": "Cadastre information",
   "errorConexion": "It is not possible to establish a connection with the Cadastre server.",
   "consultar": "Cadastre information",
-  "infocatastro_obsolete": "Message to the developer: M.plugin.InfoCatastro has been deprecated, please use M.plugin.Locator instead",
+  "infocatastro_obsolete": "Message to the developer: IDEE.plugin.InfoCatastro has been deprecated, please use IDEE.plugin.Locator instead",
   "description": "Description",
   "reference": "Cadastral reference",
   "noReference": "No reference",

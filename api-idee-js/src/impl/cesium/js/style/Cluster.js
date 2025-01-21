@@ -1,3 +1,3 @@
 /**
- * @module M/impl/style/Cluster
+ * @module IDEE/impl/style/Cluster
  */

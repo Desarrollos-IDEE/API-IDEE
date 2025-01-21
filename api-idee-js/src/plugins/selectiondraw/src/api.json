@@ -3,7 +3,7 @@
     "name": "selectiondraw",
     "separator": "*"
   },
-  "constructor": "M.plugin.SelectionDraw",
+  "constructor": "IDEE.plugin.SelectionDraw",
   "parameters": [{
     "type": "object",
     "properties": [{

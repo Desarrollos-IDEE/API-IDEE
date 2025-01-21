@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/SelectionDrawControl
+ * @module IDEE/impl/control/SelectionDrawControl
  */

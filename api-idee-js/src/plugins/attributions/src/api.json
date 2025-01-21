@@ -3,7 +3,7 @@
     "name": "attributions",
     "separator": "*"
   },
-  "constructor": "M.plugin.Attributions",
+  "constructor": "IDEE.plugin.Attributions",
   "parameters": [{
     "type": "object",
     "properties": [{

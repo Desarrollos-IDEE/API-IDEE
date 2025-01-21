@@ -1,5 +1,5 @@
 /**
- * @module M/impl/style/Point
+ * @module IDEE/impl/style/Point
  */
 import {
   isNullOrEmpty,
@@ -9,10 +9,10 @@ import {
   drawDynamicStyle,
   isArray,
   extend,
-} from 'M/util/Utils';
-import * as Align from 'M/style/Align';
-import * as Baseline from 'M/style/Baseline';
-import * as HeightReference from 'M/style/HeightReference';
+} from 'IDEE/util/Utils';
+import * as Align from 'IDEE/style/Align';
+import * as Baseline from 'IDEE/style/Baseline';
+import * as HeightReference from 'IDEE/style/HeightReference';
 import {
   BillboardGraphics,
   BoundingRectangle,
@@ -69,7 +69,7 @@ class Point extends Simple {
           if (!isNullOrEmpty(imageStyle)) {
             image = imageStyle.getValue();
             if (!image.startsWith(window.location.origin)) {
-              const proxyImageURL = concatUrlPaths([M.config.PROXY_URL, '/image']);
+              const proxyImageURL = concatUrlPaths([IDEE.config.PROXY_URL, '/image']);
               image = addParameters(proxyImageURL, {
                 url: image,
               });

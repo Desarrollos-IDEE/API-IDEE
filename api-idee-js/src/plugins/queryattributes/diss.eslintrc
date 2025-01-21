@@ -1,7 +1,7 @@
 {
   "extends": "airbnb",
   "globals": {
-    "M": true,
+    "IDEE": true,
     "ol": true,
     "CustomEvent": true,
     "Handlebars": true,

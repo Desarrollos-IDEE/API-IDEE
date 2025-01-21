@@ -1,12 +1,12 @@
 import SelectionZoom from 'facade/selectionzoom';
 
-M.language.setLang('es');
-// M.language.setLang('en');
+IDEE.language.setLang('es');
+// IDEE.language.setLang('en');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   zoom: 4,
-  layers: [new M.layer.WMTS({
+  layers: [new IDEE.layer.WMTS({
     url: 'http://www.ign.es/wmts/pnoa-ma?',
     name: 'OI.OrthoimageCoverage',
     legend: 'Imagen (PNOA)',

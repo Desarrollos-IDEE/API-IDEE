@@ -1,5 +1,5 @@
 /**
- * @module M/style/Cluster
+ * @module IDEE/style/Cluster
  */
 import ClusterImpl from 'impl/style/Cluster';
 import Style from './Style';
@@ -15,15 +15,15 @@ import { getValue } from '../i18n/language';
  * Crea un grupo de estilo
  * con parámetros especificados por el usuario.
  * @api
- * @extends {M.style.Composite}
+ * @extends {IDEE.style.Composite}
  */
 class Cluster extends Composite {
   /**
    * Constructor principal de la clase.
    * @constructor
-   * @extends {M.Style}
+   * @extends {IDEE.Style}
    * @param {object} options Parámetros de los estilos del "cluster".
-   * - ranges: Matriz de objetos con el valor mínimo, el máximo y un M.style.Point.
+   * - ranges: Matriz de objetos con el valor mínimo, el máximo y un IDEE.style.Point.
    * - animated: Indica si se quiere animación o no al desplegar
    * el "cluster".
    * - hoverInteraction: Indica si se quiere mostrar el polígono que
@@ -73,7 +73,7 @@ class Cluster extends Composite {
   /**
    * Añade los estilos "cluster" a la capa.
    * @public
-   * @param {M.layer} layer Capa.
+   * @param {IDEE.layer} layer Capa.
    * @function
    * @api
    */
@@ -86,7 +86,7 @@ class Cluster extends Composite {
   /**
    * Quita los estilos de la capa utilizando el método heredado.
    * @public
-   * @param {M.layer} layer Capa.
+   * @param {IDEE.layer} layer Capa.
    * @function
    * @api
    */
@@ -113,7 +113,7 @@ class Cluster extends Composite {
    *
    * @function
    * @public
-   * @param {M.layer.Vector} layer Capas.
+   * @param {IDEE.layer.Vector} layer Capas.
    * @api
    */
   applyInternal(layer) {
@@ -126,7 +126,7 @@ class Cluster extends Composite {
    * Devuelve los estilos antiguos.
    * @function
    * @public
-   * @return {M.Style} Estilos.
+   * @return {IDEE.Style} Estilos.
    * @api
    */
   getOldStyle() {
@@ -316,7 +316,7 @@ class Cluster extends Composite {
     const compStyles = this.getStyles().map((style) => style.serialize());
 
     const parameters = [options, optsVendor, compStyles];
-    const deserializedMethod = 'M.style.Cluster.deserialize';
+    const deserializedMethod = 'IDEE.style.Cluster.deserialize';
     return { parameters, deserializedMethod };
   }
 
@@ -326,7 +326,7 @@ class Cluster extends Composite {
    * @public
    * @param {Array} parametrers Parámetros para deserializar
    * ("serializedOptions", "serializedVendor", "serializedCompStyles").
-   * @return {M.style.Cluster} Devuelve el estilo del "cluster" deserializado.
+   * @return {IDEE.style.Cluster} Devuelve el estilo del "cluster" deserializado.
    */
   static deserialize([serializedOptions, serializedVendor, serializedCompStyles]) {
     let options = serializedOptions;
@@ -337,7 +337,7 @@ class Cluster extends Composite {
     options = defineFunctionFromString(serializedOptions);
     const vendors = defineFunctionFromString(serializedVendor);
     /* eslint-disable */
-    const styleFn = new Function(['options', 'optsVendor'], `return new M.style.Cluster(options, optsVendor)`);
+    const styleFn = new Function(['options', 'optsVendor'], `return new IDEE.style.Cluster(options, optsVendor)`);
     /* eslint-enable */
     const deserializedStyle = styleFn(options, vendors);
 

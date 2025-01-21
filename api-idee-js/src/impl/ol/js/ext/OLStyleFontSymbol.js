@@ -1,5 +1,5 @@
 /**
- * @module M/impl/ol/js/ext/OLStyleFontSymbol
+ * @module IDEE/impl/ol/js/ext/OLStyleFontSymbol
  */
 
 import OLStyleRegularShape from 'ol/style/RegularShape';

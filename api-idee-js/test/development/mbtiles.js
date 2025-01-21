@@ -1,6 +1,6 @@
-import { map } from 'M/api-idee';
-import MBTiles from 'M/layer/MBTiles';
-import MBTilesVector from 'M/layer/MBTilesVector';
+import { map } from 'IDEE/api-idee';
+import MBTiles from 'IDEE/layer/MBTiles';
+import MBTilesVector from 'IDEE/layer/MBTilesVector';
 
 const mapjs = map({
   container: 'map',

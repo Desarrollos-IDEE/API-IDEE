@@ -102,9 +102,9 @@
    %>
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
-        M.language.setLang(urlParams.get('language') || 'es');
+        IDEE.language.setLang(urlParams.get('language') || 'es');
 
-        const map = M.map({
+        const map = IDEE.map({
             container: 'mapjs',
             zoom: 6,
             maxZoom: 20,
@@ -151,7 +151,7 @@
         }
 
         function crearPlugin(posicion, fixed, baseLayer, collapsed, collapsible, tooltip, zoom) {
-            mp = new M.plugin.OverviewMap({
+            mp = new IDEE.plugin.OverviewMap({
                 position: posicion,
                 fixed: fixed,
 				tooltip: tooltip,
@@ -163,7 +163,7 @@
             map.addPlugin(mp);
         }
 
-        let mp2 = new M.plugin.ShareMap({
+        let mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
             position: "BR",
         });

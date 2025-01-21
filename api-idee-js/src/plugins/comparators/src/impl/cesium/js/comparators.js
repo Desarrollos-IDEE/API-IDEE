@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/ComparatorsControl
+ * @module IDEE/impl/control/ComparatorsControl
  */

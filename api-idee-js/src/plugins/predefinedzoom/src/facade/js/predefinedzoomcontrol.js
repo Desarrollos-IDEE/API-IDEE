@@ -1,26 +1,26 @@
 /**
- * @module M/control/PredefinedZoomControl
+ * @module IDEE/control/PredefinedZoomControl
  */
 
 import PredefinedZoomImplControl from 'impl/predefinedzoomcontrol';
 import template from 'templates/predefinedzoom';
 import { getValue } from './i18n/language';
 
-export default class PredefinedZoomControl extends M.Control {
+export default class PredefinedZoomControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(savedZooms) {
-    if (M.utils.isUndefined(PredefinedZoomImplControl)
-      || (M.utils.isObject(PredefinedZoomImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(PredefinedZoomImplControl)))) {
-      M.exception(getValue('exception_predefinedzoomcontrol'));
+    if (IDEE.utils.isUndefined(PredefinedZoomImplControl)
+      || (IDEE.utils.isObject(PredefinedZoomImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(PredefinedZoomImplControl)))) {
+      IDEE.exception(getValue('exception_predefinedzoomcontrol'));
     }
     const impl = new PredefinedZoomImplControl();
     super(impl, 'PredefinedZoom');
@@ -33,7 +33,7 @@ export default class PredefinedZoomControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
@@ -41,7 +41,7 @@ export default class PredefinedZoomControl extends M.Control {
     // eslint-disable-next-line
     console.warn(getValue('predefinedzoom_obsolete'));
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template);
+      const html = IDEE.template.compileSync(template);
       this.savedZooms.forEach((customZoom) => {
         const newBtn = document.createElement('button');
         newBtn.setAttribute('class', 'icon-expand');
@@ -85,7 +85,7 @@ export default class PredefinedZoomControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

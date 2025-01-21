@@ -1,8 +1,8 @@
 /**
- * @module M/impl/control/HelpControl
+ * @module IDEE/impl/control/HelpControl
  */
 
-export default class HelpControl extends M.impl.Control {
+export default class HelpControl extends IDEE.impl.Control {
   constructor() {
     super({});
   }
@@ -13,7 +13,7 @@ export default class HelpControl extends M.impl.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map mapa donde añadir el plugin
+   * @param {IDEE.Map} map mapa donde añadir el plugin
    * @param {HTMLElement} html HTML del plugin
    * @api
    */

@@ -1,8 +1,8 @@
 /**
- * @module M/impl/control/Downloadcontrol
+ * @module IDEE/impl/control/Downloadcontrol
  */
 
-export default class Downloadcontrol extends M.impl.Control {
+export default class Downloadcontrol extends IDEE.impl.Control {
   /**
   * @classdesc
   * Main constructor of the measure conrol.
@@ -16,7 +16,7 @@ export default class Downloadcontrol extends M.impl.Control {
     /**
       * Facade of the map
       * @private
-      * @type {M.Map}
+      * @type {IDEE.Map}
       */
     this.facadeMap_ = map;
   }
@@ -26,7 +26,7 @@ export default class Downloadcontrol extends M.impl.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api stable
    */
@@ -36,7 +36,7 @@ export default class Downloadcontrol extends M.impl.Control {
     /**
      * Facade map
      * @private
-     * @type {M.map}
+     * @type {IDEE.map}
      */
     this.facadeMap_ = map;
 

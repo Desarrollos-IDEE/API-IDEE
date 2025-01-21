@@ -1,5 +1,5 @@
 /**
- * @module M/control/AnalysisControl
+ * @module IDEE/control/AnalysisControl
  */
 import buffer from '@turf/buffer';
 import AnalysisImplControl from 'impl/analysiscontrol';
@@ -9,21 +9,21 @@ import pointProfileTemplate from '../../templates/pointprofile';
 import { getValue } from './i18n/language';
 import { changeStyleDialog } from './util';
 
-export default class AnalysisControl extends M.Control {
+export default class AnalysisControl extends IDEE.Control {
   /**
   * @classdesc
   * Main constructor of the class. Creates a PluginControl
   * control
   *
   * @constructor
-  * @extends {M.Control}
+  * @extends {IDEE.Control}
   * @api stable
   */
   constructor(map, managementControl) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(AnalysisImplControl) || (M.utils.isObject(AnalysisImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(AnalysisImplControl)))) {
-      M.exception(getValue('exception.impl_analysiscontrol'));
+    if (IDEE.utils.isUndefined(AnalysisImplControl) || (IDEE.utils.isObject(AnalysisImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(AnalysisImplControl)))) {
+      IDEE.exception(getValue('exception.impl_analysiscontrol'));
     }
 
     // 2. implementation of this control
@@ -58,7 +58,7 @@ export default class AnalysisControl extends M.Control {
 
     this.destroyLayerBufferFN = this.destroyLayerBuffer.bind(this);
 
-    this.map_.on(M.evt.REMOVED_LAYER, this.destroyLayerBufferFN);
+    this.map_.on(IDEE.evt.REMOVED_LAYER, this.destroyLayerBufferFN);
   }
 
   /**
@@ -70,7 +70,7 @@ export default class AnalysisControl extends M.Control {
    */
   destroyLayerBuffer(layers) {
     let layersParam = layers;
-    if (!M.utils.isArray(layers)) {
+    if (!IDEE.utils.isArray(layers)) {
       layersParam = [layers];
     }
     const bufferLayer = layersParam.filter((l) => { return l.name === 'bufferLayer'; });
@@ -88,7 +88,7 @@ export default class AnalysisControl extends M.Control {
    * @api
    */
   active(html) {
-    this.template = M.template.compileSync(template, {
+    this.template = IDEE.template.compileSync(template, {
       vars: {
         translations: {
           analysisProfile: getValue('analysisProfile'),
@@ -119,11 +119,11 @@ export default class AnalysisControl extends M.Control {
    */
   initializeLayers() {
     if (!this.bufferLayer) {
-      this.bufferLayer = new M.layer.Vector({
+      this.bufferLayer = new IDEE.layer.Vector({
         extract: false,
         name: 'bufferLayer',
       }, { displayInLayerSwitcher: true });
-      this.bufferLayer.setStyle(new M.style.Polygon({
+      this.bufferLayer.setStyle(new IDEE.style.Polygon({
         stroke: { color: '#71a7d3' },
         fill: { color: '#71a7d3', opacity: 0.6 },
       }));
@@ -155,7 +155,7 @@ export default class AnalysisControl extends M.Control {
       const featuresArea = this.impl_.getAreaGeoJSON(selectFeatures);
       const pre = JSON.stringify(featuresArea.length === 1
         ? featuresArea[0] : featuresArea, null, 2);
-      M.dialog.info(`<pre class="vectorsmanagement-dialogCode"><code>${pre}</code></pre>`, 'GeoJSON');
+      IDEE.dialog.info(`<pre class="vectorsmanagement-dialogCode"><code>${pre}</code></pre>`, 'GeoJSON');
 
       changeStyleDialog();
     });
@@ -196,7 +196,7 @@ export default class AnalysisControl extends M.Control {
    * This function the layer selected in the layer selector.
    * @public
    * @function
-   * @param {M.layer.Vector} layer
+   * @param {IDEE.layer.Vector} layer
    * @api
    */
   setLayer(layer) {
@@ -246,7 +246,7 @@ export default class AnalysisControl extends M.Control {
     const selectedFeatures = this.managementControl_.getSelectedFeatures();
     if (selectedFeatures.length > 0) {
       if (selectedFeatures.length > 1) {
-        M.dialog.info(getValue('exception.topographic_one_element'));
+        IDEE.dialog.info(getValue('exception.topographic_one_element'));
       } else {
         this.feature = selectedFeatures[0];
         if (this.feature.getGeometry().type !== 'Point') {
@@ -256,7 +256,7 @@ export default class AnalysisControl extends M.Control {
         }
       }
     } else {
-      M.dialog.info(getValue('exception.featuresel'));
+      IDEE.dialog.info(getValue('exception.featuresel'));
     }
   }
 
@@ -269,11 +269,11 @@ export default class AnalysisControl extends M.Control {
   drawBuffer() {
     const selection = this.managementControl_.getSelection();
     if (selection === 'feature' && this.managementControl_.getSelectedFeatures().length === 0) { // buffer de los features seleccionados
-      M.dialog.info(getValue('exception.featuresel'));
+      IDEE.dialog.info(getValue('exception.featuresel'));
     } else if (selection === 'layer' && this.layer_.getFeatures().length === 0) { // buffer de toda la capa
-      M.dialog.info(getValue('exception.emptylayer'));
+      IDEE.dialog.info(getValue('exception.emptylayer'));
     } else {
-      M.dialog.info(
+      IDEE.dialog.info(
         `<div id="chooseBuffer">
           <input type="number" id="metreBuffer" value="50" style="width: 10rem;">
           <div style="padding-top: 0.5rem;text-align: center;">
@@ -351,7 +351,7 @@ export default class AnalysisControl extends M.Control {
    * This function create a buffer feature from feature and distance.
    * @public
    * @function
-   * @param {M.Feature} feature
+   * @param {IDEE.Feature} feature
    * @param {Integer} distance
    * @api
    */
@@ -364,7 +364,7 @@ export default class AnalysisControl extends M.Control {
     const buffered = buffer(turfGeom, parseInt(distance, 10), { units: 'meters' });
     olFeature.setGeometry(format.readFeature(buffered).getGeometry().transform('EPSG:4326', this.map_.getProjection().code));
     olFeature.set('parentID', layerID);
-    const MFeature = M.impl.Feature.feature2Facade(olFeature);
+    const MFeature = IDEE.impl.Feature.feature2Facade(olFeature);
     return MFeature;
   }
 
@@ -379,14 +379,14 @@ export default class AnalysisControl extends M.Control {
     if (this.pointTemplate) {
       document.body.removeChild(this.pointTemplate);
     }
-    const mapProj = M.impl.ol.js.projections.getSupportedProjs()
+    const mapProj = IDEE.impl.ol.js.projections.getSupportedProjs()
       .filter((p) => p.codes.includes(pointXYZ.map.projection))[0];
     const mapUnit = mapProj.units === 'm' ? 'm' : '°';
     const mapLabels = mapProj.units === 'm' ? ['X', 'Y'] : [getValue('creationLongitude'), getValue('creationLatitude')];
-    const geographicProj = M.impl.ol.js.projections.getSupportedProjs()
+    const geographicProj = IDEE.impl.ol.js.projections.getSupportedProjs()
       .filter((p) => p.codes.includes(pointXYZ.geographic.projection))[0];
     const dist = mapProj.codes[0] !== geographicProj.codes[0];
-    this.pointTemplate = M.template.compileSync(pointProfileTemplate, {
+    this.pointTemplate = IDEE.template.compileSync(pointProfileTemplate, {
       vars: {
         translations: {
           longitude: getValue('creationLongitude'),
@@ -459,7 +459,7 @@ export default class AnalysisControl extends M.Control {
     document.addEventListener('mouseup', this.mouseupFunctionEvent);
     document.addEventListener('mousemove', this.mousemoveFunctionEvent);
 
-    // M.utils.draggabillyPlugin(this.pointTemplate, '#point-profile-title');
+    // IDEE.utils.draggabillyPlugin(this.pointTemplate, '#point-profile-title');
   }
 
   /**
@@ -540,7 +540,7 @@ export default class AnalysisControl extends M.Control {
         break;
     }
 
-    this.infoanalysisTemplate = M.template.compileSync(infoanalysis, {
+    this.infoanalysisTemplate = IDEE.template.compileSync(infoanalysis, {
       vars: {
         point,
         line,
@@ -567,7 +567,7 @@ export default class AnalysisControl extends M.Control {
    * @api stable
    */
   destroy() {
-    this.map_.un(M.evt.REMOVED_LAYER, this.destroyLayerBufferFN);
+    this.map_.un(IDEE.evt.REMOVED_LAYER, this.destroyLayerBufferFN);
   }
 
   /**
@@ -609,7 +609,7 @@ export default class AnalysisControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

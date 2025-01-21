@@ -1,7 +1,7 @@
 /**
  * @classdesc
  */
-class Attributions extends M.Object {
+class Attributions extends IDEE.Object {
   /**
    * @constructor
    */
@@ -11,13 +11,13 @@ class Attributions extends M.Object {
     /**
      * Map of the plugin
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = map;
   }
 
   /**
-   * Register events in ol.Map of M.Map
+   * Register events in ol.Map of IDEE.Map
    * @public
    * @function
    */

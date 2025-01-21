@@ -84,9 +84,9 @@
    %>
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
-        M.language.setLang(urlParams.get('language') || 'es');
+        IDEE.language.setLang(urlParams.get('language') || 'es');
 
-        const map = M.map({
+        const map = IDEE.map({
             container: 'mapjs',
             zoom: 5,
             maxZoom: 20,
@@ -137,14 +137,14 @@
         })
 
         function crearPlugin(collapsed, collapsible, posicion) {
-            mp = new M.plugin.ZoomPanel({
+            mp = new IDEE.plugin.ZoomPanel({
                 position: posicion,
                 collapsed: collapsed,
                 collapsible: collapsible,
             });
             map.addPlugin(mp);
         }
-        let mp2 = new M.plugin.ShareMap({
+        let mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
             position: "TR",
         });

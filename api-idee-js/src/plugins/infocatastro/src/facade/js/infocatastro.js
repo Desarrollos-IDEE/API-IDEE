@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/InfoCatastro
+ * @module IDEE/plugin/InfoCatastro
  */
 import 'assets/css/infocatastro';
 import InfoCatastroControl from './infocatastrocontrol';
@@ -9,14 +9,14 @@ import { getValue } from './i18n/language';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class InfoCatastro extends M.Plugin {
+export default class InfoCatastro extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -26,14 +26,14 @@ export default class InfoCatastro extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -87,7 +87,7 @@ export default class InfoCatastro extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).infocatastro;
+    return IDEE.language.getTranslation(lang).infocatastro;
   }
 
   /**
@@ -95,15 +95,15 @@ export default class InfoCatastro extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
     this.controls_.push(new InfoCatastroControl({ url: this.catastroWMS, tooltip: this.tooltip_ }));
     this.map_ = map;
-    this.panel_ = new M.ui.Panel('panelInfoCatastro', {
+    this.panel_ = new IDEE.ui.Panel('panelInfoCatastro', {
       className: 'm-plugin-catastro',
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       tooltip: this.tooltip_,
       collapsedButtonClass: 'icon-posicion4',
     });
@@ -111,8 +111,8 @@ export default class InfoCatastro extends M.Plugin {
     map.addPanels(this.panel_);
 
     const that = this;
-    this.controls_[0].on(M.evt.ADDED_TO_MAP, () => {
-      that.fire(M.evt.ADDED_TO_MAP);
+    this.controls_[0].on(IDEE.evt.ADDED_TO_MAP, () => {
+      that.fire(IDEE.evt.ADDED_TO_MAP);
     });
   }
 
@@ -151,7 +151,7 @@ export default class InfoCatastro extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Plugin} plugin to compare
+   * @param {IDEE.Plugin} plugin to compare
    * @api
    */
   equals(plugin) {

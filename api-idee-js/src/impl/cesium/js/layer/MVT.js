@@ -1,3 +1,3 @@
 /**
- * @module M/impl/layer/MVT
+ * @module IDEE/impl/layer/MVT
  */

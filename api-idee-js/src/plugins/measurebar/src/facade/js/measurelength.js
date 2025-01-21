@@ -9,16 +9,16 @@ import { getValue } from './i18n/language';
  * control to provides measure distances
  *
  * @constructor
- * @extends {M.control.Measure}
+ * @extends {IDEE.control.Measure}
  * @api stable
  */
 
 export default class MeasureLength extends Measure {
   constructor(order) {
     // checks if the implementation can create WMC layers
-    if (M.utils.isUndefined(MeasureLengthImpl) || (M.utils.isObject(MeasureLengthImpl)
-      && M.utils.isNullOrEmpty(Object.keys(MeasureLengthImpl)))) {
-      M.exception(getValue('exception.impl_length'));
+    if (IDEE.utils.isUndefined(MeasureLengthImpl) || (IDEE.utils.isObject(MeasureLengthImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(MeasureLengthImpl)))) {
+      IDEE.exception(getValue('exception.impl_length'));
     }
 
     // implementation of this control

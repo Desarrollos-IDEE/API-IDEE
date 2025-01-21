@@ -6,7 +6,7 @@
  */
 const namespaces = [
   {
-    name: 'M.plugin',
+    name: 'IDEE.plugin',
     object: '{}',
   },
 ];

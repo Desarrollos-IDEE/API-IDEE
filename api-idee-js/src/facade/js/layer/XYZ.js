@@ -1,5 +1,5 @@
 /**
- * @module M/layer/XYZ
+ * @module IDEE/layer/XYZ
  */
 import XYZImpl from 'impl/layer/XYZ';
 import LayerBase from './Layer';
@@ -29,7 +29,7 @@ import { getValue } from '../i18n/language';
  * @property {Array} maxExtent La medida en que restringe la visualización a una región específica.
  *
  * @api
- * @extends {M.layer}
+ * @extends {IDEE.layer}
  */
 class XYZ extends LayerBase {
   /**
@@ -78,8 +78,8 @@ class XYZ extends LayerBase {
     /**
      * Implementación de esta capa.
      * @public
-     * @implements {M.impl.layer.XYZ}
-     * @type {M.impl.layer.XYZ}
+     * @implements {IDEE.impl.layer.XYZ}
+     * @type {IDEE.impl.layer.XYZ}
      */
 
     const optionsVar = options;

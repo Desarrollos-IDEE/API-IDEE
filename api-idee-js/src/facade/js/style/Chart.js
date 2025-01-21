@@ -1,5 +1,5 @@
 /**
- * @module M/style/Chart
+ * @module IDEE/style/Chart
  */
 import ChartImpl from 'impl/style/Chart';
 import StyleFeature from './Feature';
@@ -22,7 +22,7 @@ import { getValue } from '../i18n/language';
  * Crea un estilo de gráfico
  * con parámetros especificados por el usuario.
  * @api
- * @extends {M.style.Feature}
+ * @extends {IDEE.style.Feature}
  */
 class Chart extends StyleFeature {
   /**
@@ -194,7 +194,7 @@ class Chart extends StyleFeature {
     };
 
     const parameters = [serializedOptions];
-    const deserializedMethod = 'M.style.Chart.deserialize';
+    const deserializedMethod = 'IDEE.style.Chart.deserialize';
     return { parameters, deserializedMethod };
   }
 
@@ -203,14 +203,14 @@ class Chart extends StyleFeature {
    * @function
    * @public
    * @param {Array} serializedOptions Estilos.
-   * @return {M.style.Simple} "new M.style.Chart".
+   * @return {IDEE.style.Simple} "new IDEE.style.Chart".
    */
   static deserialize([serializedOptions]) {
     const options = serializedOptions;
     options.variables = serializedOptions.variables
       .map((variableOpt) => new ChartVariable(defineFunctionFromString(variableOpt)));
     /* eslint-disable */
-    const styleFn = new Function(['options'], `return new M.style.Chart(options)`);
+    const styleFn = new Function(['options'], `return new IDEE.style.Chart(options)`);
     /* eslint-enable */
     return styleFn(options);
   }

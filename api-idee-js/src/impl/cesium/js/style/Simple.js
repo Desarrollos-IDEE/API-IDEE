@@ -1,9 +1,9 @@
 /**
- * @module M/impl/style/Simple
+ * @module IDEE/impl/style/Simple
  */
-import { isNullOrEmpty, isFunction, extendsObj } from 'M/util/Utils';
+import { isNullOrEmpty, isFunction, extendsObj } from 'IDEE/util/Utils';
 import { Entity } from 'cesium';
-import * as EventType from 'M/event/eventtype';
+import * as EventType from 'IDEE/event/eventtype';
 import ImplUtils from '../util/Utils';
 import Style from './Style';
 import Feature from '../feature/Feature';
@@ -14,7 +14,7 @@ const templateRegexp = /^\{\{([^}]+)\}\}$/;
  * @classdesc
  * Esta clase genera estilos simples.
  * @api
- * @namespace M.impl.style.Simple
+ * @namespace IDEE.impl.style.Simple
  */
 class Simple extends Style {
   /**
@@ -45,7 +45,7 @@ class Simple extends Style {
    * Este método aplica los estilos a la capa.
    * @public
    * @function
-   * @param {M.layer.Vector} layer Capa.
+   * @param {IDEE.layer.Vector} layer Capa.
    * @api stable
    */
   applyToLayer(layer) {
@@ -59,7 +59,7 @@ class Simple extends Style {
    * Este método aplica los estilos a los objetos geográficos.
    *
    * @public
-   * @param {M.Feature} feature Objetos geográficos.
+   * @param {IDEE.Feature} feature Objetos geográficos.
    * @function
    * @api stable
    */
@@ -115,7 +115,7 @@ class Simple extends Style {
    * @function
    * @param {string|number|function} attr Atributo o función.
    * @param {Entity} cesiumFeature Objeto geográfico de Cesium.
-   * @param {M.layer.Vector} layer Capas.
+   * @param {IDEE.layer.Vector} layer Capas.
    * @api stable
    */
   static getValue(attr, cesiumFeature, layer) {
@@ -146,7 +146,7 @@ class Simple extends Style {
    * Este método clona el estilo.
    *
    * @public
-   * @return {M.style.Simple} Devuelve un "new Simple".
+   * @return {IDEE.style.Simple} Devuelve un "new Simple".
    * @function
    * @api
    */

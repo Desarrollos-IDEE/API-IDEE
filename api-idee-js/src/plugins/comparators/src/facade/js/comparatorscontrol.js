@@ -1,5 +1,5 @@
 /**
- * @module M/control/ComparatorsControl
+ * @module IDEE/control/ComparatorsControl
  */
 import ComparatorsImpl from 'impl/comparators';
 import template from '../../templates/comparators';
@@ -12,19 +12,20 @@ import {
   getNameString, checkLayers, transformToStringLayers, formatearID,
 } from './utils';
 
-export default class ComparatorsControl extends M.Control {
+export default class ComparatorsControl extends IDEE.Control {
   /**
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor(isDraggable, order, options) {
-    if (M.utils.isUndefined(ComparatorsImpl) || (M.utils.isObject(ComparatorsImpl)
-      && M.utils.isNullOrEmpty(Object.keys(ComparatorsImpl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(ComparatorsImpl)
+      || (IDEE.utils.isObject(ComparatorsImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(ComparatorsImpl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
 
     const impl = new ComparatorsImpl();
@@ -97,22 +98,22 @@ export default class ComparatorsControl extends M.Control {
 
     this.defaultCompareMode = this.options.defaultCompareMode || false;
 
-    this.mirrorpanelParams = M.utils
+    this.mirrorpanelParams = IDEE.utils
       .isUndefined(this.options.mirrorpanelParams) ? true : this.options.mirrorpanelParams;
     if (typeof this.mirrorpanelParams === 'object') {
       this.mirrorpanelParams.enabledKeyFunctions = this.options.enabledKeyFunctions || false;
     }
 
-    this.lyrcompareParams = M.utils
+    this.lyrcompareParams = IDEE.utils
       .isUndefined(this.options.lyrcompareParams) ? true : this.options.lyrcompareParams;
 
-    this.transparencyParams = M.utils
+    this.transparencyParams = IDEE.utils
       .isUndefined(this.options.transparencyParams) ? true : this.options.transparencyParams;
     if (typeof this.transparencyParams === 'object') {
       this.transparencyParams.enabledKeyFunctions = this.options.enabledKeyFunctions || false;
     }
 
-    this.windowsyncParams = M.utils.isUndefined(this.options.windowsyncParams)
+    this.windowsyncParams = IDEE.utils.isUndefined(this.options.windowsyncParams)
       ? true
       : this.options.windowsyncParams;
 
@@ -126,7 +127,7 @@ export default class ComparatorsControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api
    */
   createView(map) {
@@ -216,7 +217,7 @@ export default class ComparatorsControl extends M.Control {
         transparencyParams_tooltip: this.transparencyParams.tooltip || getValue('tooltipTransparency'),
         windowsyncParams_tooltip: this.windowsyncParams.tooltip || getValue('tooltipWindSync'),
       };
-      this.html = M.template.compileSync(template, {
+      this.html = IDEE.template.compileSync(template, {
         vars: {
           mirrorpanelParams: this.mirrorpanelParams,
           lyrcompareParams: this.lyrcompareParams,
@@ -239,7 +240,7 @@ export default class ComparatorsControl extends M.Control {
       });
 
       if (this.isDraggable_) {
-        M.utils.draggabillyPlugin(this.getPanel(), '#m-comparators-title');
+        IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-comparators-title');
       }
 
       this.accessibilityTab_(this.html);
@@ -255,7 +256,7 @@ export default class ComparatorsControl extends M.Control {
   /**
    * Este método se encarga de gestionar y activar los controles
    * @param {Node} target
-   * @param {M.Control} control
+   * @param {IDEE.Control} control
    * @private
    * @function
    * @api stable
@@ -275,7 +276,7 @@ export default class ComparatorsControl extends M.Control {
         if (c.active) {
           this.html.querySelector(`#${c.buttonsID}`).classList.add('activatedComparators');
           if (c.id === 'lyrcompare' && c.controlParam[1].length < 1) {
-            M.toast.error(getValue('exception.notLayers'), null, 6000);
+            IDEE.toast.error(getValue('exception.notLayers'), null, 6000);
             setTimeout(() => {
               this.map_.addLayers(this.layerDefault);
             }, 500);
@@ -327,7 +328,7 @@ export default class ComparatorsControl extends M.Control {
   // Añadir las capas que se van añadiendo
   addLayersEventsMap_() {
     const enabledControlsPlugins = this.enabledDisplayInLayerSwitcher;
-    [M.evt.ADDED_WMTS, M.evt.ADDED_WMS].forEach((evt) => {
+    [IDEE.evt.ADDED_WMTS, IDEE.evt.ADDED_WMS].forEach((evt) => {
       this.map_.on(evt, (layer) => {
         if (enabledControlsPlugins === true) {
           // mirrror
@@ -478,7 +479,7 @@ export default class ComparatorsControl extends M.Control {
 
   // Eliminar las capas que se fueron añadiendo
   removeLayersEventMap_() {
-    this.map_.on(M.evt.REMOVED_LAYER, (layer) => {
+    this.map_.on(IDEE.evt.REMOVED_LAYER, (layer) => {
       if (!(layer instanceof Array)) { return; }
       layer.forEach((l) => {
         this.layersPlugin.forEach((lp) => {
@@ -524,7 +525,7 @@ export default class ComparatorsControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {

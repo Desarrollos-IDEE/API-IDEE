@@ -1,4 +1,4 @@
-# M.plugin.PredefinedZoom
+# IDEE.plugin.PredefinedZoom
 
 
 Centra el mapa en la/s vista/s indicada/s por parámetro.
@@ -51,17 +51,17 @@ El constructor se inicializa con un JSON de options con los siguientes atributos
 # Ejemplos de uso
 
 ```javascript
-const mp = new M.plugin.PredefinedZoom();
+const mp = new IDEE.plugin.PredefinedZoom();
 
 map.addPlugin(mp);
 ```
 
 ```javascript
-   const map = M.map({
+   const map = IDEE.map({
      container: 'map'
    });
 
-   const mp = new M.plugin.PredefinedZoom({
+   const mp = new IDEE.plugin.PredefinedZoom({
         position: 'TL',
         savedZooms: [{
             name: 'Zoom a la extensión del mapa',

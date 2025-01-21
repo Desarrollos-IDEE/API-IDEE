@@ -1,8 +1,8 @@
 import PrinterMap from 'facade/printermap';
 
-// M.language.setLang('en');
+// IDEE.language.setLang('en');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   zoom: 7,
   maxZoom: 20,
@@ -11,7 +11,7 @@ const map = M.map({
   // layers: ['OSM'],
   // projection: 'EPSG:4326*d',
   layers: [
-    new M.layer.XYZ({
+    new IDEE.layer.XYZ({
       url: 'https://tms-pnoa-ma.ign.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
       name: 'OI.OrthoimageCoverage',
       legend: 'Imagen',
@@ -25,14 +25,14 @@ const map = M.map({
   ],
 });
 
-/* const layerinicial = new M.layer.WMS({
+/* const layerinicial = new IDEE.layer.WMS({
   url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
   name: 'AU.AdministrativeBoundary',
   legend: 'Limite administrativo',
   tiled: false,
 }, {}); */
 
-const campamentos = new M.layer.GeoJSON({
+const campamentos = new IDEE.layer.GeoJSON({
   name: 'Campamentos',
   url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/sepim/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=sepim:campamentos&outputFormat=application/json&',
   extract: true,
@@ -54,7 +54,7 @@ const printermap = new PrinterMap({
   filterTemplates: ['A3 Horizontal'],
 });
 
-/* const mvt = new M.layer.MVT({
+/* const mvt = new IDEE.layer.MVT({
   // url: 'https://hcsigc-geoserver-sigc.desarrollo.guadaltel.es/geoserver/gwc/service/tms/1.0.0/Public:superadmin_capa_20220711_111231@EPSG%3A3857@pbf/{z}/{x}/{-y}.pbf',
   // url: 'https://igo.idee.es/vt/{z}/{x}/{y}.pbf',
   url: 'https://hcsigc.juntadeandalucia.es/geoserver/gwc/service/tms/1.0.0/Public:public_borja_municipios_2021_08_19@EPSG%3A3857@pbf/{z}/{x}/{-y}.pbf',
@@ -70,13 +70,13 @@ map.addLayers(campamentos);
 
 map.addPlugin(printermap);
 
-/* map.addPlugin(new M.plugin.Infocoordinates({
+/* map.addPlugin(new IDEE.plugin.Infocoordinates({
   position: 'TR',
   decimalGEOcoord: 6,
   decimalUTMcoord: 2,
 })); */
 
-map.addPlugin(new M.plugin.IGNSearchLocator({
+map.addPlugin(new IDEE.plugin.IGNSearchLocator({
   servicesToSearch: 'gn',
   searchPosition: 'geocoder,nomenclator',
   maxResults: 10,
@@ -85,11 +85,11 @@ map.addPlugin(new M.plugin.IGNSearchLocator({
   reverse: true,
 }));
 
-map.addPlugin(new M.plugin.Vectors({
+map.addPlugin(new IDEE.plugin.Vectors({
   position: 'TR',
 }));
 
-/* map.addPlugin(new M.plugin.FullTOC({
+/* map.addPlugin(new IDEE.plugin.FullTOC({
   position: 'TR',
 })); */
 

@@ -1,13 +1,13 @@
 /**
- * @module M/impl/layer/MBTiles
+ * @module IDEE/impl/layer/MBTiles
  */
-import { isNullOrEmpty, extend } from 'M/util/Utils';
+import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
 import { get as getProj, transformExtent } from 'ol/proj';
 import OLLayerTile from 'ol/layer/Tile';
 import TileGrid from 'ol/tilegrid/TileGrid';
 import { getBottomLeft, getWidth } from 'ol/extent';
 import { XYZ } from 'ol/source';
-import { getValue } from 'M/i18n/language';
+import { getValue } from 'IDEE/i18n/language';
 import ImplMap from '../Map';
 import Layer from './Layer';
 import TileProvider, { DEFAULT_WHITE_TILE } from '../../../../facade/js/provider/Tile';
@@ -58,7 +58,7 @@ const generateResolutions = (extent, tileSize, maxZoomLevel) => {
  * @property {boolean} visibility Define si la capa es visible o no.
  *
  * @api
- * @extends {M.impl.Layer}
+ * @extends {IDEE.impl.Layer}
  */
 class MBTiles extends Layer {
   /**
@@ -86,7 +86,7 @@ class MBTiles extends Layer {
    * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
    * <pre><code>
    * import OLTileGrid from 'ol/tilegrid/TileGrid';
-   * import MBTilesSource from 'M/source/MBTiles';
+   * import MBTilesSource from 'IDEE/source/MBTiles';
    * {
    *  source: new MBTilesSource({
    *    tileGrid: new OLTileGrid({
@@ -231,7 +231,7 @@ class MBTiles extends Layer {
    *
    * @function
    * @public
-   * @param {M.Map} map Mapa.
+   * @param {IDEE.Map} map Mapa.
    * @api
    */
   addTo(map, addLayer = true) {
@@ -324,7 +324,7 @@ class MBTiles extends Layer {
    * @function
    * @param {ol.Tile} tile Tesela.
    * @param {Object} opts Opciones.
-   * @param {M.provider.Tile} target Proveedor de la tesela.
+   * @param {IDEE.provider.Tile} target Proveedor de la tesela.
    * @public
    * @api
    */
@@ -346,7 +346,7 @@ class MBTiles extends Layer {
    *
    * @function
    * @param {ol.Tile} tile Tesela.
-   * @param {M.provider.Tile} tileProvider Proveedor de la tesela.
+   * @param {IDEE.provider.Tile} tileProvider Proveedor de la tesela.
    * @public
    * @api
    */

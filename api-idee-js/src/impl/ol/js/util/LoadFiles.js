@@ -1,5 +1,5 @@
 /**
- * @module M/impl/loadFiles
+ * @module IDEE/impl/loadFiles
  */
 import KML from 'ol/format/KML';
 import GeoJSON from 'ol/format/GeoJSON';
@@ -28,8 +28,8 @@ class LoadFiles {
  * Centra el mapa en los features obtenidos
  * @public
  * @function
- * @param {Array<M.Feature>} features array de features
- * @param {M.Map} map mapa donde se realizará el centrado
+ * @param {Array<IDEE.Feature>} features array de features
+ * @param {IDEE.Map} map mapa donde se realizará el centrado
  */
   static centerFeatures(features, map) {
     if ((features.length === 1) && (features[0].getGeometry().type === 'Point')) {
@@ -53,7 +53,7 @@ class LoadFiles {
  * @function
  * @param {String} source geojson source
  * @param {String} projection proyección del mapa
- * @returns {Array<M.Feature>} array de features
+ * @returns {Array<IDEE.Feature>} array de features
  */
   static loadGeoJSONLayer(source, projection) {
     let features = new GeoJSON()
@@ -72,7 +72,7 @@ class LoadFiles {
  * @function
  * @param {Array<String>} sources Array de geojson
  * @param {String} projection proyección del mapa
- * @returns {Array<M.Feature>} array de features
+ * @returns {Array<IDEE.Feature>} array de features
  */
   static loadAllInGeoJSONLayer(sources, projection) {
     let features = [];
@@ -92,7 +92,7 @@ class LoadFiles {
  * @api
  * @param {String} source source GPX
  * @param {String} projection proyeccion del mapa
- * @returns {Array<M.Feature>} array de features
+ * @returns {Array<IDEE.Feature>} array de features
  */
   static loadGPXLayer(source, projection) {
     let features = [];
@@ -348,7 +348,7 @@ class LoadFiles {
  * @function
  * @param {String} source source del GML
  * @param {String} projection proyección del mapa
- * @returns {Array<M.Feature>} Features del GML
+ * @returns {Array<IDEE.Feature>} Features del GML
  */
   static loadGMLLayer(source, projection) {
     let newSource = source;
@@ -431,7 +431,7 @@ class LoadFiles {
     * @function
     * @param {String} source source del KML
     * @param {Boolean} extractStyles indica si se extraen los estilos del KML (true/false)
-    * @returns {Array<M.Feature>} array con los features del KML
+    * @returns {Array<IDEE.Feature>} array con los features del KML
   */
   static loadKMLLayer(source, projection, extractStyles) {
     let features = new KML({ extractStyles })
@@ -445,7 +445,7 @@ class LoadFiles {
    * @public
    * @function
    * @param {Array<OL.Feature>} implFeatures
-   * @returns {Array<M.Feature>} features de api-idee
+   * @returns {Array<IDEE.Feature>} features de api-idee
    */
   static featuresToFacade(implFeatures) {
     return implFeatures.map((feature) => {

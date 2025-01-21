@@ -1,5 +1,5 @@
 /**
- * @module M/impl/layer/TMS
+ * @module IDEE/impl/layer/TMS
  */
 import { TileMapServiceImageryProvider } from 'cesium';
 import MXYZ from './XYZ';
@@ -16,7 +16,7 @@ import MXYZ from './XYZ';
  * {z} especifica el nivel de zoom; {x} el número de columna; {y} el número de fila.
  *
  * @api
- * @extends {M.impl.layer.XYZ}
+ * @extends {IDEE.impl.layer.XYZ}
  */
 class TMS extends MXYZ {
   /**
@@ -24,7 +24,7 @@ class TMS extends MXYZ {
    * con parámetros especificados por el usuario.
    *
    * @constructor
-   * @implements {M.impl.layer.Vector}
+   * @implements {IDEE.impl.layer.Vector}
    * @param {string|Mx.parameters.TMS} userParameters Parámetros que se pasarán
    * - attribution: Atribución de la capa.
    * - name: Nombre de la capa.

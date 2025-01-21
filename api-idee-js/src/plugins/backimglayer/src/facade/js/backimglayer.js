@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/BackImgLayer
+ * @module IDEE/plugin/BackImgLayer
  */
 // import '/assets/css/backimglayer';
 import '../assets/css/backimglayer';
@@ -11,14 +11,14 @@ import { getValue } from './i18n/language';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class BackImgLayer extends M.Plugin {
+export default class BackImgLayer extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -27,14 +27,14 @@ export default class BackImgLayer extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -177,7 +177,7 @@ export default class BackImgLayer extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).backimglayer;
+    return IDEE.language.getTranslation(lang).backimglayer;
   }
 
   /**
@@ -185,7 +185,7 @@ export default class BackImgLayer extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
@@ -204,10 +204,10 @@ export default class BackImgLayer extends M.Plugin {
       order: this.order,
     }));
     this.map_ = map;
-    this.panel_ = new M.ui.Panel('BackImgLayer', {
+    this.panel_ = new IDEE.ui.Panel('BackImgLayer', {
       collapsible: this.collapsible,
       collapsed: this.collapsed,
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       className: 'm-plugin-backimglayer',
       tooltip: this.tooltip_,
       collapsedButtonClass: 'backimglyr-simbolo-cuadros',
@@ -244,7 +244,7 @@ export default class BackImgLayer extends M.Plugin {
    * @api
    */
   getAPIRestBase64() {
-    return `${this.name}=base64=${M.utils.encodeBase64(this.options)}`;
+    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   /**
@@ -323,11 +323,11 @@ export default class BackImgLayer extends M.Plugin {
   }
 
   /**
-   * This function compare if pluging recieved by param is instance of M.plugin.BackImgLayer
+   * This function compare if pluging recieved by param is instance of IDEE.plugin.BackImgLayer
    *
    * @public
    * @function
-   * @param {M.plugin} plugin to comapre
+   * @param {IDEE.plugin} plugin to comapre
    * @api stable
    */
   equals(plugin) {
@@ -363,9 +363,9 @@ export default class BackImgLayer extends M.Plugin {
     return {
       title: this.name,
       content: new Promise((success) => {
-        const html = M.template.compileSync(myhelp, {
+        const html = IDEE.template.compileSync(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}plugins/backimglayer/images/`,
+            urlImages: `${IDEE.config.API_IDEE_URL}plugins/backimglayer/images/`,
             translations: {
               help1: getValue('textHelp.help1'),
               help2: getValue('textHelp.help2'),

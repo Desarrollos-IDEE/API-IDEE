@@ -4,20 +4,21 @@ import BufferControlImpl from 'impl/buffercontrolImpl';
 import Picker from './vanilla-picker';
 import { getValue } from './i18n/language';
 
-export default class BufferControl extends M.Control {
+export default class BufferControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a influenceareaControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(editLayer, featuresEdit) {
-    if (M.utils.isUndefined(BufferControlImpl) || (M.utils.isObject(BufferControlImpl)
-      && M.utils.isNullOrEmpty(Object.keys(BufferControlImpl)))) {
-      M.exception(getValue('exception_control'));
+    if (IDEE.utils.isUndefined(BufferControlImpl)
+      || (IDEE.utils.isObject(BufferControlImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(BufferControlImpl)))) {
+      IDEE.exception(getValue('exception_control'));
     }
     const impl = new BufferControlImpl();
     super(impl, 'buffer');
@@ -32,7 +33,7 @@ export default class BufferControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
@@ -40,7 +41,7 @@ export default class BufferControl extends M.Control {
     // eslint-disable-next-line
     console.warn(getValue('exception.buffer_obsolete'));
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           translations: {
             tooltip_point: getValue('tooltip_point'),
@@ -80,7 +81,7 @@ export default class BufferControl extends M.Control {
         originFeature = event.feature;
       });
       draw.on('drawend', (e) => {
-        M.dialog.info(
+        IDEE.dialog.info(
           `<div id="chooseBuffer">
             <div id="colorPick"></div>
             <input type="number" id="metreBuffer" value="50" style="width: 10rem;">
@@ -232,7 +233,7 @@ export default class BufferControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

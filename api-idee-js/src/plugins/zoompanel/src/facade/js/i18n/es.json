@@ -9,5 +9,5 @@
   "nextzoom": "Zoom posterior",
   "rectzoom": "Zoom ventana",
   "zoom_extent": "Zoom a la extensión del mapa",
-  "zoompanel_obsolete": "Mensaje para el desarrollador: M.plugin.ZoomPanel ha quedado obsoleto, utilice en su lugar M.plugin.ViewManagement"
+  "zoompanel_obsolete": "Mensaje para el desarrollador: IDEE.plugin.ZoomPanel ha quedado obsoleto, utilice en su lugar IDEE.plugin.ViewManagement"
 }

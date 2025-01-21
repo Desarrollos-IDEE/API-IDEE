@@ -1,5 +1,5 @@
 /**
- * @module M/control/LyrCompareControl
+ * @module IDEE/control/LyrCompareControl
  */
 
 import LyrcompareImplControl from 'impl/cplyrcomparecontrol';
@@ -18,21 +18,22 @@ Array.prototype.unique = (a) => {
   return c.indexOf(a, b + 1) < 0;
 });
 
-export default class LyrCompareControl extends M.Control {
+export default class LyrCompareControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(values) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(LyrcompareImplControl) || (M.utils.isObject(LyrcompareImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(LyrcompareImplControl)))) {
-      M.exception(getValue('exception'));
+    if (IDEE.utils.isUndefined(LyrcompareImplControl)
+      || (IDEE.utils.isObject(LyrcompareImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(LyrcompareImplControl)))) {
+      IDEE.exception(getValue('exception'));
     }
 
     // 2. implementation of this control
@@ -56,28 +57,28 @@ export default class LyrCompareControl extends M.Control {
     /**
      * Layer selected A
      * @public
-     * @type {M.layer}
+     * @type {IDEE.layer}
      */
     this.layerSelectedA = null;
 
     /**
      * Layer selected B
      * @public
-     * @type {M.layer}
+     * @type {IDEE.layer}
      */
     this.layerSelectedB = null;
 
     /**
      * Layer selected C
      * @public
-     * @type {M.layer}
+     * @type {IDEE.layer}
      */
     this.layerSelectedC = null;
 
     /**
      * Layer selected D
      * @public
-     * @type {M.layer}
+     * @type {IDEE.layer}
      */
     this.layerSelectedD = null;
 
@@ -151,7 +152,7 @@ export default class LyrCompareControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
@@ -164,7 +165,7 @@ export default class LyrCompareControl extends M.Control {
   }
 
   renderPlugin(success) {
-    const emptyLayer = new M.layer.WMS({
+    const emptyLayer = new IDEE.layer.WMS({
       url: 'https://www.ign.es/wms-inspire/ign-base?',
       name: 'empty_layer',
       legend: 'Sin capa',
@@ -192,7 +193,7 @@ export default class LyrCompareControl extends M.Control {
     };
 
     // template with default options
-    this.template = M.template.compileSync(template, options);
+    this.template = IDEE.template.compileSync(template, options);
     this.accessibilityTab(this.template);
     this.template.querySelectorAll('button[id^="m-lyrcompare-"]').forEach((button, i) => {
       button.addEventListener('click', this.assignEventsPlugin.bind(this, i));
@@ -202,7 +203,7 @@ export default class LyrCompareControl extends M.Control {
     });
 
     this.map.addLayers([emptyLayer]);
-    this.map.on(M.evt.ADDED_LAYER, (evt) => {
+    this.map.on(IDEE.evt.ADDED_LAYER, (evt) => {
       if (this.layerSelectedA !== null) {
         const cm = this.comparisonMode;
         this.comparisonMode = 0;
@@ -222,8 +223,8 @@ export default class LyrCompareControl extends M.Control {
       const isTransparent = (layer.transparent === true);
       const displayInLayerSwitcher = (layer.displayInLayerSwitcher === true || (layer.displayInLayerSwitcher === false && layer.name === 'empty_layer'));
       const isRaster = ['wms', 'wmts'].indexOf(layer.type.toLowerCase()) > -1;
-      const isNotWMSFull = !((layer.type === M.layer.type.WMS)
-        && M.utils.isNullOrEmpty(layer.name));
+      const isNotWMSFull = !((layer.type === IDEE.layer.type.WMS)
+        && IDEE.utils.isNullOrEmpty(layer.name));
       return (isTransparent && displayInLayerSwitcher && isRaster && isNotWMSFull);
     }).reverse();
   }
@@ -232,7 +233,7 @@ export default class LyrCompareControl extends M.Control {
     this.layers = this.getAvailableLayers();
     if (this.comparisonMode === 0) {
       if ((i < 2 && this.layers.length < 2) || (i === 2 && this.layers.length < 4)) {
-        M.dialog.error(getValue('no_layers_plugin'));
+        IDEE.dialog.error(getValue('no_layers_plugin'));
       } else {
         this.comparisonMode = i + 1;
         this.activateCurtain();
@@ -241,7 +242,7 @@ export default class LyrCompareControl extends M.Control {
       this.comparisonMode = 0;
       this.deactivateCurtain();
     } else if (i === 2 && this.layers.length < 4) {
-      M.dialog.error(getValue('no_layers_plugin'));
+      IDEE.dialog.error(getValue('no_layers_plugin'));
     } else {
       this.comparisonMode = i + 1;
       this.updateControls();
@@ -313,7 +314,7 @@ export default class LyrCompareControl extends M.Control {
 
         // e2m: de esta forma pasamos los parámetros en forma de array
         if (this.checkLayersAreDifferent(...lstLayers) === false) {
-          M.dialog.info(getValue('advice_sameLayer'));
+          IDEE.dialog.info(getValue('advice_sameLayer'));
           if (item.id === 'm-lyrcompare-lyrA') {
             this.template.querySelector(`#${item.id}`).value = this.layerSelectedA.name;
           } else if (item.id === 'm-lyrcompare-lyrB') {
@@ -435,7 +436,7 @@ export default class LyrCompareControl extends M.Control {
     };
 
     // template with default options
-    const html = M.template.compileSync(templateList, options);
+    const html = IDEE.template.compileSync(templateList, options);
     this.accessibilityTab(html);
     document.querySelector('#m-lyrcompare-list-container').innerHTML = '';
     document.querySelector('#m-lyrcompare-list-container').appendChild(html);
@@ -544,7 +545,7 @@ export default class LyrCompareControl extends M.Control {
     this.layerSelectedC = null;
     this.layerSelectedD = null;
     document.querySelector('#m-lyrcompare-list-container').innerHTML = '';
-    this.map.fire(M.evt.ADDED_LAYER);
+    this.map.fire(IDEE.evt.ADDED_LAYER);
   }
 
   /**
@@ -698,7 +699,7 @@ export default class LyrCompareControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    * @return {Boolean}
    */

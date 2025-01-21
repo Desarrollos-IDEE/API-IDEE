@@ -1,5 +1,5 @@
 /**
- * @module M/control/HelpControl
+ * @module IDEE/control/HelpControl
  */
 
 import HelpImplControl from '../../impl/ol/js/helpcontrol';
@@ -10,19 +10,19 @@ import { getValue } from './i18n/language';
 const SVG_CLOSE = '<svg id="indexLink-top-arrow" fill="currentColor" height="18px" width="18px" viewBox="0 0 24 24" style="display: inline-block; vertical-align: middle;"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg>';
 const SVG_OPEN = '<svg fill="currentColor" height="18px" width="18px" viewBox="0 0 24 24" style="display: inline-block; vertical-align: middle;"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path></svg>';
 
-export default class HelpControl extends M.Control {
+export default class HelpControl extends IDEE.Control {
   /**
    * @classdesc
    * Constructor
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor(options) {
-    if (M.utils.isUndefined(HelpImplControl) || (M.utils.isObject(HelpImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(HelpImplControl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(HelpImplControl) || (IDEE.utils.isObject(HelpImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(HelpImplControl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
     const impl = new HelpImplControl();
     super(impl, 'help');
@@ -31,13 +31,13 @@ export default class HelpControl extends M.Control {
     this.headerImages = options.headerImages;
 
     this.headerTitle = options.headerTitle;
-    if (!M.utils.isString(this.headerTitle)) {
+    if (!IDEE.utils.isString(this.headerTitle)) {
       const optionstTitle = { ...this.headerTitle };
-      this.headerTitle = this.headerTitle[M.language.getLang()];
-      if (M.utils.isUndefined(this.headerTitle)) {
+      this.headerTitle = this.headerTitle[IDEE.language.getLang()];
+      if (IDEE.utils.isUndefined(this.headerTitle)) {
         const es = 'es';
         this.headerTitle = optionstTitle[es];
-        if (M.utils.isUndefined(this.headerTitle)) {
+        if (IDEE.utils.isUndefined(this.headerTitle)) {
           this.headerTitle = optionstTitle[Object.keys(optionstTitle)[0]];
         }
       }
@@ -52,13 +52,13 @@ export default class HelpControl extends M.Control {
     this.extendInitialExtraContents = options.extendInitialExtraContents;
 
     this.initialExtraContents = options.initialExtraContents;
-    if (!M.utils.isArray(this.initialExtraContents)) {
+    if (!IDEE.utils.isArray(this.initialExtraContents)) {
       const optionsInitial = { ...this.initialExtraContents };
-      this.initialExtraContents = this.initialExtraContents[M.language.getLang()];
-      if (M.utils.isUndefined(this.initialExtraContents)) {
+      this.initialExtraContents = this.initialExtraContents[IDEE.language.getLang()];
+      if (IDEE.utils.isUndefined(this.initialExtraContents)) {
         const es = 'es';
         this.initialExtraContents = optionsInitial[es];
-        if (M.utils.isUndefined(this.initialExtraContents)) {
+        if (IDEE.utils.isUndefined(this.initialExtraContents)) {
           this.initialExtraContents = Object.keys(optionsInitial)[0];
         }
       }
@@ -73,13 +73,13 @@ export default class HelpControl extends M.Control {
     }
 
     this.finalExtraContents = options.finalExtraContents;
-    if (!M.utils.isArray(this.finalExtraContents)) {
+    if (!IDEE.utils.isArray(this.finalExtraContents)) {
       const optionsFinal = { ...this.finalExtraContents };
-      this.finalExtraContents = this.finalExtraContents[M.language.getLang()];
-      if (M.utils.isUndefined(this.finalExtraContents)) {
+      this.finalExtraContents = this.finalExtraContents[IDEE.language.getLang()];
+      if (IDEE.utils.isUndefined(this.finalExtraContents)) {
         const es = 'es';
         this.finalExtraContents = optionsFinal[es];
-        if (M.utils.isUndefined(this.finalExtraContents)) {
+        if (IDEE.utils.isUndefined(this.finalExtraContents)) {
           this.finalExtraContents = Object.keys(optionsFinal)[0];
         }
       }
@@ -95,13 +95,13 @@ export default class HelpControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map mapa para añadir el control
+   * @param {IDEE.Map} map mapa para añadir el control
    * @api
    */
   createView(map) {
     this.map = map;
     return new Promise((success) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           translations: {
             tooltip: this.tooltip,
@@ -134,14 +134,14 @@ export default class HelpControl extends M.Control {
     const list = `<ol>${this.generateContent(allContents)}</ol>`;
 
     Promise.all(this.helpsContent).then((resultsHelps) => {
-      const html = M.template.compileSync(helps, {
+      const html = IDEE.template.compileSync(helps, {
         parseToHtml: false,
         vars: {
-          library: `${M.config.API_IDEE_URL}js/print.min.js`,
+          library: `${IDEE.config.API_IDEE_URL}js/print.min.js`,
           headerImages: this.headerImages,
-          downloadPDFimg: `${M.config.API_IDEE_URL}img/file-pdf.svg`,
-          zoom1: `${M.config.API_IDEE_URL}img/magnify_on.svg`,
-          zoom2: `${M.config.API_IDEE_URL}img/magnify_off.svg`,
+          downloadPDFimg: `${IDEE.config.API_IDEE_URL}img/file-pdf.svg`,
+          zoom1: `${IDEE.config.API_IDEE_URL}img/magnify_on.svg`,
+          zoom2: `${IDEE.config.API_IDEE_URL}img/magnify_off.svg`,
           translations: {
             header: getValue('short_title'),
             pdf: getValue('pdf'),
@@ -160,7 +160,7 @@ export default class HelpControl extends M.Control {
       windowHelp.document.close();
       windowHelp.addEventListener('load', () => {
         const listContent = windowHelp.document.querySelector('#m-help-index > div:nth-child(2)');
-        listContent.appendChild(M.utils.stringToHtml(list));
+        listContent.appendChild(IDEE.utils.stringToHtml(list));
 
         const contents = windowHelp.document.querySelector('#m-help-contents');
         resultsHelps.forEach((element, index) => {
@@ -227,7 +227,7 @@ export default class HelpControl extends M.Control {
     const pluginsAndControls = [...plugins, ...controls];
     const result = [];
     pluginsAndControls.forEach((element) => {
-      if (!M.utils.isUndefined(element.getHelp)) {
+      if (!IDEE.utils.isUndefined(element.getHelp)) {
         result.push(element.getHelp());
       }
     });
@@ -249,8 +249,8 @@ export default class HelpControl extends M.Control {
       let subContentHTML = '<ol>';
       subContentsArray.forEach(({ title, content, subContents }) => {
         count += 1;
-        if (M.utils.isString(content)) {
-          this.helpsContent.push(M.utils.stringToHtml(content));
+        if (IDEE.utils.isString(content)) {
+          this.helpsContent.push(IDEE.utils.stringToHtml(content));
         } else {
           this.helpsContent.push(content);
         }
@@ -264,7 +264,7 @@ export default class HelpControl extends M.Control {
     array.forEach(({ title, content, subContents }) => {
       count += 1;
       extraContentHTML += `<li><a class="indexLink" tabindex="${count}" href="#m-help-contents" onclick="showContent('help-element-${count}', event)">${title}</a>`;
-      this.helpsContent.push(M.utils.stringToHtml(content));
+      this.helpsContent.push(IDEE.utils.stringToHtml(content));
 
       if (subContents && subContents.length > 0) {
         extraContentHTML += generateSubContent(subContents);
@@ -281,7 +281,7 @@ export default class HelpControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control control para comparar
+   * @param {IDEE.Control} control control para comparar
    * @api
    */
   equals(control) {

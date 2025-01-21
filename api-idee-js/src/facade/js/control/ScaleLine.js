@@ -1,5 +1,5 @@
 /**
- * @module M/control/ScaleLine
+ * @module IDEE/control/ScaleLine
  */
 import 'assets/css/controls/scale';
 import ScaleLineImpl from 'impl/control/ScaleLine';
@@ -16,7 +16,7 @@ import { getValue } from '../i18n/language';
  * Añadir escala gráfica.
  *
  * @api
- * @extends {M.Control}
+ * @extends {IDEE.Control}
  */
 class ScaleLine extends ControlBase {
   /**
@@ -66,7 +66,7 @@ class ScaleLine extends ControlBase {
    *
    * @public
    * @function
-   * @param {M.Map} map Mapa
+   * @param {IDEE.Map} map Mapa
    * @returns {Promise} Plantilla HTML.
    * @api
    */
@@ -88,7 +88,7 @@ class ScaleLine extends ControlBase {
       content: new Promise((success) => {
         const html = compileTemplate(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}assets/images`,
+            urlImages: `${IDEE.config.API_IDEE_URL}assets/images`,
             translations: {
               help1: textHelp.text1,
               help2: textHelp.text2,

@@ -1,4 +1,4 @@
-# M.plugin.XYLocator
+# IDEE.plugin.XYLocator
 
 
 Plugin que permite localizar las coordenas introducidas por el usuario en un sistema de referencia determinado.
@@ -66,11 +66,11 @@ mp.on('xylocator:locationCentered', (data) => {
 # Ejemplos de uso
 
 ```javascript
-   const map = M.map({
+   const map = IDEE.map({
      container: 'map'
    });
 
-   const mp = new M.plugin.XYLocator({
+   const mp = new IDEE.plugin.XYLocator({
         postition: 'TL',
       });
 
@@ -78,7 +78,7 @@ mp.on('xylocator:locationCentered', (data) => {
 ```
 
 ```javascript
-const mp = new M.plugin.XYLocator({
+const mp = new IDEE.plugin.XYLocator({
   projections: [
     { title: 'WGS84 (4326)', code: 'EPSG:4326', units: 'd' },
     { title: 'ETRS89/UTM zone 31N (25831)', code: 'EPSG:25831', units: 'm' },

@@ -1,8 +1,8 @@
 /**
- * @module M/impl/control/InfoCatastroControl
+ * @module IDEE/impl/control/InfoCatastroControl
  */
 
-export default class InfoCatastroControl extends M.impl.Control {
+export default class InfoCatastroControl extends IDEE.impl.Control {
   /**
    * This function reprojects given coordinates to given projection.
    * @private

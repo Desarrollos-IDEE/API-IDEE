@@ -1,30 +1,31 @@
 /**
- * @module M/layer/BufferLayer
+ * @module IDEE/layer/BufferLayer
  */
 
 import BufferLayerImpl from 'impl/bufferLayerImpl';
 import { getValue } from './i18n/language';
 
-export default class BufferLayer extends M.Layer {
+export default class BufferLayer extends IDEE.Layer {
   /**
    * @classdesc
    * Main constructor of the class. Creates a Draw layer
    * with parameters specified by the user
    *
    * @constructor
-   * @extends {M.Layer}
+   * @extends {IDEE.Layer}
    * @api stable
    */
   constructor(layer) {
     // checks if the implementation can create KML layers
-    if (M.utils.isUndefined(BufferLayerImpl) || (M.utils.isObject(BufferLayerImpl)
-      && M.utils.isNullOrEmpty(Object.keys(BufferLayerImpl)))) {
-      M.exception(getValue('exception_layer'));
+    if (IDEE.utils.isUndefined(BufferLayerImpl)
+      || (IDEE.utils.isObject(BufferLayerImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(BufferLayerImpl)))) {
+      IDEE.exception(getValue('exception_layer'));
     }
 
     const impl = new BufferLayerImpl(layer);
 
-    super({ type: M.layer.type.GeoJSON }, impl);
+    super({ type: IDEE.layer.type.GeoJSON }, impl);
 
     this.layer = layer;
   }

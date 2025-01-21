@@ -1,5 +1,5 @@
 /**
- * @module M/control/FullTOCControl
+ * @module IDEE/control/FullTOCControl
  */
 
 /*
@@ -21,16 +21,17 @@ const CATASTRO = '//ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx';
 const CODSI_CATALOG = 'http://www.idee.es/csw-codsi-idee/srv/spa/q?_content_type=json&bucket=s101&facet.q=type%2Fservice&fast=index&from=*1&serviceType=view&resultType=details&sortBy=title&sortOrder=asc&to=*2';
 const CODSI_PAGESIZE = 9;
 
-export default class FullTOCControl extends M.Control {
+export default class FullTOCControl extends IDEE.Control {
   /**
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor(http, https, precharged, codsi, order) {
-    if (M.utils.isUndefined(FullTOCImplControl) || (M.utils.isObject(FullTOCImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(FullTOCImplControl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(FullTOCImplControl)
+      || (IDEE.utils.isObject(FullTOCImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(FullTOCImplControl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
 
     const impl = new FullTOCImplControl();
@@ -73,7 +74,7 @@ export default class FullTOCControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api
    */
   createView(map) {
@@ -82,7 +83,7 @@ export default class FullTOCControl extends M.Control {
     this.map_ = map;
     return new Promise((success, fail) => {
       this.getTemplateVariables(map).then((templateVars) => {
-        const html = M.template.compileSync(template, {
+        const html = IDEE.template.compileSync(template, {
           vars: templateVars,
         });
 
@@ -116,7 +117,7 @@ export default class FullTOCControl extends M.Control {
 
     if (layers !== undefined && layers.length > 0) {
       layers.forEach((l) => {
-        l.getImpl().on(M.evt.ADDED_TO_MAP, (layer) => {
+        l.getImpl().on(IDEE.evt.ADDED_TO_MAP, (layer) => {
           if (layer.getLayer() != null) {
             this.template_.querySelector('.m-fulltoc-container .m-title .span-title').click();
           }
@@ -134,15 +135,15 @@ export default class FullTOCControl extends M.Control {
    */
   inputLayer(evtParameter) {
     const evt = (evtParameter || window.event);
-    if (!M.utils.isNullOrEmpty(evt.target)) {
+    if (!IDEE.utils.isNullOrEmpty(evt.target)) {
       const layerName = evt.target.getAttribute('data-layer-name');
-      if (!M.utils.isNullOrEmpty(layerName)) {
+      if (!IDEE.utils.isNullOrEmpty(layerName)) {
         evt.stopPropagation();
         const layer = this.map_.getLayers().filter((l) => l.name === layerName)[0];
         if (evt.target.classList.contains('m-check')) {
           if (layer.transparent === true || !layer.isVisible()) {
             const opacity = evt.target.parentElement.parentElement.parentElement.parentElement.querySelector('div.tools > input');
-            if (!M.utils.isNullOrEmpty(opacity)) {
+            if (!IDEE.utils.isNullOrEmpty(opacity)) {
               layer.setOpacity(opacity.value);
             }
             layer.setVisible(!layer.isVisible());
@@ -165,14 +166,14 @@ export default class FullTOCControl extends M.Control {
     const evt = (evtParameter || window.event);
     let scroll;
     let notRender = false;
-    if (!M.utils.isNullOrEmpty(evt.target)) {
+    if (!IDEE.utils.isNullOrEmpty(evt.target)) {
       if (document.querySelector('.m-panel.m-plugin-fulltoc.opened ul.m-layers') !== null) {
         scroll = document.querySelector('.m-panel.m-plugin-fulltoc.opened ul.m-layers').scrollTop;
       }
 
       const layerName = evt.target.getAttribute('data-layer-name');
       const layerURL = evt.target.getAttribute('data-layer-url');
-      if (!M.utils.isNullOrEmpty(layerName) && layerURL !== null) {
+      if (!IDEE.utils.isNullOrEmpty(layerName) && layerURL !== null) {
         evt.stopPropagation();
         const layer = this.map_.getLayers().filter((l) => {
           return l.name === layerName && l.url === layerURL;
@@ -181,7 +182,7 @@ export default class FullTOCControl extends M.Control {
         if (evt.target.classList.contains('m-check')) {
           if (layer.transparent === true || !layer.isVisible()) {
             const opacity = evt.target.parentElement.parentElement.parentElement.querySelector('div.tools > input');
-            if (!M.utils.isNullOrEmpty(opacity)) {
+            if (!IDEE.utils.isNullOrEmpty(opacity)) {
               layer.setOpacity(opacity.value);
             }
             layer.setVisible(!layer.isVisible());
@@ -204,7 +205,7 @@ export default class FullTOCControl extends M.Control {
             const extent = layer.getFeaturesExtent();
             this.map_.setBbox(extent);
           } else {
-            M.dialog.info(getValue('exception.extent'), getValue('info'), this.order);
+            IDEE.dialog.info(getValue('exception.extent'), getValue('info'), this.order);
           }
         } else if (evt.target.classList.contains('m-fulltoc-legend')) {
           const legend = evt.target.parentElement.parentElement.parentElement.querySelector('.m-legend');
@@ -243,7 +244,7 @@ export default class FullTOCControl extends M.Control {
             otherStyles = layer.capabilitiesMetadata.style;
           }
 
-          const config = M.template.compileSync(configTemplate, {
+          const config = IDEE.template.compileSync(configTemplate, {
             jsonp: true,
             parseToHtml: false,
             vars: {
@@ -260,7 +261,7 @@ export default class FullTOCControl extends M.Control {
             },
           });
 
-          M.dialog.info(config, getValue('configure_layer'), this.order);
+          IDEE.dialog.info(config, getValue('configure_layer'), this.order);
           setTimeout(() => {
             const selector = 'div.m-api-idee-container div.m-dialog #m-fulltoc-change-config button';
             document.querySelector(selector).addEventListener('click', this.changeLayerConfig.bind(this, layer, otherStyles));
@@ -277,7 +278,7 @@ export default class FullTOCControl extends M.Control {
             const metadataURL = `${layer.url}${layer.name}?f=json`;
             const htmlURL = `${layer.url}${layer.name}?f=html`;
             let jsonResponseOgc;
-            M.remote.get(metadataURL).then((response) => {
+            IDEE.remote.get(metadataURL).then((response) => {
               jsonResponseOgc = JSON.parse(response.text);
               const vars = {
                 title: jsonResponseOgc.description,
@@ -330,40 +331,40 @@ export default class FullTOCControl extends M.Control {
             };
 
             if (layer.type === 'WMS') {
-              vars.capabilities = M.utils.getWMSGetCapabilitiesUrl(layer.url, layer.version);
+              vars.capabilities = IDEE.utils.getWMSGetCapabilitiesUrl(layer.url, layer.version);
               const murl = layer.capabilitiesMetadata.metadataURL;
-              vars.metadata = !M.utils.isNullOrEmpty(murl) ? murl[0].OnlineResource : '';
-              if (!M.utils.isNullOrEmpty(layer.capabilitiesMetadata.attribution)) {
+              vars.metadata = !IDEE.utils.isNullOrEmpty(murl) ? murl[0].OnlineResource : '';
+              if (!IDEE.utils.isNullOrEmpty(layer.capabilitiesMetadata.attribution)) {
                 vars.provider = `${layer.capabilitiesMetadata.attribution.Title}`;
                 if (layer.capabilitiesMetadata.attribution.OnlineResource !== undefined) {
                   vars.provider += `<p><a class="m-fulltoc-provider-link" href="${layer.capabilitiesMetadata.attribution.OnlineResource}" target="_blank">${layer.capabilitiesMetadata.attribution.OnlineResource}</a></p>`;
                 }
               }
             } else if (layer.type === 'WMTS') {
-              vars.capabilities = M.utils.getWMTSGetCapabilitiesUrl(layer.url);
-              if (!M.utils.isNullOrEmpty(layer.capabilitiesMetadata.attribution)) {
+              vars.capabilities = IDEE.utils.getWMTSGetCapabilitiesUrl(layer.url);
+              if (!IDEE.utils.isNullOrEmpty(layer.capabilitiesMetadata.attribution)) {
                 vars.provider = `${layer.capabilitiesMetadata.attribution.ProviderName}`
                   + `<p><a class="m-fulltoc-provider-link" href="${layer.capabilitiesMetadata.attribution.ProviderSite}" target="_blank">${layer.capabilitiesMetadata.attribution.ProviderSite}</a></p>`;
                 const sc = layer.capabilitiesMetadata.attribution.ServiceContact;
-                if (!M.utils.isNullOrEmpty(sc) && !M.utils.isNullOrEmpty(sc.ContactInfo)) {
+                if (!IDEE.utils.isNullOrEmpty(sc) && !IDEE.utils.isNullOrEmpty(sc.ContactInfo)) {
                   const mail = sc.ContactInfo.Address.ElectronicMailAddress;
                   vars.provider += `<p><a class="m-fulltoc-provider-link" href="mailto:${mail}">${mail}</a></p>`;
                 }
               }
             }
 
-            M.remote.get(vars.capabilities).then((response) => {
+            IDEE.remote.get(vars.capabilities).then((response) => {
               const source = response.text;
               const urlService = source.split('<inspire_common:URL>')[1].split('<')[0].split('&amp;').join('&');
-              if (!M.utils.isNullOrEmpty(urlService) && M.utils.isUrl(urlService)) {
+              if (!IDEE.utils.isNullOrEmpty(urlService) && IDEE.utils.isUrl(urlService)) {
                 vars.metadata_service = urlService;
                 vars.hasMetadata = true;
               }
 
-              if (M.utils.isNullOrEmpty(vars.metadata) || !M.utils.isUrl(vars.metadata)) {
+              if (IDEE.utils.isNullOrEmpty(vars.metadata) || !IDEE.utils.isUrl(vars.metadata)) {
                 delete vars.metadata;
                 if (vars.metadata_service !== undefined) {
-                  M.remote.get(vars.metadata_service).then((response2) => {
+                  IDEE.remote.get(vars.metadata_service).then((response2) => {
                     const metadataText = response2.text;
                     const unfiltered = metadataText.split('<gmd:MD_DigitalTransferOptions>')[1].split('<gmd:URL>').filter((elem) => {
                       return elem.indexOf('centrodedescargas') > -1 && elem.indexOf('atom') === -1;
@@ -383,7 +384,7 @@ export default class FullTOCControl extends M.Control {
                 }
               } else {
                 vars.hasMetadata = true;
-                M.remote.get(vars.metadata).then((response2) => {
+                IDEE.remote.get(vars.metadata).then((response2) => {
                   const metadataText = response2.text;
                   const unfiltered = metadataText.split('<gmd:MD_DigitalTransferOptions>')[1].split('<gmd:URL>').filter((elem) => {
                     return elem.indexOf('centrodedescargas') > -1 && elem.indexOf('atom') === -1;
@@ -409,7 +410,7 @@ export default class FullTOCControl extends M.Control {
         const hasPrecharged = (precharged.groups !== undefined && precharged.groups.length > 0)
           || (precharged.services !== undefined && precharged.services.length > 0);
         const codsiActive = this.codsi;
-        const addServices = M.template.compileSync(addServicesTemplate, {
+        const addServices = IDEE.template.compileSync(addServicesTemplate, {
           jsonp: true,
           parseToHtml: false,
           vars: {
@@ -430,7 +431,7 @@ export default class FullTOCControl extends M.Control {
           },
         });
 
-        M.dialog.info(addServices, getValue('load_ext_services'), this.order);
+        IDEE.dialog.info(addServices, getValue('load_ext_services'), this.order);
         setTimeout(() => {
           if (document.querySelector('#m-fulltoc-addservices-list-btn') !== null) {
             document.querySelector('#m-fulltoc-addservices-list-btn').addEventListener('click', (e) => this.showSuggestions(e));
@@ -520,13 +521,13 @@ export default class FullTOCControl extends M.Control {
   }
 
   renderInfo(vars) {
-    const info = M.template.compileSync(infoTemplate, {
+    const info = IDEE.template.compileSync(infoTemplate, {
       jsonp: true,
       parseToHtml: false,
       vars,
     });
 
-    M.dialog.info(info, getValue('layer_info'), this.order);
+    IDEE.dialog.info(info, getValue('layer_info'), this.order);
     setTimeout(() => {
       document.querySelector('div.m-api-idee-container div.m-dialog div.m-title').style.backgroundColor = '#71a7d3';
       const button = document.querySelector('div.m-dialog.info div.m-button > button');
@@ -581,7 +582,7 @@ export default class FullTOCControl extends M.Control {
       url += `&any=*${encodeURIComponent(query)}*`;
     }
 
-    M.remote.get(url).then((response) => {
+    IDEE.remote.get(url).then((response) => {
       const data = JSON.parse(response.text);
       const total = data.summary['@count'];
       const results = [];
@@ -630,7 +631,7 @@ export default class FullTOCControl extends M.Control {
       this.renderCODSIResults(results);
       this.renderCODSIPagination(pageNumber, total);
     }).catch((err) => {
-      M.dialog.error(getValue('exception.codsi'));
+      IDEE.dialog.error(getValue('exception.codsi'));
     });
   }
 
@@ -708,7 +709,7 @@ export default class FullTOCControl extends M.Control {
     const styleSelected = document.querySelector('#m-fulltoc-change-config #m-fulltoc-style-select').value;
     if (styleSelected !== '') {
       if (layer.type === 'OGCAPIFeatures') {
-        if (!M.utils.isNullOrEmpty(otherStyles)) {
+        if (!IDEE.utils.isNullOrEmpty(otherStyles)) {
           const filtered = otherStyles[styleSelected];
           if (styleSelected === 0) {
             layer.setStyle();
@@ -720,7 +721,7 @@ export default class FullTOCControl extends M.Control {
         layer.getImpl().getLayer().getSource().updateParams({ STYLES: styleSelected });
         document.querySelector('div.m-api-idee-container div.m-dialog').remove();
         const cm = layer.capabilitiesMetadata;
-        if (!M.utils.isNullOrEmpty(cm) && !M.utils.isNullOrEmpty(cm.style)) {
+        if (!IDEE.utils.isNullOrEmpty(cm) && !IDEE.utils.isNullOrEmpty(cm.style)) {
           const filtered = layer.capabilitiesMetadata.style.filter((style) => {
             return style.Name === styleSelected;
           });
@@ -743,13 +744,13 @@ export default class FullTOCControl extends M.Control {
   getTemplateVariables(map) {
     return new Promise((success, fail) => {
       // gets base layers and overlay layers
-      if (!M.utils.isNullOrEmpty(map)) {
+      if (!IDEE.utils.isNullOrEmpty(map)) {
         const overlayLayers = map.getRootLayers().filter((layer) => {
           const isTransparent = (layer.transparent === true);
           const displayInLayerSwitcher = (layer.displayInLayerSwitcher === true);
           const isRaster = ['wms', 'wmts'].indexOf(layer.type.toLowerCase()) > -1;
-          const isNotWMSFull = !((layer.type === M.layer.type.WMS)
-            && M.utils.isNullOrEmpty(layer.name));
+          const isNotWMSFull = !((layer.type === IDEE.layer.type.WMS)
+            && IDEE.utils.isNullOrEmpty(layer.name));
           return ((isTransparent && displayInLayerSwitcher && isRaster && isNotWMSFull) || (layer.type === 'OGCAPIFeatures'));
         }).reverse();
 
@@ -779,7 +780,7 @@ export default class FullTOCControl extends M.Control {
    */
   render(scroll) {
     this.getTemplateVariables(this.map_).then((templateVars) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: templateVars,
       });
       this.accessibilityTab(html);
@@ -827,16 +828,16 @@ export default class FullTOCControl extends M.Control {
       imgElem.addEventListener('error', (evt) => {
         const layerName = evt.target.getAttribute('data-layer-name');
         const layerURL = evt.target.getAttribute('data-layer-url');
-        const legendErrorUrl = M.utils.concatUrlPaths([
-          M.config.THEME_URL,
-          M.layer.WMS.LEGEND_ERROR,
+        const legendErrorUrl = IDEE.utils.concatUrlPaths([
+          IDEE.config.THEME_URL,
+          IDEE.layer.WMS.LEGEND_ERROR,
         ]);
 
         const layer = this.map_.getLayers().filter((l) => {
           return l.name === layerName && l.url === layerURL;
         })[0];
 
-        if (!M.utils.isNullOrEmpty(layer) && layerURL.indexOf('/mirame.chduero.es/') === -1) {
+        if (!IDEE.utils.isNullOrEmpty(layer) && layerURL.indexOf('/mirame.chduero.es/') === -1) {
           layer.setLegendURL(legendErrorUrl);
         }
         /*
@@ -891,7 +892,7 @@ export default class FullTOCControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {
@@ -907,11 +908,11 @@ export default class FullTOCControl extends M.Control {
   parseLayerForTemplate_(layer) {
     let ogcapiFeaturesStyles;
     const layerTitle = layer.legend || layer.name;
-    const hasMetadata = !M.utils.isNullOrEmpty(layer.capabilitiesMetadata)
-      && !M.utils.isNullOrEmpty(layer.capabilitiesMetadata.abstract);
+    const hasMetadata = !IDEE.utils.isNullOrEmpty(layer.capabilitiesMetadata)
+      && !IDEE.utils.isNullOrEmpty(layer.capabilitiesMetadata.abstract);
 
     if (layer.type === 'OGCAPIFeatures') {
-      if (!M.utils.isNullOrEmpty(layer.otherStyles)) {
+      if (!IDEE.utils.isNullOrEmpty(layer.otherStyles)) {
         ogcapiFeaturesStyles = layer.otherStyles.length > 1;
       }
     }
@@ -945,9 +946,9 @@ export default class FullTOCControl extends M.Control {
   }
 
   checkIfApiFeatures(url) {
-    return M.remote.get(`${url}?f=json`).then((response) => {
+    return IDEE.remote.get(`${url}?f=json`).then((response) => {
       let isJson = false;
-      if (!M.utils.isNullOrEmpty(response) && !M.utils.isNullOrEmpty(response.text)) {
+      if (!IDEE.utils.isNullOrEmpty(response) && !IDEE.utils.isNullOrEmpty(response.text)) {
         const responseString = response.text;
         JSON.parse(responseString);
         isJson = true;
@@ -977,8 +978,8 @@ export default class FullTOCControl extends M.Control {
     const url = document.querySelector('div.m-dialog #m-fulltoc-addservices-search-input').value.trim().split('?')[0];
     this.removeContains(evt);
     let type = null;
-    if (!M.utils.isNullOrEmpty(url)) {
-      if (M.utils.isUrl(url)) {
+    if (!IDEE.utils.isNullOrEmpty(url)) {
+      if (IDEE.utils.isUrl(url)) {
         if (this.http && !this.https) {
           const expReg = /^(http:)/;
           HTTPeval = expReg.test(url);
@@ -993,7 +994,7 @@ export default class FullTOCControl extends M.Control {
         if (HTTPeval === true || HTTPSeval === true) {
           const promise = new Promise((success, reject) => {
             const id = setTimeout(() => reject(), 15000);
-            M.remote.get(M.utils.getWMTSGetCapabilitiesUrl(url)).then((response) => {
+            IDEE.remote.get(IDEE.utils.getWMTSGetCapabilitiesUrl(url)).then((response) => {
               clearTimeout(id);
               success(response);
             });
@@ -1007,10 +1008,10 @@ export default class FullTOCControl extends M.Control {
                 type = 'WMS';
               }
               if (type === 'WMTS') {
-                const getCapabilitiesParser = new M.impl.format.WMTSCapabilities();
+                const getCapabilitiesParser = new IDEE.impl.format.WMTSCapabilities();
                 const getCapabilities = getCapabilitiesParser.read(response.xml);
                 this.serviceCapabilities = getCapabilities.capabilities || {};
-                const layers = M.impl.util.wmtscapabilities.getLayers(
+                const layers = IDEE.impl.util.wmtscapabilities.getLayers(
                   getCapabilities.capabilities,
                   url,
                   this.map_.getProjection().code,
@@ -1024,17 +1025,17 @@ export default class FullTOCControl extends M.Control {
                   } else {
                     const promise2 = new Promise((success, reject) => {
                       const id = setTimeout(() => reject(), 15000);
-                      M.remote.get(M.utils.getWMSGetCapabilitiesUrl(url, '1.3.0')).then((response2) => {
+                      IDEE.remote.get(IDEE.utils.getWMSGetCapabilitiesUrl(url, '1.3.0')).then((response2) => {
                         clearTimeout(id);
                         success(response2);
                       });
                     });
                     promise2.then((response2) => {
                       try {
-                        const getCapabilitiesParser = new M.impl.format.WMSCapabilities();
+                        const getCapabilitiesParser = new IDEE.impl.format.WMSCapabilities();
                         const getCapabilities = getCapabilitiesParser.read(response2.xml);
                         this.serviceCapabilities = getCapabilities.Service || {};
-                        const getCapabilitiesUtils = new M.impl.GetCapabilities(
+                        const getCapabilitiesUtils = new IDEE.impl.GetCapabilities(
                           getCapabilities,
                           url,
                           this.map_.getProjection().code,
@@ -1048,19 +1049,19 @@ export default class FullTOCControl extends M.Control {
                         });
                         this.showResults();
                       } catch (error) {
-                        M.dialog.error(getValue('exception.capabilities'));
+                        IDEE.dialog.error(getValue('exception.capabilities'));
                       }
                     }).catch((eerror) => {
-                      M.dialog.error(getValue('exception.capabilities'));
+                      IDEE.dialog.error(getValue('exception.capabilities'));
                     });
                   }
                 });
               }
             } catch (err) {
-              M.dialog.error(getValue('exception.capabilities'));
+              IDEE.dialog.error(getValue('exception.capabilities'));
             }
           }).catch((err) => {
-            M.dialog.error(getValue('exception.capabilities'));
+            IDEE.dialog.error(getValue('exception.capabilities'));
           });
         } else {
           let errorMsg;
@@ -1071,13 +1072,13 @@ export default class FullTOCControl extends M.Control {
           } else if (!this.http && !this.https) {
             errorMsg = getValue('exception.no_http_https');
           }
-          M.dialog.error(errorMsg);
+          IDEE.dialog.error(errorMsg);
         }
       } else {
-        M.dialog.error(getValue('exception.valid_url'));
+        IDEE.dialog.error(getValue('exception.valid_url'));
       }
     } else {
-      M.dialog.error(getValue('exception.empty'));
+      IDEE.dialog.error(getValue('exception.empty'));
     }
   }
 
@@ -1185,9 +1186,9 @@ export default class FullTOCControl extends M.Control {
 
         if (filtered.length > 0) {
           parent = l.Title;
-        } else if (M.utils.isObject(l.Layer.Layer) && l.Layer.Layer.Name === name) {
+        } else if (IDEE.utils.isObject(l.Layer.Layer) && l.Layer.Layer.Name === name) {
           parent = `${l.Title} - ${l.Layer.Layer.Title}`;
-        } else if (M.utils.isArray(l.Layer) && l.Layer.length > 0) {
+        } else if (IDEE.utils.isArray(l.Layer) && l.Layer.length > 0) {
           const innerFiltered = l.Layer.filter((ll) => {
             return ll.Name === name;
           });
@@ -1257,7 +1258,7 @@ export default class FullTOCControl extends M.Control {
         if (sp !== undefined) {
           let contact = `${sp.ProviderName}<p><a class="m-fulltoc-provider-link" href="${sp.ProviderSite}" target="_blank">${sp.ProviderSite}</a></p>`;
           const ci = sp.ServiceContact.ContactInfo;
-          if (!M.utils.isNullOrEmpty(sp.ServiceContact) && !M.utils.isNullOrEmpty(ci)) {
+          if (!IDEE.utils.isNullOrEmpty(sp.ServiceContact) && !IDEE.utils.isNullOrEmpty(ci)) {
             const mail = ci.Address.ElectronicMailAddress;
             contact += `<p><a class="m-fulltoc-provider-link" href="mailto:${mail}">${mail}</a></p>`;
           }
@@ -1285,7 +1286,7 @@ export default class FullTOCControl extends M.Control {
         }
       }
 
-      const html = M.template.compileSync(resultstemplate, {
+      const html = IDEE.template.compileSync(resultstemplate, {
         vars: {
           result,
           serviceCapabilities,
@@ -1304,7 +1305,7 @@ export default class FullTOCControl extends M.Control {
 
       container.innerHTML = html.innerHTML;
       this.accessibilityTab(container);
-      M.utils.enableTouchScroll(container);
+      IDEE.utils.enableTouchScroll(container);
       const results = container.querySelectorAll('span.m-check-fulltoc-addservices');
       for (let i = 0; i < results.length; i += 1) {
         results[i].addEventListener('click', (evt) => this.registerCheck(evt));
@@ -1345,7 +1346,7 @@ export default class FullTOCControl extends M.Control {
    */
   registerCheck(evt) {
     const e = (evt || window.event);
-    if (!M.utils.isNullOrEmpty(e.target) && e.target.classList.contains('m-check-fulltoc-addservices')) {
+    if (!IDEE.utils.isNullOrEmpty(e.target) && e.target.classList.contains('m-check-fulltoc-addservices')) {
       const container = document.querySelector('#m-fulltoc-addservices-results');
       let numNotChecked = container.querySelectorAll('.m-check-fulltoc-addservices.icon-check').length;
       numNotChecked += (e.target.classList.contains('icon-check') ? -1 : 1);
@@ -1361,7 +1362,7 @@ export default class FullTOCControl extends M.Control {
         document.querySelector('#m-fulltoc-addservices-selectall').classList.remove('icon-check');
         document.querySelector('#m-fulltoc-addservices-selectall').classList.add('icon-check-seleccionado');
       }
-    } else if (!M.utils.isNullOrEmpty(e.target) && e.target.id === 'm-fulltoc-addservices-selectall') {
+    } else if (!IDEE.utils.isNullOrEmpty(e.target) && e.target.id === 'm-fulltoc-addservices-selectall') {
       if (this.stateSelectAll) {
         e.target.classList.remove('icon-check-seleccionado');
         e.target.classList.add('icon-check');
@@ -1428,7 +1429,7 @@ export default class FullTOCControl extends M.Control {
     const layers = [];
     const elmSel = document.querySelectorAll('#m-fulltoc-addservices-results .icon-check-seleccionado');
     if (elmSel.length === 0) {
-      M.dialog.error(getValue('exception.select_layer'));
+      IDEE.dialog.error(getValue('exception.select_layer'));
     } else {
       for (let i = 0; i < elmSel.length; i += 1) {
         for (let j = 0; j < this.capabilities.length; j += 1) {
@@ -1530,13 +1531,13 @@ export default class FullTOCControl extends M.Control {
           // }
           break;
         case 'date':
-          if (!M.utils.isNullOrEmpty(inputForm.value)) {
+          if (!IDEE.utils.isNullOrEmpty(inputForm.value)) {
             const date = new Date(inputForm.value);
             formData[attrName] = date.toISOString().split('T')[0];
           }
           break;
         default:
-          if (!M.utils.isNullOrEmpty(inputForm.value)) {
+          if (!IDEE.utils.isNullOrEmpty(inputForm.value)) {
             // formData[attrName] = encodeURIComponent(inputForm.value);
             formData[attrName] = inputForm.value;
           }
@@ -1631,7 +1632,7 @@ export default class FullTOCControl extends M.Control {
 
     btnAddLayer.addEventListener('click', () => {
       if (selectValue === getValue('select_service')) {
-        M.dialog.error(getValue('no_results'));
+        IDEE.dialog.error(getValue('no_results'));
       } else {
         properties = this.getProperties(selectValue, summary);
 
@@ -1644,7 +1645,7 @@ export default class FullTOCControl extends M.Control {
 
     btnCheck.addEventListener('click', () => {
       if (selectValue === getValue('select_service')) {
-        M.dialog.error(getValue('no_results'));
+        IDEE.dialog.error(getValue('no_results'));
       } else {
         properties = this.getProperties(selectValue, summary);
         this.getImpl().getNumberFeaturesOGCAPIFeaturesLayer(properties).then((numberFeatures) => {
@@ -1670,7 +1671,7 @@ export default class FullTOCControl extends M.Control {
       const limit = document.querySelector('#limit-items-input').value;
       const checked = document.querySelector('#search-bbox').checked;
       const urlQueryables = `${urlOGC}/collections/${selectValue}/queryables`;
-      M.remote.get(urlQueryables).then((queryablesResponse) => {
+      IDEE.remote.get(urlQueryables).then((queryablesResponse) => {
         try {
           const res = JSON.parse(queryablesResponse.text);
           const props = res.properties;
@@ -1699,7 +1700,7 @@ export default class FullTOCControl extends M.Control {
         } catch (error) {}
         const urlInput = document.querySelector('#m-fulltoc-addservices-search-input').value;
 
-        const customQueryTemplate = M.template.compileSync(customQueryFiltersTemplate, {
+        const customQueryTemplate = IDEE.template.compileSync(customQueryFiltersTemplate, {
           jsonp: true,
           parseToHtml: false,
           vars: {
@@ -1714,8 +1715,8 @@ export default class FullTOCControl extends M.Control {
           },
         });
         const msg = `${getValue('custom_query_btn')}`;
-        M.dialog.remove(ogcModalTemplate);
-        M.dialog.info(customQueryTemplate, msg);
+        IDEE.dialog.remove(ogcModalTemplate);
+        IDEE.dialog.info(customQueryTemplate, msg);
         const btnApplyFilters = document.createElement('button');
         const btnBack = document.createElement('button');
         setTimeout(() => {
@@ -1767,7 +1768,7 @@ export default class FullTOCControl extends M.Control {
             return capa.id === selectValue;
           });
 
-          if (M.utils.isNullOrEmpty(cDict)) {
+          if (IDEE.utils.isNullOrEmpty(cDict)) {
             this.printOGCModal(url, indexCurrentLayer, limit, checked);
           } else if (Object.keys(cDict).length === 0) {
             this.printOGCModal(url, indexCurrentLayer, limit, checked);
@@ -1800,7 +1801,7 @@ export default class FullTOCControl extends M.Control {
           );
         });
       }).catch((err) => {
-        M.dialog.error(getValue('no_results'));
+        IDEE.dialog.error(getValue('no_results'));
       });
     });
   }
@@ -1864,7 +1865,7 @@ export default class FullTOCControl extends M.Control {
   ) {
     let prevID;
     let urlOGC = url.trim();
-    if (M.utils.isUrl(urlOGC)) {
+    if (IDEE.utils.isUrl(urlOGC)) {
       document.querySelector('#m-fulltoc-addservices-search-input').value = url;
 
       document.querySelector('#m-fulltoc-addservices-search-btn').addEventListener('click', (e) => {
@@ -1873,16 +1874,16 @@ export default class FullTOCControl extends M.Control {
       });
 
       const collections = `${(urlOGC.endsWith('/') ? urlOGC : `${urlOGC}/`)}collections?f=json`;
-      M.remote.get(collections).then((response) => {
+      IDEE.remote.get(collections).then((response) => {
         const resJSON = JSON.parse(response.text);
         const layers = resJSON.collections;
-        if (M.utils.isNullOrEmpty(summary)) {
+        if (IDEE.utils.isNullOrEmpty(summary)) {
           summary = undefined;
           filterByID = undefined;
           filterByOtherFilters = undefined;
         }
 
-        const ogcModal = M.template.compileSync(ogcModalTemplate, {
+        const ogcModal = IDEE.template.compileSync(ogcModalTemplate, {
           jsonp: true,
           parseToHtml: false,
           vars: {
@@ -1935,7 +1936,7 @@ export default class FullTOCControl extends M.Control {
         );
       }).catch((err) => {
         urlOGC = '';
-        M.dialog.error(getValue('exception.error_ogc'));
+        IDEE.dialog.error(getValue('exception.error_ogc'));
       });
     }
   }

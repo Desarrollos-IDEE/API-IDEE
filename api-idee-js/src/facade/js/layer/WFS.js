@@ -1,5 +1,5 @@
 /**
- * @module M/layer/WFS
+ * @module IDEE/layer/WFS
  */
 import WFSImpl from 'impl/layer/WFS';
 import {
@@ -32,7 +32,7 @@ import { getValue } from '../i18n/language';
  * @property {Object} options Opciones de WFS.
  *
  * @api
- * @extends {M.layer.Vector}
+ * @extends {IDEE.layer.Vector}
  */
 class WFS extends Vector {
   /**
@@ -72,7 +72,7 @@ class WFS extends Vector {
    * - clampToGround: Define si el objeto geográfico se debe ajustar al suelo. Si las coordenadas
    *   son 3D, por defecto es falso, en caso contrario es verdadero.
    *   Solo disponible para Cesium.
-   * @param {M.WFSImpl} impl Implementación por defecto.
+   * @param {IDEE.WFSImpl} impl Implementación por defecto.
    * @param {Object} vendorOpts Opciones para la biblioteca base. Ejemplo vendorOptions:
    * <pre><code>
    * import OLSourceVector from 'ol/source/Vector';
@@ -175,7 +175,7 @@ class WFS extends Vector {
    * Devuelve el valor de la propiedad "extract".
    * Activa la consulta haciendo clic en el objeto geográfico, por defecto falso.
    * @function
-   * @return {M.layer.WFS.impl.extract} Devuelve el valor de la propiedad "extract".
+   * @return {IDEE.layer.WFS.impl.extract} Devuelve el valor de la propiedad "extract".
    * @api
    */
   get extract() {
@@ -204,7 +204,7 @@ class WFS extends Vector {
   /**
    * Devuelve el "namespace" de la capa.
    * @function
-   * @return {M.layer.WFS.impl.namespace} Devuelve el "namespace".
+   * @return {IDEE.layer.WFS.impl.namespace} Devuelve el "namespace".
    * @api
    */
   get namespace() {
@@ -224,7 +224,7 @@ class WFS extends Vector {
   /**
    * Devuelve el CQL de la capa.
    * @function
-   * @return {M.layer.WFS.impl.cql}  Devuelve el CQL.
+   * @return {IDEE.layer.WFS.impl.cql}  Devuelve el CQL.
    * @api
    */
   get cql() {
@@ -244,7 +244,7 @@ class WFS extends Vector {
   /**
    * Devuelve la geometría de la capa WFS.
    * @function
-   * @return {M.layer.WFS.impl.geometry} Devuelve la geometría.
+   * @return {IDEE.layer.WFS.impl.geometry} Devuelve la geometría.
    * @api
    */
   get geometry() {
@@ -270,7 +270,7 @@ class WFS extends Vector {
   /**
    * Devuelve los ids de la capa.
    * @function
-   * @return {M.layer.WFS.impl.ids} Devuelve los ids.
+   * @return {IDEE.layer.WFS.impl.ids} Devuelve los ids.
    * @api
    */
   get ids() {
@@ -294,7 +294,7 @@ class WFS extends Vector {
   /**
    * Devuelve la versión de la capa.
    * @function
-   * @return {M.layer.WFS.impl.ids} Devuelve la versión.
+   * @return {IDEE.layer.WFS.impl.ids} Devuelve la versión.
    * @api
    */
   get version() {
@@ -340,11 +340,11 @@ class WFS extends Vector {
    *
    * @function
    * @public
-   * @param {M.Style} styleParam Estilo que se aplicará a la capa.
+   * @param {IDEE.Style} styleParam Estilo que se aplicará a la capa.
    * @param {Boolean} applyToFeature Si el valor es verdadero se aplicará a los objetos geográficos,
    * falso no.
    * Por defecto, falso.
-   * @param {M.layer.WFS.DEFAULT_OPTIONS_STYLE} defaultStyle Estilo por defecto,
+   * @param {IDEE.layer.WFS.DEFAULT_OPTIONS_STYLE} defaultStyle Estilo por defecto,
    * se define en WFS.js.
    * @api
    */

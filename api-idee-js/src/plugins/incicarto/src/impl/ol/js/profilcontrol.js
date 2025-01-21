@@ -277,7 +277,7 @@ class Profil extends ol.control.Control {
     // No Z
     if (!/Z/.test(g.getLayout())) return;
     // No time
-    if (/M/.test(g.getLayout())) this.element.querySelector('.time').parentElement.style.display = 'block';
+    if (/IDEE/.test(g.getLayout())) this.element.querySelector('.time').parentElement.style.display = 'block';
     else this.element.querySelector('.time').parentElement.style.display = 'none';
 
     // Coords

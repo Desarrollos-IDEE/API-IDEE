@@ -1,13 +1,13 @@
 /**
- * @module M/impl/control/ViewShedControl
+ * @module IDEE/impl/control/ViewShedControl
  */
-export default class ViewShedControl extends M.impl.Control {
+export default class ViewShedControl extends IDEE.impl.Control {
   /**
    * This function adds the control to the specified map
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api stable
    */
@@ -37,7 +37,7 @@ export default class ViewShedControl extends M.impl.Control {
       .readFeatures(source, { featureProjection: this.facadeMap_.getProjection().code });
 
     features = this.featuresToFacade(features);
-    const pointFeature = new M.Feature('clickedPoint', {
+    const pointFeature = new IDEE.Feature('clickedPoint', {
       type: 'Feature',
       id: 'clickedPoint',
       geometry: {
@@ -46,11 +46,11 @@ export default class ViewShedControl extends M.impl.Control {
       },
     });
 
-    const layer = new M.layer.Vector({ name: 'viewresult', legend: 'viewresult', extract: false });
+    const layer = new IDEE.layer.Vector({ name: 'viewresult', legend: 'viewresult', extract: false });
     layer.addFeatures(features);
     layer.addFeatures([pointFeature]);
     this.facadeMap_.addLayers(layer);
-    pointFeature.setStyle(new M.style.Point({
+    pointFeature.setStyle(new IDEE.style.Point({
       radius: 7,
       fill: {
         color: 'red',
@@ -62,7 +62,7 @@ export default class ViewShedControl extends M.impl.Control {
     }));
 
     features.forEach((f) => {
-      f.setStyle(new M.style.Polygon({
+      f.setStyle(new IDEE.style.Polygon({
         fill: {
           color: '#71a7d3',
           opacity: 0.5,
@@ -83,11 +83,11 @@ export default class ViewShedControl extends M.impl.Control {
    * @function
    * @api
    * @param {Array<OL.Feature>} implFeatures
-   * @returns {Array<M.Feature>}
+   * @returns {Array<IDEE.Feature>}
    */
   featuresToFacade(implFeatures) {
     return implFeatures.map((feature) => {
-      return M.impl.Feature.feature2Facade(feature);
+      return IDEE.impl.Feature.feature2Facade(feature);
     });
   }
 
@@ -99,7 +99,7 @@ export default class ViewShedControl extends M.impl.Control {
    * @param {*} features -
    */
   centerFeatures(features) {
-    if (!M.utils.isNullOrEmpty(features)) {
+    if (!IDEE.utils.isNullOrEmpty(features)) {
       if ((features.length === 1) && (features[0].getGeometry().type === 'Point')) {
         const pointView = new ol.View({
           center: features[0].getGeometry().coordinates,
@@ -107,7 +107,7 @@ export default class ViewShedControl extends M.impl.Control {
         });
         this.facadeMap_.getMapImpl().setView(pointView);
       } else {
-        const extent = M.impl.utils.getFeaturesExtent(features);
+        const extent = IDEE.impl.utils.getFeaturesExtent(features);
         this.facadeMap_.getMapImpl().getView().fit(extent, {
           duration: 500,
           minResolution: 1,

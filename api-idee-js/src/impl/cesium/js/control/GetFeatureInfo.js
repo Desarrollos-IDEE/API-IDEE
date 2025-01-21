@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/GetFeatureInfo
+ * @module IDEE/impl/control/GetFeatureInfo
  */

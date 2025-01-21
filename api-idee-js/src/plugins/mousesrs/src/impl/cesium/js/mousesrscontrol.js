@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/MouseSRSControl
+ * @module IDEE/impl/control/MouseSRSControl
  */

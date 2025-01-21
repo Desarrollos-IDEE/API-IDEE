@@ -1,6 +1,6 @@
 {
   "exception": {
-    "buffer_obsolete": "Mensaje para el desarrollador: M.plugin.Buffer ha quedado obsoleto, utilice en su lugar M.plugin.VectorsManagement"
+    "buffer_obsolete": "Mensaje para el desarrollador: IDEE.plugin.Buffer ha quedado obsoleto, utilice en su lugar IDEE.plugin.VectorsManagement"
   },
   "tooltip": "Área de influencia",
   "tooltip_point": "Pintar punto",

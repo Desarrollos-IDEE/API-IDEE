@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
 </p>
-<h1 align="center"><strong>API IDEE</strong> <small>🔌 M.plugin.Locator</small></h1>
+<h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.Locator</small></h1>
 
 # Descripción
 
@@ -210,10 +210,10 @@ https://componentes.cnig.es/api-idee?locator=TL*true*true*tooltip*16*pinAzul*tru
 
 ### Ejemplo de uso
 
-Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad M.utils.encodeBase64.
+Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad IDEE.utils.encodeBase64.
 Ejemplo:
 ```javascript
-M.utils.encodeBase64(obj_params);
+IDEE.utils.encodeBase64(obj_params);
 ```
 
 ```
@@ -260,11 +260,11 @@ pluginignsearchlocator.on('ignsearchlocator:entityFound', (extent) => {
 # Ejemplo de uso
 
 ```javascript
-const map = M.map({
+const map = IDEE.map({
   container: 'map'
 });
 
-const mp = new M.plugin.Locator({
+const mp = new IDEE.plugin.Locator({
   position: 'TL',
   collapsible: true,
   collapsed: true,

@@ -3,7 +3,7 @@
     "name": "toc",
     "separator": "*"
   },
-  "constructor": "M.plugin.TOC",
+  "constructor": "IDEE.plugin.TOC",
   "parameters": [{
     "type": "object",
     "properties": [{

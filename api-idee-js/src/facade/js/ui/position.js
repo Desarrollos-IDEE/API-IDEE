@@ -1,5 +1,5 @@
 /**
- * @module M/ui/position
+ * @module IDEE/ui/position
  */
 
 /**

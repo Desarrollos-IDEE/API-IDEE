@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/Buffer
+ * @module IDEE/plugin/Buffer
  */
 
 import 'assets/css/fonts';
@@ -12,14 +12,14 @@ import { getValue } from './i18n/language';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class Buffer extends M.Plugin {
+export default class Buffer extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -29,14 +29,14 @@ export default class Buffer extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -98,7 +98,7 @@ export default class Buffer extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).buffer;
+    return IDEE.language.getTranslation(lang).buffer;
   }
 
   /**
@@ -106,7 +106,7 @@ export default class Buffer extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
@@ -136,12 +136,12 @@ export default class Buffer extends M.Plugin {
 
     this.control_ = new BufferControl(this.featureOverlay, this.featuresEdit);
 
-    this.panelTools_ = new M.ui.Panel('buffer', {
+    this.panelTools_ = new IDEE.ui.Panel('buffer', {
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,
       className: 'm-buffer',
       collapsedButtonClass: 'icon-buffer',
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       tooltip: this.tooltip_,
     });
     this.panelTools_.addControls(this.control_);
@@ -193,7 +193,7 @@ export default class Buffer extends M.Plugin {
    * This functions returns the controls of the plugin.
    *
    * @public
-   * @return {M.Control}
+   * @return {IDEE.Control}
    * @api
    */
   get control() {
@@ -230,7 +230,7 @@ export default class Buffer extends M.Plugin {
    * @api
    */
   getAPIRestBase64() {
-    return `${this.name}=base64=${M.utils.encodeBase64(this.options)}`;
+    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   /**

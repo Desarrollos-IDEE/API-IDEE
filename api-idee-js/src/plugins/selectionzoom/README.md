@@ -1,4 +1,4 @@
-# M.plugin.selectionzoom
+# IDEE.plugin.selectionzoom
 
 Plugin que permite la elección del área geográfica de la capa de fondo. Existen varias vistas predefinidas disponibles.
 
@@ -46,11 +46,11 @@ El constructor se inicializa con un JSON de options con los siguientes atributos
 # Ejemplo de uso
 
 ```javascript
-   const map = M.map({
+   const map = IDEE.map({
      container: 'map'
    });
 
-   const mp = new M.plugin.SelectionZoom({
+   const mp = new IDEE.plugin.SelectionZoom({
     position: 'TL',
     collapsible: true,
     collapsed: true,

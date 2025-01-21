@@ -1,5 +1,5 @@
 /* eslint-disable object-property-newline,no-console,no-underscore-dangle,max-len,camelcase,no-plusplus,no-param-reassign,no-proto,import/newline-after-import */
-import { map as Mmap } from 'M/api-idee';
+import { map as Mmap } from 'IDEE/api-idee';
 // Escoger una de estas capas para probarlas.
 // import { tms_003 } from '../layers/tms/tms'; const capaPrueba = tms_003; window.tms = capaPrueba; // STRING ==> import { tms_002 } from '../layers/tms/tms'; const capaPrueba = tms_002; window.tms = tms_002;
 // import { wms_001, wms_003 } from '../layers/wms/wms'; const capaPrueba = wms_003; window.wms = capaPrueba; // STRING ==> import { wms_002 } from '../layers/wms/wms'; const capaPrueba = wms_002; window.wms = wms_002;

@@ -1,4 +1,4 @@
-# M.plugin.TOC
+# IDEE.plugin.TOC
 
 Muestra un árbol de contenidos con las capas disponibles para mostrar.
 
@@ -50,11 +50,11 @@ El constructor se inicializa con un JSON de options con los siguientes atributos
 # Ejemplos de uso
 
 ```javascript
-   const map = M.map({
+   const map = IDEE.map({
      container: 'map'
    });
 
-   const mp = new M.plugin.TOC({
+   const mp = new IDEE.plugin.TOC({
         postition: 'TL',
       });
 

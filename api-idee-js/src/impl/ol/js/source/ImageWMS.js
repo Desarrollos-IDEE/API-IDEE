@@ -1,5 +1,5 @@
 /**
- * @module M/impl/source/ImageWMS
+ * @module IDEE/impl/source/ImageWMS
  */
 import OLSourceImageWMS from 'ol/source/ImageWMS';
 

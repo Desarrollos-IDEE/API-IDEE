@@ -19,7 +19,7 @@ export class HeatmapBinding extends Binding {
   /**
    * This function sets the layer of a binding class.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   setLayer(layer) {
@@ -61,7 +61,7 @@ export class HeatmapBinding extends Binding {
           });
           this.numberAddedColors_ += 1;
         } else {
-          M.dialog.info(getValue('exception.numberColorAllowed'), getValue('exception.information'));
+          IDEE.dialog.info(getValue('exception.numberColorAllowed'), getValue('exception.information'));
         }
       });
     });
@@ -79,11 +79,11 @@ export class HeatmapBinding extends Binding {
   /**
    * This function generates the heatmap style.
    * @function
-   * @returns {M.style.Heatmap}
+   * @returns {IDEE.style.Heatmap}
    */
   generateStyle() {
     const opts = this.generateOptions();
-    const style = new M.style.Heatmap(opts.attributeName, opts.options);
+    const style = new IDEE.style.Heatmap(opts.attributeName, opts.options);
     return style;
   }
 

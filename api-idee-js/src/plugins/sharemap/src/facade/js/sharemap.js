@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/ShareMap
+ * @module IDEE/plugin/ShareMap
  */
 import '../assets/css/sharemap';
 import ShareMapControl from './sharemapcontrol';
@@ -68,17 +68,17 @@ import en from './i18n/en';
  * ShareMap plugin
  * @classdesc
  */
-export default class ShareMap extends M.Plugin {
+export default class ShareMap extends IDEE.Plugin {
   /**
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {ShareMapOptions} options
    * @api
    */
   constructor({ filterLayers = [], ...options }) {
     super();
 
-    if (M.utils.isNullOrEmpty(options.baseUrl)) {
+    if (IDEE.utils.isNullOrEmpty(options.baseUrl)) {
       // eslint-disable-next-line no-console
       console.warn('options.baseUrl is null or undefined.');
     }
@@ -86,14 +86,14 @@ export default class ShareMap extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -105,7 +105,7 @@ export default class ShareMap extends M.Plugin {
      */
     this.baseUrl_ = options.baseUrl || 'https://componentes.cnig.es//';
 
-    if (!M.utils.isString(this.baseUrl_)) {
+    if (!IDEE.utils.isString(this.baseUrl_)) {
       throw new Error('options.baseUrl is not string type.');
     }
 
@@ -236,7 +236,7 @@ export default class ShareMap extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).sharemap;
+    return IDEE.language.getTranslation(lang).sharemap;
   }
 
   /**
@@ -244,7 +244,7 @@ export default class ShareMap extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api
    */
   addTo(map) {
@@ -271,9 +271,9 @@ export default class ShareMap extends M.Plugin {
 
     this.map_ = map;
 
-    this.panel_ = new M.ui.Panel('ShareMap', {
+    this.panel_ = new IDEE.ui.Panel('ShareMap', {
       collapsible: false,
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       className: 'm-plugin-sharemap',
       tooltip: getValue('tooltipPanel'),
       order: this.order,
@@ -303,7 +303,7 @@ export default class ShareMap extends M.Plugin {
    * This functions returns the controls of the plugin.
    *
    * @public
-   * @return {M.Control}
+   * @return {IDEE.Control}
    * @api
    */
   getControls() {
@@ -335,7 +335,7 @@ export default class ShareMap extends M.Plugin {
    * This function returns the facade map.
    *
    * @public
-   * @return {M.Map}
+   * @return {IDEE.Map}
    * @api
    */
   get map() {
@@ -438,7 +438,7 @@ export default class ShareMap extends M.Plugin {
    * @api
    */
   getAPIRestBase64() {
-    return `${this.name}=base64=${M.utils.encodeBase64(this.options)}`;
+    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   /**
@@ -452,9 +452,9 @@ export default class ShareMap extends M.Plugin {
     return {
       title: this.name,
       content: new Promise((success) => {
-        const html = M.template.compileSync(myhelp, {
+        const html = IDEE.template.compileSync(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}plugins/sharemap/images/`,
+            urlImages: `${IDEE.config.API_IDEE_URL}plugins/sharemap/images/`,
             translations: {
               help1: getValue('textHelp.help1'),
               help2: getValue('textHelp.help2'),

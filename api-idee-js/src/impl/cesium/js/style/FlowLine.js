@@ -1,3 +1,3 @@
 /**
- * @module M/impl/style/FlowLine
+ * @module IDEE/impl/style/FlowLine
  */

@@ -1,4 +1,4 @@
-# M.plugin.Calendar
+# IDEE.plugin.Calendar
 
 Plugin que muestra información sobre la página y manual de uso.
 
@@ -33,12 +33,12 @@ El constructor se inicializa con un JSON de options con los siguientes atributos
 # Ejemplo de uso
 
 ```javascript
-   const map = M.map({
+   const map = IDEE.map({
      container: 'map'
    });
 
 
-const mp = new M.plugin.Calendar({
+const mp = new IDEE.plugin.Calendar({
   position: 'TR',
 });
 

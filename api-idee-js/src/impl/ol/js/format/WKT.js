@@ -1,7 +1,7 @@
 /**
- * @module M/impl/format/WKT
+ * @module IDEE/impl/format/WKT
  */
-import MObject from 'M/Object';
+import MObject from 'IDEE/Object';
 import OLFormatWKT from 'ol/format/WKT';
 import { get } from 'ol/proj';
 import FeatureImpl from '../feature/Feature';
@@ -25,12 +25,12 @@ const getOptsProjection = (options) => {
   * @classdesc
   * Implementación del formateador WKT.
   *
-  * @property {M.impl.format.GeoJSON} gjFormat_ Formato GeoJSON.
+  * @property {IDEE.impl.format.GeoJSON} gjFormat_ Formato GeoJSON.
   * @property {ol.format.WKT} formatter_ Formato de geometría para leer y
   * escribir datos en formato WKT.
   *
   * @api
-  * @extends {M.Object}
+  * @extends {IDEE.Object}
   */
 class WKT extends MObject {
   /**
@@ -45,7 +45,7 @@ class WKT extends MObject {
     super(options);
     /**
       * Formato GeoJSON.
-      * @type {M.impl.format.GeoJSON}
+      * @type {IDEE.impl.format.GeoJSON}
       * @private
       */
     this.gjFormat_ = new GeoJSON();
@@ -83,7 +83,7 @@ class WKT extends MObject {
     * creados por el lector de formato.
     * - extent: Extensión de la tesela en unidades de mapa de la tesela
     * leída
-    * @returns {M.Feature} Objeto geográfico.
+    * @returns {IDEE.Feature} Objeto geográfico.
     * @public
     * @api
     */
@@ -109,7 +109,7 @@ class WKT extends MObject {
     * creados por el lector de formato.
     * - extent: Extensión de la tesela en unidades de mapa de la tesela
     * leída
-    * @returns {Array<M.Feature>} Objetos geográficos.
+    * @returns {Array<IDEE.Feature>} Objetos geográficos.
     * @public
     * @api
     */
@@ -128,7 +128,7 @@ class WKT extends MObject {
     * Este método escribe un objeto geográfico en formato WKT.
     *
     * @function
-    * @param {M.Feature} feature Objeto geográfico.
+    * @param {IDEE.Feature} feature Objeto geográfico.
     * @param {Object} options Opciones.
     * - dataProjection: Proyección de los datos a escribir.
     * - featureProjection: Proyección de las geometrías del objeto geográfico
@@ -170,7 +170,7 @@ class WKT extends MObject {
     * Este método escribe los objetos geográficos en formato WKT.
     *
     * @function
-    * @param {Array<M.Feature>} feature Objetos geográficos.
+    * @param {Array<IDEE.Feature>} feature Objetos geográficos.
     * @param {Object} options Opciones.
     * - dataProjection: Proyección de los datos a escribir.
     * - featureProjection: Proyección de las geometrías del objeto geográfico

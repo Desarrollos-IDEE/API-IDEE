@@ -3,7 +3,7 @@
     "name": "mousesrs",
     "separator": "*"
   },
-  "constructor": "M.plugin.MouseSRS",
+  "constructor": "IDEE.plugin.MouseSRS",
   "parameters": [{
     "type": "object",
     "properties": [{

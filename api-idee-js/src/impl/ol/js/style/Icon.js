@@ -1,5 +1,5 @@
 /**
- * @module M/impl/style/Icon
+ * @module IDEE/impl/style/Icon
  */
 import OLStyleIcon from 'ol/style/Icon';
 /**

@@ -3,7 +3,7 @@
     "name": "rescale",
     "separator": "*"
   },
-  "constructor": "M.plugin.Rescale",
+  "constructor": "IDEE.plugin.Rescale",
   "parameters": [{
     "type": "object",
     "properties": [{

@@ -1,3 +1,3 @@
 /**
- * @module M/impl/style/Heatmap
+ * @module IDEE/impl/style/Heatmap
  */

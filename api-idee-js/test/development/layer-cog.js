@@ -1,6 +1,6 @@
-import { map as Mmap } from 'M/api-idee';
-import WMS from 'M/layer/WMS';
-import GeoTIFF from 'M/layer/GeoTIFF';
+import { map as Mmap } from 'IDEE/api-idee';
+import WMS from 'IDEE/layer/WMS';
+import GeoTIFF from 'IDEE/layer/GeoTIFF';
 
 const mapjs = Mmap({
   container: 'map',

@@ -53,14 +53,14 @@
    %>
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
-        M.language.setLang(urlParams.get('language') || 'es');
+        IDEE.language.setLang(urlParams.get('language') || 'es');
 
-        let map = M.map({
+        let map = IDEE.map({
             container: 'mapjs',
             getfeatureinfo: 'plain',
         });
 
-        const mvt = new M.layer.MVT({
+        const mvt = new IDEE.layer.MVT({
             url: 'https://igo.idee.es/vt/{z}/{x}/{y}.pbf',
             name: 'vectortile',
             projection: 'EPSG:3857',

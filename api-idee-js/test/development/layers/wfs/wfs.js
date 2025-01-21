@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
-import WFS from 'M/layer/WFS';
-import Generic from 'M/style/Generic';// eslint-disable-line no-unused-vars
+import WFS from 'IDEE/layer/WFS';
+import Generic from 'IDEE/style/Generic';// eslint-disable-line no-unused-vars
 import OLSourceVector from 'ol/source/Vector';
 import OLFormatGeoJSON from 'ol/format/GeoJSON';
 

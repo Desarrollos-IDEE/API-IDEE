@@ -1,5 +1,5 @@
 /**
- * @module M/impl/style/Generic
+ * @module IDEE/impl/style/Generic
  */
 import {
   isFunction,
@@ -7,7 +7,7 @@ import {
   isDynamic,
   drawDynamicStyle,
   isNullOrEmpty,
-} from 'M/util/Utils';
+} from 'IDEE/util/Utils';
 import {
   BillboardGraphics,
   Color,

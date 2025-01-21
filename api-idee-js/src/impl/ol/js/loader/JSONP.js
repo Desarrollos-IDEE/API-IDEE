@@ -1,32 +1,32 @@
 /**
- * @module M/impl/loader/JSONP
+ * @module IDEE/impl/loader/JSONP
  */
-import MObject from 'M/Object';
-import { get as getRemote } from 'M/util/Remote';
-import Exception from 'M/exception/exception';
-import { isNullOrEmpty } from 'M/util/Utils';
-import { getValue } from 'M/i18n/language';
+import MObject from 'IDEE/Object';
+import { get as getRemote } from 'IDEE/util/Remote';
+import Exception from 'IDEE/exception/exception';
+import { isNullOrEmpty } from 'IDEE/util/Utils';
+import { getValue } from 'IDEE/i18n/language';
 
 /**
   * @classdesc
   * JSONP es un JSON con relleno, que se utiliza en JavaScript
   * para solicitar los datos desde la etiqueta "script".
   *
-  * @property {M.Map} map_ Mapa.
-  * @property {M.impl.service.WFS} url_ URL del servicio WFS.
-  * @property {M.format.GeoJSON} format_ Formato.
+  * @property {IDEE.Map} map_ Mapa.
+  * @property {IDEE.impl.service.WFS} url_ URL del servicio WFS.
+  * @property {IDEE.format.GeoJSON} format_ Formato.
   *
   * @api
-  * @extends {M.Object}
+  * @extends {IDEE.Object}
   */
 class JSONP extends MObject {
   /**
     * Constructor principal de la clase JSONP.
     *
     * @constructor
-    * @param {M.Map} map Mapa
-    * @param {M.impl.service.WFS} url URL del servicio WFS.
-    * @param {M.format.GeoJSON} format Formato.
+    * @param {IDEE.Map} map Mapa
+    * @param {IDEE.impl.service.WFS} url URL del servicio WFS.
+    * @param {IDEE.format.GeoJSON} format Formato.
     * @api
     */
   constructor(map, url, format) {
@@ -35,21 +35,21 @@ class JSONP extends MObject {
     /**
       * Mapa.
       * @private
-      * @type {M.Map}
+      * @type {IDEE.Map}
       */
     this.map_ = map;
 
     /**
       * URL del servicio WFS.
       * @private
-      * @type {M.impl.service.WFS}
+      * @type {IDEE.impl.service.WFS}
       */
     this.url_ = url;
 
     /**
       * Formato.
       * @private
-      * @type {M.format.GeoJSON}
+      * @type {IDEE.format.GeoJSON}
       */
     this.format_ = format;
   }

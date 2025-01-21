@@ -1,25 +1,25 @@
 /**
- * @module M/control/StyleControl
+ * @module IDEE/control/StyleControl
  */
 import StyleImplControl from 'impl/stylecontrol';
 import template from '../../templates/style';
 import { getValue } from './i18n/language';
 
-export default class StyleControl extends M.Control {
+export default class StyleControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(map, managementControl) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(StyleImplControl) || (M.utils.isObject(StyleImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(StyleImplControl)))) {
-      M.exception(getValue('exception.impl_stylecontrol'));
+    if (IDEE.utils.isUndefined(StyleImplControl) || (IDEE.utils.isObject(StyleImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(StyleImplControl)))) {
+      IDEE.exception(getValue('exception.impl_stylecontrol'));
     }
 
     // 2. implementation of this control
@@ -56,7 +56,7 @@ export default class StyleControl extends M.Control {
    * @api
    */
   active(html) {
-    this.template = M.template.compileSync(template, {
+    this.template = IDEE.template.compileSync(template, {
       vars: {
         translations: {
           styleColor: getValue('styleColor'),
@@ -178,7 +178,7 @@ export default class StyleControl extends M.Control {
         this.showLayerStyle();
       }
     } else {
-      M.dialog.info(getValue('exception.featuresel'));
+      IDEE.dialog.info(getValue('exception.featuresel'));
     }
   }
 
@@ -317,7 +317,7 @@ export default class StyleControl extends M.Control {
     };
     const selection = this.managementControl_.getSelection();
     if (selection === 'layer') {
-      this.layer_.setStyle(new M.style.Generic(options));
+      this.layer_.setStyle(new IDEE.style.Generic(options));
     } else if (selection === 'feature') {
       const features = this.managementControl_.getSelectedFeatures();
       features.forEach((f) => {
@@ -326,15 +326,15 @@ export default class StyleControl extends M.Control {
         switch (geometryType) {
           case 'Point':
           case 'MultiPoint':
-            style = new M.style.Point(options.point);
+            style = new IDEE.style.Point(options.point);
             break;
           case 'LineString':
           case 'MultiLineString':
-            style = new M.style.Line(options.line);
+            style = new IDEE.style.Line(options.line);
             break;
           case 'Polygon':
           case 'MultiPolygon':
-            style = new M.style.Polygon(options.polygon);
+            style = new IDEE.style.Polygon(options.polygon);
             break;
           default:
             break;
@@ -421,7 +421,7 @@ export default class StyleControl extends M.Control {
    * @public
    * @function
    * @api
-   * @param {M.layer} layer
+   * @param {IDEE.layer} layer
    */
   setLayer(layer) {
     this.layer_ = layer;
@@ -464,7 +464,7 @@ export default class StyleControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

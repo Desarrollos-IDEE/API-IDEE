@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/PrintViewManagementControl
+ * @module IDEE/impl/control/PrintViewManagementControl
  */

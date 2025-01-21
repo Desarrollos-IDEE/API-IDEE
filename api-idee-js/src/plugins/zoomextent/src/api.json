@@ -3,7 +3,7 @@
     "name": "zoomextent",
     "separator": "*"
   },
-  "constructor": "M.plugin.ZoomExtent",
+  "constructor": "IDEE.plugin.ZoomExtent",
   "parameters": [{
     "type": "object",
     "properties": [{

@@ -1,8 +1,8 @@
 import TOC from 'facade/toc';
 
-M.language.setLang('es');
+IDEE.language.setLang('es');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   layers: ['TMS*TMSBaseIGN*https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/{z}/{x}/{-y}.jpeg*true*false'],
 });
@@ -14,15 +14,15 @@ const mp = new TOC({
 });
 
 map.addPlugin(mp);
-map.addPlugin(new M.plugin.Attributions({ mode: 1, scale: 10000 }));
+map.addPlugin(new IDEE.plugin.Attributions({ mode: 1, scale: 10000 }));
 
-const layerUA = new M.layer.WMS({
+const layerUA = new IDEE.layer.WMS({
   url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
   name: 'AU.AdministrativeUnit',
   legend: 'Unidad administrativa',
   tiled: false,
 }, {});
-const layerinicial = new M.layer.WMS({
+const layerinicial = new IDEE.layer.WMS({
   url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
   name: 'AU.AdministrativeBoundary',
   legend: 'Limite administrativo',
@@ -31,7 +31,7 @@ const layerinicial = new M.layer.WMS({
   visibility: false,
 });
 
-// const ocupacionSuelo = new M.layer.WMTS({
+// const ocupacionSuelo = new IDEE.layer.WMTS({
 //   url: 'http://wmts-mapa-lidar.idee.es/lidar',
 //   name: 'EL.GridCoverageDSM',
 //   legend: 'Modelo Digital de Superficies LiDAR',
@@ -43,14 +43,14 @@ const layerinicial = new M.layer.WMS({
 //map.addLayers(layerinicial);
 // map.addLayers(ocupacionSuelo);
 
-const capaMVT = new M.layer.MVT({
+const capaMVT = new IDEE.layer.MVT({
   url: 'https://a.api.tomtom.com/traffic/map/4/tile/flow/relative/{z}/{x}/{y}.pbf?key=sATA9OwG11zrMKQcCxR3eSEjj2n8Jsrg&1637324528580',
   legend: 'MVT',
   name: 'MVTLayer',
   visibility: true,
 });
 
-const estilo = new M.style.Line({
+const estilo = new IDEE.style.Line({
   fill: {
     color: 'yellow',
     width: 1,

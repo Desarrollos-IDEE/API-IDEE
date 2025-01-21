@@ -1,7 +1,7 @@
 /**
- * @module M/impl/View
+ * @module IDEE/impl/View
  */
-import { isNullOrEmpty } from 'M/util/Utils';
+import { isNullOrEmpty } from 'IDEE/util/Utils';
 import OLView from 'ol/View';
 
 /**

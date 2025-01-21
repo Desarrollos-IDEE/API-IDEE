@@ -13,7 +13,7 @@ module.exports = {
     browser
       .url(URL)
       .pause(3000).execute(`
-        var campamentos = new M.layer.WFS({
+        var campamentos = new IDEE.layer.WFS({
           name: "Campamentos",
           url: "http://geostematicos-sigc.juntadeandalucia.es/geoserver/wfs",
           namespace: "sepim",
@@ -22,12 +22,12 @@ module.exports = {
           extract: true
         });
         mapjs.addLayers(campamentos);
-        let reserva_st = new M.style.Polygon({
+        let reserva_st = new IDEE.style.Polygon({
           fill: {
             color: 'rgb(223, 115, 255)'
           }
         });
-        var reservas = new M.layer.WFS({
+        var reservas = new IDEE.layer.WFS({
           name: "reservas_biosfera",
           namespace: "reservas_biosfera",
           legend: "Reservas biosferas",
@@ -39,7 +39,7 @@ module.exports = {
           describeFeatureTypeOutputFormat: 'geojson'
         });
         reservas.setStyle(reserva_st);
-        reservas.on(M.evt.LOAD, () => {
+        reservas.on(IDEE.evt.LOAD, () => {
           const divElem = document.createElement('div');
           divElem.id = 'reservasLoaded';
           divElem.style.display = 'none';
@@ -47,8 +47,8 @@ module.exports = {
         });
         mapjs.addLayers(reservas);
         mapjs.getFeatureHandler().removeLayer(reservas);
-        campamentos.on(M.evt.SELECT_FEATURES, function(features, evt) {
-          if (features[0] instanceof M.ClusteredFeature) {
+        campamentos.on(IDEE.evt.SELECT_FEATURES, function(features, evt) {
+          if (features[0] instanceof IDEE.ClusteredFeature) {
             console.log('Es un cluster:', features[0].getAttribute('features'));
           } else {
             console.log('NO es un cluster:', features);
@@ -56,25 +56,25 @@ module.exports = {
         });
 
         //Estilos para categorización
-        let primera = new M.style.Point({
+        let primera = new IDEE.style.Point({
           icon: {
             src: 'https://image.flaticon.com/icons/svg/34/34697.svg',
             scale: 0.1
           },
         });
-        let segunda = new M.style.Point({
+        let segunda = new IDEE.style.Point({
           icon: {
             src: 'https://image.flaticon.com/icons/svg/34/34651.svg',
             scale: 0.1
           },
         });
-        let tercera = new M.style.Point({
+        let tercera = new IDEE.style.Point({
           icon: {
             src: 'https://image.flaticon.com/icons/svg/34/34654.svg',
             scale: 0.1
           },
         });
-        let categoryStyle = new M.style.Category("categoria", {
+        let categoryStyle = new IDEE.style.Category("categoria", {
           "Primera": primera,
           "Segunda": segunda,
           "Tercera": tercera
@@ -85,7 +85,7 @@ module.exports = {
           ranges: [{
             min: 2,
             max: 4,
-            style: new M.style.Point({
+            style: new IDEE.style.Point({
               stroke: {
                 color: '#5789aa'
               },
@@ -97,7 +97,7 @@ module.exports = {
           }, {
             min: 5,
             max: 9,
-            style: new M.style.Point({
+            style: new IDEE.style.Point({
               stroke: {
                 color: '#5789aa'
               },
@@ -109,7 +109,7 @@ module.exports = {
           }, {
             min: 10,
             max: 15,
-            style: new M.style.Point({
+            style: new IDEE.style.Point({
               stroke: {
                 color: '#5789aa'
               },
@@ -138,7 +138,7 @@ module.exports = {
             }
           }
         }
-        let clusterStyle = new M.style.Cluster(clusterOptions, vendorParameters);
+        let clusterStyle = new IDEE.style.Cluster(clusterOptions, vendorParameters);
         campamentos.setStyle(clusterStyle);
     `, []);
   },

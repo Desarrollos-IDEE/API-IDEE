@@ -291,9 +291,9 @@
                         <% } %>
                             <script type="text/javascript">
                                 const urlParams = new URLSearchParams(window.location.search);
-                                M.language.setLang(urlParams.get('language') || 'es');
+                                IDEE.language.setLang(urlParams.get('language') || 'es');
 
-                                const map = M.map({
+                                const map = IDEE.map({
                                     container: 'mapjs',
                                     center: [-467062.8225, 4683459.6216],
                                     zoom: 6,
@@ -503,7 +503,7 @@
                                 }
 
                                 function crearPlugin(propiedades) {
-                                    mp = new M.plugin.Comparators(propiedades);
+                                    mp = new IDEE.plugin.Comparators(propiedades);
                                     map.addPlugin(mp);
                                 }
 
@@ -514,7 +514,7 @@
 
 
                                 /* ShareMap */
-                                mp2 = new M.plugin.ShareMap({
+                                mp2 = new IDEE.plugin.ShareMap({
                                     baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
                                     position: "TR",
                                 });

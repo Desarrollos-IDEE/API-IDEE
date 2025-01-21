@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/CalendarControl
+ * @module IDEE/impl/control/CalendarControl
  */

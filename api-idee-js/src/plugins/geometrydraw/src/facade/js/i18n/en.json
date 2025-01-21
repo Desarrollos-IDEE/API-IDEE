@@ -10,7 +10,7 @@
     "insertado": "A permitted file extension has not been inserted. The allowed ones are: KML, SHP (.zip), GPX and GeoJSON.",
     "maxfichero": "The selected file exceeds the maximum of 20 MB allowed",
     "ficherosel": "Download format has not been selected.",
-    "obsolete": "Developer message: M.plugin.GeometryDraw has been deprecated, use the M.plugin.VectorsManagement instead"
+    "obsolete": "Developer message: IDEE.plugin.GeometryDraw has been deprecated, use the IDEE.plugin.VectorsManagement instead"
   },
   "tooltip": "Geometry drawing",
   "punto": "Point",

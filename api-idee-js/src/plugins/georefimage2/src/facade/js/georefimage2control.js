@@ -1,5 +1,5 @@
 /**
- * @module M/control/Georefimage2Control
+ * @module IDEE/control/Georefimage2Control
  */
 
 import JsZip from 'jszip';
@@ -10,28 +10,29 @@ import { getValue } from './i18n/language';
 
 const TIMEOUT = 90;
 
-export default class Georefimage2Control extends M.Control {
+export default class Georefimage2Control extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class.
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(serverUrl, printTemplateUrl, printStatusUrl, order) {
-    if (M.utils.isUndefined(Georefimage2ControlImpl) || (M.utils.isObject(Georefimage2ControlImpl)
-      && M.utils.isNullOrEmpty(Object.keys(Georefimage2ControlImpl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(Georefimage2ControlImpl)
+      || (IDEE.utils.isObject(Georefimage2ControlImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(Georefimage2ControlImpl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
     const impl = new Georefimage2ControlImpl();
     super(impl, 'georefimage2control');
-    if (M.utils.isUndefined(Georefimage2ControlImpl)) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(Georefimage2ControlImpl)) {
+      IDEE.exception(getValue('exception.impl'));
     }
 
-    if (M.utils.isUndefined(Georefimage2ControlImpl.prototype.encodeLayer)) {
-      M.exception(getValue('exception.encode_method'));
+    if (IDEE.utils.isUndefined(Georefimage2ControlImpl.prototype.encodeLayer)) {
+      IDEE.exception(getValue('exception.encode_method'));
     }
 
     /**
@@ -118,7 +119,7 @@ export default class Georefimage2Control extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stabletrue
    */
   createView(map) {
@@ -126,7 +127,7 @@ export default class Georefimage2Control extends M.Control {
     console.warn(getValue('exception.georefimage2_obsolete'));
     this.map_ = map;
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(georefimage2HTML, {
+      const html = IDEE.template.compileSync(georefimage2HTML, {
         jsonp: true,
         vars: {
           translations: {
@@ -150,7 +151,7 @@ export default class Georefimage2Control extends M.Control {
 
   openModalPrint() {
     const content = `<div tabindex="0">${getValue('download_modal')}</div>`;
-    M.dialog.info(content, getValue('use_license'));
+    IDEE.dialog.info(content, getValue('use_license'));
     setTimeout(() => {
       document.querySelector('div.m-dialog.info > div.m-modal > div.m-content').style.maxWidth = '300px';
       document.querySelector('div.m-api-idee-container div.m-dialog div.m-title').style.backgroundColor = '#71a7d3';
@@ -201,14 +202,14 @@ export default class Georefimage2Control extends M.Control {
 
     if (printOption === 'screen') {
       this.getPrintData().then((printData) => {
-        let printUrl = M.utils.concatUrlPaths([this.printTemplateUrl_, `report.${printData.outputFormat}`]);
-        printUrl = M.utils.addParameters(printUrl, 'apiIdeeop=geoprint');
-        M.proxy(false);
-        M.remote.post(printUrl, printData).then((responseParam) => {
+        let printUrl = IDEE.utils.concatUrlPaths([this.printTemplateUrl_, `report.${printData.outputFormat}`]);
+        printUrl = IDEE.utils.addParameters(printUrl, 'apiIdeeop=geoprint');
+        IDEE.proxy(false);
+        IDEE.remote.post(printUrl, printData).then((responseParam) => {
           let response = responseParam;
           const responseStatusURL = JSON.parse(response.text);
           const ref = responseStatusURL.ref;
-          const statusURL = M.utils.concatUrlPaths([this.printStatusUrl_, `${ref}.json`]);
+          const statusURL = IDEE.utils.concatUrlPaths([this.printStatusUrl_, `${ref}.json`]);
           this.getStatus(statusURL, this.downloadPrint.bind(
             this,
             null,
@@ -220,17 +221,17 @@ export default class Georefimage2Control extends M.Control {
             response = JSON.parse(response.text);
             if (this.serverUrl_.endsWith('/geoprint')) {
               const url = this.serverUrl_.substring(0, this.serverUrl_.lastIndexOf('/geoprint'));
-              downloadUrl = M.utils.concatUrlPaths([url, response.downloadURL]);
+              downloadUrl = IDEE.utils.concatUrlPaths([url, response.downloadURL]);
             } else {
-              downloadUrl = M.utils.concatUrlPaths([this.serverUrl_, response.downloadURL]);
+              downloadUrl = IDEE.utils.concatUrlPaths([this.serverUrl_, response.downloadURL]);
             }
             this.documentRead_.src = downloadUrl;
           } catch (err) {
-            M.exception(err);
+            IDEE.exception(err);
           }
         });
 
-        M.proxy(true);
+        IDEE.proxy(true);
       });
     } else {
       const projection = this.getUTMZoneProjection();
@@ -268,12 +269,12 @@ export default class Georefimage2Control extends M.Control {
    * @param {Function} callback - function that removes loading icon class.
    */
   getStatus(url, callback) {
-    M.proxy(false);
+    IDEE.proxy(false);
     const newUrl = `${url}?timestamp=${new Date().getTime()}`;
     const time = new Date().getTime();
     if (time - (TIMEOUT * 1000) <= this.time) {
-      M.remote.get(newUrl).then((response) => {
-        M.proxy(true);
+      IDEE.remote.get(newUrl).then((response) => {
+        IDEE.proxy(true);
         const statusJson = JSON.parse(response.text);
         const { status } = statusJson;
         if (status === 'finished') {
@@ -281,19 +282,19 @@ export default class Georefimage2Control extends M.Control {
         } else if (status === 'error' || status === 'cancelled') {
           callback();
           if (statusJson.error.toLowerCase().indexOf('network is unreachable') > -1 || statusJson.error.toLowerCase().indexOf('illegalargument') > -1) {
-            M.dialog.error(getValue('exception.teselaError'), 'Error');
+            IDEE.dialog.error(getValue('exception.teselaError'), 'Error');
           } else {
-            M.dialog.error(getValue('exception.printError'), 'Error');
+            IDEE.dialog.error(getValue('exception.printError'), 'Error');
           }
         } else {
           setTimeout(() => this.getStatus(url, callback), 1000);
         }
       }).catch((err) => {
-        M.proxy(true);
+        IDEE.proxy(true);
       });
     } else {
       document.querySelector('div.m-api-idee-container div.m-dialog').remove();
-      M.dialog.error(getValue('exception.imageError'));
+      IDEE.dialog.error(getValue('exception.imageError'));
     }
   }
 
@@ -309,7 +310,7 @@ export default class Georefimage2Control extends M.Control {
     const width = this.map_.getMapImpl().getSize()[0];
     const height = this.map_.getMapImpl().getSize()[1];
     const parameters = this.params_.parameters;
-    const printData = M.utils.extend({
+    const printData = IDEE.utils.extend({
       layout: 'plain',
       outputFormat: this.format_,
       attributes: {
@@ -452,7 +453,7 @@ export default class Georefimage2Control extends M.Control {
       const encodedLayers = [];
       layers.forEach((layer, index) => {
         this.getImpl().encodeLayer(layer).then((encodedLayer) => {
-          if (!M.utils.isNullOrEmpty(encodedLayer)) {
+          if (!IDEE.utils.isNullOrEmpty(encodedLayer)) {
             encodedLayers[index] = encodedLayer;
           }
 
@@ -521,7 +522,7 @@ export default class Georefimage2Control extends M.Control {
           });
         }
       }).catch((err) => {
-        M.dialog.error(getValue('exception.imageError'));
+        IDEE.dialog.error(getValue('exception.imageError'));
       });
     }
   }
@@ -543,7 +544,7 @@ export default class Georefimage2Control extends M.Control {
 
       img.onerror = function rej() {
         Promise.reject(new Error(getValue('exception.loaderror')));
-        M.dialog.error(getValue('exception.imageError'));
+        IDEE.dialog.error(getValue('exception.imageError'));
       };
     });
   }

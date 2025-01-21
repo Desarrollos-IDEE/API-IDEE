@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/LyrcompareInteraction
+ * @module IDEE/impl/control/LyrcompareInteraction
  */

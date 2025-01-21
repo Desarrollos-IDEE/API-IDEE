@@ -1,5 +1,5 @@
 /**
- * @module M/impl/control/Panzoom
+ * @module IDEE/impl/control/Panzoom
  */
 import OLControlZoom from 'ol/control/Zoom';
 
@@ -41,7 +41,7 @@ class Panzoom extends OLControlZoom {
    *
    * @public
    * @function
-   * @param {M.Map} map Mapa.
+   * @param {IDEE.Map} map Mapa.
    * @param {function} template Plantilla del control.
    * @api stable
    */

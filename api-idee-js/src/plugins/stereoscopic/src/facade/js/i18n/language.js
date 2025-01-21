@@ -14,8 +14,8 @@ const translations = {
 
 const getLang = () => {
   let res = 'es';
-  if (typeof M.language.getLang === 'function') {
-    res = M.language.getLang();
+  if (typeof IDEE.language.getLang === 'function') {
+    res = IDEE.language.getLang();
   }
 
   return res;
@@ -58,7 +58,7 @@ export const getTranslation = (lang) => {
 export const getValue = (keyPath, lang = getLang()) => {
   const translation = getTranslation(lang);
   let value = '';
-  if (M.utils.isNullOrEmpty(translation)) {
+  if (IDEE.utils.isNullOrEmpty(translation)) {
     /* eslint-disable no-console */
     console.warn(`The translation '${lang}' has not been defined.`);
   } else {

@@ -56,8 +56,8 @@
    %>
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
-        M.language.setLang(urlParams.get('language') || 'es');
-        const map = M.map({
+        IDEE.language.setLang(urlParams.get('language') || 'es');
+        const map = IDEE.map({
             container: 'mapjs',
             controls: ['attributions*<p>Contenido del control</p>'],
             zoom: 5,
@@ -66,7 +66,7 @@
             center: [-467062.8225, 4683459.6216],
         });
 
-        const layerinicial = new M.layer.WMS({
+        const layerinicial = new IDEE.layer.WMS({
             url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
             name: 'AU.AdministrativeBoundary',
             legend: 'Limite administrativo',

@@ -1,5 +1,5 @@
 /**
- * @module M/impl/control/Mouse
+ * @module IDEE/impl/control/Mouse
  */
 
 import { getValue } from '../../../facade/js/i18n/language';
@@ -137,7 +137,7 @@ class Mouse extends ol.control.MousePosition {
     bbox = this.transformExtent(bbox, map.getProjection().code, 'EPSG:4326');
     bbox = `${bbox[0]},${bbox[1]},${bbox[2]},${bbox[3]}`;
     const urlCoverage = this.getUrlCoverageByZoom(map.getZoom());
-    const coverage = new M.layer.GeoTIFF({
+    const coverage = new IDEE.layer.GeoTIFF({
       blob: `${urlCoverage}?f=COG&lang=es&bbox-crs=4326&bbox=${bbox}`,
       name: COVERAGE_NAME,
       legend: COVERAGE_NAME,

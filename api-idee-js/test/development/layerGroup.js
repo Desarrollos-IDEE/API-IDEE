@@ -1,9 +1,9 @@
-import { map } from 'M/api-idee';
-// import WMC from 'M/layer/WMC';
-import LayerGroup from 'M/layer/LayerGroup';
-import GeoJSON from 'M/layer/GeoJSON';
-// import KML from 'M/layer/KML';
-import WFS from 'M/layer/WFS';
+import { map } from 'IDEE/api-idee';
+// import WMC from 'IDEE/layer/WMC';
+import LayerGroup from 'IDEE/layer/LayerGroup';
+import GeoJSON from 'IDEE/layer/GeoJSON';
+// import KML from 'IDEE/layer/KML';
+import WFS from 'IDEE/layer/WFS';
 
 const mapa = map({ container: 'map', layers: ['OSM'], controls: ['layerswitcher'] });
 

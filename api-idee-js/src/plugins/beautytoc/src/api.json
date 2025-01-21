@@ -3,7 +3,7 @@
     "name": "beautytoc",
     "separator": "*"
   },
-  "constructor": "M.plugin.BeautyTOC",
+  "constructor": "IDEE.plugin.BeautyTOC",
   "parameters": [{
     "type": "object",
     "properties": [{

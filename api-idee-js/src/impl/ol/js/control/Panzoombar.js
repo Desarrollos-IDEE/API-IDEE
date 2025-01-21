@@ -1,7 +1,7 @@
 /**
- * @module M/impl/control/Panzoombar
+ * @module IDEE/impl/control/Panzoombar
  */
-import { extend } from 'M/util/Utils';
+import { extend } from 'IDEE/util/Utils';
 
 import OLControlZoomSlider from 'ol/control/ZoomSlider';
 
@@ -35,7 +35,7 @@ class Panzoombar extends OLControlZoomSlider {
    *
    * @public
    * @function
-   * @param {M.Map} map Mapa.
+   * @param {IDEE.Map} map Mapa.
    * @param {function} template Plantilla del control.
    * @api stable
    */

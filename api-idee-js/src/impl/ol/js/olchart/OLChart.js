@@ -1,13 +1,13 @@
 /**
- * @module M/impl/OLChart
+ * @module IDEE/impl/OLChart
  */
 
 import OLStyleRegularShape from 'ol/style/RegularShape';
 import OLStyleFill from 'ol/style/Fill';
 import { asString as colorAsString } from 'ol/color';
-import Chart from 'M/style/Chart';
-import * as chartTypes from 'M/chart/types';
-import { isNullOrEmpty } from 'M/util/Utils';
+import Chart from 'IDEE/style/Chart';
+import * as chartTypes from 'IDEE/chart/types';
+import { isNullOrEmpty } from 'IDEE/util/Utils';
 
 /**
  * @classdesc
@@ -67,7 +67,8 @@ class OLChart extends OLStyleRegularShape {
     /**
      * Las variables del gráfico.
      * @private
-     * @type {object|M.style.chart.Variable|string|Array<string>|Array<M.style.chart.Variable>}
+     * @type {object|IDEE.style.chart.Variable|string|
+     * Array<string>|Array<IDEE.style.chart.Variable>}
      */
     this.variables_ = options.variables || [];
 

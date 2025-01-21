@@ -3,7 +3,7 @@
     "name": "stylemanager",
     "separator": "*"
   },
-  "constructor": "M.plugin.StyleManager",
+  "constructor": "IDEE.plugin.StyleManager",
   "parameters": [{
     "type": "object",
     "properties": [{

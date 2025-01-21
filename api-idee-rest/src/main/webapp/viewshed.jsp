@@ -77,13 +77,13 @@
    %>
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
-        M.language.setLang(urlParams.get('language') || 'es');
-        const map = M.map({
+        IDEE.language.setLang(urlParams.get('language') || 'es');
+        const map = IDEE.map({
             container: 'mapjs',
             center:  [-428106.86611520057, 4334472.25393817],
             zoom: 4,
             layers: [
-              new M.layer.WMTS({
+              new IDEE.layer.WMTS({
                 url: 'https://wmts-mapa-lidar.idee.es/lidar?',
                 name: 'EL.GridCoverageDSM',
                 legend: 'LiDAR',
@@ -118,7 +118,7 @@
         }
 
         function crearPlugin(propiedades){
-            mp = new M.plugin.ViewShed(propiedades);
+            mp = new IDEE.plugin.ViewShed(propiedades);
             map.addPlugin(mp);
         }
 

@@ -1,5 +1,5 @@
-import { map as Mmap } from 'M/api-idee';
-import { info, error, success, show } from 'M/dialog';
+import { map as Mmap } from 'IDEE/api-idee';
+import { info, error, success, show } from 'IDEE/dialog';
 
 
 const mapjs = Mmap({

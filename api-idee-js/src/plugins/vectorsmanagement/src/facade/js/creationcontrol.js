@@ -1,5 +1,5 @@
 /**
- * @module M/control/CreationControl
+ * @module IDEE/control/CreationControl
  */
 import CreationImplControl from 'impl/creationcontrol';
 import template from '../../templates/creation';
@@ -11,21 +11,21 @@ const DEFAULT_SIZE = 12;
 const DEFAULT_COLOR = '#71a7d3';
 const DEFAULT_THICKNESS = 6;
 
-export default class CreationControl extends M.Control {
+export default class CreationControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(map, managementControl) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(CreationImplControl) || (M.utils.isObject(CreationImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(CreationImplControl)))) {
-      M.exception(getValue('exception.impl_creationcontrol'));
+    if (IDEE.utils.isUndefined(CreationImplControl) || (IDEE.utils.isObject(CreationImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(CreationImplControl)))) {
+      IDEE.exception(getValue('exception.impl_creationcontrol'));
     }
 
     // 2. implementation of this control
@@ -99,7 +99,7 @@ export default class CreationControl extends M.Control {
     /**
      * Selected api-idee feature
      * @private
-     * @type {M.feature}
+     * @type {IDEE.feature}
      */
     this.feature = undefined;
 
@@ -107,7 +107,7 @@ export default class CreationControl extends M.Control {
      * Feature that is drawn on selection layer around this.feature
      * to emphasize it.
      * @private
-     * @type {M.feature}
+     * @type {IDEE.feature}
      */
     this.emphasis = undefined;
 
@@ -135,7 +135,7 @@ export default class CreationControl extends M.Control {
    * @api
    */
   active(html) {
-    this.template = M.template.compileSync(template, {
+    this.template = IDEE.template.compileSync(template, {
       vars: {
         translations: {
           creationLayer: getValue('creationLayer'),
@@ -173,7 +173,7 @@ export default class CreationControl extends M.Control {
     if (layers.length > 0) {
       this.selectionLayer = layers[0];
     } else {
-      this.selectionLayer = new M.layer.Vector({
+      this.selectionLayer = new IDEE.layer.Vector({
         extract: false,
         name: 'selectLayer',
         source: this.getImpl().getVectorSource(),
@@ -268,10 +268,10 @@ export default class CreationControl extends M.Control {
         this.feature = this.getImpl().drawPointFeature(coordinates, srs);
         // this.setFeatureStyle(this.feature, 'Point');
       } else {
-        M.dialog.error(getValue('exception.formatocoord'));
+        IDEE.dialog.error(getValue('exception.formatocoord'));
       }
     } else {
-      M.dialog.error(getValue('exception.introduzcoord'));
+      IDEE.dialog.error(getValue('exception.introduzcoord'));
     }
   }
 
@@ -445,7 +445,7 @@ export default class CreationControl extends M.Control {
    * @public
    * @function
    * @api
-   * @param {M.layer} layer
+   * @param {IDEE.layer} layer
    */
   setLayer(layer) {
     this.layer_ = layer;
@@ -475,7 +475,7 @@ export default class CreationControl extends M.Control {
   onDraw(event) {
     // const lastFeature = this.feature;
     this.hideTextPoint();
-    this.feature = M.impl.Feature.feature2Facade(event.feature);
+    this.feature = IDEE.impl.Feature.feature2Facade(event.feature);
     this.geometry = this.feature.getGeometry().type;
 
     if (this.geometry === 'Point' && this.isTextActive) {
@@ -571,7 +571,7 @@ export default class CreationControl extends M.Control {
       fontProperties = `${DEFAULT_SIZE}px ${DEFAULT_FONT_FAMILY}`;
     }
 
-    this.feature.setStyle(new M.style.Point({
+    this.feature.setStyle(new IDEE.style.Point({
       radius: 3,
       fill: {
         color: '#ff5733',
@@ -594,14 +594,14 @@ export default class CreationControl extends M.Control {
    * @public
    * @function
    * @api
-   * @param {M.Feature} feature
+   * @param {IDEE.Feature} feature
    * @param {String} geometryType - Point / LineString / Polygon
    */
   setFeatureStyle(feature, geometryType) {
     switch (geometryType) {
       case 'Point':
       case 'MultiPoint':
-        feature.setStyle(new M.style.Point({
+        feature.setStyle(new IDEE.style.Point({
           radius: DEFAULT_THICKNESS,
           fill: {
             color: DEFAULT_COLOR,
@@ -614,7 +614,7 @@ export default class CreationControl extends M.Control {
         break;
       case 'LineString':
       case 'MultiLineString':
-        feature.setStyle(new M.style.Line({
+        feature.setStyle(new IDEE.style.Line({
           stroke: {
             color: DEFAULT_COLOR,
             width: DEFAULT_THICKNESS,
@@ -623,7 +623,7 @@ export default class CreationControl extends M.Control {
         break;
       case 'Polygon':
       case 'MultiPolygon':
-        feature.setStyle(new M.style.Polygon({
+        feature.setStyle(new IDEE.style.Polygon({
           fill: {
             color: DEFAULT_COLOR,
             opacity: 0.2,
@@ -662,7 +662,7 @@ export default class CreationControl extends M.Control {
       if ((this.geometry === 'Point' || this.geometry === 'MultiPoint') && !isTextDrawActive) {
         this.emphasis = this.getImpl().getApiIdeeFeatureClone();
 
-        this.emphasis.setStyle(new M.style.Point({
+        this.emphasis.setStyle(new IDEE.style.Point({
           radius: 20,
           stroke: {
             color: '#FF0000',
@@ -675,8 +675,8 @@ export default class CreationControl extends M.Control {
       } else {
         // eslint-disable-next-line no-underscore-dangle
         const extent = this.getImpl().getFeatureExtent(this.feature);
-        this.emphasis = M.impl.Feature.feature2Facade(this.getImpl().newPolygonFeature(extent));
-        this.emphasis.setStyle(new M.style.Line({
+        this.emphasis = IDEE.impl.Feature.feature2Facade(this.getImpl().newPolygonFeature(extent));
+        this.emphasis.setStyle(new IDEE.style.Line({
           stroke: {
             color: '#FF0000',
             width: 2,
@@ -727,7 +727,7 @@ export default class CreationControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

@@ -3,7 +3,7 @@
     "name": "modal",
     "separator": "*"
   },
-  "constructor": "M.plugin.Modal",
+  "constructor": "IDEE.plugin.Modal",
   "parameters": [{
     "type": "object",
     "properties": [{

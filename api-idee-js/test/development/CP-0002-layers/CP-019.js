@@ -4,30 +4,30 @@ import ImageWMS from 'ol/source/ImageWMS';
 import VectorSource from 'ol/source/Vector';
 import { Fill, Stroke, Style } from 'ol/style';
 import { bbox as bboxStrategy } from 'ol/loadingstrategy';
-import { map as Mmap } from 'M/api-idee';
-import Generic from 'M/style/Generic';
+import { map as Mmap } from 'IDEE/api-idee';
+import Generic from 'IDEE/style/Generic';
 import { default as OlGeoJSON } from 'ol/format/GeoJSON';
 
 // Capas Vectoriales
-import Vector from 'M/layer/Vector';
-import GeoJSON from 'M/layer/GeoJSON';
-import WFS from 'M/layer/WFS';
-import KML from 'M/layer/KML';
-import MVT from 'M/layer/MVT'; // Mode 'feature' y 'render'
-import OGCAPIFeatures from 'M/layer/OGCAPIFeatures';
-import MBTilesVector from 'M/layer/MBTilesVector';
-import GenericVector from 'M/layer/GenericVector';
+import Vector from 'IDEE/layer/Vector';
+import GeoJSON from 'IDEE/layer/GeoJSON';
+import WFS from 'IDEE/layer/WFS';
+import KML from 'IDEE/layer/KML';
+import MVT from 'IDEE/layer/MVT'; // Mode 'feature' y 'render'
+import OGCAPIFeatures from 'IDEE/layer/OGCAPIFeatures';
+import MBTilesVector from 'IDEE/layer/MBTilesVector';
+import GenericVector from 'IDEE/layer/GenericVector';
 
 // Capas Rasters
-import TMS from 'M/layer/TMS';
-import WMS from 'M/layer/WMS';
-import WMTS from 'M/layer/WMTS';
-import XYZ from 'M/layer/XYZ';
-import OSM from 'M/layer/OSM';
-import MBTiles from 'M/layer/MBTiles';
-import GeoTIFF from 'M/layer/GeoTIFF';
-import MapLibre from 'M/layer/MapLibre';
-import GenericRaster from 'M/layer/GenericRaster';
+import TMS from 'IDEE/layer/TMS';
+import WMS from 'IDEE/layer/WMS';
+import WMTS from 'IDEE/layer/WMTS';
+import XYZ from 'IDEE/layer/XYZ';
+import OSM from 'IDEE/layer/OSM';
+import MBTiles from 'IDEE/layer/MBTiles';
+import GeoTIFF from 'IDEE/layer/GeoTIFF';
+import MapLibre from 'IDEE/layer/MapLibre';
+import GenericRaster from 'IDEE/layer/GenericRaster';
 
 const mapa = Mmap({
   container: 'map',

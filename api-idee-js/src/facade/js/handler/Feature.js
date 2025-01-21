@@ -1,5 +1,5 @@
 /**
- * @module M/handler/Feature
+ * @module IDEE/handler/Feature
  */
 import HandlerImpl from 'impl/handler/Feature';
 import { isFunction, includes } from '../util/Utils';
@@ -26,7 +26,7 @@ class Features extends Base {
    * - distance: Distancia.
    * @param {Object} impl "HandlerImpl", por defecto se le pasa las opciones a la
    * implementación.
-   * @extends {M.facade.Base}
+   * @extends {IDEE.facade.Base}
    * @api
    */
   constructor(options = {}, impl = new HandlerImpl(options)) {
@@ -35,14 +35,14 @@ class Features extends Base {
 
     /**
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      * @expose
      */
     this.map_ = null;
 
     /**
      * @private
-     * @type {Array<M.layer.Vector>}
+     * @type {Array<IDEE.layer.Vector>}
      * @expose
      */
     this.layers_ = [];
@@ -82,7 +82,7 @@ class Features extends Base {
    *
    * @public
    * @function
-   * @param {M.Map} map mapa.
+   * @param {IDEE.Map} map mapa.
    * @api
    * @export
    */
@@ -326,7 +326,7 @@ class Features extends Base {
    *
    * @public
    * @function
-   * @param {M.layer} layer Capa.
+   * @param {IDEE.layer} layer Capa.
    * @api
    * @export
    */
@@ -343,7 +343,7 @@ class Features extends Base {
    *
    * @public
    * @function
-   * @param {M.layer} layer Capa.
+   * @param {IDEE.layer} layer Capa.
    * @api
    * @export
    */
@@ -366,7 +366,7 @@ class Features extends Base {
   destroy() {
     // TODO
     // this.getImpl().destroy();
-    // this.fire(M.evt.DESTROY);
+    // this.fire(IDEE.evt.DESTROY);
   }
 
   /**

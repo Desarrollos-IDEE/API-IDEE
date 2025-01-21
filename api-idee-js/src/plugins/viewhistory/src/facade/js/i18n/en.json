@@ -1,5 +1,5 @@
 {
   "nextView": "Next View",
   "previousView": "Previous View",
-  "viewhistory_obsolete": "Message to the developer: M.plugin.ViewHistory has been deprecated, please use M.plugin.ViewManagement instead"
+  "viewhistory_obsolete": "Message to the developer: IDEE.plugin.ViewHistory has been deprecated, please use IDEE.plugin.ViewManagement instead"
 }

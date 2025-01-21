@@ -1,3 +1,3 @@
 /**
- * @module M/impl/layer/GeoTIFF
+ * @module IDEE/impl/layer/GeoTIFF
  */

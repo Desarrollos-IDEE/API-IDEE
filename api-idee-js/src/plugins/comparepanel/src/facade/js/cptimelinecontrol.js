@@ -1,26 +1,27 @@
 /**
- * @module M/control/TimelineControl
+ * @module IDEE/control/TimelineControl
  */
 
 import TimelineImplControl from 'impl/cptimelinecontrol';
 import template from 'templates/cptimeline';
 import { getValue } from './i18n/language';
 
-export default class TimelineControl extends M.Control {
+export default class TimelineControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(options) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(TimelineImplControl) || (M.utils.isObject(TimelineImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(TimelineImplControl)))) {
-      M.exception(getValue('exception'));
+    if (IDEE.utils.isUndefined(TimelineImplControl)
+      || (IDEE.utils.isObject(TimelineImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(TimelineImplControl)))) {
+      IDEE.exception(getValue('exception'));
     }
 
     // 2. implementation of this control
@@ -45,7 +46,7 @@ export default class TimelineControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
@@ -71,7 +72,7 @@ export default class TimelineControl extends M.Control {
       });
 
       this.intervals = intervals;
-      this.template = M.template.compileSync(template, {
+      this.template = IDEE.template.compileSync(template, {
         vars: {
           translations: {
             titleTimeline: getValue('titleTimeline'),
@@ -117,7 +118,7 @@ export default class TimelineControl extends M.Control {
   }
 
   /**
-   * Transform StringLayers to api-idee M.Layer
+   * Transform StringLayers to api-idee IDEE.Layer
    *
    * WMTS*http://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*EPSG:25830*PNOA
    * WMS*IGN*http://www.ign.es/wms-inspire/ign-base*IGNBaseTodo
@@ -134,12 +135,12 @@ export default class TimelineControl extends M.Control {
       if (layer.indexOf('*') >= 0) {
         const urlLayer = layer.split('*');
         if (urlLayer[0].toUpperCase() === 'WMS') {
-          newLayer = new M.layer.WMS({
+          newLayer = new IDEE.layer.WMS({
             url: urlLayer[2],
             name: urlLayer[3],
           });
         } else if (urlLayer[0].toUpperCase() === 'WMTS') {
-          newLayer = new M.layer.WMTS({
+          newLayer = new IDEE.layer.WMTS({
             url: urlLayer[2],
             name: urlLayer[3],
             legend: urlLayer[1],
@@ -377,7 +378,7 @@ export default class TimelineControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    * @return {Boolean}
    */

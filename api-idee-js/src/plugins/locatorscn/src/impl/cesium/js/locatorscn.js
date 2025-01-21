@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/LocatorscnControl
+ * @module IDEE/impl/control/LocatorscnControl
  */

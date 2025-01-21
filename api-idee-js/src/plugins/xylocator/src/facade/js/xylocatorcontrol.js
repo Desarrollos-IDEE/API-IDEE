@@ -1,5 +1,5 @@
 /**
- * @module M/control/XYLocatorControl
+ * @module IDEE/control/XYLocatorControl
  */
 
 import XYLocatorImplControl from 'impl/xylocatorcontrol';
@@ -12,16 +12,16 @@ import { getValue } from './i18n/language';
  * XYLocator api-idee control.
  * This control centers map on given coordinates.
  */
-export default class XYLocatorControl extends M.Control {
+export default class XYLocatorControl extends IDEE.Control {
   /**
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor(options) {
-    if (M.utils.isUndefined(XYLocatorImplControl) || (M.utils.isObject(XYLocatorImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(XYLocatorImplControl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(XYLocatorImplControl) || (IDEE.utils.isObject(XYLocatorImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(XYLocatorImplControl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
     const impl = new XYLocatorImplControl();
     super(impl, 'XYLocator');
@@ -48,14 +48,14 @@ export default class XYLocatorControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api
    */
   createView(map) {
     // eslint-disable-next-line
     console.warn(getValue('exception.xylocator_obsolete'));
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           translations: {
             title: getValue('title'),
@@ -73,7 +73,7 @@ export default class XYLocatorControl extends M.Control {
       });
 
       this.template_ = html;
-      const compiledOptions = M.template.compileSync(projections, {
+      const compiledOptions = IDEE.template.compileSync(projections, {
         vars: {
           projections: this.projections,
           translations: {
@@ -110,7 +110,7 @@ export default class XYLocatorControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {
@@ -139,11 +139,11 @@ export default class XYLocatorControl extends M.Control {
         center: [xFloat, yFloat],
       }]);
 
-      this.coordinatesLayer = new M.layer.Vector({
+      this.coordinatesLayer = new IDEE.layer.Vector({
         name: getValue('coordinateresult'),
       }, { displayInLayerSwitcher: false });
 
-      const feature = new M.Feature('localizacion', {
+      const feature = new IDEE.Feature('localizacion', {
         type: 'Feature',
         properties: {},
         geometry: {
@@ -153,7 +153,7 @@ export default class XYLocatorControl extends M.Control {
       });
 
       this.coordinatesLayer.addFeatures([feature]);
-      this.coordinatesLayer.setStyle(new M.style.Point({
+      this.coordinatesLayer.setStyle(new IDEE.style.Point({
         radius: 8,
         fill: {
           color: '#f00',
@@ -167,7 +167,7 @@ export default class XYLocatorControl extends M.Control {
       }));
       this.map.addLayers(this.coordinatesLayer);
     } else {
-      M.dialog.error(getValue('exception.wrong_coords'), 'Error');
+      IDEE.dialog.error(getValue('exception.wrong_coords'), 'Error');
     }
   }
 
@@ -229,7 +229,7 @@ export default class XYLocatorControl extends M.Control {
           const coordinatesTransform = this.getImpl().reproject(origin, [x, y]);
           this.locator_(coordinatesTransform);
         } catch (ex) {
-          M.dialog.error(getValue('exception.transforming'), 'Error');
+          IDEE.dialog.error(getValue('exception.transforming'), 'Error');
         }
       } else if (selectedOption.getAttribute('data-units') === 'dms') {
         const hhLon = document.querySelector('div#m-xylocator-dms input#LONHH').value;
@@ -259,10 +259,10 @@ export default class XYLocatorControl extends M.Control {
             const coordinatesTransform = this.getImpl().reproject(origin, [x, y]);
             this.locator_(coordinatesTransform);
           } catch (ex) {
-            M.dialog.error(getValue('exception.transforming'), 'Error');
+            IDEE.dialog.error(getValue('exception.transforming'), 'Error');
           }
         } else {
-          M.dialog.error(getValue('exception.wrong_values'), 'Error');
+          IDEE.dialog.error(getValue('exception.wrong_values'), 'Error');
         }
       } else {
         try {
@@ -273,11 +273,11 @@ export default class XYLocatorControl extends M.Control {
           const coordinatesTransform = this.getImpl().reproject(origin, [x, y]);
           this.locator_(coordinatesTransform);
         } catch (ex) {
-          M.dialog.error(getValue('exception.transforming'), 'Error');
+          IDEE.dialog.error(getValue('exception.transforming'), 'Error');
         }
       }
     } catch (ex) {
-      M.dialog.error(getValue('exception.wrong_coords'), 'Error');
+      IDEE.dialog.error(getValue('exception.wrong_coords'), 'Error');
       throw ex;
     }
   }

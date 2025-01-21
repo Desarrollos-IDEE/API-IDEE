@@ -1,23 +1,23 @@
 /**
- * @module M/control/ZoomExtentControl
+ * @module IDEE/control/ZoomExtentControl
  */
 
 import ZoomExtentImpl from 'impl/zoomextentcontrol';
 import { getValue } from './i18n/language';
 
-export default class ZoomExtentControl extends M.Control {
+export default class ZoomExtentControl extends IDEE.Control {
   /**
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor(map) {
-    if (M.utils.isUndefined(ZoomExtentImpl) || (M.utils.isObject(ZoomExtentImpl)
-      && M.utils.isNullOrEmpty(Object.keys(ZoomExtentImpl)))) {
-      M.exception(getValue('exception.impl_zoomextent'));
+    if (IDEE.utils.isUndefined(ZoomExtentImpl) || (IDEE.utils.isObject(ZoomExtentImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(ZoomExtentImpl)))) {
+      IDEE.exception(getValue('exception.impl_zoomextent'));
     }
     const impl = new ZoomExtentImpl();
     super(impl, 'ZoomExtentImpl');
@@ -78,7 +78,7 @@ export default class ZoomExtentControl extends M.Control {
     *
     * @public
     * @function
-    * @param {M.Control} control to compare
+    * @param {IDEE.Control} control to compare
     * @api
     */
   equals(control) {

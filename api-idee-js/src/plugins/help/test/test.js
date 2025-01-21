@@ -1,9 +1,9 @@
 import Help from 'facade/help';
 
-M.language.setLang('es');
-// M.language.setLang('en');
+IDEE.language.setLang('es');
+// IDEE.language.setLang('en');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   controls: ['scale'],
 });

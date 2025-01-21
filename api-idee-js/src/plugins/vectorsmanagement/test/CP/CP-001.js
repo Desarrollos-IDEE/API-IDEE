@@ -1,21 +1,21 @@
 import VectorsManagement from 'facade/vectorsmanagement';
 
-M.language.setLang('es');
+IDEE.language.setLang('es');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   center: [-458756.9690741142, 4682774.665868655],
   layers: ['OSM'],
   zoom: 6,
 });
 
-const vectorLayers = new M.layer.Vector({
+const vectorLayers = new IDEE.layer.Vector({
   name: 'capaVectorial',
   legend: 'Capa Vector',
 });
 
 // Creamos feature
-const featurePolygon = new M.Feature('featurePrueba001', {
+const featurePolygon = new IDEE.Feature('featurePrueba001', {
   type: 'Feature',
   id: 'apiidee_feature_4287706116785215',
   geometry: {
@@ -34,7 +34,7 @@ const featurePolygon = new M.Feature('featurePrueba001', {
   properties: {},
 });
 
-const featurePoint = new M.Feature('featurePrueba002', {
+const featurePoint = new IDEE.Feature('featurePrueba002', {
   type: 'Feature',
   id: 'prueba_pol_wfst.1985',
   geometry: {

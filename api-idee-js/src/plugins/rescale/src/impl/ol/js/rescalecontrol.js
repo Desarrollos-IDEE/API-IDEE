@@ -1,14 +1,14 @@
 /**
- * @module M/impl/control/RescaleControl
+ * @module IDEE/impl/control/RescaleControl
  */
 
-export default class RescaleControl extends M.impl.Control {
+export default class RescaleControl extends IDEE.impl.Control {
   /**
    * This function adds the control to the specified map
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api stable
    */
@@ -58,7 +58,7 @@ export default class RescaleControl extends M.impl.Control {
       if (scale < originalScale) {
         const oldWins = Math.abs(originalScale - scale) > Math.abs(originalScale - lastZoom.scale);
         this.facadeMap_.getMapImpl().getView().setResolution(resolution);
-        scale = M.impl.utils.getWMTSScale(this.facadeMap_, true);
+        scale = IDEE.impl.utils.getWMTSScale(this.facadeMap_, true);
         newScale = oldWins ? lastZoom : { scale, resolution };
         zoom = maxZoom + 1;
       } else {

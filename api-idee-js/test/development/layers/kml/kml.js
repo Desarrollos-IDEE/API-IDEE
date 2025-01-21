@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
-import KML from 'M/layer/KML';
-import Generic from 'M/style/Generic';
+import KML from 'IDEE/layer/KML';
+import Generic from 'IDEE/style/Generic';
 import VectorSource from 'ol/source/Vector';
 import OLKMLFormat from 'ol/format/KML';
 

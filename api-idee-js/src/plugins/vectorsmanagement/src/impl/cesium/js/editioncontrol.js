@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/Editioncontrol
+ * @module IDEE/impl/control/Editioncontrol
  */

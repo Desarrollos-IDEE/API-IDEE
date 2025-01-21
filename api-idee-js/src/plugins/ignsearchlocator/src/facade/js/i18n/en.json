@@ -7,7 +7,7 @@
     "noresults": "No results found",
     "noubi": "There is no associated address for this location.",
     "wrong_values": "Some value entered are not correct. Remember that minutes and seconds must be between 0 and 59 and degrees between 0 and 180.",
-    "ignsearchlocator_obsolete": "Message to the developer: M.plugin.IGNSearchLocator has been deprecated, please use M.plugin.Locator instead"
+    "ignsearchlocator_obsolete": "Message to the developer: IDEE.plugin.IGNSearchLocator has been deprecated, please use IDEE.plugin.Locator instead"
   },
   "searchresult": "searchresult",
   "coordinateresult": "coordinateresult",

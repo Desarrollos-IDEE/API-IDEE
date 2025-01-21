@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/Basic
+ * @module IDEE/plugin/Basic
  */
 import '../assets/css/basic';
 import '../assets/css/fonts';
@@ -7,13 +7,13 @@ import BasicControl from './basiccontrol';
 import myhelp from '../../templates/myhelp';
 import { getValue } from './i18n/language';
 
-export default class Basic extends M.Plugin {
+export default class Basic extends IDEE.Plugin {
   /**
    * @classdesc
    * Fachada del plugin plantilla
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} options Opciones para el plugin
    * @api
    */
@@ -30,14 +30,14 @@ export default class Basic extends M.Plugin {
     /**
      * Fachada del mapa
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Lista de controles
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -84,7 +84,7 @@ export default class Basic extends M.Plugin {
      * @public
      * @type {boolean}
      */
-    this.isDraggable = !M.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
+    this.isDraggable = !IDEE.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
 
     /**
      * Prioridad en la colocación del plugin en su área
@@ -106,16 +106,16 @@ export default class Basic extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map el mapa al que se añade el plugin
+   * @param {IDEE.Map} map el mapa al que se añade el plugin
    * @api stable
    */
   addTo(map) {
     this.controls_.push(new BasicControl(this.isDraggable));
     this.map_ = map;
-    this.panel_ = new M.ui.Panel('Basic', {
+    this.panel_ = new IDEE.ui.Panel('Basic', {
       collapsible: this.collapsible,
       collapsed: this.collapsed,
-      position: M.ui.position[this.position],
+      position: IDEE.ui.position[this.position],
       className: this.className,
       collapsedButtonClass: 'icon-basic-wrench',
       tooltip: this.tooltip_,
@@ -167,7 +167,7 @@ export default class Basic extends M.Plugin {
    * @api
    */
   getAPIRestBase64() {
-    return `${this.name}=base64=${M.utils.encodeBase64(this.options)}`;
+    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   /**
@@ -181,9 +181,9 @@ export default class Basic extends M.Plugin {
     return {
       title: this.name,
       content: new Promise((success) => {
-        const html = M.template.compileSync(myhelp, {
+        const html = IDEE.template.compileSync(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}plugins/basic/images/`,
+            urlImages: `${IDEE.config.API_IDEE_URL}plugins/basic/images/`,
             translations: {
               help1: getValue('textHelp.help1'),
               help2: getValue('textHelp.help2'),

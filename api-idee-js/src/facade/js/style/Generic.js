@@ -1,5 +1,5 @@
 /**
- * @module M/style/Generic
+ * @module IDEE/style/Generic
  */
 
 import GenericStyleImpl from 'impl/style/Generic';
@@ -12,7 +12,7 @@ import {
  * @classdesc
  * Crea un estilo genérico.
  * @api
- * @extends {M.style.Simple}
+ * @extends {IDEE.style.Simple}
  */
 class Generic extends Simple {
   /**
@@ -57,22 +57,22 @@ class Generic extends Simple {
   }
 
   /**
-   * Deserializa el método M.style.Simple.deserialize.
+   * Deserializa el método IDEE.style.Simple.deserialize.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function
    * @public
-   * @return {Function} Devuelve la función M.style.Simple.deserialize.
+   * @return {Function} Devuelve la función IDEE.style.Simple.deserialize.
    * @api
    */
   getDeserializedMethod_() {
-    return "((serializedParameters) => M.style.Simple.deserialize(serializedParameters, 'M.style.Generic'))";
+    return "((serializedParameters) => IDEE.style.Simple.deserialize(serializedParameters, 'IDEE.style.Generic'))";
   }
 
   /**
    * Este método clona el estilo.
    *
    * @public
-   * @return {M.style.Generic} Devuelve un "new Generic".
+   * @return {IDEE.style.Generic} Devuelve un "new Generic".
    * @function
    * @api
    */

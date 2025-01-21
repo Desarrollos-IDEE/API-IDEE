@@ -1,5 +1,5 @@
 /**
- * @module M/control/Panzoom
+ * @module IDEE/control/Panzoom
  */
 import panzoomTemplate from 'templates/panzoom';
 import myhelp from 'templates/panzoomhelp';
@@ -15,7 +15,7 @@ import { getValue } from '../i18n/language';
  * Agregue los botones '+' y '-' para acercar y alejar el mapa.
  *
  * @api
- * @extends {M.Control}
+ * @extends {IDEE.Control}
  */
 class Panzoom extends ControlBase {
   /**
@@ -55,7 +55,7 @@ class Panzoom extends ControlBase {
    *
    * @public
    * @function
-   * @param {M.Map} map Mapa
+   * @param {IDEE.Map} map Mapa
    * @returns {Promise} Plantilla HTML.
    * @api
    */
@@ -92,7 +92,7 @@ class Panzoom extends ControlBase {
       content: new Promise((success) => {
         const html = compileTemplate(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}assets/images`,
+            urlImages: `${IDEE.config.API_IDEE_URL}assets/images`,
             translations: {
               help1: textHelp.text1,
             },

@@ -19,7 +19,7 @@
     "error_wfs": "Could not load WFS service",
     "wfs_zoom": "Increase the zoom in * levels if you want to add this WFS service",
     "url_not_valid": "The entered URL is not valid",
-    "obsolete": "Developer message: M.plugin.Vectors has been deprecated, use the M.plugin.VectorsManagement instead"
+    "obsolete": "Developer message: IDEE.plugin.Vectors has been deprecated, use the IDEE.plugin.VectorsManagement instead"
   },
   "help_template": {
     "help": "Help",

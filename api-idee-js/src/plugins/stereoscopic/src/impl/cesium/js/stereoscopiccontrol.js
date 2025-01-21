@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/StereoscopicControl
+ * @module IDEE/impl/control/StereoscopicControl
  */

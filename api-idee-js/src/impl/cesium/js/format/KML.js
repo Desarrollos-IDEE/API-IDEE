@@ -1,7 +1,7 @@
 /**
- * @module M/impl/format/KML
+ * @module IDEE/impl/format/KML
  */
-import { decodeHtml, isUndefined } from 'M/util/Utils';
+import { decodeHtml, isUndefined } from 'IDEE/util/Utils';
 import {
   KmlDataSource,
 } from 'cesium';

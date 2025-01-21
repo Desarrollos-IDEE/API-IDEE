@@ -1,6 +1,6 @@
 /**
- * @module M/parameter/xyz
- * @example import xyzParameter from 'M/parameter/xyz';
+ * @module IDEE/parameter/xyz
+ * @example import xyzParameter from 'IDEE/parameter/xyz';
  */
 import {
   isArray, isNullOrEmpty, isObject, isString, normalize,

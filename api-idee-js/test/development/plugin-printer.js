@@ -1,6 +1,6 @@
 import Printer from 'plugins/printer/facade/js/printer';
 
-const mapjs = M.map({
+const mapjs = IDEE.map({
   container: 'map',
 });
 

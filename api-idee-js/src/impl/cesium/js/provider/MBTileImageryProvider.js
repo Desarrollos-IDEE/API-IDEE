@@ -1,5 +1,5 @@
 /**
- * @module M/impl/provider/TileLoadFunctionImagineryProvider
+ * @module IDEE/impl/provider/TileLoadFunctionImagineryProvider
  */
 import sqljs from 'sql.js';
 import {
@@ -54,7 +54,7 @@ class MBTileImageryProvider extends TileMapServiceImageryProvider {
   init() {
     this.initPromise_ = new Promise((resolve, reject) => {
       sqljs({
-        locateFile: (file) => `${M.config.SQL_WASM_URL}${file}`,
+        locateFile: (file) => `${IDEE.config.SQL_WASM_URL}${file}`,
       }).then((SQL) => {
         getUint8ArrayFromData(this.source).then((uint8Array) => {
           this.db = new SQL.Database(uint8Array);

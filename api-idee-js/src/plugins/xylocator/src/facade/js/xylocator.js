@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/XYLocator
+ * @module IDEE/plugin/XYLocator
  */
 import '../assets/css/xylocator';
 import XYLocatorControl from './xylocatorcontrol';
@@ -13,10 +13,10 @@ import en from './i18n/en';
  * Main facade plugin object. This class creates a plugin
  * object which has an implementation Object
  */
-export default class XYLocator extends M.Plugin {
+export default class XYLocator extends IDEE.Plugin {
   /**
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -27,7 +27,7 @@ export default class XYLocator extends M.Plugin {
      * Controls of the plugin
      *
      * @private
-     * @type {array<M.Control>}
+     * @type {array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -83,7 +83,7 @@ export default class XYLocator extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).xylocator;
+    return IDEE.language.getTranslation(lang).xylocator;
   }
 
   /**
@@ -91,17 +91,17 @@ export default class XYLocator extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api
    */
   addTo(map) {
     this.facadeMap_ = map;
     this.control_ = new XYLocatorControl({ projections: this.projections_, zoom: this.zoom_ });
-    this.panel_ = new M.ui.Panel('M.plugin.XYLocator.NAME', {
+    this.panel_ = new IDEE.ui.Panel('IDEE.plugin.XYLocator.NAME', {
       collapsible: true,
       className: `m-xylocator ${this.positionClass_}`,
       collapsedButtonClass: 'g-cartografia-posicion3',
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       tooltip: this.tooltip_,
     });
 

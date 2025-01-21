@@ -1,6 +1,6 @@
 /**
- * @module M/parameter/mbtilesvector
- * @example import mbtilesVectorParameter from 'M/parameter/mbtilesvector';
+ * @module IDEE/parameter/mbtilesvector
+ * @example import mbtilesVectorParameter from 'IDEE/parameter/mbtilesvector';
  */
 import {
   isArray, isNullOrEmpty, isObject, isString, normalize,

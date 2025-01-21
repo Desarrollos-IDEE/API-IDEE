@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/Mouse
+ * @module IDEE/impl/control/Mouse
  */

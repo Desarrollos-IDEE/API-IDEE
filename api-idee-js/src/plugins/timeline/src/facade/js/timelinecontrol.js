@@ -1,5 +1,5 @@
 /**
- * @module M/control/TimelineControl
+ * @module IDEE/control/TimelineControl
  */
 
 import TimelineImplControl from 'impl/timelinecontrol';
@@ -7,21 +7,21 @@ import template from 'templates/timeline';
 import templateDinamic from 'templates/timelineDinamic';
 import { getValue } from './i18n/language';
 
-export default class TimelineControl extends M.Control {
+export default class TimelineControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(options) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(TimelineImplControl) || (M.utils.isObject(TimelineImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(TimelineImplControl)))) {
-      M.exception(getValue('excepcion'));
+    if (IDEE.utils.isUndefined(TimelineImplControl) || (IDEE.utils.isObject(TimelineImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(TimelineImplControl)))) {
+      IDEE.exception(getValue('excepcion'));
     }
     // 2. implementation of this control
     const impl = new TimelineImplControl();
@@ -77,14 +77,14 @@ export default class TimelineControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
     this.map = map;
     return new Promise((success, fail) => {
       const type = ['absolute', 'relative'].includes(this.timelineType);
-      this.template = M.template.compileSync((type) ? templateDinamic : template, {
+      this.template = IDEE.template.compileSync((type) ? templateDinamic : template, {
         vars: {
           translations: {
             title: getValue('title'),
@@ -147,7 +147,7 @@ export default class TimelineControl extends M.Control {
   }
 
   /**
-   * Transform StringLayers to api-idee M.Layer
+   * Transform StringLayers to api-idee IDEE.Layer
    *
    * WMTS*http://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*EPSG:25830*PNOA
    * WMS*IGN*http://www.ign.es/wms-inspire/ign-base*IGNBaseTodo
@@ -164,12 +164,12 @@ export default class TimelineControl extends M.Control {
       if (layer.indexOf('*') >= 0) {
         const urlLayer = layer.split('*');
         if (urlLayer[0].toUpperCase() === 'WMS') {
-          newLayer = new M.layer.WMS({
+          newLayer = new IDEE.layer.WMS({
             url: urlLayer[2],
             name: urlLayer[3],
           });
         } else if (urlLayer[0].toUpperCase() === 'WMTS') {
-          newLayer = new M.layer.WMTS({
+          newLayer = new IDEE.layer.WMTS({
             url: urlLayer[2],
             name: urlLayer[3],
           });
@@ -313,7 +313,7 @@ export default class TimelineControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    * @return {Boolean}
    */
@@ -469,7 +469,7 @@ export default class TimelineControl extends M.Control {
     const layerAux = layer;
     if (!(layerAux instanceof Object)) {
       const [type, legend, url, name] = layerAux.split('*');
-      const layerWMS = new M.layer.WMS(
+      const layerWMS = new IDEE.layer.WMS(
         {
           type, legend, url, name,
         },
@@ -487,7 +487,7 @@ export default class TimelineControl extends M.Control {
       layerWMS.equalsTimeLine = equalsTimeLine;
       return layerWMS;
     }
-    if ((layerAux instanceof M.layer.Vector)) {
+    if ((layerAux instanceof IDEE.layer.Vector)) {
       layerAux.layerTimeLine = true;
       layerAux.id = id;
       layerAux.attributeParam = attributeParam;
@@ -706,13 +706,13 @@ export default class TimelineControl extends M.Control {
     this.removeLayers();
 
     layersTimeLine.forEach((l) => {
-      if (l instanceof M.layer.Vector) {
-        l.on(M.evt.LOAD, () => {
+      if (l instanceof IDEE.layer.Vector) {
+        l.on(IDEE.evt.LOAD, () => {
           const searhDinamic = this.searchLayerDinamic(l);
           const [vectorInitValue, vectorEndValue] = this
             .getGroupLimit(initValue, endValue, searhDinamic);
 
-          const filter = new M.filter.Function((f) => {
+          const filter = new IDEE.filter.Function((f) => {
             const dateTime = f.getAttributes()[l.attributeParam];
             if (l.equalsTimeLine) {
               if (
@@ -752,13 +752,13 @@ export default class TimelineControl extends M.Control {
    * @function
   */
   changeVectorLayer(init, end, layers) {
-    const vectorLayers = layers.filter((l) => l instanceof M.layer.Vector);
+    const vectorLayers = layers.filter((l) => l instanceof IDEE.layer.Vector);
     vectorLayers.forEach((l) => {
-      l.on(M.evt.LOAD, () => {
+      l.on(IDEE.evt.LOAD, () => {
         const searhDinamic = this.searchLayerDinamic(l);
         const [vectorInitValue, vectorEndValue] = this.getGroupLimit(init, end, searhDinamic);
 
-        const filter = new M.filter.Function((f) => {
+        const filter = new IDEE.filter.Function((f) => {
           const dateTime = f.getAttributes()[l.attributeParam];
           if (l.equalsTimeLine) {
             if (

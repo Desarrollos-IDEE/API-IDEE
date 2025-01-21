@@ -1,8 +1,8 @@
 /**
- * @module M/impl/format/GeoJSON
+ * @module IDEE/impl/format/GeoJSON
  */
-import { isNullOrEmpty, generateRandom } from 'M/util/Utils';
-import Feature from 'M/feature/Feature';
+import { isNullOrEmpty, generateRandom } from 'IDEE/util/Utils';
+import Feature from 'IDEE/feature/Feature';
 import OLFormatGeoJSON from 'ol/format/GeoJSON';
 import { get as getProj } from 'ol/proj';
 import OLStyle from 'ol/style/Style';
@@ -42,7 +42,7 @@ class GeoJSON extends OLFormatGeoJSON {
     * @function
     * @param {Object} object Objeto GeoJSON.
     * @param {Object} options Opciones.
-    * @returns {M.Feature} Objetos geográficos.
+    * @returns {IDEE.Feature} Objetos geográficos.
     * @public
     * @api
     */
@@ -82,7 +82,7 @@ class GeoJSON extends OLFormatGeoJSON {
     * Este método escribe un objetos geográficos en un objeto GeoJSON.
     *
     * @function
-    * @param {M.Feature} feature Objetos geográficos a escribir.
+    * @param {IDEE.Feature} feature Objetos geográficos a escribir.
     * @param {Object} optionsParameters Opciones.
     * @returns {Object} Objeto GeoJSON.
     * @public
@@ -155,7 +155,7 @@ class GeoJSON extends OLFormatGeoJSON {
     * Este método establece el estilo del icono de un objetos geográficos.
     *
     * @function
-    * @param {M.Feature} feature Objetos geográficos.
+    * @param {IDEE.Feature} feature Objetos geográficos.
     * @param {Object} icon Objeto con las opciones del icono.
     * @public
     * @api
@@ -185,7 +185,7 @@ class GeoJSON extends OLFormatGeoJSON {
     * Este método escribe una lista de objetos geográficos en objetos GeoJSON.
     *
     * @function
-    * @param {Array<M.Feature>} features Lista de objetos geográficos.
+    * @param {Array<IDEE.Feature>} features Lista de objetos geográficos.
     * @returns {Array<Object>} Lista de objetos GeoJSON.
     * @public
     * @api
@@ -200,8 +200,8 @@ class GeoJSON extends OLFormatGeoJSON {
     * @function
     * @param {Object} geojson Objeto GeoJSON.
     * @param {Array<Object>} geojsonFeatures Lista de objetos GeoJSON.
-    * @param {M.Projection} projection Proyección.
-    * @return {Array<M.Feature>} Lista de objetos geográficos.
+    * @param {IDEE.Projection} projection Proyección.
+    * @return {Array<IDEE.Feature>} Lista de objetos geográficos.
     * @public
     * @api
     */

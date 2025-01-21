@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/Lyrdropdown
+ * @module IDEE/plugin/Lyrdropdown
  */
 
 import 'assets/css/lyrdropdown';
@@ -7,14 +7,14 @@ import LyrdropdownControl from './lyrdropdowncontrol';
 import api from '../../api';
 import { getValue } from './i18n/language'; // e2m: Multilanguage support
 
-export default class Lyrdropdown extends M.Plugin {
+export default class Lyrdropdown extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -31,14 +31,14 @@ export default class Lyrdropdown extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -82,7 +82,7 @@ export default class Lyrdropdown extends M.Plugin {
      */
     this.layers = [];
     if (options.layers === undefined) {
-      M.dialog.error('No se ha especificado una capa válida sobre la que aplicar el efecto');
+      IDEE.dialog.error('No se ha especificado una capa válida sobre la que aplicar el efecto');
     } else if (Array.isArray(options.layers)) {
       this.layers = options.layers;
     } else {
@@ -117,7 +117,7 @@ export default class Lyrdropdown extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
@@ -133,10 +133,10 @@ export default class Lyrdropdown extends M.Plugin {
     this.controls_.push(this.control_);
     this.map_ = map;
     // panel para agregar control - no obligatorio
-    this.panel_ = new M.ui.Panel('panelLyrdropdown', {
+    this.panel_ = new IDEE.ui.Panel('panelLyrdropdown', {
       collapsible: this.collapsible,
       collapsed: this.collapsed,
-      position: M.ui.position[this.position], // M.ui.position.TR
+      position: IDEE.ui.position[this.position], // IDEE.ui.position.TR
       collapsedButtonClass: 'g-cartografia-flecha-izquierda',
       tooltip: this.tooltip_,
     });
@@ -240,7 +240,7 @@ export default class Lyrdropdown extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.plugin} plugin to compare
+   * @param {IDEE.plugin} plugin to compare
    * @api stable
    */
   equals(plugin) {

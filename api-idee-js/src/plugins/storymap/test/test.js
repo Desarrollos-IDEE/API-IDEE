@@ -4,10 +4,10 @@ import StoryMap from 'facade/storymap';
 import StoryMapJSON2 from './StoryMapJSON2'; // https://openlayers.org/en/latest/examples/animation.html
 import StoryMapJSON1 from './StoryMapJSON1';
 
-M.language.setLang('es');
-// M.language.setLang('en');
+IDEE.language.setLang('es');
+// IDEE.language.setLang('en');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
 });
 window.map = map;

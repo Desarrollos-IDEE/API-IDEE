@@ -1,4 +1,4 @@
-# M.plugin.SelectionDraw
+# IDEE.plugin.SelectionDraw
 
 Plugin que permite representar geometrías y obtener la información asociada en formato JSON.
 
@@ -40,11 +40,11 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 # Ejemplos de uso
 
 ```javascript
-   const map = M.map({
+   const map = IDEE.map({
      container: 'map'
    });
 
-   const mp = new M.plugin.SelectionDraw({
+   const mp = new IDEE.plugin.SelectionDraw({
         projection: 'EPSG:4326',
         position: 'TL',
         collapsed: false,

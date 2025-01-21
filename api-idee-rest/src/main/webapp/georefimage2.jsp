@@ -98,9 +98,9 @@
    %>
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
-        M.language.setLang(urlParams.get('language') || 'es');
+        IDEE.language.setLang(urlParams.get('language') || 'es');
 
-        const map = M.map({
+        const map = IDEE.map({
             container: 'mapjs',
             zoom: 5,
             maxZoom: 20,
@@ -138,7 +138,7 @@
         }
 
         function crearPlugin(position, collapsed, collapsible, serverUrl, printTemplateUrl, printStatusUrl) {
-            mp = new M.plugin.Georefimage2({
+            mp = new IDEE.plugin.Georefimage2({
                 collapsed: collapsed,
                 collapsible: collapsible,
                 position: position,
@@ -148,7 +148,7 @@
             });
             map.addPlugin(mp);
         }
-        let mp2 = new M.plugin.ShareMap({
+        let mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
             position: "TR",
         });
@@ -158,7 +158,7 @@
             map.removePlugins(mp);
         });
 
-        map.addPlugin(new M.plugin.BackImgLayer({
+        map.addPlugin(new IDEE.plugin.BackImgLayer({
           position: 'TR',
           layerId: 0,
           layerVisibility: true,
@@ -172,7 +172,7 @@
               preview: 'img/raster.png',
               title: 'Mapa',
               layers: [
-                new M.layer.WMTS({
+                new IDEE.layer.WMTS({
                   url: 'https://www.ign.es/wmts/mapa-raster?',
                   name: 'MTN',
                   legend: 'Mapa',
@@ -190,7 +190,7 @@
               preview: 'img/image.png',
               title: 'Imagen',
               layers: [
-                new M.layer.XYZ({
+                new IDEE.layer.XYZ({
                   url: 'https://tms-pnoa-ma.ign.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
                   name: 'PNOA-MA',
                   legend: 'Imagen',
@@ -201,7 +201,7 @@
                   visible: true,
                   maxZoom: 19,
                 }),
-                new M.layer.WMTS({
+                new IDEE.layer.WMTS({
                   url: 'https://www.ign.es/wmts/pnoa-ma?',
                   name: 'OI.OrthoimageCoverage',
                   matrixSet: 'GoogleMapsCompatible',
@@ -220,7 +220,7 @@
               preview: 'img/mapa.png',
               title: 'Callejero',
               layers: [
-                new M.layer.WMTS({
+                new IDEE.layer.WMTS({
                   url: 'https://www.ign.es/wmts/ign-base?',
                   name: 'IGNBaseTodo',
                   legend: 'Callejero',
@@ -238,7 +238,7 @@
               title: 'Híbrido',
               preview: 'img/hibrido.png',
               layers: [
-                new M.layer.XYZ({
+                new IDEE.layer.XYZ({
                   url: 'https://tms-pnoa-ma.ign.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
                   name: 'PNOA-MA',
                   legend: 'Imagen',
@@ -249,7 +249,7 @@
                   visible: true,
                   maxZoom: 19,
                 }),
-                new M.layer.WMTS({
+                new IDEE.layer.WMTS({
                   url: 'https://www.ign.es/wmts/pnoa-ma?',
                   name: 'OI.OrthoimageCoverage',
                   matrixSet: 'GoogleMapsCompatible',
@@ -261,7 +261,7 @@
                   format: 'image/jpeg',
                   minZoom: 19,
                 }),
-                new M.layer.WMTS({
+                new IDEE.layer.WMTS({
                   url: 'https://www.ign.es/wmts/ign-base?',
                   name: 'IGNBaseOrto',
                   matrixSet: 'GoogleMapsCompatible',
@@ -279,7 +279,7 @@
               preview: 'img/lidar.png',
               title: 'LiDAR',
               layers: [
-                new M.layer.WMTS({
+                new IDEE.layer.WMTS({
                   url: 'https://wmts-mapa-lidar.idee.es/lidar?',
                   name: 'EL.GridCoverageDSM',
                   legend: 'LiDAR',
@@ -297,7 +297,7 @@
               preview: 'img/ocupacion_suelo.png',
               title: 'Ocupación',
               layers: [
-                new M.layer.WMTS({
+                new IDEE.layer.WMTS({
                   url: 'https://servicios.idee.es/wmts/ocupacion-suelo?',
                   name: 'LC.LandCoverSurfaces',
                   legend: 'Ocupación',
@@ -315,7 +315,7 @@
               preview: 'img/historicos.png',
               title: 'Históricos',
               layers: [
-                new M.layer.WMTS({
+                new IDEE.layer.WMTS({
                   url: 'https://www.ign.es/wmts/primera-edicion-mtn?',
                   name: 'mtn50-edicion1',
                   legend: 'Históricos',

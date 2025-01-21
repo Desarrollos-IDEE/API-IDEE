@@ -1,9 +1,9 @@
 /**
- * @module M/impl/style/Generic
+ * @module IDEE/impl/style/Generic
  */
 import {
   isUndefined, isArray, isFunction, isDynamic, drawDynamicStyle,
-} from 'M/util/Utils';
+} from 'IDEE/util/Utils';
 import OLFeature from 'ol/Feature';
 import RenderFeature from 'ol/render/Feature';
 import OLStyleIcon from 'ol/style/Icon';

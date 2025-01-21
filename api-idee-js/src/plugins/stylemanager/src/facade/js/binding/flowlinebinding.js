@@ -7,7 +7,7 @@ export class FlowLineBinding extends Binding {
   /**
    * This function sets the attribute layer to the binding.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    */
   setLayer(layer) {
     this.layer_ = layer;
@@ -19,13 +19,13 @@ export class FlowLineBinding extends Binding {
    * This function generates the cluster style from GUI Options.
    *
    * @function
-   * @returns {M.style.FlowLine}
+   * @returns {IDEE.style.FlowLine}
    */
   generateStyle() {
     const opts = this.generateOptions();
     let style = null;
     if (opts) {
-      style = new M.style.FlowLine({
+      style = new IDEE.style.FlowLine({
         color: opts.color,
         color2: opts.color2,
         arrow: opts.arrow,

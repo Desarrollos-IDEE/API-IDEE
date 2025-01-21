@@ -1,5 +1,5 @@
 /* eslint-disable max-len,camelcase,import/prefer-default-export */
-import MapLibre from 'M/layer/MapLibre';
+import MapLibre from 'IDEE/layer/MapLibre';
 
 export const maplibre_001 = new MapLibre({
   name: 'Mapa Libre',

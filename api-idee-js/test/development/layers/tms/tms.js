@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import TMS from 'M/layer/TMS';
+import TMS from 'IDEE/layer/TMS';
 import XYZSource from 'ol/source/XYZ';
 
 export const tms_001 = new TMS({

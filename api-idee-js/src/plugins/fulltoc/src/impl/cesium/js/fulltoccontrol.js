@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/FullTOCControl
+ * @module IDEE/impl/control/FullTOCControl
  */

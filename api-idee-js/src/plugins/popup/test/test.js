@@ -1,8 +1,8 @@
 import Popup from 'facade/popup';
 
-M.language.setLang('es');
+IDEE.language.setLang('es');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
 });
 

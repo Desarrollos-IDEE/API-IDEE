@@ -1,19 +1,19 @@
 /**
- * @module M/plugin/LyrCompare
+ * @module IDEE/plugin/LyrCompare
  */
 import 'assets/css/cplyrcompare';
 import LyrCompareControl from './cplyrcomparecontrol';
 import api from '../../api';
 import { getValue } from './i18n/language';
 
-export default class LyrCompare extends M.Plugin {
+export default class LyrCompare extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} options plugin configuration options
    * @api stable
    */
@@ -30,14 +30,14 @@ export default class LyrCompare extends M.Plugin {
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
@@ -141,7 +141,7 @@ export default class LyrCompare extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
@@ -163,19 +163,19 @@ export default class LyrCompare extends M.Plugin {
     this.control_ = new LyrCompareControl(values);
     this.controls_.push(this.control_);
     if (this.interface) {
-      this.panel_ = new M.ui.Panel('panelLyrcompare', {
+      this.panel_ = new IDEE.ui.Panel('panelLyrcompare', {
         collapsible: this.collapsible,
         collapsed: this.collapsed,
-        position: M.ui.position[this.position],
+        position: IDEE.ui.position[this.position],
         className: 'm-plugin-lyrcompare',
         collapsedButtonClass: 'cp-icon',
         tooltip: this.tooltip_,
       });
     } else {
-      this.panel_ = new M.ui.Panel('panelLyrcompare', {
+      this.panel_ = new IDEE.ui.Panel('panelLyrcompare', {
         collapsible: false,
         collapsed: true,
-        position: M.ui.position[this.position],
+        position: IDEE.ui.position[this.position],
         className: 'm-plugin-lyrcompare-hidden',
       });
     }
@@ -259,7 +259,7 @@ export default class LyrCompare extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.plugin} plugin to compare
+   * @param {IDEE.plugin} plugin to compare
    * @api stable
    */
   equals(plugin) {

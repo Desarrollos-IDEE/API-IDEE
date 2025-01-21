@@ -1,32 +1,32 @@
 /**
- * @module M/impl/loader/KML
+ * @module IDEE/impl/loader/KML
  */
-import MObject from 'M/Object';
-import { get as getRemote } from 'M/util/Remote';
-import { isUndefined, isNullOrEmpty } from 'M/util/Utils';
-import FacadeFeature from 'M/feature/Feature';
-import Exception from 'M/exception/exception';
-import { getValue } from 'M/i18n/language';
+import MObject from 'IDEE/Object';
+import { get as getRemote } from 'IDEE/util/Remote';
+import { isUndefined, isNullOrEmpty } from 'IDEE/util/Utils';
+import FacadeFeature from 'IDEE/feature/Feature';
+import Exception from 'IDEE/exception/exception';
+import { getValue } from 'IDEE/i18n/language';
 
 /**
  * @classdesc
  * Implementación de la clase del "loader" para los objetos geográficos KML.
  *
- * @property {M.Map} map_ Mapa.
- * @property {M.impl.service.WFS} url_ URL del servicio WFS.
- * @property {M.impl.format.GeoJSON} format_ Formato.
+ * @property {IDEE.Map} map_ Mapa.
+ * @property {IDEE.impl.service.WFS} url_ URL del servicio WFS.
+ * @property {IDEE.impl.format.GeoJSON} format_ Formato.
  *
  * @api
- * @extends {M.Object}
+ * @extends {IDEE.Object}
  */
 class KML extends MObject {
   /**
    * Constructor principal de la clase KML.
    *
    * @constructor
-   * @param {M.Map} map Mapa
-   * @param {M.impl.service.WFS} url URL del servicio WFS.
-   * @param {M.impl.format.GeoJSON} format Formato.
+   * @param {IDEE.Map} map Mapa
+   * @param {IDEE.impl.service.WFS} url URL del servicio WFS.
+   * @param {IDEE.impl.format.GeoJSON} format Formato.
    * @api
    */
   constructor(map, url, format) {
@@ -34,21 +34,21 @@ class KML extends MObject {
     /**
      * Mapa.
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = map;
 
     /**
      * URL del servicio WFS.
      * @private
-     * @type {M.impl.service.WFS}
+     * @type {IDEE.impl.service.WFS}
      */
     this.url_ = url;
 
     /**
      * Formato.
      * @private
-     * @type {M.impl.format.GeoJSON}
+     * @type {IDEE.impl.format.GeoJSON}
      */
     this.format_ = format;
   }

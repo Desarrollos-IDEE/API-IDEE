@@ -1,5 +1,5 @@
 /**
- * @module M/impl/format/DescribeFeatureTypeXML
+ * @module IDEE/impl/format/DescribeFeatureTypeXML
  */
 import OLFormatGML from 'ol/format/GML';
 

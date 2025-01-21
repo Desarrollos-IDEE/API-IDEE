@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /**
- * @module M/layer/WMTS
+ * @module IDEE/layer/WMTS
  */
 import WMTSImpl from 'impl/layer/WMTS';
 import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
@@ -28,7 +28,7 @@ import { getValue } from '../i18n/language';
  * @property {Boolean} isbase Define si la capa es base.
  *
  * @api
- * @extends {M.Layer}
+ * @extends {IDEE.Layer}
  */
 class WMTS extends LayerBase {
   /**
@@ -117,8 +117,8 @@ class WMTS extends LayerBase {
     /**
      * Implementación de esta capa.
      * @public
-     * @implements {M.layer.WMTS}
-     * @type {M.layer.WMTS}
+     * @implements {IDEE.layer.WMTS}
+     * @type {IDEE.layer.WMTS}
      */
     const impl = new WMTSImpl(optionsVar, vendorOptions);
 
@@ -167,7 +167,7 @@ class WMTS extends LayerBase {
    * Devuelve el valor de la propiedad "matrixSet".
    * @function
    * @getter
-   * @return {M.layer.WMTS.impl.matrixSet} "matrixSet" de la capa.
+   * @return {IDEE.layer.WMTS.impl.matrixSet} "matrixSet" de la capa.
    * @api
    */
   get matrixSet() {
@@ -179,7 +179,7 @@ class WMTS extends LayerBase {
    *
    * @function
    * @setter
-   * @param {M.layer.WMTS.impl.matrixSet} newMatrixSet Nuevo valor "matrixSet".
+   * @param {IDEE.layer.WMTS.impl.matrixSet} newMatrixSet Nuevo valor "matrixSet".
    * @api
    */
   set matrixSet(newMatrixSet) {
@@ -191,7 +191,7 @@ class WMTS extends LayerBase {
    *
    * @function
    * @getter
-   * @return {M.layer.WMTS.options} Devuelve las opciones.
+   * @return {IDEE.layer.WMTS.options} Devuelve las opciones.
    * @api
    */
   get options() {
@@ -217,7 +217,8 @@ class WMTS extends LayerBase {
    * para evitar solicitudes múltiples.
    *
    * @function
-   * @return {M.layer.WMTS.getCapabilitiesPromise_} Devuelve el fichero de Capacidades o Metadatos.
+   * @return {IDEE.layer.WMTS.getCapabilitiesPromise_} Devuelve el fichero de Capacidades
+   * o Metadatos.
    * @api
    */
   getCapabilities() {
@@ -281,7 +282,7 @@ class WMTS extends LayerBase {
    * @public
    * @param {Array} coordinate Coordenadas.
    * @param {Number} zoom Nivel de zoom del mapa.
-   * @return {M.impl.getTileColTileRow} Columna y fila de la tesela.
+   * @return {IDEE.impl.getTileColTileRow} Columna y fila de la tesela.
    * @api
    */
   getTileColTileRow(coordinate, zoom) {

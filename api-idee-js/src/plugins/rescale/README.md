@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
 </p>
-<h1 align="center"><strong>API IDEE</strong> <small>🔌 M.plugin.Rescale</small></h1>
+<h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.Rescale</small></h1>
 
 # Descripción
 
@@ -89,10 +89,10 @@ https://componentes.cnig.es/api-idee?rescale=TL
 ```
 ### Ejemplos de uso API-REST en base64
 
-Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad M.utils.encodeBase64.
+Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad IDEE.utils.encodeBase64.
 Ejemplo:
 ```javascript
-M.utils.encodeBase64(obj_params);
+IDEE.utils.encodeBase64(obj_params);
 ```
 
 Ejemplo de constructor del plugin:
@@ -112,11 +112,11 @@ https://componentes.cnig.es/api-idee/?rescale=base64=eyJjb2xsYXBzaWJsZSI6dHJ1ZSw
 # Ejemplo de uso
 
 ```javascript
-const map = M.map({
+const map = IDEE.map({
   container: 'map'
 });
 
-const mp = new M.plugin.Rescale({
+const mp = new IDEE.plugin.Rescale({
     position: 'TL',
   });
 

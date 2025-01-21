@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/Lyrcomparecontrol
+ * @module IDEE/impl/control/Lyrcomparecontrol
  */

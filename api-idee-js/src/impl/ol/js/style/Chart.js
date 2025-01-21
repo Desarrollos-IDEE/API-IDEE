@@ -1,9 +1,9 @@
 /**
- * @module M/impl/style/Chart
+ * @module IDEE/impl/style/Chart
  */
-import { isNullOrEmpty, isObject } from 'M/util/Utils';
-import * as Align from 'M/style/Align';
-import FacadeChart from 'M/style/Chart';
+import { isNullOrEmpty, isObject } from 'IDEE/util/Utils';
+import * as Align from 'IDEE/style/Align';
+import FacadeChart from 'IDEE/style/Chart';
 import OLFeature from 'ol/Feature';
 import OLStyleStroke from 'ol/style/Stroke';
 import OLGeomPoint from 'ol/geom/Point';
@@ -11,7 +11,7 @@ import OLStyleText from 'ol/style/Text';
 import OLStyleFill from 'ol/style/Fill';
 import OLStyle from 'ol/style/Style';
 // import OLStyleIcon from 'ol/style/Icon';
-import * as Baseline from 'M/style/Baseline';
+import * as Baseline from 'IDEE/style/Baseline';
 import OLChart from '../olchart/OLChart';
 import StyleCentroid from './Centroid';
 import Feature from './Feature';
@@ -284,7 +284,7 @@ class Chart extends Feature {
   *  - rotateWithView: Determinar si el simbolizador rota con el mapa.
   *  - variables: Valores de la clase.
   *
-  * @implements {M.impl.style.Simple}
+  * @implements {IDEE.impl.style.Simple}
   * @api
   */
   constructor(options = {}) {
@@ -295,7 +295,7 @@ class Chart extends Feature {
     /**
      * Variables de estilo.
      * @private
-     * @type {Array<M.style.chart.Variable>}
+     * @type {Array<IDEE.style.chart.Variable>}
      */
     this.variables_ = options.variables || [];
 
@@ -495,7 +495,7 @@ class Chart extends Feature {
    * Este método aplica estilo a la capa.
    * @public
    * @function
-   * @param {M.layer.Vector} layer Capa.
+   * @param {IDEE.layer.Vector} layer Capa.
    * @api stable
    */
   applyToLayer(layer) {

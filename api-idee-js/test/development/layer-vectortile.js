@@ -1,7 +1,7 @@
-import { map as Mmap } from 'M/api-idee';
-import MVT from 'M/layer/MVT';
-import stylePolygon from 'M/style/Polygon';
-import stylePoint from 'M/style/Point';
+import { map as Mmap } from 'IDEE/api-idee';
+import MVT from 'IDEE/layer/MVT';
+import stylePolygon from 'IDEE/style/Polygon';
+import stylePoint from 'IDEE/style/Point';
 
 window.stylePolygon = stylePolygon;
 window.stylePoint = stylePoint;

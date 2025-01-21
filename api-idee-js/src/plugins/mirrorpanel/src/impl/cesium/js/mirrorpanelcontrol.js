@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/MirrorpanelControl
+ * @module IDEE/impl/control/MirrorpanelControl
  */

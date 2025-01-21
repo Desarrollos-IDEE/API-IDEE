@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
 </p>
-<h1 align="center"><strong>API IDEE</strong> <small>🔌 M.plugin.Modal</small></h1>
+<h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.Modal</small></h1>
 
 # Descripción
 
@@ -140,10 +140,10 @@ https://componentes.cnig.es/api-idee?modal=TR*true*true*Ayuda*https%3A%2F%2Fcomp
 
 ### Ejemplo de uso API-REST en base64
 
-Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad M.utils.encodeBase64.
+Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad IDEE.utils.encodeBase64.
 Ejemplo:
 ```javascript
-M.utils.encodeBase64(obj_params);
+IDEE.utils.encodeBase64(obj_params);
 ```
 
 Ejemplo de constructor:
@@ -166,12 +166,12 @@ https://componentes.cnig.es/api-idee?modal=base64=eyJwb3NpdGlvbiI6IlRSIiwiY29sbG
 # Ejemplo de uso
 
 ```javascript
-const map = M.map({
+const map = IDEE.map({
   container: 'map'
 });
 
 
-const mp = new M.plugin.Modal({
+const mp = new IDEE.plugin.Modal({
   position: 'TR',
   url_es: 'https://componentes.cnig.es/ayudaIberpix/es.html',
   url_en: 'https://componentes.cnig.es/ayudaIberpix/en.html',

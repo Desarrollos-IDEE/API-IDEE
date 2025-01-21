@@ -3,7 +3,7 @@
     "name": "infocoordinates",
     "separator": "*"
   },
-  "constructor": "M.plugin.Infocoordinates",
+  "constructor": "IDEE.plugin.Infocoordinates",
   "parameters": [{
     "type": "object",
     "properties": [{

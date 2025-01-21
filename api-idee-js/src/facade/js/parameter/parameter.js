@@ -1,6 +1,6 @@
 /**
- * @module M/parameter
- * @example import parameter from 'M/parameter';
+ * @module IDEE/parameter
+ * @example import parameter from 'IDEE/parameter';
  */
 import {
   isUndefined, isNull, isArray, isNullOrEmpty, isFunction, isObject, isString, isUrl, normalize,
@@ -18,7 +18,7 @@ import { getValue } from '../i18n/language';
  * @param {String|Array<String>|Array<Number>|Mx.Center} centerParameterVar Parámetros
  * proporcionados por el usuario.
  * @returns {Mx.Center} Objeto con los parámetros del centro.
- * @throws {M.exception} Argumento no válido.
+ * @throws {IDEE.exception} Argumento no válido.
  */
 export const center = (centerParameterVar) => {
   let centerParameter = centerParameterVar;
@@ -117,9 +117,9 @@ const getParameters = (params) => {
  * @public
  * @function
  * @param {String|Object} parameter Parámetro.
- * @param {M.layer.Type} forcedType Tipo forzado.
- * @returns {M.layer.Type} Tipo de capa.
- * @throws {M.exception} Tipo de capa no soportado o no reconocido.
+ * @param {IDEE.layer.Type} forcedType Tipo forzado.
+ * @returns {IDEE.layer.Type} Tipo de capa.
+ * @throws {IDEE.exception} Tipo de capa no soportado o no reconocido.
  * @api
  */
 export const getType = (parameter, forcedType) => {
@@ -174,7 +174,7 @@ export const getType = (parameter, forcedType) => {
  * @public
  * @function
  * @api
- * @throws {M.exception} Si el parámetro no es especificado o de tipo no soportado.
+ * @throws {IDEE.exception} Si el parámetro no es especificado o de tipo no soportado.
  */
 export const maxExtent = (maxExtentParam) => {
   const maxExtentParameter = maxExtentParam;
@@ -308,7 +308,7 @@ export const maxExtent = (maxExtentParam) => {
  * @public
  * @function
  * @api
- * @throws {M.exception} Si el parámetro no es especificado o de tipo no soportado.
+ * @throws {IDEE.exception} Si el parámetro no es especificado o de tipo no soportado.
  */
 export const projection = (projectionParameter) => {
   const projectionVar = {
@@ -328,7 +328,7 @@ export const projection = (projectionParameter) => {
       projectionVar.code = projectionArray[0];
       projectionVar.units = normalize(projectionArray[1].substring(0, 1));
     } else {
-      Exception(`El formato del parámetro projection no es correcto. </br>Se usará la proyección por defecto: ${M.config.DEFAULT_PROJ}`);
+      Exception(`El formato del parámetro projection no es correcto. </br>Se usará la proyección por defecto: ${IDEE.config.DEFAULT_PROJ}`);
     }
   } else if (isObject(projectionParameter)) {
     // object
@@ -338,7 +338,7 @@ export const projection = (projectionParameter) => {
       projectionVar.code = projectionParameter.code;
       projectionVar.units = normalize(projectionParameter.units.substring(0, 1));
     } else {
-      Exception(`El formato del parámetro projection no es correcto. </br>Se usará la proyección por defecto: ${M.config.DEFAULT_PROJ}`);
+      Exception(`El formato del parámetro projection no es correcto. </br>Se usará la proyección por defecto: ${IDEE.config.DEFAULT_PROJ}`);
     }
   } else {
     // unknown
@@ -361,7 +361,7 @@ export const projection = (projectionParameter) => {
  * @public
  * @function
  * @api
- * @throws {M.exception} Si el parámetro no es especificado o de tipo no soportado.
+ * @throws {IDEE.exception} Si el parámetro no es especificado o de tipo no soportado.
  */
 export const resolutions = (resolutionsParam) => {
   let resolutionsParameter = resolutionsParam;
@@ -412,7 +412,7 @@ export const resolutions = (resolutionsParam) => {
  * @public
  * @function
  * @api
- * @throws {M.exception} Si el parámetro no es especificado o de tipo no soportado.
+ * @throws {IDEE.exception} Si el parámetro no es especificado o de tipo no soportado.
  */
 export const zoom = (zoomParam) => {
   const zoomParameter = zoomParam;
@@ -448,7 +448,7 @@ export const zoom = (zoomParam) => {
  * @public
  * @function
  * @api
- * @throws {M.exception} Si el parámetro no es especificado o de tipo no soportado.
+ * @throws {IDEE.exception} Si el parámetro no es especificado o de tipo no soportado.
  */
 export const minZoom = (minZoomParam) => {
   const minZoomParameter = minZoomParam;
@@ -484,7 +484,7 @@ export const minZoom = (minZoomParam) => {
  * @public
  * @function
  * @api
- * @throws {M.exception} Si el parámetro no es especificado o de tipo no soportado.
+ * @throws {IDEE.exception} Si el parámetro no es especificado o de tipo no soportado.
  */
 export const maxZoom = (maxZoomParam) => {
   const maxZoomParameter = maxZoomParam;
@@ -521,7 +521,7 @@ export const maxZoom = (maxZoomParam) => {
  * @param {string} parameter Parámetro de capas KML especificado.
  * @returns {string} Nombre de la capa.
  * @api
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  */
 export const getNameKML = (parameter) => {
   let name;
@@ -563,7 +563,7 @@ export const getNameKML = (parameter) => {
  * @param {String} parameter Parámetro de capas KML especificado.
  * @returns {Boolean|undefined} Valor del extract.
  * @api
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  */
 export const getExtractKML = (parameter) => {
   let extract;
@@ -605,7 +605,7 @@ export const getExtractKML = (parameter) => {
  * @param {string} parameter Parámetro que indica si mostrar o no
  * la etiqueta para la capa KML.
  * @returns {String} Devuelve la etiqueta de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getLabelKML = (parameter) => {
@@ -631,7 +631,7 @@ export const getLabelKML = (parameter) => {
  * @function
  * @param {string} parameter Parámetro para obtener la visibilidad.
  * @returns {boolean} Visibilidad de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getVisibilityKML = (parameter) => {
@@ -657,7 +657,7 @@ export const getVisibilityKML = (parameter) => {
  * @function
  * @param {string} parameter Parámetro para obtener la leyenda.
  * @returns {string} Leyenda de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getLegendKML = (parameter) => {
@@ -677,7 +677,7 @@ export const getLegendKML = (parameter) => {
  * @param {string} parameter Parámetro para obtener la URL del
  * servicio.
  * @returns {string} URL del servicio.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getURLKML = (parameter) => {
@@ -711,7 +711,7 @@ export const getURLKML = (parameter) => {
  * @public
  * @function
  * @api
- * @throws {M.exception} Si el parámetro no es especificado.
+ * @throws {IDEE.exception} Si el parámetro no es especificado.
  */
 export const kml = (userParamer) => {
   const userParameters = userParamer;
@@ -817,7 +817,7 @@ export const getNameWFS = (parameter) => {
  * @param {string|Mx.parameters.WFS} parameter Parámetro para obtener
  * la URL del servicio para la capa WFS.
  * @returns {string} URL del servicio.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getURLWFS = (parameter) => {
@@ -844,7 +844,7 @@ export const getURLWFS = (parameter) => {
  * @param {string|Mx.parameters.WFS} parameter Parámetro para obtener
  * el espacio de nombres de la capa WFS.
  * @returns {string} Espacio de nombres de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getNamespaceWFS = (parameter) => {
@@ -886,7 +886,7 @@ export const getNamespaceWFS = (parameter) => {
  * @param {string|Mx.parameters.WFS} parameter Parámetro para obtener la leyenda
  * de la capa WFS.
  * @returns {string} Leyenda de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getLegendWFS = (parameter) => {
@@ -923,7 +923,7 @@ export const getLegendWFS = (parameter) => {
  * @param {string|Mx.parameters.WFS} parameter Parámetro para obtener el filtro
  * CQL de la capa WFS.
  * @returns {string} Filtro CQL.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getCQLWFS = (parameter) => {
@@ -962,7 +962,7 @@ export const getCQLWFS = (parameter) => {
  * @param {string|Mx.parameters.WFS} parameter Parámetro para obtener la geometría
  * de la capa WFS.
  * @returns {string} Geometría de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getGeometryWFS = (parameter) => {
@@ -1001,7 +1001,7 @@ export const getGeometryWFS = (parameter) => {
  * @param {string|Mx.parameters.WFS} parameter Parámetro para obtener
  * los identificadores de la capa WFS.
  * @returns {Array<string>} Identificadores de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getIdsWFS = (parameter) => {
@@ -1044,7 +1044,7 @@ export const getIdsWFS = (parameter) => {
  * @param {string|Mx.parameters.WFS} parameter Parámetro para obtener el estilo
  * de la capa WFS.
  * @returns {string} Estilo de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getStyleWFS = (parameter) => {
@@ -1153,7 +1153,7 @@ export const getOptionsWFS = (parameter) => {
  * @public
  * @function
  * @api
- * @throws {M.exception} Si el parámetro no es especificado.
+ * @throws {IDEE.exception} Si el parámetro no es especificado.
  */
 export const wfs = (userParameters) => {
   let layers = [];
@@ -1230,7 +1230,7 @@ export const wfs = (userParameters) => {
  * @param {string|Mx.parameters.GeoJSON} parameter Parámetro para obtener
  * la leyenda de la capa GeoJSON.
  * @returns {string} Leyenda de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getLegendGeoJSON = (parameter) => {
@@ -1401,7 +1401,7 @@ export const getStyleGeoJSON = (parameter) => {
  * @public
  * @function
  * @api
- * @throws {M.exception} Si el parámetro no es especificado.
+ * @throws {IDEE.exception} Si el parámetro no es especificado.
  */
 export const geojson = (userParameters) => {
   let layers = [];
@@ -1537,7 +1537,7 @@ export const getLegendMVT = (parameter) => {
  * @api
  * @param {string|Mx.parameters.MVT} userParameters Parámetros para la capa MVT.
  * @returns {Mx.parameters.MVT|Array<Mx.parameters.MVT>} Parámetros de la capa MVT.
- * @throws {M.exception} Si el parámetro no es especificado.
+ * @throws {IDEE.exception} Si el parámetro no es especificado.
  */
 export const mvt = (userParameters) => {
   let layers = [];
@@ -1583,7 +1583,7 @@ export const mvt = (userParameters) => {
  * @param {string|Mx.parameters.WMS} parameter Parámetro para obtener
  * el nombre de la capa WMS.
  * @returns {string} Nombre de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getNameWMS = (parameter) => {
@@ -2005,7 +2005,7 @@ export const getUseCapabilitiesWMS = (parameter) => {
  * @returns {Mx.parameters.WMS|Array<Mx.parameters.WMS>} Parámetros de la capa WMS.
  * @public
  * @function
- * @throws {M.exception} Si el parámetro no es especificado.
+ * @throws {IDEE.exception} Si el parámetro no es especificado.
  * @api
  */
 export const wms = (userParameters) => {
@@ -2100,7 +2100,7 @@ export const getNameGeoTIFF = (parameter) => {
  * @param {string|Mx.parameters.GeoTIFF} parameter Parámetro para obtener la
  * URL del servicio de la capa GeoTIFF.
  * @returns {string} URL del servicio.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getURLGeoTIFF = (parameter) => {
@@ -2130,7 +2130,7 @@ export const getURLGeoTIFF = (parameter) => {
  * @param {string|Mx.parameters.GeoTIFF} parameter Parámetro para obtener la
  * URL del servicio de la capa GeoTIFF.
  * @returns {string} URL del servicio.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getBlobGeoTIFF = (parameter) => {
@@ -2155,7 +2155,7 @@ export const getBlobGeoTIFF = (parameter) => {
  * @param {string|Mx.parameters.GeoTIFF} parameter Parámetro para obtener
  * la proyeccion de la capa GeoTIFF.
  * @returns {string} Conjunto de matrices.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getProjectionGeoTIFF = (parameter) => {
@@ -2185,7 +2185,7 @@ export const getProjectionGeoTIFF = (parameter) => {
  * @param {string|Mx.parameters.GeoTIFF} parameter Parámetro para obtener
  * la leyenda de la capa GeoTIFF.
  * @returns {string} Leyenda de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getLegendGeoTIFF = (parameter) => {
@@ -2216,7 +2216,7 @@ export const getLegendGeoTIFF = (parameter) => {
  * la transparencia de la capa GeoTIFF.
  * @returns {boolean} Devuelve verdadero si la capa es transparente, falso
  * si no.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getTransparentGeoTIFF = (parameter) => {
@@ -2248,7 +2248,7 @@ export const getTransparentGeoTIFF = (parameter) => {
  * @param {string|Mx.parameters.GeoTIFF} parameter Parámetro para obtener
  * el conjunto de capas GeoTIFF.
  * @returns {string} Conjunto de capas.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getDisplayInLayerSwitcherGeoTIFF = (parameter) => {
@@ -2280,7 +2280,7 @@ export const getDisplayInLayerSwitcherGeoTIFF = (parameter) => {
  * @param {string|Mx.parameters.GeoTIFF} parameter Parámetro para obtener
  * la visibilidad de la capa GeoTIFF.
  * @returns {boolean} Visibilidad de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getVisibilityGeoTIFF = (parameter) => {
@@ -2312,7 +2312,7 @@ export const getVisibilityGeoTIFF = (parameter) => {
  * @param {string|Mx.parameters.GeoTIFF} parameter Parámetro para obtener
  * la normalización de la capa GeoTIFF.
  * @returns {boolean} Normalización de los datos.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getNormalizeGeoTIFF = (parameter) => {
@@ -2380,7 +2380,7 @@ export const getNameWMTS = (parameter) => {
  * @param {string|Mx.parameters.WMTS} parameter Parámetro para obtener la
  * URL del servicio de la capa WMTS.
  * @returns {string} URL del servicio.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getURLWMTS = (parameter) => {
@@ -2407,7 +2407,7 @@ export const getURLWMTS = (parameter) => {
  * @param {string|Mx.parameters.WMTS} parameter Parámetro para obtener el
  * conjunto de matrices de la capa WMTS.
  * @returns {string} Conjunto de matrices.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getMatrixSetWMTS = (parameter) => {
@@ -2444,7 +2444,7 @@ export const getMatrixSetWMTS = (parameter) => {
  * @param {string|Mx.parameters.WMTS} parameter Parámetro para obtener
  * la leyenda de la capa WMTS.
  * @returns {string} Leyenda de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getLegendWMTS = (parameter) => {
@@ -2483,7 +2483,7 @@ export const getLegendWMTS = (parameter) => {
  * @param {string|Mx.parameters.WMTS} parameter Parámetro de entrada para
  * obtener las opciones de la capa WMTS.
  * @returns {object} Devuelve las opciones de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getOptionsWMTS = (parameter) => {
@@ -2508,7 +2508,7 @@ export const getOptionsWMTS = (parameter) => {
  * la transparencia de la capa WMTS.
  * @returns {boolean} Devuelve verdadero si la capa es transparente, falso
  * si no.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getTransparentWMTS = (parameter) => {
@@ -2552,7 +2552,7 @@ export const getTransparentWMTS = (parameter) => {
  * @param {string|Mx.parameters.WMTS} parameter Parámetro para obtener
  * el formato de la capa WMTS.
  * @returns {string} Formato.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getFormatWMTS = (parameter) => {
@@ -2581,7 +2581,7 @@ export const getFormatWMTS = (parameter) => {
  * @param {string|Mx.parameters.WMTS} parameter Parámetro para obtener
  * el conjunto de capas WMTS.
  * @returns {string} Conjunto de capas.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getDisplayInLayerSwitcherWMTS = (parameter) => {
@@ -2612,7 +2612,7 @@ export const getDisplayInLayerSwitcherWMTS = (parameter) => {
  * @param {string|Mx.parameters.WMTS} parameter Parámetro que indica
  * si la capa WMTS es consultable.
  * @returns {boolean} Verdadero si es consultable, falso si no.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getQueryableWMTS = (parameter) => {
@@ -2643,7 +2643,7 @@ export const getQueryableWMTS = (parameter) => {
  * @param {string|Mx.parameters.WMTS} parameter Parámetro para obtener
  * la visibilidad de la capa WMTS.
  * @returns {boolean} Visibilidad de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getVisibilityWMTS = (parameter) => {
@@ -2829,7 +2829,7 @@ export const layergroup = (userParameters) => {
  * @param {string|Mx.parameters.XYZ} parameter Parámetro para obtener
  * el nombre de la capa XYZ.
  * @returns {string} Nombre de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getNameXYZ = (parameter) => {
@@ -2873,7 +2873,7 @@ export const getNameXYZ = (parameter) => {
  * @param {string|Mx.parameters.XYZ|Mx.parameters.TMS} parameter Parámetro
  * para obtener la URL del servicio para capas XYZ y TMS.
  * @returns {string} URL del servicio.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getURLXYZSource = (parameter) => {
@@ -2902,7 +2902,7 @@ export const getURLXYZSource = (parameter) => {
  * @param {number} position Posición del parámetro.
  * @param {string} nameVariable Nombre de la variable.
  * @returns {string} Valor del parámetro extra.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getExtraParameter = (parameter, defaultValue, position, nameVariable) => {
@@ -2943,7 +2943,7 @@ export const getExtraParameter = (parameter, defaultValue, position, nameVariabl
  * @public
  * @function
  * @api
- * @throws {M.exception} Si el parámetro no es especificado.
+ * @throws {IDEE.exception} Si el parámetro no es especificado.
  */
 export const xyz = (userParamer) => {
   const userParameters = userParamer;
@@ -3003,7 +3003,7 @@ export const xyz = (userParamer) => {
  * @param {string|Mx.parameters.TMS} parameter Parámetro para obtener
  * el nombre de la capa TMS.
  * @returns {string} Nombre de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getNameTMS = (parameter) => {
@@ -3185,7 +3185,7 @@ export const wmts = (userParameters) => {
  * @param {string|Mx.parameters.MBTiles} parameter Parámetro para obtener
  * la leyenda de la capa MBTile.
  * @returns {string} Leyenda de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getLegendMBTiles = (parameter) => {
@@ -3216,7 +3216,7 @@ export const getLegendMBTiles = (parameter) => {
  * @param {string|Mx.parameters.MBTiles} parameter Parámetro para obtener la
  * URL del servicio de la capa MBTiles.
  * @returns {string} URL del servicio.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getURLMBTiles = (parameter) => {
@@ -3283,7 +3283,7 @@ export const getTileLoadFunctionMBTiles = (parameter) => {
  * @param {string|Mx.parameters.MBTiles} parameter Parámetro para obtener
  * el nombre de la capa MBTiles.
  * @returns {string} Nombre de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getNameMBTiles = (parameter) => {
@@ -3318,7 +3318,7 @@ export const getNameMBTiles = (parameter) => {
  * @param {string|Mx.parameters.MBTiles} parameter Parámetro para obtener
  * la transparencia de la capa MBTiles.
  * @returns {boolean} Devuelve verdadero si es transparente, falso si no.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getTransparentMBTiles = (parameter) => {
@@ -3349,7 +3349,7 @@ export const getTransparentMBTiles = (parameter) => {
  * @param {string|Mx.parameters.MBTiles} parameter Parámetro para obtener
  * si la capa MBTiles es visible.
  * @returns {boolean} Devuelve verdadero si es visible, falso si no.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getVisibilityMBTiles = (parameter) => {
@@ -3384,7 +3384,7 @@ export const getVisibilityMBTiles = (parameter) => {
  * @param {string|Mx.parameters.MBTiles} parameter Parámetro para obtener
  * la opacidad de la capa MBTiles.
  * @returns {number} Opacidad de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getOpacityMBTiles = (parameter) => {
@@ -3415,7 +3415,7 @@ export const getOpacityMBTiles = (parameter) => {
  * @param {string|Mx.parameters.MBTiles} parameter Parámetro para obtener
  * el nivel máximo de la capa MBTiles.
  * @returns {number} Nivel máximo de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getMaxZoomLevelMBTiles = (parameter) => {
@@ -3446,7 +3446,7 @@ export const getMaxZoomLevelMBTiles = (parameter) => {
  * @param {string|Mx.parameters.MBTiles} parameter Parámetro para obtener la
  * máxima extensión de la capa MBTiles.
  * @returns {Mx.Extent} Máxima extensión de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getMaxExtentMBTiles = (parameter) => {
@@ -3486,7 +3486,7 @@ export const getMaxExtentMBTiles = (parameter) => {
  * @param {string|Mx.parameters.MBTiles} parameter Parámetro para obtener el tamaño
  * de la tesela de la capa MBTiles.
  * @returns {Number} Tamaño de la tesela de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getTileSizeMBTiles = (parameter) => {
@@ -3519,7 +3519,7 @@ export const getTileSizeMBTiles = (parameter) => {
  * @public
  * @function
  * @api
- * @throws {M.exception} Si el parámetro no es especificado.
+ * @throws {IDEE.exception} Si el parámetro no es especificado.
  */
 export const mbtiles = (userParameters) => {
   let layers = [];
@@ -3581,7 +3581,7 @@ export const mbtiles = (userParameters) => {
  * @param {string|Mx.parameters.MBTilesVector} parameter Parámetro para
  * obtener la leyenda de la capa MBTilesVector.
  * @returns {string} Leyenda de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getLegendMBTilesVector = (parameter) => {
@@ -3612,7 +3612,7 @@ export const getLegendMBTilesVector = (parameter) => {
  * @param {string|Mx.parameters.MBTilesVector} parameter Parámetro para obtener
  * la URL del servicio de la capa MBTilesVector.
  * @returns {string} URL del servicio.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getURLMBTilesVector = (parameter) => {
@@ -3680,7 +3680,7 @@ export const getTileLoadFunctionMBTilesVector = (parameter) => {
  * @param {string|Mx.parameters.MBTilesVector} parameter Parámetro para
  * obtener el nombre de la capa MBTilesVector.
  * @returns {string} Nombre de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getNameMBTilesVector = (parameter) => {
@@ -3715,7 +3715,7 @@ export const getNameMBTilesVector = (parameter) => {
  * @param {string|Mx.parameters.MBTilesVector} parameter Parámetro que indica
  * si la capa MBTilesVector es visible.
  * @returns {boolean} Devuelve verdadero si la capa es visible, falso si no.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getVisibilityMBTilesVector = (parameter) => {
@@ -3769,7 +3769,7 @@ export const getMaxExtentMBTilesVector = (parameter) => {
  * @param {string|Mx.parameters.MBTilesVector} parameter Parámetro para obtener el tamaño
  * de la tesela de la capa MBTilesVector.
  * @returns {Number} Tamaño de la tesela de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getTileSizeMBTilesVector = (parameter) => {
@@ -3800,7 +3800,7 @@ export const getTileSizeMBTilesVector = (parameter) => {
  * @param {string|Mx.parameters.MBTilesVector} parameter Parámetro para obtener el estilo
  * de la capa MBTilesVector.
  * @returns {string} Estilo de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getStyleMBTilesVector = (parameter) => {
@@ -3830,7 +3830,7 @@ export const getStyleMBTilesVector = (parameter) => {
  * @param {String} parameter Parámetro de capas MBTilesVector especificado.
  * @returns {Boolean|undefined} Valor del extract.
  * @api
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  */
 export const getExtractMBTilesVector = (parameter) => {
   let params;
@@ -3860,7 +3860,7 @@ export const getExtractMBTilesVector = (parameter) => {
  * @public
  * @function
  * @api
- * @throws {M.exception} Si el parámetro no es especificado.
+ * @throws {IDEE.exception} Si el parámetro no es especificado.
  */
 export const mbtilesvector = (userParameters) => {
   let layers = [];
@@ -3920,7 +3920,7 @@ export const mbtilesvector = (userParameters) => {
  * @param {string|Mx.parameters.OGCAPIFeatures} parameter Parámetro para obtener la leyenda
  * de la capa OGCAPIFeatures.
  * @returns {string} Leyenda de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 const getLegendOGC = (parameter) => {
@@ -3950,7 +3950,7 @@ const getLegendOGC = (parameter) => {
  * @param {string|Mx.parameters.OGCAPIFeatures} parameter Parámetro para obtener
  * la URL del servicio para la capa OGCAPIFeatures.
  * @returns {string} URL del servicio.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 const getURLOGC = (parameter) => {
@@ -4164,7 +4164,7 @@ const getFormatOGC = (parameter) => {
  * @param {string|Mx.parameters.OGCAPIFeatures} parameter Parámetro para obtener el estilo
  * de la capa OGCAPIFeatures.
  * @returns {string} Estilo de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getStyleOGC = (parameter) => {
@@ -4194,7 +4194,7 @@ export const getStyleOGC = (parameter) => {
  * @param {string|Mx.parameters.OGCAPIFeatures} parameter Parámetro para obtener los condicionales
  * de la capa OGCAPIFeatures.
  * @returns {string} Condicionales de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getConditionalOGC = (parameter) => {
@@ -4213,7 +4213,7 @@ export const getConditionalOGC = (parameter) => {
  * @param {String} parameter Parámetro de capas OGCAPIFeatures especificado.
  * @returns {Boolean|undefined} Valor del extract.
  * @api
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  */
 export const getExtractOGC = (parameter) => {
   let params;
@@ -4241,7 +4241,7 @@ export const getExtractOGC = (parameter) => {
  * OGCAPIFeatures.
  * @public
  * @function
- * @throws {M.exception} Si el parámetro no es especificado.
+ * @throws {IDEE.exception} Si el parámetro no es especificado.
  * @api
  */
 export const ogcapifeatures = (userParameters) => {
@@ -4347,7 +4347,7 @@ const osm = (userParameters) => {
  * @param {string|Mx.parameters.Tiles3D} parameter Parámetro para obtener
  * la leyenda de la capa Tiles3D.
  * @returns {string} Leyenda de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getLegendTiles3D = (parameter) => {
@@ -4377,7 +4377,7 @@ export const getLegendTiles3D = (parameter) => {
  * @param {string|Mx.parameters.Tiles3D} parameter Parámetro para obtener la
  * URL del servicio de la capa Tiles3D.
  * @returns {string} URL del servicio.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getURLTiles3D = (parameter) => {
@@ -4404,7 +4404,7 @@ export const getURLTiles3D = (parameter) => {
  * @param {string|Mx.parameters.Tiles3D} parameter Parámetro para obtener
  * el nombre de la capa Tiles3D.
  * @returns {string} Nombre de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getNameTiles3D = (parameter) => {
@@ -4436,7 +4436,7 @@ export const getNameTiles3D = (parameter) => {
  * @param {string|Mx.parameters.Tiles3D} parameter Parámetro para obtener
  * la visibilidad de la capa Tiles3D.
  * @returns {boolean} Visibilidad de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getVisibilityTiles3D = (parameter) => {
@@ -4466,7 +4466,7 @@ export const getVisibilityTiles3D = (parameter) => {
  * @param {string|Mx.parameters.Tiles3D} parameter Parámetro para obtener
  * el conjunto de capas Tiles3D.
  * @returns {string} Conjunto de capas.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getDisplayInLayerSwitcherTiles3D = (parameter) => {
@@ -4545,7 +4545,7 @@ export const tiles3d = (userParameters) => {
  * @param {string|Mx.parameters.Terrain} parameter Parámetro para obtener
  * la leyenda de la capa Terrain.
  * @returns {string} Leyenda de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getLegendTerrain = (parameter) => {
@@ -4575,7 +4575,7 @@ export const getLegendTerrain = (parameter) => {
  * @param {string|Mx.parameters.Terrain} parameter Parámetro para obtener la
  * URL del servicio de la capa Terrain.
  * @returns {string} URL del servicio.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getURLTerrain = (parameter) => {
@@ -4602,7 +4602,7 @@ export const getURLTerrain = (parameter) => {
  * @param {string|Mx.parameters.Terrain} parameter Parámetro para obtener
  * el nombre de la capa Terrain.
  * @returns {string} Nombre de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getNameTerrain = (parameter) => {
@@ -4634,7 +4634,7 @@ export const getNameTerrain = (parameter) => {
  * @param {string|Mx.parameters.Terrain} parameter Parámetro para obtener
  * la visibilidad de la capa Terrain.
  * @returns {boolean} Visibilidad de la capa.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getVisibilityTerrain = (parameter) => {
@@ -4664,7 +4664,7 @@ export const getVisibilityTerrain = (parameter) => {
  * @param {string|Mx.parameters.Terrain} parameter Parámetro para obtener
  * el conjunto de capas Terrain.
  * @returns {string} Conjunto de capas.
- * @throws {M.exception} Si el parámetro no es de un tipo soportado.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
 export const getDisplayInLayerSwitcherTerrain = (parameter) => {

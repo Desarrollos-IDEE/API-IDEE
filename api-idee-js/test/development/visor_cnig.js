@@ -6,7 +6,7 @@ import ZoomExtent from 'plugins/zoomextent/src/facade/js/zoomextent';
 import MouseSRS from 'plugins/mousesrs/src/facade/js/mousesrs';
 import TOC from 'plugins/toc/src/facade/js/toc';
 
-const mapjs = M.map({
+const mapjs = IDEE.map({
   container: 'map',
   controls: ['panzoom', 'scale*true', 'scaleline', 'rotate', 'location', 'backgroundlayers', 'getfeatureinfo'],
   zoom: 5,
@@ -17,21 +17,21 @@ const mapjs = M.map({
 
 window.mapjs = mapjs;
 
-const layerinicial = new M.layer.WMS({
+const layerinicial = new IDEE.layer.WMS({
   url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
   name: 'AU.AdministrativeBoundary',
   legend: 'Limite administrativo',
   tiled: false,
 }, {});
 
-const layerUA = new M.layer.WMS({
+const layerUA = new IDEE.layer.WMS({
   url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
   name: 'AU.AdministrativeUnit',
   legend: 'Unidad administrativa',
   tiled: false,
 }, {});
 
-const ocupacionSuelo = new M.layer.WMTS({
+const ocupacionSuelo = new IDEE.layer.WMTS({
   url: 'http://wmts-mapa-lidar.idee.es/lidar',
   name: 'EL.GridCoverageDSM',
   legend: 'Modelo Digital de Superficies LiDAR',
@@ -41,7 +41,7 @@ const ocupacionSuelo = new M.layer.WMTS({
 });
 
 
-const kml = new M.layer.KML('KML*Delegaciones IGN*https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml*false*false');
+const kml = new IDEE.layer.KML('KML*Delegaciones IGN*https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml*false*false');
 
 mapjs.addLayers([ocupacionSuelo, layerinicial, layerUA, kml]);
 // mapjs.addLayers([ocupacionSuelo]);

@@ -1,6 +1,6 @@
 /* eslint-disable */
 /**
- * @module M/impl/format/OWS
+ * @module IDEE/impl/format/OWS
  */
 import XML from './CesiumXML';
 import {
@@ -37,7 +37,7 @@ const PARSERS = makeStructureNS(NAMESPACE_URIS, {
  * Implementación de la clase OWS.
  *
  * @api
- * @extends {M.impl.format.CesiumXML}
+ * @extends {IDEE.impl.format.CesiumXML}
  */
 class OWS extends XML {
   /**

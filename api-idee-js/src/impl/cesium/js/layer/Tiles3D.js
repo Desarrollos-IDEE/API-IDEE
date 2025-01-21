@@ -1,16 +1,16 @@
 /* eslint-disable no-underscore-dangle */
 /**
- * @module M/impl/layer/Tiles3D
+ * @module IDEE/impl/layer/Tiles3D
  */
 import {
   isNullOrEmpty,
   extend,
   isFunction,
   includes,
-} from 'M/util/Utils';
-import { getValue } from 'M/i18n/language';
-import { compileSync as compileTemplate } from 'M/util/Template';
-import Popup from 'M/Popup';
+} from 'IDEE/util/Utils';
+import { getValue } from 'IDEE/i18n/language';
+import { compileSync as compileTemplate } from 'IDEE/util/Template';
+import Popup from 'IDEE/Popup';
 import {
   Cesium3DTileStyle,
   Cesium3DTileset,
@@ -33,7 +33,7 @@ import Layer from './Layer';
  * @property {Boolean} displayInLayerSwitcher Mostrar en el selector de capas.
  *
  * @api
- * @extends {M.impl.Layer}
+ * @extends {IDEE.impl.Layer}
  */
 class Tiles3D extends Layer {
   /**
@@ -95,7 +95,7 @@ class Tiles3D extends Layer {
    *
    * @public
    * @function
-   * @param {M.impl.Map} map Mapa de la implementación.
+   * @param {IDEE.impl.Map} map Mapa de la implementación.
    * @api
    */
   addTo(map) {

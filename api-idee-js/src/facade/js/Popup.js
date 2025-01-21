@@ -1,5 +1,5 @@
 /**
- * @module M/Popup
+ * @module IDEE/Popup
  */
 import PopupImpl from 'impl/Popup';
 
@@ -46,7 +46,7 @@ class Tab {
     this.content = options.content;
 
     const intelligence = isUndefined(options.intelligence)
-      ? M.config.POPUP_INTELLIGENCE : options.intelligence;
+      ? IDEE.config.POPUP_INTELLIGENCE : options.intelligence;
 
     if (typeof intelligence === 'boolean' && intelligence) {
       this.content = transfomContent(this.content);
@@ -76,7 +76,7 @@ class Popup extends Base {
    * Constructor principal de la clase.
    *
    * @constructor
-   * @extends {M.facade.Base}
+   * @extends {IDEE.facade.Base}
    * @api
    */
   constructor(options) {
@@ -176,11 +176,11 @@ class Popup extends Base {
       this.show(coordinate);
     }
 
-    if (/Mobi|Android/i.test(window.navigator.userAgent) || MWindow.WIDTH <= M.config.MOBILE_WIDTH) {
-      M.config.MOVE_MAP_EXTRACT = false;
+    if (/Mobi|Android/i.test(window.navigator.userAgent) || MWindow.WIDTH <= IDEE.config.MOBILE_WIDTH) {
+      IDEE.config.MOVE_MAP_EXTRACT = false;
     }
 
-    if (M.config.MOVE_MAP_EXTRACT) {
+    if (IDEE.config.MOVE_MAP_EXTRACT) {
       this.getImpl().setAnimationView();
     }
   }
@@ -420,7 +420,7 @@ class Popup extends Base {
       this.element_.style.top = '';
       this.element_.classList.remove('m-no-animation');
       // mobile center
-      if (MWindow.WIDTH <= M.config.MOBILE_WIDTH) {
+      if (MWindow.WIDTH <= IDEE.config.MOBILE_WIDTH) {
         this.getImpl().centerByStatus(status, this.coord_);
       }
     }

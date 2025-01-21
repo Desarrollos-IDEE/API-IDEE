@@ -1,19 +1,19 @@
 /**
- * @module M/impl/Popup
+ * @module IDEE/impl/Popup
  */
 import {
   enableTouchScroll,
   isFunction,
   isNullOrEmpty,
-} from 'M/util/Utils';
-import FacadePopup from 'M/Popup';
+} from 'IDEE/util/Utils';
+import FacadePopup from 'IDEE/Popup';
 import {
   Cartesian3,
   Cartographic,
   defined,
   sampleTerrainMostDetailed,
 } from 'cesium';
-import * as EventType from 'M/event/eventtype';
+import * as EventType from 'IDEE/event/eventtype';
 import ImplUtils from './util/Utils';
 
 /**
@@ -22,7 +22,7 @@ import ImplUtils from './util/Utils';
  *
  * @property {Boolean} panMapIfOutOfView Indica si el mapa se desplaza o no.
  * @property {Object} ani_opts Opciones de animación.
- * @property {M.Map} facadeMap_ Mapa.
+ * @property {IDEE.Map} facadeMap_ Mapa.
  * @property {Array<Number>} cachedAniPixel_
  *
  * @api
@@ -69,7 +69,7 @@ class Popup {
     /**
       * Fachada del mapa a implementar.
       * @private
-      * @type {M.Map}
+      * @type {IDEE.Map}
       */
     this.facadeMap_ = null;
 
@@ -117,7 +117,7 @@ class Popup {
    * Este método añade el HTML del "Popup" al mapa.
    *
    * @function
-   * @param {M.Map} map Mapa.
+   * @param {IDEE.Map} map Mapa.
    * @param {String} html Cadena de HTML para mostrar dentro del "Popup".
    * @public
    * @api
@@ -144,7 +144,7 @@ class Popup {
    * @param {function} callback Función 'callback' de llamada para ejecutar.
    * @public
    * @api
-   * @memberof module:M/impl/Popup#
+   * @memberof module:IDEE/impl/Popup#
    */
   show(coord, callback) {
     this.setPosition_(coord);
@@ -162,7 +162,7 @@ class Popup {
    * Este método centra el "Popup".
    *
    * @function
-   * @param {M.Popup.status} status Estado del "Popup".
+   * @param {IDEE.Popup.status} status Estado del "Popup".
    * @param {Array<Number>} coord Coordenadas donde situar el "Popup".
    * @public
    * @api

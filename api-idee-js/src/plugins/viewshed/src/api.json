@@ -3,7 +3,7 @@
     "name": "viewshed",
     "separator": "*"
   },
-  "constructor": "M.plugin.ViewShed",
+  "constructor": "IDEE.plugin.ViewShed",
   "parameters": [{
     "type": "object",
     "properties": [{

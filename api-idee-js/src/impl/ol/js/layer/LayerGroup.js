@@ -1,8 +1,8 @@
 /**
- * @module M/impl/layer/LayerGroup
+ * @module IDEE/impl/layer/LayerGroup
  */
-import * as EventType from 'M/event/eventtype';
-import { isNullOrEmpty } from 'M/util/Utils';
+import * as EventType from 'IDEE/event/eventtype';
+import { isNullOrEmpty } from 'IDEE/util/Utils';
 import { Group } from 'ol/layer';
 import { Collection } from 'ol';
 
@@ -13,7 +13,7 @@ import Layer from './Layer';
 * LayerGroup es una clase que representa un grupo de capas.
 *
 * @api
-* @extends {M.impl.layer.Vector}
+* @extends {IDEE.impl.layer.Vector}
 */
 class LayerGroup extends Layer {
   /**
@@ -22,7 +22,7 @@ class LayerGroup extends Layer {
    * con parámetros especificados por el usuario.
    *
    * @constructor
-   * @implements {M.impl.layer.Vector}
+   * @implements {IDEE.impl.layer.Vector}
    * @param {Object} parameters Parámetros de la fachada, la fachada se refiere a un patrón
    * estructural como una capa de abstracción con un patrón de diseño.
    * @param {Mx.parameters.LayerOptions} options Opciones personalizadas para esta capa.
@@ -55,7 +55,7 @@ class LayerGroup extends Layer {
    *
    * @public
    * @function
-   * @param {M.impl.Map} map Mapa de la implementación.
+   * @param {IDEE.impl.Map} map Mapa de la implementación.
    * @api stable
    */
   addTo(map, addLayer = true) {
@@ -182,7 +182,7 @@ class LayerGroup extends Layer {
    * Este método establece la capa de OpenLayers en la capa.
    * Método privado.
    * @function
-   * @param {M.layer} layer Capa.
+   * @param {IDEE.layer} layer Capa.
    * @private
    * @api stable
    */
@@ -225,7 +225,7 @@ class LayerGroup extends Layer {
   /**
    * Este método agrega una capa al grupo.
    * @function
-   * @param {M.layer} layer Capa a agregar.
+   * @param {IDEE.layer} layer Capa a agregar.
    * @public
    * @api
    */
@@ -256,7 +256,7 @@ class LayerGroup extends Layer {
   /**
    * Este método elimina una capa del grupo.
    * @function
-   * @param {M.layer} layer Capa a eliminar.
+   * @param {IDEE.layer} layer Capa a eliminar.
    * @public
    * @api
    */
@@ -269,7 +269,7 @@ class LayerGroup extends Layer {
    * Este método elimina una capa del grupo.
    * Método privado.
    * @function
-   * @param {M.layer} layer Capa a eliminar.
+   * @param {IDEE.layer} layer Capa a eliminar.
    * @private
    * @api
    */
@@ -284,7 +284,7 @@ class LayerGroup extends Layer {
   /**
    * Este método saca una capa del grupo.
    * @function
-   * @param {M.layer} layer Capa a sacar.
+   * @param {IDEE.layer} layer Capa a sacar.
    * @param {boolean} upToMap Indica si se saca hasta el mapa.
    * @public
    * @api
@@ -314,8 +314,8 @@ class LayerGroup extends Layer {
    * Este método establece el grupo raíz de la capa.
    * Método privado.
    * @function
-   * @param {M.layer} layer Capa.
-   * @param {M.impl.layer.LayerGroup} rootGroup Grupo raíz.
+   * @param {IDEE.layer} layer Capa.
+   * @param {IDEE.impl.layer.LayerGroup} rootGroup Grupo raíz.
    * @private
    * @api
    */
@@ -329,7 +329,7 @@ class LayerGroup extends Layer {
   /**
    * Este método devuelve las capas del grupo.
    * @function
-   * @returns {Array<M.layer>} Capas del grupo.
+   * @returns {Array<IDEE.layer>} Capas del grupo.
    * @public
    * @api
    */

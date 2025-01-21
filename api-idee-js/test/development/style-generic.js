@@ -1,12 +1,12 @@
-import { map as Mmap } from 'M/api-idee';
-import GeoJSON from 'M/layer/GeoJSON';
+import { map as Mmap } from 'IDEE/api-idee';
+import GeoJSON from 'IDEE/layer/GeoJSON';
 import OLSourceVector from 'ol/source/Vector';
-import MVT from 'M/layer/MVT';
-import Vector from 'M/layer/Vector';
-import MBTilesVector from 'M/layer/MBTilesVector';
-import WFS from 'M/layer/WFS';
-import Generic from 'M/style/Generic';
-import Feature from 'M/feature/Feature';
+import MVT from 'IDEE/layer/MVT';
+import Vector from 'IDEE/layer/Vector';
+import MBTilesVector from 'IDEE/layer/MBTilesVector';
+import WFS from 'IDEE/layer/WFS';
+import Generic from 'IDEE/style/Generic';
+import Feature from 'IDEE/feature/Feature';
 
 const mapjs = Mmap({
   container: 'map',

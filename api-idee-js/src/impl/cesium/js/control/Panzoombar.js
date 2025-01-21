@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/Panzoombar
+ * @module IDEE/impl/control/Panzoombar
  */

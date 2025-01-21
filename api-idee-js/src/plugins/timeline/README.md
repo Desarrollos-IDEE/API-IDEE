@@ -1,4 +1,4 @@
-# M.plugin.Timeline
+# IDEE.plugin.Timeline
 
 Plugin de línea del tiempo.
 | timelineType AbsoluteSimple  | timelineType Absolute Relative| timelineType Absolute|
@@ -54,7 +54,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
   Ejemplos de uso
   Insertar intervalos a través de servicios WMS. La URL en formato API-IDEE sigue la siguiente estructura: Servicio,Leyenda,URL,Nombre. Separados por "*".
   ```javascript
-    const mp = new M.plugin.Timeline({
+    const mp = new IDEE.plugin.Timeline({
     position: 'TL',
     intervals: [
       ["NACIONAL 1981-1986", "1986", "WMS*NACIONAL_1981-1986*https://www.ign.es/wms/pnoa-historico*NACIONAL_1981-1986"],

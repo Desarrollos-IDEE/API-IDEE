@@ -8,10 +8,10 @@ import { getValue } from '../../../facade/js/i18n/language';
  *
  * @constructor
  * @param {string} type - Type of the measure geometry
- * @extends {M.impl.Control}
+ * @extends {IDEE.impl.Control}
  * @api stable
  */
-export default class Measure extends M.impl.Control {
+export default class Measure extends IDEE.impl.Control {
   constructor(type) {
     super();
 
@@ -53,7 +53,7 @@ export default class Measure extends M.impl.Control {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.facadeMap_ = null;
 
@@ -84,7 +84,7 @@ export default class Measure extends M.impl.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map - Map to add the plugin
+   * @param {IDEE.Map} map - Map to add the plugin
    * @param {HTMLElement} element - template of this control
    * @api stable
    */
@@ -155,10 +155,10 @@ export default class Measure extends M.impl.Control {
     this.facadeMap_.getMapImpl().un('pointermove', this.pointerMoveHandler_.bind(this));
     this.facadeMap_.getMapImpl().removeInteraction(this.draw_);
     // this.clear();
-    if (!M.utils.isNullOrEmpty(this.helpTooltip_)) {
+    if (!IDEE.utils.isNullOrEmpty(this.helpTooltip_)) {
       this.facadeMap_.getMapImpl().removeOverlay(this.helpTooltip_);
     }
-    if (!M.utils.isNullOrEmpty(this.measureTooltip_)) {
+    if (!IDEE.utils.isNullOrEmpty(this.measureTooltip_)) {
       this.facadeMap_.getMapImpl().removeOverlay(this.measureTooltip_);
     }
     this.active = false;
@@ -239,7 +239,7 @@ export default class Measure extends M.impl.Control {
    * @return {Promise} Template tooltip
    */
   createHelpTooltip_() {
-    const helpTooltipElement = M.template.compileSync(tooltipPointerHTML, {
+    const helpTooltipElement = IDEE.template.compileSync(tooltipPointerHTML, {
       jsonp: true,
       vars: {
         translations: getValue('text'),
@@ -261,14 +261,14 @@ export default class Measure extends M.impl.Control {
    * @function
    */
   createMeasureTooltip_() {
-    const measureTooltipElement = M.template.compileSync(tooltipHTML, {
+    const measureTooltipElement = IDEE.template.compileSync(tooltipHTML, {
       jsonp: true,
       vars: {
         translations: getValue('text'),
       },
     });
 
-    if (!M.utils.isNullOrEmpty(this.measureTooltip_)) {
+    if (!IDEE.utils.isNullOrEmpty(this.measureTooltip_)) {
       this.overlays_.push(this.measureTooltip_);
     }
     this.measureTooltip_ = new ol.Overlay({
@@ -324,7 +324,7 @@ export default class Measure extends M.impl.Control {
     if (this.currentFeature_) {
       helpMsg = this.helpMsgContinue_;
     }
-    if (!M.utils.isNullOrEmpty(this.helpTooltip_)) {
+    if (!IDEE.utils.isNullOrEmpty(this.helpTooltip_)) {
       this.helpTooltip_.getElement().innerHTML = helpMsg;
       this.helpTooltip_.setPosition(evt.coordinate);
     }
@@ -341,7 +341,7 @@ export default class Measure extends M.impl.Control {
     const tooltipText = this.formatGeometry(newGeometry);
     const tooltipCoord = this.getTooltipCoordinate(newGeometry);
 
-    if (!M.utils.isNullOrEmpty(this.measureTooltip_)) {
+    if (!IDEE.utils.isNullOrEmpty(this.measureTooltip_)) {
       this.measureTooltip_.getElement().innerHTML = tooltipText;
       this.measureTooltip_.setPosition(tooltipCoord);
     }
@@ -355,7 +355,7 @@ export default class Measure extends M.impl.Control {
    * @api stable
    */
   clear() {
-    if (!M.utils.isNullOrEmpty(this.layer_)) {
+    if (!IDEE.utils.isNullOrEmpty(this.layer_)) {
       this.layer_.getSource().clear();
     }
     this.overlays_.forEach((overlay) => {

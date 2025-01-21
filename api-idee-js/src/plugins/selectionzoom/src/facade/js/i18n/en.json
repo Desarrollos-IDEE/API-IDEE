@@ -2,7 +2,7 @@
   "exception": {
     "impl": "The implementation used cannot create SelectionZoom controls.",
     "formatMRE": "No value specified for the bbox or zoom and center parameters.",
-    "parameterizationDeprecated": "Warning M.plugin.selectionzoom: The parameter definition set in the plugin has been deprecated. Review the new definition: https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/selectionzoom",
+    "parameterizationDeprecated": "Warning IDEE.plugin.selectionzoom: The parameter definition set in the plugin has been deprecated. Review the new definition: https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/selectionzoom",
     "formatBBoxAndZoom": "No value specified for the bbox or zoom parameters."
   },
   "textHelp": {

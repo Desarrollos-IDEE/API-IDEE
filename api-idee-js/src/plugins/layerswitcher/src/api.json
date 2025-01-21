@@ -3,7 +3,7 @@
     "name": "layerswitcher",
     "separator": "*"
   },
-  "constructor": "M.plugin.Layerswitcher",
+  "constructor": "IDEE.plugin.Layerswitcher",
   "parameters": [{
     "type": "object",
     "properties": [{

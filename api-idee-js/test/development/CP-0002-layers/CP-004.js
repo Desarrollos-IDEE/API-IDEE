@@ -1,4 +1,4 @@
-import { map as Mmap } from 'M/api-idee';
+import { map as Mmap } from 'IDEE/api-idee';
 import { generic_001, generic_002 } from '../layers/generic/generic';
 
 const mapa = Mmap({

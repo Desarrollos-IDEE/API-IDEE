@@ -1,5 +1,5 @@
 /**
- * @module M/layer/Terrain
+ * @module IDEE/layer/Terrain
  */
 import TerrainImpl from 'impl/layer/Terrain';
 import LayerBase from './Layer';
@@ -21,7 +21,7 @@ import { getValue } from '../i18n/language';
  * @property {Object} options Opciones de la capa.
  *
  * @api
- * @extends {M.Layer}
+ * @extends {IDEE.Layer}
  */
 class Terrain extends LayerBase {
   /**
@@ -60,8 +60,8 @@ class Terrain extends LayerBase {
     /**
      * Implementación
      * @public
-     * @implements {M.impl.layer.Terrain}
-     * @type {M.impl.layer.Terrain}
+     * @implements {IDEE.impl.layer.Terrain}
+     * @type {IDEE.impl.layer.Terrain}
      */
     const impl = new TerrainImpl(userParameters, options, vendorOptions);
     // calls the super constructor

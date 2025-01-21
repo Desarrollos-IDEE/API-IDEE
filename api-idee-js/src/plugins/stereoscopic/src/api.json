@@ -3,7 +3,7 @@
     "name": "Stereoscopic",
     "separator": "*"
   },
-  "constructor": "M.plugin.Stereoscopic",
+  "constructor": "IDEE.plugin.Stereoscopic",
   "parameters": [{
     "type": "object",
     "properties": [{

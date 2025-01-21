@@ -1,8 +1,8 @@
-import { map as Mmap } from 'M/api-idee';
+import { map as Mmap } from 'IDEE/api-idee';
 
-import WMS from 'M/layer/WMS';
-import WMTS from 'M/layer/WMTS';
-import KML from 'M/layer/KML';
+import WMS from 'IDEE/layer/WMS';
+import WMTS from 'IDEE/layer/WMTS';
+import KML from 'IDEE/layer/KML';
 
 import IGNSearch from 'plugins/ignsearch/src/facade/js/ignsearch';
 import Attributions from 'plugins/attributions/facade/js/attributions';
@@ -87,7 +87,7 @@ const mp9 = new BackImgLayer({
       id: 'mapa',
       preview: 'plugins/backimglayer/images/svqmapa.png',
       title: 'Mapa',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'http://www.ign.es/wmts/ign-base?',
         name: 'IGNBaseTodo',
         legend: 'Mapa IGN',
@@ -103,7 +103,7 @@ const mp9 = new BackImgLayer({
       id: 'imagen',
       title: 'Imagen',
       preview: 'plugins/backimglayer/images/svqimagen.png',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'http://www.ign.es/wmts/pnoa-ma?',
         name: 'OI.OrthoimageCoverage',
         legend: 'Imagen (PNOA)',
@@ -119,7 +119,7 @@ const mp9 = new BackImgLayer({
       id: 'hibrido',
       title: 'Híbrido',
       preview: 'plugins/backimglayer/images/svqhibrid.png',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
           url: 'http://www.ign.es/wmts/pnoa-ma?',
           name: 'OI.OrthoimageCoverage',
           legend: 'Imagen (PNOA)',
@@ -130,7 +130,7 @@ const mp9 = new BackImgLayer({
           visible: true,
           format: 'image/png',
         }),
-        new M.layer.WMTS({
+        new IDEE.layer.WMTS({
           url: 'http://www.ign.es/wmts/ign-base?',
           name: 'IGNBaseOrto',
           matrixSet: 'GoogleMapsCompatible',
@@ -147,7 +147,7 @@ const mp9 = new BackImgLayer({
       id: 'lidar',
       preview: 'plugins/backimglayer/images/svqlidar.png',
       title: 'LIDAR',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'https://wmts-mapa-lidar.idee.es/lidar?',
         name: 'EL.GridCoverageDSM',
         legend: 'Modelo Digital de Superficies LiDAR',

@@ -1,22 +1,22 @@
 /**
- * @module M/impl/style/Cluster
+ * @module IDEE/impl/style/Cluster
  */
 import { unByKey } from 'ol/Observable';
 import { getCenter } from 'ol/extent';
-import LayerVector from 'M/layer/Vector';
+import LayerVector from 'IDEE/layer/Vector';
 import OLSourceCluster from 'ol/source/Cluster';
 import OLSourceVector from 'ol/source/Vector';
 import * as OLeasing from 'ol/easing';
 import OLFeature from 'ol/Feature';
 import OLGeomPolygon from 'ol/geom/Polygon';
 import OLGeomPoint from 'ol/geom/Point';
-import Generic from 'M/style/Generic';
-import FacadeCluster from 'M/style/Cluster';
+import Generic from 'IDEE/style/Generic';
+import FacadeCluster from 'IDEE/style/Cluster';
 import {
   isArray, isNullOrEmpty, isFunction, inverseColor, extendsObj,
-} from 'M/util/Utils';
-import * as EventType from 'M/event/eventtype';
-import ClusteredFeature from 'M/feature/Clustered';
+} from 'IDEE/util/Utils';
+import * as EventType from 'IDEE/event/eventtype';
+import ClusteredFeature from 'IDEE/feature/Clustered';
 import Style from './Style';
 import AnimatedCluster from '../layer/AnimatedCluster';
 import SelectCluster from '../interaction/SelectedCluster';
@@ -29,7 +29,7 @@ import coordinatesConvexHull from '../util/convexhull';
  * Crea un grupo de estilo
  * con parámetros especificados por el usuario.
  * @api
- * @namespace M.style.Cluster
+ * @namespace IDEE.style.Cluster
  */
 
 class Cluster extends Style {
@@ -39,7 +39,7 @@ class Cluster extends Style {
    *
    * @constructor
    * @param {Object} options Parámetros de los estilos del "cluster".
-   * - ranges: Matriz de objetos con el valor mínimo, el máximo y un M.style.Point.
+   * - ranges: Matriz de objetos con el valor mínimo, el máximo y un IDEE.style.Point.
    * - animated: Indica si se quiere animación o no al desplegar
    * el "cluster".
    * - hoverInteraction: Indica si se quiere mostrar el polígono que
@@ -66,7 +66,7 @@ class Cluster extends Style {
     /**
      *
      * @private
-     * @type {M.layer.Vector}
+     * @type {IDEE.layer.Vector}
      * @expose
      */
     this.convexHullLayer_ = null;
@@ -106,7 +106,7 @@ class Cluster extends Style {
     /**
      *
      * @private
-     * @type {M.impl.interaction.SelectCluster}
+     * @type {IDEE.impl.interaction.SelectCluster}
      * @expose
      */
     this.selectClusterInteraction_ = null;
@@ -124,7 +124,7 @@ class Cluster extends Style {
    * Este método aplica estilo a la capa.
    * @public
    * @function
-   * @param {M.layer.Vector} layer Capa.
+   * @param {IDEE.layer.Vector} layer Capa.
    * @api stable
    */
   applyToLayer(layer, map) {
@@ -259,9 +259,9 @@ class Cluster extends Style {
    * @param {number} min Valor mínimo.
    * @param {number} max Valor máximo.
    * @param {number} newRange Nuevo rango.
-   * @param {M.layer.Vector} layer Capa.
-   * @param {M.style.Cluster} cluster "cluster".
-   * @return {M.style.Cluster} "cluster" actualizado.
+   * @param {IDEE.layer.Vector} layer Capa.
+   * @param {IDEE.style.Cluster} cluster "cluster".
+   * @return {IDEE.style.Cluster} "cluster" actualizado.
    * @api stable
    */
   static updateRangeImpl(min, max, newRange, layer, cluster) {
@@ -279,9 +279,9 @@ class Cluster extends Style {
    * @function
    * @public
    * @param {boolean} animated Define si el "cluster" tendrá animación.
-   * @param {M.layer.Vector} layer Capa.
-   * @param {M.style.Cluster} Cluster "cluster".
-   * @return {M.style.Cluster} "cluster" actualizado.
+   * @param {IDEE.layer.Vector} layer Capa.
+   * @param {IDEE.style.Cluster} Cluster "cluster".
+   * @return {IDEE.style.Cluster} "cluster" actualizado.
    * @api stable
    */
 
@@ -358,7 +358,7 @@ class Cluster extends Style {
    * @function
    * @public
    * @param {Array<Features>} features
-   * @param {M.evt.EventType} evt
+   * @param {IDEE.evt.EventType} evt
    * @api stable
    */
   hoverFeatureFn_(features, evt) {
@@ -408,7 +408,7 @@ class Cluster extends Style {
    * @function
    * @public
    * @param {Array<Features>} features Objeto geográfico.
-   * @param {M.evt.EventType} evt Evento.
+   * @param {IDEE.evt.EventType} evt Evento.
    * @api stable
    */
   leaveFeatureFn_(features, evt) {
@@ -446,9 +446,9 @@ class Cluster extends Style {
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function
    * @public
-   * @param {M.Feature} feature Objetos geográficos.
+   * @param {IDEE.Feature} feature Objetos geográficos.
    * @param {float} resolution Resolución.
-   * @param {M.impl.interaction.SelectCluster} selected Selección.
+   * @param {IDEE.impl.interaction.SelectCluster} selected Selección.
    * @return {object} Devuelve el estilo.
    * @api stable
    * @export
@@ -540,8 +540,8 @@ class Cluster extends Style {
     this.clearConvexHull();
     // if (!isNullOrEmpty(evt.selected)) {
     //   let olFeatures = evt.selected[0].get('features');
-    //   let features = olFeatures.map(M.impl.Feature.feature2Facade);
-    //   this.layer_.fire(M.evt.SELECT_FEATURES, [features, evt]);
+    //   let features = olFeatures.map(IDEE.impl.Feature.feature2Facade);
+    //   this.layer_.fire(IDEE.evt.SELECT_FEATURES, [features, evt]);
     // }
   }
 

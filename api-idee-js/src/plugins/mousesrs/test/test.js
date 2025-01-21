@@ -1,8 +1,8 @@
 import MouseSRS from 'facade/mousesrs';
 
-// M.language.setLang('en');
+// IDEE.language.setLang('en');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   projection: 'EPSG:3857*m',
   // controls: ['backgroundlayers', 'scale'],

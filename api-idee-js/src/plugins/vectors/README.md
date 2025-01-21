@@ -1,4 +1,4 @@
-# M.plugin.Vectors
+# IDEE.plugin.Vectors
 
 Plugin que permite el dibujo y edición de geometrías sobre un mapa, así como su descarga.
 
@@ -62,21 +62,21 @@ https://componentes.cnig.es//?vectors=BL*true*true
 # Ejemplos de uso
 
 ```javascript
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
 });
 
-const mp = new M.plugin.Vectors();
+const mp = new IDEE.plugin.Vectors();
 
 map.addPlugin(mp);
 ```
 
 ```javascript
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
 });
 
-const mp = new M.plugin.Vectors({
+const mp = new IDEE.plugin.Vectors({
   collapsed: true,
   collapsible: true,
   position: 'TL',

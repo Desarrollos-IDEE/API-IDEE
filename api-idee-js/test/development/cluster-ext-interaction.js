@@ -1,15 +1,15 @@
-import { map as Mmap } from 'M/api-idee';
-import { SELECT_FEATURES, LOAD } from 'M/event/eventtype';
-import { MARKER } from 'M/style/Form';
+import { map as Mmap } from 'IDEE/api-idee';
+import { SELECT_FEATURES, LOAD } from 'IDEE/event/eventtype';
+import { MARKER } from 'IDEE/style/Form';
 import { get as getProjection, transform } from 'ol/proj';
-import KML from 'M/layer/KML';
-import Line from 'M/style/Line';
-import Cluster from 'M/style/Cluster';
-import Point from 'M/style/Point';
-import Vector from 'M/layer/Vector';
-import Feature from 'M/feature/Feature';
-import ClusteredFeature from 'M/feature/Clustered';
-import Popup from 'M/Popup';
+import KML from 'IDEE/layer/KML';
+import Line from 'IDEE/style/Line';
+import Cluster from 'IDEE/style/Cluster';
+import Point from 'IDEE/style/Point';
+import Vector from 'IDEE/layer/Vector';
+import Feature from 'IDEE/feature/Feature';
+import ClusteredFeature from 'IDEE/feature/Clustered';
+import Popup from 'IDEE/Popup';
 import SelectCluster from '../../src/impl/ol/js/interaction/SelectedCluster';
 
 let poiLayer;

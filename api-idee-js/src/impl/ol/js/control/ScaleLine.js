@@ -1,5 +1,5 @@
 /**
- * @module M/impl/control/ScaleLine
+ * @module IDEE/impl/control/ScaleLine
  */
 import OLControlScaleLine from 'ol/control/ScaleLine';
 // import ProjUnits from 'ol/proj/Units';
@@ -68,7 +68,7 @@ class ScaleLine extends OLControlScaleLine {
    *
    * @public
    * @function
-   * @param {M.Map} map Mapa.
+   * @param {IDEE.Map} map Mapa.
    * @param {function} template Plantilla del control.
    * @api stable
    */

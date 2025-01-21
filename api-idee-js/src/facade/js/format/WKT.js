@@ -1,5 +1,5 @@
 /**
- * @module M/format/WKT
+ * @module IDEE/format/WKT
  */
 import WKTImpl from 'impl/format/WKT';
 import Base from '../Base';
@@ -17,7 +17,7 @@ class WKT extends Base {
    * Constructor principal de la clase. Crea una capa
    * con parámetros especificados por el usuario.
    * @constructor
-   * @extends {M.facade.Base}
+   * @extends {IDEE.facade.Base}
    * @param {string|Object} options Parámetros opcionales.
    * - type: Tipo.
    * - value: Valor, opcional.

@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
 import Comparators from 'facade/comparators';
 
-M.language.setLang('es');
-// M.proxy(false);
+IDEE.language.setLang('es');
+// IDEE.proxy(false);
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   zoom: 6,
   bbox: [323020, 4126873, 374759, 4152013],
@@ -26,7 +26,7 @@ window.map = map;
 
 // ** CAPAS **
 // * RASTER *
-const capaWMS = new M.layer.WMS({
+const capaWMS = new IDEE.layer.WMS({
   url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
   name: 'AU.AdministrativeUnit',
   legend: 'Capa WMS l',
@@ -34,7 +34,7 @@ const capaWMS = new M.layer.WMS({
 
 // map.addLayers(capaWMS);
 
-const capaWMTS = new M.layer.WMTS({
+const capaWMTS = new IDEE.layer.WMTS({
   url: 'https://servicios.idee.es/wmts/ocupacion-suelo',
   name: 'LC.LandCoverSurfaces',
   legend: 'LC.LandCoverSurfaces l',
@@ -47,7 +47,7 @@ const capaWMTS = new M.layer.WMTS({
 // XYZ - String
 // map.addLayers('XYZ*PNOA-MA*https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg*true*true');
 
-const capaTMS = new M.layer.TMS({
+const capaTMS = new IDEE.layer.TMS({
   url: 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
   legend: 'PNOA_MA',
   name: 'PNOA_MA',
@@ -58,7 +58,7 @@ const capaTMS = new M.layer.TMS({
 
 // map.addLayers(capaTMS);
 
-const capaOSM = new M.layer.OSM({
+const capaOSM = new IDEE.layer.OSM({
   name: 'Capa OSM',
   legend: 'Capa OSM',
   transparent: true,
@@ -70,7 +70,7 @@ const capaOSM = new M.layer.OSM({
 
 // ? No se puede compartir porque no tiene URL
 /*
-const mbtile = new M.layer.MBTiles({
+const mbtile = new IDEE.layer.MBTiles({
   name: 'mbtilesLoadFunction',
   legend: 'Capa personalizada MBTiles',
   tileLoadFunction: (z, x, y) => {
@@ -85,7 +85,7 @@ const mbtile = new M.layer.MBTiles({
 });
 */
 
-const mbtile = new M.layer.MBTiles({
+const mbtile = new IDEE.layer.MBTiles({
   name: 'mbtiles',
   legend: 'Capa',
   url: './prueba1.mbtiles',
@@ -97,11 +97,11 @@ const mbtile = new M.layer.MBTiles({
 // !--
 
 // *CAPAS VECTORIALES*
-const capaVector = new M.layer.Vector({
+const capaVector = new IDEE.layer.Vector({
   name: 'capaVector',
   legend: 'vector legend',
 });
-const feature = new M.Feature('localizacion', {
+const feature = new IDEE.Feature('localizacion', {
   type: 'Feature',
   properties: { text: 'prueba' },
   geometry: {
@@ -113,7 +113,7 @@ capaVector.addFeatures(feature);
 
 // map.addLayers(capaVector);
 
-const capaGeoJSON = new M.layer.GeoJSON({
+const capaGeoJSON = new IDEE.layer.GeoJSON({
   name: 'Capa GeoJSON',
   legend: 'Capa GeoJSON',
   url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=tematicos:Provincias&maxFeatures=50&outputFormat=application%2Fjson',
@@ -122,7 +122,7 @@ const capaGeoJSON = new M.layer.GeoJSON({
 
 // map.addLayers(capaGeoJSON);
 
-const capaKML = new M.layer.KML({
+const capaKML = new IDEE.layer.KML({
   url: 'https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml',
   name: 'Capa KML',
   legend: 'Capa KML',
@@ -132,7 +132,7 @@ const capaKML = new M.layer.KML({
 // map.addLayers(capaKML);
 
 /*
-const capaWFS = new M.layer.WFS({
+const capaWFS = new IDEE.layer.WFS({
   url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?',
   namespace: 'tematicos',
   name: 'Provincias',
@@ -144,7 +144,7 @@ const capaWFS = new M.layer.WFS({
 
 /*
 window.fetch('./prueba1.mbtiles').then((response) => {
-  const mbtilesvector = new M.layer.MBTilesVector({
+  const mbtilesvector = new IDEE.layer.MBTilesVector({
     name: 'mbtiles_vector',
     legend: 'Capa MBTilesVector L',
     source: response,
@@ -155,7 +155,7 @@ window.fetch('./prueba1.mbtiles').then((response) => {
 });
 */
 
-const mbtileVector = new M.layer.MBTilesVector({
+const mbtileVector = new IDEE.layer.MBTilesVector({
   name: 'mbtilesvector',
   legend: 'Capa personalizada MBTilesVector',
   tileLoadFunction: (z, x, y) => {
@@ -168,7 +168,7 @@ const mbtileVector = new M.layer.MBTilesVector({
 });
 // map.addLayers(mbtileVector);
 
-const capaMVT = new M.layer.MVT({
+const capaMVT = new IDEE.layer.MVT({
   url: 'https://www.ign.es/web/resources/mapa-base-xyz/vt/{z}/{x}/{y}.pbf',
   // layers: ['camino_lin'],
   name: 'Capa MVT',
@@ -179,7 +179,7 @@ const capaMVT = new M.layer.MVT({
 
 // map.addLayers(capaMVT);
 
-const capaOGCAPIFeatures = new M.layer.OGCAPIFeatures({
+const capaOGCAPIFeatures = new IDEE.layer.OGCAPIFeatures({
   url: 'https://api-features.idee.es/collections',
   name: 'hidrografia/Falls',
   legend: 'Capa OGCAPIFeatures',

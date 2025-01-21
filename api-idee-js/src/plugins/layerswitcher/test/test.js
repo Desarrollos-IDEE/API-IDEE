@@ -1,9 +1,9 @@
 /* eslint-disable max-len,object-property-newline */
 import Layerswitcher from 'facade/layerswitcher';
 
-// M.language.setLang('en');
+// IDEE.language.setLang('en');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   controls: ['scale', 'attributions'],
   center: { x: -528863.345515127, y: 4514194.232367303 },
@@ -126,13 +126,13 @@ const PRECHARGED = {
   }],
 };
 
-const mp2 = new M.plugin.Vectors({}); map.addPlugin(mp2);
+const mp2 = new IDEE.plugin.Vectors({}); map.addPlugin(mp2);
 
-// M.proxy(false);
+// IDEE.proxy(false);
 // Todas las CAPAS que se tienen que probar
 
 /* / Capa GeoJson 1
-const capaGeoJSON = new M.layer.GeoJSON({
+const capaGeoJSON = new IDEE.layer.GeoJSON({
   name: 'Capa GeoJSON',
   legend: 'Capa GeoJSON',
   url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=tematicos:Provincias&maxFeatures=50&outputFormat=application%2Fjson',
@@ -143,7 +143,7 @@ map.addLayers(capaGeoJSON); window.capaGeoJSON = capaGeoJSON; // */
 /* / Reemplazo de capa GeoJson 1
 map.getMapImpl().on('moveend', () => {
   map.removeLayers([capaGeoJSON]);
-  capaGeoJSON = new M.layer.GeoJSON({
+  capaGeoJSON = new IDEE.layer.GeoJSON({
     name: 'Capa GeoJSON',
     legend: 'Capa GeoJSON',
     url: 'http://localhost:6123/test/features.json',
@@ -154,7 +154,7 @@ map.getMapImpl().on('moveend', () => {
 }); // */
 
 /* / Capa GeoJson 2
-const capaGeoJSON2 = new M.layer.GeoJSON({
+const capaGeoJSON2 = new IDEE.layer.GeoJSON({
   name: 'capaJson',
   source: {
     type: 'FeatureCollection',
@@ -185,7 +185,7 @@ const capaGeoJSON2 = new M.layer.GeoJSON({
 map.addLayers(capaGeoJSON2); window.capaGeoJSON2 = capaGeoJSON2; // */
 
 /* / Capa OSM 1
-const capaOSM = new M.layer.OSM({
+const capaOSM = new IDEE.layer.OSM({
   name: 'Capa OSM',
   legend: 'Capa OSM',
   transparent: true,
@@ -195,7 +195,7 @@ const capaOSM = new M.layer.OSM({
 map.addLayers(capaOSM); window.capaOSM = capaOSM; // */
 
 /* / Capa KML
-const capaKML = new M.layer.KML({
+const capaKML = new IDEE.layer.KML({
   url: 'https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml',
   name: 'Capa KML',
   legend: 'Capa KML',
@@ -204,7 +204,7 @@ const capaKML = new M.layer.KML({
 map.addLayers(capaKML); window.capaKML = capaKML; // */
 
 /* / Capa MVT
-const capaMVT = new M.layer.MVT({ // No visible en zooms 0-7, saltan errores 404
+const capaMVT = new IDEE.layer.MVT({ // No visible en zooms 0-7, saltan errores 404
   url: 'https://www.ign.es/web/resources/mapa-base-xyz/vt/{z}/{x}/{y}.pbf',
   layers: ['provincia_pol', 'camino_lin'], // Se reduce lag por demaciados elementos al solo coger estos
   name: 'Capa MVT',
@@ -215,24 +215,24 @@ const capaMVT = new M.layer.MVT({ // No visible en zooms 0-7, saltan errores 404
 map.addLayers(capaMVT); window.capaMVT = capaMVT; // */
 
 /* / Capa OGCAPIFeatures
-const capaOGCAPIFeatures = new M.layer.OGCAPIFeatures({
+const capaOGCAPIFeatures = new IDEE.layer.OGCAPIFeatures({
   url: 'https://api-features.idee.es/collections/', name: 'falls',
   legend: 'Capa OGCAPIFeatures L',
   limit: 20,
 }, {
   predefinedStyles: [
-    new M.style.Point({
+    new IDEE.style.Point({
       // name: 'Negro',
       fill: { color: 'black', width: 3, opacity: 1 },
       radius: 5,
     }),
-    new M.style.Point({
+    new IDEE.style.Point({
       name: 'Amarillo',
       fill: { color: 'yellow', width: 3, opacity: 1 },
       radius: 5,
     }),
   ],
-  style: new M.style.Point({
+  style: new IDEE.style.Point({
     // name: 'Rojo',
     fill: { color: 'red', width: 3, opacity: 1 },
     radius: 15,
@@ -241,7 +241,7 @@ const capaOGCAPIFeatures = new M.layer.OGCAPIFeatures({
 map.addLayers(capaOGCAPIFeatures); window.capaOGCAPIFeatures = capaOGCAPIFeatures; // */
 
 /* / Capa TMS
-const capaTMS = new M.layer.TMS({
+const capaTMS = new IDEE.layer.TMS({
   url: 'https://tms-mapa-raster.ign.es/1.0.0/mapa-raster/{z}/{x}/{-y}.jpeg',
   name: 'Capa TMS',
   legend: 'Capa TMS L',
@@ -250,8 +250,8 @@ const capaTMS = new M.layer.TMS({
 map.addLayers(capaTMS); window.capaTMS = capaTMS; // */
 
 /* / Capa Vector
-const capaVector = new M.layer.Vector({ name: 'capaVector', legend: 'vector legend' });
-const feature = new M.Feature('localizacion', {
+const capaVector = new IDEE.layer.Vector({ name: 'capaVector', legend: 'vector legend' });
+const feature = new IDEE.Feature('localizacion', {
   type: 'Feature',
   properties: { text: 'prueba' },
   geometry: { type: 'Point', coordinates: [-458757.1288, 4795217.2530] },
@@ -261,7 +261,7 @@ capaVector.addFeatures(feature);
 map.addLayers(capaVector); window.capaVector = capaVector; // */
 
 /* / Capas WFS 1
-const capaWFS = new M.layer.WFS({
+const capaWFS = new IDEE.layer.WFS({
   url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?',
   namespace: 'tematicos',
   name: 'Provincias',
@@ -270,7 +270,7 @@ const capaWFS = new M.layer.WFS({
 });
 map.addLayers(capaWFS); window.capaWFS = capaWFS; // */
 /* / Capas WFS 2
-const capaWFS2 = new M.layer.WFS({
+const capaWFS2 = new IDEE.layer.WFS({
   url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?',
   namespace: 'tematicos',
   name: 'Municipios',
@@ -280,7 +280,7 @@ const capaWFS2 = new M.layer.WFS({
 map.addWFS(capaWFS2); // */
 
 /* / Capas WMS 1 Se usa la misma dirrecion que en "WMS 2", termina reemplazandolo
-const capaWMS = new M.layer.WMS({
+const capaWMS = new IDEE.layer.WMS({
   url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
   name: 'AU.AdministrativeUnit', legend: 'capaWMS1',
   visibility: true
@@ -288,7 +288,7 @@ const capaWMS = new M.layer.WMS({
 map.addLayers(capaWMS); window.capaWMS = capaWMS; // */
 
 /* / Capas WMS 2
-const capaWMS2 = new M.layer.WMS({
+const capaWMS2 = new IDEE.layer.WMS({
   url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
   name: 'AU.AdministrativeUnit', legend: 'capaWMS2',
   tiled: false, transparent: true,
@@ -299,7 +299,7 @@ capaWMS2.setZIndex(99);
 map.addWMS(capaWMS2); window.capaWMS2 = capaWMS2; // */
 
 /* / Capas WMS 3
-const capaWMS3 = new M.layer.WMS({
+const capaWMS3 = new IDEE.layer.WMS({
   url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/wms?',
   name: 'provincias_pob', legend: 'capaWMS3',
   tiled: false, transparent: true,
@@ -307,7 +307,7 @@ const capaWMS3 = new M.layer.WMS({
 map.addWMS(capaWMS3); window.capaWMS3 = capaWMS3; // */
 
 /* / Capas WMTS
-const capaWMTS = new M.layer.WMTS({
+const capaWMTS = new IDEE.layer.WMTS({
   url: 'https://servicios.idee.es/wmts/ocupacion-suelo',
   name: 'LC.LandCoverSurfaces',
   legend: 'LC.LandCoverSurfaces l',
@@ -317,7 +317,7 @@ const capaWMTS = new M.layer.WMTS({
 map.addLayers(capaWMTS); window.capaWMTS = capaWMTS; // */
 
 /* / Capas XYZ
-const capaXYZ = new M.layer.XYZ({
+const capaXYZ = new IDEE.layer.XYZ({
   url: 'https://www.ign.es/web/catalogo-cartoteca/resources/webmaps/data/cresques/{z}/{x}/{y}.jpg',
   name: 'Capa XYZ',
   legend: 'Capa XYZ l',
@@ -328,7 +328,7 @@ const capaXYZ = new M.layer.XYZ({
 map.addLayers(capaXYZ); window.capaXYZ = capaXYZ; // */
 
 /* / Capa GenericRaster
-const generic_001 = new M.layer.GenericRaster({}, {}, new ol.layer.Image({
+const generic_001 = new IDEE.layer.GenericRaster({}, {}, new ol.layer.Image({
   source: new ol.source.ImageWMS({
     url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/wms?',
     params: { LAYERS: 'tematicos:Municipios' },
@@ -337,7 +337,7 @@ const generic_001 = new M.layer.GenericRaster({}, {}, new ol.layer.Image({
 map.addLayers(generic_001); window.generic_001 = generic_001; // */
 
 /* / Capa GenericVector
-const generic_002 = new M.layer.GenericVector({}, {}, new ol.layer.Vector({
+const generic_002 = new IDEE.layer.GenericVector({}, {}, new ol.layer.Vector({
   source: new ol.source.Vector({
     format: new ol.format.GeoJSON(),
     url: 'https://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=tematicos:Provincias&maxFeatures=50&outputFormat=application%2Fjson',
@@ -349,7 +349,7 @@ map.addLayers(generic_002); window.generic_002 = generic_002; // */
 /* / Capa MBTiles fetch
 window.fetch('./cabrera.mbtiles').then((response) => {
   if (response.status != 404) {
-    const mbtile1 = new M.layer.MBTiles({
+    const mbtile1 = new IDEE.layer.MBTiles({
       name: 'mbtiles', legend: 'Capa MBTiles L',
       source: response,
     });
@@ -358,7 +358,7 @@ window.fetch('./cabrera.mbtiles').then((response) => {
 }).catch((e) => { throw e; }); // */
 
 /* / Capa MBTiles
-const mbtile2 = new M.layer.MBTiles({
+const mbtile2 = new IDEE.layer.MBTiles({
   name: 'mbtilesLoadFunction',
   legend: 'Capa personalizada MBTiles',
   tileLoadFunction: (z, x, y) => {
@@ -376,7 +376,7 @@ map.addLayers(mbtile2); window.mbtile2 = mbtile2; // */
 /* / Capa MBTilesVector fetch
 window.fetch('./countries.mbtiles').then((response) => {
   if (response.status != 404) {
-    const mbtilesvector = new M.layer.MBTilesVector({
+    const mbtilesvector = new IDEE.layer.MBTilesVector({
       name: 'mbtiles_vector',
       legend: 'Capa MBTilesVector L',
       source: response,
@@ -387,7 +387,7 @@ window.fetch('./countries.mbtiles').then((response) => {
 }).catch((e) => { throw e; }); // */
 
 /* / Capa MBTilesVector
-const mbtileVector = new M.layer.MBTilesVector({
+const mbtileVector = new IDEE.layer.MBTilesVector({
   name: 'mbtilesvector',
   legend: 'Capa personalizada MBTilesVector',
   tileLoadFunction: (z, x, y) => {
@@ -401,7 +401,7 @@ const mbtileVector = new M.layer.MBTilesVector({
 map.addLayers(mbtileVector); window.mbtileVector = mbtileVector; // */
 
 /* / Capa GeoTIFF
-const geotiff = new M.layer.GeoTIFF({
+const geotiff = new IDEE.layer.GeoTIFF({
   url: 'http://ftpcdd.cnig.es/Vuelos_2021/Vuelos_2021/catalunya_2021/Costa/01.VF/01.08_PNOA_2021_CAT_COSTA_22cm_VF_img8c_rgb_hu31/h50_0219_fot_002-0001_cog.tif',
   name: 'Nombre geotiff',
   legend: 'Leyenda geotiff',
@@ -416,7 +416,7 @@ map.addLayers(geotiff); window.geotiff = geotiff; // */
 // */
 
 /* / Capa MapLibre
-const mapLibre = new M.layer.MapLibre({
+const mapLibre = new IDEE.layer.MapLibre({
   name: 'Mapa Libre', legend: 'Mapa Libre',
   url: 'https://vt-mapabase.idee.es/files/styles/mapaBase_scn_color1_CNIG.json',
   extract: true,
@@ -425,7 +425,7 @@ const mapLibre = new M.layer.MapLibre({
 map.addLayers(mapLibre); window.mapLibre = mapLibre; // */
 
 /* / Plugin TOC
-const mp3 = new M.plugin.TOC({
+const mp3 = new IDEE.plugin.TOC({
   collapsed: false, collapsible: true, position: 'TL',
   isDraggable: false, modeSelectLayers: 'eyes',
 });

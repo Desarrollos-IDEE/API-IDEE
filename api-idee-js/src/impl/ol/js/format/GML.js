@@ -1,13 +1,13 @@
 /**
- * @module M/impl/format/GML
+ * @module IDEE/impl/format/GML
  */
 import OLFormatGML from 'ol/format/GML';
 // import OLFormatGML3 from 'ol/format/GML'; // Same import as OLFormatGML
 import OLFormatGML2 from 'ol/format/GML2';
 import OLFormatGML32 from 'ol/format/GML32';
-import { isNullOrEmpty } from 'M/util/Utils';
+import { isNullOrEmpty } from 'IDEE/util/Utils';
 import { get as getProj } from 'ol/proj';
-// import Feature from 'M/feature/Feature';
+// import Feature from 'IDEE/feature/Feature';
 import FeatureImpl from '../feature/Feature';
 
 /**
@@ -37,9 +37,9 @@ class GML {
    * Este método devuelve los objetos geográficos en formato GML.
    * @public
    * @function
-   * @param {Array<M.Feature>} gmlFeatures XML
+   * @param {Array<IDEE.Feature>} gmlFeatures XML
    * @param {Mx.Projection} projection Proyección del GML.
-   * @return {Array<M.Feature>} Devuelve los objetos geográficos en formato GML.
+   * @return {Array<IDEE.Feature>} Devuelve los objetos geográficos en formato GML.
    * @api stable
    */
   read(gmlFeatures, projection) {

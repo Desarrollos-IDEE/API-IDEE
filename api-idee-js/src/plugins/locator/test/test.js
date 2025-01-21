@@ -1,11 +1,11 @@
 import Locator from 'facade/locator';
 
-M.language.setLang('es');
-// M.language.setLang('en');
+IDEE.language.setLang('es');
+// IDEE.language.setLang('en');
 
-M.proxy(false);
+IDEE.proxy(false);
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   zoom: 5,
   maxZoom: 20,
@@ -35,8 +35,8 @@ const mp = new Locator({
 map.addPlugin(mp);
 window.mp = mp;
 
-map.addPlugin(new M.plugin.Vectors({ position: 'TL' }));
-map.addPlugin(new M.plugin.Layerswitcher({ position: 'TR' }));
+map.addPlugin(new IDEE.plugin.Vectors({ position: 'TL' }));
+map.addPlugin(new IDEE.plugin.Layerswitcher({ position: 'TR' }));
 
 
 mp.on("infocatastro:locationCentered", (data) => {

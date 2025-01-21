@@ -2,7 +2,7 @@
   "exception": {
     "impl": "The implementation used cannot create SelectionZoom controls.",
     "formatMRE": "No se ha especificado ningún valor para los parámetros bbox o zoom y centro.",
-    "parameterizationDeprecated": "Advertencia M.plugin.selectionzoom: la definición de parámetros establecidas en el plugin ha quedado obsoleta. Revise la nueva definición: https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/selectionzoom",
+    "parameterizationDeprecated": "Advertencia IDEE.plugin.selectionzoom: la definición de parámetros establecidas en el plugin ha quedado obsoleta. Revise la nueva definición: https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/selectionzoom",
     "formatBBoxAndZoom": "No se ha especificado ningún valor para los parámetros bbox o zoom."
   },
   "textHelp": {

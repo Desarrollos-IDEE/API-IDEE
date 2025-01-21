@@ -1,5 +1,5 @@
 /**
- * @module M/impl/control/VectorsControl
+ * @module IDEE/impl/control/VectorsControl
  */
 
 import Profil from './profilcontrol';
@@ -51,13 +51,13 @@ const formatNumber = (x, decimals) => {
   return num;
 };
 
-export default class VectorsControl extends M.impl.Control {
+export default class VectorsControl extends IDEE.impl.Control {
   /**
    * This function adds the control to the specified map
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api stable
    */
@@ -65,7 +65,7 @@ export default class VectorsControl extends M.impl.Control {
     /**
      * Facade map
      * @private
-     * @type {M.map}
+     * @type {IDEE.map}
      */
     this.facadeMap_ = map;
 
@@ -310,7 +310,7 @@ export default class VectorsControl extends M.impl.Control {
   getApiIdeeFeatureClone() {
     // eslint-disable-next-line no-underscore-dangle
     const implFeatureClone = this.facadeControl.feature.getImpl().olFeature_.clone();
-    const emphasis = M.impl.Feature.feature2Facade(implFeatureClone);
+    const emphasis = IDEE.impl.Feature.feature2Facade(implFeatureClone);
     return emphasis;
   }
 
@@ -319,7 +319,7 @@ export default class VectorsControl extends M.impl.Control {
    * @public
    * @function
    * @api
-   * @param {M.Feature} feature
+   * @param {IDEE.Feature} feature
    */
   unsetAttributes(feature) {
     const properties = feature.getImpl().getFeature().getProperties();
@@ -379,7 +379,7 @@ export default class VectorsControl extends M.impl.Control {
       return f.getGeometry() !== null;
     });
 
-    const layer = new M.layer.Vector({ name: layerName, legend: layerName, extract: true });
+    const layer = new IDEE.layer.Vector({ name: layerName, legend: layerName, extract: true });
     layer.addFeatures(features);
     this.facadeMap_.addLayers(layer);
     layer.setZIndex(layer.getZIndex() + PLUS_ZINDEX);
@@ -464,7 +464,7 @@ export default class VectorsControl extends M.impl.Control {
     }
 
     features = this.featuresToFacade(features);
-    const layer = new M.layer.Vector({ name: layerName, legend: layerName, extract: true });
+    const layer = new IDEE.layer.Vector({ name: layerName, legend: layerName, extract: true });
     layer.addFeatures(features);
     this.facadeMap_.addLayers(layer);
     layer.setZIndex(layer.getZIndex() + PLUS_ZINDEX);
@@ -841,7 +841,7 @@ export default class VectorsControl extends M.impl.Control {
     });
 
     features = this.featuresToFacade(features);
-    const layer = new M.layer.Vector({ name: layerName, legend: layerName, extract: true });
+    const layer = new IDEE.layer.Vector({ name: layerName, legend: layerName, extract: true });
     layer.addFeatures(features);
     this.facadeMap_.addLayers(layer);
     layer.setZIndex(layer.getZIndex() + PLUS_ZINDEX);
@@ -873,14 +873,14 @@ export default class VectorsControl extends M.impl.Control {
     });
 
     if (lines.length > 0) {
-      const layer = new M.layer.Vector({ name: `${layerName}_lines`, legend: `${layerName}_lines`, extract: true });
+      const layer = new IDEE.layer.Vector({ name: `${layerName}_lines`, legend: `${layerName}_lines`, extract: true });
       layer.addFeatures(lines);
       this.facadeMap_.addLayers(layer);
       layer.setZIndex(layer.getZIndex() + PLUS_ZINDEX);
     }
 
     if (others.length > 0) {
-      const layer = new M.layer.Vector({ name: layerName, legend: layerName, extract: true });
+      const layer = new IDEE.layer.Vector({ name: layerName, legend: layerName, extract: true });
       layer.addFeatures(others);
       this.facadeMap_.addLayers(layer);
       layer.setZIndex(layer.getZIndex() + PLUS_ZINDEX);
@@ -920,14 +920,14 @@ export default class VectorsControl extends M.impl.Control {
     });
 
     lines = this.featuresToFacade(lines);
-    const layer = new M.layer.Vector({ name: layerName, legend: layerName, extract: true });
+    const layer = new IDEE.layer.Vector({ name: layerName, legend: layerName, extract: true });
     layer.addFeatures(lines);
     this.facadeMap_.addLayers(layer);
     layer.setZIndex(layer.getZIndex() + PLUS_ZINDEX);
 
     if (points.length > 0) {
       points = this.featuresToFacade(points);
-      const layer2 = new M.layer.Vector({ name: `${layerName}_points`, legend: `${layerName}_points`, extract: true });
+      const layer2 = new IDEE.layer.Vector({ name: `${layerName}_points`, legend: `${layerName}_points`, extract: true });
       layer2.addFeatures(points);
       this.facadeMap_.addLayers(layer2);
       layer2.setZIndex(layer2.getZIndex() + PLUS_ZINDEX);
@@ -945,11 +945,11 @@ export default class VectorsControl extends M.impl.Control {
    * @function
    * @api
    * @param {Array<OL.Feature>} implFeatures
-   * @returns {Array<M.Feature>}
+   * @returns {Array<IDEE.Feature>}
    */
   featuresToFacade(implFeatures) {
     return implFeatures.map((feature) => {
-      return M.impl.Feature.feature2Facade(feature);
+      return IDEE.impl.Feature.feature2Facade(feature);
     });
   }
 
@@ -961,7 +961,7 @@ export default class VectorsControl extends M.impl.Control {
    * @param {*} features -
    */
   centerFeatures(features, isGPX) {
-    if (!M.utils.isNullOrEmpty(features)) {
+    if (!IDEE.utils.isNullOrEmpty(features)) {
       if ((features.length === 1) && (features[0].getGeometry().type === 'Point')) {
         const pointView = new ol.View({
           center: features[0].getGeometry().coordinates,
@@ -969,7 +969,7 @@ export default class VectorsControl extends M.impl.Control {
         });
         this.facadeMap_.getMapImpl().setView(pointView);
       } else {
-        const extent = M.impl.utils.getFeaturesExtent(features);
+        const extent = IDEE.impl.utils.getFeaturesExtent(features);
         this.facadeMap_.getMapImpl().getView().fit(extent, {
           duration: 500,
           minResolution: 1,
@@ -1015,11 +1015,11 @@ export default class VectorsControl extends M.impl.Control {
               };
             }
 
-            if (f !== undefined) f.setStyle(new M.style.Point(newPointStyle));
+            if (f !== undefined) f.setStyle(new IDEE.style.Point(newPointStyle));
             break;
           case 'LineString':
           case 'MultiLineString':
-            const newLineStyle = new M.style.Line({
+            const newLineStyle = new IDEE.style.Line({
               stroke: {
                 color: '#71a7d3',
                 width: 6,
@@ -1030,7 +1030,7 @@ export default class VectorsControl extends M.impl.Control {
             break;
           case 'Polygon':
           case 'MultiPolygon':
-            const newPolygonStyle = new M.style.Polygon({
+            const newPolygonStyle = new IDEE.style.Polygon({
               fill: {
                 color: '#71a7d3',
                 opacity: 0.2,
@@ -1054,7 +1054,7 @@ export default class VectorsControl extends M.impl.Control {
    * @public
    * @function
    * @api
-   * @param {M.Featuer} apiIdeeFeature
+   * @param {IDEE.Featuer} apiIdeeFeature
    */
   getFeatureExtent() {
     return this.facadeControl.feature.getImpl().getFeature().getGeometry().getExtent();
@@ -1133,7 +1133,7 @@ export default class VectorsControl extends M.impl.Control {
       this.facadeControl.feature.setAttribute('3dLength', length);
     }, () => {
       elem.innerHTML = '-';
-      M.dialog.error(getValue('try_again'));
+      IDEE.dialog.error(getValue('try_again'));
     });
   }
 
@@ -1150,13 +1150,13 @@ export default class VectorsControl extends M.impl.Control {
   }
 
   /**
-   * Convert olFeature to M.Feature
+   * Convert olFeature to IDEE.Feature
    * @public
    * @function
    * @api
    */
   convertToMFeatures(olFeature) {
-    const feature = new M.Feature(olFeature.getId(), {
+    const feature = new IDEE.Feature(olFeature.getId(), {
       geometry: {
         coordinates: olFeature.getGeometry().getCoordinates(),
         type: olFeature.getGeometry().getType(),
@@ -1172,7 +1172,7 @@ export default class VectorsControl extends M.impl.Control {
    * @public
    * @function
    * @api
-   * @param {Array<M.Feature>} features
+   * @param {Array<IDEE.Feature>} features
    */
   geometryCollectionParse(features) {
     const parsedFeatures = [];
@@ -1181,7 +1181,7 @@ export default class VectorsControl extends M.impl.Control {
         const geometries = feature.getGeometry().geometries;
         geometries.forEach((geometry) => {
           const num = Math.random();
-          const newFeature = new M.Feature(`mf${num}`, {
+          const newFeature = new IDEE.Feature(`mf${num}`, {
             type: 'Feature',
             id: `gf${num}`,
             geometry: {
@@ -1224,14 +1224,14 @@ export default class VectorsControl extends M.impl.Control {
 
     const altitudes = [];
     const promises = [];
-    M.proxy(false);
+    IDEE.proxy(false);
     pointsBbox.forEach((bbox) => {
       const url = `${PROFILE_URL}${bbox}${PROFILE_URL_SUFFIX}`;
-      promises.push(M.remote.get(url));
+      promises.push(IDEE.remote.get(url));
     });
 
     Promise.all(promises).then((responses) => {
-      M.proxy(true);
+      IDEE.proxy(true);
       responses.forEach((response) => {
         let alt = 0;
         const responseText = response.text.split(NO_DATA_VALUE).join('');
@@ -1263,7 +1263,7 @@ export default class VectorsControl extends M.impl.Control {
 
       feature.setGeometry(geom);
     }).catch((err) => {
-      M.proxy(true);
+      IDEE.proxy(true);
     });
   }
 
@@ -1295,14 +1295,14 @@ export default class VectorsControl extends M.impl.Control {
       return elem !== '' && elem.trim().length > 3;
     });
 
-    M.proxy(false);
+    IDEE.proxy(false);
     pointsBbox.forEach((bbox) => {
       const url = `${PROFILE_URL}${bbox}${PROFILE_URL_SUFFIX}`;
-      promises.push(M.remote.get(url));
+      promises.push(IDEE.remote.get(url));
     });
 
     Promise.all(promises).then((responses) => {
-      M.proxy(true);
+      IDEE.proxy(true);
       responses.forEach((response) => {
         let alt = 0;
         const responseText = response.text.split(NO_DATA_VALUE).join('');
@@ -1338,7 +1338,7 @@ export default class VectorsControl extends M.impl.Control {
 
       callback(arrayXZY2);
     }).catch((err) => {
-      M.proxy(true);
+      IDEE.proxy(true);
       callbackError();
     });
   }
@@ -1374,14 +1374,14 @@ export default class VectorsControl extends M.impl.Control {
       return elem !== '' && elem.trim().length > 3;
     });
 
-    M.proxy(false);
+    IDEE.proxy(false);
     pointsBbox.forEach((bbox) => {
       const url = `${PROFILE_URL}${bbox}${PROFILE_URL_SUFFIX}`;
-      promises.push(M.remote.get(url));
+      promises.push(IDEE.remote.get(url));
     });
 
     Promise.all(promises).then((responses) => {
-      M.proxy(true);
+      IDEE.proxy(true);
       responses.forEach((response) => {
         let alt = 0;
         const responseText = response.text.split(NO_DATA_VALUE).join('');
@@ -1417,9 +1417,9 @@ export default class VectorsControl extends M.impl.Control {
 
       this.showProfile(arrayXZY2);
     }).catch((err) => {
-      M.proxy(true);
+      IDEE.proxy(true);
       document.querySelector('.m-vectors .m-vectors-loading-container').innerHTML = '';
-      M.dialog.error(getValue('exception.query_profile'), 'Error');
+      IDEE.dialog.error(getValue('exception.query_profile'), 'Error');
     });
   }
 
@@ -1649,7 +1649,7 @@ export default class VectorsControl extends M.impl.Control {
       if (map.getZoom() >= facadeControl.wfszoom) {
         let cancelFlag = false;
         const content = '<p class="m-vectors-loading"><span class="icon-spinner" /></p>';
-        M.dialog.info(content, getValue('loading'));
+        IDEE.dialog.info(content, getValue('loading'));
         setTimeout(() => {
           document.querySelector('div.m-api-idee-container div.m-dialog div.m-title').style.backgroundColor = '#71a7d3';
           const button = document.querySelector('div.m-dialog.info div.m-button > button');
@@ -1665,8 +1665,8 @@ export default class VectorsControl extends M.impl.Control {
           const extent = [bbox.x.min, bbox.y.min, bbox.x.max, bbox.y.max];
           const wfsURL = `${url}service=WFS&version=2.0.0&request=GetFeature&typename=${name}&`
             + `outputFormat=${encodeURIComponent(GML_FORMAT)}&srsName=${srs}&bbox=${extent.join(',')},${srs}`;
-          const layer = new M.layer.Vector({ name, legend, extract: true });
-          M.remote.get(wfsURL).then((response) => {
+          const layer = new IDEE.layer.Vector({ name, legend, extract: true });
+          IDEE.remote.get(wfsURL).then((response) => {
             if (!cancelFlag) {
               const responseWFS = response.text.replace(/wfs:member/gi, 'gml:featureMember');
               const formatter = new ol.format.WFS({ gmlFormat: ol.format.GML2() });
@@ -1690,7 +1690,7 @@ export default class VectorsControl extends M.impl.Control {
                 document.querySelector('div.m-api-idee-container div.m-dialog').remove();
               } else {
                 document.querySelector('div.m-api-idee-container div.m-dialog').remove();
-                M.dialog.error(getValue('exception.error_no_features_wfs'), 'Error');
+                IDEE.dialog.error(getValue('exception.error_no_features_wfs'), 'Error');
               }
             } else {
               document.querySelector('div.m-api-idee-container div.m-dialog').remove();
@@ -1698,13 +1698,13 @@ export default class VectorsControl extends M.impl.Control {
           }).catch((err) => {
             document.querySelector('div.m-api-idee-container div.m-dialog').remove();
             if (!cancelFlag) {
-              M.dialog.error(getValue('exception.error_features_wfs'), 'Error');
+              IDEE.dialog.error(getValue('exception.error_features_wfs'), 'Error');
             }
           });
         }, 10);
       } else {
         const levels = facadeControl.wfszoom - map.getZoom();
-        M.dialog.info(getValue('exception.wfs_zoom').replace('*', levels), getValue('warning'));
+        IDEE.dialog.info(getValue('exception.wfs_zoom').replace('*', levels), getValue('warning'));
       }
     } else {
       const namespace = name.split(':')[0];
@@ -1714,18 +1714,18 @@ export default class VectorsControl extends M.impl.Control {
           url,
           legend,
         };
-        if (M.utils.isUndefined(namelayer)) {
+        if (IDEE.utils.isUndefined(namelayer)) {
           obj.name = namespace;
-        } else if (!M.utils.isUndefined(namespace && !M.utils.isUndefined(namelayer))) {
+        } else if (!IDEE.utils.isUndefined(namespace && !IDEE.utils.isUndefined(namelayer))) {
           obj.name = namelayer;
           obj.namespace = namespace;
         }
-        const layer = new M.layer.WFS(obj);
+        const layer = new IDEE.layer.WFS(obj);
 
         this.facadeMap_.addLayers(layer);
         this.waitLayerLoaded(layer);
       } catch (err) {
-        M.dialog.error(getValue('exception.error_wfs'), 'Error');
+        IDEE.dialog.error(getValue('exception.error_wfs'), 'Error');
       }
     }
   }
@@ -1746,7 +1746,7 @@ export default class VectorsControl extends M.impl.Control {
       if (map.getZoom() >= facadeControl.wfszoom) {
         let cancelFlag = false;
         const content = '<p class="m-vectors-loading"><span class="icon-spinner" /></p>';
-        M.dialog.info(content, getValue('loading'));
+        IDEE.dialog.info(content, getValue('loading'));
         setTimeout(() => {
           document.querySelector('div.m-api-idee-container div.m-dialog div.m-title').style.backgroundColor = '#71a7d3';
           const button = document.querySelector('div.m-dialog.info div.m-button > button');
@@ -1762,7 +1762,7 @@ export default class VectorsControl extends M.impl.Control {
           const extent = [bbox.x.min, bbox.y.min, bbox.x.max, bbox.y.max];
           const wfsURL = `${layer.url}service=WFS&version=2.0.0&request=GetFeature&typename=${layer.name}&`
             + `outputFormat=${encodeURIComponent(GML_FORMAT)}&srsName=${srs}&bbox=${extent.join(',')},${srs}`;
-          M.remote.get(wfsURL).then((response) => {
+          IDEE.remote.get(wfsURL).then((response) => {
             if (!cancelFlag) {
               const responseWFS = response.text.replace(/wfs:member/gi, 'gml:featureMember');
               const formatter = new ol.format.WFS({ gmlFormat: ol.format.GML2() });
@@ -1783,7 +1783,7 @@ export default class VectorsControl extends M.impl.Control {
                 document.querySelector('div.m-api-idee-container div.m-dialog').remove();
               } else {
                 document.querySelector('div.m-api-idee-container div.m-dialog').remove();
-                M.dialog.error(getValue('exception.error_no_features_wfs'), 'Error');
+                IDEE.dialog.error(getValue('exception.error_no_features_wfs'), 'Error');
               }
             } else {
               document.querySelector('div.m-api-idee-container div.m-dialog').remove();
@@ -1791,16 +1791,16 @@ export default class VectorsControl extends M.impl.Control {
           }).catch((err) => {
             document.querySelector('div.m-api-idee-container div.m-dialog').remove();
             if (!cancelFlag) {
-              M.dialog.error(getValue('exception.error_features_wfs'), 'Error');
+              IDEE.dialog.error(getValue('exception.error_features_wfs'), 'Error');
             }
           });
         }, 10);
       } else {
         const levels = facadeControl.wfszoom - map.getZoom();
-        M.dialog.info(getValue('exception.wfs_zoom').replace('*', levels), getValue('warning'));
+        IDEE.dialog.info(getValue('exception.wfs_zoom').replace('*', levels), getValue('warning'));
       }
     } else {
-      M.dialog.error(getValue('exception.error_features_wfs'), 'Error');
+      IDEE.dialog.error(getValue('exception.error_features_wfs'), 'Error');
     }
   }
 
@@ -1817,7 +1817,7 @@ export default class VectorsControl extends M.impl.Control {
 
   waitLayerLoadedAsync(layer) {
     return new Promise((resolve) => {
-      const geometry = !M.utils.isNullOrEmpty(layer.geometry)
+      const geometry = !IDEE.utils.isNullOrEmpty(layer.geometry)
         ? layer.geometry
         : layer.getGeometryType();
 

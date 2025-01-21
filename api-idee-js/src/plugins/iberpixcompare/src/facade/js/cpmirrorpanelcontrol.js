@@ -1,26 +1,27 @@
 /**
- * @module M/control/CompareMirrorpanel
+ * @module IDEE/control/CompareMirrorpanel
  */
 
 import MirrorpanelImplControl from 'impl/cpmirrorpanel';
 import template from 'templates/cpmirrorpanel';
 import { getValue } from './i18n/language';
 
-export default class CompareMirrorpanel extends M.Control {
+export default class CompareMirrorpanel extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(values) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(MirrorpanelImplControl) || (M.utils.isObject(MirrorpanelImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(MirrorpanelImplControl)))) {
-      M.exception(getValue('exception'));
+    if (IDEE.utils.isUndefined(MirrorpanelImplControl)
+      || (IDEE.utils.isObject(MirrorpanelImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(MirrorpanelImplControl)))) {
+      IDEE.exception(getValue('exception'));
     }
 
     // 2. implementation of this control
@@ -65,9 +66,9 @@ export default class CompareMirrorpanel extends M.Control {
     /**
      * Defining cursor style
      */
-    this.styleCursor = new M.style.Point({
+    this.styleCursor = new IDEE.style.Point({
       icon: {
-        form: M.style.form.CIRCLE,
+        form: IDEE.style.form.CIRCLE,
         fontsize: 0.5,
         radius: 5,
         rotation: 0,
@@ -96,24 +97,24 @@ export default class CompareMirrorpanel extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
-    if (!M.template.compileSync) {
-      M.template.compileSync = (string, options) => {
+    if (!IDEE.template.compileSync) {
+      IDEE.template.compileSync = (string, options) => {
         let templateCompiled;
         let templateVars = {};
         let parseToHtml;
-        if (!M.utils.isUndefined(options)) {
-          templateVars = M.utils.extends(templateVars, options.vars);
+        if (!IDEE.utils.isUndefined(options)) {
+          templateVars = IDEE.utils.extends(templateVars, options.vars);
           parseToHtml = options.parseToHtml;
         }
 
         const templateFn = Handlebars.compile(string);
         const htmlText = templateFn(templateVars);
         if (parseToHtml !== false) {
-          templateCompiled = M.utils.stringToHtml(htmlText);
+          templateCompiled = IDEE.utils.stringToHtml(htmlText);
         } else {
           templateCompiled = htmlText;
         }
@@ -148,7 +149,7 @@ export default class CompareMirrorpanel extends M.Control {
         },
       };
 
-      this.template = M.template.compileSync(template, templateOptions);
+      this.template = IDEE.template.compileSync(template, templateOptions);
       this.accessibilityTab(this.template);
 
       // Button's click events
@@ -319,7 +320,7 @@ export default class CompareMirrorpanel extends M.Control {
   createMapObjects(mapLyr) {
     const plugin4map = null;
     const mpBILmap = null;
-    this.mapL[mapLyr] = M.map({
+    this.mapL[mapLyr] = IDEE.map({
       container: `mapjs${mapLyr}`,
       center: this.map_.getCenter(),
       projection: `${this.map_.getProjection().code}*${this.map_.getProjection().units}`,
@@ -348,11 +349,11 @@ export default class CompareMirrorpanel extends M.Control {
    */
   addLayerCursor(mapLyr) {
     // Cursor Layer
-    this.lyrCursor[mapLyr] = new M.layer.Vector({
+    this.lyrCursor[mapLyr] = new IDEE.layer.Vector({
       name: `Coordenadas centro ${mapLyr}`,
     }, { displayInLayerSwitcher: false });
 
-    this.featureLyrCursor[mapLyr] = new M.Feature(`Center${mapLyr}`, {
+    this.featureLyrCursor[mapLyr] = new IDEE.Feature(`Center${mapLyr}`, {
       type: 'Feature',
       properties: {},
       geometry: {
@@ -382,7 +383,7 @@ export default class CompareMirrorpanel extends M.Control {
   }
 
   addCommonPlugins(map, mapLyr) {
-    if (M.plugin.BackImgLayer !== undefined && this.backImgLayersConfig.position !== undefined) {
+    if (IDEE.plugin.BackImgLayer !== undefined && this.backImgLayersConfig.position !== undefined) {
       if (mapLyr === 'B') {
         this.backImgLayersConfig.layerId = 1;
       } else if (mapLyr === 'C') {
@@ -393,15 +394,15 @@ export default class CompareMirrorpanel extends M.Control {
         this.backImgLayersConfig.layerId = 0;
       }
 
-      map.addPlugin(new M.plugin.BackImgLayer(this.backImgLayersConfig));
+      map.addPlugin(new IDEE.plugin.BackImgLayer(this.backImgLayersConfig));
     }
 
-    if (M.plugin.FullTOC !== undefined && this.fullTOCConfig.position !== undefined) {
-      map.addPlugin(new M.plugin.FullTOC(this.fullTOCConfig));
+    if (IDEE.plugin.FullTOC !== undefined && this.fullTOCConfig.position !== undefined) {
+      map.addPlugin(new IDEE.plugin.FullTOC(this.fullTOCConfig));
     }
 
-    if (M.plugin.Vectors !== undefined && this.vectorsConfig.position !== undefined) {
-      map.addPlugin(new M.plugin.Vectors(this.vectorsConfig));
+    if (IDEE.plugin.Vectors !== undefined && this.vectorsConfig.position !== undefined) {
+      map.addPlugin(new IDEE.plugin.Vectors(this.vectorsConfig));
     }
   }
 
@@ -440,7 +441,7 @@ export default class CompareMirrorpanel extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

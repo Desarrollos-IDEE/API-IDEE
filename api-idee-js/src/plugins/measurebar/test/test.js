@@ -1,8 +1,8 @@
 import MeasureBar from 'facade/measurebar';
 
-// M.language.setLang('en');
+// IDEE.language.setLang('en');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
 });
 window.map = map;
@@ -16,8 +16,8 @@ const mp = new MeasureBar({
 });
 map.addPlugin(mp); window.mp = mp;
 
-const mp2 = new M.plugin.Infocoordinates({ position: 'TR', decimalGEOcoord: 4, decimalUTMcoord: 4 }); map.addPlugin(mp2);
+const mp2 = new IDEE.plugin.Infocoordinates({ position: 'TR', decimalGEOcoord: 4, decimalUTMcoord: 4 }); map.addPlugin(mp2);
 
-const mp3 = new M.plugin.Information({ position: 'TR', buffer: 100 }); map.addPlugin(mp3);
+const mp3 = new IDEE.plugin.Information({ position: 'TR', buffer: 100 }); map.addPlugin(mp3);
 
-const mp4 = new M.plugin.Vectors({ collapsed: true, collapsible: true, position: 'TR', wfszoom: 12 }); map.addPlugin(mp4);
+const mp4 = new IDEE.plugin.Vectors({ collapsed: true, collapsible: true, position: 'TR', wfszoom: 12 }); map.addPlugin(mp4);

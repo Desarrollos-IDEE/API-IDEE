@@ -1,8 +1,8 @@
 import Georefimage from 'facade/georefimage';
 
-// M.language.setLang('en');
+// IDEE.language.setLang('en');
 
-// const map = M.map({
+// const map = IDEE.map({
 //   container: 'mapjs',
 //   layers: ['WMTS*http://www.ign.es/wmts/mapa-raster?*MTN*EPSG:4326*label*false'],
 //   projection: 'EPSG:4326*d',
@@ -10,7 +10,7 @@ import Georefimage from 'facade/georefimage';
 //   center: { x: -6, y: 37.4 },
 // });
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   zoom: 9,
   maxZoom: 20,
@@ -21,7 +21,7 @@ const map = M.map({
   // layers: ['WMTS*http://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*IGNBaseTodo*false*image/png*false*false*true'],
 });
 
-// const wmts = new M.layer.WMTS({
+// const wmts = new IDEE.layer.WMTS({
 //   url: 'http://www.ign.es/wmts/ign-base?',
 //   name: 'IGNBaseTodo',
 //   matrixSet: 'EPSG:25830',
@@ -42,7 +42,7 @@ const map = M.map({
 
 // layers: ['WMTS*http://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*EPSG:25830*PNOA'],
 
-// const map = M.map({
+// const map = IDEE.map({
 //   container: 'mapjs',
 //   center: {
 //     x: 360020,
@@ -54,7 +54,7 @@ const map = M.map({
 //   ],
 // });
 
-const layerinicial = new M.layer.WMS({
+const layerinicial = new IDEE.layer.WMS({
   url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
   name: 'AU.AdministrativeBoundary',
   legend: 'Limite administrativo',
@@ -70,7 +70,7 @@ const georefimage = new Georefimage({
 //map.addLayers([layerinicial]);
 map.addPlugin(georefimage);
 
-const back = new M.plugin.BackImgLayer({
+const back = new IDEE.plugin.BackImgLayer({
    position: 'TR',
    collapsible: true,
    collapsed: false,
@@ -82,7 +82,7 @@ const back = new M.plugin.BackImgLayer({
            id: 'imagen',
            title: 'PNOA Imagen',
            preview: 'https://componentes.ign.es/api-idee/plugins/backimglayer/images/svqimagen.png',
-           layers: [new M.layer.WMTS({
+           layers: [new IDEE.layer.WMTS({
                url: 'https://www.ign.es/wmts/pnoa-ma?',
                name: 'OI.OrthoimageCoverage',
                legend: 'Imagen (PNOA)',
@@ -98,7 +98,7 @@ const back = new M.plugin.BackImgLayer({
            id: 'hibrido',
            title: 'PNOA Híbrido',
            preview: 'https://componentes.ign.es/api-idee/plugins/backimglayer/images/svqhibrid.png',
-           layers: [new M.layer.WMTS({
+           layers: [new IDEE.layer.WMTS({
                    url: 'https://www.ign.es/wmts/pnoa-ma?',
                    name: 'OI.OrthoimageCoverage',
                    legend: 'Imagen (PNOA)',
@@ -109,7 +109,7 @@ const back = new M.plugin.BackImgLayer({
                    visible: true,
                    format: 'image/jpeg',
                }),
-               new M.layer.WMTS({
+               new IDEE.layer.WMTS({
                    url: 'https://www.ign.es/wmts/ign-base?',
                    name: 'IGNBaseOrto',
                    matrixSet: 'EPSG:4326',
@@ -126,7 +126,7 @@ const back = new M.plugin.BackImgLayer({
            id: 'lidar',
            preview: 'https://componentes.ign.es/api-idee/plugins/backimglayer/images/svqlidar.png',
            title: 'LiDAR',
-           layers: [new M.layer.WMTS({
+           layers: [new IDEE.layer.WMTS({
                url: 'https://wmts-mapa-lidar.idee.es/lidar?',
                name: 'EL.GridCoverageDSM',
                legend: 'Modelo Digital de Superficies LiDAR',
@@ -143,7 +143,7 @@ const back = new M.plugin.BackImgLayer({
            id: 'lidarhibrido',
            preview: 'https://componentes.ign.es/api-idee/plugins/backimglayer/images/svqlidar.png',
            title: 'LiDAR Híbrido',
-           layers: [new M.layer.WMTS({
+           layers: [new IDEE.layer.WMTS({
                url: 'https://wmts-mapa-lidar.idee.es/lidar?',
                name: 'EL.GridCoverageDSM',
                legend: 'Modelo Digital de Superficies LiDAR',
@@ -154,7 +154,7 @@ const back = new M.plugin.BackImgLayer({
                visible: true,
                format: 'image/png',
            }),
-           new M.layer.WMTS({
+           new IDEE.layer.WMTS({
                    url: 'https://www.ign.es/wmts/ign-base?',
                    name: 'IGNBaseOrto',
                    matrixSet: 'EPSG:4326',
@@ -171,7 +171,7 @@ const back = new M.plugin.BackImgLayer({
            id: 'mapa',
            preview: 'https://componentes.ign.es/api-idee/plugins/backimglayer/images/svqmapa.png',
            title: 'Cartociudad',
-           layers: [new M.layer.WMTS({
+           layers: [new IDEE.layer.WMTS({
                url: 'https://www.ign.es/wmts/ign-base?',
                name: 'IGNBaseTodo',
                legend: 'Mapa IGN',
@@ -189,6 +189,6 @@ const back = new M.plugin.BackImgLayer({
 );
 
 map.addPlugin(back);
-map.addPlugin(new M.plugin.FullTOC());
+map.addPlugin(new IDEE.plugin.FullTOC());
 
 window.map = map;

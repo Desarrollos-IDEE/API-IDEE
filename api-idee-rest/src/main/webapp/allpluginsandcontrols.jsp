@@ -109,7 +109,7 @@
       }
    %>
     <script type="text/javascript">
-        const map = M.map({
+        const map = IDEE.map({
             container: 'mapjs',
             controls: ['panzoom', 'scale*true', 'scaleline', 'rotate', 'location', 'getfeatureinfo'],
             zoom: 5,
@@ -118,7 +118,7 @@
             center: [-467062.8225, 4683459.6216],
         });
 
-        let wmts = new M.layer.WMTS({
+        let wmts = new IDEE.layer.WMTS({
             url: "http://www.ideandalucia.es/geowebcache/service/wmts",
             name: "toporaster",
             matrixSet: "EPSG:25830",
@@ -128,7 +128,7 @@
         });
         map.addWMTS(wmts);
 
-        const wms = new M.layer.WMS({
+        const wms = new IDEE.layer.WMS({
             url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
             name: 'AU.AdministrativeBoundary',
             legend: 'Limite administrativo',
@@ -136,14 +136,14 @@
         }, {});
         map.addWMS(wms);
 
-        const layerinicial = new M.layer.WMS({
+        const layerinicial = new IDEE.layer.WMS({
             url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
             name: 'AU.AdministrativeBoundary',
             legend: 'Limite administrativo',
             tiled: false,
         }, {});
 
-        const layerUA = new M.layer.WMS({
+        const layerUA = new IDEE.layer.WMS({
             url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
             name: 'AU.AdministrativeUnit',
             legend: 'Unidad administrativa',
@@ -152,7 +152,7 @@
 
         map.addLayers([layerinicial, layerUA]);
 
-        const mp = new M.plugin.IGNSearch({
+        const mp = new IDEE.plugin.IGNSearch({
             servicesToSearch: 'gn',
             maxResults: 10,
             noProcess: 'poblacion',
@@ -165,20 +165,20 @@
             urlFind: 'http://servicios-de-busqueda-publico.desarrollo.guadaltel.es/geocoder/api/geocoder/findJsonp',
             urlReverse: 'http://servicios-de-busqueda-publico.desarrollo.guadaltel.es/geocoder/api/geocoder/reverseGeocode',
         });
-        const mp2 = new M.plugin.Attributions({
+        const mp2 = new IDEE.plugin.Attributions({
             mode: 1,
             scale: 10000,
         });
 
-        const mp3 = new M.plugin.ShareMap({
+        const mp3 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",,
             position: 'BR',
         });
-        const mp4 = new M.plugin.XYLocator({
+        const mp4 = new IDEE.plugin.XYLocator({
             position: 'TL',
         });
-        const mp6 = new M.plugin.ZoomExtent();
-        const mp7 = new M.plugin.MouseSRS({
+        const mp6 = new IDEE.plugin.ZoomExtent();
+        const mp7 = new IDEE.plugin.MouseSRS({
             srs: 'EPSG:4326',
             label: 'WGS84',
             precision: 6,
@@ -186,11 +186,11 @@
             utmDecimalDigits: 2,
         });
 
-        const mp8 = new M.plugin.TOC({
+        const mp8 = new IDEE.plugin.TOC({
             collapsed: true,
         });
 
-        const mp9 = new M.plugin.BackImgLayer({
+        const mp9 = new IDEE.plugin.BackImgLayer({
             position: 'TR',
             collapsible: true,
             collapsed: true,
@@ -200,7 +200,7 @@
                     id: 'mapa',
                     preview: 'plugins/backimglayer/images/svqmapa.png',
                     title: 'Mapa',
-                    layers: [new M.layer.WMTS({
+                    layers: [new IDEE.layer.WMTS({
                         url: 'http://www.ign.es/wmts/ign-base?',
                         name: 'IGNBaseTodo',
                         legend: 'Mapa IGN',
@@ -216,7 +216,7 @@
                     id: 'imagen',
                     title: 'Imagen',
                     preview: 'plugins/backimglayer/images/svqimagen.png',
-                    layers: [new M.layer.WMTS({
+                    layers: [new IDEE.layer.WMTS({
                         url: 'http://www.ign.es/wmts/pnoa-ma?',
                         name: 'OI.OrthoimageCoverage',
                         legend: 'Imagen (PNOA)',
@@ -232,7 +232,7 @@
                     id: 'hibrido',
                     title: 'Híbrido',
                     preview: 'plugins/backimglayer/images/svqhibrid.png',
-                    layers: [new M.layer.WMTS({
+                    layers: [new IDEE.layer.WMTS({
                             url: 'http://www.ign.es/wmts/pnoa-ma?',
                             name: 'OI.OrthoimageCoverage',
                             legend: 'Imagen (PNOA)',
@@ -243,7 +243,7 @@
                             visible: true,
                             format: 'image/jpeg',
                         }),
-                        new M.layer.WMTS({
+                        new IDEE.layer.WMTS({
                             url: 'http://www.ign.es/wmts/ign-base?',
                             name: 'IGNBaseOrto',
                             matrixSet: 'GoogleMapsCompatible',
@@ -260,7 +260,7 @@
                     id: 'lidar',
                     preview: 'plugins/backimglayer/images/svqlidar.png',
                     title: 'LIDAR',
-                    layers: [new M.layer.WMTS({
+                    layers: [new IDEE.layer.WMTS({
                         url: 'https://wmts-mapa-lidar.idee.es/lidar?',
                         name: 'EL.GridCoverageDSM',
                         legend: 'Modelo Digital de Superficies LiDAR',
@@ -275,7 +275,7 @@
             ],
         });
 
-        const mp10 = new M.plugin.SelectionZoom({
+        const mp10 = new IDEE.plugin.SelectionZoom({
             position: 'TL',
             collapsible: true,
             collapsed: true,
@@ -365,7 +365,7 @@
         });
 
 
-        const mp11 = new M.plugin.ZoomPanel({
+        const mp11 = new IDEE.plugin.ZoomPanel({
             position: 'TL',
             collapsible: true,
             collapsed: true,
@@ -374,54 +374,54 @@
             projection: 'EPSG:4326'
         });
 
-        const mp22 = new M.plugin.BeautyTOC({
+        const mp22 = new IDEE.plugin.BeautyTOC({
             collapsed: true,
             position: 'TR',
         });
 
-        const mp23 = new M.plugin.ContactLink({
+        const mp23 = new IDEE.plugin.ContactLink({
             position: 'BR',
         });
 
-        const mp24 = new M.plugin.FototecaHelp({
+        const mp24 = new IDEE.plugin.FototecaHelp({
             position: 'TR',
             helpLink: 'http://fototeca.cnig.es/help_es.pdf',
             contactEmail: 'fototeca@cnig.es',
         });
 
-        const mp25 = new M.plugin.GeometryDraw({
+        const mp25 = new IDEE.plugin.GeometryDraw({
             collapsed: true,
             collapsible: true,
             position: 'TR',
         });
 
-        const mp26 = new M.plugin.Georefimage({
+        const mp26 = new IDEE.plugin.Georefimage({
             collapsed: true,
             collapsible: true,
             position: 'TR',
         });
 
-        const mp27 = new M.plugin.IberpixHelp({
+        const mp27 = new IDEE.plugin.IberpixHelp({
             position: 'TR',
             helpLink: 'https://www.ign.es/iberpix2/visor/help/Manual%20de%20Usuario.html?1Introduccion.html',
         });
 
-        const mp28 = new M.plugin.IGNSearchLocator({
+        const mp28 = new IDEE.plugin.IGNSearchLocator({
             position: 'TL'
         });
 
-        const mp29 = new M.plugin.InfoCatastro({
+        const mp29 = new IDEE.plugin.InfoCatastro({
             position: 'TR',
             tooltip: 'Consultar Catastro',
         });
 
-        const mp30 = new M.plugin.Information({
+        const mp30 = new IDEE.plugin.Information({
             position: 'TR',
         });
 
-        const mp31 = new M.plugin.MeasureBar();
+        const mp31 = new IDEE.plugin.MeasureBar();
 
-        const mp32 = new M.plugin.OverviewMap({
+        const mp32 = new IDEE.plugin.OverviewMap({
             position: 'BR',
             fixed: true,
             zoom: 4,
@@ -433,7 +433,7 @@
 
         });
 
-        const mp33 = new M.plugin.PredefinedZoom({
+        const mp33 = new IDEE.plugin.PredefinedZoom({
             position: 'TL',
             savedZooms: [{
                 name: 'Zoom a la extensión del mapa',
@@ -441,27 +441,27 @@
             }],
         });
 
-        const mp34 = new M.plugin.PrinterMap({
+        const mp34 = new IDEE.plugin.PrinterMap({
             collapsed: true,
             collapsible: true,
             position: 'TR',
         });
 
-        const mp35 = new M.plugin.Rescale({
+        const mp35 = new IDEE.plugin.Rescale({
             collapsible: true,
             collapsed: true,
             position: 'BL',
         });
 
-        const mp36 = new M.plugin.SelectionDraw({
+        const mp36 = new IDEE.plugin.SelectionDraw({
             projection: 'EPSG:4326'
         });
 
-        const mp37 = new M.plugin.ViewHistory({
+        const mp37 = new IDEE.plugin.ViewHistory({
             position: 'TL',
         });
 
-        const mp38 = new M.plugin.Transparency({
+        const mp38 = new IDEE.plugin.Transparency({
             position: 'TL',
             layers: ['toporaster', 'AU.AdministrativeBoundary'],
             collapsible: false

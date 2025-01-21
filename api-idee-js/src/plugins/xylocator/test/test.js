@@ -1,6 +1,6 @@
 import XYLocator from 'facade/xylocator';
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   projection: 'EPSG:3857*m',
   center: [-443729, 4860856],

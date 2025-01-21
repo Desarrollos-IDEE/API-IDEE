@@ -1,7 +1,7 @@
 /**
- * @module M/impl/layer/AnimatedCluster
+ * @module IDEE/impl/layer/AnimatedCluster
  */
-import { isNullOrEmpty } from 'M/util/Utils';
+import { isNullOrEmpty } from 'IDEE/util/Utils';
 import OLLayerVector from 'ol/layer/Vector';
 import OLSourceVector from 'ol/source/Vector';
 import OLGeomPoint from 'ol/geom/Point';
@@ -22,7 +22,7 @@ class AnimatedCluster extends OLLayerVector {
    * con parámetros especificados por el usuario.
    *
    * @constructor
-   * @implements {M.impl.layer.Vector}
+   * @implements {IDEE.impl.layer.Vector}
    * @param {Mx.parameters.LayerOptions} options Opciones personalizadas para esta capa.
    * - style: Estilo del "cluster".
    * - animationDuration: Duración de la animación, por defecto 700.
@@ -72,7 +72,7 @@ class AnimatedCluster extends OLLayerVector {
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
    * @function
-   * @param {M.impl.Map} map Implementación del mapa.
+   * @param {IDEE.impl.Map} map Implementación del mapa.
    * @api stable
    */
   saveCluster_() {
@@ -92,8 +92,8 @@ class AnimatedCluster extends OLLayerVector {
    *
    * @public
    * @function
-   * @param {M.feature} feature Objetos geográficos.
-   * @param {M.cluster} clusters Agrupaciones.
+   * @param {IDEE.feature} feature Objetos geográficos.
+   * @param {IDEE.cluster} clusters Agrupaciones.
    * @return {Array<Feature>} Objetos geográficos del "cluster".
    * @api stable
    */
@@ -113,7 +113,7 @@ class AnimatedCluster extends OLLayerVector {
    *
    * @public
    * @function
-   * @param {M.event} event Evento.
+   * @param {IDEE.event} event Evento.
    * @api stable
    */
   animate(event) {
@@ -246,7 +246,7 @@ class AnimatedCluster extends OLLayerVector {
    *
    * @public
    * @function
-   * @param {M.event} e Evento tras la animación.
+   * @param {IDEE.event} e Evento tras la animación.
    * @api stable
    */
   postanimate(e) {
@@ -261,7 +261,7 @@ class AnimatedCluster extends OLLayerVector {
    *
    * @public
    * @function
-   * @param {M.style} style Nuevo estilo para aplicar.
+   * @param {IDEE.style} style Nuevo estilo para aplicar.
    * @api stable
    */
   setStyle(style) {

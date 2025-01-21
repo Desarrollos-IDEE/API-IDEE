@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import XYZ from 'M/layer/XYZ';
+import XYZ from 'IDEE/layer/XYZ';
 import XYZSource from 'ol/source/XYZ';
 
 export const xyz_001 = new XYZ({

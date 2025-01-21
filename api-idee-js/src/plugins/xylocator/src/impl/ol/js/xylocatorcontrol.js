@@ -1,13 +1,13 @@
 /**
- * @module M/impl/control/XYLocatorControl
+ * @module IDEE/impl/control/XYLocatorControl
  */
-export default class XYLocatorControl extends M.impl.Control {
+export default class XYLocatorControl extends IDEE.impl.Control {
   /**
    * This function adds the control to the specified map
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api
    */
@@ -22,7 +22,7 @@ export default class XYLocatorControl extends M.impl.Control {
    * @function
    */
   setScale(scale) {
-    const dpiToCM = M.units.DOTS_PER_INCH / 2.54;
+    const dpiToCM = IDEE.units.DOTS_PER_INCH / 2.54;
     const resolution = (scale / dpiToCM) / 100;
     const olMap = this.facadeMap_.getMapImpl();
     const olView = olMap.getView();

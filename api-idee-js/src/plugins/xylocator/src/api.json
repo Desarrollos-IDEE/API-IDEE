@@ -3,7 +3,7 @@
     "name": "xylocator",
     "separator": "*"
   },
-  "constructor": "M.plugin.XYLocator",
+  "constructor": "IDEE.plugin.XYLocator",
   "parameters": [{
     "type": "object",
     "properties": [{

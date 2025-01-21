@@ -3,7 +3,7 @@
     "name": "viewhistory",
     "separator": "*"
   },
-  "constructor": "M.plugin.ViewHistory",
+  "constructor": "IDEE.plugin.ViewHistory",
   "parameters": [{
     "type": "object",
     "properties": [{

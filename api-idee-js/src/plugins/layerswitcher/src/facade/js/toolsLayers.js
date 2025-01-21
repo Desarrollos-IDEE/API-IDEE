@@ -83,7 +83,7 @@ const changeLayerLegend = (layer, target) => {
 export const showModalChangeName = (layer, target, order) => {
   if (target.className.indexOf('m-layerswitcher-title-box') > -1
   || target.className.indexOf('m-layerswitcher-sectionPanel-header-text') > -1) {
-    const changeName = M.template.compileSync(changeNameTemplate, {
+    const changeName = IDEE.template.compileSync(changeNameTemplate, {
       jsonp: true,
       parseToHtml: false,
       vars: {
@@ -95,7 +95,7 @@ export const showModalChangeName = (layer, target, order) => {
       },
     });
 
-    M.dialog.info(changeName, getValue(I18N_CHANGE_NAME), order);
+    IDEE.dialog.info(changeName, getValue(I18N_CHANGE_NAME), order);
 
     document.querySelector(ID_SELECTOR_CHANGE_NAME_BUTTON).addEventListener('click', () => {
       changeLayerLegend(layer, target);
@@ -138,14 +138,14 @@ const errorLegendLayer = (layer, useProxy, statusProxy) => {
       legend = url.replace('{z}/{x}/{y}', '0/0/0');
     }
     if (legend !== '') {
-      M.proxy(useProxy);
-      M.remote.get(legend).then((response) => {
+      IDEE.proxy(useProxy);
+      IDEE.remote.get(legend).then((response) => {
         if (response.code !== 200) {
           legend = '';
         }
         success(legend);
       });
-      M.proxy(statusProxy);
+      IDEE.proxy(statusProxy);
     } else {
       success('error legend');
     }
@@ -196,7 +196,7 @@ export const legendInfo = (evt, layer, useProxy, statusProxy) => {
     } else {
       const img = legend.querySelector('img');
       const p = img.parentElement.querySelector('p');
-      if (!M.utils.isNullOrEmpty(p)) {
+      if (!IDEE.utils.isNullOrEmpty(p)) {
         p.remove();
       }
       legend.style.display = 'none';
@@ -236,7 +236,7 @@ export const eventIconTarget = (layer, map, order, evt) => {
         mapView.setBbox(extent);
       }
     } else {
-      M.dialog.info(getValue('exception.extent'), getValue('info'), order);
+      IDEE.dialog.info(getValue('exception.extent'), getValue('info'), order);
     }
   }
 };
@@ -344,8 +344,8 @@ export const selectDefaultRange = (radioButtons, map) => {
 const changeLayerConfig = (layer, otherStyles) => {
   const styleSelected = document.querySelector('#m-layerswitcher-style-select').value;
   if (styleSelected !== '') {
-    if (layer instanceof M.layer.Vector) {
-      if (!M.utils.isNullOrEmpty(otherStyles)) {
+    if (layer instanceof IDEE.layer.Vector) {
+      if (!IDEE.utils.isNullOrEmpty(otherStyles)) {
         const filtered = otherStyles[styleSelected];
         layer.clearStyle();
         if (styleSelected === 0) {
@@ -357,7 +357,7 @@ const changeLayerConfig = (layer, otherStyles) => {
     } else {
       layer.getImpl().getLayer().getSource().updateParams({ STYLES: styleSelected });
       const cm = layer.capabilitiesMetadata;
-      if (!M.utils.isNullOrEmpty(cm) && !M.utils.isNullOrEmpty(cm.style)) {
+      if (!IDEE.utils.isNullOrEmpty(cm) && !IDEE.utils.isNullOrEmpty(cm.style)) {
         const filtered = layer.capabilitiesMetadata.style.filter((style) => {
           return style.Name === styleSelected;
         });
@@ -376,17 +376,17 @@ export const styleLayers = (layer, order, evt) => {
   if (evt.target.className.indexOf('m-layerswitcher-icons-style') > -1) {
     let otherStyles = [];
     let isVectorLayer = false;
-    if (!M.utils.isUndefined(layer.capabilitiesMetadata)
-              && !M.utils.isUndefined(layer.capabilitiesMetadata.style)) {
+    if (!IDEE.utils.isUndefined(layer.capabilitiesMetadata)
+              && !IDEE.utils.isUndefined(layer.capabilitiesMetadata.style)) {
       otherStyles = layer.capabilitiesMetadata.style;
     }
 
-    if (layer instanceof M.layer.Vector) {
+    if (layer instanceof IDEE.layer.Vector) {
       otherStyles = layer.predefinedStyles;
       isVectorLayer = true;
     }
 
-    const config = M.template.compileSync(configTemplate, {
+    const config = IDEE.template.compileSync(configTemplate, {
       jsonp: true,
       parseToHtml: false,
       vars: {
@@ -402,7 +402,7 @@ export const styleLayers = (layer, order, evt) => {
       },
     });
 
-    M.dialog.info(config, getValue('configure_layer'), order);
+    IDEE.dialog.info(config, getValue('configure_layer'), order);
     focusModal('.m-title span');
     setTimeout(() => {
       const selector = '#m-layerswitcher-style button';

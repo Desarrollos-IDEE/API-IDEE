@@ -1,8 +1,8 @@
 import ZoomPanel from 'facade/zoompanel';
 
-M.language.setLang('en');
+IDEE.language.setLang('en');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
 });
 const mp = new ZoomPanel({

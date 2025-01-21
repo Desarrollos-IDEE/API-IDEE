@@ -1,8 +1,8 @@
-import { map as Mmap } from 'M/api-idee';
-import { info } from 'M/dialog';
-import WMC from 'M/layer/WMC';
-import WMS from 'M/layer/WMS';
-import WMTS from 'M/layer/WMTS';
+import { map as Mmap } from 'IDEE/api-idee';
+import { info } from 'IDEE/dialog';
+import WMC from 'IDEE/layer/WMC';
+import WMS from 'IDEE/layer/WMS';
+import WMTS from 'IDEE/layer/WMTS';
 
 
 const mapjs = Mmap({

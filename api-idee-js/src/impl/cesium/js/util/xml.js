@@ -1,5 +1,5 @@
 /**
- * @module M/impl/util/xml
+ * @module IDEE/impl/util/xml
  */
 
 /**

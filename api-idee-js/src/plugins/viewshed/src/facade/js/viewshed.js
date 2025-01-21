@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/ViewShed
+ * @module IDEE/plugin/ViewShed
  */
 import 'assets/css/fonts';
 import 'assets/css/viewshed';
@@ -10,14 +10,14 @@ import { getValue } from './i18n/language';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class ViewShed extends M.Plugin {
+export default class ViewShed extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -27,14 +27,14 @@ export default class ViewShed extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -97,7 +97,7 @@ export default class ViewShed extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).viewshed;
+    return IDEE.language.getTranslation(lang).viewshed;
   }
 
   /**
@@ -105,17 +105,17 @@ export default class ViewShed extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
     this.controls_.push(new ViewShedControl({ url: this.url_ }));
     this.map_ = map;
-    this.panel_ = new M.ui.Panel('panelViewShed', {
+    this.panel_ = new IDEE.ui.Panel('panelViewShed', {
       className: 'm-viewshed-container',
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       tooltip: getValue('tooltip'),
       collapsedButtonClass: 'icon-viewshed',
     });
@@ -123,8 +123,8 @@ export default class ViewShed extends M.Plugin {
     map.addPanels(this.panel_);
 
     const that = this;
-    this.controls_[0].on(M.evt.ADDED_TO_MAP, () => {
-      that.fire(M.evt.ADDED_TO_MAP);
+    this.controls_[0].on(IDEE.evt.ADDED_TO_MAP, () => {
+      that.fire(IDEE.evt.ADDED_TO_MAP);
     });
   }
 
@@ -163,7 +163,7 @@ export default class ViewShed extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Plugin} plugin to compare
+   * @param {IDEE.Plugin} plugin to compare
    * @api
    */
   equals(plugin) {

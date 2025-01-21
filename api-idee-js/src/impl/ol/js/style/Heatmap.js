@@ -1,9 +1,9 @@
 /**
- * @module M/impl/style/Heatmap
+ * @module IDEE/impl/style/Heatmap
  */
 import OLLayerHeatmap from 'ol/layer/Heatmap';
 import OLSourceVector from 'ol/source/Vector';
-import { isNullOrEmpty, extendsObj } from 'M/util/Utils';
+import { isNullOrEmpty, extendsObj } from 'IDEE/util/Utils';
 import Style from './Style';
 import HeatmapLayer from '../layer/Heatmap';
 
@@ -61,7 +61,7 @@ class Heatmap extends Style {
    * Este método aplica el estilo a la capa especificada.
    * @function
    * @public
-   * @param {M.layer.Vector} layer Capa.
+   * @param {IDEE.layer.Vector} layer Capa.
    * @api stable
    */
   applyToLayer(layer) {
@@ -83,7 +83,7 @@ class Heatmap extends Style {
    * Este método elimina el estilo de la capa.
    * @function
    * @public
-   * @param {M.layer} layer Capa.
+   * @param {IDEE.layer} layer Capa.
    * @api stable
    */
   unapply(layer) {

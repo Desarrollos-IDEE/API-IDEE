@@ -1,5 +1,5 @@
 /**
- * @module M/impl/control/LyrcompareInteraction
+ * @module IDEE/impl/control/LyrcompareInteraction
 
  */
 export default class LyrcompareInteraction extends ol.interaction.Pointer {

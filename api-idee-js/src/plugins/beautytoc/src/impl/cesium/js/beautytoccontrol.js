@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/BeautyTOCControl
+ * @module IDEE/impl/control/BeautyTOCControl
  */

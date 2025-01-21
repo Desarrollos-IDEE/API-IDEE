@@ -1,5 +1,5 @@
 /**
- * @module M/impl/Control
+ * @module IDEE/impl/Control
  */
 import OLControl from 'ol/control/Control';
 /**
@@ -31,7 +31,7 @@ class Control extends OLControl {
    *
    * @public
    * @function
-   * @param {M.Map} map Mapa.
+   * @param {IDEE.Map} map Mapa.
    * @param {function} template Plantilla del control.
    * @api stable
    * @export

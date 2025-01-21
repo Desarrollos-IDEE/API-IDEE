@@ -1,10 +1,10 @@
 /* eslint-disable no-console,no-underscore-dangle,max-len,camelcase,no-plusplus,no-param-reassign,no-proto,import/newline-after-import,object-property-newline,new-cap,object-curly-newline */
-import { map as Mmap } from 'M/api-idee';
-import Feature from 'M/feature/Feature';
-import Generic from 'M/style/Generic';
-import * as filterFunction from 'M/filter/Function';
+import { map as Mmap } from 'IDEE/api-idee';
+import Feature from 'IDEE/feature/Feature';
+import Generic from 'IDEE/style/Generic';
+import * as filterFunction from 'IDEE/filter/Function';
 import VectorSource from 'ol/source/Vector';
-import GeoJSON from 'M/layer/GeoJSON';
+import GeoJSON from 'IDEE/layer/GeoJSON';
 import { bbox as bboxStrategy } from 'ol/loadingstrategy';
 import olXMLFormater from 'ol/format/XML';
 // Escoger una de estas capas para probarlas.

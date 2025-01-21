@@ -1,4 +1,4 @@
-# M.plugin.GeometryDraw
+# IDEE.plugin.GeometryDraw
 
 Plugin que permite el dibujo y edición de geometrías sobre un mapa, así como su descarga.
 
@@ -49,21 +49,21 @@ https://componentes.cnig.es/api-idee/?geometrydraw=BL*true*true
 ### Ejemplos de uso
 
 ```javascript
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
 });
 
-const mp = new M.plugin.GeometryDraw();
+const mp = new IDEE.plugin.GeometryDraw();
 
 map.addPlugin(mp);
 ```
 
 ```javascript
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
 });
 
-const mp = new M.plugin.GeometryDraw({
+const mp = new IDEE.plugin.GeometryDraw({
   position: 'TL',
   collapsed: true,
   collapsible: true,

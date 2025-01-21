@@ -1,7 +1,7 @@
 /**
- * @module M/impl/format/WMTSCapabilities
+ * @module IDEE/impl/format/WMTSCapabilities
  */
-import { isNullOrEmpty } from 'M/util/Utils';
+import { isNullOrEmpty } from 'IDEE/util/Utils';
 import { optionsFromCapabilities } from 'ol/source/WMTS';
 import OLFormatWMTSCapabilities from 'ol/format/WMTSCapabilities';
 

@@ -1,5 +1,5 @@
 /**
- * @module M/Layer
+ * @module IDEE/Layer
  */
 import Exception from '../exception/exception';
 import * as parserParameter from '../parameter/parameter';
@@ -25,14 +25,14 @@ import * as EventType from '../event/eventtype';
  * @property {Boolean} isbase Define si la capa es base.
  *
  * @api
- * @extends {M.Base}
+ * @extends {IDEE.Base}
  */
 class LayerBase extends Base {
   /**
    * Constructor principal de la clase. Crea una capa
    * con parámetros especificados por el usuario.
    * @constructor
-   * @extends {M.facade.Base}
+   * @extends {IDEE.facade.Base}
    * @param {string|Mx.parameters.Layer} userParameters Parámetros proporcionados por el usuario.
    * - attribution: Atribución de la capa.
    * - name: Nombre de la capa.
@@ -102,7 +102,7 @@ class LayerBase extends Base {
     this.zindex_ = null;
 
     /**
-     * Layer map_: Mapa (M.map).
+     * Layer map_: Mapa (IDEE.map).
      */
     this.map_ = null;
 
@@ -173,7 +173,7 @@ class LayerBase extends Base {
    *
    * @function
    * @getter
-   * @return {M.layer.GeoTIFF.impl.legend} Leyenda de la capa.
+   * @return {IDEE.layer.GeoTIFF.impl.legend} Leyenda de la capa.
    * @api
    */
   get legend() {
@@ -202,7 +202,7 @@ class LayerBase extends Base {
    * Indica el nombre que queremos que aparezca en el árbol de contenidos, si lo hay.
    * @function
    * @public
-   * @returns {M.layer.impl.legend} Leyenda.
+   * @returns {IDEE.layer.impl.legend} Leyenda.
    * @api
    */
   getLegend() {
@@ -228,7 +228,7 @@ class LayerBase extends Base {
    * @function
    * @getter
    * @public
-   * @returns {M.layer.impl.url} URL del servicio.
+   * @returns {IDEE.layer.impl.url} URL del servicio.
    * @api
    */
   get url() {
@@ -252,7 +252,7 @@ class LayerBase extends Base {
    * @function
    * @getter
    * @public
-   * @returns {M.layer.impl.name}
+   * @returns {IDEE.layer.impl.name}
    * @api
    */
   get name() {
@@ -281,7 +281,7 @@ class LayerBase extends Base {
    * @function
    * @getter
    * @public
-   * @returns {M.layer.impl.transparent} Valor de la propiedad "isBase".
+   * @returns {IDEE.layer.impl.transparent} Valor de la propiedad "isBase".
    * @api
    */
   get isBase() {
@@ -316,7 +316,7 @@ class LayerBase extends Base {
    * @function
    * @getter
    * @public
-   * @returns {M.layer.impl.transparent} Valor de la propiedad "transparent".
+   * @returns {IDEE.layer.impl.transparent} Valor de la propiedad "transparent".
    * @api
    */
   get transparent() {
@@ -348,7 +348,7 @@ class LayerBase extends Base {
    * @function
    * @getter
    * @public
-   * @returns {M.layer.impl.displayInLayerSwitcher} Verdadero si esta en el
+   * @returns {IDEE.layer.impl.displayInLayerSwitcher} Verdadero si esta en el
    * "DisplayInLayerSwitcher", falso si no.
    * @api
    */
@@ -381,7 +381,7 @@ class LayerBase extends Base {
    * Este método calcula la extensión máxima de esta capa.
    *
    * @function
-   * @returns {M.layer.maxExtent} Devuelve la extensión máxima de esta capa.
+   * @returns {IDEE.layer.maxExtent} Devuelve la extensión máxima de esta capa.
    * @api
    */
   getMaxExtent() {
@@ -399,7 +399,7 @@ class LayerBase extends Base {
    * Este método calcula la extensión máxima de esta capa.
    *
    * @function
-   * @returns {M.layer.maxExtent} Devuelve una promesa, con la extensión máxima de esta capa.
+   * @returns {IDEE.layer.maxExtent} Devuelve una promesa, con la extensión máxima de esta capa.
    * @api
    */
   calculateMaxExtent() {
@@ -454,7 +454,7 @@ class LayerBase extends Base {
    *
    * @function
    * @public
-   * @param {M.map} map Instancia del mapa creado con la fachada.
+   * @param {IDEE.map} map Instancia del mapa creado con la fachada.
    * @api
    * @export
    */
@@ -532,7 +532,7 @@ class LayerBase extends Base {
    * Este método indica si la capa está dentro del rango.
    *
    * @function
-   * @returns {M.layer.impl.inRange} Devuelve si la capa está dentro del rango.
+   * @returns {IDEE.layer.impl.inRange} Devuelve si la capa está dentro del rango.
    * @api
    * @export
    */
@@ -549,7 +549,7 @@ class LayerBase extends Base {
    * Devuelve la URL de la leyenda.
    *
    * @function
-   * @returns {M.layer.impl.getLegendURL} URL de la leyenda.
+   * @returns {IDEE.layer.impl.getLegendURL} URL de la leyenda.
    * @api
    */
   getLegendURL() {
@@ -566,7 +566,7 @@ class LayerBase extends Base {
   setLegendURL(legendUrlParam) {
     let legendUrl = legendUrlParam;
     if (isNullOrEmpty(legendUrl)) {
-      legendUrl = concatUrlPaths([M.config.THEME_URL, LayerBase.LEGEND_DEFAULT]);
+      legendUrl = concatUrlPaths([IDEE.config.THEME_URL, LayerBase.LEGEND_DEFAULT]);
     }
     this.getImpl().setLegendURL(legendUrl);
   }

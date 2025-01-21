@@ -1,13 +1,13 @@
 /**
- * @module M/impl/control/IGNSearchControl
+ * @module IDEE/impl/control/IGNSearchControl
  */
-export default class IGNSearchControl extends M.impl.Control {
+export default class IGNSearchControl extends IDEE.impl.Control {
   /**
    * This function adds the control to the specified map
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api stable
    */
@@ -73,7 +73,7 @@ export default class IGNSearchControl extends M.impl.Control {
     const newResolution = olView.getMaxResolution() / (2 ** wmts3857scales.indexOf(newScale));
     olView.setResolution(newResolution);
     // 4.777314267823516); // resolution for scale 17016, table page 120
-    // const dpiToCM = M.units.DOTS_PER_INCH / 2.54;
+    // const dpiToCM = IDEE.units.DOTS_PER_INCH / 2.54;
     // const resolution = (scale / dpiToCM) / 100;
     // olView.setResolution(resolution);
   }

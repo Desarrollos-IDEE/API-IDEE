@@ -14,7 +14,7 @@ describe('CP del Grupo de Capas por API', () => {
       container: 'map',
       controls: ['layerswitcher'],
     });
-    provincias = new M.layer.WFS({
+    provincias = new IDEE.layer.WFS({
       url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?',
       namespace: 'tematicos',
       name: 'Provincias',
@@ -22,18 +22,18 @@ describe('CP del Grupo de Capas por API', () => {
       geometry: 'MPOLYGON',
       ids: '3,4',
     });
-    municipios = new M.layer.GeoJSON({
+    municipios = new IDEE.layer.GeoJSON({
       url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=tematicos:Municipios&maxFeatures=50&outputFormat=application%2Fjson',
       name: 'Municipios',
     });
-    distritosSanitarios = new M.layer.GeoJSON({
+    distritosSanitarios = new IDEE.layer.GeoJSON({
       url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=tematicos:distrito_sanitario&maxFeatures=50&outputFormat=application%2Fjson',
       name: 'Distritos Sanitarios',
     });
   });
   describe('Gestión con el grupo de capas', () => {
     it('Creamos grupo y añadimos una a una las capas', () => {
-      const layerGroup = new M.layer.LayerGroup(undefined, 'Grupo de Prueba');
+      const layerGroup = new IDEE.layer.LayerGroup(undefined, 'Grupo de Prueba');
       layerGroup.addChild(provincias);
       layerGroup.addChild(municipios);
       layerGroup.addChild(distritosSanitarios);
@@ -44,7 +44,7 @@ describe('CP del Grupo de Capas por API', () => {
       expect(layerGroups).to.have.length(1);
 
       const addedLayerGroup = layerGroups[0];
-      expect(addedLayerGroup).to.be.a(M.layer.LayerGroup);
+      expect(addedLayerGroup).to.be.a(IDEE.layer.LayerGroup);
       expect(addedLayerGroup.title).to.eql(layerGroup.title);
 
       const layers = addedLayerGroup.getChildren();
@@ -55,7 +55,7 @@ describe('CP del Grupo de Capas por API', () => {
       expect(layers).to.contain(distritosSanitarios);
     });
     it('Creamos un grupo y añadimos de golpe todas las capas', () => {
-      const layerGroup = new M.layer.LayerGroup(undefined, 'Grupo de Prueba 2');
+      const layerGroup = new IDEE.layer.LayerGroup(undefined, 'Grupo de Prueba 2');
       layerGroup.addChildren([provincias, municipios, distritosSanitarios]);
       mapjs.addLayerGroup(layerGroup);
       const layerGroups = mapjs.getLayerGroup();
@@ -63,7 +63,7 @@ describe('CP del Grupo de Capas por API', () => {
       expect(layerGroups).to.have.length(2);
 
       const addedLayerGroup = layerGroups[1];
-      expect(addedLayerGroup).to.be.a(M.layer.LayerGroup);
+      expect(addedLayerGroup).to.be.a(IDEE.layer.LayerGroup);
       expect(addedLayerGroup.title).to.eql(layerGroup.title);
 
       const layers = addedLayerGroup.getChildren();

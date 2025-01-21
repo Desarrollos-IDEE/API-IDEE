@@ -1,18 +1,18 @@
 /**
- * @module M/control/LocatorscnControl
+ * @module IDEE/control/LocatorscnControl
  */
 import LocatorscnImpl from 'impl/locatorscn';
 import template from '../../templates/locatorscn';
 import { getValue } from './i18n/language';
 import IGNSearchLocatorscnControl from './ignsearchlocatorscncontrol';
 
-export default class LocatorscnControl extends M.Control {
+export default class LocatorscnControl extends IDEE.Control {
   /**
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor(
@@ -25,9 +25,9 @@ export default class LocatorscnControl extends M.Control {
     statusProxy,
     position,
   ) {
-    if (M.utils.isUndefined(LocatorscnImpl) || (M.utils.isObject(LocatorscnImpl)
-      && M.utils.isNullOrEmpty(Object.keys(LocatorscnImpl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(LocatorscnImpl) || (IDEE.utils.isObject(LocatorscnImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(LocatorscnImpl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
 
     const impl = new LocatorscnImpl();
@@ -103,13 +103,13 @@ export default class LocatorscnControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api
    */
   createView(map) {
     this.map_ = map;
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           showTitle: this.position !== 'TC',
           byParcelCadastre: this.byParcelCadastre_,
@@ -132,7 +132,7 @@ export default class LocatorscnControl extends M.Control {
           this.statusProxy,
           this.position,
         );
-        this.on(M.evt.ADDED_TO_MAP, () => {
+        this.on(IDEE.evt.ADDED_TO_MAP, () => {
           this.ignsearchControl.initializateAddress(html);
           this.control = this.ignsearchControl;
           this.deactive(html, 'ignsearch');
@@ -144,7 +144,7 @@ export default class LocatorscnControl extends M.Control {
         });
       }
       if (this.isDraggable_) {
-        M.utils.draggabillyPlugin(this.getPanel(), '#m-locatorscn-title');
+        IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-locatorscn-title');
       }
       this.accessibilityTab(html);
       success(html);
@@ -156,7 +156,7 @@ export default class LocatorscnControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {
@@ -211,7 +211,7 @@ export default class LocatorscnControl extends M.Control {
    * @api
    */
   destroy() {
-    if (!M.utils.isNullOrEmpty(this.ignsearchControl)) {
+    if (!IDEE.utils.isNullOrEmpty(this.ignsearchControl)) {
       this.ignsearchControl.destroy();
     }
   }

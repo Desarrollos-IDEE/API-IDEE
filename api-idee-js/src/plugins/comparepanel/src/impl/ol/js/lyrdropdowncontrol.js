@@ -1,16 +1,16 @@
 /**
- * @module M/impl/control/LyrdropdownControl
+ * @module IDEE/impl/control/LyrdropdownControl
  */
 
 // import LayerdropInteraction from 'impl/LayerdropInteraction';
 
-export default class LyrdropdownControl extends M.impl.Control {
+export default class LyrdropdownControl extends IDEE.impl.Control {
   /**
    * This function adds the control to the specified map
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api stable
    */
@@ -35,7 +35,7 @@ export default class LyrdropdownControl extends M.impl.Control {
    *
    * @public
    * @function
-   * @param { M.Layer } layer layer to which to assign an effect
+   * @param { IDEE.Layer } layer layer to which to assign an effect
    * @api stable
    */
   setLayer(lyrA) {
@@ -65,7 +65,7 @@ export default class LyrdropdownControl extends M.impl.Control {
    *
    * @public
    * @function
-   * @param { M.layer } layer layer to assign effect
+   * @param { IDEE.layer } layer layer to assign effect
    * @api stable
    */
   addLayer(layer) {
@@ -88,7 +88,7 @@ export default class LyrdropdownControl extends M.impl.Control {
    *
    * @public
    * @function
-   * @param { M.layer } layer to remove
+   * @param { IDEE.layer } layer to remove
    * @api stable
    */
   removeLayer(layer) {

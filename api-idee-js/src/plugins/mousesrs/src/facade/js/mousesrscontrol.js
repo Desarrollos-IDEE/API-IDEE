@@ -1,19 +1,19 @@
 /**
- * @module M/control/MouseSRSControl
+ * @module IDEE/control/MouseSRSControl
  */
 
 import MouseSRSImplControl from 'impl/mousesrscontrol';
 import template from '../../templates/mousesrs';
 import { getValue } from './i18n/language';
 
-export default class MouseSRSControl extends M.Control {
+export default class MouseSRSControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor(
@@ -31,9 +31,9 @@ export default class MouseSRSControl extends M.Control {
     draggableDialog = true,
     epsgFormat = false,
   ) {
-    if (M.utils.isUndefined(MouseSRSImplControl) || (M.utils.isObject(MouseSRSImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(MouseSRSImplControl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(MouseSRSImplControl) || (IDEE.utils.isObject(MouseSRSImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(MouseSRSImplControl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
     // eslint-disable-next-line max-len
     const impl = new MouseSRSImplControl(srs, label, precision, geoDD, utmDD, tooltip, activeZ, helpUrl, mode, coveragePrecisions, order, draggableDialog, epsgFormat);
@@ -47,12 +47,12 @@ export default class MouseSRSControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api
    */
   createView(map) {
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           translations: {
             tooltip: this.tooltip_,
@@ -69,7 +69,7 @@ export default class MouseSRSControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {

@@ -3,10 +3,10 @@ import Transform from 'ol-ext/interaction/Transform';
 // import DrawRegular from 'ol-ext/interaction/DrawRegular';
 
 /**
- * @module M/impl/control/Editioncontrol
+ * @module IDEE/impl/control/Editioncontrol
  */
 
-export default class Editioncontrol extends M.impl.Control {
+export default class Editioncontrol extends IDEE.impl.Control {
   /**
   * @classdesc
   * Main constructor of the measure conrol.
@@ -20,7 +20,7 @@ export default class Editioncontrol extends M.impl.Control {
     /**
       * Facade of the map
       * @private
-      * @type {M.Map}
+      * @type {IDEE.Map}
       */
     this.facadeMap_ = map;
   }
@@ -30,7 +30,7 @@ export default class Editioncontrol extends M.impl.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api stable
    */
@@ -40,7 +40,7 @@ export default class Editioncontrol extends M.impl.Control {
     /**
      * Facade map
      * @private
-     * @type {M.map}
+     * @type {IDEE.map}
      */
     this.facadeMap_ = map;
 
@@ -294,7 +294,7 @@ export default class Editioncontrol extends M.impl.Control {
    * @public
    * @function
    * @api
-   * @param {M.Featuer} apiIdeeFeature
+   * @param {IDEE.Featuer} apiIdeeFeature
    */
   getFeatureExtent(feature) {
     return feature.getImpl().getFeature().getGeometry().getExtent();
@@ -320,7 +320,7 @@ export default class Editioncontrol extends M.impl.Control {
   getApiIdeeFeatureClone(feature) {
     // eslint-disable-next-line no-underscore-dangle
     const implFeatureClone = feature.getImpl().olFeature_.clone();
-    const emphasis = M.impl.Feature.feature2Facade(implFeatureClone);
+    const emphasis = IDEE.impl.Feature.feature2Facade(implFeatureClone);
     return emphasis;
   }
 }

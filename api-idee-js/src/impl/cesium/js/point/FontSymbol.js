@@ -1,5 +1,5 @@
 /**
- * @module M/impl/point/FontSymbol
+ * @module IDEE/impl/point/FontSymbol
  */
 
 import CesiumFontSymbol from '../ext/OLStyleFontSymbol';

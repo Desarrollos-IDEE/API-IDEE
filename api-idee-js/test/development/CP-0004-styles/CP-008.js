@@ -1,9 +1,9 @@
 /* eslint-disable no-console,no-underscore-dangle,no-loop-func,no-proto,max-len,no-param-reassign,spaced-comment,no-plusplus,no-unused-vars,camelcase */
-import { map as Mmap } from 'M/api-idee';
-import Chart from 'M/style/Chart';
-import WFS from 'M/layer/WFS';
-import Generic from 'M/style/Generic';
-import Polygon from 'M/style/Polygon';
+import { map as Mmap } from 'IDEE/api-idee';
+import Chart from 'IDEE/style/Chart';
+import WFS from 'IDEE/layer/WFS';
+import Generic from 'IDEE/style/Generic';
+import Polygon from 'IDEE/style/Polygon';
 import Centroid from '../../../src/impl/ol/js/style/Centroid';
 
 
@@ -43,7 +43,7 @@ let stylechart = new Chart({
     width: 1
   },
 //  animation: true,
-  // scheme: M.style.chart.schemes.Custom,
+  // scheme: IDEE.style.chart.schemes.Custom,
  // rotateWithView: true,
  // fill3DColor: '#CC33DD',
   variables: [{

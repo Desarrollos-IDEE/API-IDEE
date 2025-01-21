@@ -1,13 +1,13 @@
 /**
- * @module M/impl/control/QueryAttributesControl
+ * @module IDEE/impl/control/QueryAttributesControl
  */
-export default class QueryAttributesControl extends M.impl.Control {
+export default class QueryAttributesControl extends IDEE.impl.Control {
   /**
    * This function adds the control to the specified map
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api stable
    */
@@ -84,7 +84,7 @@ export default class QueryAttributesControl extends M.impl.Control {
 
   getPolygonFromExtent(extent) {
     const geom = ol.geom.Polygon.fromExtent(extent);
-    const feature = new M.Feature('featurebbox.1', {
+    const feature = new IDEE.Feature('featurebbox.1', {
       geometry: {
         coordinates: geom.getCoordinates(),
         type: geom.getType(),
@@ -98,7 +98,7 @@ export default class QueryAttributesControl extends M.impl.Control {
   getPolygonFromDrawnFeature() {
     const drawLayer = this.facadeMap.getLayers().find((layer) => layer.name === '__draw__');
     const olFeature = drawLayer.getImpl().getLayer().getSource().getFeatures()[0];
-    const feature = new M.Feature('featuredraw.1', {
+    const feature = new IDEE.Feature('featuredraw.1', {
       geometry: {
         coordinates: olFeature.getGeometry().getCoordinates(),
         type: olFeature.getGeometry().getType(),
@@ -193,7 +193,7 @@ export default class QueryAttributesControl extends M.impl.Control {
    * @public
    * @function
    * @api
-   * @param {M.layer} layer Layer
+   * @param {IDEE.layer} layer Layer
    * @returns {ol.layer} OL layer
    * @deprecated
    */
@@ -207,7 +207,7 @@ export default class QueryAttributesControl extends M.impl.Control {
    * @public
    * @function
    * @api
-   * @param {M.layer} layer Layer
+   * @param {IDEE.layer} layer Layer
    * @returns {ol.layer} OL layer
    */
   getLayer(layer) {

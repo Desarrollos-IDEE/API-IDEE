@@ -1,6 +1,6 @@
 import Topographicprofile from 'facade/topographicprofile';
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   zoom: 6,
   center: [-467062.8225, 4683459.6216],

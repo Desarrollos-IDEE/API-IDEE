@@ -1,5 +1,5 @@
 /**
- * @module M/Style
+ * @module IDEE/Style
  */
 import Base from '../Base';
 import {
@@ -12,7 +12,7 @@ import * as EventType from '../event/eventtype';
  * Clase principal que gestiona los estilos, de esta heredan
  * los estilos de los objetos geográficos, ...
  * @api
- * @extends {M.Base}
+ * @extends {IDEE.Base}
  */
 class Style extends Base {
   /**
@@ -65,7 +65,7 @@ class Style extends Base {
    * Este método aplica los estilos a la capa.
    *
    * @public
-   * @param {M.layer.Vector} layer Capa.
+   * @param {IDEE.layer.Vector} layer Capa.
    * @function
    * @api
    */
@@ -80,7 +80,7 @@ class Style extends Base {
    *
    * @function
    * @protected
-   * @param {M.layer.Vector} layer Capa.
+   * @param {IDEE.layer.Vector} layer Capa.
    * @api
    */
   unapply(layer) {}
@@ -120,7 +120,7 @@ class Style extends Base {
    * @public
    * @param {String} property Propiedad para cambiar el valor.
    * @param {String} value Valor de la propiedad.
-   * @return {M.Style} Devuelve this.
+   * @return {IDEE.Style} Devuelve this.
    * @function
    * @api
    */
@@ -265,7 +265,7 @@ class Style extends Base {
    * Este método clona los estilos.
    *
    * @public
-   * @return {M.Style} Devuelve un "new Style".
+   * @return {IDEE.Style} Devuelve un "new Style".
    * @function
    * @api
    */
@@ -309,7 +309,7 @@ class Style extends Base {
    * @function
    * @public
    * @param {string} serializedStyle Estilo serializado.
-   * @return {M.Style}
+   * @return {IDEE.Style}
    */
   static deserialize(encodedSerializedStyle) {
     const serializedStyle = decodeURIComponent(escape(window.atob(encodedSerializedStyle.replace(' ', '+'))));

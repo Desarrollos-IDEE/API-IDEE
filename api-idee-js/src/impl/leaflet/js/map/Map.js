@@ -1,13 +1,13 @@
-import MObject from 'M/Object';
+import MObject from 'IDEE/Object';
 import {
   isArray, isNullOrEmpty, isObject, isString, includes,
-} from 'M/util/Utils';
-import Exception from 'M/exception/Exception';
-import * as LayerType from 'M/layer/Type';
-import WMS from 'M/layer/WMS';
-import Panzoombar from 'M/control/Panzoombar';
-import Control from 'M/control/Control';
-import { getValue } from 'M/i18n/language';
+} from 'IDEE/util/Utils';
+import Exception from 'IDEE/exception/Exception';
+import * as LayerType from 'IDEE/layer/Type';
+import WMS from 'IDEE/layer/WMS';
+import Panzoombar from 'IDEE/control/Panzoombar';
+import Control from 'IDEE/control/Control';
+import { getValue } from 'IDEE/i18n/language';
 
 export default class Map extends MObject {
   /**
@@ -25,21 +25,21 @@ export default class Map extends MObject {
     /**
      * Facade map to implement
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.facadeMap_ = null;
 
     /**
      * Layers added to the map
      * @private
-     * @type {ol.Collection<M.Layer>}
+     * @type {ol.Collection<IDEE.Layer>}
      */
     this.layers_ = [];
 
     /**
      * Controls added to the map
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -65,8 +65,8 @@ export default class Map extends MObject {
    *
    * @public
    * @function
-   * @param {Array<M.Layer>} filters to apply to the search
-   * @returns {Array<M.Layer>} layers from the map
+   * @param {Array<IDEE.Layer>} filters to apply to the search
+   * @returns {Array<IDEE.Layer>} layers from the map
    * @api stable
    */
   getLayers(filters) {
@@ -97,8 +97,8 @@ export default class Map extends MObject {
    *
    * @public
    * @function
-   * @param {Array<M.Layer>} filters to apply to the search
-   * @returns {Array<M.Layer>} layers from the map
+   * @param {Array<IDEE.Layer>} filters to apply to the search
+   * @returns {Array<IDEE.Layer>} layers from the map
    * @api stable
    */
   getBaseLayers() {
@@ -119,7 +119,7 @@ export default class Map extends MObject {
    * @public
    * @function
    * @param {Array<Object>} layers
-   * @returns {M.impl.Map}
+   * @returns {IDEE.impl.Map}
    */
   addLayers(layers) {
     // gets the layers with type defined and undefined
@@ -154,7 +154,7 @@ export default class Map extends MObject {
    *
    * @function
    * @param {Array<Object>} layers to remove
-   * @returns {M.impl.Map}
+   * @returns {IDEE.impl.Map}
    * @api stable
    */
   removeLayers(layers) {
@@ -186,8 +186,8 @@ export default class Map extends MObject {
    * This function gets the WMC layers added to the map
    *
    * @function
-   * @param {Array<M.Layer>} filters to apply to the search
-   * @returns {Array<M.layer.WMC>} layers from the map
+   * @param {Array<IDEE.Layer>} filters to apply to the search
+   * @returns {Array<IDEE.layer.WMC>} layers from the map
    * @api stable
    */
   getWMC(filtersParam) {
@@ -240,8 +240,8 @@ export default class Map extends MObject {
    * This function adds the WMC layers to the map
    *
    * @function
-   * @param {Array<M.impl.layer.WMC>} layers
-   * @returns {M.impl.Map}
+   * @param {Array<IDEE.impl.layer.WMC>} layers
+   * @returns {IDEE.impl.Map}
    * @api stable
    */
   addWMC(layers) {
@@ -263,8 +263,8 @@ export default class Map extends MObject {
    * This function removes the WMC layers to the map
    *
    * @function
-   * @param {Array<M.layer.WMC>} layers
-   * @returns {M.impl.Map}
+   * @param {Array<IDEE.layer.WMC>} layers
+   * @returns {IDEE.impl.Map}
    * @api stable
    */
   removeWMC(layers) {
@@ -280,8 +280,8 @@ export default class Map extends MObject {
    * This function gets the KML layers added to the map
    *
    * @function
-   * @param {Array<M.Layer>} filters to apply to the search
-   * @returns {Array<M.layer.KML>} layers from the map
+   * @param {Array<IDEE.Layer>} filters to apply to the search
+   * @returns {Array<IDEE.layer.KML>} layers from the map
    * @api stable
    */
   getKML(filtersParam) {
@@ -339,8 +339,8 @@ export default class Map extends MObject {
    * This function adds the KML layers to the map
    *
    * @function
-   * @param {Array<M.layer.KML>} layers
-   * @returns {M.impl.Map}
+   * @param {Array<IDEE.layer.KML>} layers
+   * @returns {IDEE.impl.Map}
    * @api stable
    */
   addKML(layers) {
@@ -368,8 +368,8 @@ export default class Map extends MObject {
    * This function removes the KML layers to the map
    *
    * @function
-   * @param {Array<M.layer.KML>} layers
-   * @returns {M.impl.Map}
+   * @param {Array<IDEE.layer.KML>} layers
+   * @returns {IDEE.impl.Map}
    * @api stable
    */
   removeKML(layers) {
@@ -386,7 +386,7 @@ export default class Map extends MObject {
    * This function gets the WMS layers added to the map
    *
    * @function
-   * @param {Array<M.Layer>} filters to apply to the search
+   * @param {Array<IDEE.Layer>} filters to apply to the search
    * @returns {Array<WMS>} layers from the map
    * @api stable
    */
@@ -467,7 +467,7 @@ export default class Map extends MObject {
    *
    * @function
    * @param {Array<WMS>} layers
-   * @returns {M.impl.Map}
+   * @returns {IDEE.impl.Map}
    * @api stable
    */
   addWMS(layers) {
@@ -506,7 +506,7 @@ export default class Map extends MObject {
    *
    * @function
    * @param {Array<WMS>} layers
-   * @returns {M.impl.Map}
+   * @returns {IDEE.impl.Map}
    * @api stable
    */
   removeWMS(layers) {
@@ -523,8 +523,8 @@ export default class Map extends MObject {
    * This function gets the WFS layers added to the map
    *
    * @function
-   * @param {Array<M.Layer>} filters to apply to the search
-   * @returns {Array<M.layer.WFS>} layers from the map
+   * @param {Array<IDEE.Layer>} filters to apply to the search
+   * @returns {Array<IDEE.layer.WFS>} layers from the map
    * @api stable
    */
   getWFS(filtersParam) {
@@ -600,8 +600,8 @@ export default class Map extends MObject {
    * This function adds the WFS layers to the map
    *
    * @function
-   * @param {Array<M.layer.WFS>} layers
-   * @returns {M.impl.Map}
+   * @param {Array<IDEE.layer.WFS>} layers
+   * @returns {IDEE.impl.Map}
    * @api stable
    */
   addWFS(layers) {
@@ -625,8 +625,8 @@ export default class Map extends MObject {
    * This function removes the WFS layers to the map
    *
    * @function
-   * @param {Array<M.layer.WFS>} layers
-   * @returns {M.impl.Map}
+   * @param {Array<IDEE.layer.WFS>} layers
+   * @returns {IDEE.impl.Map}
    * @api stable
    */
   removeWFS(layers) {
@@ -643,8 +643,8 @@ export default class Map extends MObject {
    * This function gets the WMTS layers added to the map
    *
    * @function
-   * @param {Array<M.Layer>} filters to apply to the search
-   * @returns {Array<M.layer.WMTS>} layers from the map
+   * @param {Array<IDEE.Layer>} filters to apply to the search
+   * @returns {Array<IDEE.layer.WMTS>} layers from the map
    * @api stable
    */
   getWMTS(filtersParam) {
@@ -705,8 +705,8 @@ export default class Map extends MObject {
    * This function adds the WMTS layers to the map
    *
    * @function
-   * @param {Array<M.layer.WMTS>} layers
-   * @returns {M.impl.Map}
+   * @param {Array<IDEE.layer.WMTS>} layers
+   * @returns {IDEE.impl.Map}
    * @api stable
    */
   addWMTS(layers) {
@@ -728,8 +728,8 @@ export default class Map extends MObject {
    * This function removes the WMTS layers to the map
    *
    * @function
-   * @param {Array<M.layer.WMTS>} layers
-   * @returns {M.impl.Map}
+   * @param {Array<IDEE.layer.WMTS>} layers
+   * @returns {IDEE.impl.Map}
    * @api stable
    */
   removeWMTS(layers) {
@@ -746,8 +746,8 @@ export default class Map extends MObject {
    * This function gets the MBtiles layers added to the map
    *
    * @function
-   * @param {Array<M.Layer>} filters to apply to the search
-   * @returns {Array<M.layer.MBtiles>} layers from the map
+   * @param {Array<IDEE.Layer>} filters to apply to the search
+   * @returns {Array<IDEE.layer.MBtiles>} layers from the map
    * @api stable
    */
   getMBtiles(filters) {
@@ -760,8 +760,8 @@ export default class Map extends MObject {
    * This function adds the MBtiles layers to the map
    *
    * @function
-   * @param {Array<M.layer.MBtiles>} layers
-   * @returns {M.impl.Map}
+   * @param {Array<IDEE.layer.MBtiles>} layers
+   * @returns {IDEE.impl.Map}
    * @api stable
    */
   addMBtiles(layers) {
@@ -780,8 +780,8 @@ export default class Map extends MObject {
    * This function removes the MBtiles layers to the map
    *
    * @function
-   * @param {Array<M.layer.MBtiles>} layers
-   * @returns {M.impl.Map}
+   * @param {Array<IDEE.layer.MBtiles>} layers
+   * @returns {IDEE.impl.Map}
    * @api stable
    */
   removeMBtiles(layers) {
@@ -798,8 +798,8 @@ export default class Map extends MObject {
    * This function gets the XYZ layers added to the map
    *
    * @function
-   * @param {Array<M.Layer>} filters to apply to the search
-   * @returns {Array<M.layer.XYZ>} layers from the map
+   * @param {Array<IDEE.Layer>} filters to apply to the search
+   * @returns {Array<IDEE.layer.XYZ>} layers from the map
    * @api stable
    */
   getXYZs(filtersParam) {
@@ -850,8 +850,8 @@ export default class Map extends MObject {
    * This function adds the XYZ layers to the map
    *
    * @function
-   * @param {Array<M.layer.XYZ>} layers
-   * @returns {M.impl.Map}
+   * @param {Array<IDEE.layer.XYZ>} layers
+   * @returns {IDEE.impl.Map}
    * @api stable
    */
   addXYZ(layers) {
@@ -873,8 +873,8 @@ export default class Map extends MObject {
    * This function removes the XYZ layers to the map
    *
    * @function
-   * @param {Array<M.layer.XYZ>} layers
-   * @returns {M.impl.Map}
+   * @param {Array<IDEE.layer.XYZ>} layers
+   * @returns {IDEE.impl.Map}
    * @api stable
    */
   removeXYZ(layers) {
@@ -893,7 +893,7 @@ export default class Map extends MObject {
    * @public
    * @function
    * @param {string|Array<String>} filters
-   * @returns {Array<M.Control>}
+   * @returns {Array<IDEE.Control>}
    * @api stable
    */
   getControls(filtersParam) {
@@ -934,8 +934,8 @@ export default class Map extends MObject {
    *
    * @public
    * @function
-   * @param {M.Control} controls
-   * @returns {M.impl.Map}
+   * @param {IDEE.Control} controls
+   * @returns {IDEE.impl.Map}
    * @api stable
    */
   addControls(controls) {
@@ -955,7 +955,7 @@ export default class Map extends MObject {
    *
    * @function
    * @param {String|Array<String>} layers
-   * @returns {M.impl.Map}
+   * @returns {IDEE.impl.Map}
    * @api stable
    */
   removeControls(controls) {
@@ -975,7 +975,7 @@ export default class Map extends MObject {
    * @public
    * @function
    * @param {Mx.Extent} maxExtent the extent max
-   * @returns {M.impl.Map}
+   * @returns {IDEE.impl.Map}
    * @api stable
    */
   setMaxExtent(maxExtent) {
@@ -1031,7 +1031,7 @@ export default class Map extends MObject {
    * @public
    * @function
    * @param {Mx.Extent} bbox the bbox
-   * @returns {M.impl.Map}
+   * @returns {IDEE.impl.Map}
    * @api stable
    */
   setBbox(bbox) {
@@ -1098,7 +1098,7 @@ export default class Map extends MObject {
    * @public
    * @function
    * @param {Number} zoom the new zoom
-   * @returns {M.impl.Map}
+   * @returns {IDEE.impl.Map}
    * @api stable
    */
   setZoom(zoom) {
@@ -1134,7 +1134,7 @@ export default class Map extends MObject {
    * @public
    * @function
    * @param {Object} center the new center
-   * @returns {M.impl.Map}
+   * @returns {IDEE.impl.Map}
    * @api stable
    */
   setCenter(center) {
@@ -1187,7 +1187,7 @@ export default class Map extends MObject {
    * @public
    * @function
    * @param {Mx.Projection} bbox the bbox
-   * @returns {M.impl.Map}
+   * @returns {IDEE.impl.Map}
    * @api stable
    */
   setProjection(projection) {

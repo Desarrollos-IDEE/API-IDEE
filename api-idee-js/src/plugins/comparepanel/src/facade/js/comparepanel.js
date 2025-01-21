@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/Comparepanel
+ * @module IDEE/plugin/Comparepanel
  */
 
 import 'assets/css/comparepanel';
@@ -10,14 +10,14 @@ import { getValue } from './i18n/language';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class Comparepanel extends M.Plugin {
+export default class Comparepanel extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -34,14 +34,14 @@ export default class Comparepanel extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -102,12 +102,12 @@ export default class Comparepanel extends M.Plugin {
      * @type {Array}
      */
     if (options !== undefined) {
-      if (M.utils.isString(options.baseLayers)) {
+      if (IDEE.utils.isString(options.baseLayers)) {
         this.baseLayers = JSON.parse(options.baseLayers.replace(/!!/g, '[').replace(/¡¡/g, ']'));
-      } else if (M.utils.isArray(options.baseLayers)) {
+      } else if (IDEE.utils.isArray(options.baseLayers)) {
         this.baseLayers = options.baseLayers;
       } else {
-        M.dialog.error(getValue('baseLayers_error'));
+        IDEE.dialog.error(getValue('baseLayers_error'));
       }
     }
 
@@ -140,7 +140,7 @@ export default class Comparepanel extends M.Plugin {
       * Layer with attributions
       *
       * @private
-      * @type {M.layer.GeoJSON | M.layer.KML}
+      * @type {IDEE.layer.GeoJSON | IDEE.layer.KML}
       */
     this.layerCobertura_ = options.layerCobertura;
 
@@ -226,7 +226,7 @@ export default class Comparepanel extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).comparepanel;
+    return IDEE.language.getTranslation(lang).comparepanel;
   }
 
   /**
@@ -234,7 +234,7 @@ export default class Comparepanel extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
@@ -267,8 +267,8 @@ export default class Comparepanel extends M.Plugin {
     this.controls_.push(this.control_);
     this.map_ = map;
 
-    this.panel_ = new M.ui.Panel('panelComparepanel', {
-      position: M.ui.position[this.position],
+    this.panel_ = new IDEE.ui.Panel('panelComparepanel', {
+      position: IDEE.ui.position[this.position],
       collapsible: this.collapsible,
       collapsed: this.collapsed,
       className: this.className,
@@ -356,10 +356,10 @@ export default class Comparepanel extends M.Plugin {
 
   /**
    * This function compare if pluging recieved
-   * by param is instance of M.plugin.Comparepanel
+   * by param is instance of IDEE.plugin.Comparepanel
    * @public
    * @function
-   * @param {M.plugin} plugin to compare
+   * @param {IDEE.plugin} plugin to compare
    * @api stable
    */
   equals(plugin) {

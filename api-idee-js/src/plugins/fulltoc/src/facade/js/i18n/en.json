@@ -12,7 +12,7 @@
     "no_results": "No layers found in this service",
     "codsi": "An error occurred while consulting the CODSI catalog",
     "codsi_no_results": "There are no results for your search",
-    "fulltoc_obsolete": "Message to the developer: M.plugin.FullTOC has been deprecated, please use M.plugin.Layerswitcher instead"
+    "fulltoc_obsolete": "Message to the developer: IDEE.plugin.FullTOC has been deprecated, please use IDEE.plugin.Layerswitcher instead"
   },
   "tooltip": "Layers",
   "info": "Information",

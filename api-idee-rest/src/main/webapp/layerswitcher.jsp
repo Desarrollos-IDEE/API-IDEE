@@ -136,9 +136,9 @@
    %>
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
-        M.language.setLang(urlParams.get('language') || 'es');
+        IDEE.language.setLang(urlParams.get('language') || 'es');
 
-        const map = M.map({
+        const map = IDEE.map({
             container: 'mapjs',
             zoom: 5,
             maxZoom: 20,
@@ -148,19 +148,19 @@
 
         let mp = null;
 
-        let mp2 = new M.plugin.ShareMap({
+        let mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
             position: "TR",
         });
         map.addPlugin(mp2);
 
-        const capaGeoJSON = new M.layer.GeoJSON({
+        const capaGeoJSON = new IDEE.layer.GeoJSON({
             name: 'Capa GeoJSON',
             url: 'http://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json',
             extract: false,
         });
 
-        const capaWMS = new M.layer.WMS({
+        const capaWMS = new IDEE.layer.WMS({
             url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
             name: 'AU.AdministrativeUnit',
             legend: 'Capa WMS',
@@ -233,7 +233,7 @@
         }
 
         function crearPlugin(propiedades) {
-            mp = new M.plugin.Layerswitcher(propiedades);
+            mp = new IDEE.plugin.Layerswitcher(propiedades);
             map.addPlugin(mp);
         }
 

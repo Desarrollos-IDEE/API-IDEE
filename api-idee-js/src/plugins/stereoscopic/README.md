@@ -1,4 +1,4 @@
-# M.plugin.Stereoscopic
+# IDEE.plugin.Stereoscopic
 
 Plugin que muestra una vista 3D, incluye vistas por anaglifos y orbitación 3D.
 
@@ -30,7 +30,7 @@ El constructor se inicializa con un JSON de options con los siguientes atributos
 # Ejemplo de uso
 
 ```javascript
-const map = M.map({
+const map = IDEE.map({
   container: 'map',
   layers: ['TMS*PNOA-MA*https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg*true*false*19'],
   center: [-428106.86611520057, 4884472.25393817],

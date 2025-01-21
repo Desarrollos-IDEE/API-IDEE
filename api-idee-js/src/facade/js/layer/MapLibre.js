@@ -1,5 +1,5 @@
 /**
- * @module M/layer/MapLibre
+ * @module IDEE/layer/MapLibre
  */
 import MapLibreImpl from 'impl/layer/MapLibre';
 import LayerBase from './Layer';
@@ -30,7 +30,7 @@ import { getValue } from '../i18n/language';
  * @property {Object} maplibrestyle Objeto del valor de url.
  *
  * @api
- * @extends {M.layer.Vector}
+ * @extends {IDEE.layer.Vector}
  */
 class MapLibre extends LayerBase {
   /**
@@ -133,7 +133,7 @@ class MapLibre extends LayerBase {
    * Devuelve el valor de la propiedad "extract". La propiedad "extract"
    * activa la consulta al hacer clic sobre un objeto geográfico, por defecto falso.
    * @function
-   * @return {M.layer.MapLibre.impl.extract} Devuelve valor del "extract".
+   * @return {IDEE.layer.MapLibre.impl.extract} Devuelve valor del "extract".
    * @api
    */
   get extract() {
@@ -152,7 +152,7 @@ class MapLibre extends LayerBase {
    * @function
    * @public
    * @param {String|Number} id - Id objeto geográfico.
-   * @return {Null|M.feature} objeto geográfico: devuelve el objeto geográfico con esa
+   * @return {Null|IDEE.feature} objeto geográfico: devuelve el objeto geográfico con esa
    * identificación si se encuentra,
    * en caso de que no se encuentre o no indique el id devuelve nulo.
    * @api
@@ -172,7 +172,7 @@ class MapLibre extends LayerBase {
    *
    * @function
    * @public
-   * @param {M.Filter} filter Filtro para configurar.
+   * @param {IDEE.Filter} filter Filtro para configurar.
    * @api
    */
   setFilter(filter) {}
@@ -258,7 +258,7 @@ class MapLibre extends LayerBase {
    *
    * @function
    * @public
-   * @returns {M.layer.MapLibre.impl.getProjection} Devuelve la proyección.
+   * @returns {IDEE.layer.MapLibre.impl.getProjection} Devuelve la proyección.
    * @api
    */
   getProjection() {
@@ -283,7 +283,7 @@ class MapLibre extends LayerBase {
    *
    * @function
    * @public
-   * @return {Array<M.RenderFeature>} Devuelve un array con los objetos geográficos.
+   * @return {Array<IDEE.RenderFeature>} Devuelve un array con los objetos geográficos.
    * @api
    */
   getFeatures() {
@@ -366,7 +366,7 @@ class MapLibre extends LayerBase {
    *
    * @function
    * @getter
-   * @returns {M.LayerType.MapLibre} Tipo MabLibre.
+   * @returns {IDEE.LayerType.MapLibre} Tipo MabLibre.
    * @api
    */
   get type() {

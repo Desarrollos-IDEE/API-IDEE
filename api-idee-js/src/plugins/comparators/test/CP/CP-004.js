@@ -1,13 +1,13 @@
 import Comparators from 'facade/comparators';
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   zoom: 6,
   bbox: [323020, 4126873, 374759, 4152013],
   // layers: ['OSM'],
 });
 
-const mp2 = new M.plugin.Infocoordinates({
+const mp2 = new IDEE.plugin.Infocoordinates({
   position: 'TL',
   decimalGEOcoord: 4,
   decimalUTMcoord: 2,
@@ -38,7 +38,7 @@ window.map = map;
 
 map.addPlugin(mp2);
 
-const mp3 = new M.plugin.Layerswitcher({
+const mp3 = new IDEE.plugin.Layerswitcher({
   position: 'TL',
 });
 

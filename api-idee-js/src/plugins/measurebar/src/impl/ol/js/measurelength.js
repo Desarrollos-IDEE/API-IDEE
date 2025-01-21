@@ -10,7 +10,7 @@ import FacadeMeasureArea from '../../../facade/js/measurearea';
  * control
  *
  * @constructor
- * @extends {M.impl.control.Measure}
+ * @extends {IDEE.impl.control.Measure}
  * @api stable
  */
 export default class MeasureLength extends Measure {

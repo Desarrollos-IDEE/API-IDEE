@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/CompareMirrorpanel
+ * @module IDEE/impl/control/CompareMirrorpanel
  */

@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/TimelineControl
+ * @module IDEE/impl/control/TimelineControl
  */

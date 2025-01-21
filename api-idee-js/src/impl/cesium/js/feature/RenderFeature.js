@@ -1,3 +1,3 @@
 /**
- * @module M/impl/RenderFeature
+ * @module IDEE/impl/RenderFeature
  */

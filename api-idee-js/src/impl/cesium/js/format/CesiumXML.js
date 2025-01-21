@@ -1,5 +1,5 @@
 /**
- * @module M/impl/format/CesiumXML
+ * @module IDEE/impl/format/CesiumXML
  */
 
 /**

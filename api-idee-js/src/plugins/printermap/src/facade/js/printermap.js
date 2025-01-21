@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/PrinterMap
+ * @module IDEE/plugin/PrinterMap
  */
 import 'assets/css/printermap';
 import PrinterMapControl from './printermapcontrol';
@@ -8,14 +8,14 @@ import { getValue } from './i18n/language';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class PrinterMap extends M.Plugin {
+export default class PrinterMap extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -24,14 +24,14 @@ export default class PrinterMap extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -45,7 +45,7 @@ export default class PrinterMap extends M.Plugin {
     /**
      * Panel of this plugin
      * @private
-     * @type {M.ui.Panel}
+     * @type {IDEE.ui.Panel}
      */
     this.panel_ = null;
 
@@ -180,7 +180,7 @@ export default class PrinterMap extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).printermap;
+    return IDEE.language.getTranslation(lang).printermap;
   }
 
   /**
@@ -188,7 +188,7 @@ export default class PrinterMap extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
@@ -207,22 +207,22 @@ export default class PrinterMap extends M.Plugin {
       this.order,
     );
     this.controls_.push(this.control_);
-    this.panel_ = new M.ui.Panel('printermap', {
+    this.panel_ = new IDEE.ui.Panel('printermap', {
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,
       className: 'm-printermap',
       collapsedButtonClass: 'icon-impresora',
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       tooltip: this.tooltip_,
       order: this.order,
     });
-    this.panel_.on(M.evt.ADDED_TO_MAP, (html) => {
-      M.utils.enableTouchScroll(html);
+    this.panel_.on(IDEE.evt.ADDED_TO_MAP, (html) => {
+      IDEE.utils.enableTouchScroll(html);
     });
     this.panel_.addControls(this.controls_);
     map.addPanels(this.panel_);
-    this.control_.on(M.evt.ADDED_TO_MAP, () => {
-      this.fire(M.evt.ADDED_TO_MAP);
+    this.control_.on(IDEE.evt.ADDED_TO_MAP, () => {
+      this.fire(IDEE.evt.ADDED_TO_MAP);
     });
   }
 
@@ -245,7 +245,7 @@ export default class PrinterMap extends M.Plugin {
      * @api
      */
   getAPIRestBase64() {
-    return `${this.name}=base64=${M.utils.encodeBase64(this.options)}`;
+    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   /**
@@ -276,11 +276,11 @@ export default class PrinterMap extends M.Plugin {
   }
 
   /**
-   * This function compare if pluging recieved by param is instance of   M.plugin.PrinterMap
+   * This function compare if pluging recieved by param is instance of   IDEE.plugin.PrinterMap
    *
    * @public
    * @function
-   * @param {M.plugin} plugin to comapre
+   * @param {IDEE.plugin} plugin to comapre
    * @api stable
    */
   equals(plugin) {

@@ -1,5 +1,5 @@
 /**
- * @module M/evt
+ * @module IDEE/evt
  */
 
 /**

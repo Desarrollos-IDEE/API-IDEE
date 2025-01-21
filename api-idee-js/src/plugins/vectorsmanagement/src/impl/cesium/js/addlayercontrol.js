@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/AddLayerControl
+ * @module IDEE/impl/control/AddLayerControl
  */

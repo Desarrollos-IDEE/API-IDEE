@@ -48,5 +48,5 @@
   "unfreeze": "liberar cursor",
   "activate_spyeye": "Activar Spy Eye",
   "deactivate_spyeye": "Desactivar Spy Eye",
-  "comparepanel_obsolete": "Mensaje para el desarrollador: M.plugin.Comparepanel ha quedado obsoleto, utilice en su lugar M.plugin.Comparators"
+  "comparepanel_obsolete": "Mensaje para el desarrollador: IDEE.plugin.Comparepanel ha quedado obsoleto, utilice en su lugar IDEE.plugin.Comparators"
 }

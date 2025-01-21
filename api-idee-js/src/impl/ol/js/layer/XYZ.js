@@ -1,7 +1,7 @@
 /**
- * @module M/impl/layer/XYZ
+ * @module IDEE/impl/layer/XYZ
  */
-import { isNullOrEmpty, extend } from 'M/util/Utils';
+import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
 import OLTileLayer from 'ol/layer/Tile';
 import { get as getProj } from 'ol/proj';
 import XYZSource from 'ol/source/XYZ';
@@ -27,7 +27,7 @@ import ImplMap from '../Map';
  * @property {Boolean} displayInLayerSwitcher Mostrar en el selector de capas.
  *
  * @api
- * @extends {M.impl.layer.Vector}
+ * @extends {IDEE.impl.layer.Vector}
  */
 class XYZ extends Layer {
   /**
@@ -163,7 +163,7 @@ class XYZ extends Layer {
    *
    * @public
    * @function
-   * @param {M.impl.Map} map Mapa de la implementación.
+   * @param {IDEE.impl.Map} map Mapa de la implementación.
    * @api
    */
   addTo(map, addLayer = true) {
@@ -215,7 +215,7 @@ class XYZ extends Layer {
    *
    * @public
    * @function
-   * @returns {M.layer.XYZ.impl.ol3Layer.getSource.getTileUrlFunction} URL tesela.
+   * @returns {IDEE.layer.XYZ.impl.ol3Layer.getSource.getTileUrlFunction} URL tesela.
    * @api
    */
   getTileUrlFunction() {
@@ -227,7 +227,7 @@ class XYZ extends Layer {
    *
    * @public
    * @function
-   * @return {M.layer.XYZ.impl.tileSize_}  Tamaño de la tesela.
+   * @return {IDEE.layer.XYZ.impl.tileSize_}  Tamaño de la tesela.
    * @api
    */
   getTileSize() {

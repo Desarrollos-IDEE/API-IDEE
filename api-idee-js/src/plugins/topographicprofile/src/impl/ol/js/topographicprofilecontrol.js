@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /**
- * @module M/impl/control/TopographicprofileControl
+ * @module IDEE/impl/control/TopographicprofileControl
  */
 import Profil from './profilcontrol';
 import { getValue } from '../../../facade/js/i18n/language';
@@ -10,7 +10,7 @@ const PROFILE_URL_SUFFIX = '&service=WCS&version=1.0.0&coverage=Elevacion4258_50
   + 'interpolationMethod=bilinear&crs=EPSG%3A4258&format=ArcGrid&width=2&height=2';
 const NO_DATA_VALUE = 'NODATA_value -9999.000';
 
-export default class TopographicprofileControl extends M.impl.Control {
+export default class TopographicprofileControl extends IDEE.impl.Control {
   constructor(opts) {
     super();
     [this.distancePoinst_, this.mercator_, this.serviceURL, this.coordEPSG4326] = [opts.distance, 'EPSG:900913', opts.serviceURL, 'EPSG:4326'];
@@ -27,7 +27,7 @@ export default class TopographicprofileControl extends M.impl.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api stable
    */
@@ -201,14 +201,14 @@ export default class TopographicprofileControl extends M.impl.Control {
       return elem !== '' && elem.trim().length > 3;
     });
 
-    M.proxy(false);
+    IDEE.proxy(false);
     pointsBbox.forEach((bbox) => {
       const url = `${PROFILE_URL}${bbox}${PROFILE_URL_SUFFIX}`;
-      promises.push(M.remote.get(url));
+      promises.push(IDEE.remote.get(url));
     });
 
     Promise.all(promises).then((responses) => {
-      M.proxy(true);
+      IDEE.proxy(true);
       responses.forEach((response) => {
         let alt = 0;
         const responseText = response.text.split(NO_DATA_VALUE).join('');
@@ -241,8 +241,8 @@ export default class TopographicprofileControl extends M.impl.Control {
 
       this.lineString_.setCoordinates(arrayXZY2);
     }).catch((err) => {
-      M.proxy(true);
-      M.dialog.error('No se han obtenido datos');
+      IDEE.proxy(true);
+      IDEE.dialog.error('No se han obtenido datos');
     });
   }
 

@@ -1,6 +1,6 @@
 /* eslint-disable no-console,no-underscore-dangle,camelcase */
-import { map as Mmap } from 'M/api-idee';
-// import MapLibre from 'M/layer/MapLibre';
+import { map as Mmap } from 'IDEE/api-idee';
+// import MapLibre from 'IDEE/layer/MapLibre';
 import { maplibre_001 } from '../layers/maplibre/maplibre';
 // import { maplibre_003 } from '../layers/maplibre/maplibre'; // PRUEBA JSON ESTILO
 // import { maplibre_004 } from '../layers/maplibre/maplibre'; // PRUEBA STRING

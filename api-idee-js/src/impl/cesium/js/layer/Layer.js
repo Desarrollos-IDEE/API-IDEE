@@ -1,12 +1,12 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable new-cap */
 /**
- * @module M/impl/Layer
+ * @module IDEE/impl/Layer
  */
-import MObject from 'M/Object';
-import { isNullOrEmpty, isString, concatUrlPaths } from 'M/util/Utils';
-import FacadeLayer from 'M/layer/Layer';
-import { getValue } from 'M/i18n/language';
+import MObject from 'IDEE/Object';
+import { isNullOrEmpty, isString, concatUrlPaths } from 'IDEE/util/Utils';
+import FacadeLayer from 'IDEE/layer/Layer';
+import { getValue } from 'IDEE/i18n/language';
 import { ImageryLayer } from 'cesium';
 import ImplUtils from '../util/Utils';
 
@@ -15,7 +15,7 @@ import ImplUtils from '../util/Utils';
  * De esta clase heredarán todas las capas base.
  *
  * @api
- * @extends {M.Object}
+ * @extends {IDEE.Object}
  */
 class LayerBase extends MObject {
   /**
@@ -32,7 +32,7 @@ class LayerBase extends MObject {
    * - maxZoom: Zoom máximo aplicable a la capa.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
    * @param {Object} vendorOptions Pasa los "vendorOptions" heredados a la clase
-   * MObject (M/Object).
+   * MObject (IDEE/Object).
    *
    * @api stable
    */
@@ -83,7 +83,7 @@ class LayerBase extends MObject {
     /**
       * Layer legendUrl_. Leyenda URL de esta capa.
       */
-    this.legendUrl_ = concatUrlPaths([M.config.THEME_URL, FacadeLayer.LEGEND_DEFAULT]);
+    this.legendUrl_ = concatUrlPaths([IDEE.config.THEME_URL, FacadeLayer.LEGEND_DEFAULT]);
 
     /**
       * Layer minZoom. Zoom mínimo aplicable a la capa.
@@ -338,7 +338,7 @@ class LayerBase extends MObject {
    * Este método obtiene la implementación del mapa.
    *
    * @function
-   * @returns {M.impl.Map} Es la implementación del mapa.
+   * @returns {IDEE.impl.Map} Es la implementación del mapa.
    * @api stable
    * @expose
    */

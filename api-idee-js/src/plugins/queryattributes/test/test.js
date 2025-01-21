@@ -1,9 +1,9 @@
 import QueryAttributes from 'facade/queryattributes';
 
-M.language.setLang('es'); // Español
-// M.language.setLang('en'); // Inglés
+IDEE.language.setLang('es'); // Español
+// IDEE.language.setLang('en'); // Inglés
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   // controls: ['panzoom','panzoombar', 'scale*true', 'scaleline', 'rotate', 'location','backgroundlayers'], //getfeatureinfo: este control es un poco coñazo, siempre está buscando información al hacer clic en el mapa.
   // controls: ['panzoom', 'scale*true', 'scaleline', 'rotate', 'location', 'backgroundlayers', 'getfeatureinfo'],
@@ -37,16 +37,16 @@ const COLORES_PROVINCIA = {
   47: 'emerald',
   50: 'turquoise',
 };
-const estiloPoint = new M.style.Point({
+const estiloPoint = new IDEE.style.Point({
   icon: {
     // e2m: En la propiedad form se decide que forma adopta el icon de las preconfiguradas
     // Valores: BAN|BLAZON|BUBBLE|CIRCLE|LOZENGE|MARKER|NONE|SHIELD|SIGN|SQUARE|TRIANGLE
 
     // Este es el punto. En vez de igualar el valor de la propiedad a unos de los valores, lo igualamos a una función anónima que pasa como parámetros el feature y el mapa
     // Con el elemento (feature) puedo acceder a los atributos que tiene el geoJSON. La forma la determina el propietario de la estación.
-    // Como valor devuelto por el return es la clase de API-IDEE  que representa a la forma: M.style.form.TRIANGLE para el triángulo y M.style.form.CIRCLE para el cí­rculo
+    // Como valor devuelto por el return es la clase de API-IDEE  que representa a la forma: IDEE.style.form.TRIANGLE para el triángulo y IDEE.style.form.CIRCLE para el cí­rculo
     form(feature, map) {
-      return M.style.form.CIRCLE;
+      return IDEE.style.form.CIRCLE;
     },
     // e2m: luego sigo definiendo el resto de propiedades comunes a todos los sí­mbolos
     radius(feature, map) {
@@ -72,7 +72,7 @@ const estiloPoint = new M.style.Point({
     snaptopixel: true,
   },
 });
-const vertex = new M.layer.GeoJSON({
+const vertex = new IDEE.layer.GeoJSON({
   name: 'vertices',
   // url: 'https://projects.develmap.com/attributestable/roivertexcenter.geojson',
   url: 'https://projects.develmap.com/attributestable/roivertexcenterred.geojson',
@@ -82,7 +82,7 @@ const vertex = new M.layer.GeoJSON({
 map.addLayers(vertex); // */
 
 // Capa WFS
-const campamentos = new M.layer.WFS({
+const campamentos = new IDEE.layer.WFS({
   url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/sepim/ows?',
   name: 'campamentos',
   legend: 'Campamentos',

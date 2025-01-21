@@ -1,6 +1,6 @@
 /**
- * @module M/impl/control/PredefinedZoomControl
+ * @module IDEE/impl/control/PredefinedZoomControl
  */
 
-export default class PredefinedZoomControl extends M.impl.Control {
+export default class PredefinedZoomControl extends IDEE.impl.Control {
 }

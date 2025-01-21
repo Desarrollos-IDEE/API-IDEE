@@ -1,14 +1,14 @@
 /* eslint-disable no-console */
 /**
- * @module M/impl/control/InfocoordinatesControl
+ * @module IDEE/impl/control/InfocoordinatesControl
  */
-export default class InfocoordinatesControl extends M.impl.Control {
+export default class InfocoordinatesControl extends IDEE.impl.Control {
   /**
    * This function adds the control to the specified map
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api stable
    */
@@ -100,7 +100,7 @@ export default class InfocoordinatesControl extends M.impl.Control {
     const PROFILE_URL_SUFFIX = '&service=WCS&version=1.0.0&coverage=Elevacion4258_5&'
       + 'interpolationMethod=bilinear&crs=EPSG%3A4258&format=ArcGrid&width=2&height=2';
     const url = `${PROFILE_URL}${bbox}${PROFILE_URL_SUFFIX}`;
-    return M.remote.get(url);
+    return IDEE.remote.get(url);
   }
 
   transform(box, code, currProj) {

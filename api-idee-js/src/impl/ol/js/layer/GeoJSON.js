@@ -1,12 +1,12 @@
 /**
- * @module M/impl/layer/GeoJSON
+ * @module IDEE/impl/layer/GeoJSON
  */
-import { isNullOrEmpty, isFunction, isObject } from 'M/util/Utils';
-import * as EventType from 'M/event/eventtype';
-import Popup from 'M/Popup';
-import { compileSync as compileTemplate } from 'M/util/Template';
+import { isNullOrEmpty, isFunction, isObject } from 'IDEE/util/Utils';
+import * as EventType from 'IDEE/event/eventtype';
+import Popup from 'IDEE/Popup';
+import { compileSync as compileTemplate } from 'IDEE/util/Template';
 import geojsonPopupTemplate from 'templates/geojson_popup';
-import GeoJSONFormat from 'M/format/GeoJSON';
+import GeoJSONFormat from 'IDEE/format/GeoJSON';
 import OLSourceVector from 'ol/source/Vector';
 import { get as getProj } from 'ol/proj';
 import Vector from './Vector';
@@ -20,7 +20,7 @@ import ImplUtils from '../util/Utils';
  * permite que todos los elementos estén en el cliente.
  *
  * @api
- * @extends {M.impl.layer.Vector}
+ * @extends {IDEE.impl.layer.Vector}
  */
 class GeoJSON extends Vector {
   /**
@@ -28,7 +28,7 @@ class GeoJSON extends Vector {
    * con parámetros especificados por el usuario.
    *
    * @constructor
-   * @implements {M.impl.layer.Vector}
+   * @implements {IDEE.impl.layer.Vector}
    * @param {Object} parameters Parámetros de la fachada, la fachada se refiere a un patrón
    * estructural como una capa de abstracción con un patrón de diseño.
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
@@ -106,7 +106,7 @@ class GeoJSON extends Vector {
    *
    * @public
    * @function
-   * @param {M.impl.Map} map Mapa de la implementación.
+   * @param {IDEE.impl.Map} map Mapa de la implementación.
    * @api stable
    */
   addTo(map, addLayer = true) {
@@ -167,7 +167,7 @@ class GeoJSON extends Vector {
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
    * @function
-   * @returns {M.layer.GeoJSON.impl.loadFeaturesPromise_} Objetos geográficos, asíncrono.
+   * @returns {IDEE.layer.GeoJSON.impl.loadFeaturesPromise_} Objetos geográficos, asíncrono.
    * @api
    */
   requestFeatures_() {
@@ -218,7 +218,7 @@ class GeoJSON extends Vector {
    *
    * @function
    * @param {boolean} skipFilter Indica si se filtra por el filtro "skip".
-   * @param {M.Filter} filter Filtro.
+   * @param {IDEE.Filter} filter Filtro.
    * @return {Array<number>} Extensión de los objetos geográficos.
    * @api stable
    */

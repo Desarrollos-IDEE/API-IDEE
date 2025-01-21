@@ -1,11 +1,11 @@
 /**
- * @module M/impl/control/MouseSRSControl
+ * @module IDEE/impl/control/MouseSRSControl
  */
 import ExtendedMouse from './extendedMouse';
 import template from '../../../templates/srs';
 import { getValue } from '../../../facade/js/i18n/language';
 
-export default class MouseSRSControl extends M.impl.Control {
+export default class MouseSRSControl extends IDEE.impl.Control {
   // eslint-disable-next-line max-len
   constructor(srs, label, precision, geoDecimalDigits, utmDecimalDigits, tooltip, activeZ, helpUrl, mode, coveragePrecissions, order, draggableDialog, epsgFormat) {
     super();
@@ -93,7 +93,7 @@ export default class MouseSRSControl extends M.impl.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api
    */
@@ -136,12 +136,12 @@ export default class MouseSRSControl extends M.impl.Control {
   }
 
   openChangeSRS(map, html) {
-    const content = M.template.compileSync(template, {
+    const content = IDEE.template.compileSync(template, {
       jsonp: true,
       parseToHtml: true,
       vars: {
         selected: this.srs_,
-        hasHelp: this.helpUrl !== undefined && M.utils.isUrl(this.helpUrl),
+        hasHelp: this.helpUrl !== undefined && IDEE.utils.isUrl(this.helpUrl),
         helpUrl: this.helpUrl,
         select_srs: getValue('select_srs'),
         order: this.order,
@@ -151,7 +151,7 @@ export default class MouseSRSControl extends M.impl.Control {
     if (this.epsgFormat) {
       this.formatEPSGs(content);
     }
-    M.dialog.info(content.outerHTML, getValue('select_srs'), this.order);
+    IDEE.dialog.info(content.outerHTML, getValue('select_srs'), this.order);
     setTimeout(() => {
       document.querySelector('.m-dialog>div.m-modal>div.m-content').style.minWidth = '260px';
       document.querySelector('#m-mousesrs-srs-selector').addEventListener('change', this.changeSRS.bind(this, map, html));
@@ -162,7 +162,7 @@ export default class MouseSRSControl extends M.impl.Control {
       button.style.backgroundColor = '#71a7d3';
     }, 10);
     if (this.draggableDialog) {
-      M.utils.draggabillyElement('.m-dialog .m-modal .m-content', '.m-dialog .m-modal .m-content .m-title');
+      IDEE.utils.draggabillyElement('.m-dialog .m-modal .m-content', '.m-dialog .m-modal .m-content .m-title');
     }
     document.addEventListener('keydown', (evt) => {
       if (evt.key === 'Escape') {
@@ -185,8 +185,8 @@ export default class MouseSRSControl extends M.impl.Control {
   }
 
   formatEPSG(epsg) {
-    // Format M.impl.ol.js.projections.getSupportedProjs()
-    const supportedProjs = M.impl.ol.js.projections.getSupportedProjs();
+    // Format IDEE.impl.ol.js.projections.getSupportedProjs()
+    const supportedProjs = IDEE.impl.ol.js.projections.getSupportedProjs();
 
     // Find EPSG in supportedProjs
     const find = supportedProjs.find((p) => p.codes.includes(epsg));
@@ -220,7 +220,7 @@ export default class MouseSRSControl extends M.impl.Control {
       // eslint-disable-next-line no-underscore-dangle
       srsUnits = ol.proj.get(this.srs_).units_;
     } catch (e) {
-      M.dialog.error(getValue('exception.srs'));
+      IDEE.dialog.error(getValue('exception.srs'));
       // eslint-disable-next-line no-underscore-dangle
       srsUnits = ol.proj.get('EPSG:4326').units_;
       this.srs_ = 'EPSG:4326';

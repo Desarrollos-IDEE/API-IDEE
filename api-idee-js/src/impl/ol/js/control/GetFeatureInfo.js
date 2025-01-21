@@ -1,19 +1,19 @@
 /**
- * @module M/impl/control/GetFeatureInfo
+ * @module IDEE/impl/control/GetFeatureInfo
  */
 import OLFormatWFS from 'ol/format/WFS';
 import { unByKey } from 'ol/Observable';
 import WMTS from 'ol/source/WMTS';
 import TileWMS from 'ol/source/TileWMS';
 import ImageWMS from 'ol/source/ImageWMS';
-import * as dialog from 'M/dialog';
+import * as dialog from 'IDEE/dialog';
 import getfeatureinfoPopupTemplate from 'templates/getfeatureinfo_popup';
 import getfeatureinfoLayers from 'templates/getfeatureinfo_layers';
-import Popup from 'M/Popup';
-import { get as getRemote } from 'M/util/Remote';
-import { compileSync as compileTemplate } from 'M/util/Template';
-import { isNullOrEmpty, beautifyAttribute } from 'M/util/Utils';
-import { getValue } from 'M/i18n/language';
+import Popup from 'IDEE/Popup';
+import { get as getRemote } from 'IDEE/util/Remote';
+import { compileSync as compileTemplate } from 'IDEE/util/Template';
+import { isNullOrEmpty, beautifyAttribute } from 'IDEE/util/Utils';
+import { getValue } from 'IDEE/i18n/language';
 import Control from './Control';
 
 /**
@@ -32,7 +32,7 @@ class GetFeatureInfo extends Control {
    * @param {Object} options Opciones del control.
    * - featureCount. Número de objetos geográficos, por defecto 10.
    * - buffer. Configuración del área de influencia, por defecto 5.
-   * @extends {M.impl.Control}
+   * @extends {IDEE.impl.Control}
    * @api stable
    */
   constructor(activated, options) {
@@ -64,7 +64,7 @@ class GetFeatureInfo extends Control {
    *
    * @public
    * @function
-   * @param {M.Map} map Mapa.
+   * @param {IDEE.Map} map Mapa.
    * @param {function} template Plantilla del control.
    * @api stable
    * @export
@@ -111,7 +111,7 @@ class GetFeatureInfo extends Control {
    * @public
    * @function
    * @param {ol.MapBrowserPointerEvent} evt Evento de punto del navegador.
-   * @param {M.dialog} dialogParam Dialogo.
+   * @param {IDEE.dialog} dialogParam Dialogo.
    * @api stable
    */
   buildUrl_(dialogParam, evt) {

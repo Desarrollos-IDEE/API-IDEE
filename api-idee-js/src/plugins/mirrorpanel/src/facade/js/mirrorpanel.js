@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/Mirrorpanel
+ * @module IDEE/plugin/Mirrorpanel
  */
 import 'assets/css/mirrorpanel';
 import MirrorpanelControl from './mirrorpanelcontrol';
@@ -9,14 +9,14 @@ import { getValue } from './i18n/language';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class Mirrorpanel extends M.Plugin {
+export default class Mirrorpanel extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -33,14 +33,14 @@ export default class Mirrorpanel extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -149,8 +149,8 @@ export default class Mirrorpanel extends M.Plugin {
      */
     this.backImgLayersParams = options.backImgLayersParams;
     if (options.backImgLayersParams !== undefined) {
-      if (M.utils.isObject(options.backImgLayersParams)) {
-        const bIL = new M.plugin.BackImgLayer(options.backImgLayersParams);
+      if (IDEE.utils.isObject(options.backImgLayersParams)) {
+        const bIL = new IDEE.plugin.BackImgLayer(options.backImgLayersParams);
         this.backImgLayersParams = bIL.getAPIRest().replace('backimglayer=', '').replace(/\*!/g, '!!');
       }
     }
@@ -188,7 +188,7 @@ export default class Mirrorpanel extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).mirrorpanel;
+    return IDEE.language.getTranslation(lang).mirrorpanel;
   }
 
   /**
@@ -196,7 +196,7 @@ export default class Mirrorpanel extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
@@ -218,10 +218,10 @@ export default class Mirrorpanel extends M.Plugin {
     this.controls_.push(this.control_);
     this.map_ = map;
 
-    this.panel_ = new M.ui.Panel('panelMirrorpanel', {
+    this.panel_ = new IDEE.ui.Panel('panelMirrorpanel', {
       collapsible: this.collapsible,
       collapsed: this.collapsed,
-      position: M.ui.position[this.position],
+      position: IDEE.ui.position[this.position],
       modeViz: this.modeViz,
       enabledPlugins: this.enabledPlugins,
       showCursors: this.showCursors,
@@ -234,7 +234,7 @@ export default class Mirrorpanel extends M.Plugin {
 
     // Check if backimglayer is main map and backImgLayersParams is defined. If not, throw a error.
     if (this.map_.getControls('BackImgLayer').length > 0 && this.backImgLayersParams === undefined) {
-      M.dialog.error(getValue('backimglayersparams_undefined'));
+      IDEE.dialog.error(getValue('backimglayersparams_undefined'));
     }
     // Keybindings for Ctrl + Shift + (F1-F8) / ESC
     document.addEventListener('keydown', (zEvent) => {

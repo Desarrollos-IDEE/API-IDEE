@@ -1,5 +1,5 @@
 /* eslint-disable camelcase,import/prefer-default-export */
-import GeoTIFF from 'M/layer/GeoTIFF';
+import GeoTIFF from 'IDEE/layer/GeoTIFF';
 import { normalize } from 'ol/color';
 import GeoTIFFSource from 'ol/source/GeoTIFF';
 

@@ -1,15 +1,15 @@
 import VectorsManagement from 'facade/vectorsmanagement';
 
-M.language.setLang('es');
+IDEE.language.setLang('es');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   center: [-458756.9690741142, 4682774.665868655],
   layers: ['OSM'],
   zoom: 6,
 });
 
-const mbtileVector = new M.layer.MBTilesVector({
+const mbtileVector = new IDEE.layer.MBTilesVector({
   name: 'mbtilesvector',
   legend: 'Capa personalizada MBTilesVector',
   extract: true,

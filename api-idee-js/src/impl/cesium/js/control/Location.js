@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/Location
+ * @module IDEE/impl/control/Location
  */

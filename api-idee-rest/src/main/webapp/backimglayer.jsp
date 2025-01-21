@@ -102,9 +102,9 @@ html, body {
    %>
 	<script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
-        M.language.setLang(urlParams.get('language') || 'es');
+        IDEE.language.setLang(urlParams.get('language') || 'es');
 
-        const map = M.map({
+        const map = IDEE.map({
             container: 'mapjs',
 			layers: ['OSM'],
             zoom: 5,
@@ -163,7 +163,7 @@ html, body {
                     id: 'imagen',
                     title: 'Imagen',
                     preview: 'plugins/backimglayer/images/svqhibrid.png',
-                    layers: [new M.layer.TMS({
+                    layers: [new IDEE.layer.TMS({
                         url: 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
                         name: 'PNOA-MA',
                         legend: 'Mapa IGN',
@@ -177,7 +177,7 @@ html, body {
                     id: 'mapa',
  					title: 'Mapa',
                     preview: 'plugins/backimglayer/images/svqmapa.png',                   
-                    layers: [new M.layer.TMS({
+                    layers: [new IDEE.layer.TMS({
                         url: 'https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/{z}/{x}/{-y}.jpeg',
                         name: 'IGNBaseTodo',
                         legend: 'Mapa IGN',
@@ -188,10 +188,10 @@ html, body {
                     })],
                 },
             ];
-            mp = new M.plugin.BackImgLayer(propiedades);
+            mp = new IDEE.plugin.BackImgLayer(propiedades);
             map.addPlugin(mp);
         }
-        let mp2 = new M.plugin.ShareMap({
+        let mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
             position: "TR",
         });

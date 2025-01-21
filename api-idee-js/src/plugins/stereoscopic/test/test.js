@@ -1,6 +1,6 @@
 import Stereoscopic from 'facade/stereoscopic';
 
-const map = M.map({
+const map = IDEE.map({
   container: 'map',
   // layers: ['TMS*PNOA-MA*https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg*true*false*19'],
   layers: ['TMS*MTN*https://tms-mapa-raster.ign.es/1.0.0/mapa-raster/{z}/{x}/{-y}.jpeg*true*false*19'],

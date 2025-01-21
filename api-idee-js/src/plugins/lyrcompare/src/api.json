@@ -3,7 +3,7 @@
     "name": "lyrcompare",
     "separator": "*!"
   },
-  "constructor": "M.plugin.LyrCompare",
+  "constructor": "IDEE.plugin.LyrCompare",
   "parameters": [{
     "type": "object",
     "properties": [{

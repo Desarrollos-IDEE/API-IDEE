@@ -1,4 +1,4 @@
-const map = M.map({
+const map = IDEE.map({
   container: 'map',
   controls: ['panzoom', 'scale*true', 'scaleline', 'rotate', 'location', 'getfeatureinfo'],
   zoom: 5,
@@ -6,7 +6,7 @@ const map = M.map({
   getfeatureinfo: true,
 });
 
-const mp = new M.plugin.IGNSearch({
+const mp = new IDEE.plugin.IGNSearch({
   servicesToSearch: 'gn',
   maxResults: 10,
   isCollapsed: false,
@@ -14,26 +14,26 @@ const mp = new M.plugin.IGNSearch({
   countryCode: 'es',
   reverse: true,
 });
-const mp2 = new M.plugin.Attributions({
+const mp2 = new IDEE.plugin.Attributions({
   mode: 1,
   scale: 10000,
 });
-const mp3 = new M.plugin.ShareMap({
+const mp3 = new IDEE.plugin.ShareMap({
   baseUrl: 'https://componentes-desarrollo.idee.es/api-idee/',
   position: 'BR',
 });
-const mp4 = new M.plugin.XYLocator({
+const mp4 = new IDEE.plugin.XYLocator({
   position: 'TL',
 });
-const mp6 = new M.plugin.ZoomExtent();
-const mp7 = new M.plugin.MouseSRS({
+const mp6 = new IDEE.plugin.ZoomExtent();
+const mp7 = new IDEE.plugin.MouseSRS({
   projection: 'EPSG:4326',
 });
-const mp8 = new M.plugin.TOC({
+const mp8 = new IDEE.plugin.TOC({
   collapsed: false,
 });
 
-const mp9 = new M.plugin.BackImgLayer({
+const mp9 = new IDEE.plugin.BackImgLayer({
   position: 'TR',
   layerId: 0,
   layerVisibility: true,
@@ -41,7 +41,7 @@ const mp9 = new M.plugin.BackImgLayer({
     id: 'mapa',
     preview: 'plugins/backimglayer/images/svqmapa.png',
     title: 'Mapa',
-    layers: [new M.layer.WMTS({
+    layers: [new IDEE.layer.WMTS({
       url: 'http://www.ign.es/wmts/ign-base?',
       name: 'IGNBaseTodo',
       legend: 'Mapa IGN',
@@ -58,7 +58,7 @@ const mp9 = new M.plugin.BackImgLayer({
     id: 'imagen',
     title: 'Imagen',
     preview: 'plugins/backimglayer/images/svqimagen.png',
-    layers: [new M.layer.WMTS({
+    layers: [new IDEE.layer.WMTS({
       url: 'http://www.ign.es/wmts/pnoa-ma?',
       name: 'OI.OrthoimageCoverage',
       legend: 'Imagen (PNOA)',
@@ -74,7 +74,7 @@ const mp9 = new M.plugin.BackImgLayer({
     id: 'hibrido',
     title: 'Híbrido',
     preview: 'plugins/backimglayer/images/svqhibrid.png',
-    layers: [new M.layer.WMTS({
+    layers: [new IDEE.layer.WMTS({
       url: 'http://www.ign.es/wmts/pnoa-ma?',
       name: 'OI.OrthoimageCoverage',
       legend: 'Imagen (PNOA)',
@@ -86,7 +86,7 @@ const mp9 = new M.plugin.BackImgLayer({
       format: 'image/jpeg',
     }, {
       format: 'image/png',
-    }), new M.layer.WMTS({
+    }), new IDEE.layer.WMTS({
       url: 'http://www.ign.es/wmts/ign-base?',
       name: 'IGNBaseOrto',
       matrixSet: 'GoogleMapsCompatible',
@@ -102,7 +102,7 @@ const mp9 = new M.plugin.BackImgLayer({
     id: 'lidar',
     preview: 'plugins/backimglayer/images/svqlidar.png',
     title: 'LIDAR',
-    layers: [new M.layer.WMTS({
+    layers: [new IDEE.layer.WMTS({
       url: 'https://wmts-mapa-lidar.idee.es/lidar?',
       name: 'EL.GridCoverageDSM',
       legend: 'Modelo Digital de Superficies LiDAR',

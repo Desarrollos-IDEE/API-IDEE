@@ -3,7 +3,7 @@
     "name": "geometrydraw",
     "separator": "*"
   },
-  "constructor": "M.plugin.GeometryDraw",
+  "constructor": "IDEE.plugin.GeometryDraw",
   "parameters": [{
     "type": "object",
     "properties": [{

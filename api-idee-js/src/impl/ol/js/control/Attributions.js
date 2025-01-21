@@ -1,5 +1,5 @@
 /**
- * @module M/impl/control/Attributions
+ * @module IDEE/impl/control/Attributions
  */
 import DoubleClickZoom from 'ol/interaction/DoubleClickZoom';
 import Control from './Control';
@@ -22,7 +22,7 @@ class Attributions extends Control {
     /**
      * Map of the plugin
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
   }
@@ -32,7 +32,7 @@ class Attributions extends Control {
    *
    * @public
    * @function
-   * @param {M.Map} map Mapa.
+   * @param {IDEE.Map} map Mapa.
    * @param {function} template Plantilla del control.
    * @api stable
    */
@@ -48,7 +48,7 @@ class Attributions extends Control {
   }
 
   /**
-   * Register events in ol.Map of M.Map
+   * Register events in ol.Map of IDEE.Map
    * @public
    * @function
    */

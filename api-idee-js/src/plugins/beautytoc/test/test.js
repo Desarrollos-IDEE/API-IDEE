@@ -1,8 +1,8 @@
 import BeautyTOC from 'facade/beautytoc';
 
-M.language.setLang('es');
+IDEE.language.setLang('es');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   controls: ['scale'],
 });
@@ -12,7 +12,7 @@ const mp = new BeautyTOC({
   position: 'TR',
 });
 
-const mp2 = new M.plugin.LyrCompare({
+const mp2 = new IDEE.plugin.LyrCompare({
   position: 'TL',
   layers: [
     `WMS*Vuelo americano (Serie B, 1956-1957)*https://www.ign.es/wms/pnoa-historico*AMS_1956-1957`,
@@ -49,161 +49,161 @@ const mp2 = new M.plugin.LyrCompare({
 map.addPlugin(mp);
 // map.addPlugin(mp2);
 const layers = [
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'http://www.ign.es/wms-inspire/cuadriculas?',
     name: 'Grid-ETRS89-lonlat-25k,Grid-REGCAN95-lonlat-25k',
     legend: 'Cuadrícula cartográfica del MTN25',
     tiled: false,
     version: '1.1.1',
   }, { visibility: false, displayInLayerSwitcher: true, queryable: false }),
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'http://www.ign.es/wms-inspire/cuadriculas?',
     name: 'Grid-ETRS89-lonlat-50k,Grid-REGCAN95-lonlat-50k',
     legend: 'Cuadrícula cartográfica del MTN50',
     tiled: false,
     version: '1.1.1',
   }, { visibility: false, displayInLayerSwitcher: true, queryable: false }),
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?',
     name: 'Catastro',
     legend: 'Catastro',
     tiled: false,
     version: '1.1.1',
   }, { visibility: false, displayInLayerSwitcher: true, queryable: true }),
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
     name: 'AU.AdministrativeBoundary,AU.AdministrativeUnit',
     legend: 'Unidades administrativas',
     tiled: false,
     version: '1.1.1',
   }, { visibility: false, displayInLayerSwitcher: true, queryable: false }),
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'https://www.ign.es/wms/pnoa-historico?',
     name: 'AMS_1956-1957',
     legend: 'Vuelo americano (Serie B, 1956-1957)',
     tiled: false,
     version: '1.3.0',
   }, { visibility: false, displayInLayerSwitcher: true, queryable: false }),
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'https://www.ign.es/wms/pnoa-historico?',
     name: 'Interministerial_1973-1986',
     legend: 'Vuelo Interministerial (1973-1986)',
     tiled: false,
     version: '1.3.0',
   }, { visibility: false, displayInLayerSwitcher: true, queryable: false }),
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'https://www.ign.es/wms/pnoa-historico?',
     name: 'Nacional_1981-1986',
     legend: 'Vuelo Nacional (1981-1986)',
     tiled: false,
     version: '1.3.0',
   }, { visibility: false, displayInLayerSwitcher: true, queryable: false }),
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'https://www.ign.es/wms/pnoa-historico?',
     name: 'OLISTAT',
     legend: 'OLISTAT (1997-1998)',
     tiled: false,
     version: '1.3.0',
   }, { visibility: false, displayInLayerSwitcher: true, queryable: false }),
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'https://www.ign.es/wms/pnoa-historico?',
     name: 'SIGPAC',
     legend: 'SIGPAC (1997-2003)',
     tiled: false,
     version: '1.3.0',
   }, { visibility: false, displayInLayerSwitcher: true, queryable: false }),
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'https://www.ign.es/wms/pnoa-historico?',
     name: 'PNOA2004',
     legend: 'PNOA 2004',
     tiled: false,
     version: '1.3.0',
   }, { visibility: false, displayInLayerSwitcher: true, queryable: false }),
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'https://www.ign.es/wms/pnoa-historico?',
     name: 'PNOA2005',
     legend: 'PNOA 2005',
     tiled: false,
     version: '1.3.0',
   }, { visibility: false, displayInLayerSwitcher: true, queryable: false }),
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'https://www.ign.es/wms/pnoa-historico?',
     name: 'PNOA2006',
     legend: 'PNOA 2006',
     tiled: false,
     version: '1.3.0',
   }, { visibility: false, displayInLayerSwitcher: true, queryable: false }),
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'https://www.ign.es/wms/pnoa-historico?',
     name: 'PNOA2007',
     legend: 'PNOA 2007',
     tiled: false,
     version: '1.3.0',
   }, { visibility: false, displayInLayerSwitcher: true, queryable: false }),
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'https://www.ign.es/wms/pnoa-historico?',
     name: 'PNOA2008',
     legend: 'PNOA 2008',
     tiled: false,
     version: '1.3.0',
   }, { visibility: false, displayInLayerSwitcher: true, queryable: false }),
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'https://www.ign.es/wms/pnoa-historico?',
     name: 'PNOA2009',
     legend: 'PNOA 2009',
     tiled: false,
     version: '1.3.0',
   }, { visibility: false, displayInLayerSwitcher: true, queryable: false }),
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'https://www.ign.es/wms/pnoa-historico?',
     name: 'PNOA2010',
     legend: 'PNOA 2010',
     tiled: false,
     version: '1.3.0',
   }, { visibility: false, displayInLayerSwitcher: true, queryable: false }),
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'https://www.ign.es/wms/pnoa-historico?',
     name: 'PNOA2011',
     legend: 'PNOA 2011',
     tiled: false,
     version: '1.3.0',
   }, { visibility: false, displayInLayerSwitcher: true, queryable: false }),
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'https://www.ign.es/wms/pnoa-historico?',
     name: 'PNOA2012',
     legend: 'PNOA 2012',
     tiled: false,
     version: '1.3.0',
   }, { visibility: false, displayInLayerSwitcher: true, queryable: false }),
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'https://www.ign.es/wms/pnoa-historico?',
     name: 'PNOA2013',
     legend: 'PNOA 2013',
     tiled: false,
     version: '1.3.0',
   }, { visibility: false, displayInLayerSwitcher: true, queryable: false }),
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'https://www.ign.es/wms/pnoa-historico?',
     name: 'PNOA2014',
     legend: 'PNOA 2014',
     tiled: false,
     version: '1.3.0',
   }, { visibility: false, displayInLayerSwitcher: true, queryable: false }),
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'https://www.ign.es/wms/pnoa-historico?',
     name: 'PNOA2015',
     legend: 'PNOA 2015',
     tiled: false,
     version: '1.3.0',
   }, { visibility: false, displayInLayerSwitcher: true, queryable: false }),
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'https://www.ign.es/wms/pnoa-historico?',
     name: 'PNOA2016',
     legend: 'PNOA 2016',
     tiled: false,
     version: '1.3.0',
   }, { visibility: false, displayInLayerSwitcher: true, queryable: false }),
-  new M.layer.WMS({
+  new IDEE.layer.WMS({
     url: 'https://www.ign.es/wms/pnoa-historico?',
     name: 'PNOA2017',
     legend: 'PNOA 2017',

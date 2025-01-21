@@ -3,7 +3,7 @@
     "name": "popup",
     "separator": "*"
   },
-  "constructor": "M.plugin.Popup",
+  "constructor": "IDEE.plugin.Popup",
   "parameters": [{
     "type": "object",
     "properties": [{

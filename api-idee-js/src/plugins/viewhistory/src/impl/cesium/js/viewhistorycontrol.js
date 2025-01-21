@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/ViewHistoryControl
+ * @module IDEE/impl/control/ViewHistoryControl
  */

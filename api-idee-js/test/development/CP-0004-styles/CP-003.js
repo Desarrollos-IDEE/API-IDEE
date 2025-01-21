@@ -1,14 +1,14 @@
 /* eslint-disable no-unused-vars,camelcase,max-len */
-import { map as Mmap } from 'M/api-idee';
-import Polygon from 'M/style/Polygon';
-import Generic from 'M/style/Generic';
+import { map as Mmap } from 'IDEE/api-idee';
+import Polygon from 'IDEE/style/Polygon';
+import Generic from 'IDEE/style/Generic';
 import {
   TOP, BOTTOM, MIDDLE, ALPHABETIC, HANGING, IDEOGRAPHIC,
-} from 'M/style/Baseline';
-import { RIGHT, LEFT, CENTER } from 'M/style/Align';
+} from 'IDEE/style/Baseline';
+import { RIGHT, LEFT, CENTER } from 'IDEE/style/Align';
 import {
   BAN, BLAZON, BUBBLE, CIRCLE, LOZENGE, MARKER, NONE, SHIELD, SIGN, SQUARE, TRIANGLE,
-} from 'M/style/Form';
+} from 'IDEE/style/Form';
 import { vector_001 } from '../layers/vector/vector';
 
 const mapa = Mmap({

@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/BeautyTOC
+ * @module IDEE/plugin/BeautyTOC
  */
 import '../assets/css/beautytoc';
 import '../assets/css/fonts';
@@ -10,10 +10,10 @@ import { getValue } from './i18n/language';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class BeautyTOC extends M.Plugin {
+export default class BeautyTOC extends IDEE.Plugin {
   /**
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api
    */
@@ -22,14 +22,14 @@ export default class BeautyTOC extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -75,7 +75,7 @@ export default class BeautyTOC extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).beautytoc;
+    return IDEE.language.getTranslation(lang).beautytoc;
   }
 
   /**
@@ -83,15 +83,15 @@ export default class BeautyTOC extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
     this.control = new BeautyTOCControl();
     this.map_ = map;
-    this.panel_ = new M.ui.Panel('panelBeautyTOC', {
+    this.panel_ = new IDEE.ui.Panel('panelBeautyTOC', {
       collapsible: true,
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       collapsedButtonClass: 'icon-capas2',
       className: 'm-plugin-beautytoc',
       tooltip: this.tooltip_,
@@ -100,11 +100,11 @@ export default class BeautyTOC extends M.Plugin {
     this.panel_.addControls([this.control]);
     map.addPanels(this.panel_);
 
-    map.on(M.evt.ADDED_LAYER, () => {
+    map.on(IDEE.evt.ADDED_LAYER, () => {
       this.control.render();
     });
 
-    map.on(M.evt.COMPLETED, () => {
+    map.on(IDEE.evt.COMPLETED, () => {
       this.control.render();
     });
   }
@@ -156,7 +156,7 @@ export default class BeautyTOC extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Plugin} plugin to compare
+   * @param {IDEE.Plugin} plugin to compare
    * @api
    */
   equals(plugin) {

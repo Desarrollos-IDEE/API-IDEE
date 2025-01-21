@@ -1,7 +1,7 @@
 import AttributeTable from 'plugins/attributetable/facade/js/attributetable';
-import WFS from 'M/layer/WFS';
+import WFS from 'IDEE/layer/WFS';
 
-const mapjs = M.map({
+const mapjs = IDEE.map({
   container: 'map',
 });
 

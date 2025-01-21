@@ -1,15 +1,15 @@
 /**
- * @module M/impl/style/Point
+ * @module IDEE/impl/style/Point
  */
 import {
   isUndefined, isArray, isNullOrEmpty, addParameters, concatUrlPaths, isDynamic, drawDynamicStyle,
   modifySVG,
-} from 'M/util/Utils'; // from '../../../../facade/js/util/Utils';
+} from 'IDEE/util/Utils'; // from '../../../../facade/js/util/Utils';
 import chroma from 'chroma-js';
 import OLStyleImage from 'ol/style/Image';
 import OLFeature from 'ol/Feature';
-import * as Align from 'M/style/Align';
-import * as Baseline from 'M/style/Baseline';
+import * as Align from 'IDEE/style/Align';
+import * as Baseline from 'IDEE/style/Baseline';
 import OLStyleFill from 'ol/style/Fill';
 import OLGeomPoint from 'ol/geom/Point';
 import OLGeomMultiPoint from 'ol/geom/MultiPoint';
@@ -74,7 +74,7 @@ class Point extends Simple {
           if (!isNullOrEmpty(styleImg)) {
             image = styleImg.getSrc();
             if (!image.startsWith(window.location.origin)) {
-              const proxyImageURL = concatUrlPaths([M.config.PROXY_URL, '/image']);
+              const proxyImageURL = concatUrlPaths([IDEE.config.PROXY_URL, '/image']);
               image = addParameters(proxyImageURL, {
                 url: image,
               });

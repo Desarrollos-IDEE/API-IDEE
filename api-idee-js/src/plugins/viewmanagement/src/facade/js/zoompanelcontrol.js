@@ -1,23 +1,23 @@
 /**
- * @module M/control/ZoomPanelControl
+ * @module IDEE/control/ZoomPanelControl
  */
 import template from 'templates/zoompanel';
 import ZoomPanelImpl from 'impl/zoompanelcontrol';
 import { getValue } from './i18n/language';
 
-export default class ZoomPanelControl extends M.Control {
+export default class ZoomPanelControl extends IDEE.Control {
   /**
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor(map) {
-    if (M.utils.isUndefined(ZoomPanelImpl) || (M.utils.isObject(ZoomPanelImpl)
-      && M.utils.isNullOrEmpty(Object.keys(ZoomPanelImpl)))) {
-      M.exception(getValue('exception.impl_zoompanel'));
+    if (IDEE.utils.isUndefined(ZoomPanelImpl) || (IDEE.utils.isObject(ZoomPanelImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(ZoomPanelImpl)))) {
+      IDEE.exception(getValue('exception.impl_zoompanel'));
     }
     const impl = new ZoomPanelImpl();
     super(impl, 'ZoomPanelImpl');
@@ -37,7 +37,7 @@ export default class ZoomPanelControl extends M.Control {
     this.deactive(html);
     if (!zoompanelactive) {
       html.querySelector('#m-viewmanagement-zoompanel').classList.add('activated');
-      const panel = M.template.compileSync(template, {
+      const panel = IDEE.template.compileSync(template, {
         vars: {
           translations: {
             zoomin: getValue('zoomin'),
@@ -87,7 +87,7 @@ export default class ZoomPanelControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {

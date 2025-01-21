@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/Calendar
+ * @module IDEE/plugin/Calendar
  */
 import 'assets/css/calendar';
 import CalendarControl from './calendarcontrol';
@@ -9,14 +9,14 @@ import { getValue } from './i18n/language';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class Calendar extends M.Plugin {
+export default class Calendar extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -25,14 +25,14 @@ export default class Calendar extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -86,7 +86,7 @@ export default class Calendar extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).calendar;
+    return IDEE.language.getTranslation(lang).calendar;
   }
 
   /**
@@ -94,19 +94,19 @@ export default class Calendar extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
     this.control_ = new CalendarControl();
     this.controls_.push(this.control_);
     this.map_ = map;
-    this.panel_ = new M.ui.Panel('panelCalendar', {
+    this.panel_ = new IDEE.ui.Panel('panelCalendar', {
       className: 'm-panel-calendar',
       collapsed: this.collapsed_,
       collapsedButtonClass: 'icon-help',
       collapsible: true,
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       tooltip: this.tooltip_,
     });
     this.panel_.addControls(this.controls_);

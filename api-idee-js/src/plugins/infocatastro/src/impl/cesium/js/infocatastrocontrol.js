@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/InfoCatastroControl
+ * @module IDEE/impl/control/InfoCatastroControl
  */

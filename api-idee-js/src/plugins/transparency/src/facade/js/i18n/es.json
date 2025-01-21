@@ -5,5 +5,5 @@
   "transparency": "Transparencia",
   "errorLayer": "Transparency: No se ha especificado una capa válida sobre la que aplicar el efecto",
   "excepcion": "La implementación usada no puede crear controles TransparencyControl",
-  "transparency_obsolete": "Mensaje para el desarrollador: M.plugin.Transparency ha quedado obsoleto, utilice en su lugar M.plugin.Comparators"
+  "transparency_obsolete": "Mensaje para el desarrollador: IDEE.plugin.Transparency ha quedado obsoleto, utilice en su lugar IDEE.plugin.Comparators"
 }

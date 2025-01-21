@@ -1,5 +1,5 @@
 
-# M.plugin.FullTOC
+# IDEE.plugin.FullTOC
 
 Plugin que proporciona un árbol de contenidos con las capas disponibles para mostrar en el visualizador. Permite la carga de:
 - capas de un listado predefinido.
@@ -57,10 +57,10 @@ El listado de capas aparece al pulsar sobre el botón añadir (Listado de alguna
 
 # Ejemplos de uso
 ```javascript
-   const map = M.map({
+   const map = IDEE.map({
      container: 'map'
    });
-   const mp = new M.plugin.FullTOC({
+   const mp = new IDEE.plugin.FullTOC({
      collapsed: true,
      position: 'TR',
      https: true,

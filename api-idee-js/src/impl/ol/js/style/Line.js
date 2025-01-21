@@ -1,7 +1,7 @@
 /**
- * @module M/impl/style/Line
+ * @module IDEE/impl/style/Line
  */
-import { isArray, isNullOrEmpty, isFunction } from 'M/util/Utils';
+import { isArray, isNullOrEmpty, isFunction } from 'IDEE/util/Utils';
 import OLFeature from 'ol/Feature';
 import OLStyleStroke from 'ol/style/Stroke';
 import OLStyleFill from 'ol/style/Fill';
@@ -23,7 +23,7 @@ import '../ext/cspline';
  * Crea un estilo de línea
  * con parámetros especificados por el usuario.
  * @api
- * @namespace M.impl.style.Line
+ * @namespace IDEE.impl.style.Line
  *
  */
 class Line extends Simple {
@@ -32,7 +32,7 @@ class Line extends Simple {
    * @constructor
    * @param {Object} options Opciones de la clase.
    * - icon (src): Ruta del icono.
-   * @implements {M.impl.style.Simple}
+   * @implements {IDEE.impl.style.Simple}
    * @param {Object} vendorOptions Opciones de proveedor para la biblioteca base.
    * @api stable
    */
@@ -193,7 +193,7 @@ class Line extends Simple {
    * Este método aplica los estilos a la capa.
    * @public
    * @function
-   * @param {M.layer.Vector} layer Capa.
+   * @param {IDEE.layer.Vector} layer Capa.
    * @api stable
    */
   applyToLayer(layer) {
@@ -210,7 +210,7 @@ class Line extends Simple {
    *
    * @function
    * @protected
-   * @param {M.layer.Vector} layer Capa.
+   * @param {IDEE.layer.Vector} layer Capa.
    * @api stable
    */
   unapply() {

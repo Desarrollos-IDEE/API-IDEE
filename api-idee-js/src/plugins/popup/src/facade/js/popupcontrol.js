@@ -1,5 +1,5 @@
 /**
- * @module M/control/PopupControl
+ * @module IDEE/control/PopupControl
  */
 
 import templateEN from 'templates/popup_en';
@@ -7,20 +7,20 @@ import templateES from 'templates/popup_es';
 import PopupImplControl from 'impl/popupcontrol';
 import { getValue } from './i18n/language';
 
-export default class PopupControl extends M.Control {
+export default class PopupControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(url) {
-    if (M.utils.isUndefined(PopupImplControl) || (M.utils.isObject(PopupImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(PopupImplControl)))) {
-      M.exception(getValue('exception_popupcontrol'));
+    if (IDEE.utils.isUndefined(PopupImplControl) || (IDEE.utils.isObject(PopupImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(PopupImplControl)))) {
+      IDEE.exception(getValue('exception_popupcontrol'));
     }
     const impl = new PopupImplControl();
     super(impl, 'Popup');
@@ -38,7 +38,7 @@ export default class PopupControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
@@ -54,7 +54,7 @@ export default class PopupControl extends M.Control {
     });
 
     if (this.url_ !== 'template_es' && this.url_ !== 'template_en') {
-      return M.remote.get(this.url_).then((response) => {
+      return IDEE.remote.get(this.url_).then((response) => {
         let html = response.text;
         html = html.substring(html.indexOf('<!-- Start Popup Content -->'), html.lastIndexOf('<!-- End Popup Content -->'));
         const htmlObject = document.createElement('div');
@@ -66,7 +66,7 @@ export default class PopupControl extends M.Control {
 
     const htmlObject = document.createElement('div');
     htmlObject.classList.add('m-control', 'm-container', 'm-popup');
-    htmlObject.innerHTML = M.language.getLang() === 'en' ? templateEN : templateES;
+    htmlObject.innerHTML = IDEE.language.getLang() === 'en' ? templateEN : templateES;
     return htmlObject;
   }
 
@@ -75,7 +75,7 @@ export default class PopupControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

@@ -3,7 +3,7 @@
     "name": "backimglayer",
     "separator": "*!"
   },
-  "constructor": "M.plugin.BackImgLayer",
+  "constructor": "IDEE.plugin.BackImgLayer",
   "parameters": [{
     "type": "object",
     "properties": [{

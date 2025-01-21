@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/TransparencyControl
+ * @module IDEE/impl/control/TransparencyControl
  */

@@ -111,7 +111,7 @@
    %>
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
-        M.language.setLang(urlParams.get('language') || 'es');
+        IDEE.language.setLang(urlParams.get('language') || 'es');
 
 		const DEFAULT_serverUrl = "https://componentes.cnig.es/geoprint";
 		const DEFAULT_printStatusUrl = "https://componentes.cnig.es/geoprint/print/status";
@@ -120,7 +120,7 @@
         const DEFAULT_georefImage = '{"tooltip": "Georeferenciar imagen","printTemplateUrl": "https://componentes.cnig.es/geoprint/print/mapexport","printSelector": true}';
         const DEFAULT_printermap = '{"printTemplateUrl": "https://componentes.cnig.es/geoprint/print/CNIG","headerLegend": "https://www.idee.es/csw-codsi-idee/images/cabecera-CODSI.png","filterTemplates": ["A3 Horizontal"],"logo": "https://www.idee.es/csw-codsi-idee/images/cabecera-CODSI.png"}';
         
-        const map = M.map({
+        const map = IDEE.map({
             container: 'mapjs',
             zoom: 5,
             maxZoom: 20,
@@ -128,14 +128,14 @@
             center: [-467062.8225, 4683459.6216],
         });
 
-        const layerinicial = new M.layer.WMS({
+        const layerinicial = new IDEE.layer.WMS({
             url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
             name: 'AU.AdministrativeBoundary',
             legend: 'Limite administrativo',
             tiled: false,
         }, {});
 
-        const campamentos = new M.layer.GeoJSON({
+        const campamentos = new IDEE.layer.GeoJSON({
             name: 'Campamentos',
             url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/sepim/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=sepim:campamentos&outputFormat=application/json&',
             extract: true,
@@ -222,10 +222,10 @@
         }
 
         function crearPlugin(propiedades) {
-            mp = new M.plugin.PrintViewManagement(propiedades);
+            mp = new IDEE.plugin.PrintViewManagement(propiedades);
             map.addPlugin(mp);
         }
-        let mp2 = new M.plugin.ShareMap({
+        let mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
             position: "TR",
         });

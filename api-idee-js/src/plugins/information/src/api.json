@@ -3,7 +3,7 @@
     "name": "information",
     "separator": "*"
   },
-  "constructor": "M.plugin.Information",
+  "constructor": "IDEE.plugin.Information",
   "parameters": [{
     "type": "object",
     "properties": [{

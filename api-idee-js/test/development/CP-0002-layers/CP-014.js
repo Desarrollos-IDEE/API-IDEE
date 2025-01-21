@@ -1,4 +1,4 @@
-import { map as Mmap } from 'M/api-idee';
+import { map as Mmap } from 'IDEE/api-idee';
 // import { vector_001 } from '../layers/vector/vector';
 // import { wfs_001 } from '../layers/wfs/wfs';
 // import { geojson_001 } from '../layers/geojson/geojson';

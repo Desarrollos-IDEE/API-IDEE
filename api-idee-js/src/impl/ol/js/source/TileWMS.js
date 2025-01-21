@@ -1,7 +1,7 @@
 /**
- * @module M/impl/source/TileWMS
+ * @module IDEE/impl/source/TileWMS
  */
-import { isNullOrEmpty } from 'M/util/Utils';
+import { isNullOrEmpty } from 'IDEE/util/Utils';
 import OLSourceTileWMS from 'ol/source/TileWMS';
 
 /**

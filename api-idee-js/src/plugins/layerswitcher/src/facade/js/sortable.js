@@ -75,9 +75,9 @@ const handleOnAdd = (map) => (evt) => {
     ? groupFrom.getLayers().find((l) => l.name === itemName)
     : map.getLayers().find((l) => l.name === itemName);
 
-  // if (item instanceof M.layer.MBTilesVector
-  //     || item instanceof M.layer.MBTiles) {
-  //   M.toast.error(getValue('exception.not_layerGroup'), null, 6000);
+  // if (item instanceof IDEE.layer.MBTilesVector
+  //     || item instanceof IDEE.layer.MBTiles) {
+  //   IDEE.toast.error(getValue('exception.not_layerGroup'), null, 6000);
   //   return;
   // }
 

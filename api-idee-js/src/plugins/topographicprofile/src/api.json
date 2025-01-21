@@ -3,7 +3,7 @@
     "name": "topographicprofile",
     "separator": "*"
   },
-  "constructor": "M.plugin.Topographicprofile",
+  "constructor": "IDEE.plugin.Topographicprofile",
   "parameters": [{
     "type": "object",
     "properties": [{

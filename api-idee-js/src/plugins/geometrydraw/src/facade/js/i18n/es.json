@@ -10,7 +10,7 @@
     "insertado": "No se ha insertado una extensión de archivo permitida. Las permitidas son: KML, SHP(.zip), GPX y GeoJSON.",
     "maxfichero": "El fichero seleccionado sobrepasa el máximo de 20 MB permitido.",
     "ficherosel": "No se ha seleccionado formato de descarga.",
-    "obsolete": "Mensaje para el desarrollador: M.plugin.GeometryDraw ha quedado obsoleto, utilice en su lugar M.plugin.VectorsManagement"
+    "obsolete": "Mensaje para el desarrollador: IDEE.plugin.GeometryDraw ha quedado obsoleto, utilice en su lugar IDEE.plugin.VectorsManagement"
   },
   "tooltip": "Dibujo de geometrías",
   "punto": "Punto",

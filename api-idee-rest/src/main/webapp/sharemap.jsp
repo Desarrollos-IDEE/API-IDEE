@@ -112,31 +112,31 @@
    %>
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
-        M.language.setLang(urlParams.get('language') || 'es');
+        IDEE.language.setLang(urlParams.get('language') || 'es');
 
-        const map = M.map({
+        const map = IDEE.map({
             container: 'mapjs',
             zoom: 3,
         });
 
         function crearPlugin(propiedades) {
-            mp = new M.plugin.ShareMap(propiedades);
+            mp = new IDEE.plugin.ShareMap(propiedades);
             map.addPlugin(mp);
         }
 
-        const layerinicial = new M.layer.WMS({
+        const layerinicial = new IDEE.layer.WMS({
             url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
             name: 'AU.AdministrativeBoundary',
             legend: 'Limite administrativo',
         }, {});
 
-        const layerUA = new M.layer.WMS({
+        const layerUA = new IDEE.layer.WMS({
             url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
             name: 'AU.AdministrativeUnit',
             legend: 'Unidad administrativa'
         }, {});
 
-        const ocupacionSuelo = new M.layer.WMTS({
+        const ocupacionSuelo = new IDEE.layer.WMTS({
           url: 'https://www.ign.es/wmts/pnoa-ma?',
           name: 'OI.OrthoimageCoverage',
           legend: 'Imagen',
@@ -227,7 +227,7 @@
             map.removePlugins(mp);
         });
 
-        const layerswitcher = new M.plugin.Layerswitcher({});
+        const layerswitcher = new IDEE.plugin.Layerswitcher({});
         map.addPlugin(layerswitcher);
     </script>
 </body>

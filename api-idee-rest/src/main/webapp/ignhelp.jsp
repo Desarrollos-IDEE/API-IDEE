@@ -54,7 +54,7 @@
       }
    %>
     <script type="text/javascript">
-        const map = M.map({
+        const map = IDEE.map({
             container: 'mapjs',
             zoom: 5,
             maxZoom: 20,
@@ -62,7 +62,7 @@
             center: [-467062.8225, 4783459.6216],
         });
 
-        const mp = new M.plugin.IGNHelp({
+        const mp = new IDEE.plugin.IGNHelp({
             position: 'TR',
             helpLink: 'http://fototeca.cnig.es/help_es.pdf',
             contactEmail: 'fototeca@cnig.es',

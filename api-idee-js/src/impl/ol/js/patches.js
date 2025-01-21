@@ -1,5 +1,5 @@
 /**
- * @module M/impl/ol/js/patches
+ * @module IDEE/impl/ol/js/patches
  */
 
 /* eslint-disable */

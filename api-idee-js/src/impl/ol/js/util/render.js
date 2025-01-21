@@ -1,5 +1,5 @@
-import { isUndefined } from 'M/util/Utils';
-import Line from 'M/style/Line';
+import { isUndefined } from 'IDEE/util/Utils';
+import Line from 'IDEE/style/Line';
 import TextPath from './Textpath';
 import Path from '../style/Path';
 

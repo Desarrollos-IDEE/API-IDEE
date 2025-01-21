@@ -1,25 +1,25 @@
 /**
- * @module M/control/ZoomExtentControl
+ * @module IDEE/control/ZoomExtentControl
  */
 
 import ZoomExtentImplControl from 'impl/zoomextentcontrol';
 import template from '../../templates/zoomextent';
 import { getValue } from './i18n/language';
 
-export default class ZoomExtentControl extends M.Control {
+export default class ZoomExtentControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor() {
-    if (M.utils.isUndefined(ZoomExtentImplControl) || (M.utils.isObject(ZoomExtentImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(ZoomExtentImplControl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(ZoomExtentImplControl) || (IDEE.utils.isObject(ZoomExtentImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(ZoomExtentImplControl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
     const impl = new ZoomExtentImplControl();
     super(impl, 'ZoomExtent');
@@ -30,14 +30,14 @@ export default class ZoomExtentControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api
    */
   createView(map) {
     // eslint-disable-next-line
     console.warn(getValue('exception.zoomextent_obsolete'));
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           translations: {
             tooltip: getValue('tooltip'),
@@ -97,7 +97,7 @@ export default class ZoomExtentControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {

@@ -78,9 +78,9 @@
    %>
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
-        M.language.setLang(urlParams.get('language') || 'es');
+        IDEE.language.setLang(urlParams.get('language') || 'es');
 
-        const map = M.map({
+        const map = IDEE.map({
             container: 'mapjs',
             controls: ['scale*true'],
             zoom: 6,
@@ -111,7 +111,7 @@
         }
 
         function crearPlugin(position, collapsed, collapsible) {
-            mp = new M.plugin.SelectionDraw({
+            mp = new IDEE.plugin.SelectionDraw({
                 projection: 'EPSG:4326',
                 position: position,
                 collapsed: collapsed,
@@ -119,11 +119,11 @@
             });
 
             mp.on('finished:draw', (feature) => {
-                M.dialog.info(JSON.stringify(feature), 'Información del feature');
+                IDEE.dialog.info(JSON.stringify(feature), 'Información del feature');
             });
             map.addPlugin(mp);
         }
-        let mp2 = new M.plugin.ShareMap({
+        let mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
             position: "TR",
         });

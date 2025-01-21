@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
 </p>
-<h1 align="center"><strong>API IDEE</strong> <small>🔌 M.plugin.ComparePanel</small></h1>
+<h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.ComparePanel</small></h1>
 
 <p align="center">
   <a title="MIT License" href="LICENSE">

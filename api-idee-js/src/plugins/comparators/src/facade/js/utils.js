@@ -255,7 +255,7 @@ export const checkLayers = (layer, comparatorLayers) => {
  * Este método se encarga de obtener los parámetros de la
  * capa
  * @function
- * @param {M.layer.WMS | M.layer.WMTS} layer Capa WMS o WMTS
+ * @param {IDEE.layer.WMS | IDEE.layer.WMTS} layer Capa WMS o WMTS
  * @return {Array<String> | false} Array con las capas o false si no es un objeto
  */
 export const transformToStringLayers = (layer, map, remove = true) => {
@@ -283,7 +283,7 @@ export const transformToLayers = (layers, index) => {
   const transform = layers.map((layer) => {
     const urlLayer = layer.split('*');
     if (urlLayer[0].toUpperCase() === 'WMS') {
-      const l = new M.layer.WMS({
+      const l = new IDEE.layer.WMS({
         url: urlLayer[2],
         name: urlLayer[3],
         legend: urlLayer[1],
@@ -295,7 +295,7 @@ export const transformToLayers = (layers, index) => {
       return l;
     }
 
-    const l = new M.layer.WMTS({
+    const l = new IDEE.layer.WMTS({
       url: urlLayer[1],
       name: urlLayer[2],
       legend: urlLayer[4],
@@ -340,7 +340,7 @@ function getKML(layer) {
  * @function
  */
 function getGeoJSON(layer) {
-  const source = !M.utils.isUndefined(layer.source)
+  const source = !IDEE.utils.isUndefined(layer.source)
     ? layer.serialize()
     : layer.url;
   const style = (layer.getStyle()) ? layer.getStyle().serialize() : '';

@@ -139,7 +139,7 @@ function generateExports(symbols, namespaces, imports) {
       nsdefs.push(`${ns[i]} = {};`);
     }
   }
-  blocks = imports.concat(['const M = window[\'M\'] = {};\nconst ol = window[\'ol\'] = {}']
+  blocks = imports.concat(['const IDEE = window[\'IDEE\'] = {};\nconst ol = window[\'ol\'] = {}']
     .concat(nsdefs.concat(blocks).sort()));
   blocks.push('');
   return blocks.join('\n');

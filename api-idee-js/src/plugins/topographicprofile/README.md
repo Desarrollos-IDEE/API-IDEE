@@ -1,4 +1,4 @@
-# M.plugin.Topographicprofile
+# IDEE.plugin.Topographicprofile
 
 Plugin que permite realizar un perfil longitudinal en función del eje que dibujemos en pantalla
 
@@ -40,11 +40,11 @@ El constructor se inicializa con un JSON de _options_ con los siguientes atribut
 
 ### Ejemplo 1
 ```javascript
-   const map = M.map({
+   const map = IDEE.map({
      container: 'map'
    });
 
-   const mp = new M.plugin.Topographicprofile();
+   const mp = new IDEE.plugin.Topographicprofile();
 
    map.addPlugin(mp);
 ```

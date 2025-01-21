@@ -1,5 +1,5 @@
 /**
- * @module M/control/IncicartoControl
+ * @module IDEE/control/IncicartoControl
  */
 
 import Sortable from 'sortablejs';
@@ -42,20 +42,21 @@ const CONTROLS = [
   'backgroundlayers',
 ];
 
-export default class IncicartoControl extends M.Control {
+export default class IncicartoControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(options) {
-    if (M.utils.isUndefined(IncicartoImplControl) || (M.utils.isObject(IncicartoImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(IncicartoImplControl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(IncicartoImplControl)
+      || (IDEE.utils.isObject(IncicartoImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(IncicartoImplControl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
 
     const impl = new IncicartoImplControl();
@@ -67,7 +68,7 @@ export default class IncicartoControl extends M.Control {
     /**
      * Selected API-IDEE feature
      * @private
-     * @type {M.feature}
+     * @type {IDEE.feature}
      */
     this.feature = undefined;
 
@@ -75,7 +76,7 @@ export default class IncicartoControl extends M.Control {
      * Feature that is drawn on selection layer around this.feature
      * to emphasize it.
      * @private
-     * @type {M.feature}
+     * @type {IDEE.feature}
      */
     this.emphasis = undefined;
 
@@ -147,7 +148,7 @@ export default class IncicartoControl extends M.Control {
      * @private
      * @type {*}
      */
-    this.selectionLayer = new M.layer.Vector({
+    this.selectionLayer = new IDEE.layer.Vector({
       extract: false,
       name: 'selectLayer',
       source: this.getImpl().newVectorSource(true),
@@ -198,7 +199,7 @@ export default class IncicartoControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
@@ -230,7 +231,7 @@ export default class IncicartoControl extends M.Control {
         optionsTemplate.vars.products = this.products;
       }
 
-      const html = M.template.compileSync(template, optionsTemplate);
+      const html = IDEE.template.compileSync(template, optionsTemplate);
       this.html = html;
       this.renderLayers();
       success(html);
@@ -239,7 +240,7 @@ export default class IncicartoControl extends M.Control {
       this.createUploadingTemplate();
       this.map.addLayers(this.selectionLayer);
       if (this.isDraggable_) {
-        M.utils.draggabillyPlugin(this.getPanel(), '#m-incicarto-title');
+        IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-incicarto-title');
       }
     });
   }
@@ -263,14 +264,14 @@ export default class IncicartoControl extends M.Control {
     filtered.forEach((layer) => {
       if (!(layer.type.toLowerCase() === 'kml' && layer.name.toLowerCase() === 'attributions')) {
         const newLayer = layer;
-        const geometry = !M.utils.isNullOrEmpty(layer.geometry)
+        const geometry = !IDEE.utils.isNullOrEmpty(layer.geometry)
           ? layer.geometry
           : layer.getGeometryType();
-        if (!M.utils.isNullOrEmpty(geometry) && geometry.toLowerCase().indexOf('point') > -1) {
+        if (!IDEE.utils.isNullOrEmpty(geometry) && geometry.toLowerCase().indexOf('point') > -1) {
           newLayer.point = true;
-        } else if (!M.utils.isNullOrEmpty(geometry) && geometry.toLowerCase().indexOf('polygon') > -1) {
+        } else if (!IDEE.utils.isNullOrEmpty(geometry) && geometry.toLowerCase().indexOf('polygon') > -1) {
           newLayer.polygon = true;
-        } else if (!M.utils.isNullOrEmpty(geometry) && geometry.toLowerCase().indexOf('line') > -1) {
+        } else if (!IDEE.utils.isNullOrEmpty(geometry) && geometry.toLowerCase().indexOf('line') > -1) {
           newLayer.line = true;
         }
 
@@ -285,7 +286,7 @@ export default class IncicartoControl extends M.Control {
       }
     });
 
-    const html = M.template.compileSync(layersTemplate, {
+    const html = IDEE.template.compileSync(layersTemplate, {
       jsonp: true,
       vars: {
         layers,
@@ -355,7 +356,7 @@ export default class IncicartoControl extends M.Control {
    * @api
    */
   createDrawingTemplate() {
-    this.drawingTools = M.template.compileSync(drawingTemplate, {
+    this.drawingTools = IDEE.template.compileSync(drawingTemplate, {
       jsonp: true,
       vars: {
         translations: {
@@ -455,7 +456,7 @@ export default class IncicartoControl extends M.Control {
    */
   createUploadingTemplate() {
     const accept = '.kml, .zip, .gpx, .geojson, .gml';
-    this.uploadingTemplate = M.template.compileSync(uploadingTemplate, {
+    this.uploadingTemplate = IDEE.template.compileSync(uploadingTemplate, {
       jsonp: true,
       vars: {
         accept,
@@ -521,8 +522,8 @@ export default class IncicartoControl extends M.Control {
       optionsModal.vars.products = this.products;
     }
 
-    const dialog = M.template.compileSync(modaladvance, optionsModal);
-    M.dialog.info(dialog, 'Enviar notificación de incidencia en cartografía');
+    const dialog = IDEE.template.compileSync(modaladvance, optionsModal);
+    IDEE.dialog.info(dialog, 'Enviar notificación de incidencia en cartografía');
 
     setTimeout(() => {
       document.querySelector('#m-plugin-incicarto-send-email').addEventListener('click', (e) => {
@@ -586,8 +587,8 @@ export default class IncicartoControl extends M.Control {
       optionsModal.vars.themes = this.themes;
     }
 
-    const dialog = M.template.compileSync(modalsimple, optionsModal);
-    M.dialog.info(dialog, 'Enviar notificación de incidencia en cartografía');
+    const dialog = IDEE.template.compileSync(modalsimple, optionsModal);
+    IDEE.dialog.info(dialog, 'Enviar notificación de incidencia en cartografía');
     setTimeout(() => {
       document.querySelector('#m-plugin-incicarto-simple-send-email').addEventListener('click', (e) => {
         const mailtoComposed = this.composeMailtoSendByPasarela((event) => {
@@ -733,7 +734,7 @@ export default class IncicartoControl extends M.Control {
     };
 
     const emailForm = document.querySelector('#m-plugin-incicarto-email-form');
-    emailForm.action = `${M.config.API_IDEE_URL}api/email`;
+    emailForm.action = `${IDEE.config.API_IDEE_URL}api/email`;
     document.querySelector('#m-plugin-incicarto-email-subject').value = emailSubject;
     document.querySelector('#m-plugin-incicarto-email-mailto').value = destinatary;
     document.querySelector('#m-plugin-incicarto-email-sendergeometry').value = JSON.stringify(this.geometryIncidenceJSON);
@@ -759,7 +760,7 @@ export default class IncicartoControl extends M.Control {
     const errDescription = document.querySelector('#err-description').value;
 
     let url = window.location.href;
-    let apiUrl = M.config.API_IDEE_URL;
+    let apiUrl = IDEE.config.API_IDEE_URL;
     let onlyURL = false;
 
     const { x, y } = this.map_.getCenter();
@@ -779,7 +780,7 @@ export default class IncicartoControl extends M.Control {
     }
 
     // API
-    // M.config.MAP_VIWER_LAYERS
+    // IDEE.config.MAP_VIWER_LAYERS
     // URL de la API - centro, zoom, srs, todas las capas, plugin y controles
     if (HOSTNAME.includes(window.location.hostname) && window.location.pathname
       .includes(PATH_NAME)) {
@@ -947,7 +948,7 @@ export default class IncicartoControl extends M.Control {
    * @function
    */
   getGeoJSON(layer) {
-    const source = !M.utils.isUndefined(layer.source)
+    const source = !IDEE.utils.isUndefined(layer.source)
       ? layer.serialize()
       : encodeURIComponent(layer.url);
     const style = (layer.getStyle()) ? layer.getStyle().serialize() : '';
@@ -960,10 +961,10 @@ export default class IncicartoControl extends M.Control {
   getPlugins() {
     return this.map_.getPlugins().map((plugin) => {
       let newCurrent = '';
-      // if (M.utils.isFunction(plugin.getAPIRestBase64)) {
+      // if (IDEE.utils.isFunction(plugin.getAPIRestBase64)) {
       //   newCurrent = plugin.getAPIRestBase64();
       // } else
-      if (M.utils.isFunction(plugin.getAPIRest)) {
+      if (IDEE.utils.isFunction(plugin.getAPIRest)) {
         newCurrent = plugin.getAPIRest();
       }
       return newCurrent;
@@ -1013,7 +1014,7 @@ export default class IncicartoControl extends M.Control {
     }
     const backgroundlayers = this.map_.getControls().find((c) => c.name === 'backgroundlayers');
     let backgroundlayersAPI;
-    if (!M.utils.isNullOrEmpty(backgroundlayers)) {
+    if (!IDEE.utils.isNullOrEmpty(backgroundlayers)) {
       const { visible, activeLayer } = backgroundlayers;
       if (typeof visible === 'boolean' && typeof activeLayer === 'number') {
         backgroundlayersAPI = `backgroundlayers*${activeLayer}*${visible}`;
@@ -1083,7 +1084,7 @@ export default class IncicartoControl extends M.Control {
 
     try {
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', `${M.config.API_IDEE_URL}api/email`);
+      xhr.open('POST', `${IDEE.config.API_IDEE_URL}api/email`);
       xhr.onload = callback;
       const formData = new FormData(emailForm);
       xhr.send(formData);
@@ -1117,11 +1118,11 @@ export default class IncicartoControl extends M.Control {
     document.querySelector('#m-incicarto-addwfs-suggestions').style.display = 'none';
     let url = document.querySelector('div.m-dialog #m-incicarto-addwfs-search-input').value.trim();
     const auxurl = document.querySelector('div.m-dialog #m-incicarto-addwfs-search-input').value.trim();
-    if (!M.utils.isNullOrEmpty(url)) {
-      if (M.utils.isUrl(url)) {
+    if (!IDEE.utils.isNullOrEmpty(url)) {
+      if (IDEE.utils.isUrl(url)) {
         url += url.endsWith('?') ? '' : '?';
         url += 'service=WFS&request=GetCapabilities';
-        M.remote.get(url).then((response) => {
+        IDEE.remote.get(url).then((response) => {
           try {
             const services = [];
             const prenode = response.text.split('<FeatureTypeList>')[1].split('</FeatureTypeList>')[0];
@@ -1173,19 +1174,19 @@ export default class IncicartoControl extends M.Control {
             document.querySelector('div.m-dialog #m-incicarto-addwfs-search-input').value = auxurl;
             this.showResults(services, capabilities, hasCapabilities);
           } catch (err) {
-            M.dialog.error(getValue('exception.capabilities'));
+            IDEE.dialog.error(getValue('exception.capabilities'));
           }
         });
       } else {
-        M.dialog.error(getValue('exception.valid_url'));
+        IDEE.dialog.error(getValue('exception.valid_url'));
       }
     } else {
-      M.dialog.error(getValue('exception.empty'));
+      IDEE.dialog.error(getValue('exception.empty'));
     }
   }
 
   showResults(services, capabilities, hasCapabilities) {
-    const selectWFS = M.template.compileSync(selectWFSTemplate, {
+    const selectWFS = IDEE.template.compileSync(selectWFSTemplate, {
       jsonp: true,
       vars: {
         services,
@@ -1259,7 +1260,7 @@ export default class IncicartoControl extends M.Control {
 
   addNewLayer(geom) {
     const layerName = `incidencia_${new Date().getTime()}`;
-    const layer = new M.layer.Vector({ name: layerName, legend: layerName, extract: false });
+    const layer = new IDEE.layer.Vector({ name: layerName, legend: layerName, extract: false });
     layer.geometry = geom;
     layer.setZIndex(this.getMaxZIndex() + 1);
     this.map.addLayers(layer);
@@ -1299,13 +1300,13 @@ export default class IncicartoControl extends M.Control {
           }
 
           if (this.feature !== undefined) {
-            this.feature.setStyle(new M.style.Point(newPointStyle));
+            this.feature.setStyle(new IDEE.style.Point(newPointStyle));
             this.style = this.feature.getStyle();
           }
           break;
         case 'LineString':
         case 'MultiLineString':
-          const newLineStyle = new M.style.Line({
+          const newLineStyle = new IDEE.style.Line({
             stroke: {
               color: this.currentColor,
               width: this.currentThickness,
@@ -1319,7 +1320,7 @@ export default class IncicartoControl extends M.Control {
           break;
         case 'Polygon':
         case 'MultiPolygon':
-          const newPolygonStyle = new M.style.Polygon({
+          const newPolygonStyle = new IDEE.style.Polygon({
             fill: {
               color: this.currentColor,
               opacity: 0.2,
@@ -1355,7 +1356,7 @@ export default class IncicartoControl extends M.Control {
     switch (geometryType) {
       case 'Point':
       case 'MultiPoint':
-        feature.setStyle(new M.style.Point({
+        feature.setStyle(new IDEE.style.Point({
           radius: this.currentThickness,
           fill: {
             color: this.currentColor,
@@ -1368,7 +1369,7 @@ export default class IncicartoControl extends M.Control {
         break;
       case 'LineString':
       case 'MultiLineString':
-        feature.setStyle(new M.style.Line({
+        feature.setStyle(new IDEE.style.Line({
           stroke: {
             color: this.currentColor,
             width: this.currentThickness,
@@ -1378,7 +1379,7 @@ export default class IncicartoControl extends M.Control {
         break;
       case 'Polygon':
       case 'MultiPolygon':
-        feature.setStyle(new M.style.Polygon({
+        feature.setStyle(new IDEE.style.Polygon({
           fill: {
             color: this.currentColor,
             opacity: 0.2,
@@ -1413,7 +1414,7 @@ export default class IncicartoControl extends M.Control {
         this.activateModalAdvanced();
       }
     } else {
-      M.dialog.error('No hay geometrías trazadas en la incidencia');
+      IDEE.dialog.error('No hay geometrías trazadas en la incidencia');
     }
   }
 
@@ -1430,7 +1431,7 @@ export default class IncicartoControl extends M.Control {
       document.querySelector(selector).innerHTML = '';
       this.isDownloadActive = false;
     } else {
-      const html = M.template.compileSync(downloadingTemplate, {
+      const html = IDEE.template.compileSync(downloadingTemplate, {
         jsonp: true,
         vars: {
           translations: {
@@ -1576,7 +1577,7 @@ export default class IncicartoControl extends M.Control {
    * @public
    * @function
    * @api
-   * @returns {M.layer.Vector}
+   * @returns {IDEE.layer.Vector}
    */
   toGeoJSON(layer) {
     const code = this.map.getProjection().code;
@@ -1629,7 +1630,7 @@ export default class IncicartoControl extends M.Control {
         shpWrite.download(json, options);
         break;
       default:
-        M.dialog.error(getValue('exception.format_not_selected'));
+        IDEE.dialog.error(getValue('exception.format_not_selected'));
         break;
     }
 
@@ -1688,7 +1689,7 @@ export default class IncicartoControl extends M.Control {
         shpWrite.download(json, options);
         break;
       default:
-        M.dialog.error(getValue('exception.format_not_selected'));
+        IDEE.dialog.error(getValue('exception.format_not_selected'));
         break;
     }
 
@@ -1698,7 +1699,7 @@ export default class IncicartoControl extends M.Control {
       this.getCentroid4INCIGEO(geojsonLayer);
       this.activateModalSimple();
     } else {
-      M.dialog.error('No hay geometrías trazadas en la incidencia');
+      IDEE.dialog.error('No hay geometrías trazadas en la incidencia');
     }
 
     document.querySelector(selector).innerHTML = '';
@@ -1745,7 +1746,7 @@ export default class IncicartoControl extends M.Control {
         shpWrite.download(json, options);
         break;
       default:
-        M.dialog.error(getValue('exception.format_not_selected'));
+        IDEE.dialog.error(getValue('exception.format_not_selected'));
         break;
     }
 
@@ -1755,7 +1756,7 @@ export default class IncicartoControl extends M.Control {
       this.getCentroid4INCIGEO(geojsonLayer);
       this.activateModalAdvanced();
     } else {
-      M.dialog.error('No hay geometrías trazadas en la incidencia');
+      IDEE.dialog.error('No hay geometrías trazadas en la incidencia');
     }
 
     document.querySelector(selector).innerHTML = '';
@@ -1788,7 +1789,7 @@ export default class IncicartoControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {
@@ -1807,9 +1808,9 @@ export default class IncicartoControl extends M.Control {
    */
   changeFile(evt, file) {
     this.file_ = file;
-    if (!M.utils.isNullOrEmpty(file)) {
+    if (!IDEE.utils.isNullOrEmpty(file)) {
       if (file.size > 20971520) {
-        M.dialog.info(getValue('exception.size'));
+        IDEE.dialog.info(getValue('exception.size'));
         this.file_ = null;
       } else {
         this.loadLayer();
@@ -1819,7 +1820,7 @@ export default class IncicartoControl extends M.Control {
 
   loadLayerCenterFeature(features, fileExt) {
     if (features.length === 0) {
-      M.dialog.info(getValue('exception.no_geoms'));
+      IDEE.dialog.info(getValue('exception.no_geoms'));
     } else {
       this.getImpl().centerFeatures(features, fileExt === 'gpx');
     }
@@ -1856,14 +1857,14 @@ export default class IncicartoControl extends M.Control {
           } else if (fileExt === 'gml') {
             features = this.getImpl().loadGMLLayer(fileReader.result, fileName);
           } else {
-            M.dialog.error(getValue('exception.load'));
+            IDEE.dialog.error(getValue('exception.load'));
             return;
           }
 
           this.loadLayerCenterFeature(features, fileExt);
         }
       } catch (error) {
-        M.dialog.error(getValue('exception.load_correct'));
+        IDEE.dialog.error(getValue('exception.load_correct'));
       }
     });
 
@@ -1872,7 +1873,7 @@ export default class IncicartoControl extends M.Control {
     } else if (fileExt === 'kml' || fileExt === 'gpx' || fileExt === 'geojson' || fileExt === 'gml') {
       fileReader.readAsText(this.file_);
     } else {
-      M.dialog.error(getValue('exception.extension'));
+      IDEE.dialog.error(getValue('exception.extension'));
     }
   }
 
@@ -2030,14 +2031,14 @@ export default class IncicartoControl extends M.Control {
     const evt = (evtParameter || window.event);
     const layerName = evt.target.getAttribute('data-layer-name');
     let render = false;
-    if (!M.utils.isNullOrEmpty(layerName)) {
+    if (!IDEE.utils.isNullOrEmpty(layerName)) {
       evt.stopPropagation();
       const layerURL = evt.target.getAttribute('data-layer-url');
       const isEmptyURL = layerURL === '';
       const layer = this.map.getLayers()
         .find((l) => l.name === layerName && (l.url === layerURL || isEmptyURL));
       if (evt.target.classList.contains('m-incicarto-layer-legend-change')) {
-        const changeName = M.template.compileSync(changeNameTemplate, {
+        const changeName = IDEE.template.compileSync(changeNameTemplate, {
           jsonp: true,
           parseToHtml: false,
           vars: {
@@ -2048,7 +2049,7 @@ export default class IncicartoControl extends M.Control {
           },
         });
 
-        M.dialog.info(changeName, getValue('change_name'));
+        IDEE.dialog.info(changeName, getValue('change_name'));
         setTimeout(() => {
           const selector = 'div.m-api_idee-container div.m-dialog #m-layer-change-name button';
           document.querySelector(selector).addEventListener('click', this.changeLayerLegend.bind(this, layer));
@@ -2077,7 +2078,7 @@ export default class IncicartoControl extends M.Control {
           const extent = this.getImpl().getGeoJSONExtent(layer);
           this.map.setBbox(extent);
         } else {
-          M.dialog.info(getValue('exception.not_extent'), getValue('info'));
+          IDEE.dialog.info(getValue('exception.not_extent'), getValue('info'));
         }
       } else if (evt.target.classList.contains('m-incicarto-layer-reload')) {
         this.getImpl().reloadFeaturesUpdatables(layer.name, layer.url);
@@ -2195,7 +2196,7 @@ export default class IncicartoControl extends M.Control {
         const selector = `#m-incicarto-list li[name="${layer.name}"] div.m-incicarto-layer-actions .m-incicarto-layer-edit`;
         document.querySelector(selector).classList.add('active-tool');
       } else {
-        M.dialog.error(getValue('exception.no_features'), getValue('warning'));
+        IDEE.dialog.error(getValue('exception.no_features'), getValue('warning'));
       }
     } else {
       this.isEditionActive = false;
@@ -2257,7 +2258,7 @@ export default class IncicartoControl extends M.Control {
   onDraw(event) {
     this.feature = event.feature;
     this.feature.setId(`${this.drawLayer.name}.${new Date().getTime()}`);
-    this.feature = M.impl.Feature.feature2Facade(this.feature);
+    this.feature = IDEE.impl.Feature.feature2Facade(this.feature);
     this.geometry = this.feature.getGeometry().type;
     this.setFeatureStyle(this.feature, this.geometry);
     document.querySelector('.m-incicarto #drawingtools button').style.display = 'block';
@@ -2283,7 +2284,7 @@ export default class IncicartoControl extends M.Control {
     if (this.feature) {
       if ((this.geometry === 'Point' || this.geometry === 'MultiPoint')) {
         this.emphasis = this.getImpl().getApiIdeeFeatureClone();
-        this.emphasis.setStyle(new M.style.Point({
+        this.emphasis.setStyle(new IDEE.style.Point({
           radius: 20,
           stroke: {
             color: '#FF0000',
@@ -2293,8 +2294,8 @@ export default class IncicartoControl extends M.Control {
       } else {
         // eslint-disable-next-line no-underscore-dangle
         const extent = this.getImpl().getFeatureExtent();
-        this.emphasis = M.impl.Feature.feature2Facade(this.getImpl().newPolygonFeature(extent));
-        this.emphasis.setStyle(new M.style.Line({
+        this.emphasis = IDEE.impl.Feature.feature2Facade(this.getImpl().newPolygonFeature(extent));
+        this.emphasis.setStyle(new IDEE.style.Line({
           stroke: {
             color: '#FF0000',
             width: 2,

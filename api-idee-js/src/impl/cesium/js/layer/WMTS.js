@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 /**
- * @module M/impl/layer/WMTS
+ * @module IDEE/impl/layer/WMTS
  */
 import {
   isNullOrEmpty,
@@ -9,7 +9,7 @@ import {
   extend,
   addParameters,
   isArray,
-} from 'M/util/Utils';
+} from 'IDEE/util/Utils';
 import {
   Cartesian3,
   Cartographic,
@@ -19,9 +19,9 @@ import {
   GeographicTilingScheme,
   Math as CesiumMath,
 } from 'cesium';
-import { get as getRemote } from 'M/util/Remote';
-import { getValue } from 'M/i18n/language';
-import * as EventType from 'M/event/eventtype';
+import { get as getRemote } from 'IDEE/util/Remote';
+import { getValue } from 'IDEE/i18n/language';
+import * as EventType from 'IDEE/event/eventtype';
 import CesiumFormatWMTSCapabilities from '../format/CesiumWMTSCapabilities';
 import LayerBase from './Layer';
 import getLayerExtent from '../util/wmtscapabilities';
@@ -38,7 +38,7 @@ import ImplUtils from '../util/Utils';
  * @property {Object} options Opciones personalizadas para esta capa.
  *
  * @api
- * @extends {M.impl.layer.Layer}
+ * @extends {IDEE.impl.layer.Layer}
  */
 class WMTS extends LayerBase {
   /**
@@ -46,7 +46,7 @@ class WMTS extends LayerBase {
    * con parámetros especificados por el usuario.
    *
    * @constructor
-   * @implements {M.impl.Layer}
+   * @implements {IDEE.impl.Layer}
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
    * - maxZoom: Zoom máximo aplicable a la capa.
    * - minZoom: Zoom mínimo aplicable a la capa.
@@ -135,7 +135,7 @@ class WMTS extends LayerBase {
    *
    * @public
    * @function
-   * @param {M.impl.Map} map Mapa de la implementación.
+   * @param {IDEE.impl.Map} map Mapa de la implementación.
    * @api stable
    */
   addTo(map) {
@@ -222,7 +222,7 @@ class WMTS extends LayerBase {
    * Este método agrega esta capa como capa única.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
-   * @param {M.layer.WMTS.impl.capabilitiesOptions} capabilitiesOptions Opciones metadatos.
+   * @param {IDEE.layer.WMTS.impl.capabilitiesOptions} capabilitiesOptions Opciones metadatos.
    * @function
    * @api stable
    */

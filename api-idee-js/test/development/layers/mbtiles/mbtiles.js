@@ -1,5 +1,5 @@
 /* eslint-disable camelcase,import/prefer-default-export */
-import MBTiles from 'M/layer/MBTiles';
+import MBTiles from 'IDEE/layer/MBTiles';
 import { XYZ } from 'ol/source';
 import { get as getProj } from 'ol/proj';
 import TileGrid from 'ol/tilegrid/TileGrid';

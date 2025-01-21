@@ -1,25 +1,26 @@
 /**
- * @module M/control/InformationControl
+ * @module IDEE/control/InformationControl
  */
 
 import InformationImplControl from 'impl/informationcontrol';
 import template from '../../templates/information';
 import { getValue } from './i18n/language';
 
-export default class InformationControl extends M.Control {
+export default class InformationControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor(format, featureCount, buffer, tooltip, opened, order) {
-    if (M.utils.isUndefined(InformationImplControl) || (M.utils.isObject(InformationImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(InformationImplControl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(InformationImplControl)
+      || (IDEE.utils.isObject(InformationImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(InformationImplControl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
     const impl = new InformationImplControl(format, featureCount, buffer, opened);
     super(impl, 'Information');
@@ -32,12 +33,12 @@ export default class InformationControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api
    */
   createView(map) {
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           translations: {
             tooltip: this.tooltip || getValue('tooltip'),
@@ -118,7 +119,7 @@ export default class InformationControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {

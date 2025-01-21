@@ -1,5 +1,5 @@
 /**
- * @module M/control/ShareMapControl
+ * @module IDEE/control/ShareMapControl
  */
 import template from '../../templates/sharemap';
 import modal from '../../templates/modal';
@@ -51,14 +51,14 @@ const copyURL = (input) => {
  * ShareMap api-idee control.
  * This control allows current map state sharing via URL.
  */
-export default class ShareMapControl extends M.Control {
+export default class ShareMapControl extends IDEE.Control {
   /**
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(options) {
-    const impl = new M.impl.Control();
+    const impl = new IDEE.impl.Control();
     super(impl, 'sharemap');
     /**
      * Base url of the shared map
@@ -226,13 +226,13 @@ export default class ShareMapControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api
    */
   createView(map) {
     this.map_ = map;
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template);
+      const html = IDEE.template.compileSync(template);
       const button = html.querySelector('button');
       button.setAttribute('tabindex', this.order);
       button.setAttribute('aria-label', 'Plugin Sharemap');
@@ -272,7 +272,7 @@ export default class ShareMapControl extends M.Control {
    * @api
    */
   activateModal() {
-    const dialog = M.template.compileSync(modal, {
+    const dialog = IDEE.template.compileSync(modal, {
       vars: {
         title: this.title_,
         text: this.text_,
@@ -378,25 +378,25 @@ export default class ShareMapControl extends M.Control {
         }
 
         shareURL = layers.length > 0 ? shareURL.concat(`&layers=${layers}`) : shareURL.concat('');
-        if (!M.utils.isNullOrEmpty(M.config.MAP_VIEWER_LAYERS)) {
+        if (!IDEE.utils.isNullOrEmpty(IDEE.config.MAP_VIEWER_LAYERS)) {
           if (layers.length > 0) {
             let includes = '';
-            M.config.MAP_VIEWER_LAYERS.forEach((elm) => {
+            IDEE.config.MAP_VIEWER_LAYERS.forEach((elm) => {
               if (layers.indexOf(elm) === -1) {
                 includes = includes.concat(`,${elm}`);
               }
             });
-            if (M.utils.isNullOrEmpty(includes)) {
-              shareURL = `${shareURL},${M.config.MAP_VIEWER_LAYERS}`;
+            if (IDEE.utils.isNullOrEmpty(includes)) {
+              shareURL = `${shareURL},${IDEE.config.MAP_VIEWER_LAYERS}`;
             }
           } else {
-            shareURL = `${shareURL}&layers=${M.config.MAP_VIEWER_LAYERS}`;
+            shareURL = `${shareURL}&layers=${IDEE.config.MAP_VIEWER_LAYERS}`;
           }
         }
         input.value = shareURL;
       }
       shareURL = encodeURI(shareURL);
-      M.remote.get(`http://tinyurl.com/api-create.php?url=${shareURL}`).then((response) => {
+      IDEE.remote.get(`http://tinyurl.com/api-create.php?url=${shareURL}`).then((response) => {
         facebook.href = `http://www.facebook.com/sharer.php?u=${response.text}`;
         twitter.href = `https://twitter.com/intent/tweet?url=${response.text}`;
         pinterest.href = `https://www.pinterest.es/pin/create/button/?url=${response.text}`;
@@ -452,19 +452,19 @@ export default class ShareMapControl extends M.Control {
         }
 
         shareURL = layers.length > 0 ? shareURL.concat(`&layers=${layers}`) : shareURL.concat('');
-        if (!M.utils.isNullOrEmpty(M.config.MAP_VIEWER_LAYERS)) {
+        if (!IDEE.utils.isNullOrEmpty(IDEE.config.MAP_VIEWER_LAYERS)) {
           if (layers.length > 0) {
             let includes = '';
-            M.config.MAP_VIEWER_LAYERS.forEach((elm) => {
+            IDEE.config.MAP_VIEWER_LAYERS.forEach((elm) => {
               if (layers.indexOf(elm) === -1) {
                 includes = includes.concat(`,${elm}`);
               }
             });
-            if (M.utils.isNullOrEmpty(includes)) {
-              shareURL = `${shareURL},${M.config.MAP_VIEWER_LAYERS}`;
+            if (IDEE.utils.isNullOrEmpty(includes)) {
+              shareURL = `${shareURL},${IDEE.config.MAP_VIEWER_LAYERS}`;
             }
           } else {
-            shareURL = `${shareURL}&layers=${M.config.MAP_VIEWER_LAYERS}`;
+            shareURL = `${shareURL}&layers=${IDEE.config.MAP_VIEWER_LAYERS}`;
           }
         }
         input.value = shareURL;
@@ -484,7 +484,7 @@ export default class ShareMapControl extends M.Control {
     const url = this.baseUrl_.match(/(.*[A-Za-z-0-9])/)[0];
     const controls = this.map_.getControls().map((control) => control.name);
     return new Promise((resolve) => {
-      M.remote.get(`${url}/api/actions/controls`).then((response) => {
+      IDEE.remote.get(`${url}/api/actions/controls`).then((response) => {
         const allowedControls = JSON.parse(response.text);
         const resolvedControls = controls.filter((control) => allowedControls.includes(control))
           .filter((c) => c !== 'backgroundlayers');
@@ -502,7 +502,7 @@ export default class ShareMapControl extends M.Control {
         }
         const backgroundlayers = this.map_.getControls().find((c) => c.name === 'backgroundlayers');
         let backgroundlayersAPI;
-        if (!M.utils.isNullOrEmpty(backgroundlayers)) {
+        if (!IDEE.utils.isNullOrEmpty(backgroundlayers)) {
           const { visible, activeLayer } = backgroundlayers;
           if (typeof visible === 'boolean' && typeof activeLayer === 'number') {
             backgroundlayersAPI = `backgroundlayers*${activeLayer}*${visible}`;
@@ -620,7 +620,7 @@ export default class ShareMapControl extends M.Control {
    * @function
    */
   getGeoJSON(layer) {
-    const source = !M.utils.isUndefined(layer.source)
+    const source = !IDEE.utils.isUndefined(layer.source)
       ? layer.serialize()
       : encodeURIComponent(layer.url);
     const style = (layer.getStyle()) ? layer.getStyle().serialize() : '';
@@ -775,7 +775,7 @@ export default class ShareMapControl extends M.Control {
   //     visibility = true,
   //   } = layer;
 
-  //   return `Generic*${M.utils.encodeBase64(vendorOptions)}*${name}*${legend}
+  //   return `Generic*${IDEE.utils.encodeBase64(vendorOptions)}*${name}*${legend}
   // *${transparent}*${minZoom}*${maxZoom}*${displayInLayerSwitcher}*${visibility}`;
   // }
 
@@ -785,7 +785,7 @@ export default class ShareMapControl extends M.Control {
   getPlugins() {
     return this.map_.getPlugins().map((plugin) => {
       let newCurrent = '';
-      if (M.utils.isFunction(plugin.getAPIRest)) {
+      if (IDEE.utils.isFunction(plugin.getAPIRest)) {
         newCurrent = plugin.getAPIRest();
       }
       return newCurrent;
@@ -797,7 +797,7 @@ export default class ShareMapControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

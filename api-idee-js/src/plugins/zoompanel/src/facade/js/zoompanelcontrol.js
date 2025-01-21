@@ -1,24 +1,24 @@
 /**
- * @module M/control/ZoomPanelControl
+ * @module IDEE/control/ZoomPanelControl
  */
 import ZoomPanelImplControl from 'impl/zoompanelcontrol';
 import template from 'templates/zoompanel';
 import { getValue } from './i18n/language';
 
-export default class ZoomPanelControl extends M.Control {
+export default class ZoomPanelControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor(options) {
-    if (M.utils.isUndefined(ZoomPanelImplControl) || (M.utils.isObject(ZoomPanelImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(ZoomPanelImplControl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(ZoomPanelImplControl) || (IDEE.utils.isObject(ZoomPanelImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(ZoomPanelImplControl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
 
     const impl = new ZoomPanelImplControl(options.projection);
@@ -44,7 +44,7 @@ export default class ZoomPanelControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api
    */
   createView(map) {
@@ -53,7 +53,7 @@ export default class ZoomPanelControl extends M.Control {
     this.facadeMap_ = map;
     this.addOnLoadEvents();
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           activeExtent: this.activeExtent_,
           translations: {
@@ -173,14 +173,14 @@ export default class ZoomPanelControl extends M.Control {
    * @api
    */
   addOnLoadEvents() {
-    this.on(M.evt.ADDED_TO_MAP, () => {
+    this.on(IDEE.evt.ADDED_TO_MAP, () => {
       this.load_ = true;
       if (this.completed_ && this.load_) {
         this.registerViewEvents_();
       }
     });
 
-    this.facadeMap_.on(M.evt.COMPLETED, () => {
+    this.facadeMap_.on(IDEE.evt.COMPLETED, () => {
       this.completed_ = true;
       if (this.completed_ && this.load_) {
         this.registerViewEvents_();
@@ -259,7 +259,7 @@ export default class ZoomPanelControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {

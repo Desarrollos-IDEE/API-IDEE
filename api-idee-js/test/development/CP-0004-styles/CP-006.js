@@ -1,9 +1,9 @@
 /* eslint-disable no-console,no-underscore-dangle,no-loop-func,no-proto,max-len,no-param-reassign,spaced-comment,no-plusplus,no-unused-vars,camelcase */
-import { map as Mmap } from 'M/api-idee';
-import Proportional from 'M/style/Proportional';
-import WFS from 'M/layer/WFS';
-import Generic from 'M/style/Generic';
-import Point from 'M/style/Point';
+import { map as Mmap } from 'IDEE/api-idee';
+import Proportional from 'IDEE/style/Proportional';
+import WFS from 'IDEE/layer/WFS';
+import Generic from 'IDEE/style/Generic';
+import Point from 'IDEE/style/Point';
 import Centroid from '../../../src/impl/ol/js/style/Centroid';
 
 

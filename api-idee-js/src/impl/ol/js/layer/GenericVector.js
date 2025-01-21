@@ -1,14 +1,14 @@
 /**
- * @module M/impl/layer/GenericVector
+ * @module IDEE/impl/layer/GenericVector
  */
-import * as LayerType from 'M/layer/Type';
-import * as EventType from 'M/event/eventtype';
-import { compileSync as compileTemplate } from 'M/util/Template';
-import Popup from 'M/Popup';
-import { getValue } from 'M/i18n/language';
+import * as LayerType from 'IDEE/layer/Type';
+import * as EventType from 'IDEE/event/eventtype';
+import { compileSync as compileTemplate } from 'IDEE/util/Template';
+import Popup from 'IDEE/Popup';
+import { getValue } from 'IDEE/i18n/language';
 import {
   isUndefined, isNull, isNullOrEmpty, getResolutionFromScale,
-} from 'M/util/Utils';
+} from 'IDEE/util/Utils';
 import geojsonPopupTemplate from 'templates/geojson_popup';
 import Vector from './Vector';
 import ImplMap from '../Map';
@@ -19,7 +19,7 @@ import Feature from '../feature/Feature';
  * GenericVector permite añadir cualquier tipo de capa vectorial definida con la librería base.
  *
  * @api
- * @extends {M.impl.layer.Vector}
+ * @extends {IDEE.impl.layer.Vector}
  */
 class GenericVector extends Vector {
   /**
@@ -89,7 +89,7 @@ class GenericVector extends Vector {
    *
    * @public
    * @function
-   * @param {M.impl.Map} map Mapa de la implementación.
+   * @param {IDEE.impl.Map} map Mapa de la implementación.
    * @api stable
    */
   addTo(map, addLayer = true) {
@@ -443,7 +443,7 @@ class GenericVector extends Vector {
   /**
    * Este método comprueba si son iguales dos capas.
    * @function
-   * @param {M.layer.WFS} obj - Objeto a comparar.
+   * @param {IDEE.layer.WFS} obj - Objeto a comparar.
    * @returns {boolean} Son iguales o no.
    * @api stable
    */

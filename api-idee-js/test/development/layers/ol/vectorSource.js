@@ -6,7 +6,7 @@ import VectorLayer from 'ol/layer/Vector';
 import WFS from 'ol/format/WFS';
 import GeoJSON from 'ol/format/GeoJSON';
 import { bbox } from 'ol/loadingstrategy';
-import Generic from 'M/style/Generic';// eslint-disable-line no-unused-vars
+import Generic from 'IDEE/style/Generic';// eslint-disable-line no-unused-vars
 
 // import { bbox as bboxStrategy } from 'ol/loadingstrategy.js';
 

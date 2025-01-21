@@ -1,26 +1,27 @@
 /**
- * @module M/control/ContactLinkControl
+ * @module IDEE/control/ContactLinkControl
  */
 
 import ContactLinkImplControl from 'impl/contactlinkcontrol';
 import template from 'templates/contactlink';
 import { getValue } from './i18n/language';
 
-export default class ContactLinkControl extends M.Control {
+export default class ContactLinkControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(values) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(ContactLinkImplControl) || (M.utils.isObject(ContactLinkImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(ContactLinkImplControl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(ContactLinkImplControl)
+      || (IDEE.utils.isObject(ContactLinkImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(ContactLinkImplControl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
     // 2. implementation of this control
     const impl = new ContactLinkImplControl();
@@ -115,23 +116,23 @@ export default class ContactLinkControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
-    if (!M.template.compileSync) { // JGL: retrocompatibilidad API IDEE
-      M.template.compileSync = (string, options) => {
+    if (!IDEE.template.compileSync) { // JGL: retrocompatibilidad API IDEE
+      IDEE.template.compileSync = (string, options) => {
         let templateCompiled;
         let templateVars = {};
         let parseToHtml;
-        if (!M.utils.isUndefined(options)) {
-          templateVars = M.utils.extends(templateVars, options.vars);
+        if (!IDEE.utils.isUndefined(options)) {
+          templateVars = IDEE.utils.extends(templateVars, options.vars);
           parseToHtml = options.parseToHtml;
         }
         const templateFn = Handlebars.compile(string);
         const htmlText = templateFn(templateVars);
         if (parseToHtml !== false) {
-          templateCompiled = M.utils.stringToHtml(htmlText);
+          templateCompiled = IDEE.utils.stringToHtml(htmlText);
         } else {
           templateCompiled = htmlText;
         }
@@ -140,7 +141,7 @@ export default class ContactLinkControl extends M.Control {
     }
 
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           urls: {
             cnig: this.linksDescargascnig,
@@ -232,7 +233,7 @@ export default class ContactLinkControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

@@ -1,5 +1,5 @@
 /**
- * @module M/control/MirrorpanelControl
+ * @module IDEE/control/MirrorpanelControl
  */
 import MirrorpanelImplControl from 'impl/mirrorpanel';
 import template from 'templates/mirrorpanel';
@@ -8,21 +8,22 @@ import dicAccesibilityButtonES from './i18n/accessibility_es';
 import dicAccesibilityButtonEN from './i18n/accessibility_en';
 import { getNameString } from './utils';
 
-export default class MirrorpanelControl extends M.Control {
+export default class MirrorpanelControl extends IDEE.Control {
   /**
   * @classdesc
   * Main constructor of the class. Creates a PluginControl
   * control
   *
   * @constructor
-  * @extends {M.Control}
+  * @extends {IDEE.Control}
   * @api stable
   */
   constructor(values, controlsLayers, map, _, comparatorsControls) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(MirrorpanelImplControl) || (M.utils.isObject(MirrorpanelImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(MirrorpanelImplControl)))) {
-      M.exception(getValue('exception'));
+    if (IDEE.utils.isUndefined(MirrorpanelImplControl)
+      || (IDEE.utils.isObject(MirrorpanelImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(MirrorpanelImplControl)))) {
+      IDEE.exception(getValue('exception'));
     }
 
     // 2. implementation of this control
@@ -111,9 +112,9 @@ export default class MirrorpanelControl extends M.Control {
     /**
     * Defining cursor style
     */
-    this.styleCursor = new M.style.Point({
+    this.styleCursor = new IDEE.style.Point({
       icon: {
-        form: M.style.form.CIRCLE,
+        form: IDEE.style.form.CIRCLE,
         fontsize: 0.5,
         radius: 5,
         rotation: 0,
@@ -138,7 +139,7 @@ export default class MirrorpanelControl extends M.Control {
     this.lyrSelectorIds = ['mapLASelect', 'mapLBSelect', 'mapLCSelect', 'mapLDSelect'];
     this.maps = ['A', 'B', 'C', 'D'];
 
-    this.dicAccesibilityButton = (M.language.getLang() === 'es') ? dicAccesibilityButtonES : dicAccesibilityButtonEN;
+    this.dicAccesibilityButton = (IDEE.language.getLang() === 'es') ? dicAccesibilityButtonES : dicAccesibilityButtonEN;
 
     /**
      * Enabled key functions
@@ -162,13 +163,13 @@ export default class MirrorpanelControl extends M.Control {
   active(html) {
     // Si es false no existe el botón, se devuelve error
     if (!this.modeVizTypes.includes(this.defaultCompareViz)) {
-      M.toast.error(`Error: ${getValue('exception.mirrorDefaultCompareViz')}`);
+      IDEE.toast.error(`Error: ${getValue('exception.mirrorDefaultCompareViz')}`);
       this.defaultCompareViz = this.modeVizTypes[0];
     }
 
     this.modeVizTypes.forEach((n) => {
       if (![0, 1, 2, 3, 4, 5, 6, 7, 8, 9].includes(n)) {
-        M.toast.error(`Error: ${getValue('exception.mirrorModeVizTypes')} - ${n}`);
+        IDEE.toast.error(`Error: ${getValue('exception.mirrorModeVizTypes')} - ${n}`);
       }
     });
 
@@ -193,7 +194,7 @@ export default class MirrorpanelControl extends M.Control {
       },
     };
 
-    this.template = M.template.compileSync(template, options);
+    this.template = IDEE.template.compileSync(template, options);
 
     html.querySelector('#m-comparators-contents').appendChild(this.template);
 
@@ -355,7 +356,7 @@ export default class MirrorpanelControl extends M.Control {
   }
 
   changeViewPluginsGrid(change) {
-    M.config.MOBILE_WIDTH = (change) ? '2000' : '768';
+    IDEE.config.MOBILE_WIDTH = (change) ? '2000' : '768';
     let pluginsControls = [];
     Object.entries(this.mapL).forEach(([_, e]) => {
       pluginsControls = (e) ? [...pluginsControls, ...e.getControls(), ...e.getPlugins()]
@@ -459,7 +460,7 @@ export default class MirrorpanelControl extends M.Control {
      * Create mirror map object synchro with the main map
      */
   createMapObjects(mapLyr) {
-    this.mapL[mapLyr] = M.map({
+    this.mapL[mapLyr] = IDEE.map({
       container: `mapjs${mapLyr}`,
       center: this.map_.getCenter(),
       projection: `${this.map_.getProjection().code}*${this.map_.getProjection().units}`,
@@ -511,9 +512,9 @@ export default class MirrorpanelControl extends M.Control {
       this.mapL[mapLyr].addControls(this.enabledControlsPlugins[k][p]);
     } else {
       try {
-        this.mapL[mapLyr].addPlugin(new M.plugin[p](this.enabledControlsPlugins[k][p]));
+        this.mapL[mapLyr].addPlugin(new IDEE.plugin[p](this.enabledControlsPlugins[k][p]));
       } catch (error) {
-        M.toast.error('Error: enabledControlsPlugins');
+        IDEE.toast.error('Error: enabledControlsPlugins');
       }
     }
   }
@@ -523,11 +524,11 @@ export default class MirrorpanelControl extends M.Control {
      */
   addLayerCursor(mapLyr) {
     // Cursor Layer
-    this.lyrCursor[mapLyr] = new M.layer.Vector({
+    this.lyrCursor[mapLyr] = new IDEE.layer.Vector({
       name: `Coordenadas centro ${mapLyr}`,
     }, { displayInLayerSwitcher: false });
 
-    this.featureLyrCursor[mapLyr] = new M.Feature(`Center${mapLyr}`, {
+    this.featureLyrCursor[mapLyr] = new IDEE.Feature(`Center${mapLyr}`, {
       type: 'Feature',
       properties: {},
       geometry: {
@@ -608,8 +609,8 @@ export default class MirrorpanelControl extends M.Control {
 
   /**
    * Cambia la capa del mapa
-   * @param {M.map} map Mapa
-   * @param {M.layer} layer Capa
+   * @param {IDEE.map} map Mapa
+   * @param {IDEE.layer} layer Capa
    */
   changeLayer(target) {
     const { id, value, selectedIndex } = target;
@@ -692,7 +693,7 @@ export default class MirrorpanelControl extends M.Control {
      *
      * @public
      * @function
-     * @param {M.Control} control to compare
+     * @param {IDEE.Control} control to compare
      * @api stable
      */
   equals(control) {

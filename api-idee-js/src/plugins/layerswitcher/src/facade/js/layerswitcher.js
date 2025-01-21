@@ -1,6 +1,6 @@
 /* eslint-disable indent */
 /**
- * @module M/plugin/Layerswitcher
+ * @module IDEE/plugin/Layerswitcher
  */
 import '../assets/css/layerswitcher';
 import '../assets/css/fonts';
@@ -171,7 +171,7 @@ const PRECHARGED = {
 
   ],
 };
-export default class Layerswitcher extends M.Plugin {
+export default class Layerswitcher extends IDEE.Plugin {
   constructor(options = {}) {
     super();
     // Fachada del mapa
@@ -190,25 +190,25 @@ export default class Layerswitcher extends M.Plugin {
     this.position_ = options.position || 'TR';
 
     // Permite saber si el plugin está colapsado o no
-    this.collapsed_ = !M.utils.isUndefined(options.collapsed) ? options.collapsed : true;
+    this.collapsed_ = !IDEE.utils.isUndefined(options.collapsed) ? options.collapsed : true;
 
     // Permite que el plugin sea colapsado o no
-    this.collapsible_ = !M.utils.isUndefined(options.collapsible) ? options.collapsible : true;
+    this.collapsible_ = !IDEE.utils.isUndefined(options.collapsible) ? options.collapsible : true;
 
     // Tooltip
     this.tooltip_ = options.tooltip || getValue('tooltip');
 
     // Determina si el plugin es draggable o no
-    this.isDraggable = !M.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
+    this.isDraggable = !IDEE.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
 
     // Permite saber si se permite movimiento de capas
     this.isMoveLayers = options.isMoveLayers || false;
 
     // Determina el modo de selección de las capas
-    this.modeSelectLayers = M.utils.isUndefined(options.modeSelectLayers) ? 'eyes' : options.modeSelectLayers;
+    this.modeSelectLayers = IDEE.utils.isUndefined(options.modeSelectLayers) ? 'eyes' : options.modeSelectLayers;
 
     // Herramientas para mostrar en las capas
-    this.tools = M.utils.isUndefined(options.tools) ? ['transparency', 'legend', 'zoom', 'information', 'style', 'delete'] : options.tools;
+    this.tools = IDEE.utils.isUndefined(options.tools) ? ['transparency', 'legend', 'zoom', 'information', 'style', 'delete'] : options.tools;
 
     // Funcionalidad añadir capas
     this.addLayers = options.addLayers;
@@ -220,7 +220,8 @@ export default class Layerswitcher extends M.Plugin {
     this.precharged = options.precharged || PRECHARGED;
 
     // Mostrar tipo de capa
-    this.displayLabel = !M.utils.isUndefined(options.displayLabel) ? options.displayLabel : false;
+    this.displayLabel = !IDEE.utils.isUndefined(options.displayLabel)
+    ? options.displayLabel : false;
 
     //  Metadatos
     this.metadata_ = api.metadata;
@@ -241,10 +242,10 @@ export default class Layerswitcher extends M.Plugin {
     this.showCatalog = options.showCatalog || false;
 
     // use proxy
-    this.useProxy = M.utils.isUndefined(options.useProxy) ? true : options.useProxy;
+    this.useProxy = IDEE.utils.isUndefined(options.useProxy) ? true : options.useProxy;
 
     // Estado inicial del proxy
-    this.statusProxy = M.useproxy;
+    this.statusProxy = IDEE.useproxy;
 
     // Indicates order to the plugin
     this.order = options.order >= -1 ? options.order : null;
@@ -258,7 +259,7 @@ export default class Layerswitcher extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).layerswitcher;
+    return IDEE.language.getTranslation(lang).layerswitcher;
   }
 
   // Esta función añade el plugin al mapa
@@ -266,11 +267,11 @@ export default class Layerswitcher extends M.Plugin {
     this.map_ = map;
 
     // creamos panel
-    const panel = new M.ui.Panel('Layerswitcher', {
+    const panel = new IDEE.ui.Panel('Layerswitcher', {
       className: 'm-plugin-layerswitcher',
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       collapsedButtonClass: 'm-layerswitcher-icons-layers',
       tooltip: this.tooltip_,
       order: this.order,
@@ -302,8 +303,8 @@ export default class Layerswitcher extends M.Plugin {
     this.controls_.push(this.control_);
 
     // se dispara evento cuando se añade al mapa
-    this.control_.on(M.evt.ADDED_TO_MAP, () => {
-      this.fire(M.evt.ADDED_TO_MAP);
+    this.control_.on(IDEE.evt.ADDED_TO_MAP, () => {
+      this.fire(IDEE.evt.ADDED_TO_MAP);
     });
 
     this.panel_.addControls(this.controls_);
@@ -334,7 +335,7 @@ export default class Layerswitcher extends M.Plugin {
 
   // Devuelve la cadena API-REST del plugin en base64
   getAPIRestBase64() {
-    return `${this.name}=base64=${M.utils.encodeBase64(this.options)}`;
+    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   // Esta función devuelve los metadatos del plugin
@@ -368,9 +369,9 @@ export default class Layerswitcher extends M.Plugin {
     return {
       title: this.name,
       content: new Promise((success) => {
-        const html = M.template.compileSync(myhelp, {
+        const html = IDEE.template.compileSync(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}plugins/layerswitcher/images/`,
+            urlImages: `${IDEE.config.API_IDEE_URL}plugins/layerswitcher/images/`,
             translations: {
               help1: getValue('textHelp.help1'),
               help2: getValue('textHelp.help2'),

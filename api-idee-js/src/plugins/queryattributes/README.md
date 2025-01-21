@@ -1,7 +1,7 @@
 <p align="center">
   <img src="assets/logo-apicnig.png" height="152" />
 </p>
-<h1 align="center"><strong>API IDEE</strong> <small>🔌 M.plugin.QueryAttributes</small></h1>
+<h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.QueryAttributes</small></h1>
 
 # Descripción
 
@@ -129,10 +129,10 @@ https://componentes.cnig.es/api-idee?queryattributes=TR*true*true*atributos*true
 
 ### Ejemplo de uso API-REST en base64
 
-Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad M.utils.encodeBase64.
+Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad IDEE.utils.encodeBase64.
 Ejemplo:
 ```javascript
-M.utils.encodeBase64(obj_params);
+IDEE.utils.encodeBase64(obj_params);
 ```
 
 En este ejemplo se utiliza el parámetro *configuration* para que la tabla muestre los atributos de la capa *vertices*.
@@ -164,7 +164,7 @@ https://componentes.cnig.es/api-idee/?queryattributes=base64=eyJwb3NpdGlvbiI6IlR
 # Ejemplo de uso
 
 ```javascript
-const map = M.map({
+const map = IDEE.map({
   container: 'map'
 });
 

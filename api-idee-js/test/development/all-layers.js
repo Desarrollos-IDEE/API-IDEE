@@ -1,8 +1,8 @@
-import { map } from 'M/api-idee';
-import WMS from 'M/layer/WMS';
-import WFS from 'M/layer/WFS';
-import KML from 'M/layer/KML';
-import GeoJSON from 'M/layer/GeoJSON';
+import { map } from 'IDEE/api-idee';
+import WMS from 'IDEE/layer/WMS';
+import WFS from 'IDEE/layer/WFS';
+import KML from 'IDEE/layer/KML';
+import GeoJSON from 'IDEE/layer/GeoJSON';
 
 
 window.mapjs = map({

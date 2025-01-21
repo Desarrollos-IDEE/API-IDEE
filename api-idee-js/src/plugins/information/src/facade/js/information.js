@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/Information
+ * @module IDEE/plugin/Information
  */
 import '../assets/css/information';
 import '../assets/css/fonts';
@@ -11,14 +11,14 @@ import { getValue } from './i18n/language';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class Information extends M.Plugin {
+export default class Information extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -27,14 +27,14 @@ export default class Information extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -127,7 +127,7 @@ export default class Information extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).information;
+    return IDEE.language.getTranslation(lang).information;
   }
 
   /**
@@ -135,7 +135,7 @@ export default class Information extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
@@ -150,9 +150,9 @@ export default class Information extends M.Plugin {
     );
     this.controls_.push(this.ctrl);
     this.map_ = map;
-    this.panel_ = new M.ui.Panel('Information', {
+    this.panel_ = new IDEE.ui.Panel('Information', {
       className: 'm-plugin-information',
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       tooltip: this.tooltip_,
       collapsedButtonClass: 'g-cartografia-info',
       order: this.order,
@@ -215,7 +215,7 @@ export default class Information extends M.Plugin {
    * @api
    */
   getAPIRestBase64() {
-    return `${this.name}=base64=${M.utils.encodeBase64(this.options)}`;
+    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   /**
@@ -229,9 +229,9 @@ export default class Information extends M.Plugin {
     return {
       title: this.name,
       content: new Promise((success) => {
-        const html = M.template.compileSync(myhelp, {
+        const html = IDEE.template.compileSync(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}plugins/information/images/`,
+            urlImages: `${IDEE.config.API_IDEE_URL}plugins/information/images/`,
             translations: {
               help1: getValue('textHelp.help1'),
               help2: getValue('textHelp.help2'),
@@ -253,7 +253,7 @@ export default class Information extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Plugin} plugin to compare
+   * @param {IDEE.Plugin} plugin to compare
    * @api
    */
   equals(plugin) {

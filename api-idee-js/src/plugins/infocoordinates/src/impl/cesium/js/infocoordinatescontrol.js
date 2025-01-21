@@ -1,4 +1,4 @@
 /* eslint-disable no-console */
 /**
- * @module M/impl/control/InfocoordinatesControl
+ * @module IDEE/impl/control/InfocoordinatesControl
  */

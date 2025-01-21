@@ -1,16 +1,16 @@
 /* eslint-disable max-len */
 import StyleManager from 'facade/stylemanager';
 
-// M.language.setLang('en');
+// IDEE.language.setLang('en');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   center: [-454900, 4740300],
   zoom: 6,
 });
 window.map = map;
 
-const lines = new M.layer.GeoJSON({
+const lines = new IDEE.layer.GeoJSON({
   name: 'lines',
   source: {
     type: 'FeatureCollection',
@@ -74,11 +74,11 @@ const lines = new M.layer.GeoJSON({
     },
     ],
   },
-// }, { style: new M.style.FlowLine({ color: '#ff0000', color2: '#F8FF25', arrow: 1, width: 20, width2: 25, lineCap: 'round', arrowColor: '#ff0000', offset0: 0, offset1: 0 }) // Estilo en generado de capa.
+// }, { style: new IDEE.style.FlowLine({ color: '#ff0000', color2: '#F8FF25', arrow: 1, width: 20, width2: 25, lineCap: 'round', arrowColor: '#ff0000', offset0: 0, offset1: 0 }) // Estilo en generado de capa.
 });
 
 // Conjunto de todos los layers a probar
-const points = new M.layer.GeoJSON({
+const points = new IDEE.layer.GeoJSON({
   name: 'points',
   source: {
     type: 'FeatureCollection',
@@ -335,7 +335,7 @@ const points = new M.layer.GeoJSON({
   },
 });
 
-const polygons = new M.layer.GeoJSON({
+const polygons = new IDEE.layer.GeoJSON({
   name: 'polygons',
   source: {
     type: 'FeatureCollection',
@@ -422,7 +422,7 @@ const polygons = new M.layer.GeoJSON({
   },
 });
 
-const generic = new M.layer.GeoJSON({
+const generic = new IDEE.layer.GeoJSON({
   name: 'generic',
   source: {
     type: 'FeatureCollection',
@@ -464,7 +464,7 @@ window.polygons = polygons; window.generic = generic;
 // */
 
 /* / Estilo de lines
-const estiloflow = new M.style.FlowLine({
+const estiloflow = new IDEE.style.FlowLine({
   color: '#ff0000',
   color2: '#F8FF25',
   arrow: 1,
@@ -479,7 +479,7 @@ lines.setStyle(estiloflow); // */
 // map.addLayers([lines]); window.lines = lines;
 
 /* / Layer WFS1
-const wfs1 = new M.layer.WFS({
+const wfs1 = new IDEE.layer.WFS({
   url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?',
   namespace: 'tematicos',
   name: 'Provincias',
@@ -489,7 +489,7 @@ const wfs1 = new M.layer.WFS({
 map.addWFS(wfs1); window.wfs1 = wfs1; // */
 
 /* / Layer WFS2
-const wfs2 = new M.layer.WFS({
+const wfs2 = new IDEE.layer.WFS({
   url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/sepim/ows?',
   namespace: 'sepim',
   name: 'campamentos',
@@ -498,7 +498,7 @@ const wfs2 = new M.layer.WFS({
 });
 map.addWFS(wfs2); window.wfs2 = wfs2;
 
-const estilo2 = new M.style.Point({
+const estilo2 = new IDEE.style.Point({
   radius: 5,
   fill: {
     color: 'green',
@@ -512,7 +512,7 @@ const estilo2 = new M.style.Point({
 wfs2.setStyle(estilo2); // */
 
 /* / Estilado de WF2
-const estilo = new M.style.Point({
+const estilo = new IDEE.style.Point({
   // fill: { color: "#67af13", opacity: 0.4 },
   icon: {
     class: 'fa-heart',
@@ -534,7 +534,7 @@ const estilo = new M.style.Point({
 wfs2.setStyle(estilo); // */
 
 /* / Layer WFS3 (CAUSA LAG POR SER MUCHAS LINEAS, se recomienda tener apagado el inpector hasta que finalize de cargar)
-const wfs3 = new M.layer.WFS({
+const wfs3 = new IDEE.layer.WFS({
   url: 'http://www.ideandalucia.es/services/DERA_g3_hidrografia/wfs',
   namespace: 'DERA_g3_hidrografia',
   name: 'g03_08_Conduccion',
@@ -544,7 +544,7 @@ const wfs3 = new M.layer.WFS({
 map.addWFS(wfs3); window.wfs3 = wfs3; // */
 
 /* / Capa de municipios
-const layerMunicipio = new M.layer.WFS({
+const layerMunicipio = new IDEE.layer.WFS({
   url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?',
   namespace: 'tematicos',
   name: 'ind_mun_simp',

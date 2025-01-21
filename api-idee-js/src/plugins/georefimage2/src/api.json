@@ -3,7 +3,7 @@
     "name": "georefimage2",
     "separator": "*"
   },
-  "constructor": "M.plugin.Georefimage2",
+  "constructor": "IDEE.plugin.Georefimage2",
   "parameters": [{
     "type": "object",
     "properties": [{

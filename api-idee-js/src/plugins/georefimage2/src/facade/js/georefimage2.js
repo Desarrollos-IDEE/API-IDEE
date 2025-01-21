@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/Georefimage2
+ * @module IDEE/plugin/Georefimage2
  */
 import '../assets/css/georefimage2';
 import Georefimage2Control from './georefimage2control';
@@ -8,14 +8,14 @@ import { getValue } from './i18n/language';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class Georefimage2 extends M.Plugin {
+export default class Georefimage2 extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -24,14 +24,14 @@ export default class Georefimage2 extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -45,7 +45,7 @@ export default class Georefimage2 extends M.Plugin {
     /**
      * Panel of this plugin
      * @private
-     * @type {M.ui.Panel}
+     * @type {IDEE.ui.Panel}
      */
     this.panel_ = null;
 
@@ -125,7 +125,7 @@ export default class Georefimage2 extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).georefimage2;
+    return IDEE.language.getTranslation(lang).georefimage2;
   }
 
   /**
@@ -133,7 +133,7 @@ export default class Georefimage2 extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
@@ -145,22 +145,22 @@ export default class Georefimage2 extends M.Plugin {
       this.order,
     );
     this.controls_.push(this.control_);
-    this.panel_ = new M.ui.Panel('georefimage', {
+    this.panel_ = new IDEE.ui.Panel('georefimage', {
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,
       className: 'm-georefimage2',
       collapsedButtonClass: 'icon-descargar',
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       tooltip: this.tooltip_,
       order: this.order,
     });
-    this.panel_.on(M.evt.ADDED_TO_MAP, (html) => {
-      M.utils.enableTouchScroll(html);
+    this.panel_.on(IDEE.evt.ADDED_TO_MAP, (html) => {
+      IDEE.utils.enableTouchScroll(html);
     });
     this.panel_.addControls(this.controls_);
     map.addPanels(this.panel_);
-    this.control_.on(M.evt.ADDED_TO_MAP, () => {
-      this.fire(M.evt.ADDED_TO_MAP);
+    this.control_.on(IDEE.evt.ADDED_TO_MAP, () => {
+      this.fire(IDEE.evt.ADDED_TO_MAP);
     });
   }
 
@@ -203,11 +203,11 @@ export default class Georefimage2 extends M.Plugin {
   }
 
   /**
-   * This function compare if pluging recieved by param is instance of   M.plugin.Georefimage2
+   * This function compare if pluging recieved by param is instance of   IDEE.plugin.Georefimage2
    *
    * @public
    * @function
-   * @param {M.plugin} plugin to comapre
+   * @param {IDEE.plugin} plugin to comapre
    * @api stable
    */
   equals(plugin) {

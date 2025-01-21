@@ -3,7 +3,7 @@
     "name": "selectionzoom",
     "separator": "*"
   },
-  "constructor": "M.plugin.SelectionZoom",
+  "constructor": "IDEE.plugin.SelectionZoom",
   "parameters": [{
     "type": "object",
     "properties": [

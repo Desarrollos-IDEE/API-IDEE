@@ -7,31 +7,31 @@ import FacadeMeasureLength from '../../../facade/js/measurelength';
  * control
  *
  * @constructor
- * @extends {M.impl.Control}
+ * @extends {IDEE.impl.Control}
  * @api stable
  */
-export default class MeasureClear extends M.impl.Control {
+export default class MeasureClear extends IDEE.impl.Control {
   constructor(measureLengthControl, measureAreaControl) {
     super();
 
     /**
      * Implementation measureLength
      * @private
-     * @type {M.impl.control.Measure}
+     * @type {IDEE.impl.control.Measure}
      */
     this.measureLengthControl_ = measureLengthControl;
 
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.facadeMap_ = null;
 
     /**
      * Implementation measureArea
      * @private
-     * @type {M.impl.control.Measure}
+     * @type {IDEE.impl.control.Measure}
      */
     this.measureAreaControl_ = measureAreaControl;
   }
@@ -41,7 +41,7 @@ export default class MeasureClear extends M.impl.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map - Map to add the plugin
+   * @param {IDEE.Map} map - Map to add the plugin
    * @param {HTMLElement} element - Container MeasureClear
    * @api stable
    */

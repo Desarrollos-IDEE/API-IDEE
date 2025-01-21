@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/Help
+ * @module IDEE/plugin/Help
  */
 import '../assets/css/help';
 import '../assets/css/fonts';
@@ -12,13 +12,13 @@ import { getValue } from './i18n/language';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class Help extends M.Plugin {
+export default class Help extends IDEE.Plugin {
   /**
    * @classdesc
    * Fachada del plugin
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} options Opciones para el plugin
    * @api stable
    */
@@ -28,14 +28,14 @@ export default class Help extends M.Plugin {
     /**
      * Fachada del mapa
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array de controles
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -63,7 +63,7 @@ export default class Help extends M.Plugin {
      * @private
      * @type {Array}
      */
-    this.headerImages_ = header.images ? header.images : [`${M.config.API_IDEE_URL}img/logo_ge.svg`, `${M.config.API_IDEE_URL}img/ign.svg`];
+    this.headerImages_ = header.images ? header.images : [`${IDEE.config.API_IDEE_URL}img/logo_ge.svg`, `${IDEE.config.API_IDEE_URL}img/ign.svg`];
 
     /**
      * Título
@@ -95,7 +95,7 @@ export default class Help extends M.Plugin {
      * @private
      * @type {Boolean}
      */
-    this.extendInitialExtraContents = M.utils.isUndefined(options.extendInitialExtraContents)
+    this.extendInitialExtraContents = IDEE.utils.isUndefined(options.extendInitialExtraContents)
       ? true
       : options.extendInitialExtraContents;
 
@@ -150,7 +150,7 @@ export default class Help extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).help;
+    return IDEE.language.getTranslation(lang).help;
   }
 
   /**
@@ -158,11 +158,11 @@ export default class Help extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map mapa donde se añadirá el plugin
+   * @param {IDEE.Map} map mapa donde se añadirá el plugin
    * @api stable
    */
   addTo(map) {
-    M.remote.get(`${M.config.API_IDEE_URL}api/actions/controls`).then((response) => {
+    IDEE.remote.get(`${IDEE.config.API_IDEE_URL}api/actions/controls`).then((response) => {
       const controls = response.text.replace('[', '').replace(']', '').replaceAll('"', '').split(',');
       this.ctrl = new HelpControl({
         tooltip: this.tooltip_,
@@ -177,9 +177,9 @@ export default class Help extends M.Plugin {
       });
       this.controls_.push(this.ctrl);
       this.map_ = map;
-      this.panel_ = new M.ui.Panel('Help', {
+      this.panel_ = new IDEE.ui.Panel('Help', {
         className: 'm-plugin-help',
-        position: M.ui.position[this.position_],
+        position: IDEE.ui.position[this.position_],
         tooltip: this.tooltip_,
         collapsedButtonClass: 'm-help-icons-query-support',
         order: this.order,
@@ -230,7 +230,7 @@ export default class Help extends M.Plugin {
    * @api
    */
   getAPIRestBase64() {
-    return `${this.name}=base64=${M.utils.encodeBase64(this.options)}`;
+    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   /**
@@ -244,9 +244,9 @@ export default class Help extends M.Plugin {
     return {
       title: this.name_,
       content: new Promise((success) => {
-        const html = M.template.compileSync(myhelp, {
+        const html = IDEE.template.compileSync(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}plugins/help/images/`,
+            urlImages: `${IDEE.config.API_IDEE_URL}plugins/help/images/`,
             translations: {
               help1: getValue('textHelp.help1'),
               help2: getValue('textHelp.help2'),
@@ -263,7 +263,7 @@ export default class Help extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Plugin} plugin plugin para comparar
+   * @param {IDEE.Plugin} plugin plugin para comparar
    * @api
    */
   equals(plugin) {

@@ -1,7 +1,7 @@
-import { map as Mmap } from 'M/api-idee';
-import WFS from 'M/layer/WFS';
-import { LOAD as LoadEvt } from 'M/event/eventtype';
-import { GTE } from 'M/filter/Filter';
+import { map as Mmap } from 'IDEE/api-idee';
+import WFS from 'IDEE/layer/WFS';
+import { LOAD as LoadEvt } from 'IDEE/event/eventtype';
+import { GTE } from 'IDEE/filter/Filter';
 
 const mapjs = Mmap({
   container: 'map',

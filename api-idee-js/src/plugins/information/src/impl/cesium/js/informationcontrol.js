@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/InformationControl
+ * @module IDEE/impl/control/InformationControl
  */

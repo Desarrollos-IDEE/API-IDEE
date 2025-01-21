@@ -1,5 +1,5 @@
 /**
- * @module M/control/GeorefimageControl
+ * @module IDEE/control/GeorefimageControl
  */
 import GeorefimageControlImpl from 'impl/georefimagecontrol';
 import { reproject, transformExt } from 'impl/utils';
@@ -26,13 +26,13 @@ const SELECTOR_CANVAS = '.ol-layer canvas';
 // DEFAULTS PARAMS
 const TYPE_SAVE = '.zip';
 
-export default class GeorefimageControl extends M.Control {
+export default class GeorefimageControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class.
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor({
@@ -42,16 +42,17 @@ export default class GeorefimageControl extends M.Control {
     printSelector,
     printType,
   }, map, statusProxy, useProxy) {
-    if (M.utils.isUndefined(GeorefimageControlImpl) || (M.utils.isObject(GeorefimageControlImpl)
-      && M.utils.isNullOrEmpty(Object.keys(GeorefimageControlImpl)))) {
-      M.exception('La implementación usada no puede crear controles Georefimage');
+    if (IDEE.utils.isUndefined(GeorefimageControlImpl)
+      || (IDEE.utils.isObject(GeorefimageControlImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(GeorefimageControlImpl)))) {
+      IDEE.exception('La implementación usada no puede crear controles Georefimage');
     }
     const impl = new GeorefimageControlImpl(map);
     super(impl, GeorefimageControl.NAME);
     this.map_ = map;
 
-    if (M.utils.isUndefined(GeorefimageControlImpl.prototype.encodeLayer)) {
-      M.exception('La implementación usada no posee el método encodeLayer');
+    if (IDEE.utils.isUndefined(GeorefimageControlImpl.prototype.encodeLayer)) {
+      IDEE.exception('La implementación usada no posee el método encodeLayer');
     }
 
     /**
@@ -183,9 +184,9 @@ export default class GeorefimageControl extends M.Control {
    * @param {Function} callback - function that removes loading icon class.
    */
   getStatus(url, callback, queueEl) {
-    M.proxy(this.useProxy);
+    IDEE.proxy(this.useProxy);
     const newUrl = `${url}?timestamp=${new Date().getTime()}`;
-    M.remote.get(newUrl).then((response) => {
+    IDEE.remote.get(newUrl).then((response) => {
       if (response.code === 404) {
         throw new Error('Error 404');
       }
@@ -197,9 +198,9 @@ export default class GeorefimageControl extends M.Control {
       } else if (status === 'error' || status === 'cancelled') {
         callback(queueEl);
         if (statusJson.error.toLowerCase().indexOf('network is unreachable') > -1 || statusJson.error.toLowerCase().indexOf('illegalargument') > -1) {
-          M.toast.error(getValue('exception.teselaError'), 6000);
+          IDEE.toast.error(getValue('exception.teselaError'), 6000);
         } else {
-          M.toast.error(getValue('exception.printError'), 6000);
+          IDEE.toast.error(getValue('exception.printError'), 6000);
         }
       } else {
         setTimeout(() => this.getStatus(url, callback, queueEl), 1000);
@@ -207,9 +208,9 @@ export default class GeorefimageControl extends M.Control {
     }).catch((err) => {
       callback(queueEl);
       queueEl.remove();
-      M.dialog.error(getValue('exception.error_download_image'));
+      IDEE.dialog.error(getValue('exception.error_download_image'));
     });
-    M.proxy(this.statusProxy);
+    IDEE.proxy(this.statusProxy);
   }
 
   active(html) {
@@ -266,7 +267,7 @@ export default class GeorefimageControl extends M.Control {
 
       //   // forceScale
       //   capabilities.forceScale = this.options_.forceScale;
-      const template = M.template.compileSync(georefimageHTML, {
+      const template = IDEE.template.compileSync(georefimageHTML, {
         jsonp: true,
         vars: {
           // capabilities,
@@ -290,7 +291,7 @@ export default class GeorefimageControl extends M.Control {
       //  });
     });
     promise.then((t) => {
-      const proj = M.impl.ol.js.projections.getSupportedProjs().find(({ codes }) => {
+      const proj = IDEE.impl.ol.js.projections.getSupportedProjs().find(({ codes }) => {
         return codes.includes(this.map_.getProjection().code);
       });
 
@@ -356,7 +357,7 @@ export default class GeorefimageControl extends M.Control {
     const DEFAULT_PROJECTION_SERVER = 'EPSG:3857';
 
     // ADD EVENT LIST SERVICES DIALOG
-    this.elementListServices_.addEventListener('click', () => M.dialog.info(LIST_SERVICES));
+    this.elementListServices_.addEventListener('click', () => IDEE.dialog.info(LIST_SERVICES));
 
     // Disable m-georefimage-dpi when elementFieldset_ is client
     this.elementFieldset_.addEventListener('change', ({ target }) => {
@@ -370,14 +371,14 @@ export default class GeorefimageControl extends M.Control {
       }
 
       if (value === 'client') {
-        const proj = M.impl.ol.js.projections.getSupportedProjs().find(({ codes }) => {
+        const proj = IDEE.impl.ol.js.projections.getSupportedProjs().find(({ codes }) => {
           return codes.includes(this.map_.getProjection().code);
         });
         if (proj) {
           this.elementProjection_.innerText = `${proj.datum} - ${proj.proj.toUpperCase()} (${proj.codes[0]})`;
         }
       } else {
-        const proj = M.impl.ol.js.projections.getSupportedProjs().find(({ codes }) => {
+        const proj = IDEE.impl.ol.js.projections.getSupportedProjs().find(({ codes }) => {
           return codes[0] === DEFAULT_PROJECTION_SERVER;
         });
         this.elementProjection_.innerText = `${proj.datum} - ${proj.proj.toUpperCase()} (${proj.codes[0]})`;
@@ -385,11 +386,11 @@ export default class GeorefimageControl extends M.Control {
     });
 
     this.elementClipboard_.addEventListener('click', () => {
-      M.utils.copyImageClipBoard(this.map_);
+      IDEE.utils.copyImageClipBoard(this.map_);
     });
 
     // ADD ENABLE TOUCH SCROLL
-    M.utils.enableTouchScroll(getQueueContainer(this.html_));
+    IDEE.utils.enableTouchScroll(getQueueContainer(this.html_));
   }
 
   selectElementHTML(html) {
@@ -424,7 +425,7 @@ export default class GeorefimageControl extends M.Control {
 
   downloadServer() {
     this.getPrintData().then((printData) => {
-      let printUrl = M.utils.concatUrlPaths([this.printTemplateUrl_, `report.${printData.outputFormat}`]);
+      let printUrl = IDEE.utils.concatUrlPaths([this.printTemplateUrl_, `report.${printData.outputFormat}`]);
 
       const queueEl = innerQueueElement(
         this.html_,
@@ -432,16 +433,16 @@ export default class GeorefimageControl extends M.Control {
         this.elementQueueContainer_,
       );
 
-      printUrl = M.utils.addParameters(printUrl, 'apiIdeeop=geoprint');
+      printUrl = IDEE.utils.addParameters(printUrl, 'apiIdeeop=geoprint');
       // FIXME: delete proxy deactivation and uncomment if/else when proxy is fixed on api-idee
-      M.proxy(this.useProxy);
-      M.remote.post(printUrl, printData).then((responseParam) => {
+      IDEE.proxy(this.useProxy);
+      IDEE.remote.post(printUrl, printData).then((responseParam) => {
         let response = responseParam;
         if (/* response.error !== true && */ response.text.indexOf('</error>') === -1) { // withoud proxy, response.error === true
           let downloadUrl;
           const responseStatusURL = response.text && JSON.parse(response.text);
           const ref = responseStatusURL.ref;
-          const statusURL = M.utils.concatUrlPaths([this.printStatusUrl_, `${ref}.json`]);
+          const statusURL = IDEE.utils.concatUrlPaths([this.printStatusUrl_, `${ref}.json`]);
           this.getStatus(
             statusURL,
             (e) => { removeLoadQueueElement(e); this.downloadPrint(queueEl); },
@@ -452,13 +453,13 @@ export default class GeorefimageControl extends M.Control {
             response = JSON.parse(response.text);
             if (this.serverUrl_.endsWith('/geoprint')) {
               const url = this.serverUrl_.substring(0, this.serverUrl_.lastIndexOf('/geoprint'));
-              downloadUrl = M.utils.concatUrlPaths([url, response.downloadURL]);
+              downloadUrl = IDEE.utils.concatUrlPaths([url, response.downloadURL]);
             } else {
-              downloadUrl = M.utils.concatUrlPaths([this.serverUrl_, response.downloadURL]);
+              downloadUrl = IDEE.utils.concatUrlPaths([this.serverUrl_, response.downloadURL]);
             }
             this.documentRead_.src = downloadUrl;
           } catch (err) {
-            M.exception(err);
+            IDEE.exception(err);
           }
           queueEl.setAttribute(GeorefimageControl.DOWNLOAD_ATTR_NAME, downloadUrl);
         } else {
@@ -466,11 +467,11 @@ export default class GeorefimageControl extends M.Control {
           if (document.querySelector('#m-georefimage-queue-container').childNodes.length === 0) {
             document.querySelector('.m-printviewmanagement-queue').style.display = 'none';
           }
-          M.dialog.error(getValue('exception').printError);
+          IDEE.dialog.error(getValue('exception').printError);
         }
       });
 
-      M.proxy(this.statusProxy);
+      IDEE.proxy(this.statusProxy);
     });
   }
 
@@ -485,11 +486,11 @@ export default class GeorefimageControl extends M.Control {
     );
 
     try {
-      const base64image = M.utils.getImageMap(this.map_, `image/${format}`);
+      const base64image = IDEE.utils.getImageMap(this.map_, `image/${format}`);
       this.downloadPrint(queueEl, base64image, 'client');
     } catch (exceptionVar) {
       queueEl.parentElement.remove();
-      M.toast.error('Error CrossOrigin', null, 6000);
+      IDEE.toast.error('Error CrossOrigin', null, 6000);
     } finally {
       removeLoadQueueElement(queueEl);
     }
@@ -509,25 +510,25 @@ export default class GeorefimageControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   getCapabilities() {
-    if (M.utils.isNullOrEmpty(this.capabilitiesPromise_)) {
+    if (IDEE.utils.isNullOrEmpty(this.capabilitiesPromise_)) {
       this.capabilitiesPromise_ = new Promise((success, fail) => {
-        const capabilitiesUrl = M.utils.concatUrlPaths([this.printTemplateUrl_, 'capabilities.json']);
-        M.proxy(this.useProxy);
-        M.remote.get(capabilitiesUrl).then((response) => {
+        const capabilitiesUrl = IDEE.utils.concatUrlPaths([this.printTemplateUrl_, 'capabilities.json']);
+        IDEE.proxy(this.useProxy);
+        IDEE.remote.get(capabilitiesUrl).then((response) => {
           let capabilities = {};
           try {
             capabilities = JSON.parse(response.text);
           } catch (err) {
-            M.exception(err);
+            IDEE.exception(err);
           }
           success(capabilities);
         });
 
-        M.proxy(this.statusProxy);
+        IDEE.proxy(this.statusProxy);
       });
     }
 
@@ -639,7 +640,7 @@ export default class GeorefimageControl extends M.Control {
     const dpi = elementDpi.value;
     const outputFormat = 'jpg';
     const parameters = this.params_.parameters;
-    const printData = M.utils.extend({
+    const printData = IDEE.utils.extend({
       layout,
       outputFormat,
       attributes: {
@@ -682,7 +683,7 @@ export default class GeorefimageControl extends M.Control {
         );
       }
 
-      if (projection !== 'EPSG:3857' && this.map_.getLayers().some((layer) => (layer.type === M.layer.type.OSM))) {
+      if (projection !== 'EPSG:3857' && this.map_.getLayers().some((layer) => (layer.type === IDEE.layer.type.OSM))) {
         printData.attributes.map.projection = 'EPSG:3857';
         printData.attributes.map.bbox = transformExt(printData.attributes.map.bbox, projection, 'EPSG:3857');
       }
@@ -732,7 +733,7 @@ export default class GeorefimageControl extends M.Control {
       .concat(this.map_.getImpl().getAllLayerInGroup().filter((layer) => errorLayerFilter(layer)));
 
     if (errorLayers.length !== 0) {
-      M.toast.warning(getValue('exception.error_layers') + errorLayers.map((l) => l.name).join(', '), null, 6000);
+      IDEE.toast.warning(getValue('exception.error_layers') + errorLayers.map((l) => l.name).join(', '), null, 6000);
     }
 
     if (mapZoom === 20) {
@@ -820,7 +821,7 @@ export default class GeorefimageControl extends M.Control {
       const encodedLayers = [];
       layers.forEach((layer, index) => {
         this.getImpl().encodeLayer(layer).then((encodedLayer) => {
-          if (!M.utils.isNullOrEmpty(encodedLayer)) {
+          if (!IDEE.utils.isNullOrEmpty(encodedLayer)) {
             encodedLayers[index] = encodedLayer;
           }
 
@@ -847,7 +848,7 @@ export default class GeorefimageControl extends M.Control {
     const elementDpi = document.querySelector(ID_DPI);
 
     // PARAMS
-    const dpi = M.utils.isNullOrEmpty(elementDpi) ? 120 : elementDpi.value;
+    const dpi = IDEE.utils.isNullOrEmpty(elementDpi) ? 120 : elementDpi.value;
     const code = this.map_.getProjection().code;
     const addWLD = this.elementWld_.checked;
 
@@ -976,7 +977,7 @@ export default class GeorefimageControl extends M.Control {
 GeorefimageControl.NAME = 'georefimagecontrol';
 
 /**
- * M.template for this controls
+ * IDEE.template for this controls
  * @const
  * @type {string}
  * @public
@@ -985,7 +986,7 @@ GeorefimageControl.NAME = 'georefimagecontrol';
 GeorefimageControl.TEMPLATE = 'georefimage.html';
 
 /**
- * M.template for this controls
+ * IDEE.template for this controls
  * @const
  * @type {string}
  * @public
@@ -994,7 +995,7 @@ GeorefimageControl.TEMPLATE = 'georefimage.html';
 GeorefimageControl.LOADING_CLASS = 'printing';
 
 /**
- * M.template for this controls
+ * IDEE.template for this controls
  * @const
  * @type {string}
  * @public
@@ -1003,7 +1004,7 @@ GeorefimageControl.LOADING_CLASS = 'printing';
 GeorefimageControl.DOWNLOAD_ATTR_NAME = 'data-donwload-url-print';
 
 /**
- * M.template for this controls
+ * IDEE.template for this controls
  * @const
  * @type {string}
  * @public

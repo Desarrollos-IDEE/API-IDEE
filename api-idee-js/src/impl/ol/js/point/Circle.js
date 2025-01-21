@@ -1,5 +1,5 @@
 /**
- * @module M/impl/point/Circle
+ * @module IDEE/impl/point/Circle
  */
 
 import OLStyleCircle from 'ol/style/Circle';

@@ -3,7 +3,7 @@
     "name": "storymap",
     "separator": "*"
   },
-  "constructor": "M.plugin.StoryMap",
+  "constructor": "IDEE.plugin.StoryMap",
   "parameters": [{
     "type": "object",
     "properties": [

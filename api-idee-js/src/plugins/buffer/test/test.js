@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import Buffer from 'facade/buffer';
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
 });
 
@@ -14,7 +14,7 @@ const mp = new Buffer({
   tooltip: 'Buffer de ejemplo',
 });
 
-const capa = new M.layer.GeoJSON({
+const capa = new IDEE.layer.GeoJSON({
   name: 'jsonejemplo',
   url: 'http://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json',
   extract: false,

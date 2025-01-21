@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/Creationcontrol
+ * @module IDEE/impl/control/Creationcontrol
  */

@@ -1,5 +1,5 @@
 /**
- * @module M/impl/control/Analysiscontrol
+ * @module IDEE/impl/control/Analysiscontrol
  */
 
 import Profil from './profilcontrol';
@@ -25,7 +25,7 @@ const formatNumber = (x, decimals) => {
   return num;
 };
 
-export default class Analysiscontrol extends M.impl.Control {
+export default class Analysiscontrol extends IDEE.impl.Control {
   /**
   * @classdesc
   * Main constructor of the measure conrol.
@@ -39,7 +39,7 @@ export default class Analysiscontrol extends M.impl.Control {
     /**
       * Facade of the map
       * @private
-      * @type {M.Map}
+      * @type {IDEE.Map}
       */
     this.facadeMap_ = map;
     this.source_ = new ol.source.Vector({ wrapX: false });
@@ -62,7 +62,7 @@ export default class Analysiscontrol extends M.impl.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api stable
    */
@@ -72,7 +72,7 @@ export default class Analysiscontrol extends M.impl.Control {
     /**
      * Facade map
      * @private
-     * @type {M.map}
+     * @type {IDEE.map}
      */
     this.facadeMap_ = map;
 
@@ -101,12 +101,12 @@ export default class Analysiscontrol extends M.impl.Control {
    * @public
    * @function
    * @api
-   * @param {M.Feature} mFeature
+   * @param {IDEE.Feature} mFeature
    */
   getApiIdeeFeatureClone(mFeature) {
     // eslint-disable-next-line no-underscore-dangle
     const implFeatureClone = mFeature.getImpl().olFeature_.clone();
-    const emphasis = M.impl.Feature.feature2Facade(implFeatureClone);
+    const emphasis = IDEE.impl.Feature.feature2Facade(implFeatureClone);
     return emphasis;
   }
 
@@ -115,7 +115,7 @@ export default class Analysiscontrol extends M.impl.Control {
    * @public
    * @function
    * @api
-   * @param {M.Feature} feature
+   * @param {IDEE.Feature} feature
    */
   calculateProfile(feature, show = true) {
     let coordinates = [];
@@ -151,16 +151,16 @@ export default class Analysiscontrol extends M.impl.Control {
       return elem !== '' && elem.trim().length > 3;
     });
 
-    M.proxy(false);
+    IDEE.proxy(false);
     pointsBbox.forEach((bbox) => {
       const url = `${PROFILE_URL}${bbox}${PROFILE_URL_SUFFIX}`;
-      promises.push(M.remote.get(url));
+      promises.push(IDEE.remote.get(url));
     });
 
     const codeProj = this.facadeMap_.getProjection().code;
 
     this.arrayXZY = Promise.all(promises).then((responses) => {
-      M.proxy(true);
+      IDEE.proxy(true);
       responses.forEach((response) => {
         let alt = 0;
         const responseText = response.text.split(NO_DATA_VALUE).join('');
@@ -200,9 +200,9 @@ export default class Analysiscontrol extends M.impl.Control {
 
       return arrayXZY2;
     }).catch((err) => {
-      M.proxy(true);
+      IDEE.proxy(true);
       // document.querySelector('.m-vectors .m-vectors-loading-container').innerHTML = '';
-      M.dialog.error(getValue('exception.query_profile'), 'Error');
+      IDEE.dialog.error(getValue('exception.query_profile'), 'Error');
     });
   }
 
@@ -211,7 +211,7 @@ export default class Analysiscontrol extends M.impl.Control {
    * @public
    * @function
    * @api
-   * @param {M.Feature} feature
+   * @param {IDEE.Feature} feature
    */
   calculatePoint(feature) {
     const pointXYZ = {
@@ -231,11 +231,11 @@ export default class Analysiscontrol extends M.impl.Control {
     // Se aumenta un poco las coordenadas para que el servicio calcule bien la altura
     const bbox = `${pointXYZ.geographic.coordinates[0]},${pointXYZ.geographic.coordinates[1]},${pointXYZ.geographic.coordinates[0] + 0.00001},${pointXYZ.geographic.coordinates[1] + 0.000001}`;
 
-    M.proxy(false);
+    IDEE.proxy(false);
     const url = `${PROFILE_URL}${bbox}${PROFILE_URL_SUFFIX}`;
 
-    M.remote.get(url).then((response) => {
-      M.proxy(true);
+    IDEE.remote.get(url).then((response) => {
+      IDEE.proxy(true);
       let alt = 0;
       const responseText = response.text.split(NO_DATA_VALUE).join('');
       if (responseText.indexOf('dy') > -1) {
@@ -250,8 +250,8 @@ export default class Analysiscontrol extends M.impl.Control {
       pointXYZ.altitude = alt;
       this.facadeControl.showPointProfile(pointXYZ);
     }).catch((err) => {
-      M.proxy(true);
-      M.dialog.error(getValue('exception.query_profile'), 'Error');
+      IDEE.proxy(true);
+      IDEE.dialog.error(getValue('exception.query_profile'), 'Error');
     });
   }
 
@@ -526,7 +526,7 @@ export default class Analysiscontrol extends M.impl.Control {
       })
       .catch((err) => {
         $td.innerHTML = '-';
-        M.dialog.error(getValue('try_again'));
+        IDEE.dialog.error(getValue('try_again'));
       });
   }
 
@@ -538,7 +538,7 @@ export default class Analysiscontrol extends M.impl.Control {
   }
 
   getAreaGeoJSON(features) {
-    const geoFormat = new M.impl.format.GeoJSON();
+    const geoFormat = new IDEE.impl.format.GeoJSON();
     const src = this.facadeMap_.getProjection().code;
     return features.map((featureFacade) => {
       const feature = featureFacade.getImpl().getFeature();

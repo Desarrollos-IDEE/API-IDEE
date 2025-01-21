@@ -7,7 +7,7 @@
     "noresults": "No se han encontrado resultados",
     "noubi": "No existe dirección asociada para esta ubicación.",
     "wrong_values": "Algún valor introducido no es correcto. Recuerda que los minutos y los segundos tienen que tener un valor entre 0 y 59 y los grados entre 0 y 180.",
-    "ignsearchlocator_obsolete": "Mensaje para el desarrollador: M.plugin.IGNSearchLocator ha quedado obsoleto, utilice en su lugar M.plugin.Locator"
+    "ignsearchlocator_obsolete": "Mensaje para el desarrollador: IDEE.plugin.IGNSearchLocator ha quedado obsoleto, utilice en su lugar IDEE.plugin.Locator"
   },
   "informacion": "Información",
   "informacionCatastral": "Información catastral",

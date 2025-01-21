@@ -1,12 +1,12 @@
 /**
- * @module M/impl/layer/WFS
+ * @module IDEE/impl/layer/WFS
  */
-import FormatGeoJSON from 'M/format/GeoJSON';
-import { isNullOrEmpty, isFunction } from 'M/util/Utils';
-import Popup from 'M/Popup';
-import { compileSync as compileTemplate } from 'M/util/Template';
+import FormatGeoJSON from 'IDEE/format/GeoJSON';
+import { isNullOrEmpty, isFunction } from 'IDEE/util/Utils';
+import Popup from 'IDEE/Popup';
+import { compileSync as compileTemplate } from 'IDEE/util/Template';
 import geojsonPopupTemplate from 'templates/geojson_popup';
-import * as EventType from 'M/event/eventtype';
+import * as EventType from 'IDEE/event/eventtype';
 import { GeoJsonDataSource } from 'cesium';
 import FormatImplGeoJSON from '../format/GeoJSON';
 import JSONPLoader from '../loader/JSONP';
@@ -17,7 +17,7 @@ import Vector from './Vector';
  * @classdesc
  * WFS (Web Feature Service) es un estándar OGC para la transferencia de información geográfica,
  * donde los elementos o características geográficas se transmiten en su totalidad al cliente.
- * @extends {M.impl.layer.Vector}
+ * @extends {IDEE.impl.layer.Vector}
  * @api
  */
 class WFS extends Vector {
@@ -26,7 +26,7 @@ class WFS extends Vector {
    * con parámetros especificados por el usuario.
    *
    * @constructor
-   * @implements {M.impl.layer.GeoJSON}
+   * @implements {IDEE.impl.layer.GeoJSON}
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
    * - style: Define el estilo de la capa.
    * - getFeatureOutputFormat: Formato de los objetos geográficos, por defecto 'application/json'
@@ -104,7 +104,7 @@ class WFS extends Vector {
    *
    * @public
    * @function
-   * @param {M.Map} map Implementación del mapa.
+   * @param {IDEE.Map} map Implementación del mapa.
    * @api stable
    */
   addTo(map) {

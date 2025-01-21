@@ -1,5 +1,5 @@
 /**
- * @module M/control/IGNSearchLocatorscnControl
+ * @module IDEE/control/IGNSearchLocatorscnControl
  */
 import template from 'templates/ignsearchlocatorscn';
 import results from 'templates/ignsearchlocatorscn-results';
@@ -9,13 +9,13 @@ import { getValue } from './i18n/language';
 
 let typingTimer;
 
-export default class IGNSearchLocatorscnControl extends M.Control {
+export default class IGNSearchLocatorscnControl extends IDEE.Control {
   /**
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor(
@@ -27,9 +27,10 @@ export default class IGNSearchLocatorscnControl extends M.Control {
     statusProxy,
     positionPlugin,
   ) {
-    if (M.utils.isUndefined(IGNSearchLocatorscnImpl) || (M.utils.isObject(IGNSearchLocatorscnImpl)
-      && M.utils.isNullOrEmpty(Object.keys(IGNSearchLocatorscnImpl)))) {
-      M.exception(getValue('exception.impl_ignsearchlocatorscn'));
+    if (IDEE.utils.isUndefined(IGNSearchLocatorscnImpl)
+      || (IDEE.utils.isObject(IGNSearchLocatorscnImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(IGNSearchLocatorscnImpl)))) {
+      IDEE.exception(getValue('exception.impl_ignsearchlocatorscn'));
     }
     const impl = new IGNSearchLocatorscnImpl(map);
     super(impl, 'IGNSearchLocatorscnImpl');
@@ -47,14 +48,14 @@ export default class IGNSearchLocatorscnControl extends M.Control {
      * @private
      * @type {boolean}
      */
-    this.reverse = !M.utils.isUndefined(options.reverse) ? options.reverse : true;
+    this.reverse = !IDEE.utils.isUndefined(options.reverse) ? options.reverse : true;
 
     /**
      * This variable indicates whether result geometry should be drawn on map.
      * @private
      * @type {boolean}
      */
-    this.resultVisibility = !M.utils.isUndefined(options.resultVisibility)
+    this.resultVisibility = !IDEE.utils.isUndefined(options.resultVisibility)
       ? options.resultVisibility
       : true;
 
@@ -115,7 +116,7 @@ export default class IGNSearchLocatorscnControl extends M.Control {
     this.pointStyle = pointStyle;
 
     let peliasCoords = options.peliasCoords;
-    if (M.utils.isString(peliasCoords)) {
+    if (IDEE.utils.isString(peliasCoords)) {
       peliasCoords = peliasCoords.split(',');
       peliasCoords = [Number.parseFloat(peliasCoords[0]),
         Number.parseFloat(peliasCoords[1]),
@@ -183,13 +184,13 @@ export default class IGNSearchLocatorscnControl extends M.Control {
       this.drawNomenclatorResult(this.locationID, false);
     }
     if (this.requestStreet && this.requestStreet.length > 0) {
-      M.proxy(this.useProxy);
-      M.remote.get(this.requestStreet).then((res) => {
+      IDEE.proxy(this.useProxy);
+      IDEE.remote.get(this.requestStreet).then((res) => {
         const geoJsonData = res.text.substring(9, res.text.length - 1);
         this.createGeometryStyles();
         this.drawGeocoderResult(geoJsonData);
       }).catch();
-      M.proxy(this.statusProxy);
+      IDEE.proxy(this.statusProxy);
     }
     if (this.geocoderCoords && this.geocoderCoords.length === 2) {
       const reprojCoords = this.getImpl().reproject('EPSG:4326', this.geocoderCoords);
@@ -218,7 +219,7 @@ export default class IGNSearchLocatorscnControl extends M.Control {
         document.querySelector('.m-plugin-locatorscn').classList.add('m-plugin-locatorscn-tc-withpanel');
       }
       this.html_.querySelector('#m-locatorscn-ignsearch').classList.add('activated');
-      const panel = M.template.compileSync(template, {
+      const panel = IDEE.template.compileSync(template, {
         vars: {
           reverse: this.reverse,
           placeholder: getValue('search_direction'),
@@ -265,7 +266,7 @@ export default class IGNSearchLocatorscnControl extends M.Control {
     if (this.reverse) {
       this.html_.querySelector('#m-ignsearch-panel>#m-ignsearchlocatorscn-search-input').style.width = '160px';
       this.html_.querySelector('#m-ignsearch-panel>#m-ignsearchlocatorscn-locate-button').addEventListener('click', this.activateDeactivateReverse.bind(this));
-      this.clickReverseEvent = this.map.on(M.evt.CLICK, (e) => this.showReversePopUp(e));
+      this.clickReverseEvent = this.map.on(IDEE.evt.CLICK, (e) => this.showReversePopUp(e));
     }
     this.html_.querySelector('#m-ignsearch-panel>#m-ignsearchlocatorscn-clean-button').addEventListener('click', () => this.clearResults());
   }
@@ -283,7 +284,7 @@ export default class IGNSearchLocatorscnControl extends M.Control {
       this.reverseActivated = true;
       this.html_.querySelector('#m-ignsearchlocatorscn-locate-button').style.color = '#71a7d3';
       document.addEventListener('keyup', this.checkEscKey.bind(this));
-      document.getElementsByTagName('body')[0].style.cursor = `url(${M.utils.concatUrlPaths([M.config.THEME_URL, '/img/pushpin.svg'])}) 0 20, auto`;
+      document.getElementsByTagName('body')[0].style.cursor = `url(${IDEE.utils.concatUrlPaths([IDEE.config.THEME_URL, '/img/pushpin.svg'])}) 0 20, auto`;
     } else {
       this.reverseActivated = false;
       this.html_.querySelector('#m-ignsearchlocatorscn-locate-button').style.color = '#7A7A73';
@@ -356,8 +357,8 @@ export default class IGNSearchLocatorscnControl extends M.Control {
       const dataCoordinates = [etrs89pointCoordinates[1], etrs89pointCoordinates[0]];
       // let fullAddress = '';
       let addressData = {};
-      M.proxy(this.useProxy);
-      M.remote.get(urlToGet).then((res) => {
+      IDEE.proxy(this.useProxy);
+      IDEE.remote.get(urlToGet).then((res) => {
         if (res.text) {
           const returnData = JSON.parse(res.text);
           const { features } = returnData;
@@ -369,7 +370,7 @@ export default class IGNSearchLocatorscnControl extends M.Control {
         }
         this.showPopUp(addressData, mapCoordinates, dataCoordinates, null, e, false);
       });
-      M.proxy(this.statusProxy);
+      IDEE.proxy(this.statusProxy);
     }
   }
 
@@ -389,7 +390,7 @@ export default class IGNSearchLocatorscnControl extends M.Control {
     const extension = (jsonResult.extension === null
       || jsonResult.extension === undefined) ? '' : jsonResult.extension.trim();
     let street = `${via} ${address}`;
-    if (!M.utils.isNullOrEmpty(extension)) {
+    if (!IDEE.utils.isNullOrEmpty(extension)) {
       street += ` ${extension}`;
     }
     return `${street}`;
@@ -420,7 +421,7 @@ export default class IGNSearchLocatorscnControl extends M.Control {
       && !this.html_.querySelector('#m-ignsearchlocatorscn-results-list')) {
       const recents = window.localStorage.getItem('recents');
       if (recents && recents.length > 0) {
-        const compiledResult = M.template.compileSync(results, {
+        const compiledResult = IDEE.template.compileSync(results, {
           vars: {
             noresults: false,
             places: JSON.parse(recents),
@@ -510,11 +511,11 @@ export default class IGNSearchLocatorscnControl extends M.Control {
       const boundaryParams = this.generateBoundaryParams();
       const params = `text=${newInputVal}&size=${this.autocompleteSize}&layers=${this.autocompleteLayers.replace(',', '%2C')}&${boundaryParams}`;
       const urlToGet = `${this.urlAutocomplete}?${params}`;
-      M.proxy(this.useProxy);
+      IDEE.proxy(this.useProxy);
 
-      M.remote.get(urlToGet).then((res) => {
+      IDEE.remote.get(urlToGet).then((res) => {
         if (res.code === 404 || res.code === 500) {
-          M.dialog.error(getValue('exception.error_candidates'));
+          IDEE.dialog.error(getValue('exception.error_candidates'));
         } else {
           const returnData = JSON.parse(res.text);
           const { features } = returnData;
@@ -525,7 +526,7 @@ export default class IGNSearchLocatorscnControl extends M.Control {
         }
         resolve();
       });
-      M.proxy(this.statusProxy);
+      IDEE.proxy(this.statusProxy);
     });
   }
 
@@ -585,7 +586,7 @@ export default class IGNSearchLocatorscnControl extends M.Control {
     this.resultsBox.innerHTML = '';
     // remove animation class and return to normal font size after loading
     this.resultsBox.classList.remove('locatorscn-icon-spinner');
-    const compiledResult = M.template.compileSync(results, {
+    const compiledResult = IDEE.template.compileSync(results, {
       vars: {
         noresults: this.allCandidates.length === 0
           && this.candidatesFinished,
@@ -688,10 +689,10 @@ export default class IGNSearchLocatorscnControl extends M.Control {
   createGeometryStyles() {
     // Shows pin on drawn point
     if (this.pointStyle === 'pinAzul') {
-      this.point = new M.style.Point({
+      this.point = new IDEE.style.Point({
         radius: 5,
         icon: {
-          src: M.utils.concatUrlPaths([M.config.THEME_URL, '/img/marker.svg']),
+          src: IDEE.utils.concatUrlPaths([IDEE.config.THEME_URL, '/img/marker.svg']),
           scale: 1.4,
           fill: {
             color: '#71a7d3',
@@ -704,24 +705,24 @@ export default class IGNSearchLocatorscnControl extends M.Control {
         },
       });
     } else if (this.pointStyle === 'pinRojo') {
-      this.point = new M.style.Point({
+      this.point = new IDEE.style.Point({
         radius: 5,
         icon: {
-          src: M.utils.concatUrlPaths([M.config.THEME_URL, '/img/pinign.svg']),
+          src: IDEE.utils.concatUrlPaths([IDEE.config.THEME_URL, '/img/pinign.svg']),
           anchor: [0.5, 1],
         },
       });
     } else if (this.pointStyle === 'pinMorado') {
-      this.point = new M.style.Point({
+      this.point = new IDEE.style.Point({
         radius: 5,
         icon: {
-          src: M.utils.concatUrlPaths([M.config.THEME_URL, '/img/m-pin-24.svg']),
+          src: IDEE.utils.concatUrlPaths([IDEE.config.THEME_URL, '/img/m-pin-24.svg']),
           anchor: [0.5, 1],
         },
       });
     }
     // Style for hiding geometry
-    this.simple = new M.style.Polygon({
+    this.simple = new IDEE.style.Polygon({
       fill: {
         color: 'black',
         opacity: 0,
@@ -743,7 +744,7 @@ export default class IGNSearchLocatorscnControl extends M.Control {
     if (this.html_) {
       this.resultsList = this.html_.querySelector('#m-ignsearchlocatorscn-results-list');
     }
-    if (this.clickedElementLayer instanceof M.layer.Vector) {
+    if (this.clickedElementLayer instanceof IDEE.layer.Vector) {
       if (service === 'n' && type === 'Point') {
         this.clickedElementLayer.calculateMaxExtent().then((extent) => {
           this.map.setBbox(extent);
@@ -758,7 +759,7 @@ export default class IGNSearchLocatorscnControl extends M.Control {
 
       setTimeout(() => {
         // // show popup for streets
-        M.config.MOVE_MAP_EXTRACT = true;
+        IDEE.config.MOVE_MAP_EXTRACT = true;
         const coordinates = [properties.lng, properties.lat];
         const perfectResult = properties.state;
         this.showSearchPopUp(properties, coordinates, perfectResult);
@@ -780,12 +781,12 @@ export default class IGNSearchLocatorscnControl extends M.Control {
     this.map.removeLayers(this.clickedElementLayer);
 
     const olFeature = this.getImpl().readFromWKT(geoJsonData);
-    const mFeature = M.impl.Feature.feature2Facade(olFeature);
+    const mFeature = IDEE.impl.Feature.feature2Facade(olFeature);
     const properties = geoJsonData;
     // Center coordinates
     this.coordinates = `${properties.lat}, ${properties.lng}`;
     // New layer with geometry
-    this.clickedElementLayer = new M.layer.GeoJSON({
+    this.clickedElementLayer = new IDEE.layer.GeoJSON({
       name: 'searchresult',
       source: {
         type: 'FeatureCollection',
@@ -796,7 +797,7 @@ export default class IGNSearchLocatorscnControl extends M.Control {
     this.clickedElementLayer.displayInLayerSwitcher = false;
     const type = mFeature.getGeometry().type;
 
-    this.clickedElementLayer.on(M.evt.LOAD, () => {
+    this.clickedElementLayer.on(IDEE.evt.LOAD, () => {
       this.clickedElementLayer.addFeatures(mFeature);
       this.zoomInLocation('g', type, this.zoom, properties);
     });
@@ -806,7 +807,7 @@ export default class IGNSearchLocatorscnControl extends M.Control {
     }
 
     if (type.indexOf('Polygon') > -1 || type.indexOf('Collection') > -1) {
-      this.clickedElementLayer.setStyle(new M.style.Polygon({
+      this.clickedElementLayer.setStyle(new IDEE.style.Polygon({
         fill: {
           color: '#3399CC',
           opacity: 0,
@@ -885,7 +886,7 @@ export default class IGNSearchLocatorscnControl extends M.Control {
         return `<span>${key.toUpperCase()}: </span> ${addendum[key]}`;
       });
 
-    const tab = M.template.compileSync(ignsearchlocatorscnReverse, {
+    const tab = IDEE.template.compileSync(ignsearchlocatorscnReverse, {
       vars: {
         addressData: {
           ...addressData,
@@ -905,7 +906,7 @@ export default class IGNSearchLocatorscnControl extends M.Control {
     });
 
     featureTabOpts.content = tab.innerHTML;
-    const myPopUp = new M.Popup({});
+    const myPopUp = new IDEE.Popup({});
     myPopUp.addTab(featureTabOpts);
     this.map.addPopup(myPopUp, [
       mapcoords[0],
@@ -930,7 +931,7 @@ export default class IGNSearchLocatorscnControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {

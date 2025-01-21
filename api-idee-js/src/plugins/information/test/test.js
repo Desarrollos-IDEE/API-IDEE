@@ -1,10 +1,10 @@
 /* eslint-disable max-len,spaced-comment */
 import Information from 'facade/information';
 
-// M.language.setLang('en');
-M.config('MOVE_MAP_EXTRACT', true);
+// IDEE.language.setLang('en');
+IDEE.config('MOVE_MAP_EXTRACT', true);
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   controls: ['location'],
   zoom: 15,
@@ -13,13 +13,13 @@ const map = M.map({
 });
 window.map = map;
 
-const mpLayerswitcher = new M.plugin.Layerswitcher({ collapsed: true, position: 'TL' }); map.addPlugin(mpLayerswitcher);
-// const mp2 = new M.plugin.Infocoordinates({position: 'TR', decimalGEOcoord: 4, decimalUTMcoord: 4}); map.addPlugin(mp2);
-// const mp3 = new M.plugin.Vectors({position: 'TR', wfszoom: 12}); map.addPlugin(mp3);
-// const mp4 = new M.plugin.MeasureBar({ position: 'TR' }); map.addPlugin(mp4);
+const mpLayerswitcher = new IDEE.plugin.Layerswitcher({ collapsed: true, position: 'TL' }); map.addPlugin(mpLayerswitcher);
+// const mp2 = new IDEE.plugin.Infocoordinates({position: 'TR', decimalGEOcoord: 4, decimalUTMcoord: 4}); map.addPlugin(mp2);
+// const mp3 = new IDEE.plugin.Vectors({position: 'TR', wfszoom: 12}); map.addPlugin(mp3);
+// const mp4 = new IDEE.plugin.MeasureBar({ position: 'TR' }); map.addPlugin(mp4);
 
 // Pruebas de layers WMS
-const layer1 = new M.layer.WMS({
+const layer1 = new IDEE.layer.WMS({
   url: 'https://www.ign.es/wms-inspire/redes-geodesicas?',
   name: 'RED_NAP',
   legend: 'Red de Nivelación de Alta Presión',
@@ -27,7 +27,7 @@ const layer1 = new M.layer.WMS({
   version: '1.1.0', 
 }, {});
 
-const layer2 = new M.layer.WMS({
+const layer2 = new IDEE.layer.WMS({
   url: 'https://www.ign.es/wms-inspire/redes-geodesicas?',
   name: 'RED_ROI',
   legend: 'Red de Orden Inferior',
@@ -35,7 +35,7 @@ const layer2 = new M.layer.WMS({
   version: '1.1.0',
 }, {});
 
-const layer3 = new M.layer.WMS({
+const layer3 = new IDEE.layer.WMS({
   url: 'https://www.ign.es/wms-inspire/redes-geodesicas?',
   name: 'RED_REGENTE',
   legend: 'Red REGENTE',
@@ -43,7 +43,7 @@ const layer3 = new M.layer.WMS({
   version: '1.1.0',
 }, {});
 
-const layer4 = new M.layer.WMS({
+const layer4 = new IDEE.layer.WMS({
   url: 'https://www.ign.es/wms-inspire/redes-geodesicas?',
   name: 'RED_ERGNSS',
   legend: 'Red de Estaciones permanentes GNSS',
@@ -51,7 +51,7 @@ const layer4 = new M.layer.WMS({
   version: '1.3.0',
 }, {});
 
-const layer5 = new M.layer.WMS({
+const layer5 = new IDEE.layer.WMS({
   url: 'https://servicios.ine.es/WMS/WMS_INE_SECCIONES_G01/MapServer/WMSServer?',
   name: 'Secciones2021',
   legend: 'Secciones censales',
@@ -62,12 +62,12 @@ const layer5 = new M.layer.WMS({
 map.addLayers([layer1, layer4]); // */
 
 /*/ Prueba de todos los usables capas WMTS, GenericRaster y WMS
-const wmtsLayer = new M.layer.WMTS({
+const wmtsLayer = new IDEE.layer.WMTS({
   url: "https://servicios.idee.es/wmts/ocupacion-suelo",
   name: "LC.LandCoverSurfaces", legend: "CORINE / SIOSE",
   matrixSet: "GoogleMapsCompatible", format: 'image/png'
 });
-const generic_001 = new M.layer.GenericRaster(
+const generic_001 = new IDEE.layer.GenericRaster(
   {name: 'Nombre de prueba', legend: 'capaGenericRaster'},
   {visibility: true, displayInLayerSwitcher: true, opacity: 0.5, queryable: true},
   new ol.layer.Image({source: new ol.source.ImageWMS({
@@ -75,7 +75,7 @@ const generic_001 = new M.layer.GenericRaster(
     params: { LAYERS: 'tematicos:Municipios' }
   })})
 );
-const hidrografia = new M.layer.WMS({
+const hidrografia = new IDEE.layer.WMS({
   url: 'https://servicios.idee.es/wms-inspire/hidrografia',
   name: 'HY.Network',
   legend: 'Red hidrográfica',
@@ -84,7 +84,7 @@ const hidrografia = new M.layer.WMS({
 map.addLayers([wmtsLayer, generic_001, hidrografia]); // */
 
 /*/ Prueba WMTS
-const testLayer = new M.layer.WMTS({
+const testLayer = new IDEE.layer.WMTS({
   url: 'https://www.ign.es/wmts/primera-edicion-mtn?',
   name: 'catastrones', legend: 'catastrones',
   matrixSet: 'GoogleMapsCompatible', transparent: true,

@@ -1,10 +1,10 @@
 /**
- * @module M/impl/layer/XYZ
+ * @module IDEE/impl/layer/XYZ
  */
-import { isNullOrEmpty, extend } from 'M/util/Utils';
+import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
 import {
   getValue,
-} from 'M/i18n/language';
+} from 'IDEE/i18n/language';
 import {
   ImageryLayer,
   UrlTemplateImageryProvider,
@@ -30,7 +30,7 @@ import Layer from './Layer';
  * @property {Boolean} displayInLayerSwitcher Mostrar en el selector de capas.
  *
  * @api
- * @extends {M.impl.layer.Vector}
+ * @extends {IDEE.impl.layer.Vector}
  */
 class XYZ extends Layer {
   /**
@@ -146,7 +146,7 @@ class XYZ extends Layer {
    *
    * @public
    * @function
-   * @param {M.impl.Map} map Mapa de la implementación.
+   * @param {IDEE.impl.Map} map Mapa de la implementación.
    * @api
    */
   addTo(map) {
@@ -223,7 +223,7 @@ class XYZ extends Layer {
    *
    * @public
    * @function
-   * @return {M.layer.XYZ.impl.tileSize_}  Tamaño de la tesela.
+   * @return {IDEE.layer.XYZ.impl.tileSize_}  Tamaño de la tesela.
    * @api
    */
   getTileSize() {

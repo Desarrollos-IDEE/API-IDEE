@@ -1,5 +1,5 @@
 /**
- * @module M/control/GeometryDrawControl
+ * @module IDEE/control/GeometryDrawControl
  */
 
 import GeometryDrawImplControl from 'impl/geometrydrawcontrol';
@@ -19,20 +19,21 @@ const DEFAULT_FONT_COLOR = '#71a7d3';
 const DEFAULT_FONT_FAMILY = 'Arial';
 const DEFAULT_SIZE = 12;
 
-export default class GeometryDrawControl extends M.Control {
+export default class GeometryDrawControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor() {
-    if (M.utils.isUndefined(GeometryDrawImplControl) || (M.utils.isObject(GeometryDrawImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(GeometryDrawImplControl)))) {
-      M.exception('La implementación usada no puede crear controles GeometryDrawControl');
+    if (IDEE.utils.isUndefined(GeometryDrawImplControl)
+      || (IDEE.utils.isObject(GeometryDrawImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(GeometryDrawImplControl)))) {
+      IDEE.exception('La implementación usada no puede crear controles GeometryDrawControl');
     }
 
     const impl = new GeometryDrawImplControl();
@@ -86,7 +87,7 @@ export default class GeometryDrawControl extends M.Control {
     /**
      * Selected api-idee feature
      * @private
-     * @type {M.feature}
+     * @type {IDEE.feature}
      */
     this.feature = undefined;
 
@@ -94,7 +95,7 @@ export default class GeometryDrawControl extends M.Control {
      * Feature that is drawn on selection layer around this.feature
      * to emphasize it.
      * @private
-     * @type {M.feature}
+     * @type {IDEE.feature}
      */
     this.emphasis = undefined;
 
@@ -222,7 +223,7 @@ export default class GeometryDrawControl extends M.Control {
      * @private
      * @type {*}
      */
-    this.selectionLayer = new M.layer.Vector({
+    this.selectionLayer = new IDEE.layer.Vector({
       extract: false,
       name: 'selectLayer',
       source: this.getImpl().newVectorSource(true),
@@ -234,7 +235,7 @@ export default class GeometryDrawControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
@@ -243,7 +244,7 @@ export default class GeometryDrawControl extends M.Control {
     this.map = map;
     this.getImpl().setSource();
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           translations: {
             punto: getValue('punto'),
@@ -279,7 +280,7 @@ export default class GeometryDrawControl extends M.Control {
    * @api
    */
   createTextDrawTemplate() {
-    this.textDrawTemplate = M.template.compileSync(textDrawTemplate, {
+    this.textDrawTemplate = IDEE.template.compileSync(textDrawTemplate, {
       jsonp: true,
       vars: {
         translations: {
@@ -312,7 +313,7 @@ export default class GeometryDrawControl extends M.Control {
    * @api
    */
   createDownloadingTemplate() {
-    this.downloadingTemplate = M.template.compileSync(downloadingTemplate, {
+    this.downloadingTemplate = IDEE.template.compileSync(downloadingTemplate, {
       jsonp: true,
       vars: {
         translations: {
@@ -332,7 +333,7 @@ export default class GeometryDrawControl extends M.Control {
    */
   createUploadingTemplate() {
     const accept = '.kml, .zip, .gpx, .geojson';
-    this.uploadingTemplate = M.template.compileSync(uploadingTemplate, {
+    this.uploadingTemplate = IDEE.template.compileSync(uploadingTemplate, {
       jsonp: true,
       vars: {
         accept,
@@ -359,7 +360,7 @@ export default class GeometryDrawControl extends M.Control {
    * @api
    */
   createDrawingTemplate() {
-    this.drawingTools = M.template.compileSync(drawingTemplate, {
+    this.drawingTools = IDEE.template.compileSync(drawingTemplate, {
       jsonp: true,
       vars: {
         translations: {
@@ -388,7 +389,7 @@ export default class GeometryDrawControl extends M.Control {
    */
   createLocationDrawingTemplate() {
     const innerThis = this;
-    this.locationDrawingTools = M.template.compileSync(locationDrawingTemplate, {
+    this.locationDrawingTools = IDEE.template.compileSync(locationDrawingTemplate, {
       jsonp: true,
       vars: {
         translations: {
@@ -447,7 +448,7 @@ export default class GeometryDrawControl extends M.Control {
     });
 
     this.locationDrawingTools.querySelector('button#m-geometrydraw-coordinates-draw').addEventListener('click', () => {
-      const newPointStyle = new M.style.Point({
+      const newPointStyle = new IDEE.style.Point({
         radius: innerThis.currentThickness,
         fill: {
           color: innerThis.currentColor,
@@ -467,10 +468,10 @@ export default class GeometryDrawControl extends M.Control {
           innerThis.feature = innerThis.getImpl().drawPointFeature(coordinates, innerThis.srs);
           innerThis.feature.setStyle(newPointStyle);
         } else {
-          M.dialog.error(getValue('exception.formatocoord'));
+          IDEE.dialog.error(getValue('exception.formatocoord'));
         }
       } else {
-        M.dialog.error(getValue('exception.introduzcoord'));
+        IDEE.dialog.error(getValue('exception.introduzcoord'));
       }
     });
   }
@@ -701,7 +702,7 @@ export default class GeometryDrawControl extends M.Control {
         case 'Point':
         case 'MultiPoint':
           if (evtId === 'colorSelector' || evtId === 'thicknessSelector') {
-            const newPointStyle = new M.style.Point({
+            const newPointStyle = new IDEE.style.Point({
               radius: this.currentThickness,
               fill: {
                 color: this.currentColor,
@@ -718,7 +719,7 @@ export default class GeometryDrawControl extends M.Control {
           break;
         case 'LineString':
         case 'MultiLineString':
-          const newLineStyle = new M.style.Line({
+          const newLineStyle = new IDEE.style.Line({
             stroke: {
               color: this.currentColor,
               width: this.currentThickness,
@@ -728,7 +729,7 @@ export default class GeometryDrawControl extends M.Control {
           break;
         case 'Polygon':
         case 'MultiPolygon':
-          const newPolygonStyle = new M.style.Polygon({
+          const newPolygonStyle = new IDEE.style.Polygon({
             fill: {
               color: this.currentColor,
               opacity: 0.2,
@@ -869,7 +870,7 @@ export default class GeometryDrawControl extends M.Control {
       fontProperties = `${this.fontSize}px ${this.fontFamily}`;
     }
 
-    this.feature.setStyle(new M.style.Point({
+    this.feature.setStyle(new IDEE.style.Point({
       radius: 3,
       fill: {
         color: '#ff5733',
@@ -915,7 +916,7 @@ export default class GeometryDrawControl extends M.Control {
     switch (geometryType) {
       case 'Point':
       case 'MultiPoint':
-        feature.setStyle(new M.style.Point({
+        feature.setStyle(new IDEE.style.Point({
           radius: this.currentThickness,
           fill: {
             color: this.currentColor,
@@ -928,7 +929,7 @@ export default class GeometryDrawControl extends M.Control {
         break;
       case 'LineString':
       case 'MultiLineString':
-        feature.setStyle(new M.style.Line({
+        feature.setStyle(new IDEE.style.Line({
           stroke: {
             color: this.currentColor,
             width: this.currentThickness,
@@ -937,7 +938,7 @@ export default class GeometryDrawControl extends M.Control {
         break;
       case 'Polygon':
       case 'MultiPolygon':
-        feature.setStyle(new M.style.Polygon({
+        feature.setStyle(new IDEE.style.Polygon({
           fill: {
             color: this.currentColor,
             opacity: 0.2,
@@ -966,7 +967,7 @@ export default class GeometryDrawControl extends M.Control {
     const lastFeature = this.feature;
     this.hideTextPoint();
     this.feature = event.feature;
-    this.feature = M.impl.Feature.feature2Facade(this.feature);
+    this.feature = IDEE.impl.Feature.feature2Facade(this.feature);
     if (this.geometry === undefined) this.geometry = this.feature.getGeometry().type;
 
     if (this.geometry === 'Point' && this.isTextActive) {
@@ -995,7 +996,7 @@ export default class GeometryDrawControl extends M.Control {
    * @public
    * @function
    * @api
-   * @param {Array<M.Feature>} features
+   * @param {Array<IDEE.Feature>} features
    */
   deleteFeatureAttributes(features) {
     const newFeatures = features;
@@ -1083,7 +1084,7 @@ export default class GeometryDrawControl extends M.Control {
       if ((this.geometry === 'Point' || this.geometry === 'MultiPoint') && !isTextDrawActive) {
         this.emphasis = this.getImpl().getApiIdeeFeatureClone();
 
-        this.emphasis.setStyle(new M.style.Point({
+        this.emphasis.setStyle(new IDEE.style.Point({
           radius: 20,
           stroke: {
             color: '#FF0000',
@@ -1096,8 +1097,8 @@ export default class GeometryDrawControl extends M.Control {
       } else {
         // eslint-disable-next-line no-underscore-dangle
         const extent = this.getImpl().getFeatureExtent();
-        this.emphasis = M.impl.Feature.feature2Facade(this.getImpl().newPolygonFeature(extent));
-        this.emphasis.setStyle(new M.style.Line({
+        this.emphasis = IDEE.impl.Feature.feature2Facade(this.getImpl().newPolygonFeature(extent));
+        this.emphasis.setStyle(new IDEE.style.Line({
           stroke: {
             color: '#FF0000',
             width: 2,
@@ -1140,7 +1141,7 @@ export default class GeometryDrawControl extends M.Control {
       this.deactivateDrawing();
       document.querySelector('.m-geometrydraw').appendChild(this.downloadingTemplate);
     } else {
-      M.dialog.info(getValue('exception.emptylater'));
+      IDEE.dialog.info(getValue('exception.emptylater'));
     }
   }
 
@@ -1290,10 +1291,10 @@ export default class GeometryDrawControl extends M.Control {
    * @public
    * @function
    * @api
-   * @returns {M.layer.Vector}
+   * @returns {IDEE.layer.Vector}
    */
   newNoTextLayer() {
-    const newLayer = new M.layer.Vector({ name: 'copia' });
+    const newLayer = new IDEE.layer.Vector({ name: 'copia' });
     const noTextFeatures = this.drawLayer.getFeatures().filter((feature) => {
       return feature.getStyle().get('label') === undefined;
     });
@@ -1344,7 +1345,7 @@ export default class GeometryDrawControl extends M.Control {
         shpWrite.download(json, options);
         break;
       default:
-        M.dialog.error(getValue('exception.ficherosel'));
+        IDEE.dialog.error(getValue('exception.ficherosel'));
         break;
     }
 
@@ -1437,7 +1438,7 @@ export default class GeometryDrawControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {
@@ -1457,9 +1458,9 @@ export default class GeometryDrawControl extends M.Control {
   changeFile(evt, file) {
     this.file_ = file;
     this.loadBtn_.setAttribute('disabled', 'disabled');
-    if (!M.utils.isNullOrEmpty(file)) {
+    if (!IDEE.utils.isNullOrEmpty(file)) {
       if (file.size > 20971520) {
-        M.dialog.info(getValue('exception.maxfichero'));
+        IDEE.dialog.info(getValue('exception.maxfichero'));
         this.file_ = null;
         document.querySelector('#fileInfo').innerHTML = '';
       } else {
@@ -1502,16 +1503,16 @@ export default class GeometryDrawControl extends M.Control {
           features = this.getImpl()
             .loadGeoJSONLayer(fileReader.result);
         } else {
-          M.dialog.error(getValue('exception.errorfichero'));
+          IDEE.dialog.error(getValue('exception.errorfichero'));
           return;
         }
         if (features.length === 0) {
-          M.dialog.info(getValue('exception.nodetectado'));
+          IDEE.dialog.info(getValue('exception.nodetectado'));
         } else {
           this.getImpl().centerFeatures(features);
         }
       } catch (error) {
-        M.dialog.error(getValue('exception.comprobar'));
+        IDEE.dialog.error(getValue('exception.comprobar'));
       }
     });
     if (fileExt === 'zip') {
@@ -1519,7 +1520,7 @@ export default class GeometryDrawControl extends M.Control {
     } else if (fileExt === 'kml' || fileExt === 'gpx' || fileExt === 'geojson') {
       fileReader.readAsText(this.file_);
     } else {
-      M.dialog.error(getValue('exception.insertado'));
+      IDEE.dialog.error(getValue('exception.insertado'));
     }
   }
 
@@ -1528,7 +1529,7 @@ export default class GeometryDrawControl extends M.Control {
    * @public
    * @function
    * @api
-   * @param {Array<M.Feature>} features
+   * @param {Array<IDEE.Feature>} features
    */
   geometryCollectionParse(features) {
     const parsedFeatures = [];
@@ -1537,7 +1538,7 @@ export default class GeometryDrawControl extends M.Control {
         const geometries = feature.getGeometry().geometries;
         geometries.forEach((geometry) => {
           const num = Math.random();
-          const newFeature = new M.Feature(`mf${num}`, {
+          const newFeature = new IDEE.Feature(`mf${num}`, {
             type: 'Feature',
             id: `gf${num}`,
             geometry: {
@@ -1742,8 +1743,8 @@ export default class GeometryDrawControl extends M.Control {
    * @function
    * @public
    * @api
-   * @param {Array<M.Feature>} features
-   * @return {Array<M.Feature>}
+   * @param {Array<IDEE.Feature>} features
+   * @return {Array<IDEE.Feature>}
    */
   featuresLoader(features) {
     let newFeatures = features;

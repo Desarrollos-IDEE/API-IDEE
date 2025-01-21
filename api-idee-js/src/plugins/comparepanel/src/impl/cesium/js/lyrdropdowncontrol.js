@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/LyrdropdownControl
+ * @module IDEE/impl/control/LyrdropdownControl
  */

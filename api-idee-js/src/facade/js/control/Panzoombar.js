@@ -1,5 +1,5 @@
 /**
- * @module M/control/Panzoombar
+ * @module IDEE/control/Panzoombar
  */
 import panzoombarTemplate from 'templates/panzoombar';
 import myhelp from 'templates/panzoombarhelp';
@@ -15,7 +15,7 @@ import { getValue } from '../i18n/language';
  * Añade una barra de desplazamiento para acercar/alejar el mapa.
  *
  * @api
- * @extends {M.Control}
+ * @extends {IDEE.Control}
  */
 class Panzoombar extends ControlBase {
   /**
@@ -49,7 +49,7 @@ class Panzoombar extends ControlBase {
    *
    * @public
    * @function
-   * @param {M.Map} map Mapa
+   * @param {IDEE.Map} map Mapa
    * @returns {Promise} Plantilla HTML.
    * @api
    */
@@ -71,7 +71,7 @@ class Panzoombar extends ControlBase {
       content: new Promise((success) => {
         const html = compileTemplate(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}assets/images`,
+            urlImages: `${IDEE.config.API_IDEE_URL}assets/images`,
             translations: {
               help1: textHelp.text1,
             },

@@ -1,4 +1,4 @@
-import { map as Mmap } from 'M/api-idee';
+import { map as Mmap } from 'IDEE/api-idee';
 import { osm } from '../layers/osm/osm';
 
 const mapa = Mmap({

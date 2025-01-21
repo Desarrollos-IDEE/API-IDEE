@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import WMS from 'M/layer/WMS';
+import WMS from 'IDEE/layer/WMS';
 import OLSourceImageWMS from 'ol/source/ImageWMS';
 import OLSourceTileWMS from 'ol/source/TileWMS';
 

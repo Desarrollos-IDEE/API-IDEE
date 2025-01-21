@@ -1,5 +1,5 @@
 /**
- * @module M/impl/OLStyleStrokePattern
+ * @module IDEE/impl/OLStyleStrokePattern
  */
 
 /**

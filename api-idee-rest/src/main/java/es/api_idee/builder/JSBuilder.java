@@ -26,8 +26,8 @@ public class JSBuilder {
 	public static String build(Parameters parameters, List<String> plugins) {
 		StringBuilder codeJS = new StringBuilder();
 
-		// M.map({..<params>..})
-		codeJS.append("M.map(").append(parameters.toJSON()).append(")");
+		// IDEE.map({..<params>..})
+		codeJS.append("IDEE.map(").append(parameters.toJSON()).append(")");
 
 		// add plugins with .addPlugin(...)
 		for (String plugin : plugins) {

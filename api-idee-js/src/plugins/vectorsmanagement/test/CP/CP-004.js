@@ -1,15 +1,15 @@
 import VectorsManagement from 'facade/vectorsmanagement';
 
-M.language.setLang('es');
+IDEE.language.setLang('es');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   center: [-458756.9690741142, 4682774.665868655],
   layers: ['OSM'],
   zoom: 6,
 });
 
-const kml = new M.layer.KML({
+const kml = new IDEE.layer.KML({
   url: 'https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml',
   name: 'capaKML',
 });
@@ -37,14 +37,14 @@ const mp = new VectorsManagement({
 
 map.addPlugin(mp);
 
-const mp1 = new M.plugin.StyleManager({
+const mp1 = new IDEE.plugin.StyleManager({
   collapsed: true,
   collapsible: true,
   position: 'TL',
 });
 map.addPlugin(mp1);
 
-const mp2 = new M.plugin.PrintViewManagement({});
+const mp2 = new IDEE.plugin.PrintViewManagement({});
 
 map.addPlugin(mp2);
 

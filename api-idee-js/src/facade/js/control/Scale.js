@@ -1,5 +1,5 @@
 /**
- * @module M/control/Scale
+ * @module IDEE/control/Scale
  */
 import 'assets/css/controls/scale';
 import scaleTemplate from 'templates/scale';
@@ -18,7 +18,7 @@ import { getValue } from '../i18n/language';
  * resto de plugins y controles por pantalla.
  *
  * @api
- * @extends {M.Control}
+ * @extends {IDEE.Control}
  */
 class Scale extends ControlBase {
   /**
@@ -54,7 +54,7 @@ class Scale extends ControlBase {
    *
    * @public
    * @function
-   * @param {M.Map} map Mapa
+   * @param {IDEE.Map} map Mapa
    * @returns {Promise} Plantilla HTML.
    * @api
    */
@@ -83,7 +83,7 @@ class Scale extends ControlBase {
       content: new Promise((success) => {
         const html = compileTemplate(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}assets/images`,
+            urlImages: `${IDEE.config.API_IDEE_URL}assets/images`,
             translations: {
               help1: textHelp.text1,
               help2: textHelp.text2,

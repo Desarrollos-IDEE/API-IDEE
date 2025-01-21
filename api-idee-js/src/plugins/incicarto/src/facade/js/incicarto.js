@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/Incicarto
+ * @module IDEE/plugin/Incicarto
  */
 import '../assets/css/incicarto';
 import '../assets/css/fonts';
@@ -11,14 +11,14 @@ import myhelp from '../../templates/myhelp';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class Incicarto extends M.Plugin {
+export default class Incicarto extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -27,14 +27,14 @@ export default class Incicarto extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -124,7 +124,7 @@ export default class Incicarto extends M.Plugin {
      * @private
      * @type {Boolean}
      */
-    this.isDraggable = !M.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
+    this.isDraggable = !IDEE.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
 
     /**
      * Plugin parameters
@@ -146,7 +146,7 @@ export default class Incicarto extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).incicarto;
+    return IDEE.language.getTranslation(lang).incicarto;
   }
 
   /**
@@ -154,16 +154,16 @@ export default class Incicarto extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
     this.map_ = map;
-    this.panel_ = new M.ui.Panel('panelIncicarto', {
+    this.panel_ = new IDEE.ui.Panel('panelIncicarto', {
       className: 'm-incicarto',
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       collapsedButtonClass: 'icon-incicarto',
       tooltip: this.tooltip_,
     });
@@ -195,13 +195,13 @@ export default class Incicarto extends M.Plugin {
 
     this.controls_.push(this.control_);
 
-    this.map_.on(M.evt.ADDED_LAYER, () => {
+    this.map_.on(IDEE.evt.ADDED_LAYER, () => {
       if (this.control_ !== null) {
         this.control_.renderLayers();
       }
     });
 
-    this.map_.on(M.evt.REMOVED_LAYER, () => {
+    this.map_.on(IDEE.evt.REMOVED_LAYER, () => {
       if (this.control_ !== null) {
         this.control_.renderLayers();
       }
@@ -232,7 +232,7 @@ export default class Incicarto extends M.Plugin {
    * @api
    */
   getAPIRestBase64() {
-    return `${this.name_}=base64=${M.utils.encodeBase64(this.options)}`;
+    return `${this.name_}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   /**
@@ -270,9 +270,9 @@ export default class Incicarto extends M.Plugin {
     return {
       title: this.name_,
       content: new Promise((success) => {
-        const html = M.template.compileSync(myhelp, {
+        const html = IDEE.template.compileSync(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}plugins/incicarto/images/`,
+            urlImages: `${IDEE.config.API_IDEE_URL}plugins/incicarto/images/`,
             translations: {
               help1: getValue('textHelp.help1'),
               help2: getValue('textHelp.help2'),

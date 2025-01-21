@@ -3,7 +3,7 @@
     "name": "printermap",
     "separator": "*"
   },
-  "constructor": "M.plugin.PrinterMap",
+  "constructor": "IDEE.plugin.PrinterMap",
   "parameters": [{
     "type": "object",
     "properties": [{

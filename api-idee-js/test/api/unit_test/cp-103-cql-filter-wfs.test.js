@@ -13,7 +13,7 @@ describe('CP-103 Capa WFS y filtro CQL', () => {
       container: 'map',
       controls: ['layerswitcher']
     });
-    gridWFS = new M.layer.WFS({
+    gridWFS = new IDEE.layer.WFS({
       url: "http://www.juntadeandalucia.es/institutodeestadisticaycartografia/geoserver-ieca/grid/wfs?",
       namespace: "grid",
       name: "gridp_250",
@@ -26,7 +26,7 @@ describe('CP-103 Capa WFS y filtro CQL', () => {
   });
   describe('Añadimos capa WFS con filtro CQL por municipio', () => {
     it('Todos los features cumplen el filtro cql', (done) => {
-      gridWFS.once(M.evt.LOAD, () => {
+      gridWFS.once(IDEE.evt.LOAD, () => {
         const features = gridWFS.getFeatures();
         expect(features.every(f => /.*18005.*/.test(f.getAttribute('cmun')))).to.be.ok();
         done();
@@ -36,7 +36,7 @@ describe('CP-103 Capa WFS y filtro CQL', () => {
   describe('Cambiamos el filtro CQL por otro', () => {
     it('Todos los features cumplen el filtro cql', function test2(done) {
       this.timeout(10000);
-      gridWFS.once(M.evt.LOAD, () => {
+      gridWFS.once(IDEE.evt.LOAD, () => {
         const features = gridWFS.getFeatures();
         expect(features.every(f => f.getAttribute('cmun').indexOf('18006') !== -1)).to.be.ok();
         done();

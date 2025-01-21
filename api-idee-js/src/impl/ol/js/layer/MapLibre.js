@@ -1,14 +1,14 @@
 /* eslint-disable no-underscore-dangle */
 /**
- * @module M/impl/layer/MapLibre
+ * @module IDEE/impl/layer/MapLibre
  */
 import {
   isNull, isNullOrEmpty, isString, getResolutionFromScale, includes,
-} from 'M/util/Utils';
+} from 'IDEE/util/Utils';
 import geojsonPopupTemplate from 'templates/geojson_popup';
-import { compileSync as compileTemplate } from 'M/util/Template';
-import Popup from 'M/Popup';
-import * as EventType from 'M/event/eventtype';
+import { compileSync as compileTemplate } from 'IDEE/util/Template';
+import Popup from 'IDEE/Popup';
+import * as EventType from 'IDEE/event/eventtype';
 import { MapLibreLayer } from '@geoblocks/ol-maplibre-layer';
 import LayerBase from './Layer';
 
@@ -17,7 +17,7 @@ import LayerBase from './Layer';
  * MapLibre ofrecen la posibilidad de cargar styles (.json) de MapLibre.
  *
  * @api
- * @extends {M.impl.layer.MapLibre}
+ * @extends {IDEE.impl.layer.MapLibre}
  */
 
 class MapLibre extends LayerBase {
@@ -26,8 +26,9 @@ class MapLibre extends LayerBase {
    * con parámetros especificados por el usuario.
    *
    * @constructor
-   * @implements {M.impl.layer.MapLibre}
-   * @param {M.layer.MapLibre.parameters} parameters Opciones de la fachada, la fachada se refiere a
+   * @implements {IDEE.impl.layer.MapLibre}
+   * @param {IDEE.layer.MapLibre.parameters} parameters Opciones de la fachada,
+   * la fachada se refiere a
    * un patrón estructural como una capa de abstracción con un patrón de diseño.
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
    * - opacity: Opacidad de la capa (0-1), por defecto 1.
@@ -121,7 +122,7 @@ class MapLibre extends LayerBase {
    *
    * @public
    * @function
-   * @param {M.impl.Map} map Mapa de la implementación.
+   * @param {IDEE.impl.Map} map Mapa de la implementación.
    * @api
    */
   addTo(map, addLayer = true) {
@@ -449,7 +450,7 @@ class MapLibre extends LayerBase {
    * @function
    * @public
    * @param {string|number} id Identificador del objeto geográfico..
-   * @return {null|M.feature} Objeto Geográfico - Devuelve el objeto geográfico con
+   * @return {null|IDEE.feature} Objeto Geográfico - Devuelve el objeto geográfico con
    * ese id si se encuentra, en caso de que no se encuentre o no indique el id devuelve nulo.
    * @api stable
    */

@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/SelectionZoom
+ * @module IDEE/plugin/SelectionZoom
  */
 // import '/assets/css/selectionzoom';
 import '../assets/css/selectionzoom';
@@ -11,14 +11,14 @@ import myhelp from '../../templates/myhelp';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class SelectionZoom extends M.Plugin {
+export default class SelectionZoom extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -27,14 +27,14 @@ export default class SelectionZoom extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -180,7 +180,7 @@ export default class SelectionZoom extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).selectionzoom;
+    return IDEE.language.getTranslation(lang).selectionzoom;
   }
 
   /**
@@ -188,7 +188,7 @@ export default class SelectionZoom extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
@@ -204,10 +204,10 @@ export default class SelectionZoom extends M.Plugin {
       this.newparameterization,
     ));
     this.map_ = map;
-    this.panel_ = new M.ui.Panel('panelSelectionZoom', {
+    this.panel_ = new IDEE.ui.Panel('panelSelectionZoom', {
       collapsible: this.collapsible,
       collapsed: this.collapsed,
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       className: 'm-plugin-selectionzoom',
       tooltip: this.tooltip_,
       collapsedButtonClass: 'g-selectionzoom-selezoom',
@@ -237,7 +237,7 @@ export default class SelectionZoom extends M.Plugin {
    * @api
    */
   getAPIRestBase64() {
-    return `${this.name}=base64=${M.utils.encodeBase64(this.options)}`;
+    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   /**
@@ -290,11 +290,11 @@ export default class SelectionZoom extends M.Plugin {
   }
 
   /**
-   * This function compare if pluging recieved by param is instance of M.plugin.SelectionZoom
+   * This function compare if pluging recieved by param is instance of IDEE.plugin.SelectionZoom
    *
    * @public
    * @function
-   * @param {M.plugin} plugin to comapre
+   * @param {IDEE.plugin} plugin to comapre
    * @api stable
    */
   equals(plugin) {
@@ -323,9 +323,9 @@ export default class SelectionZoom extends M.Plugin {
     return {
       title: this.name,
       content: new Promise((success) => {
-        const html = M.template.compileSync(myhelp, {
+        const html = IDEE.template.compileSync(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}plugins/selectionzoom/images/`,
+            urlImages: `${IDEE.config.API_IDEE_URL}plugins/selectionzoom/images/`,
             translations: {
               help1: getValue('textHelp.help1'),
               help2: getValue('textHelp.help2'),

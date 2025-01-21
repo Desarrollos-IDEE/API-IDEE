@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/ContactLinkControl
+ * @module IDEE/impl/control/ContactLinkControl
  */

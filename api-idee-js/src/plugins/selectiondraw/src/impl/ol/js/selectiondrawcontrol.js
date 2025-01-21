@@ -32,12 +32,12 @@ const DRAW_END_EVENT = 'drawend';
  * @private
  * @const
  */
-const GEOJSON_FORMAT = new M.impl.format.GeoJSON();
+const GEOJSON_FORMAT = new IDEE.impl.format.GeoJSON();
 
 /**
- * @module M/impl/control/SelectionDrawControl
+ * @module IDEE/impl/control/SelectionDrawControl
  */
-export default class SelectionDrawControl extends M.impl.Control {
+export default class SelectionDrawControl extends IDEE.impl.Control {
   constructor(destProj) {
     super();
     this.facadeControl = null;
@@ -49,7 +49,7 @@ export default class SelectionDrawControl extends M.impl.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api stable
    */

@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/StoryMap
+ * @module IDEE/plugin/StoryMap
  */
 import '../assets/css/storymap';
 import '../assets/css/fonts';
@@ -11,10 +11,10 @@ import { getValue } from './i18n/language';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class StoryMap extends M.Plugin {
+export default class StoryMap extends IDEE.Plugin {
   /**
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api
    */
@@ -23,14 +23,14 @@ export default class StoryMap extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -106,7 +106,7 @@ export default class StoryMap extends M.Plugin {
      * @private
      * @type {Boolean}
      */
-    this.isDraggable = !M.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
+    this.isDraggable = !IDEE.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
   }
 
   /**
@@ -121,7 +121,7 @@ export default class StoryMap extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).storymap;
+    return IDEE.language.getTranslation(lang).storymap;
   }
 
   /**
@@ -129,13 +129,13 @@ export default class StoryMap extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
     // TO DO Parametrizar indice y poner que sea un max de x minimo
     this.control = new StoryMapControl(
-      this.content_[M.language.getLang()],
+      this.content_[IDEE.language.getLang()],
       this.delay,
       this.indexInContent,
       this.isDraggable,
@@ -144,9 +144,9 @@ export default class StoryMap extends M.Plugin {
     window.map = map;
     window.mapjs = map;
 
-    this.panel_ = new M.ui.Panel('panelStoryMap', {
+    this.panel_ = new IDEE.ui.Panel('panelStoryMap', {
       collapsible: this.collapsible,
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       collapsedButtonClass: 'icon-capas2',
       className: 'm-plugin-storymap',
       tooltip: this.tooltip_,
@@ -156,11 +156,11 @@ export default class StoryMap extends M.Plugin {
     map.addPanels(this.panel_);
 
     // No funciona en el cervantes
-    // map.on(M.evt.ADDED_LAYER, () => {
+    // map.on(IDEE.evt.ADDED_LAYER, () => {
     //   this.control.render();
     // });
 
-    // map.on(M.evt.COMPLETED, () => {
+    // map.on(IDEE.evt.COMPLETED, () => {
     //   this.control.render();
     // });
   }
@@ -215,7 +215,7 @@ export default class StoryMap extends M.Plugin {
    * @api
    */
   getAPIRestBase64() {
-    return `${this.name}=base64=${M.utils.encodeBase64(this.options_)}`;
+    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options_)}`;
   }
 
   /**
@@ -223,7 +223,7 @@ export default class StoryMap extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Plugin} plugin to compare
+   * @param {IDEE.Plugin} plugin to compare
    * @api
    */
   equals(plugin) {
@@ -264,9 +264,9 @@ export default class StoryMap extends M.Plugin {
     return {
       title: this.name,
       content: new Promise((success) => {
-        const html = M.template.compileSync(myhelp, {
+        const html = IDEE.template.compileSync(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}plugins/storymap/images/`,
+            urlImages: `${IDEE.config.API_IDEE_URL}plugins/storymap/images/`,
             translations: {
               help1: getValue('textHelp.help1'),
               help2: getValue('textHelp.help2'),
