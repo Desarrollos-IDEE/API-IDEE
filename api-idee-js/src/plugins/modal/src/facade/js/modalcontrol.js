@@ -1,5 +1,5 @@
 /**
- * @module M/control/ModalControl
+ * @module IDEE/control/ModalControl
  */
 
 import templateEN from 'templates/modal_en';
@@ -7,20 +7,20 @@ import templateES from 'templates/modal_es';
 import ModalImplControl from 'impl/modalcontrol';
 import { getValue } from './i18n/language';
 
-export default class ModalControl extends M.Control {
+export default class ModalControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(url) {
-    if (M.utils.isUndefined(ModalImplControl) || (M.utils.isObject(ModalImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(ModalImplControl)))) {
-      M.exception(getValue('exception_modalcontrol'));
+    if (IDEE.utils.isUndefined(ModalImplControl) || (IDEE.utils.isObject(ModalImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(ModalImplControl)))) {
+      IDEE.exception(getValue('exception_modalcontrol'));
     }
     const impl = new ModalImplControl();
     super(impl, 'Modal');
@@ -38,7 +38,7 @@ export default class ModalControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
@@ -51,7 +51,7 @@ export default class ModalControl extends M.Control {
       }
     });
     if (this.url_ !== 'template_es' && this.url_ !== 'template_en') {
-      return M.remote.get(this.url_).then((response) => {
+      return IDEE.remote.get(this.url_).then((response) => {
         let html = response.text;
         html = html.substring(html.indexOf('<!-- Start Popup Content -->'), html.lastIndexOf('<!-- End Popup Content -->'));
         const htmlObject = document.createElement('div');
@@ -63,7 +63,7 @@ export default class ModalControl extends M.Control {
 
     const htmlObject = document.createElement('div');
     htmlObject.classList.add('m-control', 'm-container', 'm-modal');
-    htmlObject.innerHTML = M.language.getLang() === 'en' ? templateEN : templateES;
+    htmlObject.innerHTML = IDEE.language.getLang() === 'en' ? templateEN : templateES;
     return htmlObject;
   }
 
@@ -72,7 +72,7 @@ export default class ModalControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

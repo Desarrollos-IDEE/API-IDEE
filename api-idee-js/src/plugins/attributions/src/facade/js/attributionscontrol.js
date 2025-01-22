@@ -1,5 +1,5 @@
 /**
- * @module M/control/AttributionsControl
+ * @module IDEE/control/AttributionsControl
  */
 import AttributionsImplControl from '../../impl/ol/js/attributionscontrol';
 import template from '../../templates/attributions';
@@ -10,16 +10,17 @@ import { getValue } from './i18n/language';
  * Main constructor of the class. Creates a PluginControl
  * control
  */
-export default class AttributionsControl extends M.Control {
+export default class AttributionsControl extends IDEE.Control {
   /**
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor(position, closePanel) {
-    if (M.utils.isUndefined(AttributionsImplControl) || (M.utils.isObject(AttributionsImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(AttributionsImplControl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(AttributionsImplControl)
+      || (IDEE.utils.isObject(AttributionsImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(AttributionsImplControl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
     const impl = new AttributionsImplControl();
     super(impl, 'Attributions');
@@ -32,7 +33,7 @@ export default class AttributionsControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api
    */
   createView(map) {
@@ -40,7 +41,7 @@ export default class AttributionsControl extends M.Control {
     // eslint-disable-next-line
     console.warn(getValue('exception.attribution_obsolete'));
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           icon: this.position === 'BR' || this.position === 'TR'
             ? 'g-cartografia-flecha-derecha'
@@ -59,7 +60,7 @@ export default class AttributionsControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {

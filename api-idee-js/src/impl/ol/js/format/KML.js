@@ -1,8 +1,8 @@
 /**
- * @module M/impl/format/KML
+ * @module IDEE/impl/format/KML
  */
 import { parse as parseXML } from 'ol/xml';
-import { isNullOrEmpty, decodeHtml } from 'M/util/Utils';
+import { isNullOrEmpty, decodeHtml } from 'IDEE/util/Utils';
 import OLFormatKML from 'ol/format/KML';
 import Icon from 'ol/style/Icon';
 
@@ -55,7 +55,7 @@ class KML extends OLFormatKML {
    * - extent: Extensión de la tesela en unidades de mapa de la tesela leída.
    * - featureProjection: Proyección de las geometrías de los objetos geográficos creadas por el
    * lector de formato.
-   * @returns {M.Feature} Objetos geográficos personalizados.
+   * @returns {IDEE.Feature} Objetos geográficos personalizados.
    * @public
    * @api
    */

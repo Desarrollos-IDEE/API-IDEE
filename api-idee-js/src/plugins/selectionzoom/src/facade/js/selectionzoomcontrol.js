@@ -1,5 +1,5 @@
 /**
- * @module M/control/SelectionZoomControl
+ * @module IDEE/control/SelectionZoomControl
  */
 
 // import template from 'templates/selectionzoom';
@@ -37,10 +37,10 @@ let zoombase = null;
  * Background layers selector api-idee control.
  * This control puts a set of layers in the background of the map.
  */
-export default class SelectionZoomControl extends M.Control {
+export default class SelectionZoomControl extends IDEE.Control {
   /**
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(
@@ -54,9 +54,9 @@ export default class SelectionZoomControl extends M.Control {
     order,
     newparam,
   ) {
-    if (M.utils.isUndefined(SelectionZoomImpl) || (M.utils.isObject(SelectionZoomImpl)
-      && M.utils.isNullOrEmpty(Object.keys(SelectionZoomImpl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(SelectionZoomImpl) || (IDEE.utils.isObject(SelectionZoomImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(SelectionZoomImpl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
     const impl = new SelectionZoomImpl();
     super(impl, 'SelectionZoom');
@@ -67,7 +67,7 @@ export default class SelectionZoomControl extends M.Control {
     }
 
     // map.getBaseLayers().forEach((layer) => {
-    //   layer.on(M.evt.LOAD, map.removeLayers(layer));
+    //   layer.on(IDEE.evt.LOAD, map.removeLayers(layer));
     // });
     this.layers = [];
 
@@ -78,7 +78,7 @@ export default class SelectionZoomControl extends M.Control {
     const titlesArray = titles.split(',');
     const previewsArray = previews.split(',');
     const bboxArray = [];
-    if (M.utils.isArray(bboxs)) {
+    if (IDEE.utils.isArray(bboxs)) {
       bboxs.forEach((item, index) => {
         bboxArray[index] = item.split(/[ ,]+/);
       });
@@ -99,7 +99,7 @@ export default class SelectionZoomControl extends M.Control {
     }
     const zoomsArray = zooms.split(',');
     const centersArray = [];
-    if (M.utils.isArray(centers)) {
+    if (IDEE.utils.isArray(centers)) {
       centers.forEach((item, index) => {
         centersArray[index] = item.split(/[ ,]+/);
       });
@@ -129,13 +129,13 @@ export default class SelectionZoomControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
     this.map = map;
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           layers: this.layers,
           translations: {
@@ -160,7 +160,7 @@ export default class SelectionZoomControl extends M.Control {
    */
   showBaseLayer(e, layersInfo, i) {
     const callback = this.handlerClickDesktop.bind(this);
-    // if (window.innerWidth <= M.config.MOBILE_WIDTH) {
+    // if (window.innerWidth <= IDEE.config.MOBILE_WIDTH) {
     //   callback = this.handlerClickMobile.bind(this);
     // }
     callback(e, layersInfo, i);
@@ -205,7 +205,7 @@ export default class SelectionZoomControl extends M.Control {
           .querySelector(`#m-selectionzoom-lyr-${layersInfo.id}`).classList.add('activeSelectionZoomDiv');
       }
 
-      if (!M.utils.isNullOrEmpty(layersInfo.bbox)) {
+      if (!IDEE.utils.isNullOrEmpty(layersInfo.bbox)) {
         let BboxTransformXminYmax = [layersInfo.bbox[0], layersInfo.bbox[3]];
         let BboxTransformXmaxYmin = [];
 
@@ -235,14 +235,14 @@ export default class SelectionZoomControl extends M.Control {
         if (!layersInfo.isnewparam) {
           this.map.setZoom(layersInfo.zoom);
         }
-      } else if (layersInfo.isnewparam && !M.utils.isNullOrEmpty(layersInfo.zoom)
-        && !M.utils.isNullOrEmpty(layersInfo.center)) {
+      } else if (layersInfo.isnewparam && !IDEE.utils.isNullOrEmpty(layersInfo.zoom)
+        && !IDEE.utils.isNullOrEmpty(layersInfo.center)) {
         this.map.setZoom(layersInfo.zoom);
         this.map.setCenter(layersInfo.center);
       } else if (layersInfo.isnewparam) {
-        M.dialog.error(getValue('exception.formatMRE'));
+        IDEE.dialog.error(getValue('exception.formatMRE'));
       } else {
-        M.dialog.error(getValue('exception.formatBBoxAndZoom'));
+        IDEE.dialog.error(getValue('exception.formatBBoxAndZoom'));
       }
     } else {
       nuevoBbox.x.min = bboxbase[0];
@@ -292,7 +292,7 @@ export default class SelectionZoomControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

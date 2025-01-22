@@ -1,5 +1,5 @@
 /**
- * @module M/Object
+ * @module IDEE/Object
  */
 import EventsManager from './event/Manager';
 import { isNullOrEmpty } from './util/Utils';
@@ -32,7 +32,7 @@ class MObject {
    *
    * @public
    * @function
-   * @param {M.eventType} eventType Evento "M.evt".
+   * @param {IDEE.eventType} eventType Evento "IDEE.evt".
    * @param {Function} listener Función "callback".
    * @param {Object} optThis "Scope", valor de "this".
    * @api
@@ -46,7 +46,7 @@ class MObject {
    *
    * @public
    * @function
-   * @param {M.eventType} eventType Evento "M.evt".
+   * @param {IDEE.eventType} eventType Evento "IDEE.evt".
    * @param {Function} listener Función "callback".
    * @param {Object} optThis "Scope", valor de "this".
    * @api
@@ -60,7 +60,7 @@ class MObject {
    *
    * @public
    * @function
-   * @param {M.eventType} eventType Event "M.evt".
+   * @param {IDEE.eventType} eventType Event "IDEE.evt".
    * @param {Function} listener Function "callback".
    * @param {Object} optThis "Scope", valor de "this".
    * @api
@@ -74,7 +74,7 @@ class MObject {
    *
    * @public
    * @function
-   * @param {M.eventType} eventType Evento "M.evt".
+   * @param {IDEE.eventType} eventType Evento "IDEE.evt".
    * @param {String} key "Key" del evento.
    * @api
    */
@@ -87,7 +87,7 @@ class MObject {
    *
    * @public
    * @function
-   * @param {M.eventType} eventType Evento "M.evt".
+   * @param {IDEE.eventType} eventType Evento "IDEE.evt".
    * @param {Array} argsParam Matriz de argumentos.
    * @api
    */

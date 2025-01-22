@@ -1,5 +1,5 @@
 /**
- * @module M/layer/MBTiles
+ * @module IDEE/layer/MBTiles
  */
 import MBTilesImpl from 'impl/layer/MBTiles';
 import LayerBase from './Layer';
@@ -23,7 +23,7 @@ import * as parameter from '../parameter/parameter';
  * @property {Boolean} isbase Define si la capa es base.
  *
  * @api
- * @extends {M.Layer}
+ * @extends {IDEE.Layer}
  */
 class MBTiles extends LayerBase {
   /**
@@ -56,7 +56,7 @@ class MBTiles extends LayerBase {
    * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
    * <pre><code>
    * import OLTileGrid from 'ol/tilegrid/TileGrid';
-   * import MBTilesSource from 'M/source/MBTiles';
+   * import MBTilesSource from 'IDEE/source/MBTiles';
    * {
    *  source: new MBTilesSource({
    *    tileGrid: new OLTileGrid({
@@ -81,8 +81,8 @@ class MBTiles extends LayerBase {
     /**
      * Implementación
      * @public
-     * @implements {M.impl.layer.MBTiles}
-     * @type {M.impl.layer.MBTilesVector}
+     * @implements {IDEE.impl.layer.MBTiles}
+     * @type {IDEE.impl.layer.MBTilesVector}
      */
     const impl = new MBTilesImpl(parameters, options, vendorOptions);
 

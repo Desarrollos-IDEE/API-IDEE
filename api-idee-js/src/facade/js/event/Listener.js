@@ -1,5 +1,5 @@
 /**
- * @module M/evt/Listener
+ * @module IDEE/evt/Listener
  */
 import { isArray, isFunction, generateRandom } from '../util/Utils';
 
@@ -73,7 +73,7 @@ class EventListener {
     *
     * @public
     * @function
-    * @returns {M.EventListener.eventKey_} Identificador del evento.
+    * @returns {IDEE.EventListener.eventKey_} Identificador del evento.
     * @api
     */
   getEventKey() {
@@ -85,7 +85,7 @@ class EventListener {
     *
     * @public
     * @function
-    * @returns {M.EventListener.once_} Devuelve el valor de la propiedad "once".
+    * @returns {IDEE.EventListener.once_} Devuelve el valor de la propiedad "once".
     * @api
     */
   isOnce() {

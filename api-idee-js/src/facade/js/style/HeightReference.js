@@ -1,5 +1,5 @@
 /**
- * @module M/style/heightReference
+ * @module IDEE/style/heightReference
  */
 
 /**

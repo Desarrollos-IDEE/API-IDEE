@@ -1,14 +1,14 @@
 /**
- * @module M/impl/control/TimelineControl
+ * @module IDEE/impl/control/TimelineControl
  */
 
-export default class TimelineControl extends M.impl.Control {
+export default class TimelineControl extends IDEE.impl.Control {
   /**
    * This function adds the control to the specified map
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api stable
    */

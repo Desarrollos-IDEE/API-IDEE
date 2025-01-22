@@ -1,5 +1,5 @@
 /**
- * @module M/style/Composite
+ * @module IDEE/style/Composite
  */
 import StyleBase from './Style';
 import { isArray, isNullOrEmpty, styleComparator } from '../util/Utils';
@@ -9,7 +9,7 @@ import { isArray, isNullOrEmpty, styleComparator } from '../util/Utils';
  * @classdesc
  * Clase que crea estilos compuestos.
  * @api
- * @extends {M.style}
+ * @extends {IDEE.style}
  */
 class Composite extends StyleBase {
   /**
@@ -25,7 +25,7 @@ class Composite extends StyleBase {
     super(options, impl);
     /**
      * Array of styles.
-     * @type {Array<M.Style>}
+     * @type {Array<IDEE.Style>}
      */
     this.styles_ = [];
   }
@@ -34,7 +34,7 @@ class Composite extends StyleBase {
    * Este método aplica el estilo.
    *
    * @public
-   * @param {M.layer.Vector} layer Capa.
+   * @param {IDEE.layer.Vector} layer Capa.
    * @function
    * @api
    */
@@ -52,8 +52,8 @@ class Composite extends StyleBase {
    *
    * @public
    * @function
-   * @param {M.style|Array<M.Style>} stylesParam Estilos.
-   * @returns {M.style.Composite} Devuelve "this".
+   * @param {IDEE.style|Array<IDEE.Style>} stylesParam Estilos.
+   * @returns {IDEE.style.Composite} Devuelve "this".
    * @api
    */
   add(stylesParam) {
@@ -79,7 +79,7 @@ class Composite extends StyleBase {
    *
    * @public
    * @function
-   * @param {M.style|Array<M.Style>} stylesParam Estilo.
+   * @param {IDEE.style|Array<IDEE.Style>} stylesParam Estilo.
    * @api
    */
   remove(stylesParam) {
@@ -101,7 +101,7 @@ class Composite extends StyleBase {
    *
    * @function
    * @public
-   * @return {Array<M.Style>} Estilo.
+   * @return {Array<IDEE.Style>} Estilo.
    * @api
    */
   getStyles() {
@@ -113,7 +113,7 @@ class Composite extends StyleBase {
    *
    * @function
    * @public
-   * @return {M.Style} Estilo antiguo.
+   * @return {IDEE.Style} Estilo antiguo.
    * @api
    */
   getOldStyle() {
@@ -135,7 +135,7 @@ class Composite extends StyleBase {
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function
    * @public
-   * @param {M.layer.Vector} layer Capa.
+   * @param {IDEE.layer.Vector} layer Capa.
    * @api
    */
   unapplyInternal(layer) {
@@ -152,7 +152,7 @@ class Composite extends StyleBase {
    * Este método quita el estilo "soft".
    * @function
    * @public
-   * @param {M.layer.Vector} layer Capa.
+   * @param {IDEE.layer.Vector} layer Capa.
    * @api
    */
   unapplySoft(layer) {}
@@ -161,7 +161,7 @@ class Composite extends StyleBase {
    * Desaplica el estilo de la capa.
    * @function
    * @public
-   * @param {M.layer.Vector} layer Capa.
+   * @param {IDEE.layer.Vector} layer Capa.
    * @api
    */
   unapply(layer) {
@@ -174,7 +174,7 @@ class Composite extends StyleBase {
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function
    * @public
-   * @param {M.layer.Vector} layer Capa.
+   * @param {IDEE.layer.Vector} layer Capa.
    * @api
    */
   updateInternal_(layer) {

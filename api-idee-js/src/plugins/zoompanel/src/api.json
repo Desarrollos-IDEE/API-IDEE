@@ -3,7 +3,7 @@
     "name": "zoompanel",
     "separator": "*"
   },
-  "constructor": "M.plugin.ZoomPanel",
+  "constructor": "IDEE.plugin.ZoomPanel",
   "parameters": [{
     "type": "object",
     "properties": [{

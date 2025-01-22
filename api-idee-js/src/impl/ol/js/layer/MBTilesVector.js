@@ -1,9 +1,9 @@
 /**
- * @module M/impl/layer/MBTilesVector
+ * @module IDEE/impl/layer/MBTilesVector
  */
-import { isNullOrEmpty, isFunction, extend } from 'M/util/Utils';
-import { compileSync as compileTemplate } from 'M/util/Template';
-import Popup from 'M/Popup';
+import { isNullOrEmpty, isFunction, extend } from 'IDEE/util/Utils';
+import { compileSync as compileTemplate } from 'IDEE/util/Template';
+import Popup from 'IDEE/Popup';
 import geojsonPopupTemplate from 'templates/geojson_popup';
 import { get as getProj, transformExtent } from 'ol/proj';
 // import { inflate } from 'pako';
@@ -12,10 +12,10 @@ import OLLayerVectorTile from 'ol/layer/VectorTile';
 import OLSourceVectorTile from 'ol/source/VectorTile';
 import TileGrid from 'ol/tilegrid/TileGrid';
 import { getBottomLeft, getWidth } from 'ol/extent';
-import TileProvider from 'M/provider/Tile';
-import * as EventType from 'M/event/eventtype';
+import TileProvider from 'IDEE/provider/Tile';
+import * as EventType from 'IDEE/event/eventtype';
 import MVT from 'ol/format/MVT';
-import { getValue } from 'M/i18n/language';
+import { getValue } from 'IDEE/i18n/language';
 // import Feature from 'ol/Feature';
 import ImplMap from '../Map';
 import Vector from './Vector';
@@ -68,7 +68,7 @@ const generateResolutions = (extent, tileSize, maxZoomLevel) => {
  * @property {boolean} visibility Define si la capa es visible o no.
  *
  * @api
- * @extends {M.impl.layer.Vector}
+ * @extends {IDEE.impl.layer.Vector}
  */
 class MBTilesVector extends Vector {
   /**
@@ -180,7 +180,7 @@ class MBTilesVector extends Vector {
    *
    * @function
    * @public
-   * @param {M.Map} map Mapa.
+   * @param {IDEE.Map} map Mapa.
    * @api
    */
   addTo(map, addLayer = true) {
@@ -306,7 +306,7 @@ class MBTilesVector extends Vector {
    * @param {ol.Tile} tile Tesela vectorial.
    * @param {ol.format.MVT} formatter Formateador.
    * @param {Object} opts Opciones.
-   * @param {M.provider.Tile} target Proveedor de la tesela vectorial.
+   * @param {IDEE.provider.Tile} target Proveedor de la tesela vectorial.
    * @public
    * @api
    */
@@ -512,7 +512,7 @@ class MBTilesVector extends Vector {
    *
    * @function
    * @public
-   * @returns {Array<M.Feature>} Todos los objetos geográficos.
+   * @returns {Array<IDEE.Feature>} Todos los objetos geográficos.
    * @api
    */
   getFeatures() {

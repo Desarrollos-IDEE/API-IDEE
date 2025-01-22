@@ -1,5 +1,5 @@
 /**
- * @module M/control/Rotate
+ * @module IDEE/control/Rotate
  */
 import 'assets/css/controls/rotate';
 import RotateImpl from 'impl/control/Rotate';
@@ -16,7 +16,7 @@ import { getValue } from '../i18n/language';
  * Agrega la funcionalidad para rotar el mapa para que el norte esté arriba.
  *
  * @api
- * @extends {M.Control}
+ * @extends {IDEE.Control}
  */
 class Rotate extends ControlBase {
   /**
@@ -44,7 +44,7 @@ class Rotate extends ControlBase {
    *
    * @public
    * @function
-   * @param {M.Map} map Añade el control al mapa.
+   * @param {IDEE.Map} map Añade el control al mapa.
    * @returns {Promise} HTML generado, promesa.
    * @api
    */
@@ -70,7 +70,7 @@ class Rotate extends ControlBase {
       content: new Promise((success) => {
         const html = compileTemplate(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}assets/images`,
+            urlImages: `${IDEE.config.API_IDEE_URL}assets/images`,
             translations: {
               help1: textHelp.text1,
               help2: textHelp.text2,

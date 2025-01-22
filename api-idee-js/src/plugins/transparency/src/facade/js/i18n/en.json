@@ -5,5 +5,5 @@
   "transparency": "Transparency",
   "errorLayer": "Transparency: No valid layer specified on which to apply the effect",
   "excepcion": "The implementation used cannot create TransparencyControl controls",
-  "transparency_obsolete": "Message to developer: M.plugin.Transparency has been deprecated, please use M.plugin.Comparators instead"
+  "transparency_obsolete": "Message to developer: IDEE.plugin.Transparency has been deprecated, please use IDEE.plugin.Comparators instead"
 }

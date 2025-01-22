@@ -1,11 +1,11 @@
 import Locatorscn from 'facade/locatorscn';
 
-M.language.setLang('es');
-// M.language.setLang('en');
+IDEE.language.setLang('es');
+// IDEE.language.setLang('en');
 
-M.proxy(false);
+IDEE.proxy(false);
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   minZoom: 4, maxZoom: 20, zoom: 5,
   center: [-467062.8225, 4783459.6216],

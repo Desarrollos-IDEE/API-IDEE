@@ -1,5 +1,5 @@
 /**
- * @module M/control/PrintViewManagementControl
+ * @module IDEE/control/PrintViewManagementControl
  */
 import PrintViewManagementImpl from 'impl/printviewmanagement';
 import template from '../../templates/printviewmanagement';
@@ -10,22 +10,23 @@ import GeorefimageControl from './georefimagecontrol';
 
 import { removeQueueElements } from './utils';
 
-export default class PrintViewManagementControl extends M.Control {
+export default class PrintViewManagementControl extends IDEE.Control {
   /**
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor({
     isDraggable, georefImageEpsg, georefImage, printermap, order, map,
     serverUrl, printStatusUrl, defaultOpenControl, useProxy, statusProxy,
   }) {
-    if (M.utils.isUndefined(PrintViewManagementImpl) || (M.utils.isObject(PrintViewManagementImpl)
-      && M.utils.isNullOrEmpty(Object.keys(PrintViewManagementImpl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(PrintViewManagementImpl)
+      || (IDEE.utils.isObject(PrintViewManagementImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(PrintViewManagementImpl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
 
     const impl = new PrintViewManagementImpl();
@@ -96,13 +97,13 @@ export default class PrintViewManagementControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api
    */
   createView(map) {
     this.map_ = map;
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           georefImageEpsg: !!this.georefImageEpsg_,
           georefImage: !!this.georefImage_,
@@ -126,7 +127,7 @@ export default class PrintViewManagementControl extends M.Control {
 
       if (this.printermap_) { this.addPrinterMapControl(html); }
 
-      if (this.isDraggable_) { M.utils.draggabillyPlugin(this.getPanel(), '#m-printviewmanagement-title'); }
+      if (this.isDraggable_) { IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-printviewmanagement-title'); }
 
       this.accessibilityTab(html);
       this.selectElementHTML();
@@ -205,7 +206,7 @@ export default class PrintViewManagementControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {
@@ -342,10 +343,10 @@ export default class PrintViewManagementControl extends M.Control {
    * @api
    */
   destroy() {
-    if (!M.utils.isNullOrEmpty(this.georefImageControl)) {
+    if (!IDEE.utils.isNullOrEmpty(this.georefImageControl)) {
       this.georefImageControl.destroy();
     }
-    if (!M.utils.isNullOrEmpty(this.printerMapControl)) {
+    if (!IDEE.utils.isNullOrEmpty(this.printerMapControl)) {
       this.printerMapControl.destroy();
     }
   }

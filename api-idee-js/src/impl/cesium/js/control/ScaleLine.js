@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/ScaleLine
+ * @module IDEE/impl/control/ScaleLine
  */

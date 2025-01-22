@@ -1,9 +1,9 @@
 /**
- * @module M/impl/layer/Draw
+ * @module IDEE/impl/layer/Draw
  */
-import Exception from 'M/exception/exception';
-import { isArray, isNullOrEmpty, isFunction } from 'M/util/Utils';
-import * as EventType from 'M/event/eventtype';
+import Exception from 'IDEE/exception/exception';
+import { isArray, isNullOrEmpty, isFunction } from 'IDEE/util/Utils';
+import * as EventType from 'IDEE/event/eventtype';
 import OLLayerVector from 'ol/layer/Vector';
 import OLSourceVector from 'ol/source/Vector';
 import OLStyle from 'ol/style/Style';
@@ -11,7 +11,7 @@ import OLStyleFill from 'ol/style/Fill';
 import OLStyleStroke from 'ol/style/Stroke';
 import OLStyleCircle from 'ol/style/Circle';
 import OLGeomPoint from 'ol/geom/Point';
-import { getValue } from 'M/i18n/language';
+import { getValue } from 'IDEE/i18n/language';
 import { get as getProj } from 'ol/proj';
 import Layer from './Layer';
 import FormatGeoJSON from '../format/GeoJSON';
@@ -22,14 +22,14 @@ import Map from '../Map';
  * La capa se utiliza para la representación de entidades.
  *
  * @api
- * @extends {M.impl.layer.Layer}
+ * @extends {IDEE.impl.layer.Layer}
  */
 class Draw extends Layer {
   /**
    *  Constructor principal de la clase
    *
    * @constructor
-   * @implements {M.impl.Layer}
+   * @implements {IDEE.impl.Layer}
    * @api stable
    */
   constructor() {
@@ -58,7 +58,7 @@ class Draw extends Layer {
    *
    * @public
    * @function
-   * @param {M.impl.Map} map  Implementación del mapa.
+   * @param {IDEE.impl.Map} map  Implementación del mapa.
    * @api stable
    */
   addTo(map) {

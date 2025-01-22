@@ -3,7 +3,7 @@
     "name": "queryattributes",
     "separator": "*"
   },
-  "constructor": "M.plugin.QueryAttributes",
+  "constructor": "IDEE.plugin.QueryAttributes",
   "parameters": [{
     "type": "object",
     "properties": [{

@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/BasicControl
+ * @module IDEE/impl/control/BasicControl
  */

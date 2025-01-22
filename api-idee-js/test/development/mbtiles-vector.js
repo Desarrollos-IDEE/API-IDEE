@@ -1,6 +1,6 @@
-import { map } from 'M/api-idee';
-import { info } from 'M/dialog';
-import MBTilesVector from 'M/layer/MBTilesVector';
+import { map } from 'IDEE/api-idee';
+import { info } from 'IDEE/dialog';
+import MBTilesVector from 'IDEE/layer/MBTilesVector';
 
 const bbox = {
   x: { max: 37752.77805046586, min:-1127147.533015621},

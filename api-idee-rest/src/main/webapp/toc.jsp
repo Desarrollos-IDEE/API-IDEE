@@ -81,23 +81,23 @@
    %>
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
-        M.language.setLang(urlParams.get('language') || 'es');
+        IDEE.language.setLang(urlParams.get('language') || 'es');
 
         let layerUA, layerinicial;
-        let map = M.map({
+        let map = IDEE.map({
             container: 'mapjs',
             zoom: 5,
             maxZoom: 20,
             minZoom: 4,
             center: [-467062.8225, 4783459.6216],
         });
-        layerUA = new M.layer.WMS({
+        layerUA = new IDEE.layer.WMS({
             url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
             name: 'AU.AdministrativeUnit',
             legend: 'Unidad administrativa',
             tiled: false,
         }, {});
-        layerinicial = new M.layer.WMS({
+        layerinicial = new IDEE.layer.WMS({
             url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
             name: 'AU.AdministrativeBoundary',
             legend: 'Limite administrativo',
@@ -147,20 +147,20 @@
 
         function crearPlugin(posicion, collapsed, collapsible, flag) {
             if (flag === 1) {
-                map = M.map({
+                map = IDEE.map({
                     container: 'mapjs',
                     zoom: 5,
                     maxZoom: 20,
                     minZoom: 4,
                     center: [-467062.8225, 4783459.6216],
                 });
-                layerUA = new M.layer.WMS({
+                layerUA = new IDEE.layer.WMS({
                     url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
                     name: 'AU.AdministrativeUnit',
                     legend: 'Unidad administrativa',
                     tiled: false,
                 }, {});
-                layerinicial = new M.layer.WMS({
+                layerinicial = new IDEE.layer.WMS({
                     url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
                     name: 'AU.AdministrativeBoundary',
                     legend: 'Limite administrativo',
@@ -171,13 +171,13 @@
                 map.addLayers(layerUA);
                 map.addLayers(layerinicial);
             }
-            mp = new M.plugin.TOC({
+            mp = new IDEE.plugin.TOC({
                 collapsed: collapsed,
                 collapsible: collapsible,
                 position: posicion,
             });
             map.addPlugin(mp);
-            let mp2 = new M.plugin.ShareMap({
+            let mp2 = new IDEE.plugin.ShareMap({
                 baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
                 position: "TR",
             });
@@ -187,7 +187,7 @@
                 map.removePlugins(mp);
             });
         }
-        let mp2 = new M.plugin.ShareMap({
+        let mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
             position: "TR",
         });

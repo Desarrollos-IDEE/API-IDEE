@@ -1,15 +1,15 @@
 /**
- * @module M/impl/control/StereoscopicControl
+ * @module IDEE/impl/control/StereoscopicControl
  */
 
-export default class StereoscopicControl extends M.impl.Control {
+export default class StereoscopicControl extends IDEE.impl.Control {
   /**
     * @classdesc
     * Main constructor of the class. Creates a StereoscopicControl
     * control
     *
     * @constructor
-    * @extends {M.impl.Control}
+    * @extends {IDEE.impl.Control}
     * @api stable
     */
   /*
@@ -23,7 +23,7 @@ export default class StereoscopicControl extends M.impl.Control {
     *
     * @public
     * @function
-    * @param {M.Map} map to add the plugin
+    * @param {IDEE.Map} map to add the plugin
     * @param {HTMLElement} html of the plugin
     * @api stable
     */

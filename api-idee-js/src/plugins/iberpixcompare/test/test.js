@@ -1,6 +1,6 @@
 import IberpixCompare from 'facade/iberpixcompare';
 
-M.language.setLang('es');//Español
+IDEE.language.setLang('es');// Español
 
 const PRECHARGED = {
   groups: [
@@ -23,7 +23,7 @@ const PRECHARGED = {
           type: 'WMS',
           url: 'https://www.ign.es/wms-inspire/redes-geodesicas?',
         },
-		{
+        {
           name: 'Cuadrículas cartográficas',
           type: 'WMS',
           url: 'https://www.ign.es/wms-inspire/cuadriculas?',
@@ -39,7 +39,7 @@ const PRECHARGED = {
           type: 'WMS',
           url: 'https://fototeca.cnig.es/wms/fototeca.dll?',
         },
-		{
+        {
           name: 'Camino de Santiago',
           type: 'WMS',
           url: 'https://www.ign.es/wms-inspire/camino-santiago?',
@@ -99,27 +99,27 @@ const PRECHARGED = {
           type: 'WMS',
           url: 'https://servicios.idee.es/wms-inspire/ocupacion-suelo-historico?',
         },
-		{
+        {
           name: 'Información Geográfica de Referencia. Transportes',
           type: 'WMS',
           url: 'https://servicios.idee.es/wms-inspire/transportes?',
         },
-		{
+        {
           name: 'Información Geográfica de Referencia. Hidrografía',
           type: 'WMS',
           url: 'https://servicios.idee.es/wms-inspire/hidrografia?',
         },
-		{
+        {
           name: 'Direcciones y códigos postales',
           type: 'WMS',
           url: 'https://www.cartociudad.es/wms-inspire/direcciones-ccpp?',
         },
-		{
+        {
           name: 'Modelos digitales del terreno',
           type: 'WMS',
           url: 'https://servicios.idee.es/wms-inspire/mdt?',
         },
-		{
+        {
           name: 'Copernicus Land Monitoring Service',
           type: 'WMS',
           url: 'https://servicios.idee.es/wms/copernicus-landservice-spain?',
@@ -158,9 +158,9 @@ const PRECHARGED = {
           name: 'Mapas Históricos',
           type: 'WMTS',
           url: 'https://www.ign.es/wmts/primera-edicion-mtn',
-        }
+        },
       ],
-    }
+    },
   ],
   services: [
     {
@@ -168,12 +168,12 @@ const PRECHARGED = {
       type: 'WMS',
       url: 'http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?',
     },
-	{
+    {
       name: 'SIU Sistema de Información Urbana',
       type: 'WMS',
       url: 'https://mapas.fomento.gob.es/arcgis/services/SIU/Servicios_OGC_SIU/MapServer/WMSServer?',
     },
-	{
+    {
       name: 'Cartografía Militar',
       type: 'WMS',
       url: 'http://wms-defensa.idee.es/mapas',
@@ -200,12 +200,12 @@ const PRECHARGED = {
  * Objeto mapa
  */
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   controls: ['location'],
   center: [-412300, 4926700],
   zoom: 5,
-  //minZoom: 14,
+  // minZoom: 14,
 });
 
 const pluginIberpixCompare = new IberpixCompare({
@@ -226,7 +226,7 @@ const pluginIberpixCompare = new IberpixCompare({
         preview: 'http://visores-cnig-gestion-publico.desarrollo.guadaltel.es/iberpix/static/media/raster.c7a904f3.png',
         title: 'Mapa',
         layers: [
-          new M.layer.WMTS({
+          new IDEE.layer.WMTS({
             url: 'https://www.ign.es/wmts/mapa-raster?',
             name: 'MTN',
             legend: 'Mapa',
@@ -244,7 +244,7 @@ const pluginIberpixCompare = new IberpixCompare({
         preview: 'http://visores-cnig-gestion-publico.desarrollo.guadaltel.es/iberpix/static/media/image.44c5b451.png',
         title: 'Imagen',
         layers: [
-          new M.layer.WMTS({
+          new IDEE.layer.WMTS({
             url: 'https://www.ign.es/wmts/pnoa-ma?',
             name: 'OI.OrthoimageCoverage',
             legend: 'Imagen',
@@ -262,7 +262,7 @@ const pluginIberpixCompare = new IberpixCompare({
         preview: 'http://visores-cnig-gestion-publico.desarrollo.guadaltel.es/iberpix/static/media/mapa.98d45f00.png',
         title: 'Callejero',
         layers: [
-          new M.layer.WMTS({
+          new IDEE.layer.WMTS({
             url: 'https://www.ign.es/wmts/ign-base?',
             name: 'IGNBaseTodo',
             legend: 'Callejero',
@@ -280,7 +280,7 @@ const pluginIberpixCompare = new IberpixCompare({
         title: 'Híbrido',
         preview: 'http://visores-cnig-gestion-publico.desarrollo.guadaltel.es/iberpix/static/media/hibrido.485e957e.png',
         layers: [
-          new M.layer.WMTS({
+          new IDEE.layer.WMTS({
             url: 'https://www.ign.es/wmts/pnoa-ma?',
             name: 'OI.OrthoimageCoverage',
             matrixSet: 'GoogleMapsCompatible',
@@ -291,7 +291,7 @@ const pluginIberpixCompare = new IberpixCompare({
             visible: true,
             format: 'image/jpeg',
           }),
-          new M.layer.WMTS({
+          new IDEE.layer.WMTS({
             url: 'https://www.ign.es/wmts/ign-base?',
             name: 'IGNBaseOrto',
             matrixSet: 'GoogleMapsCompatible',
@@ -301,7 +301,7 @@ const pluginIberpixCompare = new IberpixCompare({
             queryable: false,
             visible: true,
             format: 'image/png',
-          })
+          }),
         ],
       },
       {
@@ -309,7 +309,7 @@ const pluginIberpixCompare = new IberpixCompare({
         preview: 'http://visores-cnig-gestion-publico.desarrollo.guadaltel.es/iberpix/static/media/lidar.5aa94e82.png',
         title: 'LiDAR (Relieve)',
         layers: [
-          new M.layer.WMTS({
+          new IDEE.layer.WMTS({
             url: 'https://wmts-mapa-lidar.idee.es/lidar?',
             name: 'EL.GridCoverageDSM',
             legend: 'LiDAR (Relieve)',
@@ -327,7 +327,7 @@ const pluginIberpixCompare = new IberpixCompare({
         preview: 'http://visores-cnig-gestion-publico.desarrollo.guadaltel.es/iberpix/static/media/ocupacion_suelo.ae7c9787.png',
         title: 'Ocupación del suelo',
         layers: [
-          new M.layer.WMTS({
+          new IDEE.layer.WMTS({
             url: 'https://servicios.idee.es/wmts/ocupacion-suelo?',
             name: 'LC.LandCoverSurfaces',
             legend: 'Ocupación del suelo',
@@ -345,7 +345,7 @@ const pluginIberpixCompare = new IberpixCompare({
         preview: 'http://visores-cnig-gestion-publico.desarrollo.guadaltel.es/iberpix/static/media/historicos.78c9c369.png',
         title: 'Mapas Históricos',
         layers: [
-          new M.layer.WMTS({
+          new IDEE.layer.WMTS({
             url: 'https://www.ign.es/wmts/primera-edicion-mtn?',
             name: 'mtn50-edicion1',
             legend: 'Mapas Históricos',
@@ -387,7 +387,7 @@ const pluginIberpixCompare = new IberpixCompare({
 
 map.addPlugin(pluginIberpixCompare);
 
-map.addPlugin(new M.plugin.FullTOC({
+map.addPlugin(new IDEE.plugin.FullTOC({
   collapsed: true,
   position: 'TR',
   https: true,
@@ -395,13 +395,13 @@ map.addPlugin(new M.plugin.FullTOC({
   precharged: PRECHARGED,
 }));
 
-map.addPlugin(new M.plugin.PrinterMap({
+map.addPlugin(new IDEE.plugin.PrinterMap({
   position: 'TR',
   collapsed: true,
   georefActive: false,
 }));
 
-/*const xyz = new M.layer.XYZ({
+/* const xyz = new IDEE.layer.XYZ({
   url: 'https://tms-pnoa-ma.ign.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
   name: 'PNOA-MA',
   projection: 'EPSG:3857',
@@ -410,6 +410,6 @@ map.addPlugin(new M.plugin.PrinterMap({
   legend: 'PNOA-MA',
 });
 
-map.addLayers([xyz]);*/
+map.addLayers([xyz]); */
 
 window.map = map;

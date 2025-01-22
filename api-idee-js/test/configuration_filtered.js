@@ -13,20 +13,21 @@ const config = (configKey, configValue) => {
   config[configKey] = configValue;
 };
 
-if (!window.M) {
-  const M = {};
-  window.M = M;
+if (!window.IDEE) {
+  const IDEE = {};
+  window.IDEE = IDEE;
+  window.M = IDEE;
 }
-M.config = config;
+IDEE.config = config;
 
-function fun(M_) {
+function fun(IDEE_) {
   /**
    * Pixels width for mobile devices
    *
    * @private
    * @type {Number}
    */
-  M_.config('MOBILE_WIDTH', 768);
+  IDEE_.config('MOBILE_WIDTH', 768);
 
   /**
    * The API IDEE URL
@@ -35,7 +36,7 @@ function fun(M_) {
    * @public
    * @api stable
    */
-  M_.config('API_IDEE_URL', 'https://componentes-desarrollo.idee.es/api-idee/');
+  IDEE_.config('API_IDEE_URL', 'https://componentes-desarrollo.idee.es/api-idee/');
 
   /**
    * The path to the API-IDEE proxy to send
@@ -45,7 +46,7 @@ function fun(M_) {
    * @public
    * @api stable
    */
-  M_.config('PROXY_URL', `${location.protocol}//componentes-desarrollo.idee.es/api-idee/api/proxy`);
+  IDEE_.config('PROXY_URL', `${location.protocol}//componentes-desarrollo.idee.es/api-idee/api/proxy`);
 
   /**
    * The path to the API-IDEE proxy to send
@@ -55,7 +56,7 @@ function fun(M_) {
    * @public
    * @api stable
    */
-  M_.config('PROXY_POST_URL', `${location.protocol}//componentes-desarrollo.idee.es/api-idee/proxyPost`);
+  IDEE_.config('PROXY_POST_URL', `${location.protocol}//componentes-desarrollo.idee.es/api-idee/proxyPost`);
 
   /**
    * The path to the API IDEE templates
@@ -64,7 +65,7 @@ function fun(M_) {
    * @public
    * @api stable
    */
-  M_.config('TEMPLATES_PATH', '/files/templates/');
+  IDEE_.config('TEMPLATES_PATH', '/files/templates/');
 
   /**
    * The path to the API IDEE theme
@@ -73,7 +74,7 @@ function fun(M_) {
    * @public
    * @api stable
    */
-  M_.config('THEME_URL', `${location.protocol}//componentes-desarrollo.idee.es/api-idee/assets/`);
+  IDEE_.config('THEME_URL', `${location.protocol}//componentes-desarrollo.idee.es/api-idee/assets/`);
 
   /**
    * TODO
@@ -81,7 +82,7 @@ function fun(M_) {
    * @public
    * @api stable
    */
-  M_.config('tileMappgins', {
+  IDEE_.config('tileMappgins', {
     /**
      * Predefined WMC URLs
      * @const
@@ -126,7 +127,7 @@ function fun(M_) {
    * @public
    * @api stable
    */
-  M_.config('DEFAULT_PROJ', 'EPSG:3857*m');
+  IDEE_.config('DEFAULT_PROJ', 'EPSG:3857*m');
 
   /**
    * Predefined WMC files. It is composed of URL,
@@ -135,7 +136,7 @@ function fun(M_) {
    * @public
    * @api stable
    */
-  M_.config('panels', {
+  IDEE_.config('panels', {
     /**
      * TODO
      * @const
@@ -152,7 +153,7 @@ function fun(M_) {
    * @private
    * @type {object}
    */
-  M_.config('tms', {
+  IDEE_.config('tms', {
     base: 'QUICK*Base_IGNBaseTodo_TMS',
   });
 
@@ -162,7 +163,7 @@ function fun(M_) {
    * @private
    * @type {object}
    */
-  M_.config('terrain', {
+  IDEE_.config('terrain', {
     default: 'QUICK*MDT_TERRAIN',
   });
 
@@ -172,7 +173,7 @@ function fun(M_) {
    * @private
    * @type {object}
    */
-  M_.config('backgroundlayers', backgroundlayersOpts);
+  IDEE_.config('backgroundlayers', backgroundlayersOpts);
 
   /**
    * Attributions configuration
@@ -180,7 +181,7 @@ function fun(M_) {
    * @private
    * @type {object}
    */
-  M_.config('attributions', {
+  IDEE_.config('attributions', {
     defaultAttribution: 'Instituto Geográfico Nacional',
     defaultURL: 'https://www.ign.es/',
     url: 'https://componentes-desarrollo.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
@@ -193,7 +194,7 @@ function fun(M_) {
    * @private
    * @type {object}
    */
-  M_.config('controls', {
+  IDEE_.config('controls', {
     default: '',
   });
 
@@ -202,7 +203,7 @@ function fun(M_) {
    * @private
    * @type {String}
    */
-  M_.config('SQL_WASM_URL', '../../../../node_modules/sql.js/dist/');
+  IDEE_.config('SQL_WASM_URL', '../../../../node_modules/sql.js/dist/');
 
   /**
    * Mueve el mapa cuando se hace clic sobre un objeto
@@ -211,7 +212,7 @@ function fun(M_) {
    * @private
    * @type {object}
    */
-  M_.config('MOVE_MAP_EXTRACT', false);
+  IDEE_.config('MOVE_MAP_EXTRACT', false);
 
   /**
    * Hace el popup inteligente
@@ -219,7 +220,7 @@ function fun(M_) {
    * @private
    * @type {object}
    */
-  M_.config('POPUP_INTELLIGENCE', {
+  IDEE_.config('POPUP_INTELLIGENCE', {
     activate: true,
     sizes: {
       images: ['120px', '75px'],
@@ -235,7 +236,7 @@ function fun(M_) {
    * @private
    * @type {object}
    */
-  M.config('DIALOG_INTELLIGENCE', {
+  IDEE.config('DIALOG_INTELLIGENCE', {
     activate: true,
     sizes: {
       images: ['120px', '75px'],
@@ -246,4 +247,4 @@ function fun(M_) {
   });
 }
 
-fun(window.M);
+fun(window.IDEE);

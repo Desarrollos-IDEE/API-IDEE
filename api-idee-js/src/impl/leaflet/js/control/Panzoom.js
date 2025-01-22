@@ -1,5 +1,5 @@
 /**
- * @namespace M.impl.control
+ * @namespace IDEE.impl.control
  */
 export default class Panzoom {
   /**
@@ -21,7 +21,7 @@ export default class Panzoom {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {function} template template of this control
    * @api stable
    */

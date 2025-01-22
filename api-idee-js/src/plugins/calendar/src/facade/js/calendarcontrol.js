@@ -1,24 +1,25 @@
 /**
- * @module M/control/CalendarControl
+ * @module IDEE/control/CalendarControl
  */
 
 import CalendarImplControl from 'impl/calendarcontrol';
 import { getValue } from './i18n/language';
 
-export default class CalendarControl extends M.Control {
+export default class CalendarControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor() {
-    if (M.utils.isUndefined(CalendarImplControl) || (M.utils.isObject(CalendarImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(CalendarImplControl)))) {
-      M.exception(getValue('exception_calendarcontrol'));
+    if (IDEE.utils.isUndefined(CalendarImplControl)
+      || (IDEE.utils.isObject(CalendarImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(CalendarImplControl)))) {
+      IDEE.exception(getValue('exception_calendarcontrol'));
     }
     const impl = new CalendarImplControl();
     super(impl, 'Calendar');
@@ -29,7 +30,7 @@ export default class CalendarControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
@@ -46,7 +47,7 @@ export default class CalendarControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

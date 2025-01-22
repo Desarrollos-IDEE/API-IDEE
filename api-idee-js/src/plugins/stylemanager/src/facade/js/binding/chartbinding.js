@@ -57,17 +57,17 @@ export class ChartBinding extends Binding {
     const attribute = inputAttribute.value;
     if (attribute !== '') {
       if (this.variables_.includes(attribute)) {
-        M.dialog.info(getValue('exception.attributeAdded'), getValue('exception.repeatedVariable'));
+        IDEE.dialog.info(getValue('exception.attributeAdded'), getValue('exception.repeatedVariable'));
       } else {
         const allowedAttrs = this.layer_.getFeatures()[0].getAttributes();
         if (allowedAttrs.hasOwnProperty(attribute)) {
           this.addAttributeFromParamenter(attribute);
         } else {
-          M.dialog.info(getValue('exception.variableName'), getValue('exception.incorrectName'));
+          IDEE.dialog.info(getValue('exception.variableName'), getValue('exception.incorrectName'));
         }
       }
     } else {
-      M.dialog.info(getValue('exception.emptyString'), getValue('exception.emptyVariable'));
+      IDEE.dialog.info(getValue('exception.emptyString'), getValue('exception.emptyVariable'));
     }
   }
 
@@ -371,16 +371,16 @@ export class ChartBinding extends Binding {
   generateStyle() {
     const options = this.generateOptions().options;
     const varsOpts = this.generateVariableOptions();
-    const scheme = M.style.chart.schemes[options.scheme];
+    const scheme = IDEE.style.chart.schemes[options.scheme];
 
-    const style = new M.style.Chart({
+    const style = new IDEE.style.Chart({
       type: options.type,
       scheme,
       radius: options.radius,
       donutRadio: options.donutRadius,
       offsetX: options.offsetX,
       offsetY: options.offsetY,
-      variables: varsOpts.length === 0 ? [new M.style.chart.Variable({
+      variables: varsOpts.length === 0 ? [new IDEE.style.chart.Variable({
         attribute: 'default',
       })] : varsOpts,
       fill3DColor: options.fill3DColor,
@@ -419,7 +419,7 @@ export class ChartBinding extends Binding {
     let nameAux = '';
     if (this.style_ != null) {
       const scheme = this.style_.getOptions()['scheme'];
-      const schemesChart = M.style.chart.schemes;
+      const schemesChart = IDEE.style.chart.schemes;
       nameAux = Object.keys(schemesChart).find((name) => arrayEquals(scheme, schemesChart[name]));
     }
     return nameAux;

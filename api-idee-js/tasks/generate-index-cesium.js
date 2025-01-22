@@ -21,7 +21,7 @@ const srcPath = path.posix.resolve(__dirname, '../src').replace(/\\/g, '/');
 
 function getPath(name) {
   const fullPath = require.resolve(path.resolve('src', name)).replace(/\.js$/, '');
-  return './' + path.posix.relative(srcPath, fullPath.replace(/\\/g, '/'));
+  return `./${path.posix.relative(srcPath, fullPath.replace(/\\/g, '/'))}`;
 }
 
 /**
@@ -64,8 +64,8 @@ function formatSymbolExport(name, namespaces) {
   const nsParts = parts[0].replace(/^module:/, '').split(/[/.]/);
   const last = nsParts.length - 1;
   const importName = isNamed
-    ? nsParts.slice(0, last).join('') + 'Module.' + nsParts[last]
-    : '$' + nsParts.join('$');
+    ? `${nsParts.slice(0, last).join('')}Module.${nsParts[last]}`
+    : `$${nsParts.join('$')}`;
   let line = nsParts[0];
   for (let i = 1, ii = nsParts.length; i < ii; ++i) {
     line += `.${nsParts[i]}`;
@@ -100,7 +100,7 @@ function generateExports(symbols, namespaces, imports) {
       nsdefs.push(`${ns[i]} = {};`);
     }
   }
-  blocks = imports.concat(['const M = window[\'M\'] = {};\nconst Cesium = window[\'cesium\'] = {}']
+  blocks = imports.concat(['const IDEE = window[\'IDEE\'] = {};\nconst Cesium = window[\'cesium\'] = {}']
     .concat(nsdefs.concat(blocks).sort()));
   blocks.push('');
   return blocks.join('\n');

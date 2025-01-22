@@ -1,6 +1,6 @@
 /**
  * Este modulo contiene las funciones para mostrar un toast.
- * @module M/toast
+ * @module IDEE/toast
  */
 import 'assets/css/toast';
 import toastTemplate from 'templates/toast';

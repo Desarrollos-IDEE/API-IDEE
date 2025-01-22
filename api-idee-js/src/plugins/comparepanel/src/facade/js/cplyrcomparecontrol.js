@@ -1,5 +1,5 @@
 /**
- * @module M/control/LyrCompareControl
+ * @module IDEE/control/LyrCompareControl
  */
 
 import LyrcompareImplControl from 'impl/cplyrcomparecontrol';
@@ -16,21 +16,22 @@ Array.prototype.unique = (a) => {
   return c.indexOf(a, b + 1) < 0;
 });
 
-export default class LyrCompareControl extends M.Control {
+export default class LyrCompareControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(values) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(LyrcompareImplControl) || (M.utils.isObject(LyrcompareImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(LyrcompareImplControl)))) {
-      M.exception(getValue('exception'));
+    if (IDEE.utils.isUndefined(LyrcompareImplControl)
+      || (IDEE.utils.isObject(LyrcompareImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(LyrcompareImplControl)))) {
+      IDEE.exception(getValue('exception'));
     }
 
     // 2. implementation of this control
@@ -54,28 +55,28 @@ export default class LyrCompareControl extends M.Control {
     /**
      * Layer selected A
      * @public
-     * @type {M.layer}
+     * @type {IDEE.layer}
      */
     this.layerSelectedA = null;
 
     /**
      * Layer selected B
      * @public
-     * @type {M.layer}
+     * @type {IDEE.layer}
      */
     this.layerSelectedB = null;
 
     /**
      * Layer selected C
      * @public
-     * @type {M.layer}
+     * @type {IDEE.layer}
      */
     this.layerSelectedC = null;
 
     /**
      * Layer selected D
      * @public
-     * @type {M.layer}
+     * @type {IDEE.layer}
      */
     this.layerSelectedD = null;
 
@@ -148,7 +149,7 @@ export default class LyrCompareControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
@@ -156,7 +157,7 @@ export default class LyrCompareControl extends M.Control {
 
     // Se hace esto para poder añadir ol3Layers a la instancia
     // this.layers. Ol3Layers tiene valor cuando se añade al mapa
-    this.map.on(M.evt.ADDED_LAYER, (evt) => {
+    this.map.on(IDEE.evt.ADDED_LAYER, (evt) => {
       evt.forEach((l) => {
         if (l.type === 'WMS' || l.type === 'WMTS') {
           this.layers = this.layers.map((layers) => {
@@ -169,7 +170,7 @@ export default class LyrCompareControl extends M.Control {
     return new Promise((success, fail) => {
       if (this.layers.length >= 2) {
         if (this.comparisonMode === 3 && this.layers.length < 4) {
-          M.dialog.error(getValue('no_layers_plugin'), 'lyrcompare');
+          IDEE.dialog.error(getValue('no_layers_plugin'), 'lyrcompare');
           this.comparisonMode = 0;
         }
 
@@ -186,7 +187,7 @@ export default class LyrCompareControl extends M.Control {
           }, 200);
         }
       } else {
-        M.dialog.error(getValue('no_layers_plugin'), 'lyrcompare');
+        IDEE.dialog.error(getValue('no_layers_plugin'), 'lyrcompare');
       }
     });
   }
@@ -232,12 +233,12 @@ export default class LyrCompareControl extends M.Control {
     };
 
     // template with default options
-    this.template = M.template.compileSync(template, options);
+    this.template = IDEE.template.compileSync(template, options);
     this.setEventsAndValues();
     this.updateControls();
 
     if (this.layers.length === 0) {
-      M.dialog.error(getValue('no_layers_plugin'));
+      IDEE.dialog.error(getValue('no_layers_plugin'));
     } else {
       // e2m: Toogle activate/desactivate vcurtain, hcurtain, multicurtain
       // ---> comparisonMode = 1, 2, 3
@@ -353,7 +354,7 @@ export default class LyrCompareControl extends M.Control {
 
         // e2m: de esta forma pasamos los parámetros en forma de array
         if (this.checkLayersAreDifferent(...lstLayers) === false) {
-          M.dialog.info(getValue('advice_sameLayer'));
+          IDEE.dialog.info(getValue('advice_sameLayer'));
           if (item.id === 'm-lyrcompare-lyrA') {
             this.template.querySelector(`#${item.id}`).value = this.layerSelectedA.name;
           } else if (item.id === 'm-lyrcompare-lyrB') {
@@ -741,7 +742,7 @@ export default class LyrCompareControl extends M.Control {
   }
 
   /**
-   * This function transform string to M.Layer
+   * This function transform string to IDEE.Layer
    *
    * @public
    * @function
@@ -758,7 +759,7 @@ export default class LyrCompareControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    * @return {Boolean}
    */

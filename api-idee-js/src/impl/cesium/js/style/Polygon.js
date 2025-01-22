@@ -1,15 +1,15 @@
 /**
- * @module M/impl/style/Polygon
+ * @module IDEE/impl/style/Polygon
  */
-import * as Baseline from 'M/style/Baseline';
-import * as Align from 'M/style/Align';
-import * as HeightReference from 'M/style/HeightReference';
+import * as Baseline from 'IDEE/style/Baseline';
+import * as Align from 'IDEE/style/Align';
+import * as HeightReference from 'IDEE/style/HeightReference';
 import {
   isNullOrEmpty,
   extend,
   isUndefined,
   isString,
-} from 'M/util/Utils';
+} from 'IDEE/util/Utils';
 import {
   Entity,
   Color,

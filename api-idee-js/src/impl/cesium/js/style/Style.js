@@ -1,5 +1,5 @@
 /**
- * @module M/impl/Style
+ * @module IDEE/impl/Style
  */
 
 /**
@@ -26,7 +26,7 @@ class Style {
     /**
      * Capa a la que se aplica este estilo.
      * @private
-     * @type {M.layer.Vector}
+     * @type {IDEE.layer.Vector}
      */
     this.layer_ = null;
 
@@ -46,7 +46,7 @@ class Style {
    * Este método aplica estilos a la capa.
    * @public
    * @function
-   * @param {M.layer.Vector} layer Capa.
+   * @param {IDEE.layer.Vector} layer Capa.
    * @api stable
    */
   applyToLayer(layer) {
@@ -59,7 +59,7 @@ class Style {
    *
    * @public
    * @function
-   * @param {M.Feature} feature Objetos geográficos.
+   * @param {IDEE.Feature} feature Objetos geográficos.
    * @api stable
    */
   applyToFeature(feature) {

@@ -1,5 +1,5 @@
 /**
- * @module M/window
+ * @module IDEE/window
  */
 
 /**

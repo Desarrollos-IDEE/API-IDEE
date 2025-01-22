@@ -1,5 +1,5 @@
 /**
- * @module M/ui/Panel
+ * @module IDEE/ui/Panel
  */
 import 'assets/css/panel';
 import panelTemplate from 'templates/panel';
@@ -38,7 +38,7 @@ class Panel extends MObject {
    * - collapsedButtonClass: Clase CSS del botón del panel.
    * - tooltip: Información sobre la herramienta.
    * - order: Orden del panel respecto a los otros paneles y su posición.
-   * @extends {M.Object}
+   * @extends {IDEE.Object}
    * @api
    */
   constructor(name, options = {}) {
@@ -54,7 +54,7 @@ class Panel extends MObject {
 
     /**
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      * @expose
      */
     this._map = null;
@@ -211,7 +211,7 @@ class Panel extends MObject {
    *
    * @public
    * @function
-   * @param {M.map} map Mapa.
+   * @param {IDEE.map} map Mapa.
    * @param {HTMLElement} areaContainer Elemento contenedor.
    * @api
    */
@@ -358,7 +358,7 @@ class Panel extends MObject {
    *
    * @public
    * @function
-   * @return {array<M.Control>} Control.
+   * @return {array<IDEE.Control>} Control.
    * @api
    */
   getControls(filter) {
@@ -390,7 +390,7 @@ class Panel extends MObject {
    *
    * @public
    * @function
-   * @param {array<M.Control>} controlsParam Control.
+   * @param {array<IDEE.Control>} controlsParam Control.
    * @api
    */
   addControls(controlsParam) {
@@ -432,7 +432,7 @@ class Panel extends MObject {
    *
    * @public
    * @function
-   * @param {array<M.Control>} controlParam Control.
+   * @param {array<IDEE.Control>} controlParam Control.
    * @returns {Boolean} Verdadero pertenece, falso no.
    *
    * @api
@@ -454,7 +454,7 @@ class Panel extends MObject {
    *
    * @public
    * @function
-   * @param {array<M.Control>} controlsParam Control.
+   * @param {array<IDEE.Control>} controlsParam Control.
    * @api
    */
   removeControls(controlsParam) {
@@ -483,7 +483,7 @@ class Panel extends MObject {
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
    * @function
-   * @param {array<M.Control>} controls Control.
+   * @param {array<IDEE.Control>} controls Control.
    * @api
    */
   _removeControl(controlsParam) {
@@ -533,7 +533,7 @@ class Panel extends MObject {
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
    * @function
-   * @param {array<M.Control>} controls Control.
+   * @param {array<IDEE.Control>} controls Control.
    * @api
    */
   _moveControlView(control) {
@@ -549,7 +549,7 @@ class Panel extends MObject {
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
    * @function
-   * @param {array<M.Control>} controls Control.
+   * @param {array<IDEE.Control>} controls Control.
    * @api
    */
   _manageActivation(control) {

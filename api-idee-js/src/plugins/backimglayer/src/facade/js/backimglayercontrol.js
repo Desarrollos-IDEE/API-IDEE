@@ -1,5 +1,5 @@
 /**
- * @module M/control/BackImgLayerControl
+ * @module IDEE/control/BackImgLayerControl
  */
 
 import template from '../../templates/backimglayer';
@@ -19,10 +19,10 @@ import { getValue } from './i18n/language';
  * Background layers selector api-idee control.
  * This control puts a set of layers in the background of the map.
  */
-export default class BackImgLayerControl extends M.Control {
+export default class BackImgLayerControl extends IDEE.Control {
   /**
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor({
@@ -38,11 +38,11 @@ export default class BackImgLayerControl extends M.Control {
     empty,
     order,
   }) {
-    const impl = new M.impl.Control();
+    const impl = new IDEE.impl.Control();
     let numColumnsV;
     super(impl, 'BackImgLayer');
     map.getBaseLayers().forEach((layer) => {
-      layer.on(M.evt.LOAD, map.removeLayers(layer));
+      layer.on(IDEE.evt.LOAD, map.removeLayers(layer));
     });
     this.layers = [];
 
@@ -82,16 +82,16 @@ export default class BackImgLayerControl extends M.Control {
         backgroundLayers = backgroundLayers.map((urlLayer) => {
           let aux = null;
           if (/QUICK.*/.test(urlLayer)) {
-            aux = M.getQuickLayers(urlLayer.replace('QUICK*', ''));
+            aux = IDEE.getQuickLayers(urlLayer.replace('QUICK*', ''));
           }
           let apiIdeeLayer;
-          if (!M.utils.isNullOrEmpty(aux)) {
+          if (!IDEE.utils.isNullOrEmpty(aux)) {
             apiIdeeLayer = aux;
             if (typeof apiIdeeLayer === 'string') {
-              apiIdeeLayer = new M.layer.WMTS(apiIdeeLayer);
+              apiIdeeLayer = new IDEE.layer.WMTS(apiIdeeLayer);
             }
           } else {
-            apiIdeeLayer = new M.layer.WMTS(urlLayer);
+            apiIdeeLayer = new IDEE.layer.WMTS(urlLayer);
           }
           return apiIdeeLayer;
         });
@@ -129,13 +129,13 @@ export default class BackImgLayerControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
     this.map = map;
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           layers: this.layers,
           empty: this.empty,
@@ -148,7 +148,7 @@ export default class BackImgLayerControl extends M.Control {
       this.accessibilityTab(html);
       this.html = html;
       this.listen(html);
-      this.on(M.evt.ADDED_TO_MAP, () => {
+      this.on(IDEE.evt.ADDED_TO_MAP, () => {
         const visible = this.visible;
         if (this.idLayer > -1) {
           this.activeLayer = this.idLayer;
@@ -215,10 +215,10 @@ export default class BackImgLayerControl extends M.Control {
       this.activeLayer = i;
       e.currentTarget.parentElement
         .querySelector(`#m-backimglayer-lyr-${layersInfo.id}`).classList.add('activeBackimglayerDiv');
-      // M.proxy(false);
+      // IDEE.proxy(false);
       this.map.addLayers(layers);
       // setTimeout(() => {
-      // M.proxy(true);
+      // IDEE.proxy(true);
       /*
         layers.forEach((l) => {
           l.setVisible(true);
@@ -277,7 +277,7 @@ export default class BackImgLayerControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

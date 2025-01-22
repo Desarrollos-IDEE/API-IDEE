@@ -1,5 +1,5 @@
 /**
- * @module M/impl/cesium/js/ext/CesiumStyleFontSymbol
+ * @module IDEE/impl/cesium/js/ext/CesiumStyleFontSymbol
  */
 
 /* Copyright (c) 2015 Jean-Marc VIGLINO,

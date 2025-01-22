@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/ComparepanelControl
+ * @module IDEE/impl/control/ComparepanelControl
  */

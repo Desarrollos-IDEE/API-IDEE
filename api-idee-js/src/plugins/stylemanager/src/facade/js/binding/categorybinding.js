@@ -27,7 +27,7 @@ export class CategoryBinding extends Binding {
   /**
    * This function sets the attribute layer to the binding.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    */
   setLayer(layer) {
     this.layer_ = layer;
@@ -248,9 +248,9 @@ export class CategoryBinding extends Binding {
     if (this.style_ != null && flag === true) {
       value = this.style_.getAttributeName();
     }
-    const attributeExists = !M.utils.isNullOrEmpty(value);
+    const attributeExists = !IDEE.utils.isNullOrEmpty(value);
     const values = this.getAllValuesAttribute(value)
-      .filter((val) => !(M.utils.isNullOrEmpty(val)))
+      .filter((val) => !(IDEE.utils.isNullOrEmpty(val)))
       .map((valu) => {
         return {
           name: valu,
@@ -321,7 +321,7 @@ export class CategoryBinding extends Binding {
    */
   setAttributes() {
     const layer = this.layer_;
-    if (layer instanceof M.layer.Vector) {
+    if (layer instanceof IDEE.layer.Vector) {
       const selected = this.style_ == null ? '' : this.style_.getAttributeName();
       const attributeNames = this.filterAttributesFeature('string').map((element) => {
         return {
@@ -365,7 +365,7 @@ export class CategoryBinding extends Binding {
         category.geometry_ = 'polygon';
         break;
       default:
-        M.dialog.error(getValue('exception.geomNotSupported'), 'Error');
+        IDEE.dialog.error(getValue('exception.geomNotSupported'), 'Error');
     }
     /* eslint-enable no-param-reassign */
   }
@@ -516,7 +516,7 @@ export class CategoryBinding extends Binding {
         geometry = 'polygon';
         break;
       default:
-        M.dialog.error(getValue('geomNotSupported'), 'Error');
+        IDEE.dialog.error(getValue('geomNotSupported'), 'Error');
     }
     return geometry;
   }
@@ -564,7 +564,7 @@ export class CategoryBinding extends Binding {
     const opts = this.generateOptions();
     let style = null;
     if (opts.attributeName !== '') {
-      style = new M.style.Category(opts.attributeName, opts.options);
+      style = new IDEE.style.Category(opts.attributeName, opts.options);
     }
     return style;
   }

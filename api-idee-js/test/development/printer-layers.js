@@ -1,19 +1,19 @@
 import Printer from 'plugins/printer/facade/js/printer';
 import SelectionDraw from 'plugins/printer/facade/js/selectiondraw';
 
-const mapjs = M.map({
+const mapjs = IDEE.map({
   container: 'map',
   // wmcfiles: ['cdau'],
 });
 
-const layerinicial = new M.layer.WMS({
+const layerinicial = new IDEE.layer.WMS({
   url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
   name: 'AU.AdministrativeBoundary',
   legend: 'Limite administrativo',
   tiled: false,
 }, {});
 
-const campamentos = new M.layer.GeoJSON({
+const campamentos = new IDEE.layer.GeoJSON({
   name: 'Campamentos',
   url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/sepim/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=sepim:campamentos&outputFormat=application/json&',
   extract: true,

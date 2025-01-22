@@ -1,6 +1,6 @@
 /**
- * @module M/parameter/tms
- * @example import tmsParameter from 'M/parameter/tms';
+ * @module IDEE/parameter/tms
+ * @example import tmsParameter from 'IDEE/parameter/tms';
  */
 import {
   isArray, isNullOrEmpty, isObject, isString, normalize,

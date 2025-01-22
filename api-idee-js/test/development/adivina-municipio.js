@@ -1,8 +1,8 @@
-import { map as Mmap } from 'M/api-idee';
-import WFS from 'M/layer/WFS';
-import Polygon from 'M/style/Polygon';
-import Category from 'M/style/Category';
-import { SELECT_FEATURES as SelectFeaturesEvt, LOAD as LoadEvt } from 'M/event/eventtype';
+import { map as Mmap } from 'IDEE/api-idee';
+import WFS from 'IDEE/layer/WFS';
+import Polygon from 'IDEE/style/Polygon';
+import Category from 'IDEE/style/Category';
+import { SELECT_FEATURES as SelectFeaturesEvt, LOAD as LoadEvt } from 'IDEE/event/eventtype';
 
 const mapajs = Mmap({
   container: 'map',

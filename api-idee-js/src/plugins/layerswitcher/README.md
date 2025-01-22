@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
 </p>
-<h1 align="center"><strong>API IDEE</strong> <small>🔌 M.plugin.Layerswitcher</small></h1>
+<h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.Layerswitcher</small></h1>
 
 # Descripción
 
@@ -163,10 +163,10 @@ https://componentes.cnig.es/api-idee/?layerswitcher=position*collapsed*collapsib
 
 ### Ejemplo de uso
 
-Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad M.utils.encodeBase64.
+Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad IDEE.utils.encodeBase64.
 Ejemplo:
 ```javascript
-M.utils.encodeBase64(obj_params);
+IDEE.utils.encodeBase64(obj_params);
 ```
 
 Ejemplo de constructor del plugin:
@@ -193,11 +193,11 @@ https://componentes.cnig.es/api-idee?layerswitcher=base64=eyJjb2xsYXBzZWQiOmZhbH
 # Ejemplo de uso
 
 ```javascript
-const map = M.map({
+const map = IDEE.map({
   container: 'map'
 });
 
-const mp = new M.plugin.Layerswitcher({
+const mp = new IDEE.plugin.Layerswitcher({
   collapsed: false,
   position: 'TL',
   tooltip: 'Capas',

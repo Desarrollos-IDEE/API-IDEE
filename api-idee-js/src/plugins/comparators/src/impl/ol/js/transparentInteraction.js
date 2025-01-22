@@ -1,5 +1,5 @@
 /**
- * @module M/impl/control/TransparentInteraction
+ * @module IDEE/impl/control/TransparentInteraction
 
  */
 export default class TransparentInteraction extends ol.interaction.Pointer {

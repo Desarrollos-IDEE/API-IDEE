@@ -3,7 +3,7 @@
     "name": "measurebar",
     "separator": "*"
   },
-  "constructor": "M.plugin.MeasureBar",
+  "constructor": "IDEE.plugin.MeasureBar",
   "parameters": [{
     "type": "object",
     "properties": [{

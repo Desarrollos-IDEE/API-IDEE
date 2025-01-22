@@ -1,5 +1,5 @@
 /**
- * @module M/RenderFeature
+ * @module IDEE/RenderFeature
  */
 import RenderFeatureImpl from 'impl/feature/RenderFeature';
 import Base from '../Base';
@@ -8,7 +8,7 @@ import { isNullOrEmpty, generateRandom } from '../util/Utils';
 /**
  * @classdesc
  * Crea un objeto geográfico de renderizado.
- * @extends {M.facade.Base}
+ * @extends {IDEE.facade.Base}
  * @api
  */
 class RenderFeature extends Base {
@@ -22,7 +22,7 @@ class RenderFeature extends Base {
     /**
      * Implementación de la clase.
      * @public
-     * @type {M.impl.Feature}
+     * @type {IDEE.impl.Feature}
      */
     const impl = new RenderFeatureImpl();
     super(impl);
@@ -123,7 +123,7 @@ class RenderFeature extends Base {
    * Este método retorna si dos objetos geográficos son iguales.
    * @public
    * @function
-   * @param {M.Feature} feature Objeto geográfico.
+   * @param {IDEE.Feature} feature Objeto geográfico.
    * @return {bool} Retorna el resultado de comparar los dos objetos geográficos.
    * @api
    */

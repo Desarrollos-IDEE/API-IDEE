@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
-import MVT from 'M/layer/MVT';
-import Generic from 'M/style/Generic';
+import MVT from 'IDEE/layer/MVT';
+import Generic from 'IDEE/style/Generic';
 import OLSourceVectorTile from 'ol/source/VectorTile';
 import MVTFormatter from 'ol/format/MVT';
 

@@ -1,13 +1,13 @@
 /**
- * @module M/impl/control/CompareMirrorpanel
+ * @module IDEE/impl/control/CompareMirrorpanel
  */
-export default class CompareMirrorpanel extends M.impl.Control {
+export default class CompareMirrorpanel extends IDEE.impl.Control {
   /**
    * This function adds the control to the specified map
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api stable
    */

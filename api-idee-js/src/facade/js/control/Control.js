@@ -1,5 +1,5 @@
 /**
- * @module M/Control
+ * @module IDEE/Control
  */
 import { isUndefined, isNullOrEmpty } from '../util/Utils';
 import Exception from '../exception/exception';
@@ -15,7 +15,7 @@ import { getValue } from '../i18n/language';
  * @property {String} name Nombre del control.
  *
  * @api
- * @extends {M.Base}
+ * @extends {IDEE.Base}
  */
 class Control extends Base {
   /**
@@ -87,7 +87,7 @@ class Control extends Base {
    *
    * @public
    * @function
-   * @param {M.Map} impl Implementación del mapa.
+   * @param {IDEE.Map} impl Implementación del mapa.
    * @api
    */
   setImpl(implParam) {
@@ -110,7 +110,7 @@ class Control extends Base {
    *
    * @public
    * @function
-   * @param {M.Map} map Mapa.
+   * @param {IDEE.Map} map Mapa.
    * @api
    * @export
    */
@@ -135,7 +135,7 @@ class Control extends Base {
    * Este método añade la vista al mapa.
    * @public
    * @function
-   * @param {M.Map} map Mapa.
+   * @param {IDEE.Map} map Mapa.
    * @api
    * @export
    */
@@ -234,7 +234,7 @@ class Control extends Base {
    *
    * @public
    * @function
-   * @param {M.ui.Panel} panel Panel.
+   * @param {IDEE.ui.Panel} panel Panel.
    * @api
    * @export
    */
@@ -247,7 +247,7 @@ class Control extends Base {
    *
    * @public
    * @function
-   * @returns {M.ui.Panel} Panel.
+   * @returns {IDEE.ui.Panel} Panel.
    * @api
    * @export
    */

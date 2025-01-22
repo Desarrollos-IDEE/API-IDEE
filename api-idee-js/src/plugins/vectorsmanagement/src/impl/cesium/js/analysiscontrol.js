@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/Analysiscontrol
+ * @module IDEE/impl/control/Analysiscontrol
  */

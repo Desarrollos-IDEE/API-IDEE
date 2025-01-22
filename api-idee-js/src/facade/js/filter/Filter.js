@@ -1,13 +1,13 @@
 /**
- * @module M/filter
+ * @module IDEE/filter
  */
 import FilterFunction from './Function';
 /**
   * Esta función une los filtros para que se cumplan todos.
   *
   * @function
-  * @param {Array<M.Fiter>} filters Filtros para unirse.
-  * @return {M.Filter} Filtro.
+  * @param {Array<IDEE.Fiter>} filters Filtros para unirse.
+  * @return {IDEE.Filter} Filtro.
   * @api
   */
 export const AND = (filters) => {
@@ -32,8 +32,8 @@ export const AND = (filters) => {
   * Esta función une los filtros para que al menos uno de los filtros se ejecute.
   *
   * @function
-  * @param {Array<M.Fiter>} filters Filtros para unirse.
-  * @return {M.Filter} Filtro.
+  * @param {Array<IDEE.Fiter>} filters Filtros para unirse.
+  * @return {IDEE.Filter} Filtro.
   * @api
   */
 export const OR = (filters) => {
@@ -58,8 +58,8 @@ export const OR = (filters) => {
   * Este método ejecuta lo contrario del filtro.
   *
   * @function
-  * @param {M.Fiter} filters Filtros para unirse.
-  * @return {M.Filter} Filtro opuesto.
+  * @param {IDEE.Fiter} filters Filtros para unirse.
+  * @return {IDEE.Filter} Filtro opuesto.
   * @api
   */
 export const NOT = (filter) => {
@@ -76,7 +76,7 @@ export const NOT = (filter) => {
   * @function
   * @param {string} nameAtt Nombre del atributo.
   * @param {string|number} value El valor que se compara.
-  * @return {M.Filter} Filtro.
+  * @return {IDEE.Filter} Filtro.
   * @api
   */
 export const EQUAL = (nameAtt, value) => {
@@ -94,7 +94,7 @@ export const EQUAL = (nameAtt, value) => {
   * @function
   * @param {string} nameAtt Nombre del atributo.
   * @param {string|number} value Expresión regular.
-  * @return {M.Filter} Filtro.
+  * @return {IDEE.Filter} Filtro.
   * @api
   */
 export const LIKE = (nameAtt, value) => {
@@ -111,7 +111,7 @@ export const LIKE = (nameAtt, value) => {
   * @function
   * @param {string} nameAtt Nombre del atributo.
   * @param {string|number} value Valor.
-  * @return {M.Filter} Filtro.
+  * @return {IDEE.Filter} Filtro.
   * @api
   */
 export const LT = (nameAtt, value) => {
@@ -128,7 +128,7 @@ export const LT = (nameAtt, value) => {
   * @function
   * @param {string} nameAtt Nombre del atributo.
   * @param {string|number} value Valor.
-  * @return {M.Filter} Filtro.
+  * @return {IDEE.Filter} Filtro.
   * @api
   */
 export const GT = (nameAtt, value) => {
@@ -145,7 +145,7 @@ export const GT = (nameAtt, value) => {
   * @function
   * @param {string} nameAtt Nombre del atributo.
   * @param {string|number} value Valor.
-  * @return {M.Filter} Filtro.
+  * @return {IDEE.Filter} Filtro.
   * @api
   */
 export const LTE = (nameAtt, value) => {
@@ -162,7 +162,7 @@ export const LTE = (nameAtt, value) => {
   * @function
   * @param {string} nameAtt Nombre del atributo.
   * @param {string|number} value Valor.
-  * @return {M.Filter} Filtro.
+  * @return {IDEE.Filter} Filtro.
   * @api
   */
 export const GTE = (nameAtt, value) => {

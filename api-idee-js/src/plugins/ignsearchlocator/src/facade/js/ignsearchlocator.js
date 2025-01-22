@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/IGNSearchLocator
+ * @module IDEE/plugin/IGNSearchLocator
  */
 import '../assets/css/ignsearchlocator';
 import '../assets/css/fonts';
@@ -76,14 +76,14 @@ const IGNSEARCH_TYPES_CONFIGURATION = [
   'Relieve submarino',
 ];
 
-export default class IGNSearchLocator extends M.Plugin {
+export default class IGNSearchLocator extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api
    */
@@ -92,14 +92,14 @@ export default class IGNSearchLocator extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -276,7 +276,7 @@ export default class IGNSearchLocator extends M.Plugin {
     this.requestStreet_ = (options.requestStreet && options.requestStreet.replace(/\^/g, '&')) || '';
 
     let geocoderCoords = options.geocoderCoords;
-    if (M.utils.isString(geocoderCoords)) {
+    if (IDEE.utils.isString(geocoderCoords)) {
       geocoderCoords = geocoderCoords.split(',');
       geocoderCoords = [Number.parseFloat(geocoderCoords[0]),
         Number.parseFloat(geocoderCoords[1]),
@@ -362,7 +362,7 @@ export default class IGNSearchLocator extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).ignsearchlocator;
+    return IDEE.language.getTranslation(lang).ignsearchlocator;
   }
 
   /**
@@ -370,7 +370,7 @@ export default class IGNSearchLocator extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api
    */
   addTo(map) {
@@ -414,9 +414,9 @@ export default class IGNSearchLocator extends M.Plugin {
     if (this.position === 'TC') {
       this.collapsible = false;
     }
-    this.panel_ = new M.ui.Panel('IGNSearchLocator', {
+    this.panel_ = new IDEE.ui.Panel('IGNSearchLocator', {
       collapsible: this.collapsible,
-      position: M.ui.position[this.position],
+      position: IDEE.ui.position[this.position],
       collapsed: this.isCollapsed,
       className: 'ign-searchlocator-panel',
       collapsedButtonClass: 'icon-ignsearch',
@@ -491,7 +491,7 @@ export default class IGNSearchLocator extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Plugin} plugin to compare
+   * @param {IDEE.Plugin} plugin to compare
    * @api
    */
   equals(plugin) {

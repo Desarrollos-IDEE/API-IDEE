@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/Vectors
+ * @module IDEE/plugin/Vectors
  */
 import '../assets/css/vectors';
 import '../assets/css/fonts';
@@ -10,14 +10,14 @@ import { getValue } from './i18n/language';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class Vectors extends M.Plugin {
+export default class Vectors extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -26,14 +26,14 @@ export default class Vectors extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -103,7 +103,7 @@ export default class Vectors extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).vectors;
+    return IDEE.language.getTranslation(lang).vectors;
   }
 
   /**
@@ -111,16 +111,16 @@ export default class Vectors extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
     this.map_ = map;
-    this.panel_ = new M.ui.Panel('Vectors', {
+    this.panel_ = new IDEE.ui.Panel('Vectors', {
       className: 'm-vectors',
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       collapsedButtonClass: 'icon-vectors',
       tooltip: getValue('tooltip'),
       order: this.order,
@@ -133,13 +133,13 @@ export default class Vectors extends M.Plugin {
 
     this.controls_.push(this.control_);
 
-    this.map_.on(M.evt.ADDED_LAYER, () => {
+    this.map_.on(IDEE.evt.ADDED_LAYER, () => {
       if (this.control_ !== null) {
         this.control_.renderLayers();
       }
     });
 
-    this.map_.on(M.evt.REMOVED_LAYER, () => {
+    this.map_.on(IDEE.evt.REMOVED_LAYER, () => {
       if (this.control_ !== null) {
         this.control_.renderLayers();
       }

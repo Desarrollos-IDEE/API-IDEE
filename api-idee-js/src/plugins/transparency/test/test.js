@@ -1,14 +1,14 @@
 import Transparency from 'facade/transparency';
 import ShareMap from '../../sharemap/src/facade/js/sharemap';
 
-M.language.setLang('en');
+IDEE.language.setLang('en');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   controls: ['panzoom', 'scale*true'],
 });
 
-const wfs = new M.layer.WFS({
+const wfs = new IDEE.layer.WFS({
   url: "http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?",
   namespace: "tematicos",
   name: "Provincias",
@@ -48,7 +48,7 @@ const pluginTransparency = new Transparency({
 // WMTS*http://servicios.idee.es/wmts/ocupacion-suelo?*LC.LandCoverSurfaces*GoogleMapsCompatible*usoSuelo
 
 // 3 WMS y WMTS como objetos
-// let wmts = new M.layer.WMTS({
+// let wmts = new IDEE.layer.WMTS({
 //   url: "http://www.ideandalucia.es/geowebcache/service/wmts",
 //   name: "toporaster",
 //   matrixSet: "EPSG:25830",
@@ -58,7 +58,7 @@ const pluginTransparency = new Transparency({
 // });
 // map.addWMTS(wmts);
 
-// const wms = new M.layer.WMS({
+// const wms = new IDEE.layer.WMS({
 //   url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
 //   name: 'AU.AdministrativeBoundary',
 //   legend: 'Limite administrativo',
@@ -86,9 +86,9 @@ const shareMap = new ShareMap({
   position: 'BR',
 })
 
-// const mp6 = new M.plugin.ZoomExtent();
+// const mp6 = new IDEE.plugin.ZoomExtent();
 
-// const mp7 = new M.plugin.XYLocator({
+// const mp7 = new IDEE.plugin.XYLocator({
 //   position: 'TL',
 // });
 

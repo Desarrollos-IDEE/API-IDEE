@@ -1,5 +1,5 @@
 /**
- * @module M/impl/ol/js/projections
+ * @module IDEE/impl/ol/js/projections
  */
 
 import proj4 from 'proj4';

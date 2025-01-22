@@ -1,5 +1,5 @@
 /**
- * @module M/control/BeautyTOCControl
+ * @module IDEE/control/BeautyTOCControl
  */
 
 import BeautyTOCImplControl from '../../impl/ol/js/beautytoccontrol';
@@ -16,16 +16,17 @@ const listenAll = (html, selector, type, callback) => {
     .addEventListener(type, (evt) => callback(evt)));
 };
 
-export default class BeautyTOCControl extends M.Control {
+export default class BeautyTOCControl extends IDEE.Control {
   /**
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor() {
-    if (M.utils.isUndefined(BeautyTOCImplControl) || (M.utils.isObject(BeautyTOCImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(BeautyTOCImplControl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(BeautyTOCImplControl)
+      || (IDEE.utils.isObject(BeautyTOCImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(BeautyTOCImplControl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
     const impl = new BeautyTOCImplControl();
     super(impl, 'BeautyTOC');
@@ -36,14 +37,14 @@ export default class BeautyTOCControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api
    */
   createView(map) {
     this.map_ = map;
     return new Promise((success, fail) => {
       const templateVars = this.getTemplateVariables();
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: templateVars,
       });
       this.panelHTML_ = html;
@@ -63,7 +64,7 @@ export default class BeautyTOCControl extends M.Control {
     const layersOpts = layers.map((layer) => {
       return {
         // disabled: this.getLayerDisabled(layer),
-        visible: (layer instanceof M.layer.WMTS
+        visible: (layer instanceof IDEE.layer.WMTS
           ? layer.options.visibility === true
           : layer.isVisible()),
         id: layer.name,
@@ -99,7 +100,7 @@ export default class BeautyTOCControl extends M.Control {
    */
   render(scroll) {
     const templateVars = this.getTemplateVariables();
-    const html = M.template.compileSync(template, {
+    const html = IDEE.template.compileSync(template, {
       vars: templateVars,
     });
     this.panelHTML_.innerHTML = html.innerHTML;
@@ -139,13 +140,13 @@ export default class BeautyTOCControl extends M.Control {
         .concat(height)
         .concat('&BBOX=')
         .concat(bboxFormatted.join(','));
-      M.dialog.info(getValue('exception.cobertura'));
+      IDEE.dialog.info(getValue('exception.cobertura'));
       setTimeout(() => {
         document.querySelector('div.m-dialog > div > div > div.m-button').innerHTML = '';
       }, 10);
-      M.proxy(false);
-      M.remote.get(urlCheck).then((response) => {
-        M.proxy(true);
+      IDEE.proxy(false);
+      IDEE.remote.get(urlCheck).then((response) => {
+        IDEE.proxy(true);
         const rowImage = Buffer.from(response.text).toString('base64');
         const outputImg = document.createElement('img');
         outputImg.src = 'data:image/png;base64,'.concat(rowImage);
@@ -156,7 +157,7 @@ export default class BeautyTOCControl extends M.Control {
             parent.removeChild(dialog);
           });
 
-          const visibility = layerFound instanceof M.layer.WMTS
+          const visibility = layerFound instanceof IDEE.layer.WMTS
             ? layerFound.options.visibility
             : layerFound.isVisible();
           layerFound.setVisible(!visibility);
@@ -164,14 +165,14 @@ export default class BeautyTOCControl extends M.Control {
           this.render(scroll);
         } else {
           setTimeout(() => {
-            M.dialog.error(getValue('exception.nocobertura'), getValue('warning'));
+            IDEE.dialog.error(getValue('exception.nocobertura'), getValue('warning'));
           }, 10);
         }
       }).catch((err) => {
-        M.proxy(true);
+        IDEE.proxy(true);
       });
     } else if (layerFound !== null) {
-      const visibility = layerFound instanceof M.layer.WMTS
+      const visibility = layerFound instanceof IDEE.layer.WMTS
         ? layerFound.options.visibility
         : layerFound.isVisible();
       layerFound.setVisible(!visibility);
@@ -219,7 +220,7 @@ export default class BeautyTOCControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {

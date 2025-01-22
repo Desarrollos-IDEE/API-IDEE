@@ -1,8 +1,8 @@
-import { map as Mmap } from 'M/api-idee';
-// import WMS from 'M/layer/WMS';
-// import WMTS from 'M/layer/WMTS';
-import MVT from 'M/layer/MVT';
-import XYZ from 'M/layer/XYZ';
+import { map as Mmap } from 'IDEE/api-idee';
+// import WMS from 'IDEE/layer/WMS';
+// import WMTS from 'IDEE/layer/WMTS';
+import MVT from 'IDEE/layer/MVT';
+import XYZ from 'IDEE/layer/XYZ';
 
 
 const mapa = Mmap({
@@ -49,7 +49,7 @@ const xyz = new XYZ({
 mapa.addLayers(mvt3);
 // mapa.addXYZ(xyz);
 // mapa.addLayers(mvt4);
-// M.Popup.options.takeMeThere = true;
+// IDEE.Popup.options.takeMeThere = true;
 window.map = mapa;
 
 

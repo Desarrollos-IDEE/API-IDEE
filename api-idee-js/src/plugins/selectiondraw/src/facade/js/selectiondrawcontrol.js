@@ -1,26 +1,27 @@
 /* eslint-disable no-restricted-globals */
 /**
- * @module M/control/SelectionDrawControl
+ * @module IDEE/control/SelectionDrawControl
  */
 
 import SelectionDrawImplControl from 'impl/selectiondrawcontrol';
 import template from 'templates/selectiondraw';
 import { getValue } from './i18n/language';
 
-export default class SelectionDrawControl extends M.Control {
+export default class SelectionDrawControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor(options) {
-    if (M.utils.isUndefined(SelectionDrawImplControl) || (M.utils.isObject(SelectionDrawImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(SelectionDrawImplControl)))) {
-      M.exception(getValue('exception_selectiondrawcontrol'));
+    if (IDEE.utils.isUndefined(SelectionDrawImplControl)
+      || (IDEE.utils.isObject(SelectionDrawImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(SelectionDrawImplControl)))) {
+      IDEE.exception(getValue('exception_selectiondrawcontrol'));
     }
     const impl = new SelectionDrawImplControl(options.projection);
     super(impl, 'SelectionDraw');
@@ -32,14 +33,14 @@ export default class SelectionDrawControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api
    */
   createView(map) {
     // eslint-disable-next-line
     console.warn(getValue('exception.obsolete'));
     return new Promise((success) => {
-      const html = M.template.compileSync(template);
+      const html = IDEE.template.compileSync(template);
       const polygonBtn = html.querySelector('button#polygon');
       const pointBtn = html.querySelector('button#point');
       const clearBtn = html.querySelector('button#clear');
@@ -109,7 +110,7 @@ export default class SelectionDrawControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {

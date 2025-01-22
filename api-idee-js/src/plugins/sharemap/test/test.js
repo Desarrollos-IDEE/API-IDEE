@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import ShareMap from 'facade/sharemap';
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   controls: ['scale*true', 'location', 'backgroundlayers'],
   center: [144112, 4839064],
@@ -10,7 +10,7 @@ const map = M.map({
 window.map = map;
 
 // Layer para probar el URL/IFRAME con este incluido
-const geoJSON = new M.layer.GeoJSON({
+const geoJSON = new IDEE.layer.GeoJSON({
   name: 'cosas1_poligono',
   source: {
     type: 'FeatureCollection',

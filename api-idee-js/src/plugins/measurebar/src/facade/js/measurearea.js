@@ -6,9 +6,9 @@ import { getValue } from './i18n/language';
 export default class MeasureArea extends Measure {
   constructor(order) {
     // checks if the implementation can create WMC layers
-    if (M.utils.isUndefined(MeasureAreaImpl) || (M.utils.isObject(MeasureAreaImpl)
-      && M.utils.isNullOrEmpty(Object.keys(MeasureAreaImpl)))) {
-      M.exception(getValue('exception.impl_area'));
+    if (IDEE.utils.isUndefined(MeasureAreaImpl) || (IDEE.utils.isObject(MeasureAreaImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(MeasureAreaImpl)))) {
+      IDEE.exception(getValue('exception.impl_area'));
     }
     // implementation of this control
     const impl = new MeasureAreaImpl();

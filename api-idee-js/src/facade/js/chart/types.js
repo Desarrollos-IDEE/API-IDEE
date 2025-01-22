@@ -1,5 +1,5 @@
 /**
- * @module M/style/chart
+ * @module IDEE/style/chart
  */
 
 /**

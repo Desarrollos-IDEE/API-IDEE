@@ -1,5 +1,5 @@
-import { map } from 'M/api-idee';
-import GeoJSON from 'M/layer/GeoJSON';
+import { map } from 'IDEE/api-idee';
+import GeoJSON from 'IDEE/layer/GeoJSON';
 
 const mapjs = map({
   container: 'map',

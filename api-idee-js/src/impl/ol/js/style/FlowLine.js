@@ -1,7 +1,7 @@
 /**
- * @module M/impl/style/FlowLine
+ * @module IDEE/impl/style/FlowLine
  */
-import { isNullOrEmpty } from 'M/util/Utils';
+import { isNullOrEmpty } from 'IDEE/util/Utils';
 import OLFeature from 'ol/Feature';
 import { unByKey } from 'ol/Observable';
 import { toContext as toContextRender } from 'ol/render';
@@ -15,14 +15,14 @@ import '../ext/cspline';
  * Crea un estilo de línea de flujo
  * con parámetros especificados por el usuario.
  * @api
- * @namespace M.impl.style.FlowLine
+ * @namespace IDEE.impl.style.FlowLine
  *
  */
 class FlowLine extends Simple {
   /**
    * Constructor principal de la clase.
    * @constructor
-   * @implements {M.impl.style.Simple}
+   * @implements {IDEE.impl.style.Simple}
    * @param {object} options Opciones de estilo:
    * - color: Color de la línea.
    * - color2: Color de la línea 2.
@@ -78,7 +78,7 @@ class FlowLine extends Simple {
    * Este método aplica estilo a la capa.
    * @public
    * @function
-   * @param {M.layer.Vector} layer Capa.
+   * @param {IDEE.layer.Vector} layer Capa.
    * @api stable
    */
   applyToLayer(layer) {

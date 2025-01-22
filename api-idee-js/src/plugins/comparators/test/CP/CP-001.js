@@ -1,9 +1,9 @@
 import Comparators from 'facade/comparators';
 
-M.language.setLang('es');
-// M.proxy(false);
+IDEE.language.setLang('es');
+// IDEE.proxy(false);
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   zoom: 6,
   bbox: [323020, 4126873, 374759, 4152013],

@@ -1,6 +1,6 @@
 /* eslint-disable import/extensions */
 /**
- * @module M/plugin/StyleManager
+ * @module IDEE/plugin/StyleManager
  */
 import 'css/stylemanager';
 import 'css/font-awesome.min';
@@ -10,14 +10,14 @@ import { ColorPickerPolyfill } from './utils/colorpicker';
 import { getValue } from './i18n/language';
 import myhelp from '../../templates/myhelp';
 
-export default class StyleManager extends M.Plugin {
+export default class StyleManager extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -26,14 +26,14 @@ export default class StyleManager extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -62,13 +62,13 @@ export default class StyleManager extends M.Plugin {
 
     /**
      * @private
-     * @type {M.ui.Panel}
+     * @type {IDEE.ui.Panel}
      */
     this.panel_ = null;
 
     /**
      * @private
-     * @type {M.layer.Vector}
+     * @type {IDEE.layer.Vector}
      */
     this.layer_ = options.layer;
 
@@ -87,7 +87,7 @@ export default class StyleManager extends M.Plugin {
 
     ColorPickerPolyfill.apply(window);
 
-    M.utils.extends = M.utils.extendsObj;
+    IDEE.utils.extends = IDEE.utils.extendsObj;
   }
 
   /**
@@ -95,18 +95,18 @@ export default class StyleManager extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
     this.controls_.push(new StyleManagerControl(this.layer_));
     this.map_ = map;
-    this.panel_ = new M.ui.Panel(StyleManager.NAME, {
+    this.panel_ = new IDEE.ui.Panel(StyleManager.NAME, {
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,
       className: 'm-stylemanager',
       collapsedButtonClass: 'stylemanager-palette',
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       tooltip: this.tooltip_,
     });
     this.panel_.addControls(this.controls_);
@@ -132,7 +132,7 @@ export default class StyleManager extends M.Plugin {
    * @api
    */
   getAPIRestBase64() {
-    return `${this.name}=base64=${M.utils.encodeBase64(this.options)}`;
+    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   /**
@@ -158,9 +158,9 @@ export default class StyleManager extends M.Plugin {
     return {
       title: this.name,
       content: new Promise((success) => {
-        const html = M.template.compileSync(myhelp, {
+        const html = IDEE.template.compileSync(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}plugins/stylemanager/images/`,
+            urlImages: `${IDEE.config.API_IDEE_URL}plugins/stylemanager/images/`,
             translations: {
               help1: getValue('textHelp.help1'),
               help2: getValue('textHelp.help2'),

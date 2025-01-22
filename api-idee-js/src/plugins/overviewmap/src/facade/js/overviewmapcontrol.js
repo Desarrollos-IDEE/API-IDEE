@@ -1,25 +1,26 @@
 /**
- * @module M/control/OverviewMapControl
+ * @module IDEE/control/OverviewMapControl
  */
 
 import OverviewMapImplControl from 'impl/overviewmapcontrol';
 import template from 'templates/overviewmap';
 import { getValue } from './i18n/language';
 
-export default class OverviewMapControl extends M.Control {
+export default class OverviewMapControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(options = {}, vendorOptions = {}) {
-    if (M.utils.isUndefined(OverviewMapImplControl) || (M.utils.isObject(OverviewMapImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(OverviewMapImplControl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(OverviewMapImplControl)
+      || (IDEE.utils.isObject(OverviewMapImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(OverviewMapImplControl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
     const impl = new OverviewMapImplControl(options, vendorOptions);
     super(impl, 'OverviewMap');
@@ -32,12 +33,12 @@ export default class OverviewMapControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template);
+      const html = IDEE.template.compileSync(template);
       success(html);
     });
   }
@@ -47,7 +48,7 @@ export default class OverviewMapControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

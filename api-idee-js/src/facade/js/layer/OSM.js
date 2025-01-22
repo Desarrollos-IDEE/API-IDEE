@@ -1,5 +1,5 @@
 /**
- * @module M/layer/OSM
+ * @module IDEE/layer/OSM
  */
 import OSMImpl from 'impl/layer/OSM';
 import LayerBase from './Layer';
@@ -20,7 +20,7 @@ import { getValue } from '../i18n/language';
  * @property {Object} options Opciones OSM.
  * @property {Boolean} isbase Define si la capa es base.
  * @api
- * @extends {M.Layer}
+ * @extends {IDEE.Layer}
  */
 class OSM extends LayerBase {
   /**
@@ -80,8 +80,8 @@ class OSM extends LayerBase {
     /**
      * Implementación.
      * @public
-     * @implements {M.layer.OSMImpl}
-     * @type {M.layer.OSMImpl}
+     * @implements {IDEE.layer.OSMImpl}
+     * @type {IDEE.layer.OSMImpl}
      */
     const impl = new OSMImpl(parameters, optionsVar, vendorOptions);
 
@@ -120,7 +120,7 @@ class OSM extends LayerBase {
   /**
    * Devuelve el tipo de capa, OSM.
    * @function
-   * @return {M.LayerType.OSM} Devuelve OSM.
+   * @return {IDEE.LayerType.OSM} Devuelve OSM.
    * @api
    */
   get type() {

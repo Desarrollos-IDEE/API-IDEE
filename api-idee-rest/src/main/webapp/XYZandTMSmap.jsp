@@ -57,9 +57,9 @@
    %>
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
-        M.language.setLang(urlParams.get('language') || 'es');
+        IDEE.language.setLang(urlParams.get('language') || 'es');
 
-        const mapa = M.map({
+        const mapa = IDEE.map({
             container: 'mapjs',
             getfeatureinfo: 'plain',
             projection: 'EPSG:3857*m', // CASO EPSG:4326 'EPSG:4326*d',
@@ -67,14 +67,14 @@
             zoom: 6,
         });
 
-        const xyz = new M.layer.XYZ({
+        const xyz = new IDEE.layer.XYZ({
           url: 'https://api.maptiler.com/maps/outdoor/256/{z}/{x}/{y}@2x.png?key=7oapAXDXQ3uctBopr1Wx',
           name: 'pruebaXYZ',
           projection: 'EPSG:3857',
           displayInLayerSwitcher: true
         });
 
-        const xyz2 = new M.layer.XYZ({
+        const xyz2 = new IDEE.layer.XYZ({
           url: 'https://rts.larioja.org/mapa-base/rioja/{z}/{x}/{y}.png',
           name: 'XYZLaRioja',
           projection: 'EPSG:3857',
@@ -82,7 +82,7 @@
 	      displayInLayerSwitcher: true
         });
 
-        const tms = new M.layer.TMS({
+        const tms = new IDEE.layer.TMS({
             url: 'https://www.ign.es/resources/sismologia/tproximos/rsn_tiles/{z}/{x}/{-y}.png',
             name: 'sismología',
             projection: 'EPSG:3857',
@@ -90,28 +90,28 @@
 	      displayInLayerSwitcher: true
         });
 
-        const tms2 = new M.layer.TMS({
+        const tms2 = new IDEE.layer.TMS({
             url: 'https://www.ign.es/web/catalogo-cartoteca/resources/webmaps/data/cresques/{z}/{x}/{y}.jpg',
             name: 'Cresques',
             projection: 'EPSG:3857',
 	      displayInLayerSwitcher: true
         });
 
-        const tms3 = new M.layer.TMS({
+        const tms3 = new IDEE.layer.TMS({
             url: 'https://www.ign.es/web/catalogo-cartoteca/resources/webmaps/data/malagandlc/{z}/{x}/{y}.jpg',
             name: 'Malagandlc',
             projection: 'EPSG:3857',
 	      displayInLayerSwitcher: true
         });
 
-        const tms4 = new M.layer.TMS({
+        const tms4 = new IDEE.layer.TMS({
             url: 'https://www.ign.es/web/catalogo-cartoteca/resources/webmaps/data/mapmosaic/{z}/{x}/{y}.jpg',
             name: 'Mapmosaic',
             projection: 'EPSG:3857',
 	      displayInLayerSwitcher: true
         });
 
-        const tms5 = new M.layer.TMS({
+        const tms5 = new IDEE.layer.TMS({
             url: 'https://www.ign.es/web/resources/expo/virtual/2018/data/visual01/{z}/{x}/{y}.jpg',
             name: 'Visual01',
             projection: 'EPSG:3857',
@@ -120,7 +120,7 @@
 
         mapa.addLayers([xyz, xyz2, tms, tms2, tms3, tms4, tms5]);
 
-        const mp = new M.plugin.TOC ({
+        const mp = new IDEE.plugin.TOC ({
             collapsed: true,
             collapsible: true,
             position: 'TR',

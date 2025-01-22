@@ -1,5 +1,5 @@
 /**
- * @module M/impl/control/Rotate
+ * @module IDEE/impl/control/Rotate
  */
 import Control from './Control';
 
@@ -32,7 +32,7 @@ class Rotate extends Control {
    *
    * @public
    * @function
-   * @param {M.Map} map Map.
+   * @param {IDEE.Map} map Map.
    * @param {function} template Plantilla del control.
    * @api stable
    */

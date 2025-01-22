@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/CurtainInteraction
+ * @module IDEE/impl/control/CurtainInteraction
  */

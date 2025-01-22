@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
-import GeoJSON from 'M/layer/GeoJSON';
-import Generic from 'M/style/Generic';// eslint-disable-line no-unused-vars
+import GeoJSON from 'IDEE/layer/GeoJSON';
+import Generic from 'IDEE/style/Generic';// eslint-disable-line no-unused-vars
 import { bbox as bboxStrategy } from 'ol/loadingstrategy';// eslint-disable-line no-unused-vars
 import VectorSource from 'ol/source/Vector';// eslint-disable-line no-unused-vars
 import OLGeoJSONFormat from 'ol/format/GeoJSON';

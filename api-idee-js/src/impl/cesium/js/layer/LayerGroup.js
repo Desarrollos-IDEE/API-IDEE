@@ -1,3 +1,3 @@
 /**
- * @module M/impl/layer/LayerGroup
+ * @module IDEE/impl/layer/LayerGroup
  */

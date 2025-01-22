@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /**
- * @module M/layer/GeoTIFF
+ * @module IDEE/layer/GeoTIFF
  */
 import GeoTIFFImpl from 'impl/layer/GeoTIFF';
 import {
@@ -27,7 +27,7 @@ import { getValue } from '../i18n/language';
  * @property {Object} options Capa de opciones GeoTIFF.
  *
  * @api
- * @extends {M.Layer}
+ * @extends {IDEE.Layer}
  */
 class GeoTIFF extends LayerBase {
   /**
@@ -156,7 +156,7 @@ class GeoTIFF extends LayerBase {
    *
    * @function
    * @getter
-   * @return {M.layer.GeoTIFF.impl.options} Devuelve las opciones de la
+   * @return {IDEE.layer.GeoTIFF.impl.options} Devuelve las opciones de la
    * implementación.
    * @api
    */

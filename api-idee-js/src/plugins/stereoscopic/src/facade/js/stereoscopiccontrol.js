@@ -1,6 +1,6 @@
 /* eslint-disable default-param-last */
 /**
- * @module M/control/StereoscopicControl
+ * @module IDEE/control/StereoscopicControl
  */
 
 import StereoscopicImplControl from 'impl/stereoscopiccontrol';
@@ -8,14 +8,14 @@ import template from 'templates/stereoscopic';
 import { getValue } from './i18n/language';
 import loadAllResources from './util';
 
-export default class StereoscopicControl extends M.Control {
+export default class StereoscopicControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(
@@ -25,9 +25,10 @@ export default class StereoscopicControl extends M.Control {
     maxMaginification,
   ) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(StereoscopicImplControl) || (M.utils.isObject(StereoscopicImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(StereoscopicImplControl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(StereoscopicImplControl)
+      || (IDEE.utils.isObject(StereoscopicImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(StereoscopicImplControl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
     // 2. implementation of this control
     const impl = new StereoscopicImplControl();
@@ -46,7 +47,7 @@ export default class StereoscopicControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
@@ -54,7 +55,7 @@ export default class StereoscopicControl extends M.Control {
 
     this.map_ = map;
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           translations: {
             generate_3d_view: getValue('generate_3d_view'),
@@ -72,7 +73,7 @@ export default class StereoscopicControl extends M.Control {
             linkGlass: getValue('linkGlass'),
             maxMagnification: this.maxMaginification,
           },
-          url: `${M.config.API_IDEE_URL}plugins/stereoscopic/images/docStereo.pdf`,
+          url: `${IDEE.config.API_IDEE_URL}plugins/stereoscopic/images/docStereo.pdf`,
         },
       });
       this.addEvent(html, this.map_);
@@ -134,7 +135,7 @@ export default class StereoscopicControl extends M.Control {
     const newScript = document.createElement('script');
     newScript.type = 'module';
 
-    const url = `${M.config.API_IDEE_URL}plugins/stereoscopic/`;
+    const url = `${IDEE.config.API_IDEE_URL}plugins/stereoscopic/`;
 
     const inlineScript = document.createTextNode(` const TR3cfg = new Array();
 
@@ -303,7 +304,7 @@ export default class StereoscopicControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

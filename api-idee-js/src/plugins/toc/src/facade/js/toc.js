@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/TOC
+ * @module IDEE/plugin/TOC
  */
 import '../assets/css/toc';
 import '../assets/css/fonts';
@@ -9,10 +9,10 @@ import { getValue } from './i18n/language';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class TOC extends M.Plugin {
+export default class TOC extends IDEE.Plugin {
   /**
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api
    */
@@ -21,14 +21,14 @@ export default class TOC extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -74,7 +74,7 @@ export default class TOC extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).toc;
+    return IDEE.language.getTranslation(lang).toc;
   }
 
   /**
@@ -82,15 +82,15 @@ export default class TOC extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
     this.control = new TOCControl();
     this.map_ = map;
-    this.panel_ = new M.ui.Panel('panelTOC', {
+    this.panel_ = new IDEE.ui.Panel('panelTOC', {
       collapsible: this.collapsible_,
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       collapsedButtonClass: 'g-plugin-toc-capas2',
       className: 'm-plugin-toc',
       tooltip: this.tooltip_,
@@ -99,7 +99,7 @@ export default class TOC extends M.Plugin {
     this.panel_.addControls([this.control]);
     map.addPanels(this.panel_);
 
-    map.on(M.evt.ADDED_LAYER, () => {
+    map.on(IDEE.evt.ADDED_LAYER, () => {
       this.control.render();
     });
   }

@@ -1,3 +1,3 @@
 /**
- * @module M/impl/layer/MBTilesVector
+ * @module IDEE/impl/layer/MBTilesVector
  */

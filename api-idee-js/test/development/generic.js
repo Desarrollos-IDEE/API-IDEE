@@ -1,7 +1,7 @@
-import { map as Mmap } from 'M/api-idee';
-import WMS from 'M/layer/WMS';
-import WFS from 'M/layer/WFS';
-import Generic from 'M/layer/Generic';
+import { map as Mmap } from 'IDEE/api-idee';
+import WMS from 'IDEE/layer/WMS';
+import WFS from 'IDEE/layer/WFS';
+import Generic from 'IDEE/layer/Generic';
 import ImageWMS from 'ol/source/ImageWMS.js';
 import { Image, Vector as VectorLayer } from 'ol/layer.js';
 import VectorSource from 'ol/source/Vector.js';
@@ -9,8 +9,8 @@ import GeoJSON from 'ol/format/GeoJSON.js';
 import { bbox as bboxStrategy } from 'ol/loadingstrategy.js';
 import Style from 'ol/style/Style';
 import Stroke from 'ol/style/Stroke';
-import Polygon from 'M/style/Polygon';
-import { EQUAL } from 'M/filter/Filter';
+import Polygon from 'IDEE/style/Polygon';
+import { EQUAL } from 'IDEE/filter/Filter';
 
 const mapa = Mmap({
   container: 'map',

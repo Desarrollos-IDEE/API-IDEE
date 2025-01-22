@@ -56,14 +56,14 @@ params.forEach((param) => {
   }
 });
 
-(function (M) {
+(function (IDEE) {
   /**
    * Pixels width for mobile devices
    *
    * @private
    * @type {Number}
    */
-  M.config('MOBILE_WIDTH', '${mobile.width}');
+  IDEE.config('MOBILE_WIDTH', '${mobile.width}');
 
   /**
    * The api-idee URL
@@ -72,7 +72,7 @@ params.forEach((param) => {
    * @public
    * @api stable
    */
-  M.config('API_IDEE_URL', '${api-idee.url}');
+  IDEE.config('API_IDEE_URL', '${api-idee.url}');
 
   /**
    * The path to the api-idee proxy to send
@@ -82,7 +82,7 @@ params.forEach((param) => {
    * @public
    * @api stable
    */
-  M.config('PROXY_URL', `${(location.protocol !== 'file' && location.protocol !== 'file:') ? location.protocol : 'https:'}\${api-idee.proxy.url}`);
+  IDEE.config('PROXY_URL', `${(location.protocol !== 'file' && location.protocol !== 'file:') ? location.protocol : 'https:'}\${api-idee.proxy.url}`);
 
   /**
    * The path to the api-idee proxy to send
@@ -92,7 +92,7 @@ params.forEach((param) => {
    * @public
    * @api stable
    */
-  M.config('PROXY_POST_URL', `${(location.protocol !== 'file' && location.protocol !== 'file:') ? location.protocol : 'https:'}\${api-idee.proxy_post.url}`);
+  IDEE.config('PROXY_POST_URL', `${(location.protocol !== 'file' && location.protocol !== 'file:') ? location.protocol : 'https:'}\${api-idee.proxy_post.url}`);
 
   /**
    * The path to the api-idee templates
@@ -101,7 +101,7 @@ params.forEach((param) => {
    * @public
    * @api stable
    */
-  M.config('TEMPLATES_PATH', '${api-idee.templates.path}');
+  IDEE.config('TEMPLATES_PATH', '${api-idee.templates.path}');
 
   /**
    * The path to the api-idee theme
@@ -110,7 +110,7 @@ params.forEach((param) => {
    * @public
    * @api stable
    */
-  M.config('THEME_URL', `${(location.protocol !== 'file' && location.protocol !== 'file:') ? location.protocol : 'https:'}\${api-idee.theme.url}`);
+  IDEE.config('THEME_URL', `${(location.protocol !== 'file' && location.protocol !== 'file:') ? location.protocol : 'https:'}\${api-idee.theme.url}`);
 
   /**
    * The path to the api-idee theme
@@ -126,7 +126,7 @@ params.forEach((param) => {
    * @public
    * @api stable
    */
-  M.config('tileMappgins', {
+  IDEE.config('tileMappgins', {
     /**
      * Predefined WMC URLs
      * @const
@@ -171,7 +171,7 @@ params.forEach((param) => {
    * @public
    * @api stable
    */
-  M.config('DEFAULT_PROJ', '${api-idee.proj.default}');
+  IDEE.config('DEFAULT_PROJ', '${api-idee.proj.default}');
 
   /**
    * TMS configuration
@@ -179,7 +179,7 @@ params.forEach((param) => {
    * @private
    * @type {object}
    */
-  M.config('tms', {
+  IDEE.config('tms', {
     base: '${tms.base}',
   });
 
@@ -189,7 +189,7 @@ params.forEach((param) => {
    * @private
    * @type {String}
    */
-  M.config('terrain', {
+  IDEE.config('terrain', {
     default: '${terrain.default}',
   });
 
@@ -199,7 +199,7 @@ params.forEach((param) => {
    * @private
    * @type {object}
    */
-  M.config('controls', {
+  IDEE.config('controls', {
     default: '${controls.default}',
   });
 
@@ -209,14 +209,14 @@ params.forEach((param) => {
    * @private
    * @type {object}
    */
-  M.config('backgroundlayers', backgroundlayersOpts);
+  IDEE.config('backgroundlayers', backgroundlayersOpts);
 
   /**
    * URL of sql wasm file
    * @private
    * @type {String}
    */
-  M.config('SQL_WASM_URL', `${(location.protocol !== 'file' && location.protocol !== 'file:') ? location.protocol : 'https:'}\${sql_wasm.url}`);
+  IDEE.config('SQL_WASM_URL', `${(location.protocol !== 'file' && location.protocol !== 'file:') ? location.protocol : 'https:'}\${sql_wasm.url}`);
 
   /**
    * MAP Viewer - Center
@@ -224,7 +224,7 @@ params.forEach((param) => {
    * @private
    * @type {object}
    */
-  M.config('MAP_VIEWER_CENTER', center);
+  IDEE.config('MAP_VIEWER_CENTER', center);
 
   /**
    * MAP Viewer - Zoom
@@ -232,7 +232,7 @@ params.forEach((param) => {
    * @private
    * @type {object}
    */
-  M.config('MAP_VIEWER_ZOOM', zoom);
+  IDEE.config('MAP_VIEWER_ZOOM', zoom);
 
   /**
    * MAP Viewer - SRS
@@ -240,7 +240,7 @@ params.forEach((param) => {
    * @private
    * @type {object}
    */
-  M.config('MAP_VIEWER_SRS', srs);
+  IDEE.config('MAP_VIEWER_SRS', srs);
 
   /**
    * MAP Viewer - Layers
@@ -248,7 +248,7 @@ params.forEach((param) => {
    * @private
    * @type {object}
    */
-  M.config('MAP_VIEWER_LAYERS', layers);
+  IDEE.config('MAP_VIEWER_LAYERS', layers);
 
   /**
    * Mueve el mapa cuando se hace clic sobre un objeto
@@ -257,7 +257,7 @@ params.forEach((param) => {
    * @private
    * @type {object}
    */
-  M.config('MOVE_MAP_EXTRACT', true);
+  IDEE.config('MOVE_MAP_EXTRACT', true);
 
   /**
    * Hace el popup y dialog inteligente
@@ -265,7 +265,7 @@ params.forEach((param) => {
    * @private
    * @type {object}
    */
-  M.config('POPUP_INTELLIGENCE', {
+  IDEE.config('POPUP_INTELLIGENCE', {
     activate: true,
     sizes: {
       images: ['120px', '75px'],
@@ -281,7 +281,7 @@ params.forEach((param) => {
    * @private
    * @type {object}
    */
-  M.config('DIALOG_INTELLIGENCE', {
+  IDEE.config('DIALOG_INTELLIGENCE', {
     activate: true,
     sizes: {
       images: ['120px', '75px'],
@@ -290,4 +290,5 @@ params.forEach((param) => {
       audios: ['250px', '40px'],
     },
   });
-}(window.M));
+  window.M = IDEE;
+}(window.IDEE));

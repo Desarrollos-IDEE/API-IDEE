@@ -3,7 +3,7 @@
     "name": "help",
     "separator": "*"
   },
-  "constructor": "M.plugin.Help",
+  "constructor": "IDEE.plugin.Help",
   "parameters": [
     {
       "type": "object",

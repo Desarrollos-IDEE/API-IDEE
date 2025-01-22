@@ -1,7 +1,7 @@
-M.language.setLang('en');
+IDEE.language.setLang('en');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
 });
-const mp = new M.plugin.StoryMap();
+const mp = new IDEE.plugin.StoryMap();
 map.addPlugin(mp);

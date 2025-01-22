@@ -1,5 +1,5 @@
 /**
- * @module M/impl/control/OverviewMapControl
+ * @module IDEE/impl/control/OverviewMapControl
  */
 import { getValue } from '../../../facade/js/i18n/language';
 
@@ -10,7 +10,7 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
    * @api stable
    */
   constructor(options, vendorOptions = {}) {
-    super(M.utils.extend({
+    super(IDEE.utils.extend({
       layers: [],
       tipLabel: getValue('tooltip'),
     }, vendorOptions, true));
@@ -21,7 +21,7 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
      * @type {Number}
      */
     this.toggleDelay_ = 1000;
-    if (!M.utils.isNullOrEmpty(options.toggleDelay)) {
+    if (!IDEE.utils.isNullOrEmpty(options.toggleDelay)) {
       this.toggleDelay_ = options.toggleDelay;
     }
 
@@ -31,7 +31,7 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
      * @type {String}
      */
     this.collapsedButtonClass_ = 'overviewmap-mundo';
-    if (!M.utils.isNullOrEmpty(options.collapsedButtonClass)) {
+    if (!IDEE.utils.isNullOrEmpty(options.collapsedButtonClass)) {
       this.collapsedButtonClass_ = options.collapsedButtonClass;
     }
 
@@ -41,7 +41,7 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
       this.openedButtonClass_ = 'g-cartografia-flecha-izquierda';
     }
 
-    if (!M.utils.isNullOrEmpty(options.openedButtonClass)) {
+    if (!IDEE.utils.isNullOrEmpty(options.openedButtonClass)) {
       this.openedButtonClass_ = options.openedButtonClass;
     }
 
@@ -66,7 +66,7 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
   /**
    * This function sets de control facade of the class
    * @function
-   * @param {M/control/OverviewMap}
+   * @param {IDEE/control/OverviewMap}
    * @api
    */
   set facadeControl(c) {
@@ -76,7 +76,7 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
   /**
    * This function gets de control facade of the class
    * @function
-   * @return {M/control/OverviewMap}
+   * @return {IDEE/control/OverviewMap}
    * @api
    */
   get facadeControl() {
@@ -88,7 +88,7 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api stable
    */
@@ -103,7 +103,7 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
   /**
    * Updates the controls
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {function} template template of this control
    */
   update(map, html) {
@@ -159,9 +159,9 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
    */
   setTarget() {
     const facadeControl = this.facadeControl_;
-    if (!M.utils.isNullOrEmpty(facadeControl)) {
+    if (!IDEE.utils.isNullOrEmpty(facadeControl)) {
       const panel = facadeControl.getPanel();
-      if (!M.utils.isNullOrEmpty(panel)) {
+      if (!IDEE.utils.isNullOrEmpty(panel)) {
         this.target_ = panel.getControlsContainer();
       }
     }
@@ -186,7 +186,7 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
   //  * @function
   //  */
   // addLayer_(layer) {
-  //   layer.un(M.evt.ADDED_TO_MAP, this.addLayer_, this);
+  //   layer.un(IDEE.evt.ADDED_TO_MAP, this.addLayer_, this);
   //   this.getOverviewMap().addLayer(layer.getLayer());
   // }
 
@@ -194,15 +194,15 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
    * This function adds the layers of map to overviewmap control
    * @function
    * @public
-   * @param {M/Map}
+   * @param {IDEE/Map}
    */
   addLayers() {
     const olLayers = [];
     this.facadeMap_.getLayers().forEach((layer) => {
       if (layer.transparent === false && layer.isVisible()) {
         const olLayer = layer.getImpl().getLayer();
-        if (M.utils.isNullOrEmpty(olLayer)) {
-          // layer.getImpl().on(M.evt.ADDED_TO_MAP, this.addLayer_.bind(this));
+        if (IDEE.utils.isNullOrEmpty(olLayer)) {
+          // layer.getImpl().on(IDEE.evt.ADDED_TO_MAP, this.addLayer_.bind(this));
         } else {
           olLayers.push(olLayer);
         }
@@ -216,7 +216,7 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
         minZoom: this.zoom_,
       });
     } else {
-      newView = new M.impl.View({
+      newView = new IDEE.impl.View({
         projection: ol.proj.get(this.facadeMap_.getProjection().code),
         resolutions: this.facadeMap_.getResolutions(),
       });
@@ -247,7 +247,7 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
 
           this.ovmap_.addLayer(layer);
         } else if (parameters[0] === 'LayerGroup') {
-          const layer = new M.layer.LayerGroup(this.baseLayer_);
+          const layer = new IDEE.layer.LayerGroup(this.baseLayer_);
           layer.getImpl().addTo(this.facadeMap_, false);
           const olLayer = layer.getImpl().getLayer();
           this.ovmap_.addLayer(olLayer);

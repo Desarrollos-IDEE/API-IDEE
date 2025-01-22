@@ -3,7 +3,7 @@
     "name": "locator",
     "separator": "*"
   },
-  "constructor": "M.plugin.Locator",
+  "constructor": "IDEE.plugin.Locator",
   "parameters": [{
     "type": "object",
     "properties": [

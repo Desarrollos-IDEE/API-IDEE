@@ -1,8 +1,8 @@
 import GeometryDraw from 'facade/geometrydraw';
 
-M.language.setLang('en');
+IDEE.language.setLang('en');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   // controls: ['layerswitcher'],
 });
@@ -13,7 +13,7 @@ const mp = new GeometryDraw({
   position: 'TL',
 });
 
-map.addControls(new M.control.GetFeatureInfo('gml', { buffer: 1000 }));
+map.addControls(new IDEE.control.GetFeatureInfo('gml', { buffer: 1000 }));
 
 map.addPlugin(mp);
 

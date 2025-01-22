@@ -1,15 +1,15 @@
 /**
- * @module M/impl/control/Lyrcomparecontrol
+ * @module IDEE/impl/control/Lyrcomparecontrol
  */
 import LyrcompareInteraction from 'impl/cplyrcompareinteraction';
 
-export default class Lyrcomparecontrol extends M.impl.Control {
+export default class Lyrcomparecontrol extends IDEE.impl.Control {
   /**
    * This function adds the control to the specified map
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api stable
    */
@@ -25,7 +25,7 @@ export default class Lyrcomparecontrol extends M.impl.Control {
    *
    * @public
    * @function
-   * @param { M.Layer } layer layer to which to assign an effect
+   * @param { IDEE.Layer } layer layer to which to assign an effect
    * @param { Number } opacityVal nivel de opacidad
    * @api stable
    */
@@ -109,7 +109,7 @@ export default class Lyrcomparecontrol extends M.impl.Control {
    *
    * @public
    * @function
-   * @param { M.layer } layer layer to assign effect
+   * @param { IDEE.layer } layer layer to assign effect
    * @api stable
    */
   addLayer(layer) {
@@ -132,7 +132,7 @@ export default class Lyrcomparecontrol extends M.impl.Control {
    *
    * @public
    * @function
-   * @param { M.layer } layer to remove
+   * @param { IDEE.layer } layer to remove
    * @api stable
    */
   removeLayer(layer) {

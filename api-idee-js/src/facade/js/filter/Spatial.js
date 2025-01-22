@@ -1,5 +1,5 @@
 /**
- * @module M/filter/Spatial
+ * @module IDEE/filter/Spatial
  */
 import FilterFunction from './Function';
 import { isNullOrEmpty } from '../util/Utils';
@@ -8,7 +8,7 @@ import { isNullOrEmpty } from '../util/Utils';
   * @classdesc
   * Crea un filtro para todos los objetos geográficos
   * de "Spatial".
-  * @extends {M.filter.Function}
+  * @extends {IDEE.filter.Function}
   * @api
   */
 class Spatial extends FilterFunction {

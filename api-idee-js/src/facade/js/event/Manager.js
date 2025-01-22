@@ -1,5 +1,5 @@
 /**
- * @module M/evt/EventsManager
+ * @module IDEE/evt/EventsManager
  */
 import { isNullOrEmpty, isFunction } from '../util/Utils';
 import EventListener from './Listener';
@@ -36,7 +36,7 @@ class EventsManager {
     * @param {Object} optThis "Scope", Se asigna al evento usa el método "apply"
     * (Asignando explícitamente el objeto "this").
     * @param {Boolean} once Define si solo se activa una vez, por defecto falso.
-    * @returns {M.eventKey} Identificador del evento.
+    * @returns {IDEE.eventKey} Identificador del evento.
     * @api
     */
   add(eventType, listener, optThis, once = false) {

@@ -6,21 +6,22 @@ import { getValue } from './i18n/language';
 
 const LAYERS_PREVENT_PLUGINS = ['bufferLayer'];
 
-export default class StyleManagerControl extends M.Control {
+export default class StyleManagerControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(layer) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(StyleManagerImplControl) || (M.utils.isObject(StyleManagerImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(StyleManagerImplControl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(StyleManagerImplControl)
+      || (IDEE.utils.isObject(StyleManagerImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(StyleManagerImplControl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
 
     // 2. implementation of this control
@@ -34,7 +35,7 @@ export default class StyleManagerControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
@@ -45,7 +46,7 @@ export default class StyleManagerControl extends M.Control {
     const layers = allLayers.filter((layer) => filterLayersTyle.includes(layer.type) && layer.name !== 'selectLayer' && layer.name !== '__draw__');
 
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(stylemanager, {
+      const html = IDEE.template.compileSync(stylemanager, {
         jsonp: true,
         vars: {
           layers,
@@ -84,10 +85,10 @@ export default class StyleManagerControl extends M.Control {
    * @api stable
    */
   renderOptionsLayerParam(htmlSelect, html, layers) {
-    if (this.layer_ instanceof M.layer.Vector) {
+    if (this.layer_ instanceof IDEE.layer.Vector) {
       Promise.all(this.bindinController_.getAllCompilePromises()).then(() => {
         this.renderOptions(htmlSelect, html, this.layer_);
-        const htmlRes = M.template.compileSync(selectlayer, {
+        const htmlRes = IDEE.template.compileSync(selectlayer, {
           vars: {
             layers: layers.map((layer) => {
               return {
@@ -166,18 +167,18 @@ export default class StyleManagerControl extends M.Control {
    * @api stable
    */
   subscribeAddedLayer(htmlSelect) {
-    this.facadeMap_.on(M.evt.ADDED_LAYER, (layers) => {
+    this.facadeMap_.on(IDEE.evt.ADDED_LAYER, (layers) => {
       if (Array.isArray(layers)) {
-        layers.filter((layer) => ((layer instanceof M.layer.Vector && layer.type !== 'Generic') && layer
-          instanceof M.layer.MBTilesVector === false && layer.name !== 'selectLayer')).forEach((layer) => this.addLayerOption(htmlSelect, layer.name));
-      } else if (layers instanceof M.layer.Vector
+        layers.filter((layer) => ((layer instanceof IDEE.layer.Vector && layer.type !== 'Generic') && layer
+          instanceof IDEE.layer.MBTilesVector === false && layer.name !== 'selectLayer')).forEach((layer) => this.addLayerOption(htmlSelect, layer.name));
+      } else if (layers instanceof IDEE.layer.Vector
         && !LAYERS_PREVENT_PLUGINS.includes(layers.name)
       ) {
         const layer = { ...layers };
         this.addLayerOption(htmlSelect, layer);
       }
     });
-    this.facadeMap_.on(M.evt.REMOVED_LAYER, (layers) => {
+    this.facadeMap_.on(IDEE.evt.REMOVED_LAYER, (layers) => {
       let l = layers;
       if (!Array.isArray(layers)) {
         l = [layers];
@@ -237,10 +238,10 @@ export default class StyleManagerControl extends M.Control {
     if (layer != null) {
       this.layer_ = layer;
     }
-    if (this.layer_ instanceof M.layer.Vector) {
+    if (this.layer_ instanceof IDEE.layer.Vector) {
       const features = this.layer_.getFeatures();
       if (features.length === 0) {
-        M.dialog.error(getValue('exception.layerNoFeaturesLoad'), 'Error');
+        IDEE.dialog.error(getValue('exception.layerNoFeaturesLoad'), 'Error');
         // eslint-disable-next-line no-param-reassign
         htmlSelect.selectedIndex = 0;
       } else {
@@ -283,7 +284,7 @@ export default class StyleManagerControl extends M.Control {
    * @api stable
    */
   applyStyle() {
-    if (this.layer_ instanceof M.layer.Vector) {
+    if (this.layer_ instanceof IDEE.layer.Vector) {
       this.clearStyle();
       const style = this.bindinController_.getStyle();
       if (this.layer_.type === 'Vector') {
@@ -292,7 +293,7 @@ export default class StyleManagerControl extends M.Control {
         this.layer_.setStyle(style);
       }
     } else {
-      M.dialog.info(getValue('exception.chooseLayer'), getValue('exception.choLayer'));
+      IDEE.dialog.info(getValue('exception.chooseLayer'), getValue('exception.choLayer'));
     }
   }
 
@@ -302,7 +303,7 @@ export default class StyleManagerControl extends M.Control {
    * @api stable
    */
   serializedStyle() {
-    if (this.layer_ instanceof M.layer.Vector) {
+    if (this.layer_ instanceof IDEE.layer.Vector) {
       const style = this.bindinController_.getStyle();
       const text = style.serialize();
       const p = document.createElement('input');
@@ -310,10 +311,10 @@ export default class StyleManagerControl extends M.Control {
       document.body.appendChild(p);
       p.select();
       document.execCommand('copy');
-      M.dialog.info(getValue('clipboard'), getValue('serializedStyle'));
+      IDEE.dialog.info(getValue('clipboard'), getValue('serializedStyle'));
       document.body.removeChild(p);
     } else {
-      M.dialog.info(getValue('exception.chooseLayer'), getValue('exception.choLayer'));
+      IDEE.dialog.info(getValue('exception.chooseLayer'), getValue('exception.choLayer'));
     }
   }
 
@@ -324,10 +325,10 @@ export default class StyleManagerControl extends M.Control {
    * @api stable
    */
   clearStyle() {
-    if (this.layer_ instanceof M.layer.Vector) {
-      this.layer_.setStyle(M.layer.Vector.DEFAULT_OPTIONS_STYLE);
+    if (this.layer_ instanceof IDEE.layer.Vector) {
+      this.layer_.setStyle(IDEE.layer.Vector.DEFAULT_OPTIONS_STYLE);
     } else {
-      M.dialog.info(getValue('exception.chooseLayer'), getValue('exception.choLayer'));
+      IDEE.dialog.info(getValue('exception.chooseLayer'), getValue('exception.choLayer'));
     }
   }
 
@@ -335,7 +336,7 @@ export default class StyleManagerControl extends M.Control {
    * @function
    */
   loadFonts() {
-    M.style.Font.addSymbol({
+    IDEE.style.Font.addSymbol({
       font: 'FontAwesome',
       name: 'FontAwesome',
       copyright: 'SIL OFL 1.1',
@@ -488,7 +489,7 @@ export default class StyleManagerControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

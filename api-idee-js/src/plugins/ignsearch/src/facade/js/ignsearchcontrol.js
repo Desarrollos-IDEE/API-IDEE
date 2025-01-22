@@ -1,5 +1,5 @@
 /**
- * @module M/control/IGNSearchControl
+ * @module IDEE/control/IGNSearchControl
  */
 import IGNSearchImplControl from 'impl/ignsearchcontrol';
 import template from '../../templates/ignsearch';
@@ -13,10 +13,10 @@ let typingTimer;
  * It uses Instituto Geográfico Nacional services Geocoder and Nomenclator
  * to search user's input location and return coordinates on click.
  */
-export default class IGNSearchControl extends M.Control {
+export default class IGNSearchControl extends IDEE.Control {
   /*
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor(
@@ -40,9 +40,10 @@ export default class IGNSearchControl extends M.Control {
     pointStyle,
     nomenclatorSearchType,
   ) {
-    if (M.utils.isUndefined(IGNSearchImplControl) || (M.utils.isObject(IGNSearchImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(IGNSearchImplControl)))) {
-      M.exception('La implementación usada no puede crear controles IGNSearchControl');
+    if (IDEE.utils.isUndefined(IGNSearchImplControl)
+      || (IDEE.utils.isObject(IGNSearchImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(IGNSearchImplControl)))) {
+      IDEE.exception('La implementación usada no puede crear controles IGNSearchControl');
     }
     const impl = new IGNSearchImplControl();
     super(impl, 'IGNSearch');
@@ -186,7 +187,7 @@ export default class IGNSearchControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api
    */
   createView(map) {
@@ -195,7 +196,7 @@ export default class IGNSearchControl extends M.Control {
     this.map = map;
     this.destroyMapLayers();
     return new Promise((success) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           translations: {
             deleteresults: getValue('deleteresults'),
@@ -218,14 +219,14 @@ export default class IGNSearchControl extends M.Control {
       });
       html.querySelector('#m-ignsearch-locate-button').addEventListener('click', this.activateDeactivateReverse.bind(this));
       document.querySelector('.ign-search-panel>.m-panel-btn').addEventListener('click', this.clearResults.bind(this));
-      this.clickReverseEvent = this.map.on(M.evt.CLICK, (e) => this.showReversePopUp(e));
+      this.clickReverseEvent = this.map.on(IDEE.evt.CLICK, (e) => this.showReversePopUp(e));
       this.changePlaceholder();
       if (!this.reverse) {
         html.querySelector('#m-ignsearch-locate-button').style.display = 'none';
       }
-      this.on(M.evt.ADDED_TO_MAP, () => {
+      this.on(IDEE.evt.ADDED_TO_MAP, () => {
         if (this.locationID && this.locationID.length > 0) {
-          this.point = new M.style.Point({
+          this.point = new IDEE.style.Point({
             radius: 5,
             icon: {
               form: 'none',
@@ -238,7 +239,7 @@ export default class IGNSearchControl extends M.Control {
               opacity: 1,
             },
           });
-          this.simple = new M.style.Polygon({
+          this.simple = new IDEE.style.Polygon({
             fill: {
               color: 'black',
               opacity: 0,
@@ -247,8 +248,8 @@ export default class IGNSearchControl extends M.Control {
           this.drawNomenclatorResult(this.locationID, false);
         }
         if (this.requestStreet && this.requestStreet.length > 0) {
-          M.proxy(false);
-          M.remote.get(this.requestStreet).then((res) => {
+          IDEE.proxy(false);
+          IDEE.remote.get(this.requestStreet).then((res) => {
             const geoJsonData = res.text.substring(9, res.text.length - 1);
             this.map.removeLayers(this.clickedElementLayer);
             const featureJSON = JSON.parse(geoJsonData);
@@ -256,7 +257,7 @@ export default class IGNSearchControl extends M.Control {
             // Center coordinates
             this.coordinates = `${featureJSON.properties.lat}, ${featureJSON.properties.lng}`;
             // New layer with geometry
-            this.clickedElementLayer = new M.layer.GeoJSON({
+            this.clickedElementLayer = new IDEE.layer.GeoJSON({
               name: getValue('searchresult'),
               source: {
                 type: 'FeatureCollection',
@@ -288,9 +289,9 @@ export default class IGNSearchControl extends M.Control {
               this.showSearchPopUp(fullAddress, coordinates, perfectResult, { fake: true });
             }
 
-            M.proxy(true);
+            IDEE.proxy(true);
           }).catch((err) => {
-            M.proxy(true);
+            IDEE.proxy(true);
           });
         }
 
@@ -362,8 +363,8 @@ export default class IGNSearchControl extends M.Control {
       this.geocoderCoords = etrs89pointCoordinates;
       const dataCoordinates = [etrs89pointCoordinates[1], etrs89pointCoordinates[0]];
       let fullAddress = '';
-      M.proxy(false);
-      M.remote.get(urlToGet).then((res) => {
+      IDEE.proxy(false);
+      IDEE.remote.get(urlToGet).then((res) => {
         if (res.text !== null) {
           const returnData = JSON.parse(res.text);
           fullAddress = this.createFullAddress(returnData);
@@ -373,7 +374,7 @@ export default class IGNSearchControl extends M.Control {
         this.showPopUp(fullAddress, mapCoordinates, dataCoordinates, null, true, e);
       });
 
-      M.proxy(true);
+      IDEE.proxy(true);
     }
   }
 
@@ -406,7 +407,7 @@ export default class IGNSearchControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {
@@ -495,7 +496,7 @@ export default class IGNSearchControl extends M.Control {
       // remove animation class and return to normal font size after loading
       this.resultsBox.classList.remove('g-cartografia-spinner');
       this.resultsBox.style.fontSize = '1em';
-      const compiledResult = M.template.compileSync(results, {
+      const compiledResult = IDEE.template.compileSync(results, {
         vars: {
           places: this.allCandidates,
         },
@@ -526,8 +527,8 @@ export default class IGNSearchControl extends M.Control {
    */
   drawGeocoderResultProv(geoJsonData) {
     this.map.removeLayers(this.clickedElementLayer);
-    M.proxy(false);
-    M.remote.get(this.urlParse).then((res) => {
+    IDEE.proxy(false);
+    IDEE.remote.get(this.urlParse).then((res) => {
       const urlSinJSON = res.text.substring(9, res.text.length - 1);
 
       let geoJsonData2 = geoJsonData;
@@ -591,7 +592,7 @@ export default class IGNSearchControl extends M.Control {
       // Center coordinates
       this.coordinates = `${featureJSON.properties.lat}, ${featureJSON.properties.lng}`;
       // New layer with geometry
-      this.clickedElementLayer = new M.layer.GeoJSON({
+      this.clickedElementLayer = new IDEE.layer.GeoJSON({
         name: getValue('searchresult'),
         source: {
           type: 'FeatureCollection',
@@ -605,7 +606,7 @@ export default class IGNSearchControl extends M.Control {
       }
 
       if (featureJSON.geometry.type.indexOf('Polygon') > -1) {
-        this.clickedElementLayer.setStyle(new M.style.Polygon({
+        this.clickedElementLayer.setStyle(new IDEE.style.Polygon({
           fill: {
             color: '#3399CC',
             opacity: 0,
@@ -638,7 +639,7 @@ export default class IGNSearchControl extends M.Control {
       }
     });
 
-    M.proxy(true);
+    IDEE.proxy(true);
   }
 
   drawGeocoderResult(geoJsonData) {
@@ -648,7 +649,7 @@ export default class IGNSearchControl extends M.Control {
     // Center coordinates
     this.coordinates = `${featureJSON.properties.lat}, ${featureJSON.properties.lng}`;
     // New layer with geometry
-    this.clickedElementLayer = new M.layer.GeoJSON({
+    this.clickedElementLayer = new IDEE.layer.GeoJSON({
       name: getValue('searchresult'),
       source: {
         type: 'FeatureCollection',
@@ -667,7 +668,7 @@ export default class IGNSearchControl extends M.Control {
     if (!this.resultVisibility_) {
       this.clickedElementLayer.setStyle(this.simple);
     } else if (featureJSON.geometry.type.indexOf('Polygon') > -1) {
-      this.clickedElementLayer.setStyle(new M.style.Polygon({
+      this.clickedElementLayer.setStyle(new IDEE.style.Polygon({
         fill: {
           color: '#3399CC',
           opacity: 0,
@@ -721,15 +722,15 @@ export default class IGNSearchControl extends M.Control {
    */
   drawNomenclatorResult(locationId, zoomIn = true) {
     this.requestStreet = '';
-    this.requestPlace = M.utils.addParameters(this.urlDispatcher, {
+    this.requestPlace = IDEE.utils.addParameters(this.urlDispatcher, {
       request: 'OpenQuerySource',
       query: `<ogc:Filter><ogc:FeatureId fid="${locationId}"/></ogc:Filter>`,
       sourcename: `${this.urlPrefix}communicationsPoolServlet/sourceAccessWFS-INSPIRE-NGBE.rdf`,
       outputformat: 'application/json',
     });
     this.locationID = locationId;
-    M.proxy(true);
-    M.remote.get(this.requestPlace).then((res) => {
+    IDEE.proxy(true);
+    IDEE.remote.get(this.requestPlace).then((res) => {
       const latLngString = JSON.parse(res.text).results[0].location;
       const resultTitle = JSON.parse(res.text).results[0].title;
       const latLngArray = latLngString.split(' ');
@@ -754,7 +755,10 @@ export default class IGNSearchControl extends M.Control {
           }],
         },
       };
-      this.clickedElementLayer = new M.layer.GeoJSON(newGeojson, { displayInLayerSwitcher: false });
+      this.clickedElementLayer = new IDEE.layer.GeoJSON(
+        newGeojson,
+        { displayInLayerSwitcher: false },
+      );
       this.clickedElementLayer.displayInLayerSwitcher = false;
       this.clickedElementLayer.setStyle(this.point);
 
@@ -786,8 +790,8 @@ export default class IGNSearchControl extends M.Control {
         let params = `q=${newInputVal}&limit=${this.maxResults + 5}&no_process=${this.noProcess}`;
         params += `&countrycode=${this.countryCode}&autocancel=true`;
         const urlToGet = `${this.urlCandidates}?${params}`;
-        M.proxy(false);
-        M.remote.get(urlToGet).then((res) => {
+        IDEE.proxy(false);
+        IDEE.remote.get(urlToGet).then((res) => {
           const returnData = JSON.parse(res.text.substring(9, res.text.length - 1));
           for (let i = 0; i < returnData.length; i += 1) {
             resultsArray.push(returnData[i]);
@@ -795,7 +799,7 @@ export default class IGNSearchControl extends M.Control {
           resolve();
         });
 
-        M.proxy(true);
+        IDEE.proxy(true);
       } else {
         resolve();
       }
@@ -816,8 +820,8 @@ export default class IGNSearchControl extends M.Control {
       if (this.servicesToSearch !== 'g') {
         const params = `maxresults=${this.maxResults - 5}&name_equals=${newInputVal}`;
         const urlToGet = `${this.urlAssistant}?${params}`;
-        M.proxy(true);
-        M.remote.get(urlToGet).then((res) => {
+        IDEE.proxy(true);
+        IDEE.remote.get(urlToGet).then((res) => {
           const temporalData = (res.text !== '' && res.text !== null) ? JSON.parse(res.text) : { results: [] };
           const returnData = temporalData.results;
           for (let i = 0; i < returnData.length; i += 1) {
@@ -887,13 +891,13 @@ export default class IGNSearchControl extends M.Control {
 
       this.requestStreet = urlToGet;
       this.locationID = '';
-      M.proxy(false);
-      M.remote.get(urlToGet).then((res) => {
+      IDEE.proxy(false);
+      IDEE.remote.get(urlToGet).then((res) => {
         const geoJsonData = res.text.substring(9, res.text.length - 1);
         resolve(geoJsonData);
       });
 
-      M.proxy(true);
+      IDEE.proxy(true);
     });
   }
 
@@ -936,7 +940,7 @@ export default class IGNSearchControl extends M.Control {
    */
   zoomInLocation(service, type, zoom) {
     this.resultsList = document.getElementById('m-ignsearch-results-list');
-    if (this.clickedElementLayer instanceof M.layer.Vector) {
+    if (this.clickedElementLayer instanceof IDEE.layer.Vector) {
       this.clickedElementLayer.calculateMaxExtent().then((extent) => {
         this.map.setBbox(extent);
         if (service === 'n' || type === 'Point') {
@@ -1002,7 +1006,7 @@ export default class IGNSearchControl extends M.Control {
       // const longFromSet = setOfCoordinates.split(' ')[1];
       // // geocoder service
       // const urlToGet = `${this.urlReverse}?lat=${latFromSet}&lon=${longFromSet}`;
-      // M.remote.get(urlToGet).then((res) => {
+      // IDEE.remote.get(urlToGet).then((res) => {
       //   const parsedResponse = JSON.parse(res.text);
       //   const coordinatesSetAddress = parsedResponse.address;
       //   resolve();
@@ -1076,7 +1080,7 @@ export default class IGNSearchControl extends M.Control {
     // Shows pin on drawn point
 
     if (this.pointStyle === 'pinBlanco') {
-      this.point = new M.style.Point({
+      this.point = new IDEE.style.Point({
         radius: 5,
         icon: {
           form: 'none',
@@ -1091,23 +1095,23 @@ export default class IGNSearchControl extends M.Control {
         },
       });
     } else if (this.pointStyle === 'pinRojo') {
-      this.point = new M.style.Point({
+      this.point = new IDEE.style.Point({
         radius: 5,
         icon: {
-          src: M.utils.concatUrlPaths([M.config.THEME_URL, '/img/pinign.svg']),
+          src: IDEE.utils.concatUrlPaths([IDEE.config.THEME_URL, '/img/pinign.svg']),
         },
       });
     } else if (this.pointStyle === 'pinMorado') {
-      this.point = new M.style.Point({
+      this.point = new IDEE.style.Point({
         radius: 5,
         icon: {
-          src: M.utils.concatUrlPaths([M.config.THEME_URL, '/img/m-pin-24.svg']),
+          src: IDEE.utils.concatUrlPaths([IDEE.config.THEME_URL, '/img/m-pin-24.svg']),
         },
       });
     }
 
     // Style for hiding geometry
-    this.simple = new M.style.Polygon({
+    this.simple = new IDEE.style.Polygon({
       fill: {
         color: 'black',
         opacity: 0,
@@ -1154,11 +1158,11 @@ export default class IGNSearchControl extends M.Control {
     featureTabOpts.content += `<div>${fullAddress}</div>
                 <div class='ignsearch-popup'>Lat: ${featureCoordinates[0].toFixed(6)}</div>
                 <div class='ignsearch-popup'> Lon: ${featureCoordinates[1].toFixed(6)} </div>`;
-    if (this.map.getPopup() instanceof M.Popup && addTab === true) {
+    if (this.map.getPopup() instanceof IDEE.Popup && addTab === true) {
       this.popup = this.map.getPopup();
       this.popup.addTab(featureTabOpts);
     } else {
-      const myPopUp = new M.Popup({ panMapIfOutOfView: !e.fake });
+      const myPopUp = new IDEE.Popup({ panMapIfOutOfView: !e.fake });
       myPopUp.addTab(featureTabOpts);
 
       this.map.addPopup(myPopUp, [

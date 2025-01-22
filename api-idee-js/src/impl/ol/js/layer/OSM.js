@@ -1,10 +1,10 @@
 /**
- * @module M/impl/layer/OSM
+ * @module IDEE/impl/layer/OSM
  */
-import FacadeOSM from 'M/layer/OSM';
-import * as LayerType from 'M/layer/Type';
-import { isNullOrEmpty, generateResolutionsFromExtent, extend } from 'M/util/Utils';
-import * as EventType from 'M/event/eventtype';
+import FacadeOSM from 'IDEE/layer/OSM';
+import * as LayerType from 'IDEE/layer/Type';
+import { isNullOrEmpty, generateResolutionsFromExtent, extend } from 'IDEE/util/Utils';
+import * as EventType from 'IDEE/event/eventtype';
 import OLLayerTile from 'ol/layer/Tile';
 import OLControlAttribution from 'ol/control/Attribution';
 import SourceOSM from 'ol/source/OSM';
@@ -16,7 +16,7 @@ import Layer from './Layer';
  * La API-IDEE permite visualizar la capa de Open Street Map.
  *
  * @api
- * @extends {M.impl.layer.Layer}
+ * @extends {IDEE.impl.layer.Layer}
  */
 class OSM extends Layer {
   /**
@@ -24,7 +24,7 @@ class OSM extends Layer {
    * con parámetros especificados por el usuario.
    *
    * @constructor
-   * @implements {M.impl.Layer}
+   * @implements {IDEE.impl.Layer}
   * @param {string|Mx.parameters.OSM} userParameters Parámetros para la construcción de la capa.
    * - attribution: Atribución de la capa.
    * - isBase: Indica si la capa es base.
@@ -134,7 +134,7 @@ class OSM extends Layer {
    *
    * @public
    * @function
-   * @param {M.impl.Map} map Mapa de la implementación.
+   * @param {IDEE.impl.Map} map Mapa de la implementación.
    * @api stable
    */
   addTo(map, addLayer = true) {

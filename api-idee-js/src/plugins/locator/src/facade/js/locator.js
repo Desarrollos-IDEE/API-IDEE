@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/Locator
+ * @module IDEE/plugin/Locator
  */
 import '../assets/css/locator';
 import LocatorControl from './locatorcontrol';
@@ -8,14 +8,14 @@ import en from './i18n/en';
 import { getValue } from './i18n/language';
 import myhelp from '../../templates/myhelp';
 
-export default class Locator extends M.Plugin {
+export default class Locator extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api
    */
@@ -24,14 +24,14 @@ export default class Locator extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -62,14 +62,14 @@ export default class Locator extends M.Plugin {
      * @private
      * @type {Boolean}
      */
-    this.collapsed = !M.utils.isUndefined(options.collapsed) ? options.collapsed : true;
+    this.collapsed = !IDEE.utils.isUndefined(options.collapsed) ? options.collapsed : true;
 
     /**
      * Option to allow the plugin to be collapsible or not
      * @private
      * @type {Boolean}
      */
-    this.collapsible = !M.utils.isUndefined(options.collapsible) ? options.collapsible : true;
+    this.collapsible = !IDEE.utils.isUndefined(options.collapsible) ? options.collapsible : true;
 
     /**
      * Tooltip of plugin
@@ -83,7 +83,7 @@ export default class Locator extends M.Plugin {
      * @private
      * @type {Boolean}
      */
-    this.isDraggable = !M.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
+    this.isDraggable = !IDEE.utils.isUndefined(options.isDraggable) ? options.isDraggable : false;
 
     /**
      * Zoom
@@ -104,7 +104,7 @@ export default class Locator extends M.Plugin {
      * @private
      * @type {Boolean|Object}
      */
-    this.byParcelCadastre = M.utils.isUndefined(options.byParcelCadastre)
+    this.byParcelCadastre = IDEE.utils.isUndefined(options.byParcelCadastre)
       || options.byParcelCadastre === true
       ? this.getInfoCatastro()
       : options.byParcelCadastre;
@@ -114,7 +114,7 @@ export default class Locator extends M.Plugin {
      * @private
      * @type {Boolean|Object}
      */
-    this.byCoordinates = M.utils.isUndefined(options.byCoordinates)
+    this.byCoordinates = IDEE.utils.isUndefined(options.byCoordinates)
       || options.byCoordinates === true ? this.getXYLocator() : options.byCoordinates;
 
     /**
@@ -122,7 +122,7 @@ export default class Locator extends M.Plugin {
      * @private
      * @type {Boolean|Object}
      */
-    this.byPlaceAddressPostal = M.utils.isUndefined(options.byPlaceAddressPostal)
+    this.byPlaceAddressPostal = IDEE.utils.isUndefined(options.byPlaceAddressPostal)
       || options.byPlaceAddressPostal === true
       ? this.getIGNSearchLocator()
       : options.byPlaceAddressPostal;
@@ -139,14 +139,14 @@ export default class Locator extends M.Plugin {
      * @private
      * @type {Boolean}
      */
-    this.useProxy = M.utils.isUndefined(options.useProxy) ? true : options.useProxy;
+    this.useProxy = IDEE.utils.isUndefined(options.useProxy) ? true : options.useProxy;
 
     /**
      * Stores the proxy state at plugin load time
      * @private
      * @type {Boolean}
      */
-    this.statusProxy = M.useproxy;
+    this.statusProxy = IDEE.useproxy;
   }
 
   /**
@@ -161,7 +161,7 @@ export default class Locator extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).locator;
+    return IDEE.language.getTranslation(lang).locator;
   }
 
   /**
@@ -169,13 +169,13 @@ export default class Locator extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api
    */
   addTo(map) {
     if (this.byCoordinates === false && this.byParcelCadastre === false
         && this.byPlaceAddressPostal === false) {
-      M.dialog.error(getValue('exception.no_controls'));
+      IDEE.dialog.error(getValue('exception.no_controls'));
     }
     this.controls_.push(new LocatorControl(
       this.isDraggable,
@@ -193,10 +193,10 @@ export default class Locator extends M.Plugin {
     if (this.position_ === 'TC') {
       this.collapsible = false;
     }
-    this.panel_ = new M.ui.Panel('panelLocator', {
+    this.panel_ = new IDEE.ui.Panel('panelLocator', {
       collapsible: this.collapsible,
       collapsed: this.collapsed,
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       className: 'm-plugin-locator',
       tooltip: this.tooltip_,
       collapsedButtonClass: 'locator-icon-localizacion2',
@@ -306,7 +306,7 @@ export default class Locator extends M.Plugin {
    * @api
    */
   getAPIRestBase64() {
-    return `${this.name}=base64=${M.utils.encodeBase64(this.options)}`;
+    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   /**
@@ -325,11 +325,11 @@ export default class Locator extends M.Plugin {
   }
 
   /**
-   * This function compare if pluging recieved by param is instance of M.plugin.Locator
+   * This function compare if pluging recieved by param is instance of IDEE.plugin.Locator
    *
    * @public
    * @function
-   * @param {M.plugin} plugin to comapre
+   * @param {IDEE.plugin} plugin to comapre
    * @api
    */
   equals(plugin) {
@@ -347,9 +347,9 @@ export default class Locator extends M.Plugin {
     return {
       title: this.name,
       content: new Promise((success) => {
-        const html = M.template.compileSync(myhelp, {
+        const html = IDEE.template.compileSync(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}plugins/locator/images/`,
+            urlImages: `${IDEE.config.API_IDEE_URL}plugins/locator/images/`,
             translations: {
               help1: getValue('textHelp.help1'),
               help2: getValue('textHelp.help2'),

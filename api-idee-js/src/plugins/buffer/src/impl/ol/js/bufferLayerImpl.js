@@ -1,11 +1,11 @@
-export default class BufferLayerImpl extends M.impl.Layer {
+export default class BufferLayerImpl extends IDEE.impl.Layer {
   /**
    * @classdesc
    * Main constructor of the class. Creates a KML layer
    * with parameters specified by the user
    *
    * @constructor
-   * @implements {M.impl.Layer}
+   * @implements {IDEE.impl.Layer}
    * @param {Mx.parameters.LayerOptions} options custom options for this layer
    * @api stable
    */
@@ -20,7 +20,7 @@ export default class BufferLayerImpl extends M.impl.Layer {
    *
    * @public
    * @function
-   * @param {M.impl.Map} map
+   * @param {IDEE.impl.Map} map
    * @api stable
    */
   addTo(map) {
@@ -30,7 +30,7 @@ export default class BufferLayerImpl extends M.impl.Layer {
   destroy() {
     const olMap = this.map.getMapImpl();
 
-    if (!M.utils.isNullOrEmpty(this.layerOL)) {
+    if (!IDEE.utils.isNullOrEmpty(this.layerOL)) {
       olMap.removeLayer(this.layerOL);
       this.layerOL = null;
     }

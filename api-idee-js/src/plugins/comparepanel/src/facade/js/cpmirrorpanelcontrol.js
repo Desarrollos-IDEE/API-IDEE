@@ -1,13 +1,13 @@
 /* eslint-disable no-underscore-dangle */
 /**
- * @module M/control/CompareMirrorpanel
+ * @module IDEE/control/CompareMirrorpanel
  */
 import MirrorpanelImplControl from 'impl/cpmirrorpanel';
 import template from 'templates/cpmirrorpanel';
 import { getValue } from './i18n/language';
 import Lyrdropdown from './lyrdropdown'; // e2m: reference LayerDropDown control
 
-/* const objWMTSsiose = new M.layer.WMTS({
+/* const objWMTSsiose = new IDEE.layer.WMTS({
   url: 'https://servicios.idee.es/wmts/ocupacion-suelo',
   name: 'LC.LandCoverSurfaces',
   matrixSet: 'GoogleMapsCompatible',
@@ -19,7 +19,7 @@ import Lyrdropdown from './lyrdropdown'; // e2m: reference LayerDropDown control
   format: 'image/png',
 });
 
-const objWMTSMTN501Edi = new M.layer.WMTS({
+const objWMTSMTN501Edi = new IDEE.layer.WMTS({
   url: 'https://www.ign.es/wmts/primera-edicion-mtn?',
   name: 'mtn50-edicion1',
   legend: 'MTN50 1Edi',
@@ -31,7 +31,7 @@ const objWMTSMTN501Edi = new M.layer.WMTS({
   format: 'image/jpeg',
 });
 
-const objWMTSMapa = new M.layer.WMTS({
+const objWMTSMapa = new IDEE.layer.WMTS({
   url: 'https://www.ign.es/wmts/mapa-raster',
   name: 'MTN',
   matrixSet: 'GoogleMapsCompatible',
@@ -43,7 +43,7 @@ const objWMTSMapa = new M.layer.WMTS({
   format: 'image/jpeg',
 });
 
-const objWMTSLidar = new M.layer.WMTS({
+const objWMTSLidar = new IDEE.layer.WMTS({
   url: 'https://wmts-mapa-lidar.idee.es/lidar',
   name: 'EL.GridCoverageDSM',
   matrixSet: 'GoogleMapsCompatible',
@@ -55,7 +55,7 @@ const objWMTSLidar = new M.layer.WMTS({
   format: 'image/png',
 });
 
-const objTMSIGNBase = new M.layer.XYZ({
+const objTMSIGNBase = new IDEE.layer.XYZ({
   url: 'https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/{z}/{x}/{-y}.jpeg',
   projection: 'EPSG:3857',
   transparent: false,
@@ -65,7 +65,7 @@ const objTMSIGNBase = new M.layer.XYZ({
   maxZoom: 19,
 });
 
-const objTMSPNOA = new M.layer.XYZ({
+const objTMSPNOA = new IDEE.layer.XYZ({
   url: 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
   projection: 'EPSG:3857',
   transparent: false,
@@ -75,7 +75,7 @@ const objTMSPNOA = new M.layer.XYZ({
   maxZoom: 19,
 });
 
-const objTMSIGNBaseSoloTextos = new M.layer.XYZ({
+const objTMSIGNBaseSoloTextos = new IDEE.layer.XYZ({
   url: 'https://tms-ign-base.idee.es/1.0.0/IGNBaseOrto/{z}/{x}/{-y}.png',
   projection: 'EPSG:3857',
   transparent: false,
@@ -143,21 +143,22 @@ const BASE_LAYERS_CONFIG = {
     },
   ],
 }; */
-export default class CompareMirrorpanel extends M.Control {
+export default class CompareMirrorpanel extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(values) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(MirrorpanelImplControl) || (M.utils.isObject(MirrorpanelImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(MirrorpanelImplControl)))) {
-      M.exception(getValue('exception'));
+    if (IDEE.utils.isUndefined(MirrorpanelImplControl)
+      || (IDEE.utils.isObject(MirrorpanelImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(MirrorpanelImplControl)))) {
+      IDEE.exception(getValue('exception'));
     }
 
     // 2. implementation of this control
@@ -206,9 +207,9 @@ export default class CompareMirrorpanel extends M.Control {
     /**
      * Defining cursor style
      */
-    this.styleCursor = new M.style.Point({
+    this.styleCursor = new IDEE.style.Point({
       icon: {
-        form: M.style.form.CIRCLE,
+        form: IDEE.style.form.CIRCLE,
         fontsize: 0.5,
         radius: 5,
         rotation: 0,
@@ -288,24 +289,24 @@ export default class CompareMirrorpanel extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
-    if (!M.template.compileSync) {
-      M.template.compileSync = (string, options) => {
+    if (!IDEE.template.compileSync) {
+      IDEE.template.compileSync = (string, options) => {
         let templateCompiled;
         let templateVars = {};
         let parseToHtml;
-        if (!M.utils.isUndefined(options)) {
-          templateVars = M.utils.extends(templateVars, options.vars);
+        if (!IDEE.utils.isUndefined(options)) {
+          templateVars = IDEE.utils.extends(templateVars, options.vars);
           parseToHtml = options.parseToHtml;
         }
 
         const templateFn = Handlebars.compile(string);
         const htmlText = templateFn(templateVars);
         if (parseToHtml !== false) {
-          templateCompiled = M.utils.stringToHtml(htmlText);
+          templateCompiled = IDEE.utils.stringToHtml(htmlText);
         } else {
           templateCompiled = htmlText;
         }
@@ -349,7 +350,7 @@ export default class CompareMirrorpanel extends M.Control {
         },
       };
 
-      this.template = M.template.compileSync(template, templateOptions);
+      this.template = IDEE.template.compileSync(template, templateOptions);
 
       // Button's click events
       this.template.querySelectorAll('button[id^="set-mirror-"]').forEach((button, modeViz) => {
@@ -417,7 +418,7 @@ export default class CompareMirrorpanel extends M.Control {
   }
 
   changeViewPluginsGrid(change) {
-    M.config.MOBILE_WIDTH = (change) ? '2000' : '768';
+    IDEE.config.MOBILE_WIDTH = (change) ? '2000' : '768';
     let pluginsControls = [];
     Object.entries(this.mapL).forEach(([_, e]) => {
       pluginsControls = (e)
@@ -532,7 +533,7 @@ export default class CompareMirrorpanel extends M.Control {
     let pluginBackImgLayer4map = null;
     let pluginVector = null;
 
-    this.mapL[mapLyr] = M.map({
+    this.mapL[mapLyr] = IDEE.map({
       container: `mapjs${mapLyr}`,
       center: this.map_.getCenter(),
       projection: `${this.map_.getProjection().code}*${this.map_.getProjection().units}`,
@@ -555,7 +556,7 @@ export default class CompareMirrorpanel extends M.Control {
         if (itemPlug.metadata_) {
           // FullTOC
           if (itemPlug.metadata_.name === 'FullTOC') {
-            pluginFullTOC4map = new M.plugin.FullTOC({
+            pluginFullTOC4map = new IDEE.plugin.FullTOC({
               position: itemPlug.position,
               collapsed: itemPlug.collapsed,
               collapsible: itemPlug.collapsible,
@@ -566,7 +567,7 @@ export default class CompareMirrorpanel extends M.Control {
           }
           // Vector
           if (itemPlug.metadata_.name === 'Vectors') {
-            pluginVector = new M.plugin.Vectors({
+            pluginVector = new IDEE.plugin.Vectors({
               position: itemPlug.position,
               collapsed: itemPlug.collapsed,
               collapsible: itemPlug.collapsible,
@@ -592,7 +593,7 @@ export default class CompareMirrorpanel extends M.Control {
             /* Para el Comparador PNOA descomentar las dos siguientes líneas y comentar
 // la tercera y comentar la definición posterior
 // BASE_LAYERS_CONFIG.layerId = mapLyr === 'A' ? 0 : mapLyr === 'B' ? 1 : mapLyr == 'C' ? 2 : 3,
-// pluginBackImgLayer4map = new M.plugin.BackImgLayer(BASE_LAYERS_CONFIG); */
+// pluginBackImgLayer4map = new IDEE.plugin.BackImgLayer(BASE_LAYERS_CONFIG); */
 
             let auxID;
             if (mapLyr === 'A') {
@@ -604,7 +605,7 @@ export default class CompareMirrorpanel extends M.Control {
             } else {
               auxID = 3;
             }
-            pluginBackImgLayer4map = new M.plugin.BackImgLayer({
+            pluginBackImgLayer4map = new IDEE.plugin.BackImgLayer({
               layerId: auxID,
               layerVisibility: itemPlug.layerVisibility,
               columnsNumber: itemPlug.columnsNumber,
@@ -651,11 +652,11 @@ export default class CompareMirrorpanel extends M.Control {
    */
   addLayerCursor(mapLyr) {
     // Cursor Layer
-    this.lyrCursor[mapLyr] = new M.layer.Vector({
+    this.lyrCursor[mapLyr] = new IDEE.layer.Vector({
       name: `Coordenadas centro ${mapLyr}`,
     }, { displayInLayerSwitcher: false });
 
-    this.featureLyrCursor[mapLyr] = new M.Feature(`Center${mapLyr}`, {
+    this.featureLyrCursor[mapLyr] = new IDEE.Feature(`Center${mapLyr}`, {
       type: 'Feature',
       properties: {},
       geometry: {
@@ -734,7 +735,7 @@ export default class CompareMirrorpanel extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

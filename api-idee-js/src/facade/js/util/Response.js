@@ -1,5 +1,5 @@
 /**
- * @module M/remote/Response
+ * @module IDEE/remote/Response
  */
 
 /**
@@ -16,7 +16,7 @@ class Response {
   /**
    * Constructor principal de la clase.
    * @constructor
-   * @extends {M.Object}
+   * @extends {IDEE.Object}
    * @param {Object} xmlHttpResponse Respuesta del proxy.
    * @api
    */

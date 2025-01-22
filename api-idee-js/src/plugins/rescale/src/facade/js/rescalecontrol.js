@@ -1,5 +1,5 @@
 /**
- * @module M/control/RescaleControl
+ * @module IDEE/control/RescaleControl
  */
 
 import RescaleImplControl from 'impl/rescalecontrol';
@@ -8,20 +8,21 @@ import { getValue } from './i18n/language';
 
 // let typingTimer;
 
-export default class RescaleControl extends M.Control {
+export default class RescaleControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor() {
-    if (M.utils.isUndefined(RescaleImplControl) || (M.utils.isObject(RescaleImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(RescaleImplControl)))) {
-      M.exception('La implementación usada no puede crear controles RescaleControl');
+    if (IDEE.utils.isUndefined(RescaleImplControl)
+      || (IDEE.utils.isObject(RescaleImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(RescaleImplControl)))) {
+      IDEE.exception('La implementación usada no puede crear controles RescaleControl');
     }
     const impl = new RescaleImplControl();
     super(impl, 'Rescale');
@@ -33,13 +34,13 @@ export default class RescaleControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
     this.map_ = map;
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           translations: {
             insertscale: getValue('insertscale'),
@@ -76,7 +77,7 @@ export default class RescaleControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

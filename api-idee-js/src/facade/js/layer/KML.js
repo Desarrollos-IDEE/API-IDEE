@@ -1,5 +1,5 @@
 /**
- * @module M/layer/KML
+ * @module IDEE/layer/KML
  */
 import KMLImpl from 'impl/layer/KML';
 import LayerVector from './Vector';
@@ -21,7 +21,7 @@ import { getValue } from '../i18n/language';
  * @property {String} label Etiqueta de la capa.
  *
  * @api
- * @extends {M.layer.Vector}
+ * @extends {IDEE.layer.Vector}
  */
 class KML extends LayerVector {
   /**
@@ -98,8 +98,8 @@ class KML extends LayerVector {
     /**
      * Implementación de la capa.
      * @public
-     * @implements {M.layer.KML}
-     * @type {M.layer.KML}
+     * @implements {IDEE.layer.KML}
+     * @type {IDEE.layer.KML}
      */
     const impl = new KMLImpl(optionsVar, vendorOptions);
 
@@ -156,7 +156,7 @@ class KML extends LayerVector {
    *
    * @function
    * @getter
-   * @returns {M.LayerType.KML} Valor de la propiedad "extract".
+   * @returns {IDEE.LayerType.KML} Valor de la propiedad "extract".
    * @api
    */
   get extract() {
@@ -188,7 +188,7 @@ class KML extends LayerVector {
    * Devuelve las opciones que se mandan a la implementación.
    * @function
    * @getter
-   * @returns {M.layer.KML.impl.options} Opciones de la capa KML.
+   * @returns {IDEE.layer.KML.impl.options} Opciones de la capa KML.
    * @api
    */
   get options() {

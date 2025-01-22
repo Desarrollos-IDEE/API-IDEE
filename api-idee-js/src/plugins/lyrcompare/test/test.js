@@ -2,7 +2,7 @@
 //import ShareMap from '../../sharemap/src/facade/js/sharemap';
 
 // Código mínimo para arrancar el mapa
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   center: {
     x: -667143.31,
@@ -12,7 +12,7 @@ const map = M.map({
 });
 
 // Prueba básica del plugin LyrCompare
-const pluginLyrCompare = new M.plugin.LyrCompare({
+const pluginLyrCompare = new IDEE.plugin.LyrCompare({
   position: 'TL',
   layers: [
     'WMTS*https://www.ign.es/wmts/mapa-raster?*MTN*GoogleMapsCompatible*MTN*true*image/jpeg*false*false*true',
@@ -33,14 +33,14 @@ const pluginLyrCompare = new M.plugin.LyrCompare({
 });
 map.addPlugin(pluginLyrCompare);
 
-M.language.setLang('es'); //Español
-//M.language.setLang('en');//Inglés
+IDEE.language.setLang('es'); //Español
+//IDEE.language.setLang('en');//Inglés
 
 /***************************
  *     Otras pruebas       *
  **************************/
 
-/*const map = M.map({
+/*const map = IDEE.map({
   container: 'mapjs',
   center: {
     x: -667143.31,
@@ -58,7 +58,7 @@ M.language.setLang('es'); //Español
 
 //Añado un BackImageLayer para ver el comportamiento.
 //Código para configurar el BackImgLayer
-/*const mpBIL = new M.plugin.BackImgLayer({
+/*const mpBIL = new IDEE.plugin.BackImgLayer({
   position: 'TR',
   collapsible: true,
   collapsed: true,
@@ -68,7 +68,7 @@ M.language.setLang('es'); //Español
       id: 'mapa',
       preview: 'http://componentes.ign.es/api-idee/plugins/backimglayer/images/svqmapa.png',
       title: 'Mapa',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'http://www.ign.es/wmts/ign-base?',
         name: 'IGNBaseTodo',
         legend: 'Mapa IGN',
@@ -84,7 +84,7 @@ M.language.setLang('es'); //Español
       id: 'imagen',
       title: 'Imagen',
       preview: 'http://componentes.ign.es/api-idee/plugins/backimglayer/images/svqimagen.png',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'http://www.ign.es/wmts/pnoa-ma?',
         name: 'OI.OrthoimageCoverage',
         legend: 'Imagen (PNOA)',
@@ -100,7 +100,7 @@ M.language.setLang('es'); //Español
       id: 'hibrido',
       title: 'Híbrido',
       preview: 'http://componentes.ign.es/api-idee/plugins/backimglayer/images/svqhibrid.png',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
           url: 'http://www.ign.es/wmts/pnoa-ma?',
           name: 'OI.OrthoimageCoverage',
           legend: 'Imagen (PNOA)',
@@ -111,7 +111,7 @@ M.language.setLang('es'); //Español
           visible: true,
           format: 'image/png',
         }),
-        new M.layer.WMTS({
+        new IDEE.layer.WMTS({
           url: 'http://www.ign.es/wmts/ign-base?',
           name: 'IGNBaseOrto',
           matrixSet: 'GoogleMapsCompatible',
@@ -128,7 +128,7 @@ M.language.setLang('es'); //Español
       id: 'lidar',
       preview: 'http://componentes.ign.es/api-idee/plugins/backimglayer/images/svqlidar.png',
       title: 'LIDAR',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'https://wmts-mapa-lidar.idee.es/lidar?',
         name: 'EL.GridCoverageDSM',
         legend: 'Modelo Digital de Superficies LiDAR',
@@ -160,7 +160,7 @@ map.addPlugin(mpBIL);*/
 // });
 
 // 3 WMS y WMTS como objetos
-/*let wmtsToporaster = new M.layer.WMTS({
+/*let wmtsToporaster = new IDEE.layer.WMTS({
   url: "http://www.ideandalucia.es/geowebcache/service/wmts",
   name: "toporaster",
   matrixSet: "EPSG:25830",
@@ -171,7 +171,7 @@ map.addPlugin(mpBIL);*/
 map.addWMTS(wmtsToporaster);*/
 
 /*
-const wms = new M.layer.WMS({
+const wms = new IDEE.layer.WMS({
   url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
   name: 'AU.AdministrativeBoundary',
   legend: 'Limite administrativo',
@@ -180,7 +180,7 @@ const wms = new M.layer.WMS({
 map.addWMS(wms);
 */
 
-/*let wmtsMinutasMTN50 = new M.layer.WMTS({
+/*let wmtsMinutasMTN50 = new IDEE.layer.WMTS({
   url: "http://www.ign.es/wmts/primera-edicion-mtn",
   name: "catastrones",
   //matrixSet: "EPSG:25830",
@@ -191,7 +191,7 @@ map.addWMS(wms);
 });
 map.addWMTS(wmtsMinutasMTN50);*/
 
-/*let wmtsMTN501edi = new M.layer.WMTS({
+/*let wmtsMTN501edi = new IDEE.layer.WMTS({
   url: "http://www.ign.es/wmts/primera-edicion-mtn",
   name: "mtn50-edicion1",
   //matrixSet: "EPSG:25830",
@@ -202,7 +202,7 @@ map.addWMTS(wmtsMinutasMTN50);*/
 });
 map.addWMTS(wmtsMTN501edi);*/
 
-/*let wmtsMTN251edi = new M.layer.WMTS({
+/*let wmtsMTN251edi = new IDEE.layer.WMTS({
   url: "http://www.ign.es/wmts/primera-edicion-mtn",
   name: "mtn25-edicion1",
   //matrixSet: "EPSG:25830",
@@ -213,7 +213,7 @@ map.addWMTS(wmtsMTN501edi);*/
 });
 map.addWMTS(wmtsMTN251edi);*/
 
-/*let wmtsLidar = new M.layer.WMTS({
+/*let wmtsLidar = new IDEE.layer.WMTS({
   url: "http://wmts-mapa-lidar.idee.es/lidar",
   name: "EL.GridCoverageDSM",
   matrixSet: "GoogleMapsCompatible",
@@ -223,7 +223,7 @@ map.addWMTS(wmtsMTN251edi);*/
 });
 map.addWMTS(wmtsLidar);*/
 
-/*let wmtsSIOSE = new M.layer.WMTS({
+/*let wmtsSIOSE = new IDEE.layer.WMTS({
   url: "http://servicios.idee.es/wmts/ocupacion-suelo",
   name: "LC.LandCoverSurfaces",
   matrixSet: "GoogleMapsCompatible",

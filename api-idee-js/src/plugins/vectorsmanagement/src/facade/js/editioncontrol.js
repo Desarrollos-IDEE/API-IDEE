@@ -1,5 +1,5 @@
 /**
- * @module M/control/EditionControl
+ * @module IDEE/control/EditionControl
  */
 import EditionImplControl from 'impl/editioncontrol';
 import template from '../../templates/edition';
@@ -9,21 +9,21 @@ import editiontableTemplate from '../../templates/editiontable';
 import { getValue } from './i18n/language';
 import { changeStyleDialog } from './util';
 
-export default class EditionControl extends M.Control {
+export default class EditionControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(map, managementControl) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(EditionImplControl) || (M.utils.isObject(EditionImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(EditionImplControl)))) {
-      M.exception(getValue('exception.impl_editioncontrol'));
+    if (IDEE.utils.isUndefined(EditionImplControl) || (IDEE.utils.isObject(EditionImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(EditionImplControl)))) {
+      IDEE.exception(getValue('exception.impl_editioncontrol'));
     }
 
     // 2. implementation of this control
@@ -109,7 +109,7 @@ export default class EditionControl extends M.Control {
    * @api
    */
   active(html) {
-    this.template = M.template.compileSync(template, {
+    this.template = IDEE.template.compileSync(template, {
       vars: {
         translations: {
           editgeometria: getValue('editgeometria'),
@@ -147,7 +147,7 @@ export default class EditionControl extends M.Control {
     if (layers.length > 0) {
       this.selectionLayer = layers[0];
     } else {
-      this.selectionLayer = new M.layer.Vector({
+      this.selectionLayer = new IDEE.layer.Vector({
         extract: false,
         name: 'selectLayer',
         source: this.layer_.getImpl().getLayer().getSource(),
@@ -286,7 +286,7 @@ export default class EditionControl extends M.Control {
   }
 
   openModalEditAttribute() {
-    const templateModal = M.template.compileSync(editiontableTemplate, {
+    const templateModal = IDEE.template.compileSync(editiontableTemplate, {
       vars: {
         translations: {
           newcolumn: getValue('newcolumn'),
@@ -296,8 +296,8 @@ export default class EditionControl extends M.Control {
 
     this.managementControl_.accessibilityTab(templateModal);
 
-    M.dialog.info(templateModal.innerHTML, getValue('title_attribute_table'));
-    M.utils.draggabillyElement('.m-dialog .m-modal .m-content', '.m-dialog .m-modal .m-content .m-title');
+    IDEE.dialog.info(templateModal.innerHTML, getValue('title_attribute_table'));
+    IDEE.utils.draggabillyElement('.m-dialog .m-modal .m-content', '.m-dialog .m-modal .m-content .m-title');
     changeStyleDialog();
     document.querySelector('#add-attribute-btn').onclick = () => this.newAttributeColumn();
     document.querySelector('.m-dialog.info .m-modal .m-button button').onclick = () => this.activationManager('isEditAttributeActive', 'editattribute');
@@ -381,7 +381,7 @@ export default class EditionControl extends M.Control {
    * @api
    */
   showModalCleanGeometries() {
-    const templateModal = M.template.compileSync(removeLayerTemplate, {
+    const templateModal = IDEE.template.compileSync(removeLayerTemplate, {
       vars: {
         translations: {
           title_clear_geometries: getValue('title_clear_geometries'),
@@ -392,7 +392,7 @@ export default class EditionControl extends M.Control {
       },
     });
     this.managementControl_.accessibilityTab(templateModal);
-    M.dialog.info(templateModal.innerHTML, getValue('title_attribute_table'));
+    IDEE.dialog.info(templateModal.innerHTML, getValue('title_attribute_table'));
 
     // this.template.querySelector('#clear-layer-modal').classList.remove('closed');
     document.querySelector('#confirm-clear-btn').onclick = () => this.closeModalCleanGeometries(true);
@@ -630,7 +630,7 @@ export default class EditionControl extends M.Control {
    * Draws square around feature and adds it to selection layer.
    * @public
    * @function
-   * @param {M.Feature} feature
+   * @param {IDEE.Feature} feature
    * @param {Boolead} addToSelection add feature to selection (true/false)
    * @api
    */
@@ -642,7 +642,7 @@ export default class EditionControl extends M.Control {
       if (geomType === 'Point' || geomType === 'MultiPoint') {
         emphasis = this.getImpl().getApiIdeeFeatureClone(feature);
 
-        emphasis.setStyle(new M.style.Point({
+        emphasis.setStyle(new IDEE.style.Point({
           radius: 20,
           stroke: {
             color: '#FF0000',
@@ -652,8 +652,8 @@ export default class EditionControl extends M.Control {
       } else {
         // eslint-disable-next-line no-underscore-dangle
         const extent = this.getImpl().getFeatureExtent(feature);
-        emphasis = M.impl.Feature.feature2Facade(this.getImpl().newPolygonFeature(extent));
-        emphasis.setStyle(new M.style.Line({
+        emphasis = IDEE.impl.Feature.feature2Facade(this.getImpl().newPolygonFeature(extent));
+        emphasis.setStyle(new IDEE.style.Line({
           stroke: {
             color: '#FF0000',
             width: 2,
@@ -689,7 +689,7 @@ export default class EditionControl extends M.Control {
         this.createEmptyTable();
       }
     } else {
-      M.dialog.info(getValue('exception.emptylayer'));
+      IDEE.dialog.info(getValue('exception.emptylayer'));
     }
   }
 
@@ -739,7 +739,7 @@ export default class EditionControl extends M.Control {
     const $dialog = document.querySelector('.m-dialog.info');
     $dialog.style.display = 'none';
 
-    M.dialog.info(
+    IDEE.dialog.info(
       `<div id="chooseAttribute" class="m-vectorsmanagement-editAttribute">
         <input autofocus type="text" id="attribute-name" style="width: 10rem;">
       </div>`,
@@ -933,7 +933,7 @@ export default class EditionControl extends M.Control {
     const $dialog = document.querySelector('.m-dialog.info');
     $dialog.style.display = 'none';
 
-    M.dialog.info(
+    IDEE.dialog.info(
       `<div id="chooseAttribute" class="m-vectorsmanagement-editAttribute">
         <input type="text" id="attribute-name" style="width: 10rem;">
       </div>`,
@@ -1006,7 +1006,7 @@ export default class EditionControl extends M.Control {
    * @public
    * @function
    * @api stable
-   * @param {M.Feature} feature
+   * @param {IDEE.Feature} feature
    * @param {String} attributeName
    * @param {String} newAttribute
    */
@@ -1030,7 +1030,7 @@ export default class EditionControl extends M.Control {
    * @public
    * @function
    * @api
-   * @param {M.layer} layer
+   * @param {IDEE.layer} layer
    */
   setLayer(layer) {
     this.layer_ = layer;
@@ -1076,7 +1076,7 @@ export default class EditionControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

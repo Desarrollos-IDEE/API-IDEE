@@ -1,23 +1,23 @@
 /* eslint-disable no-param-reassign,no-underscore-dangle,spaced-comment,max-len,no-proto,no-plusplus,no-console */
-import { map as Mmap } from 'M/api-idee';
+import { map as Mmap } from 'IDEE/api-idee';
 
 // Habilitar para pruebas Layers
-import KML from 'M/layer/KML'; // eslint-disable-line no-unused-vars
-import WMS from 'M/layer/WMS'; // eslint-disable-line no-unused-vars
-import WMTS from 'M/layer/WMTS'; // eslint-disable-line no-unused-vars
-import GeoJSON from 'M/layer/GeoJSON';
-import MBTiles from 'M/layer/MBTiles';
-import MBTilesVector from 'M/layer/MBTilesVector';
-import OGCAPIFeatures from 'M/layer/OGCAPIFeatures';
-import XYZ from 'M/layer/XYZ';
-import GeoTIFF from 'M/layer/GeoTIFF'; // eslint-disable-line no-unused-vars
-import MapLibre from 'M/layer/MapLibre'; // eslint-disable-line no-unused-vars
+import KML from 'IDEE/layer/KML'; // eslint-disable-line no-unused-vars
+import WMS from 'IDEE/layer/WMS'; // eslint-disable-line no-unused-vars
+import WMTS from 'IDEE/layer/WMTS'; // eslint-disable-line no-unused-vars
+import GeoJSON from 'IDEE/layer/GeoJSON';
+import MBTiles from 'IDEE/layer/MBTiles';
+import MBTilesVector from 'IDEE/layer/MBTilesVector';
+import OGCAPIFeatures from 'IDEE/layer/OGCAPIFeatures';
+import XYZ from 'IDEE/layer/XYZ';
+import GeoTIFF from 'IDEE/layer/GeoTIFF'; // eslint-disable-line no-unused-vars
+import MapLibre from 'IDEE/layer/MapLibre'; // eslint-disable-line no-unused-vars
 
 // Para otras pruebas
-import Polygon from 'M/style/Polygon';
-import Feature from 'M/feature/Feature';
-import Panel from 'M/ui/Panel';
-import Popup from 'M/Popup';
+import Polygon from 'IDEE/style/Polygon';
+import Feature from 'IDEE/feature/Feature';
+import Panel from 'IDEE/ui/Panel';
+import Popup from 'IDEE/Popup';
 import Label from '../../../src/facade/js/Label'; // eslint-disable-line no-unused-vars
 
 const mapa = Mmap(
@@ -251,7 +251,7 @@ if (listAllFunctions && listAllFunctions.length > 0) { // Confirmar que existen 
           } else if (auxName === 'getPlugins') {
             showResult(auxButton, 'GET_Plugins', mapa[auxName]());
             auxButton.className = 'warningButton';
-            console.error('IMPOSIBLE_TO_DO_TEST_IN_DEVELOPMENT'); // POR PROBAR SIN TERMINAR LA PRUEBA, requiere "M." que esta en Pruebas de Producción
+            console.error('IMPOSIBLE_TO_DO_TEST_IN_DEVELOPMENT'); // POR PROBAR SIN TERMINAR LA PRUEBA, requiere "IDEE." que esta en Pruebas de Producción
           } else if (auxName === 'getRootLayers') {
             showResult(auxButton, 'GET_RootLayers', mapa[auxName]());
             showResult(auxButton, 'GET_RootLayers_FILTER', mapa[auxName]({ name: 'IGNBaseTodo' }));
@@ -325,18 +325,18 @@ if (listAllFunctions && listAllFunctions.length > 0) { // Confirmar que existen 
           } else if (auxName === 'addPanels') {
             showResult(auxButton, 'ADD_panels', mapa[auxName](new Panel('toolsExtra', {
               collapsible: true, className: 'm-tools', collapsedButtonClass: 'g-cartografia-herramienta', position: '.m-top.m-left',
-            }))); // M.ui.position.TL
+            }))); // IDEE.ui.position.TL
           } else if (auxName === 'addPlugin') {
             // POR PROBAR Hay que hacer la prueba de Plugin en api-idee-js/test/production
-            // import GeometryDraw from 'M/plugin/GeometryDraw'; // Hay que crear el test de plugin en Poduction, ya que solo se tiene acceso a este desde ahí.
-            // showResult(auxButton, 'ADD_PLUGIN_DRAW', mapa[auxName](new M.plugin.GeometryDraw()));
+            // import GeometryDraw from 'IDEE/plugin/GeometryDraw'; // Hay que crear el test de plugin en Poduction, ya que solo se tiene acceso a este desde ahí.
+            // showResult(auxButton, 'ADD_PLUGIN_DRAW', mapa[auxName](new IDEE.plugin.GeometryDraw()));
             // showResult(auxButton, 'ADD_PLUGIN_DRAW', mapa[auxName](new GeometryDraw()));
             auxButton.className = 'warningButton';
             console.error('IMPOSIBLE_TO_DO_TEST_IN_DEVELOPMENT');
           } else if (auxName === 'addPopup') {
             const popup = new Popup();
             popup.addTab({ 'icon': 'g-cartografia-pin', 'title': 'Título', 'content': 'Información' });
-            showResult(auxButton, 'ADD_POPUP', mapa[auxName](popup, [240829, 4143088]));// popup.on(M.evt.DESTROY, () => {M.dialog.info('Popup eliminado');  });popup.destroy();
+            showResult(auxButton, 'ADD_POPUP', mapa[auxName](popup, [240829, 4143088]));// popup.on(IDEE.evt.DESTROY, () => {IDEE.dialog.info('Popup eliminado');  });popup.destroy();
           } else if (auxName === 'addQuickLayers') {
             showResult(auxButton, 'ADD_QuickLayers', mapa[auxName]('QUICK*BASE_PNOA_MA_TMS')); // 403 'QUICK*BASE_IGNBaseOrto_TMS'
           } else if (auxName === 'addTMS') {

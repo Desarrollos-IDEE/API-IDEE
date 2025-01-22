@@ -1,5 +1,5 @@
 /**
- * @module M/impl/ol/js/ext/OLStyleFlowLine
+ * @module IDEE/impl/ol/js/ext/OLStyleFlowLine
  */
 
 /* eslint-disable  no-cond-assign */

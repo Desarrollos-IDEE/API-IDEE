@@ -1,4 +1,4 @@
-# M.plugin.ViewHistory
+# IDEE.plugin.ViewHistory
 
 Plugin que permite navegar entre las vistas visitadas del mapa (hacia adelante y atrás).
 
@@ -38,11 +38,11 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 # Ejemplos de uso
 
 ```javascript
-   const map = M.map({
+   const map = IDEE.map({
      container: 'map'
    });
 
-   const mp = new M.plugin.ViewHistory({
+   const mp = new IDEE.plugin.ViewHistory({
      position: 'TL'
    });
 

@@ -1,10 +1,10 @@
 /**
- * @module M/impl/style/builder
+ * @module IDEE/impl/style/builder
  */
 import chroma from 'chroma-js';
-import { isUndefined, isNullOrEmpty, isFunction } from 'M/util/Utils';
-import * as Align from 'M/style/Align';
-import * as Baseline from 'M/style/Baseline';
+import { isUndefined, isNullOrEmpty, isFunction } from 'IDEE/util/Utils';
+import * as Align from 'IDEE/style/Align';
+import * as Baseline from 'IDEE/style/Baseline';
 import OLStyle from 'ol/style/Style';
 import OLStyleFill from 'ol/style/Fill';
 import OLStyleStroke from 'ol/style/Stroke';

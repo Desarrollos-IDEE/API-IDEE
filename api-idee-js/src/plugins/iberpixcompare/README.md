@@ -1,4 +1,4 @@
-# M.plugin.IberpixCompare
+# IDEE.plugin.IberpixCompare
 
 Plugin compilatorio de comparadores
 
@@ -61,7 +61,7 @@ Ejemplo:
 Insertar intervalos a través de servicios WMS. La URL en formato api-idee sigue la siguiente estructura:
   - Servicio,Leyenda,URL,Nombre. Separados por "*".
 ```javascript
-const mp = new M.plugin.IberpixCompare({
+const mp = new IDEE.plugin.IberpixCompare({
     position: 'TL',
     vertical: true,
     collapsible: false,
@@ -103,7 +103,7 @@ const mp = new M.plugin.IberpixCompare({
           preview: MAPA,
           title: 'Mapa',
           layers: [
-            new M.layer.WMTS({
+            new IDEE.layer.WMTS({
               url: 'http://www.ign.es/wmts/ign-base?',
               name: 'IGNBaseTodo',
               legend: 'Mapa',
@@ -121,7 +121,7 @@ const mp = new M.plugin.IberpixCompare({
           preview: IMAGEN,
           title: 'Imagen',
           layers: [
-            new M.layer.WMTS({
+            new IDEE.layer.WMTS({
               url: 'http://www.ign.es/wmts/pnoa-ma?',
               name: 'OI.OrthoimageCoverage',
               legend: 'Imagen',
@@ -139,7 +139,7 @@ const mp = new M.plugin.IberpixCompare({
           title: 'Híbrido',
           preview: HIBRIDO,
           layers: [
-            new M.layer.WMTS({
+            new IDEE.layer.WMTS({
               url: 'http://www.ign.es/wmts/pnoa-ma?',
               name: 'OI.OrthoimageCoverage',
               matrixSet: 'GoogleMapsCompatible',
@@ -150,7 +150,7 @@ const mp = new M.plugin.IberpixCompare({
               visible: true,
               format: 'image/jpeg',
             }),
-            new M.layer.WMTS({
+            new IDEE.layer.WMTS({
               url: 'http://www.ign.es/wmts/ign-base?',
               name: 'IGNBaseOrto',
               matrixSet: 'GoogleMapsCompatible',

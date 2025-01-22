@@ -1,10 +1,10 @@
 /**
- * @module M/impl/Map
+ * @module IDEE/impl/Map
  */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable new-cap */
-import MObject from 'M/Object';
-import { get as getRemote } from 'M/util/Remote';
+import MObject from 'IDEE/Object';
+import { get as getRemote } from 'IDEE/util/Remote';
 import {
   isNullOrEmpty,
   includes,
@@ -14,18 +14,18 @@ import {
   isUndefined,
   getWMSGetCapabilitiesUrl,
   getWMTSGetCapabilitiesUrl,
-} from 'M/util/Utils';
-import { FOCAL } from 'M/units';
-import * as LayerType from 'M/layer/Type';
-import Control from 'M/control/Control';
-import FacadeWMS from 'M/layer/WMS';
-import Exception from 'M/exception/exception';
-import * as EventType from 'M/event/eventtype';
-import FacadeMap from 'M/Map';
-import LayerBase from 'M/layer/Layer';
+} from 'IDEE/util/Utils';
+import { FOCAL } from 'IDEE/units';
+import * as LayerType from 'IDEE/layer/Type';
+import Control from 'IDEE/control/Control';
+import FacadeWMS from 'IDEE/layer/WMS';
+import Exception from 'IDEE/exception/exception';
+import * as EventType from 'IDEE/event/eventtype';
+import FacadeMap from 'IDEE/Map';
+import LayerBase from 'IDEE/layer/Layer';
 import {
   getValue,
-} from 'M/i18n/language';
+} from 'IDEE/i18n/language';
 import 'impl-assets/css/custom';
 import 'impl-assets/css/widgets';
 import {
@@ -54,9 +54,9 @@ import CesiumFormatWMTSCapabilities from './format/CesiumWMTSCapabilities';
  * @classdesc
  * Esta clase crea un mapa con un contenedor "div" específico
  *
- * @property {M.Map} facadeMap_ Fachada del mapa a implementar.
- * @property {M.Layer} layers_ Capas añadidas al mapa.
- * @property {Array<M.Control>} controls_ Controles añadidos al mapa.
+ * @property {IDEE.Map} facadeMap_ Fachada del mapa a implementar.
+ * @property {IDEE.Layer} layers_ Capas añadidas al mapa.
+ * @property {Array<IDEE.Control>} controls_ Controles añadidos al mapa.
  * @property {Boolean} initZoom_ Indica si el zoom inicial fue calculado. Por defecto verdadero.
  * @property {Array<Number>} userResolutions_ Resoluciones asociadas a cada nivel
  * de zoom especificadas por el usuario.
@@ -79,7 +79,7 @@ import CesiumFormatWMTSCapabilities from './format/CesiumWMTSCapabilities';
  * indicado por el usuario.
  *
  * @api
- * @extends {M.Object}
+ * @extends {IDEE.Object}
  */
 class Map extends MObject {
   /**
@@ -88,7 +88,7 @@ class Map extends MObject {
    *
    * @constructor
    * @param {Object} div Elemento "div" proporcionado por el usuario.
-   * @param {M.Map} facadeMap Fachada del mapa a implementar.
+   * @param {IDEE.Map} facadeMap Fachada del mapa a implementar.
    * @param {Mx.parameters.MapOptions} options Opciones del mapa.
    * - zoom: Nivel de zoom inicial del mapa.
    * - bbox: Encuadre de visualización del mapa.
@@ -107,35 +107,35 @@ class Map extends MObject {
    * @api
    */
   constructor(div, facadeMap, options = {}, viewVendorOptions = {}) {
-    buildModuleUrl.setBaseUrl(`${M.config.API_IDEE_URL}/cesium/`);
+    buildModuleUrl.setBaseUrl(`${IDEE.config.API_IDEE_URL}/cesium/`);
     Ion.defaultAccessToken = '';
 
     super();
     /**
      * Fachada del mapa a implementar.
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.facadeMap_ = facadeMap;
 
     /**
      * Capas añadidas al mapa.
      * @private
-     * @type {Array<M.Layer>}
+     * @type {Array<IDEE.Layer>}
      */
     this.layers_ = [];
 
     /**
      * Grupos añadidos al mapa.
      * @private
-     * @type {Array<M.layer.Group>}
+     * @type {Array<IDEE.layer.Group>}
      */
     this.layerGroups_ = [];
 
     /**
      * Controles añadidos al mapa.
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -318,8 +318,8 @@ class Map extends MObject {
    * Este método obtiene las capas del mapa.
    *
    * @function
-   * @param {Array<M.Layer>} filters Filtros a aplicar para la búsqueda.
-   * @returns {Array<M.Layer>} Capas del mapa.
+   * @param {Array<IDEE.Layer>} filters Filtros a aplicar para la búsqueda.
+   * @returns {Array<IDEE.Layer>} Capas del mapa.
    * @public
    * @api
    */
@@ -367,7 +367,7 @@ class Map extends MObject {
    * Este método obtiene las capas base del mapa.
    *
    * @function
-   * @returns {Array<M.Layer>} Capas base del mapa.
+   * @returns {Array<IDEE.Layer>} Capas base del mapa.
    * @public
    * @api
    */
@@ -379,7 +379,7 @@ class Map extends MObject {
    * Este método añade las capas especificadas por el usuario al mapa.
    *
    * @function
-   * @param {Array<M.Layer>} layers Capas a añadir.
+   * @param {Array<IDEE.Layer>} layers Capas a añadir.
    * @returns {Map} Mapa.
    * @public
    * @api
@@ -434,7 +434,7 @@ class Map extends MObject {
    * Este método elimina las capas del mapa.
    *
    * @function
-   * @param {Array<M.Layer>} layers Capas a eliminar.
+   * @param {Array<IDEE.Layer>} layers Capas a eliminar.
    * @returns {Map} Mapa.
    * @public
    * @api
@@ -476,8 +476,8 @@ class Map extends MObject {
    * Este método obtiene las capas KML añadidas al mapa.
    *
    * @function
-   * @param {Array<M.Layer>} filters Filtros a aplicar para la búsqueda.
-   * @returns {Array<M.layer.KML>} Capas KML del mapa.
+   * @param {Array<IDEE.Layer>} filters Filtros a aplicar para la búsqueda.
+   * @returns {Array<IDEE.layer.KML>} Capas KML del mapa.
    * @public
    * @api
    */
@@ -537,7 +537,7 @@ class Map extends MObject {
    * Este método añade las capas KML especificadas por el usuario al mapa.
    *
    * @function
-   * @param {Array<M.layer.KML>} layers Capas KML a añadir.
+   * @param {Array<IDEE.layer.KML>} layers Capas KML a añadir.
    * @returns {Map} Mapa.
    * @public
    * @api
@@ -560,7 +560,7 @@ class Map extends MObject {
    * Este método elimina las capas KML del mapa especificadas por el usuario.
    *
    * @function
-   * @param {Array<M.layer.KML>} layers Capas KML a eliminar.
+   * @param {Array<IDEE.layer.KML>} layers Capas KML a eliminar.
    * @returns {Map} Mapa.
    * @public
    * @api
@@ -580,7 +580,7 @@ class Map extends MObject {
    * Este método obtiene las capas WMS añadidas al mapa.
    *
    * @function
-   * @param {Array<M.Layer>} filters Filtros a aplicar para la búsqueda.
+   * @param {Array<IDEE.Layer>} filters Filtros a aplicar para la búsqueda.
    * @returns {Array<FacadeWMS>} Capas WMS del mapa.
    * @public
    * @api
@@ -710,8 +710,8 @@ class Map extends MObject {
    * Este método obtiene las capas GeoJSON añadidas al mapa.
    *
    * @function
-   * @param {Array<M.Layer>} filters Filtros a aplicar para la búsqueda.
-   * @returns {Array<M.layer.GeoJSON>} Capas GeoJSON del mapa.
+   * @param {Array<IDEE.Layer>} filters Filtros a aplicar para la búsqueda.
+   * @returns {Array<IDEE.layer.GeoJSON>} Capas GeoJSON del mapa.
    * @public
    * @api
    */
@@ -771,8 +771,8 @@ class Map extends MObject {
    * Este método obtiene las capas WFS añadidas al mapa.
    *
    * @function
-   * @param {Array<M.Layer>} filters Filtros a aplicar para la búsqueda.
-   * @returns {Array<M.layer.WFS>} Capas WFS del mapa.
+   * @param {Array<IDEE.Layer>} filters Filtros a aplicar para la búsqueda.
+   * @returns {Array<IDEE.layer.WFS>} Capas WFS del mapa.
    * @public
    * @api
    */
@@ -852,7 +852,7 @@ class Map extends MObject {
    * Este método añade las capas WFS especificadas por el usuario al mapa.
    *
    * @function
-   * @param {Array<M.layer.WFS>} layers Capas WFS a añadir.
+   * @param {Array<IDEE.layer.WFS>} layers Capas WFS a añadir.
    * @returns {Map} Mapa.
    * @public
    * @api
@@ -875,7 +875,7 @@ class Map extends MObject {
    * Este método elimina las capas WFS del mapa especificadas por el usuario.
    *
    * @function
-   * @param {Array<M.layer.WFS>} layers Capas WFS a eliminar.
+   * @param {Array<IDEE.layer.WFS>} layers Capas WFS a eliminar.
    * @returns {Map} Mapa.
    * @public
    * @api
@@ -895,8 +895,8 @@ class Map extends MObject {
    * Este método obtiene las capas OGCAPIFeatures añadidas al mapa.
    *
    * @function
-   * @param {Array<M.Layer>} filters Filtros a aplicar para la búsqueda.
-   * @returns {Array<M.layer.OGCAPIFeatures>} Capas OGCAPIFeatures del mapa.
+   * @param {Array<IDEE.Layer>} filters Filtros a aplicar para la búsqueda.
+   * @returns {Array<IDEE.layer.OGCAPIFeatures>} Capas OGCAPIFeatures del mapa.
    * @public
    * @api
    */
@@ -969,7 +969,7 @@ class Map extends MObject {
    * Este método añade las capas OGCAPIFeatures especificadas por el usuario al mapa.
    *
    * @function
-   * @param {Array<M.layer.OGCAPIFeatures>} layers Capas OGCAPIFeatures a añadir.
+   * @param {Array<IDEE.layer.OGCAPIFeatures>} layers Capas OGCAPIFeatures a añadir.
    * @returns {Map} Mapa.
    * @public
    * @api
@@ -992,7 +992,7 @@ class Map extends MObject {
    * Este método elimina las capas OGCAPIFeatures del mapa especificadas por el usuario.
    *
    * @function
-   * @param {Array<M.layer.OGCAPIFeatures>} layers Capas OGCAPIFeatures a eliminar.
+   * @param {Array<IDEE.layer.OGCAPIFeatures>} layers Capas OGCAPIFeatures a eliminar.
    * @returns {Map} Mapa.
    * @public
    * @api
@@ -1012,8 +1012,8 @@ class Map extends MObject {
    * Este método obtiene las capas WMTS añadidas al mapa.
    *
    * @function
-   * @param {Array<M.Layer>} filters Filtros a aplicar para la búsqueda.
-   * @returns {Array<M.layer.WMTS>} Capas WMTS del mapa.
+   * @param {Array<IDEE.Layer>} filters Filtros a aplicar para la búsqueda.
+   * @returns {Array<IDEE.layer.WMTS>} Capas WMTS del mapa.
    * @public
    * @api
    */
@@ -1078,7 +1078,7 @@ class Map extends MObject {
    * Este método añade las capas WMTS especificadas por el usuario al mapa.
    *
    * @function
-   * @param {Array<M.layer.WMTS>} layers Capas WMTS a añadir.
+   * @param {Array<IDEE.layer.WMTS>} layers Capas WMTS a añadir.
    * @returns {Map} Mapa.
    * @public
    * @api
@@ -1102,7 +1102,7 @@ class Map extends MObject {
    * Este método elimina las capas WMTS del mapa especificadas por el usuario.
    *
    * @function
-   * @param {Array<M.layer.WMTS>} layers Capas WMTS a eliminar.
+   * @param {Array<IDEE.layer.WMTS>} layers Capas WMTS a eliminar.
    * @returns {Map} Mapa.
    * @public
    * @api
@@ -1122,8 +1122,8 @@ class Map extends MObject {
    * Este método obtiene las capas MBTiles añadidas al mapa.
    *
    * @function
-   * @param {Array<M.Layer>} filtersParam Filtros a aplicar para la búsqueda.
-   * @returns {Array<M.layer.MBTiles>} Capas MBTiles del mapa.
+   * @param {Array<IDEE.Layer>} filtersParam Filtros a aplicar para la búsqueda.
+   * @returns {Array<IDEE.layer.MBTiles>} Capas MBTiles del mapa.
    * @public
    * @api
    */
@@ -1177,7 +1177,7 @@ class Map extends MObject {
    * Este método añade las capas MBTiles especificadas por el usuario al mapa.
    *
    * @function
-   * @param {Array<M.layer.MBTiles>} layers Capas MBTiles a añadir al mapa.
+   * @param {Array<IDEE.layer.MBTiles>} layers Capas MBTiles a añadir al mapa.
    * @returns {Map} Mapa.
    * @public
    * @api
@@ -1199,7 +1199,7 @@ class Map extends MObject {
    * Este método elimina las capas MBTiles del mapa especificadas por el usuario.
    *
    * @function
-   * @param {Array<M.layer.MBTiles>} layers Capas MBTiles a eliminar.
+   * @param {Array<IDEE.layer.MBTiles>} layers Capas MBTiles a eliminar.
    * @returns {Map} Mapa.
    * @public
    * @api
@@ -1220,7 +1220,7 @@ class Map extends MObject {
    *- ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
    * @function
-   * @param {Array<M.Layer>} filters Filtros a aplicar en la búsqueda.
+   * @param {Array<IDEE.Layer>} filters Filtros a aplicar en la búsqueda.
    * @returns {Array<FacadeWMS>} Capas del mapa.
    * @api
    */
@@ -1317,8 +1317,8 @@ class Map extends MObject {
    * Este método obtiene las capas XYZ añadidas al mapa.
    *
    * @function
-   * @param {Array<M.Layer>} filters Filtros a aplicar para la búsqueda.
-   * @returns {Array<M.layer.XYZ>} Capas XYZ del mapa.
+   * @param {Array<IDEE.Layer>} filters Filtros a aplicar para la búsqueda.
+   * @returns {Array<IDEE.layer.XYZ>} Capas XYZ del mapa.
    * @public
    * @api
    */
@@ -1370,8 +1370,8 @@ class Map extends MObject {
    * Este método añade las capas XYZ especificadas por el usuario al mapa.
    *
    * @function
-   * @param {Array<M.layer.XYZ>} layers Capas XYZ a añadir.
-   * @returns {M.impl.Map} Mapa.
+   * @param {Array<IDEE.layer.XYZ>} layers Capas XYZ a añadir.
+   * @returns {IDEE.impl.Map} Mapa.
    * @public
    * @api
    */
@@ -1392,8 +1392,8 @@ class Map extends MObject {
    * Este método elimina las capas XYZ del mapa especificadas por el usuario.
    *
    * @function
-   * @param {Array<M.layer.XYZ>} layers Capas XYZ a eliminar.
-   * @returns {M.impl.Map} Mapa.
+   * @param {Array<IDEE.layer.XYZ>} layers Capas XYZ a eliminar.
+   * @returns {IDEE.impl.Map} Mapa.
    * @public
    * @api
    */
@@ -1412,8 +1412,8 @@ class Map extends MObject {
    * Este método obtiene las capas TMS añadidas al mapa.
    *
    * @function
-   * @param {Array<M.Layer>} filters Filtros para aplicar en la búsqueda.
-   * @returns {Array<M.layer.TMS>} Capas TMS del mapa.
+   * @param {Array<IDEE.Layer>} filters Filtros para aplicar en la búsqueda.
+   * @returns {Array<IDEE.layer.TMS>} Capas TMS del mapa.
    * @public
    * @api
    */
@@ -1465,8 +1465,8 @@ class Map extends MObject {
    * Este método añade las capas TMS especificadas por el usuario al mapa.
    *
    * @function
-   * @param {Array<M.layer.TMS>} layers Capas TMS a añadir.
-   * @returns {M.impl.Map} Mapa.
+   * @param {Array<IDEE.layer.TMS>} layers Capas TMS a añadir.
+   * @returns {IDEE.impl.Map} Mapa.
    * @public
    * @api
    */
@@ -1487,8 +1487,8 @@ class Map extends MObject {
    * Este método elimina las capas TMS del mapa especificadas por el usuario.
    *
    * @function
-   * @param {Array<M.layer.TMS>} layers Capas TMS a eliminar.
-   * @returns {M.impl.Map} Mapa.
+   * @param {Array<IDEE.layer.TMS>} layers Capas TMS a eliminar.
+   * @returns {IDEE.impl.Map} Mapa.
    * @public
    * @api
    */
@@ -1507,8 +1507,8 @@ class Map extends MObject {
    * Este método obtiene las capas Tiles3D añadidas al mapa.
    *
    * @function
-   * @param {Array<M.Layer>} filters Filtros a aplicar para la búsqueda.
-   * @returns {Array<M.layer.Tiles3D>} Capas Tiles3D del mapa.
+   * @param {Array<IDEE.Layer>} filters Filtros a aplicar para la búsqueda.
+   * @returns {Array<IDEE.layer.Tiles3D>} Capas Tiles3D del mapa.
    * @public
    * @api
    */
@@ -1567,7 +1567,7 @@ class Map extends MObject {
    * Este método añade las capas Tiles3D especificadas por el usuario al mapa.
    *
    * @function
-   * @param {Array<M.layer.Tiles3D>} layers Capas Tiles3D a añadir.
+   * @param {Array<IDEE.layer.Tiles3D>} layers Capas Tiles3D a añadir.
    * @returns {Map} Mapa.
    * @public
    * @api
@@ -1589,7 +1589,7 @@ class Map extends MObject {
    * Este método elimina las capas Tiles3D del mapa especificadas por el usuario.
    *
    * @function
-   * @param {Array<M.layer.Tiles3D>} layers Capas Tiles3D a eliminar.
+   * @param {Array<IDEE.layer.Tiles3D>} layers Capas Tiles3D a eliminar.
    * @returns {Map} Mapa.
    * @public
    * @api
@@ -1608,8 +1608,8 @@ class Map extends MObject {
    * Este método obtiene las capas Terrain añadidas al mapa.
    *
    * @function
-   * @param {Array<M.Layer>} filters Filtros a aplicar para la búsqueda.
-   * @returns {Array<M.layer.Terrain>} Capas Terrain del mapa.
+   * @param {Array<IDEE.Layer>} filters Filtros a aplicar para la búsqueda.
+   * @returns {Array<IDEE.layer.Terrain>} Capas Terrain del mapa.
    * @public
    * @api
    */
@@ -1669,7 +1669,7 @@ class Map extends MObject {
    * Solo disponible para Cesium.
    *
    * @function
-   * @param {Array<M.layer.Terrain>} layers Capas Terrain a añadir.
+   * @param {Array<IDEE.layer.Terrain>} layers Capas Terrain a añadir.
    * @returns {Map} Mapa.
    * @public
    * @api
@@ -1696,7 +1696,7 @@ class Map extends MObject {
    * Este método elimina las capas Terrain del mapa especificadas por el usuario.
    *
    * @function
-   * @param {Array<M.layer.Terrain>} layers Capas Terrain a eliminar.
+   * @param {Array<IDEE.layer.Terrain>} layers Capas Terrain a eliminar.
    * @returns {Map} Mapa.
    * @public
    * @api
@@ -1716,7 +1716,7 @@ class Map extends MObject {
    *
    * @function
    * @param {string|Array<String>} filters Filtros.
-   * @returns {Array<M.Control>} Controles.
+   * @returns {Array<IDEE.Control>} Controles.
    * @public
    * @api
    */
@@ -1770,7 +1770,7 @@ class Map extends MObject {
    * Este método añade los controles del mapa especificados por el usuario.
    *
    * @function
-   * @param {M.Control} controls Controles a añadir.
+   * @param {IDEE.Control} controls Controles a añadir.
    * @returns {Map} Mapa.
    * @public
    * @api
@@ -1789,7 +1789,7 @@ class Map extends MObject {
    * Este método elimina los controles del mapa especificados por el usuario.
    *
    * @function
-   * @param {M.Control} controls Controles a eliminar.
+   * @param {IDEE.Control} controls Controles a eliminar.
    * @returns {Map} Mapa.
    * @public
    * @api
@@ -2435,7 +2435,7 @@ class Map extends MObject {
    * Este método elimina el "popup".
    *
    * @function
-   * @param {M.impl.Popup} popup "Popup" a eliminar.
+   * @param {IDEE.impl.Popup} popup "Popup" a eliminar.
    * @returns {cesium.Map} Mapa.
    * @public
    * @api
@@ -2473,7 +2473,7 @@ class Map extends MObject {
    * a partir de las capas base.
    *
    * @function
-   * @returns {M.Map} Mapa
+   * @returns {IDEE.Map} Mapa
    * @public
    * @api
    */
@@ -2485,7 +2485,7 @@ class Map extends MObject {
    * Este método añade un "popup" y elimina el anterior.
    *
    * @function
-   * @param {M.impl.Popup} label "Popup" a añadir.
+   * @param {IDEE.impl.Popup} label "Popup" a añadir.
    * @returns {Cesium.Viewer} Mapa.
    * @public
    * @api
@@ -2540,7 +2540,7 @@ class Map extends MObject {
    * Este método establece la fachada del mapa a implementar.
    *
    * @function
-   * @param {M.Map} facadeMap Fachada del mapa a implementar.
+   * @param {IDEE.Map} facadeMap Fachada del mapa a implementar.
    * @public
    * @api
    */
@@ -2577,7 +2577,7 @@ class Map extends MObject {
    * Este método se ejecuta cuando el usuario hace click en el mapa.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function
-   * @param {M.evt} evt Evento.
+   * @param {IDEE.evt} evt Evento.
    * @public
    * @api
    */
@@ -2614,7 +2614,7 @@ class Map extends MObject {
    * Este método se ejecuta cuando el usuario mueve el mapa.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function
-   * @param {M.evt} evt Evento.
+   * @param {IDEE.evt} evt Evento.
    * @public
    * @api
    */
@@ -2645,7 +2645,7 @@ class Map extends MObject {
    * Este método se ejecuta cuando el usuario mueve el ratón.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function
-   * @param {M.evt} evt Evento.
+   * @param {IDEE.evt} evt Evento.
    * @public
    * @api
    */

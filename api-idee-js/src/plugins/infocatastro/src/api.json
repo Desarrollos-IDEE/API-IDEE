@@ -3,7 +3,7 @@
     "name": "infocatastro",
     "separator": "*"
   },
-  "constructor": "M.plugin.InfoCatastro",
+  "constructor": "IDEE.plugin.InfoCatastro",
   "parameters": [{
     "type": "object",
     "properties": [{

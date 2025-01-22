@@ -1,7 +1,7 @@
-import { map as Mmap } from 'M/api-idee';
+import { map as Mmap } from 'IDEE/api-idee';
 import { generic_001 } from '../layers/generic/generic';
 
-M.config.backgroundlayers = [{
+IDEE.config.backgroundlayers = [{
   id: 'mapa',
   title: 'Callejero',
   layers: [

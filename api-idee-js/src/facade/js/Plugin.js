@@ -1,5 +1,5 @@
 /**
- * @module M/Plugin
+ * @module IDEE/Plugin
  */
 import Base from './Base';
 import { isUndefined, isNullOrEmpty } from './util/Utils';
@@ -10,7 +10,7 @@ import { getValue } from './i18n/language';
 /**
  * @classdesc
  * Esta clase crea los métodos necesarios para añadir los plugins al mapa.
- * @extends {M.facade.Base}
+ * @extends {IDEE.facade.Base}
  * @api
  */
 class Plugin extends Base {
@@ -53,7 +53,7 @@ class Plugin extends Base {
    * Añade la vista al mapa.
    * @public
    * @function
-   * @param {M.Map} map Añade la vista al mapa.
+   * @param {IDEE.Map} map Añade la vista al mapa.
    * @api
    */
   createView(map) {}

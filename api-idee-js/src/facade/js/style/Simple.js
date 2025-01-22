@@ -1,5 +1,5 @@
 /**
- * @module M/style/Simple
+ * @module IDEE/style/Simple
  */
 import { defineFunctionFromString, isDynamic, drawDynamicStyle } from '../util/Utils';
 import StyleFeature from './Feature';
@@ -8,7 +8,7 @@ import StyleFeature from './Feature';
  * @classdesc
  * Esta clase genera estilos simples.
  * @api
- * @extends {M.style.feature}
+ * @extends {IDEE.style.feature}
  */
 class Simple extends StyleFeature {
   /**
@@ -67,7 +67,7 @@ class Simple extends StyleFeature {
    * Este método devuelve el orden del estilo.
    * @constant
    * @public
-   * @returns {M.style.Simple} Devuelve el orden.
+   * @returns {IDEE.style.Simple} Devuelve el orden.
    * @api
    */
   get ORDER() {
@@ -80,7 +80,7 @@ class Simple extends StyleFeature {
    * @public
    * @param {string} serializedStyle Estilo serializado.
    * @param {string} className Nombre de clase con estilo.
-   * @returns {M.style.Simple} Devuelve la desesialización.
+   * @returns {IDEE.style.Simple} Devuelve la desesialización.
    *
    * @api
    */

@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/Stylecontrol
+ * @module IDEE/impl/control/Stylecontrol
  */

@@ -1,17 +1,17 @@
 /**
- * @module M/impl/layer/GenericRaster
+ * @module IDEE/impl/layer/GenericRaster
  */
-import * as LayerType from 'M/layer/Type';
-import { getValue } from 'M/i18n/language';
+import * as LayerType from 'IDEE/layer/Type';
+import { getValue } from 'IDEE/i18n/language';
 import {
   isUndefined, isNull, isNullOrEmpty, getWMSGetCapabilitiesUrl, getWMTSGetCapabilitiesUrl,
   getResolutionFromScale,
-} from 'M/util/Utils';
+} from 'IDEE/util/Utils';
 import TileWMS from 'ol/source/TileWMS';
 import ImageWMS from 'ol/source/ImageWMS';
 import OLSourceWMTS from 'ol/source/WMTS';
 import OLFormatWMTSCapabilities from 'ol/format/WMTSCapabilities';
-import { get as getRemote } from 'M/util/Remote';
+import { get as getRemote } from 'IDEE/util/Remote';
 import { get as getProj } from 'ol/proj';
 
 import LayerBase from './Layer';
@@ -26,7 +26,7 @@ import ImplUtils from '../util/Utils';
  * @classdesc
  * GenericRaster permite añadir cualquier tipo de capa raster definida con la librería base.
  * @api
- * @extends {M.impl.layer.Layer}
+ * @extends {IDEE.impl.layer.Layer}
  */
 class GenericRaster extends LayerBase {
   /**
@@ -106,7 +106,7 @@ class GenericRaster extends LayerBase {
    *
    * @public
    * @function
-   * @param {M.impl.Map} map Mapa de la implementación.
+   * @param {IDEE.impl.Map} map Mapa de la implementación.
    * @api stable
    */
   addTo(map, addLayer = true) {
@@ -225,7 +225,7 @@ class GenericRaster extends LayerBase {
 
   /**
    * Este método devuelve el capabilities de la capa.
-   * @param {M.layer.WMS} layerOl Capa de la que se quiere obtener el capabilities.
+   * @param {IDEE.layer.WMS} layerOl Capa de la que se quiere obtener el capabilities.
    * @param {string} projection Proyección del mapa.
    * @return {Promise} Promesa con el capabilities de la capa.
    */
@@ -240,7 +240,7 @@ class GenericRaster extends LayerBase {
   /**
    * Este método devuelve el capabilities de la capa.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
-   * @param {M.layer.WMS} layerOl Capa de la que se quiere obtener el capabilities.
+   * @param {IDEE.layer.WMS} layerOl Capa de la que se quiere obtener el capabilities.
    * @param {string} projection Proyección del mapa.
    * @return {Promise} Promesa con el capabilities de la capa.
    * @api
@@ -274,7 +274,7 @@ class GenericRaster extends LayerBase {
   /**
    * Este método devuelve el capabilities de la capa.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
-   * @param {M.layer.WMS} layerOl Capa de la que se quiere obtener el capabilities.
+   * @param {IDEE.layer.WMS} layerOl Capa de la que se quiere obtener el capabilities.
    * @return {Promise} Promesa con el capabilities de la capa.
    * @api
    */

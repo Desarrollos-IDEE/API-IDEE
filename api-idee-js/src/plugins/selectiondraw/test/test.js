@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import SelectionDraw from 'facade/selectiondraw';
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
 });
 const mp = new SelectionDraw({

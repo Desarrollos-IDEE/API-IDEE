@@ -1,5 +1,5 @@
 /**
- * @module M/control/GetFeatureInfo
+ * @module IDEE/control/GetFeatureInfo
  */
 import 'assets/css/controls/getfeatureinfo';
 import GetFeatureInfoImpl from 'impl/control/GetFeatureInfo';
@@ -16,7 +16,7 @@ import { compileSync as compileTemplate } from '../util/Template';
  * WMS y WMTS a través de su servicio getFeatureInfo.
  *
  * @api
- * @extends {M.Control}
+ * @extends {IDEE.Control}
  */
 class GetFeatureInfo extends ControlBase {
   /**
@@ -46,7 +46,7 @@ class GetFeatureInfo extends ControlBase {
    *
    * @public
    * @function
-   * @param {M.Map} map Mapa.
+   * @param {IDEE.Map} map Mapa.
    * @returns {Promise} Plantilla HTML.
    * @api
    */
@@ -83,7 +83,7 @@ class GetFeatureInfo extends ControlBase {
       content: new Promise((success) => {
         const html = compileTemplate(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}assets/images`,
+            urlImages: `${IDEE.config.API_IDEE_URL}assets/images`,
             translations: {
               help1: textHelp.text1,
             },

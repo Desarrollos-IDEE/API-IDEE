@@ -1,5 +1,5 @@
 /**
- * @module M/impl/control/InformationControl
+ * @module IDEE/impl/control/InformationControl
  */
 
 import informationPopupTemplate from '../../../templates/information_popup';
@@ -23,7 +23,7 @@ const regExs = {
 
 const POPUP_TITLE = getValue('title');
 
-export default class InformationControl extends M.impl.Control {
+export default class InformationControl extends IDEE.impl.Control {
   constructor(format, featureCount, buffer, opened) {
     super({});
 
@@ -35,9 +35,9 @@ export default class InformationControl extends M.impl.Control {
      */
     this.format_ = format;
 
-    if ((M.utils.normalize(this.format_) === 'plain') || (M.utils.normalize(this.format_) === 'text/plain')) {
+    if ((IDEE.utils.normalize(this.format_) === 'plain') || (IDEE.utils.normalize(this.format_) === 'text/plain')) {
       this.format_ = 'text/plain';
-    } else if ((M.utils.normalize(this.format_) === 'gml') || (M.utils.normalize(this.format_) === 'application/vnd.ogc.gml')) {
+    } else if ((IDEE.utils.normalize(this.format_) === 'gml') || (IDEE.utils.normalize(this.format_) === 'application/vnd.ogc.gml')) {
       this.format_ = 'application/vnd.ogc.gml';
     } else {
       this.format_ = 'text/html';
@@ -70,7 +70,7 @@ export default class InformationControl extends M.impl.Control {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.facadeMap_ = null;
 
@@ -90,7 +90,7 @@ export default class InformationControl extends M.impl.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api
    */
@@ -156,7 +156,7 @@ export default class InformationControl extends M.impl.Control {
    */
   addOnClickEvent_() {
     const olMap = this.facadeMap_.getMapImpl();
-    this.clickEventKey_ = olMap.on('singleclick', (e) => this.buildUrl_(M.dialog, e));
+    this.clickEventKey_ = olMap.on('singleclick', (e) => this.buildUrl_(IDEE.dialog, e));
     document.querySelector('.m-control.m-container.m-information-container').classList.add('activated');
   }
 
@@ -182,7 +182,7 @@ export default class InformationControl extends M.impl.Control {
     const wmtsInfoURLS = this.buildWMTSInfoURL([...wmts, ...urlsWMTS]);
 
     const layerNamesUrls = [...wmtsInfoURLS, ...wmsInfoURLS]
-      .filter((layer) => !M.utils.isNullOrEmpty(layer));
+      .filter((layer) => !IDEE.utils.isNullOrEmpty(layer));
     if (layerNamesUrls.length > 0) {
       this.showInfoFromURL_(layerNamesUrls, evt.coordinate, olMap);
     } else {
@@ -202,7 +202,7 @@ export default class InformationControl extends M.impl.Control {
     return wmsLayers.map((layer) => {
       const olLayer = layer.getImpl().getLayer();
       let param;
-      if (layer.isVisible() && layer.isQueryable() && !M.utils.isNullOrEmpty(olLayer)) {
+      if (layer.isVisible() && layer.isQueryable() && !IDEE.utils.isNullOrEmpty(olLayer)) {
         param = {};
         const informationParams = {
           INFO_FORMAT: this.format_,
@@ -230,7 +230,7 @@ export default class InformationControl extends M.impl.Control {
   buildWMTSInfoURL(wmtsLayers) {
     return wmtsLayers.map((layer) => {
       let param;
-      if (layer.isVisible() && layer.isQueryable() && !M.utils.isNullOrEmpty(layer)) {
+      if (layer.isVisible() && layer.isQueryable() && !IDEE.utils.isNullOrEmpty(layer)) {
         param = {};
         const infoFormat = this.format_;
         const coord = this.evt.coordinate;
@@ -356,13 +356,13 @@ export default class InformationControl extends M.impl.Control {
         features.forEach((feature) => {
           const attr = feature.getKeys();
           formatedInfo += '<div class=\'divinfo\'>';
-          formatedInfo += `<table class='api-idee-table'><tbody><tr><td class='header' colspan='3'>' ${M.utils.beautifyAttribute(layerName)} '</td></tr>'`;
+          formatedInfo += `<table class='api-idee-table'><tbody><tr><td class='header' colspan='3'>' ${IDEE.utils.beautifyAttribute(layerName)} '</td></tr>'`;
           for (let i = 0, ilen = attr.length; i < ilen; i += 1) {
             const attrName = attr[i];
             const attrValue = feature.get(attrName);
 
             formatedInfo += '<tr><td class="key"><b>';
-            formatedInfo += M.utils.beautifyAttribute(attrName);
+            formatedInfo += IDEE.utils.beautifyAttribute(attrName);
             formatedInfo += '</b></td><td class="value">';
             formatedInfo += attrValue;
             formatedInfo += '</td></tr>';
@@ -423,7 +423,7 @@ export default class InformationControl extends M.impl.Control {
     let html = '<div class=\'divinfo\'>';
 
     // build the table
-    html += `<table class='api-idee-table'><tbody><tr><td class='header' colspan='3'>${M.utils.beautifyAttribute(layerName)}</td></tr>`;
+    html += `<table class='api-idee-table'><tbody><tr><td class='header' colspan='3'>${IDEE.utils.beautifyAttribute(layerName)}</td></tr>`;
 
     for (let i = 0, ilen = attrValuesString.length; i < ilen; i += 1) {
       const attrValueString = attrValuesString[i].trim();
@@ -440,14 +440,14 @@ export default class InformationControl extends M.impl.Control {
 
         if (regExs.gsGeometry.test(attr) === false) {
           html += '<tr><td class="key"><b>';
-          html += M.utils.beautifyAttribute(attr);
+          html += IDEE.utils.beautifyAttribute(attr);
           html += '</b></td><td class="value">';
           html += value;
           html += '</td></tr>';
         }
       } else if (regExs.gsNewFeature.test(attrValueString)) {
         // set new header
-        html += `<tr><td class="header" colspan="3">${M.utils.beautifyAttribute(layerName)}</td></tr>`;
+        html += `<tr><td class="header" colspan="3">${IDEE.utils.beautifyAttribute(layerName)}</td></tr>`;
       }
     }
 
@@ -487,7 +487,7 @@ export default class InformationControl extends M.impl.Control {
     const attrValuesString = infoVar.split('\n');
 
     let html = '';
-    const htmlHeader = `<table class='api-idee-table'><tbody><tr><td class='header' colspan='3'>${M.utils.beautifyAttribute(layerName)}</td></tr>`;
+    const htmlHeader = `<table class='api-idee-table'><tbody><tr><td class='header' colspan='3'>${IDEE.utils.beautifyAttribute(layerName)}</td></tr>`;
 
     for (let i = 0, ilen = attrValuesString.length; i < ilen; i += 1) {
       const attrValueString = attrValuesString[i].trim();
@@ -508,11 +508,11 @@ export default class InformationControl extends M.impl.Control {
           if ((nextAttrValueString.length > 0)
             && !regExs.msNewFeature.test(nextAttrValueString)) {
             // set new header
-            html += `<tr><td class='header' colspan='3'>${M.utils.beautifyAttribute(layerName)}</td><td></td></tr>`;
+            html += `<tr><td class='header' colspan='3'>${IDEE.utils.beautifyAttribute(layerName)}</td><td></td></tr>`;
           }
         } else {
           html += '<tr><td class="key"><b>';
-          html += M.utils.beautifyAttribute(attr);
+          html += IDEE.utils.beautifyAttribute(attr);
           html += '</b></td><td class="value">';
           html += value;
           html += '</td></tr>';
@@ -538,7 +538,7 @@ export default class InformationControl extends M.impl.Control {
 
    */
   showInfoFromURL_(layerNamesUrls, coordinate, olMap) {
-    const htmlAsText = M.template.compileSync(informationPopupTemplate, {
+    const htmlAsText = IDEE.template.compileSync(informationPopupTemplate, {
       vars: {
         info: getValue('querying'),
       },
@@ -556,12 +556,12 @@ export default class InformationControl extends M.impl.Control {
     let popup = this.facadeMap_.getPopup();
     // Se desactiva el movimiento para los casos que no encuentra
     // información y se muestra el mensaje de no hay información
-    if (M.config.MOVE_MAP_EXTRACT) {
-      M.config('MOVE_MAP_EXTRACT', false);
+    if (IDEE.config.MOVE_MAP_EXTRACT) {
+      IDEE.config('MOVE_MAP_EXTRACT', false);
       this.popupMove_ = true;
     }
-    if (M.utils.isNullOrEmpty(popup)) {
-      popup = new M.Popup();
+    if (IDEE.utils.isNullOrEmpty(popup)) {
+      popup = new IDEE.Popup();
       popup.addTab(loadingInfoTab);
       this.facadeMap_.addPopup(popup, coordinate);
     } else {
@@ -569,7 +569,7 @@ export default class InformationControl extends M.impl.Control {
         .some((tab) => tab.title !== POPUP_TITLE);
       if (!hasExternalContent) {
         this.facadeMap_.removePopup();
-        popup = new M.Popup();
+        popup = new IDEE.Popup();
         popup.addTab(loadingInfoTab);
         this.facadeMap_.addPopup(popup, coordinate);
       } else {
@@ -579,8 +579,8 @@ export default class InformationControl extends M.impl.Control {
     layerNamesUrls.forEach((layerNameUrl) => {
       const url = layerNameUrl.url.replace('row=-', 'row=').replace('col=-', 'col=');
       const layerName = layerNameUrl.layer;
-      // M.proxy(false);
-      M.remote.get(url).then((response) => {
+      // IDEE.proxy(false);
+      IDEE.remote.get(url).then((response) => {
         popup = this.facadeMap_.getPopup();
         if (response.code === 200) {
           const info = this.parseCSSInfo(response.text);
@@ -596,7 +596,7 @@ export default class InformationControl extends M.impl.Control {
         }
 
         contFull += 1;
-        if (layerNamesUrls.length === contFull && !M.utils.isNullOrEmpty(popup)) {
+        if (layerNamesUrls.length === contFull && !IDEE.utils.isNullOrEmpty(popup)) {
           popup.removeTab(loadingInfoTab);
           if (infos.length === 0) {
             popup.addTab({
@@ -605,7 +605,7 @@ export default class InformationControl extends M.impl.Control {
               content: getValue('no_info'),
             });
           } else {
-            const popupContent = M.template.compileSync(informationLayersTemplate, {
+            const popupContent = IDEE.template.compileSync(informationLayersTemplate, {
               vars: {
                 layers: infos,
                 info_of: getValue('info_of'),
@@ -641,10 +641,10 @@ export default class InformationControl extends M.impl.Control {
             }
             this.movePopup_(this.facadeMap_);
           }
-          // M.proxy(true);
+          // IDEE.proxy(true);
         }
       }).catch((err) => {
-        // M.proxy(true);
+        // IDEE.proxy(true);
       });
     });
     this.popup_ = popup;
@@ -673,7 +673,7 @@ export default class InformationControl extends M.impl.Control {
       target.classList.remove('m-arrow-right');
       target.classList.add('m-arrow-down');
       const coordinates = this.popup_.getCoordinate();
-      // if (!M.utils.isNullOrEmpty(this.popup_.getImpl().panIntoView)) {
+      // if (!IDEE.utils.isNullOrEmpty(this.popup_.getImpl().panIntoView)) {
       this.popup_.getImpl().panIntoView(coordinates);
       // }
     } else {
@@ -685,19 +685,19 @@ export default class InformationControl extends M.impl.Control {
 
   /**
    * Mueve el popup cuando esta configurado
-   * en M.config('MOVE_MAP_EXTRACT', true);
+   * en IDEE.config('MOVE_MAP_EXTRACT', true);
    * @function
    */
   movePopup_(map) {
     if (this.popupMove_ && window.innerWidth > 768) {
-      const center = M.utils.returnPositionHtmlElement('m-popup', map);
+      const center = IDEE.utils.returnPositionHtmlElement('m-popup', map);
       setTimeout(() => {
         map.getMapImpl()
           .getView()
           .animate({ zoom: map.getZoom(), center, duration: 1000 });
 
-        // Se vuelve a poner el M.config como estaba
-        if (this.popupMove_) M.config('MOVE_MAP_EXTRACT', true);
+        // Se vuelve a poner el IDEE.config como estaba
+        if (this.popupMove_) IDEE.config('MOVE_MAP_EXTRACT', true);
         this.popupMove_ = false;
       }, 100);
     }

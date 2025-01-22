@@ -1,8 +1,8 @@
 import ViewShed from 'facade/viewshed';
 
-M.language.setLang('es');
+IDEE.language.setLang('es');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
 });
 

@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/OverviewMap
+ * @module IDEE/plugin/OverviewMap
  */
 import 'assets/css/overviewmap';
 import OverviewMapControl from './overviewmapcontrol';
@@ -10,14 +10,14 @@ import myhelp from '../../templates/myhelp';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class OverviewMap extends M.Plugin {
+export default class OverviewMap extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -26,14 +26,14 @@ export default class OverviewMap extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -138,7 +138,7 @@ export default class OverviewMap extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).overviewmap;
+    return IDEE.language.getTranslation(lang).overviewmap;
   }
 
   /**
@@ -146,16 +146,16 @@ export default class OverviewMap extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
     this.control_ = new OverviewMapControl(this.options_, this.vendorOptions);
     this.controls_.push(this.control_);
     this.map_ = map;
-    this.panel_ = new M.ui.Panel('OverviewMap', {
+    this.panel_ = new IDEE.ui.Panel('OverviewMap', {
       className: 'm-overviewmap-panel',
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       order: this.order,
       tooltip: this.tooltip_,
     });
@@ -206,7 +206,7 @@ export default class OverviewMap extends M.Plugin {
    * @api
    */
   getAPIRestBase64() {
-    return `${this.name}=base64=${M.utils.encodeBase64(this.options)}`;
+    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   /**
@@ -220,9 +220,9 @@ export default class OverviewMap extends M.Plugin {
     return {
       title: this.name,
       content: new Promise((success) => {
-        const html = M.template.compileSync(myhelp, {
+        const html = IDEE.template.compileSync(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}plugins/overviewmap/images/`,
+            urlImages: `${IDEE.config.API_IDEE_URL}plugins/overviewmap/images/`,
             translations: {
               help1: getValue('textHelp.help1'),
               help2: getValue('textHelp.help2'),

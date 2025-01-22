@@ -2,7 +2,7 @@
   "exception": {
     "exists": "There is no associated address for this location.",
     "results": "No results found",
-    "ignsearch_obsolete": "Message to the developer: M.plugin.IGNSearch has been deprecated, please use M.plugin.Locator instead"
+    "ignsearch_obsolete": "Message to the developer: IDEE.plugin.IGNSearch has been deprecated, please use IDEE.plugin.Locator instead"
   },
   "searchresult": "searchresult",
   "tooltip": "Search places",

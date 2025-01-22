@@ -1,5 +1,5 @@
 /**
- * @module M/control/QueryAttributesControl
+ * @module IDEE/control/QueryAttributesControl
  */
 
 import QueryAttributesImplControl from 'impl/queryattributescontrol';
@@ -12,22 +12,22 @@ import shpWrite from 'shp-write';
 import tokml from 'tokml';
 import { getValue } from './i18n/language';
 
-export default class QueryAttributesControl extends M.Control {
+export default class QueryAttributesControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
 
   constructor(configuration, filters, collapsed_, position_, refreshBBOXFilterOnPanning_) {
-    if (M.utils.isUndefined(QueryAttributesImplControl)
-      || (M.utils.isObject(QueryAttributesImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(QueryAttributesImplControl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(QueryAttributesImplControl)
+      || (IDEE.utils.isObject(QueryAttributesImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(QueryAttributesImplControl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
 
     const impl = new QueryAttributesImplControl();
@@ -91,13 +91,13 @@ export default class QueryAttributesControl extends M.Control {
 
     this.refreshBBOXFilterOnPanning = refreshBBOXFilterOnPanning_;
 
-    this.selectionLayer = new M.layer.Vector({
+    this.selectionLayer = new IDEE.layer.Vector({
       extract: false,
       name: 'selectLayer',
       source: this.getImpl().newVectorSource(true),
     }, { displayInLayerSwitcher: false });
 
-    this.selectionLayerStyle = new M.style.Point({
+    this.selectionLayerStyle = new IDEE.style.Point({
       radius: 10,
       stroke: {
         color: '#FF0000',
@@ -105,7 +105,7 @@ export default class QueryAttributesControl extends M.Control {
       },
       /*
       icon: {
-              form: M.style.form.CIRCLE,
+              form: IDEE.style.form.CIRCLE,
               radius: 10,
               rotation: 3.14159,
               rotate: false,
@@ -153,14 +153,14 @@ export default class QueryAttributesControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
     this.map = map;
     return new Promise((success, fail) => {
       this.createInitialView(map);
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           translations: {
             attribute_table: getValue('attribute_table'),
@@ -239,7 +239,7 @@ export default class QueryAttributesControl extends M.Control {
     }
 
     this.map.getKML().forEach((kmlLayer) => {
-      kmlLayer.on(M.evt.LOAD, () => {
+      kmlLayer.on(IDEE.evt.LOAD, () => {
         this.kmlLayers.find((layer) => {
           return layer.layer === kmlLayer;
         }).loaded = true;
@@ -259,20 +259,20 @@ export default class QueryAttributesControl extends M.Control {
   showAttributeTable(layerName, callback) {
     const columns = this.configuration.columns;
 
-    if (!M.utils.isNullOrEmpty(layerName)) {
+    if (!IDEE.utils.isNullOrEmpty(layerName)) {
       this.layer = this.hasLayer_(layerName)[0];
       if (this.allFeatures === undefined) {
         this.allFeatures = this.layer.getFeatures();
       }
     }
 
-    if (M.utils.isNullOrEmpty(this.layer)) {
+    if (IDEE.utils.isNullOrEmpty(this.layer)) {
       // Cuando layer es nulo o vacío, no se muestra el gif de carga.
       this.html.querySelector('.m-queryattributes-table-loading').style.display = 'none';
     }
 
     const interval = setInterval(() => {
-      if (!M.utils.isNullOrEmpty(this.layer) && this.isLayerLoaded(this.layer)) {
+      if (!IDEE.utils.isNullOrEmpty(this.layer) && this.isLayerLoaded(this.layer)) {
         clearInterval(interval);
         document.getElementById('m-queryattributes-table').innerHTML = '';
         document.getElementById('m-queryattributes-search-results').innerHTML = '';
@@ -290,7 +290,7 @@ export default class QueryAttributesControl extends M.Control {
         // e2m: ocultamos nuestro spinner de búsqueda.
         this.html.querySelector('#m-queryattributes-searching-results').style.display = 'none';
 
-        if (!M.utils.isNullOrEmpty(features)) {
+        if (!IDEE.utils.isNullOrEmpty(features)) {
           Object.keys(features[0].getAttributes()).forEach((attr) => {
             if (columns !== undefined && columns.length > 0) {
               const filtered = columns.filter((elem) => {
@@ -323,7 +323,7 @@ export default class QueryAttributesControl extends M.Control {
           features.forEach((feature) => {
             const keys = Object.keys(feature.getAttributes());
             const properties = Object.values(feature.getAttributes());
-            if (!M.utils.isNullOrEmpty(properties)) {
+            if (!IDEE.utils.isNullOrEmpty(properties)) {
               if (columns !== undefined && columns.length > 0) {
                 const newProperties = [];
                 properties.forEach((prop, index) => {
@@ -371,11 +371,11 @@ export default class QueryAttributesControl extends M.Control {
           });
           attributesParam.push(attrP);
         });
-        if (!M.utils.isUndefined(headerAtt)) {
+        if (!IDEE.utils.isUndefined(headerAtt)) {
           params = {
             headerAtt,
             legend: this.layer.legend,
-            attributes: (M.utils.isNullOrEmpty(attributesParam)) ? false : attributesParam,
+            attributes: (IDEE.utils.isNullOrEmpty(attributesParam)) ? false : attributesParam,
           };
         }
 
@@ -384,7 +384,7 @@ export default class QueryAttributesControl extends M.Control {
           jsonp: true,
           vars: params,
         };
-        const html = M.template.compileSync(tabledata, options);
+        const html = IDEE.template.compileSync(tabledata, options);
         document.getElementById('m-queryattributes-table').appendChild(html);
         document.getElementById('m-queryattributes-filter').style.display = 'flex';
         document.querySelector('#m-queryattributes-options-buttons #exportar-btn').style.display = 'block';
@@ -518,7 +518,7 @@ export default class QueryAttributesControl extends M.Control {
       const buttons = '#m-queryattributes-options-buttons>button';
       document.querySelector(`${buttons}#cleanEmphasis-btn`).style.display = 'block';
 
-      const html = M.template.compileSync(information, {
+      const html = IDEE.template.compileSync(information, {
         vars: {
           fields,
           translations: {
@@ -544,7 +544,7 @@ export default class QueryAttributesControl extends M.Control {
     const mapaOL = this.map.getMapImpl();
 
     mapaOL.forEachFeatureAtPixel(evt.pixel, (feature) => {
-      const featureFacade = M.impl.Feature.feature2Facade(feature);
+      const featureFacade = IDEE.impl.Feature.feature2Facade(feature);
       const fields = [];
 
       /**
@@ -597,7 +597,7 @@ export default class QueryAttributesControl extends M.Control {
       // Añadimos la clase highlight-attrow
       rowfeature.classList.add('highlight-attrow');
 
-      const html = M.template.compileSync(information, {
+      const html = IDEE.template.compileSync(information, {
         vars: {
           fields,
           translations: {
@@ -753,7 +753,7 @@ export default class QueryAttributesControl extends M.Control {
         },
       },
     };
-    this.initialView = M.template.compileSync(initialView, options);
+    this.initialView = IDEE.template.compileSync(initialView, options);
   }
 
   /**
@@ -810,7 +810,7 @@ export default class QueryAttributesControl extends M.Control {
     const bbox = this.map.getBbox();
     const extent = [bbox.x.min, bbox.y.min, bbox.x.max, bbox.y.max];
     const feature = this.getImpl().getPolygonFromExtent(extent);
-    const filter = M.filter.spatial.INTERSECT(feature);
+    const filter = IDEE.filter.spatial.INTERSECT(feature);
     this.layer.setFilter(filter);
     this.filtered = true;
     this.bboxfilter = true;
@@ -827,7 +827,7 @@ export default class QueryAttributesControl extends M.Control {
   setDrawFilter() {
     this.getImpl().addDrawInteraction(() => {
       const feature = this.getImpl().getPolygonFromDrawnFeature();
-      const filter = M.filter.spatial.INTERSECT(feature);
+      const filter = IDEE.filter.spatial.INTERSECT(feature);
       this.layer.setFilter(filter);
       this.filtered = true;
       this.oldFilter = filter;
@@ -846,7 +846,7 @@ export default class QueryAttributesControl extends M.Control {
     text = this.normalizeString_(text);
     const searchbyColumn = document.getElementById('m-queryattributes-fieldselector').value;
     // e2m: con esto busco en los valores de todos los campos
-    // const filter = new M.filter.Function((feature) => {
+    // const filter = new IDEE.filter.Function((feature) => {
     //   let res = false;
     //   Object.values(feature.getAttributes()).forEach((v) => {
     //     const value = this.normalizeString_(v);
@@ -867,7 +867,7 @@ export default class QueryAttributesControl extends M.Control {
       return item.searchable === true;
     }).map((field) => field.name);
 
-    const filter = new M.filter.Function((feature) => {
+    const filter = new IDEE.filter.Function((feature) => {
       let res = false;
       Object.entries(feature.getAttributes()).forEach((entry) => {
         if (searchingFields.indexOf(entry[0]) < 0) return;
@@ -905,7 +905,7 @@ export default class QueryAttributesControl extends M.Control {
    */
   exportResults() {
     if (this.layer.getFeatures().length > 0) {
-      const download = M.template.compileSync(downloadTemplate, {
+      const download = IDEE.template.compileSync(downloadTemplate, {
         jsonp: true,
         parseToHtml: false,
         vars: {
@@ -916,7 +916,7 @@ export default class QueryAttributesControl extends M.Control {
         },
       });
 
-      M.dialog.info(download, getValue('export'));
+      IDEE.dialog.info(download, getValue('export'));
       setTimeout(() => {
         const title = 'div.m-api-idee-container div.m-dialog div.m-title';
         document.querySelector(title).style.backgroundColor = '#a15bd7';
@@ -929,7 +929,7 @@ export default class QueryAttributesControl extends M.Control {
         button.style.backgroundColor = '#71a7d3';
       }, 10);
     } else {
-      M.dialog.error(getValue('exception.no_data'));
+      IDEE.dialog.error(getValue('exception.no_data'));
     }
   }
 
@@ -968,7 +968,7 @@ export default class QueryAttributesControl extends M.Control {
           shpWrite.download(json, options);
           break;
         default:
-          M.dialog.error(getValue('exception.no_data'));
+          IDEE.dialog.error(getValue('exception.no_data'));
           break;
       }
 
@@ -1097,7 +1097,7 @@ export default class QueryAttributesControl extends M.Control {
    * @public
    * @function
    * @api
-   * @returns {M.layer.Vector}
+   * @returns {IDEE.layer.Vector}
    */
   toGeoJSON(features) {
     const code = this.map.getProjection().code;
@@ -1215,7 +1215,7 @@ export default class QueryAttributesControl extends M.Control {
    * Saves features attributes on csv string.
    * @public
    * @function
-   * @param {M.feature} features - query results features
+   * @param {IDEE.feature} features - query results features
    * @api
    */
   dataToCsv(features) {
@@ -1276,18 +1276,18 @@ export default class QueryAttributesControl extends M.Control {
    * Checks if map has given layer and returns that layer.
    *
    * @private
-   * @param {array<string>| string| M.Layer} layerSearch -
+   * @param {array<string>| string| IDEE.Layer} layerSearch -
         Array of layer names, layer name or layer instance
    * @function
    */
   hasLayer_(layerSearch) {
     const layersFind = [];
-    if (M.utils.isNullOrEmpty(layerSearch) || (!M.utils.isArray(layerSearch)
-      && !M.utils.isString(layerSearch) && !(layerSearch instanceof M.Layer))) {
+    if (IDEE.utils.isNullOrEmpty(layerSearch) || (!IDEE.utils.isArray(layerSearch)
+      && !IDEE.utils.isString(layerSearch) && !(layerSearch instanceof IDEE.Layer))) {
       return layersFind;
     }
 
-    if (M.utils.isString(layerSearch)) {
+    if (IDEE.utils.isString(layerSearch)) {
       this.map.getLayers().forEach((lay) => {
         if (lay.name === layerSearch) {
           layersFind.push(lay);
@@ -1295,14 +1295,14 @@ export default class QueryAttributesControl extends M.Control {
       });
     }
 
-    if (layerSearch instanceof M.Layer) {
+    if (layerSearch instanceof IDEE.Layer) {
       this.map.getLayers().forEach((lay) => {
         if (lay.equals(layerSearch)) {
           layersFind.push(lay);
         }
       });
     }
-    if (M.utils.isArray(layerSearch)) {
+    if (IDEE.utils.isArray(layerSearch)) {
       this.map.getLayers().forEach((lay) => {
         if (layerSearch.indexOf(lay.name) >= 0) {
           layersFind.push(lay);
@@ -1321,7 +1321,7 @@ export default class QueryAttributesControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

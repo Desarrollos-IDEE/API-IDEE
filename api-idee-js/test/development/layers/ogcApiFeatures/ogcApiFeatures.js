@@ -1,6 +1,6 @@
 /* eslint-disable camelcase,import/prefer-default-export */
-import OGCAPIFeatures from 'M/layer/OGCAPIFeatures';
-import Generic from 'M/style/Generic';// eslint-disable-line no-unused-vars
+import OGCAPIFeatures from 'IDEE/layer/OGCAPIFeatures';
+import Generic from 'IDEE/style/Generic';// eslint-disable-line no-unused-vars
 import OLSourceVector from 'ol/source/Vector';
 import OLFormatGeoJSON from 'ol/format/GeoJSON';
 import { bbox } from 'ol/loadingstrategy';

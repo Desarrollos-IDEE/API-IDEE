@@ -1,8 +1,8 @@
 /**
- * @module M/impl/service/WFS
+ * @module IDEE/impl/service/WFS
  */
-import { get as getRemote } from 'M/util/Remote';
-import { isNullOrEmpty, addParameters } from 'M/util/Utils';
+import { get as getRemote } from 'IDEE/util/Remote';
+import { isNullOrEmpty, addParameters } from 'IDEE/util/Utils';
 import Featuretype from '../format/wfs/DescribeFeatureType';
 
 /**
@@ -18,7 +18,7 @@ class WFS {
    * con parámetros especificados por el usuario.
    *
    * @constructor
-   * @implements {M.impl.Layer}
+   * @implements {IDEE.impl.Layer}
    * @param {Object} layerParameters Parámetros para la construcción de la capa,
    * estos parámetros los proporciona el usuario.
    * - url: URL del servicio WFS.
@@ -91,7 +91,7 @@ class WFS {
     /**
      * Proyección.
      * @private
-     * @type {M.Projection}
+     * @type {IDEE.Projection}
      */
     this.projection_ = layerParameters.projection;
 

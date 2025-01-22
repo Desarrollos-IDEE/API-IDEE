@@ -3,7 +3,7 @@
  */
 window.putMapOnWindowScope = function putMapOnWindowScope(mapInstance) {
   window.mapjs = mapInstance;
-  // window.mapjs.on(M.evt.COMPLETED, () => {
+  // window.mapjs.on(IDEE.evt.COMPLETED, () => {
   const divElem = document.createElement('div');
   divElem.id = 'mapLoaded';
   divElem.style.display = 'none';

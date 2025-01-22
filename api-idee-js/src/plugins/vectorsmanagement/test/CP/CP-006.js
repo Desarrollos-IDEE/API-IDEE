@@ -1,15 +1,15 @@
 import VectorsManagement from 'facade/vectorsmanagement';
 
-M.language.setLang('es');
+IDEE.language.setLang('es');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   center: [-458756.9690741142, 4682774.665868655],
   layers: ['OSM'],
   zoom: 6,
 });
 
-const ogc = new M.layer.OGCAPIFeatures({
+const ogc = new IDEE.layer.OGCAPIFeatures({
   url: 'https://api-features.idee.es/collections/',
   name: 'falls',
   legend: 'Capa OGCAPIFeatures',

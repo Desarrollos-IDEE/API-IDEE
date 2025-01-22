@@ -1,23 +1,23 @@
 /**
- * @module M/control/PredefinedZoomControl
+ * @module IDEE/control/PredefinedZoomControl
  */
 import template from 'templates/predefinedzoom';
 import PredefinedZoomImpl from 'impl/predefinedzoomcontrol';
 import { getValue } from './i18n/language';
 
-export default class PredefinedZoomControl extends M.Control {
+export default class PredefinedZoomControl extends IDEE.Control {
   /**
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor(map, predefinedzoom) {
-    if (M.utils.isUndefined(PredefinedZoomImpl) || (M.utils.isObject(PredefinedZoomImpl)
-      && M.utils.isNullOrEmpty(Object.keys(PredefinedZoomImpl)))) {
-      M.exception(getValue('exception.impl_predefinedzoom'));
+    if (IDEE.utils.isUndefined(PredefinedZoomImpl) || (IDEE.utils.isObject(PredefinedZoomImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(PredefinedZoomImpl)))) {
+      IDEE.exception(getValue('exception.impl_predefinedzoom'));
     }
     const impl = new PredefinedZoomImpl();
     super(impl, 'PredefinedZoomImpl');
@@ -38,10 +38,10 @@ export default class PredefinedZoomControl extends M.Control {
     const predefinedzoomactive = html.querySelector('#m-viewmanagement-predefinedzoom').classList.contains('activated');
     this.deactive(html);
     if (!predefinedzoomactive) {
-      if (M.utils.isArray(this.savedZooms_) && this.savedZooms_.length > 1) {
+      if (IDEE.utils.isArray(this.savedZooms_) && this.savedZooms_.length > 1) {
         // predefinedZoom is an array with more than one zoom level
         html.querySelector('#m-viewmanagement-predefinedzoom').classList.add('activated');
-        const panel = M.template.compileSync(template);
+        const panel = IDEE.template.compileSync(template);
         this.savedZooms_.forEach((customZoom) => {
           const newDiv = document.createElement('div');
           newDiv.classList.add('m-predefinedzoom-button-container');
@@ -133,7 +133,7 @@ export default class PredefinedZoomControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {

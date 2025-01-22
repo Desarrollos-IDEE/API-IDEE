@@ -1,5 +1,5 @@
 /**
- * @module M/control/DownloadControl
+ * @module IDEE/control/DownloadControl
  */
 import shpWrite from 'shp-write';
 import tokml from 'tokml';
@@ -8,21 +8,21 @@ import DownloadImplControl from 'impl/downloadcontrol';
 import template from '../../templates/download';
 import { getValue } from './i18n/language';
 
-export default class DownloadControl extends M.Control {
+export default class DownloadControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(map, managementControl) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(DownloadImplControl) || (M.utils.isObject(DownloadImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(DownloadImplControl)))) {
-      M.exception(getValue('exception.impl_downloadcontrol'));
+    if (IDEE.utils.isUndefined(DownloadImplControl) || (IDEE.utils.isObject(DownloadImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(DownloadImplControl)))) {
+      IDEE.exception(getValue('exception.impl_downloadcontrol'));
     }
 
     // 2. implementation of this control
@@ -61,7 +61,7 @@ export default class DownloadControl extends M.Control {
    * @api
    */
   active(html) {
-    this.template = M.template.compileSync(template, {
+    this.template = IDEE.template.compileSync(template, {
       vars: {
         translations: {
           download: getValue('download'),
@@ -105,7 +105,7 @@ export default class DownloadControl extends M.Control {
       this.map_.removeLayers(noTextLayer);
       this.download(geojsonLayer);
     } else {
-      M.dialog.info(getValue('exception.emptylayer'));
+      IDEE.dialog.info(getValue('exception.emptylayer'));
     }
   }
 
@@ -125,10 +125,10 @@ export default class DownloadControl extends M.Control {
           featuresGeoJson.push(f.getGeoJSON());
         }
       });
-      const geojsonLayer = { type: 'FeatureCollection', features: M.impl.utils.geojsonTo4326(featuresGeoJson, this.map_.getProjection().code) };
+      const geojsonLayer = { type: 'FeatureCollection', features: IDEE.impl.utils.geojsonTo4326(featuresGeoJson, this.map_.getProjection().code) };
       this.download(geojsonLayer);
     } else {
-      M.dialog.info(getValue('exception.featuresel'));
+      IDEE.dialog.info(getValue('exception.featuresel'));
     }
   }
 
@@ -175,7 +175,7 @@ export default class DownloadControl extends M.Control {
         shpWrite.download(json, options);
         break;
       default:
-        M.dialog.error(getValue('exception.ficherosel'));
+        IDEE.dialog.error(getValue('exception.ficherosel'));
         break;
     }
 
@@ -198,10 +198,10 @@ export default class DownloadControl extends M.Control {
    * @public
    * @function
    * @api
-   * @returns {M.layer.Vector}
+   * @returns {IDEE.layer.Vector}
    */
   newNoTextLayer() {
-    const newLayer = new M.layer.Vector({ name: 'copia' });
+    const newLayer = new IDEE.layer.Vector({ name: 'copia' });
     const noTextFeatures = this.layer_.getFeatures().filter((feature) => {
       return feature.getStyle() === null || feature.getStyle().get('label') === undefined;
     });
@@ -268,7 +268,7 @@ export default class DownloadControl extends M.Control {
    * @public
    * @function
    * @api
-   * @param {M.layer} layer
+   * @param {IDEE.layer} layer
    */
   setLayer(layer) {
     this.layer_ = layer;
@@ -321,7 +321,7 @@ export default class DownloadControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

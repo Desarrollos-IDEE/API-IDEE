@@ -1,12 +1,12 @@
 /**
- * @module M/impl/Popup
+ * @module IDEE/impl/Popup
  */
 import OLOverlay from 'ol/Overlay';
 import {
   isNullOrEmpty, isFunction, enableTouchScroll, returnPositionHtmlElement,
-} from 'M/util/Utils';
-import FacadePopup from 'M/Popup';
-import FacadeWindow from 'M/util/Window';
+} from 'IDEE/util/Utils';
+import FacadePopup from 'IDEE/Popup';
+import FacadeWindow from 'IDEE/util/Window';
 
 /**
  * @classdesc
@@ -14,7 +14,7 @@ import FacadeWindow from 'M/util/Window';
  *
  * @property {Boolean} panMapIfOutOfView Indica si el mapa se desplaza o no.
  * @property {Object} ani_opts Opciones de animación.
- * @property {M.Map} facadeMap_ Mapa.
+ * @property {IDEE.Map} facadeMap_ Mapa.
  * @property {ol.Coordinate} cachedAniPixel_
  *
  * @api
@@ -68,7 +68,7 @@ class Popup extends OLOverlay {
     /**
      * Fachada del mapa a implementar.
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.facadeMap_ = null;
 
@@ -84,7 +84,7 @@ class Popup extends OLOverlay {
    * Este método añade el HTML del "Popup" al mapa.
    *
    * @function
-   * @param {M.Map} map Mapa.
+   * @param {IDEE.Map} map Mapa.
    * @param {String} html Cadena de HTML para mostrar dentro del "Popup".
    * @public
    * @api
@@ -113,7 +113,7 @@ class Popup extends OLOverlay {
    * @param {function} callback Función 'callback' de llamada para ejecutar.
    * @public
    * @api
-   * @memberof module:M/impl/Popup#
+   * @memberof module:IDEE/impl/Popup#
    */
   show(coord, callback) {
     this.setPosition(coord);
@@ -131,7 +131,7 @@ class Popup extends OLOverlay {
    * Este método centra el "Popup".
    *
    * @function
-   * @param {M.Popup.status} status Estado del "Popup".
+   * @param {IDEE.Popup.status} status Estado del "Popup".
    * @param {ol.Coordinate} coord Coordenadas donde situar el "Popup".
    * @public
    * @api

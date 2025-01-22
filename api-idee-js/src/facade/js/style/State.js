@@ -1,5 +1,5 @@
 /**
- * @module M/style/state
+ * @module IDEE/style/state
  */
 
 /**

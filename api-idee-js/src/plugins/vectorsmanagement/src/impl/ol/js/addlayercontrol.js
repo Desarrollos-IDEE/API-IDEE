@@ -1,14 +1,14 @@
 /**
- * @module M/impl/control/AddLayerControl
+ * @module IDEE/impl/control/AddLayerControl
  */
 
-export default class AddLayerControl extends M.impl.Control {
+export default class AddLayerControl extends IDEE.impl.Control {
   /**
    * This function adds the control to the specified map
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api stable
    */

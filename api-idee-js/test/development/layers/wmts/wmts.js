@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import WMTS from 'M/layer/WMTS';
+import WMTS from 'IDEE/layer/WMTS';
 import { default as OLSourceWMTS } from 'ol/source/WMTS';
 import OLTileGridWMTS from 'ol/tilegrid/WMTS';
 import { get as getProj } from 'ol/proj';

@@ -1,13 +1,13 @@
 /**
- * @module M/impl/control/PrintViewManagementControl
+ * @module IDEE/impl/control/PrintViewManagementControl
  */
-export default class PrintViewManagementControl extends M.impl.Control {
+export default class PrintViewManagementControl extends IDEE.impl.Control {
   /**
    * This function adds the control to the specified map
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api stable
    */

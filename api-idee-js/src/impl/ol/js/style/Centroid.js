@@ -1,5 +1,5 @@
 /**
- * @module M/impl/style/Centroid
+ * @module IDEE/impl/style/Centroid
  */
 import OLStyle from 'ol/style/Style';
 /**
@@ -29,7 +29,7 @@ class Centroid extends OLStyle {
   /**
    * Clona el estilo.
    * @public
-   * @return {M.impl.style.CentroidStyle} "new Centroid".
+   * @return {IDEE.impl.style.CentroidStyle} "new Centroid".
    * @api stable
    */
   clone() {

@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
 </p>
-<h1 align="center"><strong>API IDEE</strong> <small>🔌 M.plugin.VectorsManagement</small></h1>
+<h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.VectorsManagement</small></h1>
 
 # Descripción
 
@@ -62,11 +62,11 @@ https://componentes.cnig.es//?vectorsmanagement=TR*true*true
 # Ejemplo de uso
 
 ```javascript
-const map = M.map({
+const map = IDEE.map({
     container: 'map'
 });
 
-const mp = new M.plugin.VectorsManagement({
+const mp = new IDEE.plugin.VectorsManagement({
     position: 'TR',
     collapsible: true,
     collapsed: true,

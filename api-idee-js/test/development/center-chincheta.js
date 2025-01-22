@@ -1,4 +1,4 @@
-import { map } from 'M/api-idee';
+import { map } from 'IDEE/api-idee';
 
 const mapajs = map({
   container: 'map',

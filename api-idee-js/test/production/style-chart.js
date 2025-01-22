@@ -1,12 +1,12 @@
 // En el constructor
-var mapajs = M.map({
+var mapajs = IDEE.map({
   container: "map",
   controls: ["layerswitcher"],
   wmcfiles: ["cdau"]
 });
 
 // Con metodos
-var layer = new M.layer.WFS({
+var layer = new IDEE.layer.WFS({
   url: "http://geostematicos-sigc.juntadeandalucia.es/geoserver/wfs?",
   namespace: "tematicos",
   name: "provincias_pob_centroides",
@@ -16,7 +16,7 @@ var layer = new M.layer.WFS({
 
 mapajs.addWFS(layer);
 
-let stylechart = new M.style.Chart({
+let stylechart = new IDEE.style.Chart({
   type: 'bar',
   donutRatio: 0.5,
   radius: 25,
@@ -27,7 +27,7 @@ let stylechart = new M.style.Chart({
     width: 1
   },
   //  animation: true,
-  scheme: M.style.chart.schemes.Custom,
+  scheme: IDEE.style.chart.schemes.Custom,
   // rotateWithView: true,
   // fill3DColor: '#CC33DD',
   variables: [{

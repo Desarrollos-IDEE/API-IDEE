@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/BackImgLayerControl
+ * @module IDEE/impl/control/BackImgLayerControl
  */

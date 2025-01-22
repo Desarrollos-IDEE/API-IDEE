@@ -1,25 +1,25 @@
 /**
- * @module M/control/Help
+ * @module IDEE/control/Help
  */
 import HelpImplControl from 'impl/helpcontrol';
 import template from '../../templates/help';
 import { getValue } from './i18n/language';
 
-export default class HelpControl extends M.Control {
+export default class HelpControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(map, managementControl) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(HelpImplControl) || (M.utils.isObject(HelpImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(HelpImplControl)))) {
-      M.exception(getValue('exception.impl_helpcontrol'));
+    if (IDEE.utils.isUndefined(HelpImplControl) || (IDEE.utils.isObject(HelpImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(HelpImplControl)))) {
+      IDEE.exception(getValue('exception.impl_helpcontrol'));
     }
 
     // 2. implementation of this control
@@ -49,7 +49,7 @@ export default class HelpControl extends M.Control {
    * @api
    */
   active(html) {
-    this.template = M.template.compileSync(template, {
+    this.template = IDEE.template.compileSync(template, {
       vars: {
         translations: {
           addlayer_title: getValue('help_template').addlayer_title,
@@ -107,7 +107,7 @@ export default class HelpControl extends M.Control {
       document.addEventListener('keydown', this.closeEvent.bind(this));
       this.closeEventActive_ = true;
     }
-    M.dialog.info(M.utils.htmlToString(this.template), getValue('help_template').title);
+    IDEE.dialog.info(IDEE.utils.htmlToString(this.template), getValue('help_template').title);
     document.querySelector('.m-dialog.info .m-content').style.overflowX = 'auto';
     document.querySelector('.m-dialog.info .m-content').style.maxHeight = '70vh';
     document.querySelector('.m-button button').addEventListener('click', this.deactivate.bind(this));
@@ -170,7 +170,7 @@ export default class HelpControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

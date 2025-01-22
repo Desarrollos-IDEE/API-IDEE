@@ -1,5 +1,5 @@
 /**
- * @module M/control/StoryMapControl
+ * @module IDEE/control/StoryMapControl
  */
 
 import StoryMapControlImplControl from 'impl/storymapcontrol';
@@ -8,17 +8,17 @@ import { getValue } from './i18n/language';
 
 // import { getValue } from './i18n/language';
 
-export default class StoryMapControl extends M.Control {
+export default class StoryMapControl extends IDEE.Control {
   /**
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor(content = {}, delay = 2000, indexInContent = false, isDraggable_ = false) {
-    if (M.utils.isUndefined(StoryMapControlImplControl)
-      || (M.utils.isObject(StoryMapControlImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(StoryMapControlImplControl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(StoryMapControlImplControl)
+      || (IDEE.utils.isObject(StoryMapControlImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(StoryMapControlImplControl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
     const impl = new StoryMapControlImplControl();
     super(impl, 'StoryMapControl');
@@ -44,13 +44,13 @@ export default class StoryMapControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api
    */
   createView(map) {
     this.map_ = map;
     return new Promise((success, fail) => {
-      let html = M.template.compileSync(template, {
+      let html = IDEE.template.compileSync(template, {
         vars: {
           title: 'Story Map',
           speed: (this.delay / 1000),
@@ -62,7 +62,7 @@ export default class StoryMapControl extends M.Control {
       html = this.createNavPointer(html, this.content_.cap.length);
       html = this.buttonDelay(html);
 
-      map.on('M.evt.COMPLETED', () => {
+      map.on('IDEE.evt.COMPLETED', () => {
         this.createPointerSteps(0);
       });
 
@@ -79,7 +79,7 @@ export default class StoryMapControl extends M.Control {
       this.panelHTML_ = html;
 
       if (this.isDraggable_) {
-        M.utils.draggabillyPlugin(this.getPanel(), '#m-storymap-panel .title');
+        IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-storymap-panel .title');
       }
 
       success(this.panelHTML_);
@@ -565,7 +565,7 @@ export default class StoryMapControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
     * @api
     */
   equals(control) {

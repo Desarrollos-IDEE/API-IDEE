@@ -1,5 +1,5 @@
 /**
- * @module M/impl/interaction/SelectCluster
+ * @module IDEE/impl/interaction/SelectCluster
  */
 import OLFeature from 'ol/Feature';
 import OLGeomPoint from 'ol/geom/Point';
@@ -126,7 +126,7 @@ class SelectCluster extends OLInteractionSelect {
    *
    * @public
    * @function
-   * @returns {M.layer.Vector} Capa vectorial sobre la que se aplica la interacción.
+   * @returns {IDEE.layer.Vector} Capa vectorial sobre la que se aplica la interacción.
    * @api
    */
   getLayer() {

@@ -1,5 +1,5 @@
 /**
- * @module M/style/Font
+ * @module IDEE/style/Font
  */
 import OLFontSymbol from 'impl/ext/OLStyleFontSymbol';
 

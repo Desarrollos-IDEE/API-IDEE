@@ -1,7 +1,7 @@
-import MObject from 'M/Object';
-import { isNullOrEmpty, concatUrlPaths } from 'M/util/Utils';
-import MConfig from 'M/configuration';
-import FacadeLayer from 'M/layer/Layer';
+import MObject from 'IDEE/Object';
+import { isNullOrEmpty, concatUrlPaths } from 'IDEE/util/Utils';
+import MConfig from 'IDEE/configuration';
+import FacadeLayer from 'IDEE/layer/Layer';
 
 export default class Layer extends MObject {
   /**
@@ -10,7 +10,7 @@ export default class Layer extends MObject {
    * with parameters specified by the user
    *
    * @interface
-   * @extends {M.facade.Base}
+   * @extends {IDEE.facade.Base}
    * @param {string | Mx.parameters.Layer} userParameters parameters
    * provided by the user
    * @api stable
@@ -22,7 +22,7 @@ export default class Layer extends MObject {
     /**
      * The map instance
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      * @expose
      */
     this.map = null;

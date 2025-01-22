@@ -1,5 +1,5 @@
 /**
- * @module M/layer/type
+ * @module IDEE/layer/type
  */
 import { isString, normalize } from '../util/Utils';
 

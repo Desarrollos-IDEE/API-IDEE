@@ -1,5 +1,5 @@
 /**
- * @module M/style/Category
+ * @module IDEE/style/Category
  */
 import StyleBase from './Style';
 import Composite from './Composite';
@@ -17,7 +17,7 @@ import { getValue } from '../i18n/language';
  * Crea un estilo de categoría
  * con parámetros especificados por el usuario.
  * @api
- * @extends {M.style.Composite}
+ * @extends {IDEE.style.Composite}
  */
 class Category extends Composite {
   /**
@@ -64,7 +64,7 @@ class Category extends Composite {
    *
    * @function
    * @public
-   * @param {M.layer.Vector} layer Capa especificada.
+   * @param {IDEE.layer.Vector} layer Capa especificada.
    * @api
    */
   applyInternal(layer) {
@@ -90,7 +90,7 @@ class Category extends Composite {
    * @function
    * @public
    * @param {String} attributeName Nuevo "AttributeName".
-   * @returns {M.style.Category} Categoría ("this").
+   * @returns {IDEE.style.Category} Categoría ("this").
    * @api
    */
   setAttributeName(attributeName) {
@@ -117,8 +117,8 @@ class Category extends Composite {
    *
    * @function
    * @public
-   * @param {Map<String,M.style>} categories Nombre de la categoría.
-   * @return {M.style.Category} Categoría.
+   * @param {Map<String,IDEE.style>} categories Nombre de la categoría.
+   * @return {IDEE.style.Category} Categoría.
    * @api
    */
   setCategories(categories) {
@@ -134,7 +134,7 @@ class Category extends Composite {
    * @function
    * @public
    * @param {String} string Nombre de la categoría.
-   * @returns {M.style} Estilo de la categoría.
+   * @returns {IDEE.style} Estilo de la categoría.
    * @api
    */
   getStyleForCategory(category) {
@@ -147,8 +147,8 @@ class Category extends Composite {
    * @function
    * @public
    * @param {String} category Nombre de la categoría.
-   * @param {M.style.Simple} style Nuevo estilo.
-   * @returns {M.style.Category} Categoría.
+   * @param {IDEE.style.Simple} style Nuevo estilo.
+   * @returns {IDEE.style.Category} Categoría.
    * @api
    */
   setStyleForCategory(category, style) {
@@ -300,8 +300,8 @@ class Category extends Composite {
    *
    * @public
    * @function
-   * @param {M.style|Array<M.Style>} styles Estilos.
-   * @returns {M.style.Composite} Estilo de la clase padre.
+   * @param {IDEE.style|Array<IDEE.Style>} styles Estilos.
+   * @returns {IDEE.style.Composite} Estilo de la clase padre.
    * @api
    */
   add(stylesParam) {
@@ -362,7 +362,7 @@ class Category extends Composite {
     const compStyles = this.getStyles().map((style) => style.serialize());
 
     const parameters = [attributeName, serializedCategoryStyles, options, compStyles];
-    const deserializedMethod = 'M.style.Category.deserialize';
+    const deserializedMethod = 'IDEE.style.Category.deserialize';
     return { parameters, deserializedMethod };
   }
 
@@ -372,7 +372,7 @@ class Category extends Composite {
    * @public
    * @param {Array} parametrers - parameters to deserialize and create
    * the instance
-   * @return {M.style.Category} Devuelve la instancia deserializada.
+   * @return {IDEE.style.Category} Devuelve la instancia deserializada.
    */
   static deserialize([serializedAttributeName, serializedCategoryStyles,
     serializedOptions, serializedCompStyles,
@@ -384,7 +384,7 @@ class Category extends Composite {
     });
     const options = defineFunctionFromString(serializedOptions);
     /* eslint-disable */
-    const styleFn = new Function(['attributeName', 'categoryStyles', 'options'], `return new M.style.Category(attributeName, categoryStyles, options)`);
+    const styleFn = new Function(['attributeName', 'categoryStyles', 'options'], `return new IDEE.style.Category(attributeName, categoryStyles, options)`);
     /* eslint-enable */
     const deserializedStyle = styleFn(attributeName, categoryStyles, options);
 

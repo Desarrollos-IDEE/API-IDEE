@@ -1,9 +1,9 @@
 /**
- * @module M/impl/format/XML
+ * @module IDEE/impl/format/XML
  */
-import { isString } from 'M/util/Utils';
-import Exception from 'M/exception/exception';
-import { getValue } from 'M/i18n/language';
+import { isString } from 'IDEE/util/Utils';
+import Exception from 'IDEE/exception/exception';
+import { getValue } from 'IDEE/i18n/language';
 
 /**
   * @classdesc

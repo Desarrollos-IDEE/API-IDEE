@@ -1,5 +1,5 @@
 /**
- * @module M/ClusteredFeature
+ * @module IDEE/ClusteredFeature
  */
 import Feature from './Feature';
 import { generateRandom } from '../util/Utils';
@@ -7,7 +7,7 @@ import { generateRandom } from '../util/Utils';
 /**
  * @classdesc
  * Crea objetos geográficos agrupados.
- * @extends {M.Feature}
+ * @extends {IDEE.Feature}
  * @api
  */
 class Clustered extends Feature {
@@ -15,7 +15,7 @@ class Clustered extends Feature {
    * Constructor principal de la clase.
    *
    * @constructor
-   * @param {Array<M.Feature>} features Array de objetos geográficos.
+   * @param {Array<IDEE.Feature>} features Array de objetos geográficos.
    * @param {Object} attributes Atributos.
    * @api
    */

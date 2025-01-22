@@ -1,9 +1,9 @@
 /**
- * @module M/impl/RenderFeature
+ * @module IDEE/impl/RenderFeature
  */
 
-import FacadeRenderFeature from 'M/feature/RenderFeature';
-import { isNullOrEmpty } from 'M/util/Utils';
+import FacadeRenderFeature from 'IDEE/feature/RenderFeature';
+import { isNullOrEmpty } from 'IDEE/util/Utils';
 
 /**
  * @classdesc
@@ -100,12 +100,12 @@ class RenderFeature {
 
   /**
    * Este método de la clase transforma "OLFeature" (Objeto geográfico de Openlayers)
-   * a "M.Feature" (Objeto geográfico de API-IDEE).
+   * a "IDEE.Feature" (Objeto geográfico de API-IDEE).
    * @public
    * @function
    * @param {OLFeature} olFeature Objeto "OLFeature" (Objeto geográfico de Openlayers).
    * @param {boolean} canBeModified Define si se puede modificar.
-   * @return {M.Feature} Retorna el objeto "M.Feature" (Objeto geográfico de API-IDEE).
+   * @return {IDEE.Feature} Retorna el objeto "IDEE.Feature" (Objeto geográfico de API-IDEE).
    * @api
    * @deprecated
    */
@@ -120,12 +120,12 @@ class RenderFeature {
 
   /**
    * Este método de la clase transforma "OLFeature" (Objeto geográfico de Openlayers)
-   * a "M.Feature" (Objeto geográfico de API-IDEE).
+   * a "IDEE.Feature" (Objeto geográfico de API-IDEE).
    * @public
    * @function
    * @param {OLFeature} olFeature Objeto "OLFeature" (Objeto geográfico de Openlayers).
    * @param {boolean} canBeModified Define si se puede modificar.
-   * @return {M.Feature} Retorna el objeto "M.Feature" (Objeto geográfico de API-IDEE).
+   * @return {IDEE.Feature} Retorna el objeto "IDEE.Feature" (Objeto geográfico de API-IDEE).
    * @api
    */
   static feature2Facade(olFeature, canBeModified) {
@@ -138,11 +138,11 @@ class RenderFeature {
   }
 
   /**
-   * Método de la clase transforma "M.Feature" (Objeto geográfico de API-IDEE)
+   * Método de la clase transforma "IDEE.Feature" (Objeto geográfico de API-IDEE)
    * a "OLFeature" (Objeto geográfico de Openlayers).
    * @public
    * @function
-   * @param {M.Feature} facadeFeature Objeto "M.Feature" (Objeto geográfico de API-IDEE).
+   * @param {IDEE.Feature} facadeFeature Objeto "IDEE.Feature" (Objeto geográfico de API-IDEE).
    * @return {OLFeature} Retorna el objeto "OLFeature" (Objeto geográfico de Openlayers).
    * @api
    * @deprecated
@@ -152,11 +152,11 @@ class RenderFeature {
   }
 
   /**
-   * Método de la clase transforma "M.Feature" (Objeto geográfico de API-IDEE)
+   * Método de la clase transforma "IDEE.Feature" (Objeto geográfico de API-IDEE)
    * a "OLFeature" (Objeto geográfico de Openlayers).
    * @public
    * @function
-   * @param {M.Feature} facadeFeature Objeto "M.Feature" (Objeto geográfico de API-IDEE).
+   * @param {IDEE.Feature} facadeFeature Objeto "IDEE.Feature" (Objeto geográfico de API-IDEE).
    * @return {OLFeature} Retorna el objeto "OLFeature" (Objeto geográfico de Openlayers).
    * @api
    */

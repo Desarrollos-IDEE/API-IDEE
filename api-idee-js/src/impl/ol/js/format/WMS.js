@@ -1,7 +1,7 @@
 /**
- * @module M/impl/format/WMSCapabilities
+ * @module IDEE/impl/format/WMSCapabilities
  */
-import { isArray, isNullOrEmpty, isObject } from 'M/util/Utils';
+import { isArray, isNullOrEmpty, isObject } from 'IDEE/util/Utils';
 import OLFormatWMSCapabilities from 'ol/format/WMSCapabilities';
 
 /**

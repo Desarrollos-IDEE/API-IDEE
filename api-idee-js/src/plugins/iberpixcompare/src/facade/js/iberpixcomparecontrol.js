@@ -1,5 +1,5 @@
 /**
- * @module M/control/IberpixCompareControl
+ * @module IDEE/control/IberpixCompareControl
  */
 
 import IberpixCompareImplControl from 'impl/iberpixcomparecontrol';
@@ -8,22 +8,22 @@ import { getValue } from './i18n/language';
 import Mirrorpanel from './cpmirrorpanel';
 import LyrCompare from './cplyrcompare';
 
-export default class IberpixCompareControl extends M.Control {
+export default class IberpixCompareControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(options) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(IberpixCompareImplControl)
-      || (M.utils.isObject(IberpixCompareImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(IberpixCompareImplControl)))) {
-      M.exception(getValue('exception'));
+    if (IDEE.utils.isUndefined(IberpixCompareImplControl)
+      || (IDEE.utils.isObject(IberpixCompareImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(IberpixCompareImplControl)))) {
+      IDEE.exception(getValue('exception'));
     }
     // 2. implementation of this control
     const impl = new IberpixCompareImplControl();
@@ -60,7 +60,7 @@ export default class IberpixCompareControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
@@ -76,7 +76,7 @@ export default class IberpixCompareControl extends M.Control {
         },
       };
 
-      this.template = M.template.compileSync(template, options);
+      this.template = IDEE.template.compileSync(template, options);
       this.accessibilityTab(this.template);
       success(this.template);
       this.addComparators(map);
@@ -142,7 +142,7 @@ export default class IberpixCompareControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    * @return {Boolean}
    */

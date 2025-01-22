@@ -1,5 +1,5 @@
 /**
- * @module M/control/InfocoordinatesControl
+ * @module IDEE/control/InfocoordinatesControl
  */
 import InfocoordinatesImplControl from 'impl/infocoordinatescontrol';
 import template from 'templates/infocoordinates';
@@ -11,29 +11,29 @@ import { getValue } from './i18n/language';
 
 const NO_DATA_VALUE = 'NODATA_value -9999.000';
 
-export default class InfocoordinatesControl extends M.Control {
+export default class InfocoordinatesControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(decimalGEOcoord, decimalUTMcoord, helpUrl, order, outputDownloadFormat) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(InfocoordinatesImplControl)
-      || (M.utils.isObject(InfocoordinatesImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(InfocoordinatesImplControl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(InfocoordinatesImplControl)
+      || (IDEE.utils.isObject(InfocoordinatesImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(InfocoordinatesImplControl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
     // 2. implementation of this control
     const impl = new InfocoordinatesImplControl();
     super(impl, 'Infocoordinates');
     this.map_ = null;
     this.numTabs = 0;
-    this.layerFeatures = new M.layer.Vector();
+    this.layerFeatures = new IDEE.layer.Vector();
     this.layerFeatures.name = 'infocoordinatesLayerFeatures';
     this.layerFeatures.displayInLayerSwitcher = false;
     this.decimalGEOcoord = decimalGEOcoord;
@@ -49,24 +49,24 @@ export default class InfocoordinatesControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
     this.map_ = map;
-    if (!M.template.compileSync) { // JGL: retrocompatibilidad API IDEE
-      M.template.compileSync = (string, options) => {
+    if (!IDEE.template.compileSync) { // JGL: retrocompatibilidad API IDEE
+      IDEE.template.compileSync = (string, options) => {
         let templateCompiled;
         let templateVars = {};
         let parseToHtml;
-        if (!M.utils.isUndefined(options)) {
-          templateVars = M.utils.extends(templateVars, options.vars);
+        if (!IDEE.utils.isUndefined(options)) {
+          templateVars = IDEE.utils.extends(templateVars, options.vars);
           parseToHtml = options.parseToHtml;
         }
         const templateFn = Handlebars.compile(string);
         const htmlText = templateFn(templateVars);
         if (parseToHtml !== false) {
-          templateCompiled = M.utils.stringToHtml(htmlText);
+          templateCompiled = IDEE.utils.stringToHtml(htmlText);
         } else {
           templateCompiled = htmlText;
         }
@@ -78,7 +78,7 @@ export default class InfocoordinatesControl extends M.Control {
       const options = {
         jsonp: true,
         vars: {
-          hasHelp: this.helpUrl !== undefined && M.utils.isUrl(this.helpUrl),
+          hasHelp: this.helpUrl !== undefined && IDEE.utils.isUrl(this.helpUrl),
           helpUrl: this.helpUrl,
           translations: {
             title: getValue('title'),
@@ -101,13 +101,13 @@ export default class InfocoordinatesControl extends M.Control {
           },
         },
       };
-      const html = M.template.compileSync(template, options);
+      const html = IDEE.template.compileSync(template, options);
       // Añadir código dependiente del DOM
       this.accessibilityTab(html);
 
       this.map_.addLayers(this.layerFeatures);
-      this.panel_.on(M.evt.SHOW, this.activate, this);
-      this.panel_.on(M.evt.HIDE, this.deactivate, this);
+      this.panel_.on(IDEE.evt.SHOW, this.activate, this);
+      this.panel_.on(IDEE.evt.HIDE, this.deactivate, this);
 
       success(html);
       html.querySelector('#m-infocoordinates-buttonRemoveAllPoints').addEventListener('click', this.removeAllPoints.bind(this));
@@ -131,7 +131,7 @@ export default class InfocoordinatesControl extends M.Control {
    */
   activate() {
     this.invokeEscKey();
-    this.map_.on(M.evt.CLICK, this.addPoint, this);
+    this.map_.on(IDEE.evt.CLICK, this.addPoint, this);
     document.body.style.cursor = 'crosshair';
     this.map_.getFeatureHandler().deactivate();
     document.addEventListener('keyup', this.checkEscKey.bind(this));
@@ -174,7 +174,7 @@ export default class InfocoordinatesControl extends M.Control {
    */
   deactivate() {
     this.clickedDeactivate = true;
-    this.map_.un(M.evt.CLICK, this.addPoint, this);
+    this.map_.un(IDEE.evt.CLICK, this.addPoint, this);
     document.body.style.cursor = 'default';
     this.map_.getFeatureHandler().activate();
   }
@@ -211,7 +211,7 @@ export default class InfocoordinatesControl extends M.Control {
     const coordinates = evt.coord;
 
     // Agrego la feature
-    const featurePoint = new M.Feature(numPoint, {
+    const featurePoint = new IDEE.Feature(numPoint, {
       'type': 'Feature',
       'id': numPoint,
       'geometry': {
@@ -231,7 +231,7 @@ export default class InfocoordinatesControl extends M.Control {
     // Altura
     let altitudeFromWCSservice;
     const altitudeBox = document.getElementById('m-infocoordinates-altitude');
-    M.proxy(false);
+    IDEE.proxy(false);
     const promesa = new Promise((success, fail) => {
       altitudeBox.innerHTML = getValue('readingAltitude');
       altitudeFromWCSservice = this.getImpl()
@@ -250,7 +250,7 @@ export default class InfocoordinatesControl extends M.Control {
       buttonTab.addEventListener('click', () => this.openTabFromTab(numPoint));
     });
 
-    M.proxy(true);
+    IDEE.proxy(true);
     this.layerFeatures.addFeatures([featurePoint]);
     this.layerFeatures.setZIndex(999);
     this.openTab(numPoint);
@@ -291,9 +291,9 @@ export default class InfocoordinatesControl extends M.Control {
   }
 
   selectFeature(numPoint) {
-    this.point = new M.style.Point({
+    this.point = new IDEE.style.Point({
       icon: {
-        form: M.style.form.NONE,
+        form: IDEE.style.form.NONE,
         class: '+',
         fontsize: 1.5,
         radius: 10,
@@ -302,7 +302,7 @@ export default class InfocoordinatesControl extends M.Control {
       },
     });
 
-    this.pointDisable = new M.style.Point({
+    this.pointDisable = new IDEE.style.Point({
       radius: 5,
       icon: {
         form: 'none',
@@ -375,7 +375,7 @@ export default class InfocoordinatesControl extends M.Control {
           </div>
       </div>`;
 
-    const helpTooltipElement = M.template.compileSync(textHTML, {
+    const helpTooltipElement = IDEE.template.compileSync(textHTML, {
       jsonp: true,
       vars: {
         translations: getValue('text'),
@@ -522,7 +522,7 @@ export default class InfocoordinatesControl extends M.Control {
     }
     const result = `${long},${lat},${alt},${proj}`;
     navigator.clipboard.writeText(result);
-    M.toast.success(getValue('clipboard'));
+    IDEE.toast.success(getValue('clipboard'));
   }
 
   copyxy() {
@@ -532,7 +532,7 @@ export default class InfocoordinatesControl extends M.Control {
     const proj = document.getElementById('m-infocoordinates-comboDatum').value;
     const result = `${x},${y},${alt},${proj}`;
     navigator.clipboard.writeText(result);
-    M.toast.success(getValue('clipboard'));
+    IDEE.toast.success(getValue('clipboard'));
   }
 
   copyAllPoints() {
@@ -580,7 +580,7 @@ export default class InfocoordinatesControl extends M.Control {
     }
 
     navigator.clipboard.writeText(printDocument);
-    M.toast.success(getValue('clipboard'));
+    IDEE.toast.success(getValue('clipboard'));
   }
 
   importAllPoints() {
@@ -687,7 +687,7 @@ export default class InfocoordinatesControl extends M.Control {
           </div>
       </div>`;
 
-        const helpTooltipElement = M.template.compileSync(textHTML, {
+        const helpTooltipElement = IDEE.template.compileSync(textHTML, {
           jsonp: true,
           vars: {
             translations: getValue('text'),
@@ -803,7 +803,7 @@ export default class InfocoordinatesControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

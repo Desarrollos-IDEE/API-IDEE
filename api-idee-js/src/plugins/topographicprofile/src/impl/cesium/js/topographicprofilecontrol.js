@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/TopographicprofileControl
+ * @module IDEE/impl/control/TopographicprofileControl
  */

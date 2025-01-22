@@ -1,10 +1,10 @@
 import Incicarto from 'facade/incicarto';
 window.Incicarto = Incicarto;
 
-M.language.setLang('es'); // Español
-// M.language.setLang('en');
+IDEE.language.setLang('es'); // Español
+// IDEE.language.setLang('en');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   center: {
     x: -667143,
@@ -22,7 +22,7 @@ const map = M.map({
 window.map = map;
 
 /*/ Añadimos el BackImgLayer
-const mpBIL = new M.plugin.BackImgLayer({
+const mpBIL = new IDEE.plugin.BackImgLayer({
   position: 'TR',
   collapsible: true,
   collapsed: true,
@@ -34,7 +34,7 @@ const mpBIL = new M.plugin.BackImgLayer({
       id: 'pnoa-hibido',
       title: 'PNOA Híbrido',
       preview: 'https://componentes.cnig.es/api-idee/plugins/backimglayer/images/svqhibrid.png',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'https://www.ign.es/wmts/pnoa-ma?',
         name: 'OI.OrthoimageCoverage',
         legend: 'Imagen (PNOA)',
@@ -42,7 +42,7 @@ const mpBIL = new M.plugin.BackImgLayer({
         matrixSet: 'EPSG:4326', displayInLayerSwitcher: false, queryable: false, visible: true,
         format: 'image/jpeg',
       }),
-      new M.layer.WMTS({
+      new IDEE.layer.WMTS({
         url: 'https://www.ign.es/wmts/ign-base?',
         name: 'IGNBaseOrto',
         legend: 'Mapa IGN',
@@ -55,7 +55,7 @@ const mpBIL = new M.plugin.BackImgLayer({
       id: 'lidar-hibrido',
       title: 'LiDAR Híbrido',
       preview: 'https://componentes.cnig.es/api-idee/plugins/backimglayer/images/svqlidar.png',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'https://wmts-mapa-lidar.idee.es/lidar?',
         name: 'EL.GridCoverageDSM',
         legend: 'Modelo Digital de Superficies LiDAR',
@@ -63,7 +63,7 @@ const mpBIL = new M.plugin.BackImgLayer({
         matrixSet: 'EPSG:4326', displayInLayerSwitcher: false, queryable: false, visible: true,
         format: 'image/png',
       }),
-      new M.layer.WMTS({
+      new IDEE.layer.WMTS({
         url: 'https://www.ign.es/wmts/ign-base?',
         name: 'IGNBaseOrto',
         legend: 'Mapa IGN',
@@ -76,7 +76,7 @@ const mpBIL = new M.plugin.BackImgLayer({
       id: 'mapa',
       preview: 'https://componentes.cnig.es/api-idee/plugins/backimglayer/images/svqmapa.png',
       title: 'Mapa',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'https://www.ign.es/wmts/ign-base?',
         name: 'IGNBaseTodo',
         legend: 'Mapa IGN',
@@ -89,7 +89,7 @@ const mpBIL = new M.plugin.BackImgLayer({
       id: 'imagen',
       title: 'Imagen',
       preview: 'https://componentes.cnig.es/api-idee/plugins/backimglayer/images/svqimagen.png',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'https://www.ign.es/wmts/pnoa-ma?',
         name: 'OI.OrthoimageCoverage',
         legend: 'Imagen (PNOA)',
@@ -102,7 +102,7 @@ const mpBIL = new M.plugin.BackImgLayer({
       id: 'lidar',
       preview: 'https://componentes.cnig.es/api-idee/plugins/backimglayer/images/svqlidar.png',
       title: 'LIDAR',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'https://wmts-mapa-lidar.idee.es/lidar?',
         name: 'EL.GridCoverageDSM',
         legend: 'Modelo Digital de Superficies LiDAR',
@@ -115,7 +115,7 @@ const mpBIL = new M.plugin.BackImgLayer({
       id: 'MAPAMTN',
       preview: 'https://componentes.cnig.es/api-idee/plugins/backimglayer/images/svqmapa.png', // 'img/mtnactual.jpg' No esta esta imagen para probar
       title: 'Mapa MTN',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'https://www.ign.es/wmts/mapa-raster',
         name: 'MTN',
         legend: 'Mapa MTN',
@@ -137,27 +137,27 @@ map.addPlugin(mpBIL); // */
 // addWMSLayer('TN.RailTransportNetwork.RailwayLink', 'Vías de comunicación ferroviarias', 'https://www.ign.es/wms-inspire/ign-base?', '1.3.0', true, { visibility: false, displayInLayerSwitcher: true, queryable: fals
 
 /*/ PRUEBA con capas WMS
-const objLyrREDNAP = new M.layer.WMS({ url: 'https://www.ign.es/wms-inspire/redes-geodesicas?',
+const objLyrREDNAP = new IDEE.layer.WMS({ url: 'https://www.ign.es/wms-inspire/redes-geodesicas?',
   name: 'RED_NAP', legend: 'Red de Nivelación de Alta Precisión',
   tiled: false, visibility: false,
 }, {});
 
-const objLyrBDLJE = new M.layer.WMS({ url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
+const objLyrBDLJE = new IDEE.layer.WMS({ url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
   name: 'AU.AdministrativeBoundary', legend: 'Líneas Límite',
   tiled: false, visibility: false,
 }, {});
 
-const objLyrRTRoads = new M.layer.WMS({ url: 'https://servicios.idee.es/wms-inspire/transportes?',
+const objLyrRTRoads = new IDEE.layer.WMS({ url: 'https://servicios.idee.es/wms-inspire/transportes?',
   name: 'TN.RoadTransportNetwork.RoadLink', legend: 'Vías de comunicación por carretera',
   tiled: false, visibility: false,
 }, {});
 
-const objLyrRTRailways = new M.layer.WMS({ url: 'https://servicios.idee.es/wms-inspire/transportes?',
+const objLyrRTRailways = new IDEE.layer.WMS({ url: 'https://servicios.idee.es/wms-inspire/transportes?',
   name: 'TN.RailTransportNetwork.RailwayLink', legend: 'Vías de comunicación por ferrocarril',
   tiled: false, visibility: false,
 }, {});
 
-const objLyrNGBE = new M.layer.WMS({ url: 'https://www.ign.es/wms-inspire/ngbe?',
+const objLyrNGBE = new IDEE.layer.WMS({ url: 'https://www.ign.es/wms-inspire/ngbe?',
   name: 'GN.GeographicalNames', legend: 'Nombres geográficos - NGBE',
   tiled: false, visibility: false,
 }, {});
@@ -221,17 +221,17 @@ const mp = new Incicarto({
 window.mp = mp;
 
 /*/ PRUEBA con múltiples plugins
-const mp2 = new M.plugin.Infocoordinates({ position: 'TR', decimalGEOcoord: 4, decimalUTMcoord: 4 });
-const mp3 = new M.plugin.Information({ position: 'TR', buffer: 100 });
-const mp4 = new M.plugin.MeasureBar({ position: 'TR' });
+const mp2 = new IDEE.plugin.Infocoordinates({ position: 'TR', decimalGEOcoord: 4, decimalUTMcoord: 4 });
+const mp3 = new IDEE.plugin.Information({ position: 'TR', buffer: 100 });
+const mp4 = new IDEE.plugin.MeasureBar({ position: 'TR' });
 
-const provincias = new M.layer.WFS({ url: "http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?",
+const provincias = new IDEE.layer.WFS({ url: "http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?",
   name: "Provincias", legend: "Provincias",
   namespace: "tematicos", geometry: 'MPOLYGON',
 });
 //map.addWFS(provincias);
 
-const viales = new M.layer.WFS({ url: "http://g-gis-online-lab.desarrollo.guadaltel.es/geoserver/ggiscloud_root/wms?",
+const viales = new IDEE.layer.WFS({ url: "http://g-gis-online-lab.desarrollo.guadaltel.es/geoserver/ggiscloud_root/wms?",
   name: "a1585302352391_viales_almeria", legend: "Viales",
   namespace: "ggiscloud_root", geometry: 'LINE',
 });
@@ -242,5 +242,5 @@ map.addPlugin(mp3); window.mp3 = mp3;
 map.addPlugin(mp4); window.mp4 = mp4; // */
 
 map.addPlugin(mp);
-// map.addPlugin(new M.plugin.MeasureBar({ position: 'TR' }));
+// map.addPlugin(new IDEE.plugin.MeasureBar({ position: 'TR' }));
 

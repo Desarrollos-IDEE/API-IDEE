@@ -1,5 +1,5 @@
 /**
- * @module M/layer/GenericVector
+ * @module IDEE/layer/GenericVector
  */
 import GenericVectorImpl from 'impl/layer/GenericVector';
 import Utils from 'impl/util/Utils';
@@ -26,7 +26,7 @@ import Generic from '../style/Generic';
  * @property {Object} options Opciones GenericVector.
  *
  * @api
- * @extends {M.layer.Vector}
+ * @extends {IDEE.layer.Vector}
  */
 class GenericVector extends Vector {
   /**
@@ -166,7 +166,7 @@ class GenericVector extends Vector {
     * Este método calcula la extensión máxima de esta capa.
     *
     * @function
-    * @returns {M.layer.maxExtent} Devuelve una promesa, con la extensión máxima de esta capa.
+    * @returns {IDEE.layer.maxExtent} Devuelve una promesa, con la extensión máxima de esta capa.
     * @api
     */
   calculateMaxExtent() {
@@ -225,7 +225,7 @@ class GenericVector extends Vector {
    *
    * @function
    * @getter
-   * @returns {M.LayerType.KML} Valor de la propiedad "extract".
+   * @returns {IDEE.LayerType.KML} Valor de la propiedad "extract".
    * @api
    */
   get extract() {
@@ -258,7 +258,7 @@ class GenericVector extends Vector {
    *
    * @function
    * @getter
-   * @return {M.layer.GenericVector.impl.version} Versión del servicio.
+   * @return {IDEE.layer.GenericVector.impl.version} Versión del servicio.
    * @api
    */
   get version() {
@@ -284,7 +284,7 @@ class GenericVector extends Vector {
   /**
    * Devuelve el CQL de la capa.
    * @function
-   * @return {M.layer.WFS.impl.cql}  Devuelve el CQL.
+   * @return {IDEE.layer.WFS.impl.cql}  Devuelve el CQL.
    * @api
    */
   get cql() {
@@ -324,7 +324,7 @@ class GenericVector extends Vector {
   /**
    * Devuelve los ids de la capa.
    * @function
-   * @return {M.layer.WFS.impl.ids} Devuelve los ids.
+   * @return {IDEE.layer.WFS.impl.ids} Devuelve los ids.
    * @api
    */
   get ids() {
@@ -350,7 +350,7 @@ class GenericVector extends Vector {
    *
    * @function
    * @public
-   * @returns {M.layer.Vector.style}
+   * @returns {IDEE.layer.Vector.style}
    * @api
    */
   getStyle() {
@@ -386,7 +386,7 @@ class GenericVector extends Vector {
    *
    * @function
    * @public
-   * @param {Array<M.feature>} features Objetos geográficos que
+   * @param {Array<IDEE.feature>} features Objetos geográficos que
    * se incluirán a la capa.
    * @param {Boolean} update Verdadero se vuelve a cargar la capa,
    * falso no la vuelve a cargar.

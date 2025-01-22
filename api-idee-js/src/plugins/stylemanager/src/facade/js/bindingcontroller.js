@@ -33,7 +33,7 @@ export default class BindingController {
 
       if (style instanceof styleType) {
         styleBinding = style;
-      } else if (style instanceof M.style.Composite) {
+      } else if (style instanceof IDEE.style.Composite) {
         const styles = style.getStyles();
         styleBinding = styles.find((styleEl) => styleEl instanceof styleType);
       }
@@ -43,14 +43,14 @@ export default class BindingController {
 
   renderViews(layer) {
     this.bindings_ = {};
-    this.bindings_['stylesimple'] = new SimpleBinding(stylesimple, this.html_, 'stylesimple', this.getStyles(layer, M.style.Simple), layer, this);
-    this.bindings_['styleproportional'] = new ProportionalBinding(styleproportional, this.html_, 'styleproportional', this.getStyles(layer, M.style.Proportional), layer);
-    this.bindings_['stylecluster'] = new ClusterBinding(stylecluster, this.html_, 'stylecluster', this.getStyles(layer, M.style.Cluster), layer);
-    this.bindings_['stylechoropleth'] = new ChoroplethBinding(stylechoropleth, this.html_, 'stylechoropleth', this.getStyles(layer, M.style.Choropleth), layer);
-    this.bindings_['styleheatmap'] = new HeatmapBinding(styleheatmap, this.html_, 'styleheatmap', this.getStyles(layer, M.style.Heatmap), layer);
-    this.bindings_['stylechart'] = new ChartBinding(stylechart, this.html_, 'stylechart', this.getStyles(layer, M.style.Chart), layer);
-    this.bindings_['stylecategory'] = new CategoryBinding(stylecategory, this.html_, 'stylecategory', this.getStyles(layer, M.style.Category), layer, this);
-    this.bindings_['styleflowline'] = new FlowLineBinding(styleflowline, this.html_, 'styleflowline', this.getStyles(layer, M.style.FlowLine), layer);
+    this.bindings_['stylesimple'] = new SimpleBinding(stylesimple, this.html_, 'stylesimple', this.getStyles(layer, IDEE.style.Simple), layer, this);
+    this.bindings_['styleproportional'] = new ProportionalBinding(styleproportional, this.html_, 'styleproportional', this.getStyles(layer, IDEE.style.Proportional), layer);
+    this.bindings_['stylecluster'] = new ClusterBinding(stylecluster, this.html_, 'stylecluster', this.getStyles(layer, IDEE.style.Cluster), layer);
+    this.bindings_['stylechoropleth'] = new ChoroplethBinding(stylechoropleth, this.html_, 'stylechoropleth', this.getStyles(layer, IDEE.style.Choropleth), layer);
+    this.bindings_['styleheatmap'] = new HeatmapBinding(styleheatmap, this.html_, 'styleheatmap', this.getStyles(layer, IDEE.style.Heatmap), layer);
+    this.bindings_['stylechart'] = new ChartBinding(stylechart, this.html_, 'stylechart', this.getStyles(layer, IDEE.style.Chart), layer);
+    this.bindings_['stylecategory'] = new CategoryBinding(stylecategory, this.html_, 'stylecategory', this.getStyles(layer, IDEE.style.Category), layer, this);
+    this.bindings_['styleflowline'] = new FlowLineBinding(styleflowline, this.html_, 'styleflowline', this.getStyles(layer, IDEE.style.FlowLine), layer);
 
     this.bindings_['stylesimple'].getCompilePromise().then(() => {
       this.addSelectOnChangeListener();
@@ -203,7 +203,7 @@ export default class BindingController {
           type = 'polygon';
           break;
         default:
-          M.dialog.error(getValue('exception.geomNotSupported'), 'Error');
+          IDEE.dialog.error(getValue('exception.geomNotSupported'), 'Error');
       }
     }
 
@@ -288,7 +288,7 @@ export default class BindingController {
   initBindings(layer) {
     this.bindings_['stylesimple'].setGeometry(this.geometry_).setLayer(this.layer_);
     const styles = [layer.getStyle()];
-    if (styles[0] instanceof M.style.Composite) {
+    if (styles[0] instanceof IDEE.style.Composite) {
       styles.push(...styles[0].getStyles());
     }
     const styleNames = styles.map((style) => BindingController.parseStyleToName(style));
@@ -400,7 +400,7 @@ export default class BindingController {
   getStyle() {
     let style;
     if (this.getSelectedPanels().length === 0) {
-      M.dialog.info(getValue('exception.chooseStyle'), getValue('exception.choStyle'));
+      IDEE.dialog.info(getValue('exception.chooseStyle'), getValue('exception.choStyle'));
     } else if (this.getSelectedPanels().length === 1) {
       style = this.getSelectedPanels()[0].generateStyle();
     } else {
@@ -417,7 +417,7 @@ export default class BindingController {
    */
   getMainStyle() {
     return this.getSelectedPanels().map((binding) => binding.generateStyle())
-      .find((style) => style instanceof M.style.Composite);
+      .find((style) => style instanceof IDEE.style.Composite);
   }
 
   /**
@@ -540,21 +540,21 @@ export default class BindingController {
    */
   static parseStyleToName(style) {
     let name = '';
-    if (style instanceof M.style.FlowLine) {
+    if (style instanceof IDEE.style.FlowLine) {
       name = 'styleflowline';
-    } else if (style instanceof M.style.Simple) {
+    } else if (style instanceof IDEE.style.Simple) {
       name = 'stylesimple';
-    } else if (style instanceof M.style.Cluster) {
+    } else if (style instanceof IDEE.style.Cluster) {
       name = 'stylecluster';
-    } else if (style instanceof M.style.Heatmap) {
+    } else if (style instanceof IDEE.style.Heatmap) {
       name = 'styleheatmap';
-    } else if (style instanceof M.style.Choropleth) {
+    } else if (style instanceof IDEE.style.Choropleth) {
       name = 'stylechoropleth';
-    } else if (style instanceof M.style.Category) {
+    } else if (style instanceof IDEE.style.Category) {
       name = 'stylecategory';
-    } else if (style instanceof M.style.Chart) {
+    } else if (style instanceof IDEE.style.Chart) {
       name = 'stylechart';
-    } else if (style instanceof M.style.Proportional) {
+    } else if (style instanceof IDEE.style.Proportional) {
       name = 'styleproportional';
     }
     return name;

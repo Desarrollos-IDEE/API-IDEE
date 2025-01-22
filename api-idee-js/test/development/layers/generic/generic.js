@@ -1,8 +1,8 @@
 /* eslint-disable camelcase */
 import ImageWMS from 'ol/source/ImageWMS';
-import GenericRaster from 'M/layer/GenericRaster';
-import GenericVector from 'M/layer/GenericVector';
-import Polygon from 'M/style/Polygon';// eslint-disable-line no-unused-vars
+import GenericRaster from 'IDEE/layer/GenericRaster';
+import GenericVector from 'IDEE/layer/GenericVector';
+import Polygon from 'IDEE/style/Polygon';// eslint-disable-line no-unused-vars
 import { Image, Vector as VectorLayer } from 'ol/layer';
 import VectorSource from 'ol/source/Vector';
 import GeoJSON from 'ol/format/GeoJSON';

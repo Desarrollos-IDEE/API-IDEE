@@ -1,18 +1,18 @@
 /* eslint-disable no-console,no-underscore-dangle,no-loop-func,no-proto,max-len,no-param-reassign,spaced-comment,no-plusplus,no-unused-vars,camelcase */
-import { map as Mmap } from 'M/api-idee';
-import Generic from 'M/style/Generic';
-import Choropleth from 'M/style/Choropleth';
-import Proportional from 'M/style/Proportional';
-import Category from 'M/style/Category';
-import Chart from 'M/style/Chart';
-import Heatmap from 'M/style/Heatmap';
-import Cluster from 'M/style/Cluster';
-import FlowLine from 'M/style/FlowLine';
-import { schemes } from 'M/chart/types';
+import { map as Mmap } from 'IDEE/api-idee';
+import Generic from 'IDEE/style/Generic';
+import Choropleth from 'IDEE/style/Choropleth';
+import Proportional from 'IDEE/style/Proportional';
+import Category from 'IDEE/style/Category';
+import Chart from 'IDEE/style/Chart';
+import Heatmap from 'IDEE/style/Heatmap';
+import Cluster from 'IDEE/style/Cluster';
+import FlowLine from 'IDEE/style/FlowLine';
+import { schemes } from 'IDEE/chart/types';
 import {
   JENKS, QUANTILE, EQUAL_INTERVAL, MEDIA_SIGMA, ARITHMETIC_PROGRESSION, GEOMETRIC_PROGRESSION,
-} from 'M/style/Quantification';
-import { info } from 'M/dialog';
+} from 'IDEE/style/Quantification';
+import { info } from 'IDEE/dialog';
 import {
   wfs_001, wfs_002, wfs_003, wfs_004,
 } from '../layers/wfs/wfs';

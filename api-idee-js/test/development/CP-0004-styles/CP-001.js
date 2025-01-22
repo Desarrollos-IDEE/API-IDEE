@@ -1,18 +1,18 @@
 /* eslint-disable spaced-comment,no-loop-func,object-property-newline,no-param-reassign,no-proto,no-console,no-plusplus,object-curly-newline,max-len,camelcase */
-import { map as Mmap } from 'M/api-idee';
-import Feature from 'M/feature/Feature';
-import Point from 'M/style/Point';
-import Line from 'M/style/Line';
-import Polygon from 'M/style/Polygon';
-import Generic from 'M/style/Generic';
+import { map as Mmap } from 'IDEE/api-idee';
+import Feature from 'IDEE/feature/Feature';
+import Point from 'IDEE/style/Point';
+import Line from 'IDEE/style/Line';
+import Polygon from 'IDEE/style/Polygon';
+import Generic from 'IDEE/style/Generic';
 import {
   TOP, BOTTOM, MIDDLE, ALPHABETIC, HANGING, IDEOGRAPHIC,
-} from 'M/style/Baseline';
-import { RIGHT, LEFT, CENTER } from 'M/style/Align';
+} from 'IDEE/style/Baseline';
+import { RIGHT, LEFT, CENTER } from 'IDEE/style/Align';
 import {
   BAN, BLAZON, BUBBLE, CIRCLE, LOZENGE, MARKER, NONE, SHIELD, SIGN, SQUARE, TRIANGLE,
-} from 'M/style/Form';
-import { info } from 'M/dialog';
+} from 'IDEE/style/Form';
+import { info } from 'IDEE/dialog';
 import OLStyle from 'ol/style/Style';
 import OLStyleFill from 'ol/style/Fill';
 import OLStyleStroke from 'ol/style/Stroke';
@@ -23,7 +23,7 @@ import Centroid from '../../../src/impl/ol/js/style/Centroid';
 import { vector_001 } from '../layers/vector/vector';
 
 const capaPrueba = vector_001;
-window.M.style = { Point, Line, Polygon, Generic };
+window.IDEE.style = { Point, Line, Polygon, Generic };
 window.ol = { style: { Style: OLStyle, Centroid, Fill: OLStyleFill, Stroke: OLStyleStroke, Circle: CircleStyle, Icon: OLStyleIcon, RegularShape: OLStyleRegularShape } };
 
 // START Pruebas con pointVendor
@@ -34,20 +34,20 @@ const pointVendor = undefined; // Sin vendorOptions
 // const pointVendor = [new OLStyle({ image: new CircleStyle({ radius: 25, fill: new OLStyleFill({ color: '#0000ff88' }), stroke: new OLStyleStroke({ color: '#F54700', width: 5, lineDash: [10, 10], lineDashOffset: 5, lineCap: 'butt' }) }) }), new OLStyle({ image: new CircleStyle({ radius: 7, fill: new OLStyleFill({ color: '#00ff00' }), stroke: new OLStyleStroke({ color: '#888800', width: 3, lineDash: [5, 5] }) }) })];
 
 // Pruebas en consola
-// var consoleTestPoint = new M.style.Point({ 'radius': 25, 'fill': { 'color': 'blue', 'opacity': 0.5 }, 'stroke': { 'color': '#F54700', 'width': 5, 'linedash': [10, 10], 'linedashoffset': 5, 'linecap': 'butt' }, 'label': {} }); window.mapa.getLayers()[1].setStyle(consoleTestPoint);
-// var consoleTestPoint = new M.style.Point(undefined, new ol.style.Style({ image: new ol.style.Circle({ radius: 25, fill: new ol.style.Fill({ color: '#0000ff88' }), stroke: new ol.style.Stroke({ color: '#F54700', width: 5, lineDash: [10, 10], lineDashOffset: 5, lineCap: 'butt' }) }) })); window.mapa.getLayers()[1].setStyle(consoleTestPoint);
-// var consoleTestPoint = new M.style.Point(undefined, [new ol.style.Style({ image: new ol.style.Circle({ radius: 25, fill: new ol.style.Fill({ color: '#0000ff88' }), stroke: new ol.style.Stroke({ color: '#F54700', width: 5, lineDash: [10, 10], lineDashOffset: 5, lineCap: 'butt' }) }) }), new ol.style.Style({ image: new ol.style.Circle({ radius: 7, fill: new ol.style.Fill({ color: '#00ff00' }), stroke: new ol.style.Stroke({ color: '#888800', width: 3, lineDash: [5, 5] }) }) })]); window.mapa.getLayers()[1].setStyle(consoleTestPoint);
+// var consoleTestPoint = new IDEE.style.Point({ 'radius': 25, 'fill': { 'color': 'blue', 'opacity': 0.5 }, 'stroke': { 'color': '#F54700', 'width': 5, 'linedash': [10, 10], 'linedashoffset': 5, 'linecap': 'butt' }, 'label': {} }); window.mapa.getLayers()[1].setStyle(consoleTestPoint);
+// var consoleTestPoint = new IDEE.style.Point(undefined, new ol.style.Style({ image: new ol.style.Circle({ radius: 25, fill: new ol.style.Fill({ color: '#0000ff88' }), stroke: new ol.style.Stroke({ color: '#F54700', width: 5, lineDash: [10, 10], lineDashOffset: 5, lineCap: 'butt' }) }) })); window.mapa.getLayers()[1].setStyle(consoleTestPoint);
+// var consoleTestPoint = new IDEE.style.Point(undefined, [new ol.style.Style({ image: new ol.style.Circle({ radius: 25, fill: new ol.style.Fill({ color: '#0000ff88' }), stroke: new ol.style.Stroke({ color: '#F54700', width: 5, lineDash: [10, 10], lineDashOffset: 5, lineCap: 'butt' }) }) }), new ol.style.Style({ image: new ol.style.Circle({ radius: 7, fill: new ol.style.Fill({ color: '#00ff00' }), stroke: new ol.style.Stroke({ color: '#888800', width: 3, lineDash: [5, 5] }) }) })]); window.mapa.getLayers()[1].setStyle(consoleTestPoint);
 
 // Prueba de ambos parámetros solo en consola
-// var consoleTestPoint = new M.style.Point({ 'radius': 8, 'fill': { 'color': 'Black' }, 'stroke': { 'color': 'Black', 'width': 5, 'linedash': [10, 10] } }, new ol.style.Style({ image: new ol.style.Circle({ radius: 7, fill: new ol.style.Fill({ color: '#00ff00' }), stroke: new ol.style.Stroke({ color: '#888800', width: 3, lineDash: [5, 5] }) }) })); window.mapa.getLayers()[1].setStyle(consoleTestPoint);
+// var consoleTestPoint = new IDEE.style.Point({ 'radius': 8, 'fill': { 'color': 'Black' }, 'stroke': { 'color': 'Black', 'width': 5, 'linedash': [10, 10] } }, new ol.style.Style({ image: new ol.style.Circle({ radius: 7, fill: new ol.style.Fill({ color: '#00ff00' }), stroke: new ol.style.Stroke({ color: '#888800', width: 3, lineDash: [5, 5] }) }) })); window.mapa.getLayers()[1].setStyle(consoleTestPoint);
 
 // Pruebas de set (Si el vendorOptions esta presente es reemplazado)
 // var sVSet = window.mapa.getLayers()[1].getStyle(); sVSet.set('radius', '10'); sVSet.set('fill.color', 'red'); sVSet.set('stroke.color', 'yellow'); sVSet.set('stroke.width', '5');
 
 //Pruebas antiguas (NO NORMALIZADAS PARA ENTENDER BIEN)
-// Color in classOLStyleIcon never used // var pointICONVendor = new M.style.Point({ radius: 12 }, new ol.style.Style({ radius: 10, fill: new ol.style.Fill({ color: 'blue' }), stroke: new ol.style.Stroke({ color: 'red', width: 7 }), image: new ol.style.Icon({ anchor: [1, 2], anchorOrigin: 'top-left', anchorXUnits: 'fraction', anchorYUnits: 'fraction', crossOrigin: null, src: 'https://avatars.githubusercontent.com/u/50570110?v=4', offset: [3, 4], offsetOrigin: 'top-left', size: [50, 150], opacity: 0.9, scale: 1, rotation: 0.5, rotateWithView: false }) })); console.log(pointICONVendor); window.mapa.getLayers()[1].setStyle(pointICONVendor);
+// Color in classOLStyleIcon never used // var pointICONVendor = new IDEE.style.Point({ radius: 12 }, new ol.style.Style({ radius: 10, fill: new ol.style.Fill({ color: 'blue' }), stroke: new ol.style.Stroke({ color: 'red', width: 7 }), image: new ol.style.Icon({ anchor: [1, 2], anchorOrigin: 'top-left', anchorXUnits: 'fraction', anchorYUnits: 'fraction', crossOrigin: null, src: 'https://avatars.githubusercontent.com/u/50570110?v=4', offset: [3, 4], offsetOrigin: 'top-left', size: [50, 150], opacity: 0.9, scale: 1, rotation: 0.5, rotateWithView: false }) })); console.log(pointICONVendor); window.mapa.getLayers()[1].setStyle(pointICONVendor);
 // const pointVendor = new OLStyle({ radius: 10, fill: new OLStyleFill({ color: 'blue' }), stroke: new OLStyleStroke({ color: 'red', width: 7 }), image: new OLStyleIcon({ anchor: [1, 2], anchorOrigin: 'top-left', anchorXUnits: 'fraction', anchorYUnits: 'fraction', crossOrigin: null, src: 'https://avatars.githubusercontent.com/u/50570110?v=4', offset: [3, 4], offsetOrigin: 'top-left', size: [50, 150], opacity: 0.9, scale: 1, rotation: 0.5, rotateWithView: false }) });
-// var rgFont = new ol.style.RegularShape({ radius: 30, fill: 'blue', rotation: 0.6, rotateWithView: false });rgFont.setOpacity(0.8);rgFont.color_ = 'red'; rgFont.fontSize_ = 17; rgFont.stroke_ = new ol.style.Stroke({ color: 'green', width: 7 }); rgFont.fill_ = new ol.style.Fill({ color: 'blue' }); rgFont.radius_ = 20; rgFont.form_ = 'bubble'; rgFont.gradient_ = true; rgFont.offset_ = [0.5, 0.5]; rgFont.glyph_ = 'g-cartografia-alerta'; var pointFONTVendor = new M.style.Point({ radius: 12 }, new ol.style.Style({ radius: 10, fill: new ol.style.Fill({ color: 'blue' }), stroke: new ol.style.Stroke({ color: 'red', width: 7 }), image: rgFont })); console.log(pointFONTVendor); window.mapa.getLayers()[1].setStyle(pointFONTVendor);
+// var rgFont = new ol.style.RegularShape({ radius: 30, fill: 'blue', rotation: 0.6, rotateWithView: false });rgFont.setOpacity(0.8);rgFont.color_ = 'red'; rgFont.fontSize_ = 17; rgFont.stroke_ = new ol.style.Stroke({ color: 'green', width: 7 }); rgFont.fill_ = new ol.style.Fill({ color: 'blue' }); rgFont.radius_ = 20; rgFont.form_ = 'bubble'; rgFont.gradient_ = true; rgFont.offset_ = [0.5, 0.5]; rgFont.glyph_ = 'g-cartografia-alerta'; var pointFONTVendor = new IDEE.style.Point({ radius: 12 }, new ol.style.Style({ radius: 10, fill: new ol.style.Fill({ color: 'blue' }), stroke: new ol.style.Stroke({ color: 'red', width: 7 }), image: rgFont })); console.log(pointFONTVendor); window.mapa.getLayers()[1].setStyle(pointFONTVendor);
 // eslint-disable-next-line no-underscore-dangle
 // const pointVendor = { const rgFont = new OLStyleRegularShape({ radius: 30, fill: 'blue', rotation: 0.6, rotateWithView: false }); rgFont.setOpacity(0.8); rgFont.color_ = 'red'; rgFont.fontSize_ = 17; rgFont.stroke_ = new OLStyleStroke({ color: 'green', width: 7 }); rgFont.fill_ = new OLStyleFill({ color: 'blue' }); rgFont.radius_ = 20; rgFont.form_ = 'bubble'; rgFont.gradient_ = true; rgFont.offset_ = [0.5, 0.5]; rgFont.glyph_ = 'g-cartografia-alerta'; const pointFONTVendor = new OLStyle({ radius: 10, fill: new OLStyleFill({ color: 'blue' }), stroke: new OLStyleStroke({ color: 'red', width: 7 }), image: rgFont }); return pointFONTVendor; };
 
@@ -61,12 +61,12 @@ const lineVendor = undefined; // Sin vendorOptions
 // const lineVendor = [new OLStyle({ stroke: new OLStyleStroke({ color: 'blue', width: 3 }) }), new OLStyle({ stroke: new OLStyleStroke({ color: 'red', width: 6, lineDash: [20, 8], lineCap: 'butt' }) })];
 
 // Pruebas en consola
-// var consoleTestLine = new M.style.Line({ 'fill': { 'color': 'red', 'opacity': 1 }, 'stroke': { 'color': '#F54700', 'width': 20, 'linedash': [5, 5, 20], 'linedashoffset': 5, 'linecap': 'butt', 'linejoin': 'miter', 'opacity': 0.5 }, 'label': {} }); window.mapa.getLayers()[1].setStyle(consoleTestLine);
-// var consoleTestLine = new M.style.Line(undefined, [new ol.style.Style({ fill: new ol.style.Fill({ color: 'red', opacity: 1 }), stroke: new ol.style.Stroke({ color: '#F54700', width: 20, lineDash: [5, 5, 20], lineDashOffset: 5, lineCap: 'butt', lineJoin: 'miter', opacity: 0.5 }) })]); window.mapa.getLayers()[1].setStyle(consoleTestLine);
-// var consoleTestLine = new M.style.Line(undefined, [new ol.style.Style({ stroke: new ol.style.Stroke({ color: 'blue', width: 3 }) }), new ol.style.Style({ stroke: new ol.style.Stroke({ color: 'red', width: 6, lineDash: [20, 8], lineCap: 'butt' }) })]); window.mapa.getLayers()[1].setStyle(consoleTestLine);
+// var consoleTestLine = new IDEE.style.Line({ 'fill': { 'color': 'red', 'opacity': 1 }, 'stroke': { 'color': '#F54700', 'width': 20, 'linedash': [5, 5, 20], 'linedashoffset': 5, 'linecap': 'butt', 'linejoin': 'miter', 'opacity': 0.5 }, 'label': {} }); window.mapa.getLayers()[1].setStyle(consoleTestLine);
+// var consoleTestLine = new IDEE.style.Line(undefined, [new ol.style.Style({ fill: new ol.style.Fill({ color: 'red', opacity: 1 }), stroke: new ol.style.Stroke({ color: '#F54700', width: 20, lineDash: [5, 5, 20], lineDashOffset: 5, lineCap: 'butt', lineJoin: 'miter', opacity: 0.5 }) })]); window.mapa.getLayers()[1].setStyle(consoleTestLine);
+// var consoleTestLine = new IDEE.style.Line(undefined, [new ol.style.Style({ stroke: new ol.style.Stroke({ color: 'blue', width: 3 }) }), new ol.style.Style({ stroke: new ol.style.Stroke({ color: 'red', width: 6, lineDash: [20, 8], lineCap: 'butt' }) })]); window.mapa.getLayers()[1].setStyle(consoleTestLine);
 
 // Prueba de ambos parámetros solo en consola
-// var consoleTestLine = new M.style.Line({ 'fill': { 'color': 'black', 'opacity': 1 }, 'stroke': { 'color': 'black', 'width': 20, 'linedash': [5, 5, 20], 'linedashoffset': 5, 'linecap': 'butt', 'linejoin': 'miter', 'opacity': 0.5 }, 'label': {} }, [new ol.style.Style({ fill: new ol.style.Fill({ color: 'red', opacity: 1 }), stroke: new ol.style.Stroke({ color: '#F54700', width: 20, lineDash: [5, 5, 20], lineDashOffset: 5, lineCap: 'butt', lineJoin: 'miter', opacity: 0.5 }) })]); window.mapa.getLayers()[1].setStyle(consoleTestLine);
+// var consoleTestLine = new IDEE.style.Line({ 'fill': { 'color': 'black', 'opacity': 1 }, 'stroke': { 'color': 'black', 'width': 20, 'linedash': [5, 5, 20], 'linedashoffset': 5, 'linecap': 'butt', 'linejoin': 'miter', 'opacity': 0.5 }, 'label': {} }, [new ol.style.Style({ fill: new ol.style.Fill({ color: 'red', opacity: 1 }), stroke: new ol.style.Stroke({ color: '#F54700', width: 20, lineDash: [5, 5, 20], lineDashOffset: 5, lineCap: 'butt', lineJoin: 'miter', opacity: 0.5 }) })]); window.mapa.getLayers()[1].setStyle(consoleTestLine);
 
 // Pruebas de set (Si el vendorOptions esta presente es reemplazado)
 // var sVSet = window.mapa.getLayers()[1].getStyle(); sVSet.set('stroke.color', 'yellow'); sVSet.set('stroke.width', '5');
@@ -82,12 +82,12 @@ const polygonVendor = undefined; // Sin vendorOptions
 // const polygonVendor = [new OLStyle({ stroke: new OLStyleStroke({ color: 'red', width: 3, lineDash: [20, 8], lineCap: 'butt' }) }), new OLStyle({ stroke: new OLStyleStroke({ color: 'blue', width: 1 }) })];
 
 // Pruebas en consola
-// var consoleTestPolygon = new M.style.Polygon({ 'fill': { 'color': 'red', 'opacity': 1 }, 'stroke': { 'color': '#F54700', 'width': 20, 'linedash': [5, 5, 20], 'linedashoffset': 5, 'linecap': 'butt', 'linejoin': 'miter', 'opacity': 0.5 }, 'label': {} }); window.mapa.getLayers()[1].setStyle(consoleTestPolygon);
-// var consoleTestPolygon = new M.style.Polygon(undefined, [new ol.style.Style({ fill: new ol.style.Fill({ color: 'red', opacity: 1 }), stroke: new ol.style.Stroke({ color: '#F54700', width: 20, lineDash: [5, 5, 20], lineDashOffset: 5, lineCap: 'butt', lineJoin: 'miter', opacity: 0.5 }) })]); window.mapa.getLayers()[1].setStyle(consoleTestPolygon);
-// var consoleTestPolygon = new M.style.Polygon(undefined, [new ol.style.Style({ stroke: new ol.style.Stroke({ color: 'red', width: 3, lineDash: [20, 8], lineCap: 'butt' }) }), new ol.style.Style({ stroke: new ol.style.Stroke({ color: 'blue', width: 1 }) })]); window.mapa.getLayers()[1].setStyle(consoleTestPolygon);
+// var consoleTestPolygon = new IDEE.style.Polygon({ 'fill': { 'color': 'red', 'opacity': 1 }, 'stroke': { 'color': '#F54700', 'width': 20, 'linedash': [5, 5, 20], 'linedashoffset': 5, 'linecap': 'butt', 'linejoin': 'miter', 'opacity': 0.5 }, 'label': {} }); window.mapa.getLayers()[1].setStyle(consoleTestPolygon);
+// var consoleTestPolygon = new IDEE.style.Polygon(undefined, [new ol.style.Style({ fill: new ol.style.Fill({ color: 'red', opacity: 1 }), stroke: new ol.style.Stroke({ color: '#F54700', width: 20, lineDash: [5, 5, 20], lineDashOffset: 5, lineCap: 'butt', lineJoin: 'miter', opacity: 0.5 }) })]); window.mapa.getLayers()[1].setStyle(consoleTestPolygon);
+// var consoleTestPolygon = new IDEE.style.Polygon(undefined, [new ol.style.Style({ stroke: new ol.style.Stroke({ color: 'red', width: 3, lineDash: [20, 8], lineCap: 'butt' }) }), new ol.style.Style({ stroke: new ol.style.Stroke({ color: 'blue', width: 1 }) })]); window.mapa.getLayers()[1].setStyle(consoleTestPolygon);
 
 // Prueba de ambos parámetros solo en consola
-// var consoleTestPolygon = new M.style.Line({ 'fill': { 'color': 'black', 'opacity': 1 }, 'stroke': { 'color': 'black', 'width': 20, 'linedash': [5, 5, 20], 'linedashoffset': 5, 'linecap': 'butt', 'linejoin': 'miter', 'opacity': 0.5 }, 'label': {} }, [new ol.style.Style({ fill: new ol.style.Fill({ color: 'red', opacity: 1 }), stroke: new ol.style.Stroke({ color: '#F54700', width: 20, lineDash: [5, 5, 20], lineDashOffset: 5, lineCap: 'butt', lineJoin: 'miter', opacity: 0.5 }) })]); window.mapa.getLayers()[1].setStyle(consoleTestPolygon);
+// var consoleTestPolygon = new IDEE.style.Line({ 'fill': { 'color': 'black', 'opacity': 1 }, 'stroke': { 'color': 'black', 'width': 20, 'linedash': [5, 5, 20], 'linedashoffset': 5, 'linecap': 'butt', 'linejoin': 'miter', 'opacity': 0.5 }, 'label': {} }, [new ol.style.Style({ fill: new ol.style.Fill({ color: 'red', opacity: 1 }), stroke: new ol.style.Stroke({ color: '#F54700', width: 20, lineDash: [5, 5, 20], lineDashOffset: 5, lineCap: 'butt', lineJoin: 'miter', opacity: 0.5 }) })]); window.mapa.getLayers()[1].setStyle(consoleTestPolygon);
 
 // Pruebas de set (Si el vendorOptions esta presente es reemplazado)
 // var sVSet = window.mapa.getLayers()[1].getStyle(); sVSet.set('fill.color', 'red'); sVSet.set('stroke.color', 'yellow'); sVSet.set('stroke.width', '5');
@@ -963,7 +963,7 @@ const initTestFunctions = () => {
 initTestFunctions();
 
 /* / Pruebas con la leyenda de Layerswitcher(SIN EXITO, probar con localhost en el propio plugin)
-const pluginLayerswitcher = new M.plugin.Layerswitcher({
+const pluginLayerswitcher = new IDEE.plugin.Layerswitcher({
   collapsed: false,
   collapsible: true,
   isDraggable: true,

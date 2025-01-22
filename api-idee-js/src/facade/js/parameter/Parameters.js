@@ -1,5 +1,5 @@
 /**
- * @module M/Parameters
+ * @module IDEE/Parameters
  */
 import {
   isUndefined, isArray, isNullOrEmpty, isObject, isString, getParameterValue,

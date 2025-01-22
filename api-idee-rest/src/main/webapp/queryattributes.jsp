@@ -97,7 +97,7 @@
    %>
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
-        M.language.setLang(urlParams.get('language') || 'es');
+        IDEE.language.setLang(urlParams.get('language') || 'es');
 
         const COLORES_PROVINCIA = {
           2: 'olive',
@@ -116,7 +116,7 @@
           50: 'turquoise',
         };
 
-        let map = M.map({
+        let map = IDEE.map({
             container: 'mapjs',
             zoom: 10 ,
             maxZoom: 20,
@@ -124,15 +124,15 @@
             center: [-409000, 4930000],
         });
 
-        const vertex = new M.layer.GeoJSON({
+        const vertex = new IDEE.layer.GeoJSON({
           name: 'vertices',
           url: 'https://projects.develmap.com/attributestable/roivertexcenterred.geojson',
           extract: true,
         });
 
-        const estiloPoint = new M.style.Point({
+        const estiloPoint = new IDEE.style.Point({
 	        icon: {
-		        form: M.style.form.CIRCLE,
+		        form: IDEE.style.form.CIRCLE,
 		        radius: 5,
 		        rotation: 3.14159,
 		        rotate: false,
@@ -154,7 +154,7 @@
 
 		let mp;
         function crearPlugin(propiedades) {
-	        mp = new M.plugin.QueryAttributes(propiedades);
+	        mp = new IDEE.plugin.QueryAttributes(propiedades);
 	
 	        map.addPlugin(mp);
         }

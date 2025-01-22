@@ -1,14 +1,14 @@
 /**
- * @module M/impl/control/ZoomExtentControl
+ * @module IDEE/impl/control/ZoomExtentControl
  */
 
-export default class ZoomExtentControl extends M.impl.Control {
+export default class ZoomExtentControl extends IDEE.impl.Control {
   /**
    * This function create DragZoom interaction
    *
    * @public
    * @function
-   * @param {M.Map} map Map
+   * @param {IDEE.Map} map Map
    * @api
    */
   createInteraction(map) {
@@ -25,7 +25,7 @@ export default class ZoomExtentControl extends M.impl.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map Map
+   * @param {IDEE.Map} map Map
    * @api
    */
   activateClick(map) {
@@ -37,7 +37,7 @@ export default class ZoomExtentControl extends M.impl.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map Map
+   * @param {IDEE.Map} map Map
    * @api
    */
   deactivateClick(map) {

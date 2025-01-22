@@ -1,5 +1,5 @@
 /**
- * @module M/control/ViewManagementControl
+ * @module IDEE/control/ViewManagementControl
  */
 import ViewManagementImpl from 'impl/viewmanagement';
 import template from '../../templates/viewmanagement';
@@ -9,19 +9,19 @@ import ZoomPanelControl from './zoompanelcontrol';
 import PredefinedZoomControl from './predefinedzoomcontrol';
 import ZoomExtentControl from './zoomextentcontrol';
 
-export default class ViewManagementControl extends M.Control {
+export default class ViewManagementControl extends IDEE.Control {
   /**
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor(isDraggable, predefinedzoom, zoomextent, viewhistory, zoompanel, order) {
-    if (M.utils.isUndefined(ViewManagementImpl) || (M.utils.isObject(ViewManagementImpl)
-      && M.utils.isNullOrEmpty(Object.keys(ViewManagementImpl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(ViewManagementImpl) || (IDEE.utils.isObject(ViewManagementImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(ViewManagementImpl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
 
     const impl = new ViewManagementImpl();
@@ -75,13 +75,13 @@ export default class ViewManagementControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api
    */
   createView(map) {
     this.map_ = map;
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           predefinedzoom: this.predefinedzoom_,
           zoomextent: this.zoomextent_,
@@ -153,7 +153,7 @@ export default class ViewManagementControl extends M.Control {
         });
       }
       if (this.isDraggable_) {
-        M.utils.draggabillyPlugin(this.getPanel(), '#m-viewmanagement-title');
+        IDEE.utils.draggabillyPlugin(this.getPanel(), '#m-viewmanagement-title');
       }
       this.accessibilityTab(html);
       success(html);
@@ -165,7 +165,7 @@ export default class ViewManagementControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {
@@ -216,10 +216,10 @@ export default class ViewManagementControl extends M.Control {
    * @api
    */
   destroy() {
-    if (!M.utils.isNullOrEmpty(this.zoomextentControl)) {
+    if (!IDEE.utils.isNullOrEmpty(this.zoomextentControl)) {
       this.zoomextentControl.destroy();
     }
-    if (!M.utils.isNullOrEmpty(this.viewhistoryControl)) {
+    if (!IDEE.utils.isNullOrEmpty(this.viewhistoryControl)) {
       this.viewhistoryControl.destroy();
     }
   }

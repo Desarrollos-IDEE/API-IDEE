@@ -1,5 +1,5 @@
 /**
- * @module M/Label
+ * @module IDEE/Label
  */
 import LabelImpl from 'impl/Label';
 import Base from './Base';
@@ -10,7 +10,7 @@ import Base from './Base';
  * información específica.
  *
  * @api
- * @extends {M.facade.Base}
+ * @extends {IDEE.facade.Base}
  */
 class Label extends Base {
   /**
@@ -22,7 +22,7 @@ class Label extends Base {
    * @param {Boolean} panMapIfOutOfView Define si el mapa esta fuera de la vista.
    *
    * @api
-   * @extends {M.facade.Base}
+   * @extends {IDEE.facade.Base}
    */
   constructor(text, coordOpts, panMapIfOutOfView) {
     // implementation of this control
@@ -49,7 +49,7 @@ class Label extends Base {
    *
    * @public
    * @function
-   * @param {M.Map} map Fachada del objeto "map".
+   * @param {IDEE.Map} map Fachada del objeto "map".
    * @api
    * @export
    */
@@ -61,7 +61,7 @@ class Label extends Base {
    * Este método devuelve la ventana emergente creada.
    * @public
    * @function
-   * @returns {M.Popup} Ventana emergente creada.
+   * @returns {IDEE.Popup} Ventana emergente creada.
    * @api
    * @export
    */

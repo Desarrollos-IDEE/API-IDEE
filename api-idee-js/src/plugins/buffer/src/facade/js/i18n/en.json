@@ -1,6 +1,6 @@
 {
   "exception": {
-    "buffer_obsolete": "Developer message: M.plugin.Buffer has been deprecated, use the M.plugin.VectorsManagement instead"
+    "buffer_obsolete": "Developer message: IDEE.plugin.Buffer has been deprecated, use the IDEE.plugin.VectorsManagement instead"
   },
   "tooltip": "Influence Area",
   "tooltip_point": "Draw Point",

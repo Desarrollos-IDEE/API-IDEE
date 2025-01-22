@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/LyrCompare
+ * @module IDEE/plugin/LyrCompare
  */
 import 'assets/css/lyrcompare';
 import LyrCompareControl from './lyrcomparecontrol';
@@ -11,14 +11,14 @@ import {
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class LyrCompare extends M.Plugin {
+export default class LyrCompare extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} options plugin configuration options
    * @api stable
    */
@@ -46,7 +46,7 @@ export default class LyrCompare extends M.Plugin {
      */
     this.layers = [];
     if (options.layers === undefined || options.layers.length < 2) {
-      M.dialog.error(getValue('no_layers_plugin'), 'lyrcompare');
+      IDEE.dialog.error(getValue('no_layers_plugin'), 'lyrcompare');
       this.error_ = true;
     } else if (Array.isArray(options.layers)) {
       this.layers = options.layers;
@@ -57,14 +57,14 @@ export default class LyrCompare extends M.Plugin {
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
@@ -171,7 +171,7 @@ export default class LyrCompare extends M.Plugin {
         this.defaultLyrB = parseInt(options.defaultLyrB, 10);
       }
       if (this.defaultLyrA === this.defaultLyrB) {
-        M.dialog.error(getValue('repeated_layers'), 'lyrcompare');
+        IDEE.dialog.error(getValue('repeated_layers'), 'lyrcompare');
         this.error_ = true;
       }
 
@@ -186,7 +186,7 @@ export default class LyrCompare extends M.Plugin {
         this.defaultLyrC = parseInt(options.defaultLyrC, 10);
       }
       if ((this.defaultLyrA === this.defaultLyrC) || (this.defaultLyrB === this.defaultLyrC)) {
-        M.dialog.error(getValue('repeated_layers'), 'lyrcompare');
+        IDEE.dialog.error(getValue('repeated_layers'), 'lyrcompare');
         this.error_ = true;
       }
 
@@ -203,7 +203,7 @@ export default class LyrCompare extends M.Plugin {
       if ((this.defaultLyrA === this.defaultLyrD)
         || (this.defaultLyrB === this.defaultLyrD)
         || (this.defaultLyrC === this.defaultLyrD)) {
-        M.dialog.error(getValue('repeated_layers'), 'lyrcompare');
+        IDEE.dialog.error(getValue('repeated_layers'), 'lyrcompare');
         this.error_ = true;
       }
     }
@@ -221,7 +221,7 @@ export default class LyrCompare extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).lyrcompare;
+    return IDEE.language.getTranslation(lang).lyrcompare;
   }
 
   /**
@@ -229,7 +229,7 @@ export default class LyrCompare extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
@@ -252,10 +252,10 @@ export default class LyrCompare extends M.Plugin {
       const plugin = map.getPlugins('lyrcompare');
       if (plugin.length !== 0) map.removePlugins(map.getPlugins('lyrcompare'));
     } else {
-      this.panel_ = new M.ui.Panel('panelLyrcompare', {
+      this.panel_ = new IDEE.ui.Panel('panelLyrcompare', {
         collapsible: this.collapsible,
         collapsed: this.collapsed,
-        position: M.ui.position[this.position],
+        position: IDEE.ui.position[this.position],
         className: 'm-plugin-lyrcompare',
         collapsedButtonClass: 'lyrcompare-icon',
         tooltip: this.tooltip_,
@@ -350,7 +350,7 @@ export default class LyrCompare extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.plugin} plugin to compare
+   * @param {IDEE.plugin} plugin to compare
    * @api stable
    */
   equals(plugin) {

@@ -1,5 +1,5 @@
 /**
- * @module M/control/TOCControl
+ * @module IDEE/control/TOCControl
  */
 
 import template from '../../templates/toc';
@@ -15,14 +15,14 @@ const listenAll = (html, selector, type, callback) => {
     .addEventListener(type, (evt) => callback(evt)));
 };
 
-export default class TOCControl extends M.Control {
+export default class TOCControl extends IDEE.Control {
   /**
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor() {
-    const impl = new M.impl.Control();
+    const impl = new IDEE.impl.Control();
     super(impl, 'TOC');
   }
 
@@ -31,7 +31,7 @@ export default class TOCControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api
    */
   createView(map) {
@@ -40,7 +40,7 @@ export default class TOCControl extends M.Control {
     this.map_ = map;
     return new Promise((success, fail) => {
       const templateVars = this.getTemplateVariables();
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: templateVars,
       });
       this.panelHTML_ = html;
@@ -64,10 +64,10 @@ export default class TOCControl extends M.Control {
       .reverse();
     const layersOpts = layers.map((layer) => {
       return {
-        outOfRange: layer instanceof M.layer.TMS || layer instanceof M.layer.XYZ
+        outOfRange: layer instanceof IDEE.layer.TMS || layer instanceof IDEE.layer.XYZ
           ? true
           : !layer.inRange(),
-        visible: (layer instanceof M.layer.WMTS ? (layer.options.visibility === true
+        visible: (layer instanceof IDEE.layer.WMTS ? (layer.options.visibility === true
           || layer.visibility === true) : layer.isVisible()),
         id: layer.name,
         title: layer.legend || layer.name,
@@ -93,7 +93,7 @@ export default class TOCControl extends M.Control {
       scroll = document.querySelector('.m-panel.m-plugin-toc.opened ul.m-toc-content').scrollTop;
     }
     const templateVars = this.getTemplateVariables();
-    const html = M.template.compileSync(template, {
+    const html = IDEE.template.compileSync(template, {
       vars: templateVars,
     });
     this.panelHTML_.innerHTML = html.innerHTML;
@@ -111,7 +111,7 @@ export default class TOCControl extends M.Control {
   toogleVisible(evt) {
     const layerName = evt.currentTarget.querySelector('.m-check').dataset.layerName;
     const layerFound = this.map_.getLayers({ name: layerName })[0];
-    const visibility = layerFound instanceof M.layer.WMTS ? layerFound.options.visibility
+    const visibility = layerFound instanceof IDEE.layer.WMTS ? layerFound.options.visibility
       : layerFound.isVisible();
     layerFound.setVisible(!visibility);
     layerFound.visibility = !visibility;
@@ -161,7 +161,7 @@ export default class TOCControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {

@@ -3,7 +3,7 @@
     "name": "calendar",
     "separator": "*"
   },
-  "constructor": "M.plugin.Calendar",
+  "constructor": "IDEE.plugin.Calendar",
   "parameters": [{
     "type": "object",
     "properties": [{

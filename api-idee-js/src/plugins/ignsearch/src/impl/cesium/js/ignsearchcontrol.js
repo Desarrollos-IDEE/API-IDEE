@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/IGNSearchControl
+ * @module IDEE/impl/control/IGNSearchControl
  */

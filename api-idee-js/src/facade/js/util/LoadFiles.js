@@ -1,8 +1,8 @@
 /**
  * Esta clase contiene funciones de utilidad para leer
  * ficheros geográficos y añadir los features al mapa.
- * @module M/loadFiles
- * @example import utils from 'M/loadFiles';
+ * @module IDEE/loadFiles
+ * @example import utils from 'IDEE/loadFiles';
  */
 import * as shp from 'shpjs';
 import LoadFilesImpl from '../../../impl/ol/js/util/LoadFiles';
@@ -24,7 +24,7 @@ const loadFeaturesLoadFilesImpl = (map, layerName, features) => {
 /**
  * Esta función añade al mapa una capa vector con los features
  * de un fichero
- * @param {M.map} map objeto mapa
+ * @param {IDEE.map} map objeto mapa
  * @param {Object} source fichero a cargar
  * @param {String} layerName nombre del nuevo layer
  * @param {String} fileExt extension del fichero
@@ -64,7 +64,7 @@ export const loadFeaturesFromSource = (map, source, layerName, fileExt) => {
 /**
  * Esta función añade al mapa una capa vector con los features
  * de un fichero
- * @param {M.map} map objeto mapa
+ * @param {IDEE.map} map objeto mapa
  * @param {Object} file fichero del que se obtienen los features
  * @function
  * @api

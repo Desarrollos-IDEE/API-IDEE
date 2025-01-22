@@ -1,19 +1,19 @@
 /**
- * @module M/impl/layer/GenericRaster
+ * @module IDEE/impl/layer/GenericRaster
  */
-import { getValue } from 'M/i18n/language';
+import { getValue } from 'IDEE/i18n/language';
 import {
   isNullOrEmpty,
   isNull,
   getWMSGetCapabilitiesUrl,
   getWMTSGetCapabilitiesUrl,
   extend,
-} from 'M/util/Utils';
+} from 'IDEE/util/Utils';
 import {
   WebMapServiceImageryProvider,
   WebMapTileServiceImageryProvider,
 } from 'cesium';
-import { get as getRemote } from 'M/util/Remote';
+import { get as getRemote } from 'IDEE/util/Remote';
 
 import LayerBase from './Layer';
 import FormatWMS from '../format/WMS';
@@ -27,7 +27,7 @@ import ImplUtils from '../util/Utils';
  * @classdesc
  * GenericRaster permite añadir cualquier tipo de capa raster definida con la librería base.
  * @api
- * @extends {M.impl.layer.Layer}
+ * @extends {IDEE.impl.layer.Layer}
  */
 class GenericRaster extends LayerBase {
   /**
@@ -95,7 +95,7 @@ class GenericRaster extends LayerBase {
    *
    * @public
    * @function
-   * @param {M.impl.Map} map Mapa de la implementación.
+   * @param {IDEE.impl.Map} map Mapa de la implementación.
    * @api stable
    */
   addTo(map) {
@@ -213,7 +213,7 @@ class GenericRaster extends LayerBase {
 
   /**
    * Este método devuelve el capabilities de la capa.
-   * @param {M.layer.WMS} layerCesium Capa de la que se quiere obtener el capabilities.
+   * @param {IDEE.layer.WMS} layerCesium Capa de la que se quiere obtener el capabilities.
    * @param {string} projection Proyección del mapa.
    * @return {Promise} Promesa con el capabilities de la capa.
    */
@@ -228,7 +228,7 @@ class GenericRaster extends LayerBase {
   /**
    * Este método devuelve el capabilities de la capa.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
-   * @param {M.layer.WMS} layerCesium Capa de la que se quiere obtener el capabilities.
+   * @param {IDEE.layer.WMS} layerCesium Capa de la que se quiere obtener el capabilities.
    * @param {string} projection Proyección del mapa.
    * @return {Promise} Promesa con el capabilities de la capa.
    * @api
@@ -259,7 +259,7 @@ class GenericRaster extends LayerBase {
   /**
    * Este método devuelve el capabilities de la capa.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
-   * @param {M.layer.WMS} layerCesium Capa de la que se quiere obtener el capabilities.
+   * @param {IDEE.layer.WMS} layerCesium Capa de la que se quiere obtener el capabilities.
    * @return {Promise} Promesa con el capabilities de la capa.
    * @api
    */

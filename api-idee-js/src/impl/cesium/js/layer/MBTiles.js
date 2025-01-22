@@ -1,10 +1,10 @@
 /**
- * @module M/impl/layer/MBTiles
+ * @module IDEE/impl/layer/MBTiles
  */
-import { isNullOrEmpty, extend } from 'M/util/Utils';
+import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
 import {
   getValue,
-} from 'M/i18n/language';
+} from 'IDEE/i18n/language';
 import {
   ImageryLayer,
   Rectangle,
@@ -28,7 +28,7 @@ import ImplUtils from '../util/Utils';
  * @property {boolean} visibility Define si la capa es visible o no.
  *
  * @api
- * @extends {M.impl.Layer}
+ * @extends {IDEE.impl.Layer}
  */
 class MBTiles extends Layer {
   /**
@@ -144,7 +144,7 @@ class MBTiles extends Layer {
    *
    * @public
    * @function
-   * @param {M.impl.Map} map Mapa de la implementación.
+   * @param {IDEE.impl.Map} map Mapa de la implementación.
    * @api
    */
   addTo(map) {

@@ -21,5 +21,5 @@
   "advice_sameLayer": "No puede cargarse la misma capa en varios sitios",
   "no_layers_plugin": "El número de capas es insuficiente para aplicar el efecto",
   "repeated_layers": "Las capas seleccionadas no se pueden repetir",
-  "lyrcompare_obsolete": "Mensaje para el desarrollador: M.plugin.LyrCompare ha quedado obsoleto, utilice en su lugar M.plugin.Comparators"
+  "lyrcompare_obsolete": "Mensaje para el desarrollador: IDEE.plugin.LyrCompare ha quedado obsoleto, utilice en su lugar IDEE.plugin.Comparators"
 }

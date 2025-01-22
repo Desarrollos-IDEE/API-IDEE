@@ -127,9 +127,9 @@
    %>
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
-        M.language.setLang(urlParams.get('language') || 'es');
+        IDEE.language.setLang(urlParams.get('language') || 'es');
 
-        const map = M.map({
+        const map = IDEE.map({
             container: 'mapjs',
         });
         let mp,collapsed,collapsible;
@@ -204,7 +204,7 @@
         }
 
         function crearPlugin(propiedades){
-            mp = new M.plugin.VectorsManagement(propiedades);
+            mp = new IDEE.plugin.VectorsManagement(propiedades);
             map.addPlugin(mp);
         }
         const botonEliminar = document.getElementById("botonEliminar");

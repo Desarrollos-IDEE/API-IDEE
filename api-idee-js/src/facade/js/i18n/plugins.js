@@ -1,7 +1,7 @@
 /* eslint-disable import/no-relative-packages */
 /**
- * @module M/i18n/plugins
- * @example import pluginsLanguage from 'M/i18n/plugins';
+ * @module IDEE/i18n/plugins
+ * @example import pluginsLanguage from 'IDEE/i18n/plugins';
  */
 
 // Attributions

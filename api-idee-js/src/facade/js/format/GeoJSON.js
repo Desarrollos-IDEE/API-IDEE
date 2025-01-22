@@ -1,5 +1,5 @@
 /**
- * @module M/format/GeoJSON
+ * @module IDEE/format/GeoJSON
  */
 import GeoJSONImpl from 'impl/format/GeoJSON';
 import Base from '../Base';
@@ -14,7 +14,7 @@ import { getValue } from '../i18n/language';
  * GeoJSON, a pesar de no ser un estándar OGC (está en camino de convertirse en uno),
  * es un formato de intercambio de información geográfica muy extendido que, al igual que WFS,
  * permite que todos los elementos estén en el cliente.
- * @extends {M.facade.Base}
+ * @extends {IDEE.facade.Base}
  * @api
  */
 class GeoJSON extends Base {
@@ -35,7 +35,7 @@ class GeoJSON extends Base {
     /**
      * Implementation of this formatter.
      * @public
-     * @type {M.impl.format.GeoJSON}
+     * @type {IDEE.impl.format.GeoJSON}
      */
     const impl = new GeoJSONImpl(options);
 
@@ -53,7 +53,7 @@ class GeoJSON extends Base {
    *
    * @public
    * @function
-   * @param {Array<M.Feature>} features Array de objetos geográficos que se transformará
+   * @param {Array<IDEE.Feature>} features Array de objetos geográficos que se transformará
    * en un GeoJSON "FeatureCollection".
    * @return {Array<Object>} Matriz con objetos "FeatureCollection".
    * @api
@@ -68,13 +68,13 @@ class GeoJSON extends Base {
 
   /**
    * Este método lee los objetos geográficos "FeatureCollection" y
-   * los transforma a una matriz de "M.Feature".
+   * los transforma a una matriz de "IDEE.Feature".
    *
    * @public
    * @function
    * @param {object} geojson GeoJSON para analizar como un
-   * matriz M.Feature.
-   * @return {Array<M.Feature>} Matriz con objetos geográficos.
+   * matriz IDEE.Feature.
+   * @return {Array<IDEE.Feature>} Matriz con objetos geográficos.
    * @api
    */
   read(geojsonParam, projection) {

@@ -1,9 +1,9 @@
 import Comparators from 'facade/comparators';
 
-M.language.setLang('es');
-// M.proxy(false);
+IDEE.language.setLang('es');
+// IDEE.proxy(false);
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   zoom: 5,
   bbox: [323020, 4126873, 374759, 4152013],
@@ -40,7 +40,7 @@ const timeline = {
 
 // ! StyleManager
 /*
-const wfs = new M.layer.WFS({
+const wfs = new IDEE.layer.WFS({
   url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?',
   namespace: 'tematicos',
   name: 'Provincias',

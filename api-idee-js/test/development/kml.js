@@ -1,5 +1,5 @@
-import { map, proxy } from 'M/api-idee';
-import KML from 'M/layer/KML';
+import { map, proxy } from 'IDEE/api-idee';
+import KML from 'IDEE/layer/KML';
 
 
 

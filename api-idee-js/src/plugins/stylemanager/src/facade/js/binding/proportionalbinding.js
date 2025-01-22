@@ -8,7 +8,7 @@ export class ProportionalBinding extends Binding {
   /**
    * This function sets the attribute layer to the binding.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    */
   setLayer(layer) {
     this.layer_ = layer;
@@ -20,14 +20,14 @@ export class ProportionalBinding extends Binding {
    * This function generates the cluster style from GUI Options.
    *
    * @function
-   * @returns {M.style.Cluster}
+   * @returns {IDEE.style.Cluster}
    */
   generateStyle() {
     const opts = this.generateOptions();
     let style = null;
     if (opts.attributeName !== '') {
       const scaledName = opts.scaledName === 'flannery' ? { flannery: true } : { flannery: false };
-      style = new M.style.Proportional(
+      style = new IDEE.style.Proportional(
         opts.attributeName,
         opts.minRadius,
         opts.maxRadius,

@@ -1,10 +1,10 @@
 /**
- * @module M/impl/control/Location
+ * @module IDEE/impl/control/Location
  */
 
-import { isNullOrEmpty, extend } from 'M/util/Utils';
-// import * as Dialog from 'M/dialog';
-// import { getValue } from 'M/i18n/language';
+import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
+// import * as Dialog from 'IDEE/dialog';
+// import { getValue } from 'IDEE/i18n/language';
 import { get as getProj } from 'ol/proj';
 import OLFeature from 'ol/Feature';
 import OLGeolocation from 'ol/Geolocation';
@@ -35,7 +35,7 @@ class Location extends Control {
    * Valor por defecto 60000.
    * @param {Object} vendorOptions Opciones de proveedor para la biblioteca base,
    * por defecto objeto vacío. Estos valores no son configurables.
-   * @extends {M.impl.Control}
+   * @extends {IDEE.impl.Control}
    * @api stable
    */
 
@@ -213,7 +213,7 @@ class Location extends Control {
  * @type {ol.style.Style}
  * @public
  * @api stable
- * @memberof module:M/impl/control/Location~
+ * @memberof module:IDEE/impl/control/Location~
  */
 Location.POSITION_STYLE = new OLStyle({
   image: new OLStyleCircle({

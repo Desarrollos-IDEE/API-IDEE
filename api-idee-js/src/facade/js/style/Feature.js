@@ -1,7 +1,7 @@
-import { modifySVG } from 'M/util/Utils';
+import { modifySVG } from 'IDEE/util/Utils';
 
 /**
- * @module M/style/Feature
+ * @module IDEE/style/Feature
  */
 import StyleBase from './Style';
 
@@ -9,7 +9,7 @@ import StyleBase from './Style';
  * @classdesc
  * Esta clase se encarga de actualizar los objetos geográficos.
  * @api
- * @extends {M.style}
+ * @extends {IDEE.style}
  */
 class Feature extends StyleBase {
   /**
@@ -29,7 +29,7 @@ class Feature extends StyleBase {
     /**
      * Objeto geográfico.
      * @private
-     * @type {M.Feature}
+     * @type {IDEE.Feature}
      */
     this.feature_ = null;
   }
@@ -38,7 +38,7 @@ class Feature extends StyleBase {
    * Este método aplica los estilos a los objetos geográficos.
    *
    * @public
-   * @param {M.Feature} feature Objeto geográfico.
+   * @param {IDEE.Feature} feature Objeto geográfico.
    * @function
    * @api
    */

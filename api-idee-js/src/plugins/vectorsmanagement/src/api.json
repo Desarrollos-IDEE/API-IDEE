@@ -3,7 +3,7 @@
     "name": "vectorsmanagement",
     "separator": "*!"
   },
-  "constructor": "M.plugin.VectorsManagement",
+  "constructor": "IDEE.plugin.VectorsManagement",
   "parameters": [{
     "type": "object",
     "properties": [{

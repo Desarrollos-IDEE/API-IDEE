@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/Topographicprofile
+ * @module IDEE/plugin/Topographicprofile
  */
 import 'assets/css/topographicprofile';
 import TopographicprofileControl from './topographicprofilecontrol';
@@ -9,14 +9,14 @@ import { getValue } from './i18n/language';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class Topographicprofile extends M.Plugin {
+export default class Topographicprofile extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -25,21 +25,21 @@ export default class Topographicprofile extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
     /**
      * Position
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.position_ = opts.position ? opts.position : 'TR';
 
@@ -68,7 +68,7 @@ export default class Topographicprofile extends M.Plugin {
      * @type {Boolean}
      */
     this.options_.visible = Object.prototype.hasOwnProperty.call(opts, 'visible') ? opts.visible : true;
-    // this.options_.serviceURL = opts.serviceURL || ((M.config.GGIS_RESTAPI) ? M.config.GGIS_RESTAPI + "/services/elevation" : "http://ggiscloud.guadaltel.com/ggiscloud/restapi/services/elevation");
+    // this.options_.serviceURL = opts.serviceURL || ((IDEE.config.GGIS_RESTAPI) ? IDEE.config.GGIS_RESTAPI + "/services/elevation" : "http://ggiscloud.guadaltel.com/ggiscloud/restapi/services/elevation");
     // 'http://idecan5.grafcan.es/ServicioWPS/mdt';
   }
 
@@ -84,7 +84,7 @@ export default class Topographicprofile extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).topographicprofile;
+    return IDEE.language.getTranslation(lang).topographicprofile;
   }
 
   /**
@@ -92,18 +92,18 @@ export default class Topographicprofile extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
     this.controls_.push(new TopographicprofileControl(this.options_));
     this.map_ = map;
     // panel para agregar control - no obligatorio
-    this.panel_ = new M.ui.Panel('panelTopographicprofile', {
+    this.panel_ = new IDEE.ui.Panel('panelTopographicprofile', {
       // 'collapsible': true,
       'className': 'm-topographicprofile',
       'collapsedButtonClass': 'icon-chart',
-      'position': M.ui.position[this.position_],
+      'position': IDEE.ui.position[this.position_],
       'tooltip': getValue('tooltip'),
     });
     this.panel_.addControls(this.controls_);

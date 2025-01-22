@@ -3,7 +3,7 @@
     "name": "comparepanel",
     "separator": "*!"
   },
-  "constructor": "M.plugin.Comparepanel",
+  "constructor": "IDEE.plugin.Comparepanel",
   "parameters": [{
     "type": "object",
     "properties": [{

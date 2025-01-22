@@ -1,3 +1,3 @@
 /**
- * @module M/impl/style/Chart
+ * @module IDEE/impl/style/Chart
  */

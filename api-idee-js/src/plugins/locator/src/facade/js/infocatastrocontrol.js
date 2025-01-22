@@ -1,24 +1,24 @@
 /**
- * @module M/control/InfoCatastroControl
+ * @module IDEE/control/InfoCatastroControl
  */
 /* eslint-disable no-restricted-syntax */
 import template from 'templates/infocatastro';
 import InfoCatastroImpl from 'impl/infocatastrocontrol';
 import { getValue } from './i18n/language';
 
-export default class InfoCatastroControl extends M.Control {
+export default class InfoCatastroControl extends IDEE.Control {
   /**
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor(map, zoom, pointStyle, options, positionPlugin) {
-    if (M.utils.isUndefined(InfoCatastroImpl) || (M.utils.isObject(InfoCatastroImpl)
-      && M.utils.isNullOrEmpty(Object.keys(InfoCatastroImpl)))) {
-      M.exception(getValue('exception.impl_infocatastro'));
+    if (IDEE.utils.isUndefined(InfoCatastroImpl) || (IDEE.utils.isObject(InfoCatastroImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(InfoCatastroImpl)))) {
+      IDEE.exception(getValue('exception.impl_infocatastro'));
     }
     const impl = new InfoCatastroImpl();
     super(impl, 'InfoCatastroImpl');
@@ -148,7 +148,7 @@ export default class InfoCatastroControl extends M.Control {
         document.querySelector('.m-plugin-locator').classList.add('m-plugin-locator-tc-withpanel');
       }
       this.html_.querySelector('#m-locator-infocatastro').classList.add('activated');
-      const panel = M.template.compileSync(template, {
+      const panel = IDEE.template.compileSync(template, {
         vars: {
           translations: {
             plot: getValue('plot'),
@@ -339,7 +339,7 @@ export default class InfoCatastroControl extends M.Control {
     }
     this.clearMunicipiosSelect();
     if (provinceCode !== '0') {
-      M.remote.get(this.CMC_url, {
+      IDEE.remote.get(this.CMC_url, {
         CodigoProvincia: provinceCode,
         CodigoMunicipio: '',
         CodigoMunicipioIne: '',
@@ -392,7 +392,7 @@ export default class InfoCatastroControl extends M.Control {
         this.selectMunicipios.value = this.municipalityvalue;
       }
     } else {
-      M.dialog.error(getValue('exception.apiideerror'));
+      IDEE.dialog.error(getValue('exception.apiideerror'));
     }
   }
 
@@ -411,24 +411,24 @@ export default class InfoCatastroControl extends M.Control {
     this.inputParcela = this.html_.querySelector('#m-infocatastro-estatePlot>#m-searchParamsParcela-input');
 
     if ((evt.type !== 'keyup') || (evt.keyCode === 13)) {
-      if (M.utils.isNullOrEmpty(this.selectProvincias.value) || this.selectProvincias.value === '0') {
-        M.dialog.info(getValue('exception.no_province'));
+      if (IDEE.utils.isNullOrEmpty(this.selectProvincias.value) || this.selectProvincias.value === '0') {
+        IDEE.dialog.info(getValue('exception.no_province'));
         return;
       }
-      if (M.utils.isNullOrEmpty(this.selectMunicipios.value) || this.selectMunicipios.value === '0') {
-        M.dialog.info(getValue('exception.no_mun'));
+      if (IDEE.utils.isNullOrEmpty(this.selectMunicipios.value) || this.selectMunicipios.value === '0') {
+        IDEE.dialog.info(getValue('exception.no_mun'));
         return;
       }
-      if (M.utils.isNullOrEmpty(this.inputPoligono.value)) {
-        M.dialog.info(getValue('exception.no_polygon'));
+      if (IDEE.utils.isNullOrEmpty(this.inputPoligono.value)) {
+        IDEE.dialog.info(getValue('exception.no_polygon'));
         return;
       }
-      if (M.utils.isNullOrEmpty(this.inputParcela.value)) {
-        M.dialog.info(getValue('exception.no_parcel'));
+      if (IDEE.utils.isNullOrEmpty(this.inputParcela.value)) {
+        IDEE.dialog.info(getValue('exception.no_parcel'));
         return;
       }
 
-      const searchUrl = M.utils.addParameters(this.DNPPP_url, {
+      const searchUrl = IDEE.utils.addParameters(this.DNPPP_url, {
         CodigoProvincia: this.selectProvincias.value,
         CodigoMunicipio: this.selectMunicipios.value,
         CodigoMunicipioINE: '',
@@ -436,7 +436,7 @@ export default class InfoCatastroControl extends M.Control {
         Parcela: this.inputParcela.value,
       });
 
-      M.remote.get(searchUrl).then((response) => {
+      IDEE.remote.get(searchUrl).then((response) => {
         const success = this.acceptOVCSW(response);
         if (success) {
           this.parseParamsResultsForTemplate_(response.xml);
@@ -470,15 +470,15 @@ export default class InfoCatastroControl extends M.Control {
           const errorDesc = errorNode.getElementsByTagName('err')[0];
           const errorDescTxt = errorDesc.getElementsByTagName('des')[0].childNodes[0].nodeValue;
           success = false;
-          M.dialog.info(errorDescTxt);
+          IDEE.dialog.info(errorDescTxt);
         }
       } else {
         success = false;
-        M.dialog.error(getValue('exception.apiideerror'));
+        IDEE.dialog.error(getValue('exception.apiideerror'));
       }
     } catch (err) {
       success = false;
-      M.exception(`${getValue('exception.json_invalid')} ${err}.`);
+      IDEE.exception(`${getValue('exception.json_invalid')} ${err}.`);
     }
     return success;
   }
@@ -508,14 +508,14 @@ export default class InfoCatastroControl extends M.Control {
     const pc1Value = rcNode.getElementsByTagName('pc1')[0].childNodes[0].nodeValue;
     const pc2Value = rcNode.getElementsByTagName('pc2')[0].childNodes[0].nodeValue;
 
-    const searchUrl = M.utils.addParameters(this.CPMRC_url, {
+    const searchUrl = IDEE.utils.addParameters(this.CPMRC_url, {
       Provincia: '',
       Municipio: '',
       SRS: this.map.getProjection().code,
       RC: pc1Value + pc2Value,
     });
 
-    return M.remote.get(searchUrl).then((res) => {
+    return IDEE.remote.get(searchUrl).then((res) => {
       const success = this.acceptOVCSW(res);
       if (success) {
         const docsRC = this.parseCPMRCResults(res.xml);
@@ -598,11 +598,11 @@ export default class InfoCatastroControl extends M.Control {
         center: [xFloat, yFloat],
       }]);
 
-      this.coordinatesLayer = new M.layer.Vector({
+      this.coordinatesLayer = new IDEE.layer.Vector({
         name: type === 'cadastre' ? 'coordinatecatastro' : 'coordinateparcel',
       }, { displayInLayerSwitcher: false });
 
-      const feature = new M.Feature('localizacion', {
+      const feature = new IDEE.Feature('localizacion', {
         type: 'Feature',
         properties: {},
         geometry: {
@@ -614,7 +614,7 @@ export default class InfoCatastroControl extends M.Control {
       this.coordinatesLayer.addFeatures([feature]);
       this.createGeometryStyles();
     } else {
-      M.dialog.error(getValue('exception.wrong_coords'), 'Error');
+      IDEE.dialog.error(getValue('exception.wrong_coords'), 'Error');
     }
   }
 
@@ -644,7 +644,7 @@ export default class InfoCatastroControl extends M.Control {
       style = {
         radius: 5,
         icon: {
-          src: M.utils.concatUrlPaths([M.config.THEME_URL, '/img/marker.svg']),
+          src: IDEE.utils.concatUrlPaths([IDEE.config.THEME_URL, '/img/marker.svg']),
           scale: 1.4,
           fill: {
             color: '#71a7d3',
@@ -660,18 +660,18 @@ export default class InfoCatastroControl extends M.Control {
       style = {
         radius: 5,
         icon: {
-          src: M.utils.concatUrlPaths([M.config.THEME_URL, '/img/pinign.svg']),
+          src: IDEE.utils.concatUrlPaths([IDEE.config.THEME_URL, '/img/pinign.svg']),
         },
       };
     } else if (this.pointStyle === 'pinMorado') {
       style = {
         radius: 5,
         icon: {
-          src: M.utils.concatUrlPaths([M.config.THEME_URL, '/img/m-pin-24.svg']),
+          src: IDEE.utils.concatUrlPaths([IDEE.config.THEME_URL, '/img/m-pin-24.svg']),
         },
       };
     }
-    this.coordinatesLayer.setStyle(new M.style.Point(style));
+    this.coordinatesLayer.setStyle(new IDEE.style.Point(style));
     // Change zIndex value
     this.coordinatesLayer.setZIndex(999999999999999);
 
@@ -692,17 +692,17 @@ export default class InfoCatastroControl extends M.Control {
     this.inputRefCatastral = this.html_.querySelector('#m-infocatastro-coordinatesSystemRefCatastral>#m-refCatastral-input');
     let refcatastral = this.inputRefCatastral.value.trim();
     if ((evt.type !== 'keyup') || (evt.keyCode === 13)) {
-      if (M.utils.isNullOrEmpty(refcatastral)) {
-        M.dialog.info(getValue('exception.no_refcatastro'));
+      if (IDEE.utils.isNullOrEmpty(refcatastral)) {
+        IDEE.dialog.info(getValue('exception.no_refcatastro'));
       } else {
         refcatastral = refcatastral.substr(0, 14);
-        const searchUrl = M.utils.addParameters(this.CPMRC_url, {
+        const searchUrl = IDEE.utils.addParameters(this.CPMRC_url, {
           Provincia: '',
           Municipio: '',
           SRS: this.map.getProjection().code,
           RC: refcatastral,
         });
-        M.remote.get(searchUrl).then((response) => {
+        IDEE.remote.get(searchUrl).then((response) => {
           const success = this.acceptOVCSW(response);
           if (success) {
             const docs = this.parseCPMRCResults(response.xml);
@@ -783,7 +783,7 @@ export default class InfoCatastroControl extends M.Control {
                   <div class='ignsearchlocator-popup'><b>Lat:</b> ${featureCoordinates[1].toFixed(6)}</div>
                   `;
 
-    const myPopUp = new M.Popup({ panMapIfOutOfView: !e.fake });
+    const myPopUp = new IDEE.Popup({ panMapIfOutOfView: !e.fake });
     myPopUp.addTab(featureTabOpts);
     this.map.addPopup(myPopUp, [
       mapcoords[0],
@@ -816,7 +816,7 @@ export default class InfoCatastroControl extends M.Control {
     document.body.style.cursor = 'crosshair';
     this.clearResults(true, true);
 
-    this.map.on(M.evt.CLICK, this.buildUrl_, this);
+    this.map.on(IDEE.evt.CLICK, this.buildUrl_, this);
   }
 
   /**
@@ -833,7 +833,7 @@ export default class InfoCatastroControl extends M.Control {
     };
 
     const srs = this.map.getProjection().code;
-    M.remote.get(this.cadastreWMS, {
+    IDEE.remote.get(this.cadastreWMS, {
       SRS: srs,
       Coordenada_X: evt.coord[0],
       Coordenada_Y: evt.coord[1],
@@ -841,7 +841,7 @@ export default class InfoCatastroControl extends M.Control {
       this.showInfoFromURL_(res, evt.coord);
 
       // Se desactiva el evento del click una vez haya encontrado una catastro
-      this.map.un(M.evt.CLICK, this.buildUrl_, this);
+      this.map.un(IDEE.evt.CLICK, this.buildUrl_, this);
       document.body.style.cursor = '';
     }, options);
   }
@@ -870,7 +870,7 @@ export default class InfoCatastroControl extends M.Control {
 
       let popup = this.map.getPopup();
 
-      if (!M.utils.isNullOrEmpty(popup) && popup.getCoordinate()[0] === coordinates[0]
+      if (!IDEE.utils.isNullOrEmpty(popup) && popup.getCoordinate()[0] === coordinates[0]
         && popup.getCoordinate()[1] === coordinates[1]) {
         let hasExternalContent = false;
         popup.getTabs().forEach((t) => {
@@ -883,18 +883,18 @@ export default class InfoCatastroControl extends M.Control {
         if (hasExternalContent) {
           popup.addTab(tab);
         } else {
-          popup = new M.Popup();
+          popup = new IDEE.Popup();
           popup.addTab(tab);
           this.map.addPopup(popup, coordinates);
         }
       } else {
-        popup = new M.Popup();
+        popup = new IDEE.Popup();
         popup.addTab(tab);
         this.map.addPopup(popup, coordinates);
       }
     } else {
       this.map.removePopup();
-      M.dialog.error(getValue('exception.apiideerror'));
+      IDEE.dialog.error(getValue('exception.apiideerror'));
     }
   }
 
@@ -935,19 +935,19 @@ export default class InfoCatastroControl extends M.Control {
       link = `https://www1.sedecatastro.gob.es/CYCBienInmueble/OVCListaBienes.aspx?del==${codProv}&mun=${codMun}&rc1=${pc1Node}&rc2=${pc2Node}`;
     }
 
-    let formatedInfo = `${M.utils.beautifyAttribute(getValue('cadastral_information'))}
+    let formatedInfo = `${IDEE.utils.beautifyAttribute(getValue('cadastral_information'))}
     <div class='divinfo'>
     <table class='api-idee-table'>
     <tbody>
     <tr><td class='header' colspan='4'></td></tr>
-    <tr><td class='key'><b>${M.utils.beautifyAttribute(getValue('reference'))}</b></td><td class='value'></b>
+    <tr><td class='key'><b>${IDEE.utils.beautifyAttribute(getValue('reference'))}</b></td><td class='value'></b>
     <a href='${link}' target='_blank'>${valuePopup}</a></td></tr>
-    <tr><td class='key'><b>${M.utils.beautifyAttribute(getValue('description'))}</b></td>
+    <tr><td class='key'><b>${IDEE.utils.beautifyAttribute(getValue('description'))}</b></td>
     <td class='value'>${ldtNode}</td></tr>
     </tbody></table></div>`;
 
     if (valuePopup.toLowerCase().indexOf(getValue('noReference')) > -1) {
-      formatedInfo = `${M.utils.beautifyAttribute(getValue('cadastral_information'))}
+      formatedInfo = `${IDEE.utils.beautifyAttribute(getValue('cadastral_information'))}
       <div class='divinfo'>
       <table class='api-idee-table'>
       <tbody>
@@ -965,7 +965,7 @@ export default class InfoCatastroControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {

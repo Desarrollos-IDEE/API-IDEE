@@ -1,5 +1,5 @@
 /**
- * @module M/impl/control/ViewHistoryControl
+ * @module IDEE/impl/control/ViewHistoryControl
  */
 
 /**
@@ -21,7 +21,7 @@ class Properties {
     return equals;
   }
 }
-export default class ViewHistoryControl extends M.impl.Control {
+export default class ViewHistoryControl extends IDEE.impl.Control {
   constructor(map) {
     super();
 

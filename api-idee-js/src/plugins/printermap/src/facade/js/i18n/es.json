@@ -6,7 +6,7 @@
     "error": "Se ha producido un error en la impresión.",
     "imageError": "No ha podido realizarse la descarga en este momento. Por favor, inténtelo más tarde.",
     "error_layers": "Las siguientes capas no se visualizarán al imprimir el mapa: ",
-    "printermap_obsolete": "Mensaje para el desarrollador: M.plugin.printermap ha quedado obsoleto, utilice en su lugar M.plugin.PrintViewManagement"
+    "printermap_obsolete": "Mensaje para el desarrollador: IDEE.plugin.printermap ha quedado obsoleto, utilice en su lugar IDEE.plugin.PrintViewManagement"
   },
   "errorProjectionCapabilities": "La proyeccion seleccionada no está disponible para esta capa base. Por favor elija otra proyección.",
   "tooltip": "Impresión del mapa",

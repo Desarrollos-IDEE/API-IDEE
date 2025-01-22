@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/QueryAttributes
+ * @module IDEE/plugin/QueryAttributes
  */
 import 'assets/css/queryattributes';
 import 'assets/css/fonts';
@@ -11,14 +11,14 @@ import myhelp from '../../templates/myhelp';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class QueryAttributes extends M.Plugin {
+export default class QueryAttributes extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -27,14 +27,14 @@ export default class QueryAttributes extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -62,7 +62,7 @@ export default class QueryAttributes extends M.Plugin {
     this.collapsible_ = options.collapsible;
     if (this.collapsible_ === undefined) this.collapsible_ = true;
 
-    if (M.utils.isNullOrEmpty(options.configuration)) {
+    if (IDEE.utils.isNullOrEmpty(options.configuration)) {
       // eslint-disable-next-line no-console
       console.warn('options.configuration is null or undefined.');
     }
@@ -110,7 +110,7 @@ export default class QueryAttributes extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).queryattributes;
+    return IDEE.language.getTranslation(lang).queryattributes;
   }
 
   /**
@@ -118,16 +118,16 @@ export default class QueryAttributes extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
     this.map_ = map;
-    this.panel_ = new M.ui.Panel('panelQueryAttributes', {
+    this.panel_ = new IDEE.ui.Panel('panelQueryAttributes', {
       className: 'm-queryattributes',
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       collapsedButtonClass: 'icon-tabla',
       tooltip: this.tooltip_,
       refreshBBOXFilterOnPanning: this.refreshBBOXFilterOnPanning_,
@@ -237,7 +237,7 @@ export default class QueryAttributes extends M.Plugin {
    * @api
    */
   getAPIRestBase64() {
-    return `${this.name}=base64=${M.utils.encodeBase64(this.options)}`;
+    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   /**
@@ -259,9 +259,9 @@ export default class QueryAttributes extends M.Plugin {
     return {
       title: this.name,
       content: new Promise((success) => {
-        const html = M.template.compileSync(myhelp, {
+        const html = IDEE.template.compileSync(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}plugins/queryattributes/images/`,
+            urlImages: `${IDEE.config.API_IDEE_URL}plugins/queryattributes/images/`,
             translations: {
               help1: getValue('textHelp.help1'),
               help2: getValue('textHelp.help2'),

@@ -3,7 +3,7 @@
     "name": "buffer",
     "separator": "*"
   },
-  "constructor": "M.plugin.Buffer",
+  "constructor": "IDEE.plugin.Buffer",
   "parameters": [{
     "type": "object",
     "properties": [{

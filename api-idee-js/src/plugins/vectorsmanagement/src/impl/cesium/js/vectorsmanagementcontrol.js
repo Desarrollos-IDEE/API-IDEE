@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/VectorsManagementControl
+ * @module IDEE/impl/control/VectorsManagementControl
  */

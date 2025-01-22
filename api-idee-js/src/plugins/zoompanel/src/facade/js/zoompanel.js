@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/ZoomPanel
+ * @module IDEE/plugin/ZoomPanel
  */
 import 'assets/css/zoompanel';
 import ZoomPanelControl from './zoompanelcontrol';
@@ -9,14 +9,14 @@ import { getValue } from './i18n/language';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class ZoomPanel extends M.Plugin {
+export default class ZoomPanel extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -35,14 +35,14 @@ export default class ZoomPanel extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -104,7 +104,7 @@ export default class ZoomPanel extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).zoompanel;
+    return IDEE.language.getTranslation(lang).zoompanel;
   }
 
   /**
@@ -112,16 +112,16 @@ export default class ZoomPanel extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
     this.control_ = new ZoomPanelControl(this.options);
     this.facadeMap_ = map;
-    this.panel_ = new M.ui.Panel('zoompanel', {
+    this.panel_ = new IDEE.ui.Panel('zoompanel', {
       collapsible: this.collapsible,
       collapsed: this.collapsed,
-      position: M.ui.position[this.position],
+      position: IDEE.ui.position[this.position],
       collapsedButtonClass: 'icon-zoompanel',
       className: 'm-zoompanel',
       tooltip: this.tooltip_,

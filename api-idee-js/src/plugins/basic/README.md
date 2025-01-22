@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
 </p>
-<h1 align="center"><strong>API IDEE</strong> <small>🔌 M.plugin.Basic</small></h1>
+<h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.Basic</small></h1>
 
 # Descripción
 
@@ -105,7 +105,7 @@ https://componentes.cnig.es/api-idee/?basic=base64=eyJwb3NpdGlvbiI6IlRMIiwiZGVzY
 # Ejemplo de uso
 
 ```javascript
-const mp = new M.plugin.Basic({
+const mp = new IDEE.plugin.Basic({
   position: 'TR',
 });
 

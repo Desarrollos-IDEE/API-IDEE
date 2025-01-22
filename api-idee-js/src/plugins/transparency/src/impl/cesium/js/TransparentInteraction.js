@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/TransparentInteraction
+ * @module IDEE/impl/control/TransparentInteraction
  */

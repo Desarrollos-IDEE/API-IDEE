@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/PrinterMapControl
+ * @module IDEE/impl/control/PrinterMapControl
  */

@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /**
- * @module M/layer/WMS
+ * @module IDEE/layer/WMS
  */
 import WMSImpl from 'impl/layer/WMS';
 import {
@@ -29,7 +29,7 @@ import { getValue } from '../i18n/language';
  * @property {Boolean} useCapabilities Define si se utilizará el capabilities para generar la capa.
  * @property {Boolean} isbase Define si la capa es base.
  * @api
- * @extends {M.Layer}
+ * @extends {IDEE.Layer}
  */
 class WMS extends LayerBase {
   /**
@@ -169,7 +169,7 @@ class WMS extends LayerBase {
    *
    * @function
    * @getter
-   * @return {M.layer.WMS.impl.tiled} Valor de la tesela.
+   * @return {IDEE.layer.WMS.impl.tiled} Valor de la tesela.
    * @api
    */
   get tiled() {
@@ -181,7 +181,7 @@ class WMS extends LayerBase {
    *
    * @function
    * @setter
-   * @param {M.WMS.tiled} newTiled Nueva tesela.
+   * @param {IDEE.WMS.tiled} newTiled Nueva tesela.
    * @api
    */
   set tiled(newTiled) {
@@ -201,7 +201,7 @@ class WMS extends LayerBase {
    *
    * @function
    * @getter
-   * @return {M.layer.WMS.impl.version} Versión del servicio.
+   * @return {IDEE.layer.WMS.impl.version} Versión del servicio.
    * @api
    */
   get version() {
@@ -229,7 +229,7 @@ class WMS extends LayerBase {
    *
    * @function
    * @getter
-   * @return {M.layer.WMTS.options} Devuelve las opciones de la
+   * @return {IDEE.layer.WMTS.options} Devuelve las opciones de la
    * implementación.
    * @api
    */
@@ -254,7 +254,7 @@ class WMS extends LayerBase {
    *
    * @function
    * @param {Function} callbackFn
-   * @returns {M.WMS.maxExtent} Devuelve la extensión máxima.
+   * @returns {IDEE.WMS.maxExtent} Devuelve la extensión máxima.
    * @api
    */
   getMaxExtent(callbackFn) {
@@ -303,7 +303,7 @@ class WMS extends LayerBase {
    *
    * Versión asíncrona de getMaxExtent.
    * @function
-   * @returns {M.WMS.maxExtent} Devuelve el maxExtent.
+   * @returns {IDEE.WMS.maxExtent} Devuelve el maxExtent.
    * @api
    */
   calculateMaxExtent() {
@@ -315,7 +315,7 @@ class WMS extends LayerBase {
    *
    * Versión asíncrona de getMaxExtent.
    * @function
-   * @returns {M.WMS.maxExtent} Devuelve el maxExtent.
+   * @returns {IDEE.WMS.maxExtent} Devuelve el maxExtent.
    * @api
    */
   calculateMaxExtentWithCapabilities(capabilities) {
@@ -348,7 +348,7 @@ class WMS extends LayerBase {
    * para evitar solicitudes múltiples.
    *
    * @function
-   * @returns {M.WMS.capabilities} Devuelve el capabilities.
+   * @returns {IDEE.WMS.capabilities} Devuelve el capabilities.
    * @api
    */
   getCapabilities() {
@@ -362,7 +362,7 @@ class WMS extends LayerBase {
    * Devuelve las URL de "tileMappins" (url del contexto, de la configuración).
    *
    * @function
-   * @returns {M.config.tileMappgins.urls} Devuelve "noCacheURL".
+   * @returns {IDEE.config.tileMappgins.urls} Devuelve "noCacheURL".
    * @api
    */
   getNoCacheUrl() {
@@ -373,7 +373,7 @@ class WMS extends LayerBase {
    * Devuelve el nombre del "tileMappins" (nombres del contexto, de la configuración).
    *
    * @function
-   * @returns {M.config.tileMappgins.names} Devuelve "noCacheName".
+   * @returns {IDEE.config.tileMappgins.names} Devuelve "noCacheName".
    * @api
    */
   getNoCacheName() {
@@ -386,7 +386,7 @@ class WMS extends LayerBase {
    * @public
    * @function
    * @param {String|Mx.Projection} projection Proyección del mapa.
-   * @returns {M.WMS.impl.updateMinMaxResolution} Devuelve la resolucción
+   * @returns {IDEE.WMS.impl.updateMinMaxResolution} Devuelve la resolucción
    * máxima y mínima.
    * @api
    */
@@ -395,17 +395,17 @@ class WMS extends LayerBase {
   }
 
   /**
-   * Actualica los parámetros de NoCahe, "M.config.tileMappins".
+   * Actualica los parámetros de NoCahe, "IDEE.config.tileMappins".
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
    * @function
    * @api
    */
   _updateNoCache() {
-    const tiledIdx = M.config.tileMappgins.tiledNames.indexOf(this.name);
-    if ((tiledIdx !== -1) && sameUrl(M.config.tileMappgins.tiledUrls[tiledIdx], this.url)) {
-      this._noCacheUrl = M.config.tileMappgins.urls[tiledIdx];
-      this._noCacheName = M.config.tileMappgins.names[tiledIdx];
+    const tiledIdx = IDEE.config.tileMappgins.tiledNames.indexOf(this.name);
+    if ((tiledIdx !== -1) && sameUrl(IDEE.config.tileMappgins.tiledUrls[tiledIdx], this.url)) {
+      this._noCacheUrl = IDEE.config.tileMappgins.urls[tiledIdx];
+      this._noCacheName = IDEE.config.tileMappgins.names[tiledIdx];
     }
   }
 

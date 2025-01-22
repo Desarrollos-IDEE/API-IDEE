@@ -1,27 +1,27 @@
 /**
- * @module M/control/Topographicprofilecontrol
+ * @module IDEE/control/Topographicprofilecontrol
  */
 
 import TopographicprofileImplControl from 'impl/topographicprofilecontrol';
 import template from 'templates/perfiltopografico';
 import { getValue } from './i18n/language';
 
-export default class TopographicprofileControl extends M.Control {
+export default class TopographicprofileControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(opts) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(TopographicprofileImplControl)
-      || (M.utils.isObject(TopographicprofileImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(TopographicprofileImplControl)))) {
-      M.exception('La implementación usada no puede crear controles TopographicprofileControl');
+    if (IDEE.utils.isUndefined(TopographicprofileImplControl)
+      || (IDEE.utils.isObject(TopographicprofileImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(TopographicprofileImplControl)))) {
+      IDEE.exception('La implementación usada no puede crear controles TopographicprofileControl');
     }
     // 2. implementation of this control
     const impl = new TopographicprofileImplControl(opts);
@@ -33,25 +33,25 @@ export default class TopographicprofileControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
     // eslint-disable-next-line
     console.warn(getValue('exception.obsolete'));
-    if (!M.template.compileSync) { // JGL: retrocompatibilidad API IDEE
-      M.template.compileSync = (string, options) => {
+    if (!IDEE.template.compileSync) { // JGL: retrocompatibilidad API IDEE
+      IDEE.template.compileSync = (string, options) => {
         let templateCompiled;
         let templateVars = {};
         let parseToHtml;
-        if (!M.utils.isUndefined(options)) {
-          templateVars = M.utils.extends(templateVars, options.vars);
+        if (!IDEE.utils.isUndefined(options)) {
+          templateVars = IDEE.utils.extends(templateVars, options.vars);
           parseToHtml = options.parseToHtml;
         }
         const templateFn = Handlebars.compile(string);
         const htmlText = templateFn(templateVars);
         if (parseToHtml !== false) {
-          templateCompiled = M.utils.stringToHtml(htmlText);
+          templateCompiled = IDEE.utils.stringToHtml(htmlText);
         } else {
           templateCompiled = htmlText;
         }
@@ -61,7 +61,7 @@ export default class TopographicprofileControl extends M.Control {
     this.facadeMap_ = map;
 
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template);
+      const html = IDEE.template.compileSync(template);
       // Añadir código dependiente del DOM
       this.template_ = html;
       html.querySelector('#m-topographicprofile-btn').title = getValue('title');
@@ -97,7 +97,7 @@ export default class TopographicprofileControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

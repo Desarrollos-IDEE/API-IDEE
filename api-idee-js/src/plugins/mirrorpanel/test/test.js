@@ -1,8 +1,8 @@
 /* eslint-disable max-len */
 import Mirrorpanel from 'facade/mirrorpanel'; // Importación del plugin que desarrollamos para trabajar
 
-M.language.setLang('es'); // Español
-// M.language.setLang('en');// Inglés
+IDEE.language.setLang('es'); // Español
+// IDEE.language.setLang('en');// Inglés
 
 /**
  * Definimos las capas con notación API-REST
@@ -14,7 +14,7 @@ const capasPNOA = [
   'WMS*PNOA 2018*https://www.ign.es/wms/pnoa-historico*PNOA2018',
 ];
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   center: {
     x: -667143.31,
@@ -29,7 +29,7 @@ const map = M.map({
  * Añadimos un FullTOC para gestionar las capas Overlay
  */
 
-const mpFullTOC = new M.plugin.FullTOC({
+const mpFullTOC = new IDEE.plugin.FullTOC({
   position: 'TR',
   collapsed: true,
   http: true,
@@ -85,7 +85,7 @@ const backImgLayerParams = {
       id: 'mapa',
       preview: 'http://componentes.ign.es/api-idee/plugins/backimglayer/images/svqmapa.png',
       title: 'Mapa',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'http://www.ign.es/wmts/ign-base?',
         name: 'IGNBaseTodo',
         legend: 'Mapa IGN',
@@ -101,7 +101,7 @@ const backImgLayerParams = {
       id: 'imagen',
       title: 'Imagen',
       preview: 'http://componentes.ign.es/api-idee/plugins/backimglayer/images/svqimagen.png',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'http://www.ign.es/wmts/pnoa-ma?',
         name: 'OI.OrthoimageCoverage',
         legend: 'Imagen (PNOA)',
@@ -117,7 +117,7 @@ const backImgLayerParams = {
       id: 'lidar',
       preview: 'http://componentes.ign.es/api-idee/plugins/backimglayer/images/svqlidar.png',
       title: 'LIDAR',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'https://wmts-mapa-lidar.idee.es/lidar?',
         name: 'EL.GridCoverageDSM',
         legend: 'Modelo Digital de Superficies LiDAR',
@@ -133,7 +133,7 @@ const backImgLayerParams = {
       id: 'hibrido',
       title: 'Híbrido',
       preview: 'http://componentes.ign.es/api-idee/plugins/backimglayer/images/svqhibrid.png',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'http://www.ign.es/wmts/pnoa-ma?',
         name: 'OI.OrthoimageCoverage',
         legend: 'Imagen (PNOA)',
@@ -144,7 +144,7 @@ const backImgLayerParams = {
         visible: true,
         format: 'image/png',
       }),
-      new M.layer.WMTS({
+      new IDEE.layer.WMTS({
         url: 'http://www.ign.es/wmts/ign-base?',
         name: 'IGNBaseOrto',
         matrixSet: 'GoogleMapsCompatible',
@@ -159,7 +159,7 @@ const backImgLayerParams = {
     },
   ],
 };
-const mpBIL = new M.plugin.BackImgLayer(backImgLayerParams);
+const mpBIL = new IDEE.plugin.BackImgLayer(backImgLayerParams);
 map.addPlugin(mpBIL);
 
 const mpMirrorPanel = new Mirrorpanel({
@@ -167,7 +167,7 @@ const mpMirrorPanel = new Mirrorpanel({
   collapsible: true, // El botón para desplegar/replegar el plugin no aparece (false) o sí aparece(true)
   collapsed: false, // El panel del plugin se muestra desplegado (false) o replegado (true)
   modeViz: 0,
-  enabledPlugins: true, // Si el mapa principal tiene los controles M.plugin.BackImgLayer y M.plugin.FullTOC, se importan en mapas espejo
+  enabledPlugins: true, // Si el mapa principal tiene los controles IDEE.plugin.BackImgLayer y IDEE.plugin.FullTOC, se importan en mapas espejo
   mirrorLayers: capasPNOA, // Array de capas para los mapas espejo en formato StringAPICNIG
   enabledKeyFunctions: true, // Están habilitadas los comandos por teclado
   showCursors: true, // Se muestran los cursores

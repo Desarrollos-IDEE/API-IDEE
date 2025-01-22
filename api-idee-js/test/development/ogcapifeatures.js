@@ -1,9 +1,9 @@
-import { map as Mmap } from 'M/api-idee';
-import OGCAPIFeatures from 'M/layer/OGCAPIFeatures';
-import WFS from 'M/layer/WFS';
-import Line from 'M/style/Line';
-import * as Filter from 'M/filter/Filter';
-import { ADDED_LAYER, ADDED_OGCAPIFEATURES } from 'M/event/eventtype';
+import { map as Mmap } from 'IDEE/api-idee';
+import OGCAPIFeatures from 'IDEE/layer/OGCAPIFeatures';
+import WFS from 'IDEE/layer/WFS';
+import Line from 'IDEE/style/Line';
+import * as Filter from 'IDEE/filter/Filter';
+import { ADDED_LAYER, ADDED_OGCAPIFEATURES } from 'IDEE/event/eventtype';
 
 
 const mapa = Mmap({

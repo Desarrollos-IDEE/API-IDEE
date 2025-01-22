@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/Attributions
+ * @module IDEE/plugin/Attributions
  */
 import '../assets/css/attributions';
 import AttributionsImpl from 'impl/attributions';
@@ -33,26 +33,26 @@ const MODES = {
  * @param {object}
  * @classdesc
  */
-export default class Attributions extends M.Plugin {
+export default class Attributions extends IDEE.Plugin {
   /**
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {AttributionsOptions} options
    * @api
    */
   constructor(options = {}) {
     super();
 
-    if (options.mode === MODES.mapAttributions && !M.utils.isNullOrEmpty(options.url)) {
-      if (M.utils.isNullOrEmpty(options.type)) {
+    if (options.mode === MODES.mapAttributions && !IDEE.utils.isNullOrEmpty(options.url)) {
+      if (IDEE.utils.isNullOrEmpty(options.type)) {
         // throw new Error(getValue('exception.type'));
         // eslint-disable-next-line no-console
         console.warn(getValue('exception.type'));
       }
     }
 
-    if (options.mode === MODES.mapAttributions && !M.utils.isNullOrEmpty(options.layerName)) {
-      if (M.utils.isNullOrEmpty(options.type)) {
+    if (options.mode === MODES.mapAttributions && !IDEE.utils.isNullOrEmpty(options.layerName)) {
+      if (IDEE.utils.isNullOrEmpty(options.type)) {
         // throw new Error(getValue('exception.layerName'));
         // eslint-disable-next-line no-console
         console.warn(getValue('exception.layerName'));
@@ -63,7 +63,7 @@ export default class Attributions extends M.Plugin {
      * Facade of the map
      *
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
@@ -71,7 +71,7 @@ export default class Attributions extends M.Plugin {
      * Array of controls
      *
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -110,7 +110,7 @@ export default class Attributions extends M.Plugin {
      * Layer of api-idee with attributions
      *
      * @private
-     * @type {M.layer.GeoJSON | M.layer.KML}
+     * @type {IDEE.layer.GeoJSON | IDEE.layer.KML}
      */
     this.layer_ = options.layer;
 
@@ -219,7 +219,7 @@ export default class Attributions extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).attributions;
+    return IDEE.language.getTranslation(lang).attributions;
   }
 
   /**
@@ -227,22 +227,23 @@ export default class Attributions extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
     this.map_ = map;
-    if (M.utils.isUndefined(AttributionsImpl) || (M.utils.isObject(AttributionsImpl)
-      && M.utils.isNullOrEmpty(Object.keys(AttributionsImpl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(AttributionsImpl)
+      || (IDEE.utils.isObject(AttributionsImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(AttributionsImpl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
     this.impl_ = new AttributionsImpl(map);
     this.control_ = new AttributionsControl(this.position_, this.closePanel);
     this.controls_.push(this.control_);
 
-    this.panel_ = new M.ui.Panel('Attributions', {
+    this.panel_ = new IDEE.ui.Panel('Attributions', {
       collapsible: window.innerWidth < 769,
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       className: 'm-panel-attributions',
       collapsedButtonClass: 'g-cartografia-info',
       tooltip: this.tooltip_,
@@ -277,18 +278,18 @@ export default class Attributions extends M.Plugin {
    */
   initMode() {
     if (this.mode_ === MODES.mapAttributions) {
-      if (!(this.layer_ instanceof M.layer.Vector)) {
+      if (!(this.layer_ instanceof IDEE.layer.Vector)) {
         const optionsLayer = {
           name: this.layerName_,
           url: this.url_,
         };
 
         if (this.type_ === 'geojson') {
-          this.layer_ = new M.layer.GeoJSON(optionsLayer, { displayInLayerSwitcher: false });
+          this.layer_ = new IDEE.layer.GeoJSON(optionsLayer, { displayInLayerSwitcher: false });
         } else if (this.type_ === 'kml') {
-          this.layer_ = new M.layer.KML(optionsLayer, { displayInLayerSwitcher: false });
+          this.layer_ = new IDEE.layer.KML(optionsLayer, { displayInLayerSwitcher: false });
         } else if (this.type === 'topojson') {
-          // TODO: Implement in api-idee M.layer.TopoJSON
+          // TODO: Implement in api-idee IDEE.layer.TopoJSON
         }
       }
 
@@ -400,7 +401,7 @@ export default class Attributions extends M.Plugin {
    * @public
    */
   clearContent() {
-    if (!M.utils.isNullOrEmpty(this.control_)) {
+    if (!IDEE.utils.isNullOrEmpty(this.control_)) {
       const html = this.control_.getElement();
       html.querySelectorAll('div').forEach((child) => html.removeChild(child));
     }
@@ -463,7 +464,7 @@ export default class Attributions extends M.Plugin {
    */
   updateBBoxFeature() {
     const { x, y } = this.map_.getBbox();
-    this.bboxFeature_ = new M.Feature('bbox_feature', {
+    this.bboxFeature_ = new IDEE.Feature('bbox_feature', {
       type: 'Feature',
       properties: {},
       geometry: {
@@ -652,6 +653,6 @@ export default class Attributions extends M.Plugin {
    * @api
    */
   getAPIRestBase64() {
-    return `${this.name}=base64=${M.utils.encodeBase64(this.options)}`;
+    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 }

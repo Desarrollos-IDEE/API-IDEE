@@ -1,14 +1,14 @@
 /**
- * @module M/impl/utils
+ * @module IDEE/impl/utils
  */
-import Feature from 'M/feature/Feature';
+import Feature from 'IDEE/feature/Feature';
 import {
   isNullOrEmpty,
   isUndefined,
   isString,
   isArray,
   generateRandom,
-} from 'M/util/Utils';
+} from 'IDEE/util/Utils';
 import {
   Cartographic,
   PolygonGraphics,
@@ -594,7 +594,7 @@ class Utils {
    * Este método convierte coordenadas a píxeles.
    *
    * @function
-   * @param {M.impl.Map} map - Mapa
+   * @param {IDEE.impl.Map} map - Mapa
    * @param {Array<Number>} coord - Coordenadas
    * @public
    * @api
@@ -618,7 +618,7 @@ class Utils {
    * Este método convierte píxeles a coordenadas.
    *
    * @function
-   * @param {M.impl.Map} map - Mapa
+   * @param {IDEE.impl.Map} map - Mapa
    * @param {Array<Number>} pixel - Pixe
    * @public
    * @api

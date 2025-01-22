@@ -3,7 +3,7 @@
     "name": "incicarto",
     "separator": "*"
   },
-  "constructor": "M.plugin.Incicarto",
+  "constructor": "IDEE.plugin.Incicarto",
   "parameters": [{
     "type": "object",
     "properties": [{

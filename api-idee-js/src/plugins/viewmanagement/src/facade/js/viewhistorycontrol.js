@@ -1,24 +1,24 @@
 /**
- * @module M/control/ViewHistoryControl
+ * @module IDEE/control/ViewHistoryControl
  */
 
 import template from 'templates/viewhistory';
 import ViewHistoryImpl from 'impl/viewhistorycontrol';
 import { getValue } from './i18n/language';
 
-export default class ViewHistoryControl extends M.Control {
+export default class ViewHistoryControl extends IDEE.Control {
   /**
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor(map) {
-    if (M.utils.isUndefined(ViewHistoryImpl) || (M.utils.isObject(ViewHistoryImpl)
-      && M.utils.isNullOrEmpty(Object.keys(ViewHistoryImpl)))) {
-      M.exception(getValue('exception.impl_viewhistory'));
+    if (IDEE.utils.isUndefined(ViewHistoryImpl) || (IDEE.utils.isObject(ViewHistoryImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(ViewHistoryImpl)))) {
+      IDEE.exception(getValue('exception.impl_viewhistory'));
     }
     const impl = new ViewHistoryImpl(map);
     super(impl, 'ViewHistoryImpl');
@@ -49,7 +49,7 @@ export default class ViewHistoryControl extends M.Control {
     this.deactive(html);
     if (!viewhistoryactive) {
       html.querySelector('#m-viewmanagement-viewhistory').classList.add('activated');
-      const panel = M.template.compileSync(template, {
+      const panel = IDEE.template.compileSync(template, {
         vars: {
           translations: {
             previousView: getValue('previousView'),
@@ -116,7 +116,7 @@ export default class ViewHistoryControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {

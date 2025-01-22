@@ -1,10 +1,10 @@
-import { map as Mmap } from 'M/api-idee';
-import WFS from 'M/layer/WFS';
-import Polygon from 'M/style/Polygon';
-import Point from 'M/style/Point';
-import Cluster from 'M/style/Cluster';
-import Clustered from 'M/feature/Clustered';
-import { SELECT_FEATURES as SelectFeaturesEvt, LOAD as LoadEvt } from 'M/event/eventtype';
+import { map as Mmap } from 'IDEE/api-idee';
+import WFS from 'IDEE/layer/WFS';
+import Polygon from 'IDEE/style/Polygon';
+import Point from 'IDEE/style/Point';
+import Cluster from 'IDEE/style/Cluster';
+import Clustered from 'IDEE/feature/Clustered';
+import { SELECT_FEATURES as SelectFeaturesEvt, LOAD as LoadEvt } from 'IDEE/event/eventtype';
 
 const mapjs = Mmap({
   container: 'map',

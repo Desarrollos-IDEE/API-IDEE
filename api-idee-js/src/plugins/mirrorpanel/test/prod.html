@@ -27,7 +27,7 @@
     <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/configuration.js"></script>
     <script type="text/javascript" src="../dist/mirrorpanel.ol.min.js"></script>
     <script>
-        const map = M.map({
+        const map = IDEE.map({
             container: 'mapjs',
             center: {
                 x: -667143.31,
@@ -37,7 +37,7 @@
             zoom: 15,
         });
 
-        const mpMirrorPanel = new M.plugin.Mirrorpanel();
+        const mpMirrorPanel = new IDEE.plugin.Mirrorpanel();
         map.addPlugin(mpMirrorPanel);
     </script>
 </body>

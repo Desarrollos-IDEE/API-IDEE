@@ -1,7 +1,7 @@
-import { map as Mmap } from 'M/api-idee';
-import GeoJSON from 'M/layer/GeoJSON';
-import StylePoint from 'M/style/Point';
-import StylePolygon from 'M/style/Polygon';
+import { map as Mmap } from 'IDEE/api-idee';
+import GeoJSON from 'IDEE/layer/GeoJSON';
+import StylePoint from 'IDEE/style/Point';
+import StylePolygon from 'IDEE/style/Polygon';
 
 window.StylePoint = StylePoint;
 window.StylePolygon = StylePolygon;

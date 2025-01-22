@@ -1,3 +1,3 @@
 /**
- * @module M/impl/layer/MapLibre
+ * @module IDEE/impl/layer/MapLibre
  */

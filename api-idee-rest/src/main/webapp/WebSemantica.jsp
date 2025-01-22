@@ -67,7 +67,7 @@
       }
    %>
     <script type="text/javascript">
-        const map = M.map({
+        const map = IDEE.map({
             container: 'mapjs',
             controls: ['scale*true'],
             zoom: 6,
@@ -79,14 +79,14 @@
         });
 
 
-        const mp = new M.plugin.Attributions({
+        const mp = new IDEE.plugin.Attributions({
             mode: 1,
             scale: 10000,
             defaultAttribution: 'Instituto Geográfico Nacional',
             defaultURL: 'https://www.ign.es/',
         })
 
-        const mp2 = new M.plugin.MouseSRS({
+        const mp2 = new IDEE.plugin.MouseSRS({
             projection: 'EPSG:4326',
             label: 'WGS84',
         });

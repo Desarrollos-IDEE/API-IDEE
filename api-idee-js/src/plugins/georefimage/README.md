@@ -1,4 +1,4 @@
-# M.plugin.Georefimage
+# IDEE.plugin.Georefimage
 
 
 Plugin que permite la descarga de la imagen georeferenciada que se muestra en pantalla.
@@ -49,19 +49,19 @@ El constructor se inicializa con un JSON de options con los siguientes atributos
 
 ## Configuración por defecto sin parámetros:
 ```javascript
-mapajs = M.map({
+mapajs = IDEE.map({
   container: "map"
 });
 
-mapajs.addPlugin(new M.plugin.Georefimage());
+mapajs.addPlugin(new IDEE.plugin.Georefimage());
 ```
 ## Configuración con parámetros:
 ```javascript
-mapajs = M.map({
+mapajs = IDEE.map({
   container: "map"
 });
 
-mapajs.addPlugin(new M.plugin.Georefimage({
+mapajs.addPlugin(new IDEE.plugin.Georefimage({
   position: 'TR',
   collapsed: false,
   collapsible: false,

@@ -1,6 +1,6 @@
 /**
- * @module M/impl/control/ZoomPanelControl
+ * @module IDEE/impl/control/ZoomPanelControl
  */
 
-export default class ZoomPanelControl extends M.impl.Control {
+export default class ZoomPanelControl extends IDEE.impl.Control {
 }

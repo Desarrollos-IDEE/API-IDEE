@@ -17,7 +17,7 @@ export class SimpleBinding extends Binding {
   /**
    * This function sets the layer of a binding class.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   setLayer(layer, refresh = true) {
@@ -78,7 +78,7 @@ export class SimpleBinding extends Binding {
   infoListener() {
     const infoButton = this.querySelector('[data-info]');
     infoButton.addEventListener('click', () => {
-      M.dialog.info(getValue('infoURL'), getValue('info'));
+      IDEE.dialog.info(getValue('infoURL'), getValue('info'));
     });
   }
 
@@ -138,7 +138,7 @@ export class SimpleBinding extends Binding {
       document.querySelector(`.style-grid-item${fam === 'fa' ? '.fa' : ''}.${fmSIcon}`).classList.add('selected');
     }
 
-    if (style != null && !(style instanceof M.style.FlowLine)) {
+    if (style != null && !(style instanceof IDEE.style.FlowLine)) {
       const options = style.getOptions();
       if (options['point']['fill'] != null || options['line']['fill'] != null || options['polygon']['fill'] != null) {
         const valuesFillPoint = Object
@@ -277,7 +277,7 @@ export class SimpleBinding extends Binding {
   /**
    * This function sets the layer of a binding class.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   toggleCheckOptionSection(option) {
@@ -308,7 +308,7 @@ export class SimpleBinding extends Binding {
   /**
    * This function sets the layer of a binding class.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   activateOptionSection(option) {
@@ -321,7 +321,7 @@ export class SimpleBinding extends Binding {
   /**
    * This function sets the layer of a binding class.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   activateOption(option) {
@@ -336,7 +336,7 @@ export class SimpleBinding extends Binding {
   /**
    * This function sets the layer of a binding class.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   activateLabel(label) {
@@ -351,7 +351,7 @@ export class SimpleBinding extends Binding {
   /**
    * This function sets the layer of a binding class.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   displaySectionOption(option) {
@@ -482,7 +482,7 @@ export class SimpleBinding extends Binding {
    * @function
    */
   processOptions(styleOpts) {
-    const styleOptsClone = M.utils.extends({}, styleOpts);
+    const styleOptsClone = IDEE.utils.extends({}, styleOpts);
     const checkedFill = this.isChecked('fill');
     const checkedStroke = this.isChecked('stroke');
     const checkedLabel = this.isChecked('label');
@@ -541,12 +541,12 @@ export class SimpleBinding extends Binding {
 
   /**
    * This function generates the style simple.
-   * @return {M.style.Simple}
+   * @return {IDEE.style.Simple}
    */
   generateStyle() {
     // let geometry = this.getGeometry();
     const styleOptions = this.generateOptions();
-    return new M.style.Generic(styleOptions);
+    return new IDEE.style.Generic(styleOptions);
   }
 
   /**
@@ -602,8 +602,8 @@ export class SimpleBinding extends Binding {
   getOptionsTemplate() {
     let options = SimpleBinding.DEFAULT_OPTIONS_STYLE;
     if (this.style_ != null) {
-      options = M.utils.extends({}, this.style_.getOptions());
-      options = M.utils.extends(options, SimpleBinding.DEFAULT_OPTIONS_STYLE);
+      options = IDEE.utils.extends({}, this.style_.getOptions());
+      options = IDEE.utils.extends(options, SimpleBinding.DEFAULT_OPTIONS_STYLE);
 
       if (this.style_.get('polygon.fill.pattern') != null) {
         options['polygon']['patternfflag'] = true;
@@ -635,10 +635,10 @@ export class SimpleBinding extends Binding {
     options['line']['fill']['pattern']['color'] = chroma(options['polygon']['fill']['pattern']['color']).hex();
     // --
 
-    const patternValids = Object.keys(M.style.pattern).filter((name) => name !== 'ICON' && name !== 'IMAGE');
-    const alignValues = Object.values(M.style.align);
-    const baselineValues = Object.values(M.style.baseline);
-    const formValues = Object.values(M.style.form).filter((name) => name != null);
+    const patternValids = Object.keys(IDEE.style.pattern).filter((name) => name !== 'ICON' && name !== 'IMAGE');
+    const alignValues = Object.values(IDEE.style.align);
+    const baselineValues = Object.values(IDEE.style.baseline);
+    const formValues = Object.values(IDEE.style.form).filter((name) => name != null);
     const linejoins = [getValue('bevel'), getValue('miter'), getValue('rounded')];
     const linecapstrokes = [getValue('rounded'), getValue('extreme'), getValue('square')];
     const alings = [getValue('center'), getValue('justified'), getValue('left'), getValue('right')];
@@ -736,7 +736,7 @@ export class SimpleBinding extends Binding {
     }
     if (style != null) {
       style = style.clone();
-      if (style instanceof M.style.Point) {
+      if (style instanceof IDEE.style.Point) {
         style.set('radius', SimpleBinding.RADIUS_OPTION);
         if (style.get('icon.radius') != null) {
           style.set('icon.radius', SimpleBinding.ICON_RADIUS_OPTION);
@@ -903,9 +903,9 @@ export class SimpleBinding extends Binding {
       },
     };
     return {
-      'point': M.utils.extends({}, def),
-      'line': M.utils.extends({}, def),
-      'polygon': M.utils.extends({}, def),
+      'point': IDEE.utils.extends({}, def),
+      'line': IDEE.utils.extends({}, def),
+      'polygon': IDEE.utils.extends({}, def),
     };
   }
 }

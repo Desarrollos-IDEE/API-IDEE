@@ -1,25 +1,25 @@
 /**
- * @module M/control/ViewShedControl
+ * @module IDEE/control/ViewShedControl
  */
 
 import ViewShedImplControl from 'impl/viewshedcontrol';
 import template from 'templates/viewshed';
 import { getValue } from './i18n/language';
 
-export default class ViewShedControl extends M.Control {
+export default class ViewShedControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(parameters) {
-    if (M.utils.isUndefined(ViewShedImplControl) || (M.utils.isObject(ViewShedImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(ViewShedImplControl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(ViewShedImplControl) || (IDEE.utils.isObject(ViewShedImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(ViewShedImplControl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
     const impl = new ViewShedImplControl();
     super(impl, 'ViewShed');
@@ -47,13 +47,13 @@ export default class ViewShedControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
     this.facadeMap_ = map;
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           translations: {
             tooltip: getValue('tooltip'),
@@ -80,7 +80,7 @@ export default class ViewShedControl extends M.Control {
     if (this.activated) {
       this.deactivate();
     } else {
-      this.facadeMap_.on(M.evt.CLICK, this.analizeVisibility, this);
+      this.facadeMap_.on(IDEE.evt.CLICK, this.analizeVisibility, this);
       this.activated = true;
       this.element_.querySelector('#m-viewshed-calculate-btn').classList.add('activated');
       document.addEventListener('keydown', this.checkEscKey.bind(this));
@@ -103,7 +103,7 @@ export default class ViewShedControl extends M.Control {
    */
   deactivate() {
     this.facadeMap_.removePopup();
-    this.facadeMap_.un(M.evt.CLICK, this.analizeVisibility, this);
+    this.facadeMap_.un(IDEE.evt.CLICK, this.analizeVisibility, this);
     this.activated = false;
     this.element_.querySelector('#m-viewshed-calculate-btn').classList.remove('activated');
   }
@@ -123,32 +123,32 @@ export default class ViewShedControl extends M.Control {
     this.facadeMap_.removeLayers(remove);
     const coord = this.getImpl().transformCoordinates(evt.coord, 'EPSG:4326');
     const config = `<div class="m-viewshed-message">${getValue('calculating')}...<br/><br/><p class="m-viewshed-loading"><span class="icon-spinner" /></p></div>`;
-    M.dialog.info(config);
+    IDEE.dialog.info(config);
     setTimeout(() => {
       document.querySelector('div.m-api-idee-container div.m-dialog div.m-title').style.backgroundColor = '#71a7d3';
       const button = document.querySelector('div.m-dialog.info div.m-button > button');
       button.remove();
     }, 10);
 
-    M.remote.get(`${this.url_}/api/operations/checkCoordinates?x=${coord[0]}&y=${coord[1]}`).then((response) => {
+    IDEE.remote.get(`${this.url_}/api/operations/checkCoordinates?x=${coord[0]}&y=${coord[1]}`).then((response) => {
       const res = JSON.parse(response.text);
       if (res.valid === true) {
         const url = `${this.url_}/api/operations/viewshed?x=${coord[0]}&y=${coord[1]}&distance=0.1`;
-        M.remote.get(url).then((response2) => {
+        IDEE.remote.get(url).then((response2) => {
           document.querySelector('div.m-api-idee-container div.m-dialog').remove();
           const features = this.getImpl().loadGeoJSONLayer(response2.text, evt.coord);
           this.getImpl().centerFeatures(features);
         }).catch((err) => {
           document.querySelector('div.m-api-idee-container div.m-dialog').remove();
-          M.dialog.error(getValue('error_query'));
+          IDEE.dialog.error(getValue('error_query'));
         });
       } else {
         document.querySelector('div.m-api-idee-container div.m-dialog').remove();
-        M.dialog.error(getValue('outbox'), getValue('warning'));
+        IDEE.dialog.error(getValue('outbox'), getValue('warning'));
       }
     }).catch((err) => {
       document.querySelector('div.m-api-idee-container div.m-dialog').remove();
-      M.dialog.error(getValue('error_query'));
+      IDEE.dialog.error(getValue('error_query'));
     });
   }
 
@@ -173,7 +173,7 @@ export default class ViewShedControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {

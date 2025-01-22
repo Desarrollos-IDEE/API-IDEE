@@ -1,5 +1,5 @@
 /**
- * @module M/style/Point
+ * @module IDEE/style/Point
  */
 import StylePointImpl from 'impl/style/Point';
 import Simple from './Simple';
@@ -11,7 +11,7 @@ import {
  * @classdesc
  * Crea un punto de estilo.
  * @api
- * @extends {M.style.Simple}
+ * @extends {IDEE.style.Simple}
  */
 class Point extends Simple {
   /**
@@ -57,22 +57,22 @@ class Point extends Simple {
   }
 
   /**
-   * Deserializa el método M.style.Simple.deserialize.
+   * Deserializa el método IDEE.style.Simple.deserialize.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function
    * @public
-   * @return {Function} Devuelve la función M.style.Simple.deserialize.
+   * @return {Function} Devuelve la función IDEE.style.Simple.deserialize.
    * @api
    */
   getDeserializedMethod_() {
-    return "((serializedParameters) => M.style.Simple.deserialize(serializedParameters, 'M.style.Point'))";
+    return "((serializedParameters) => IDEE.style.Simple.deserialize(serializedParameters, 'IDEE.style.Point'))";
   }
 
   /**
    * Este método clona el estilo.
    *
    * @public
-   * @return {M.style.Point} Devuelve un "new Point".
+   * @return {IDEE.style.Point} Devuelve un "new Point".
    * @function
    * @api
    */

@@ -186,9 +186,9 @@
    %>
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
-        M.language.setLang(urlParams.get('language') || 'es');
+        IDEE.language.setLang(urlParams.get('language') || 'es');
 
-        const map = M.map({
+        const map = IDEE.map({
             container: 'mapjs',
             zoom: 5,
             maxZoom: 20,
@@ -199,46 +199,46 @@
 
         let mp = null;
 
-        let mp2 = new M.plugin.ShareMap({
+        let mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
             position: "TR",
         });
         map.addPlugin(mp2);
 
-        let mp3 = new M.plugin.BackImgLayer({});
+        let mp3 = new IDEE.plugin.BackImgLayer({});
         map.addPlugin(mp3);
 
-        let mp4 = new M.plugin.MeasureBar({});
+        let mp4 = new IDEE.plugin.MeasureBar({});
         map.addPlugin(mp4);
 
-        let mp5 = new M.plugin.Information({});
+        let mp5 = new IDEE.plugin.Information({});
         map.addPlugin(mp5);
 
-        let mp6 = new M.plugin.Infocoordinates({});
+        let mp6 = new IDEE.plugin.Infocoordinates({});
         map.addPlugin(mp6);
 
-        let mp7 = new M.plugin.MouseSRS({});
+        let mp7 = new IDEE.plugin.MouseSRS({});
         map.addPlugin(mp7);
 
-        let mp8 = new M.plugin.OverviewMap({});
+        let mp8 = new IDEE.plugin.OverviewMap({});
         map.addPlugin(mp8);
 
-        let mp9 = new M.plugin.ContactLink({});
+        let mp9 = new IDEE.plugin.ContactLink({});
         map.addPlugin(mp9);
 
-        let mp10 = new M.plugin.SelectionZoom({});
+        let mp10 = new IDEE.plugin.SelectionZoom({});
         map.addPlugin(mp10);
 
-        let mp11 = new M.plugin.Modal({});
+        let mp11 = new IDEE.plugin.Modal({});
         map.addPlugin(mp11);
 
-        let mp12 = new M.plugin.Rescale({});
+        let mp12 = new IDEE.plugin.Rescale({});
         map.addPlugin(mp12);
 
-        let mp13 = new M.plugin.Comparators({});
+        let mp13 = new IDEE.plugin.Comparators({});
         map.addPlugin(mp13);
 
-        let mp14 = new M.plugin.StoryMap({
+        let mp14 = new IDEE.plugin.StoryMap({
             collapsed: true,
             collapsible: true,
             position: 'TR',
@@ -325,19 +325,19 @@
         });
         map.addPlugin(mp14);
 
-        let mp15 = new M.plugin.Locator({});
+        let mp15 = new IDEE.plugin.Locator({});
         map.addPlugin(mp15);
 
-        let mp16 = new M.plugin.Layerswitcher({});
+        let mp16 = new IDEE.plugin.Layerswitcher({});
         map.addPlugin(mp16);
 
-        let mp17 = new M.plugin.StyleManager({});
+        let mp17 = new IDEE.plugin.StyleManager({});
         map.addPlugin(mp17);
 
-        let mp18 = new M.plugin.Incicarto({});
+        let mp18 = new IDEE.plugin.Incicarto({});
         map.addPlugin(mp18);
 
-        let mp19 = new M.plugin.Timeline({
+        let mp19 = new IDEE.plugin.Timeline({
             position: 'TR',
             timelineType: 'absolute',
             intervals : [
@@ -358,13 +358,13 @@
         });
         map.addPlugin(mp19);
 
-        let mp20 = new M.plugin.QueryAttributes({});
+        let mp20 = new IDEE.plugin.QueryAttributes({});
         map.addPlugin(mp20);
 
-        let mp21 = new M.plugin.ViewManagement({});
+        let mp21 = new IDEE.plugin.ViewManagement({});
         map.addPlugin(mp21);
 
-        let mp22 = new M.plugin.PrintViewManagement({});
+        let mp22 = new IDEE.plugin.PrintViewManagement({});
         map.addPlugin(mp22);
 
         const selectPosition = document.getElementById("selectPosition");
@@ -404,7 +404,7 @@
         }
 
         function crearPlugin(propiedades) {
-            mp = new M.plugin.Help(propiedades);
+            mp = new IDEE.plugin.Help(propiedades);
             map.addPlugin(mp);
         }
 

@@ -1,8 +1,8 @@
 /**
- * @module M/impl/Feature
+ * @module IDEE/impl/Feature
  */
-import FacadeFeature from 'M/feature/Feature';
-import { isNullOrEmpty, generateRandom, isString } from 'M/util/Utils';
+import FacadeFeature from 'IDEE/feature/Feature';
+import { isNullOrEmpty, generateRandom, isString } from 'IDEE/util/Utils';
 import {
   Cartesian3,
   Entity,
@@ -16,7 +16,7 @@ import {
 } from 'cesium';
 import {
   getValue,
-} from 'M/i18n/language';
+} from 'IDEE/i18n/language';
 import FormatGeoJSON from '../format/GeoJSON';
 import ImplUtils from '../util/Utils';
 
@@ -28,7 +28,7 @@ class Feature {
   /**
    * Contructor para generar un objeto geográfico de Cesium.
    * @constructor
-   * @implements {M.impl.Layer}
+   * @implements {IDEE.impl.Layer}
    * @param {String} id Identificador del objeto geográfico.
    * @param {Object} geojson GeoJSON con objetos geográficos.
    * @param {Object} style Estilo de los objetos geográficos.
@@ -172,13 +172,13 @@ class Feature {
 
   /**
    * Este método de la clase transforma "Entity" (Objeto geográfico de Cesium)
-   * a "M.Feature" (Objeto geográfico de API-IDEE).
+   * a "IDEE.Feature" (Objeto geográfico de API-IDEE).
    *
    * @public
    * @function
    * @param {Entity} cesiumFeature "Entity".
    * @param {boolean} canBeModified Define si puede ser modificado.
-   * @return {M.Feature} Retorna "M.Feature" modificado.
+   * @return {IDEE.Feature} Retorna "IDEE.Feature" modificado.
    * @api stable
    */
   static feature2Facade(cesiumFeature, canBeModified) {
@@ -196,7 +196,7 @@ class Feature {
 
   /**
    * Este método de la clase transforma "RenderFeature"
-   * a "M.Feature" (Objeto geográfico de API-IDEE).
+   * a "IDEE.Feature" (Objeto geográfico de API-IDEE).
    * No disponible para Cesium.
    *
    * @public
@@ -210,12 +210,12 @@ class Feature {
   }
 
   /**
-   * Este método de la clase transforma "M.Feature" (Objeto geográfico de API-IDEE)
+   * Este método de la clase transforma "IDEE.Feature" (Objeto geográfico de API-IDEE)
    * a "Entity" (Objeto geográfico de Cesium).
    *
    * @public
    * @function
-   * @param {M.Feature} feature "M.Feature".
+   * @param {IDEE.Feature} feature "IDEE.Feature".
    * @return {Entity} Retorna "Entity".
    * @api stable
    */

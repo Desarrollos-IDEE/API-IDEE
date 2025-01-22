@@ -1,25 +1,26 @@
 /**
- * @module M/control/ViewHistoryControl
+ * @module IDEE/control/ViewHistoryControl
  */
 
 import ViewHistoryImplControl from 'impl/viewhistorycontrol';
 import template from 'templates/viewhistory';
 import { getValue } from './i18n/language';
 
-export default class ViewHistoryControl extends M.Control {
+export default class ViewHistoryControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor() {
-    if (M.utils.isUndefined(ViewHistoryImplControl) || (M.utils.isObject(ViewHistoryImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(ViewHistoryImplControl)))) {
-      M.exception('La implementación usada no puede crear controles ViewHistoryControl');
+    if (IDEE.utils.isUndefined(ViewHistoryImplControl)
+      || (IDEE.utils.isObject(ViewHistoryImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(ViewHistoryImplControl)))) {
+      IDEE.exception('La implementación usada no puede crear controles ViewHistoryControl');
     }
     const impl = new ViewHistoryImplControl();
     super(impl, 'ViewHistory');
@@ -36,7 +37,7 @@ export default class ViewHistoryControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
@@ -55,7 +56,7 @@ export default class ViewHistoryControl extends M.Control {
         },
       };
 
-      const html = M.template.compileSync(template, options);
+      const html = IDEE.template.compileSync(template, options);
       html.querySelector('#m-historyprevious-button').addEventListener('click', this.previousStep_.bind(this));
       html.querySelector('#m-historynext-button').addEventListener('click', this.nextStep_.bind(this));
       success(html);
@@ -69,14 +70,14 @@ export default class ViewHistoryControl extends M.Control {
    * @api
    */
   addOnLoadEvents() {
-    this.on(M.evt.ADDED_TO_MAP, () => {
+    this.on(IDEE.evt.ADDED_TO_MAP, () => {
       this.load_ = true;
       if (this.completed_ && this.load_) {
         this.registerViewEvents_();
       }
     });
 
-    this.facadeMap_.on(M.evt.COMPLETED, () => {
+    this.facadeMap_.on(IDEE.evt.COMPLETED, () => {
       this.completed_ = true;
       if (this.completed_ && this.load_) {
         this.registerViewEvents_();
@@ -123,7 +124,7 @@ export default class ViewHistoryControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

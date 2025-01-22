@@ -1,5 +1,5 @@
 /**
- * @module M/control/GeorefImageEpsgControl
+ * @module IDEE/control/GeorefImageEpsgControl
  */
 import Georefimage2ControlImpl from 'impl/georefimageepsgcontrol';
 import { adjustExtentForSquarePixels, reproject } from 'impl/utils';
@@ -15,19 +15,20 @@ const FILE_EXTENSION_GEO = '.wld'; // .jgw
 const FILE_EXTENSION_IMG = '.jpg';
 const TYPE_SAVE = '.zip';
 
-export default class GeorefImageEpsgControl extends M.Control {
+export default class GeorefImageEpsgControl extends IDEE.Control {
   /**
     * @classdesc
     * Main constructor of the class.
     *
     * @constructor
-    * @extends {M.Control}
+    * @extends {IDEE.Control}
     * @api stable
     */
   constructor({ order, layers }, map) {
-    if (M.utils.isUndefined(Georefimage2ControlImpl) || (M.utils.isObject(Georefimage2ControlImpl)
-      && M.utils.isNullOrEmpty(Object.keys(Georefimage2ControlImpl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(Georefimage2ControlImpl)
+      || (IDEE.utils.isObject(Georefimage2ControlImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(Georefimage2ControlImpl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
     const impl = new Georefimage2ControlImpl(map);
     super(impl, 'georefimage2control');
@@ -97,7 +98,7 @@ export default class GeorefImageEpsgControl extends M.Control {
     const button = this.html_.querySelector('#m-printviewmanagement-georefImageEpsg');
 
     const template = new Promise((resolve, reject) => {
-      this.template_ = M.template.compileSync(georefimage2HTML, {
+      this.template_ = IDEE.template.compileSync(georefimage2HTML, {
         jsonp: true,
         vars: {
           translations: {
@@ -169,7 +170,7 @@ export default class GeorefImageEpsgControl extends M.Control {
       const projection = epsg;
       let ext = false;
       if (DEFAULT_EPSG === projection) {
-        ext = M.utils.ObjectToArrayExtent(mapBbox, DEFAULT_EPSG);
+        ext = IDEE.utils.ObjectToArrayExtent(mapBbox, DEFAULT_EPSG);
         extWLD = ext;
       } else if (version === '1.1.1' || version === '1.1.0') {
         const transformBbox = [mapBbox.x.min, mapBbox.y.min, mapBbox.x.max, mapBbox.y.max];
@@ -177,7 +178,7 @@ export default class GeorefImageEpsgControl extends M.Control {
 
         extWLD = adjustExtentForSquarePixels(ext, size);
       } else {
-        const transformBbox = M.utils.ObjectToArrayExtent(mapBbox, DEFAULT_EPSG);
+        const transformBbox = IDEE.utils.ObjectToArrayExtent(mapBbox, DEFAULT_EPSG);
         ext = ol.proj.transformExtent(transformBbox, DEFAULT_EPSG, projection);
         extWLD = adjustExtentForSquarePixels(ext, size);
         ext = this.transformExtentOL(ext, projection);
@@ -210,7 +211,7 @@ export default class GeorefImageEpsgControl extends M.Control {
   }
 
   transformExtentOL(extent, projection) {
-    const { def } = M.impl.ol.js.projections.getSupportedProjs()
+    const { def } = IDEE.impl.ol.js.projections.getSupportedProjs()
       .find((proj) => proj.codes.includes(projection));
     const typeCoordinates = def.includes('+proj=longlat');
 
@@ -295,7 +296,7 @@ export default class GeorefImageEpsgControl extends M.Control {
         }
       }).catch((err) => {
         getQueueContainer(this.html_).lastChild.remove();
-        M.dialog.error(getValue('exception.imageError'));
+        IDEE.dialog.error(getValue('exception.imageError'));
       });
     } else {
       getQueueContainer(this.html_).lastChild.remove();

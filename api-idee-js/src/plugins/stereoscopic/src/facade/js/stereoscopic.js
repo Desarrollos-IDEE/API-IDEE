@@ -1,18 +1,18 @@
 /**
- * @module M/plugin/Stereoscopic
+ * @module IDEE/plugin/Stereoscopic
  */
 import 'assets/css/stereoscopic';
 import StereoscopicControl from './stereoscopiccontrol';
 import { getValue } from './i18n/language';
 
-export default class Stereoscopic extends M.Plugin {
+export default class Stereoscopic extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -21,14 +21,14 @@ export default class Stereoscopic extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -79,7 +79,7 @@ export default class Stereoscopic extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
@@ -92,18 +92,18 @@ export default class Stereoscopic extends M.Plugin {
 
     this.controls_.push(control);
     this.map_ = map;
-    this.panel_ = new M.ui.Panel('panelStereoscopic', {
+    this.panel_ = new IDEE.ui.Panel('panelStereoscopic', {
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,
       className: 'm-plugin-stereoscopic',
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       tooltip: getValue('generate_3d_view'),
       collapsedButtonClass: 'stereoscopic-plugin-3D',
     });
     this.panel_.addControls(this.controls_);
     map.addPanels(this.panel_);
 
-    map.on(M.evt.COMPLETED, () => {
+    map.on(IDEE.evt.COMPLETED, () => {
       const olLayer = map.getLayers()[0].getImpl().getLayer();
       const mapProperties = olLayer.getProperties();
       const mapSource = mapProperties.source;

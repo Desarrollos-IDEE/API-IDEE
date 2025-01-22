@@ -1,5 +1,5 @@
 /**
- * @module M/style/align
+ * @module IDEE/style/align
  */
 
 /**

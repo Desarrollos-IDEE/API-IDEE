@@ -1,7 +1,7 @@
 /**
  * Enumeración de tipos de geometrías WFS.
- * @module M/geom/wfs/type
- * @example import * as WFSType from 'M/geom/wfs/type';
+ * @module IDEE/geom/wfs/type
+ * @example import * as WFSType from 'IDEE/geom/wfs/type';
  */
 
 /**

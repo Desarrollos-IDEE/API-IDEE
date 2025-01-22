@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/ViewShedControl
+ * @module IDEE/impl/control/ViewShedControl
  */

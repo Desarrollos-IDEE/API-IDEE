@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
 </p>
-<h1 align="center"><strong>API IDEE</strong> <small>🔌 M.plugin.PrinterMap</small></h1>
+<h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.PrinterMap</small></h1>
 
 # Descripción
 
@@ -146,10 +146,10 @@ https://componentes.cnig.es/api-idee/?printermap=TR*true*true*Imprimir%20mapa*ht
 
 ### Ejemplo de uso API-REST en base64
 
-Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad M.utils.encodeBase64.
+Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad IDEE.utils.encodeBase64.
 Ejemplo:
 ```javascript
-M.utils.encodeBase64(obj_params);
+IDEE.utils.encodeBase64(obj_params);
 ```
 
 Ejemplo de constructor:
@@ -177,7 +177,7 @@ https://componentes.cnig.es/api-idee/?printermap=base64=eyJwb3NpdGlvbiI6IlRSIiwi
   - Expone, como parámetro devuelto, el **PrinterMapControl**.
 
 ```javascript
-pluginprintermap.on(M.evt.ADDED_TO_MAP, () => {
+pluginprintermap.on(IDEE.evt.ADDED_TO_MAP, () => {
   window.alert('Añadido al mapa');
 });
 ```
@@ -185,11 +185,11 @@ pluginprintermap.on(M.evt.ADDED_TO_MAP, () => {
 # Ejemplo de uso
 
 ```javascript
-mapajs = M.map({
+mapajs = IDEE.map({
   container: "map"
 });
 
-mapajs.addPlugin(new M.plugin.PrinterMap({
+mapajs.addPlugin(new IDEE.plugin.PrinterMap({
   position: 'TR',
   collapsed: false,
   collapsible: false,

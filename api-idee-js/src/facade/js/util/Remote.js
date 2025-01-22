@@ -15,7 +15,7 @@
  * envolver los datos en una función de devolución de llamada. Esta técnica permite superar
  * la política de seguridad del
  * mismo origen del navegador, que restringe el acceso a recursos de otro dominio.
- * @module M/remote
+ * @module IDEE/remote
  * @api
  */
 
@@ -70,16 +70,16 @@ const removeScriptTag = (jsonpHandlerName) => {
  * Esta función maneja el proxy.
  *
  * @function
- * @param {String} url URL del proxy (M.config.PROXY_URL).
+ * @param {String} url URL del proxy (IDEE.config.PROXY_URL).
  * @param {String} methodType Tipo de petición.
  * @returns {String} Devuelve el proxy.
  * @api
  */
 const manageProxy = (url, methodType) => {
   // deafult GET
-  let proxyUrl = M.config.PROXY_URL;
+  let proxyUrl = IDEE.config.PROXY_URL;
   if (methodType === method.POST) {
-    proxyUrl = M.config.PROXY_POST_URL;
+    proxyUrl = IDEE.config.PROXY_POST_URL;
   }
 
   proxyUrl = addParameters(proxyUrl, {

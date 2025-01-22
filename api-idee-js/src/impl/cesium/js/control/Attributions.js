@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/Attributions
+ * @module IDEE/impl/control/Attributions
  */

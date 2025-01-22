@@ -1,11 +1,11 @@
 /**
- * @module M/impl/control/PrinterMapControl
+ * @module IDEE/impl/control/PrinterMapControl
  */
 import {
   encodeKML, encodeWMS, encodeImage, encodeGeoTIFF, encodeXYZ, encodeWMTS,
 } from './encoders';
 
-export default class PrinterMapControl extends M.impl.Control {
+export default class PrinterMapControl extends IDEE.impl.Control {
   /**
    * @classdesc
    * Main constructor of the measure conrol.
@@ -19,7 +19,7 @@ export default class PrinterMapControl extends M.impl.Control {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.facadeMap_ = map;
 
@@ -31,7 +31,7 @@ export default class PrinterMapControl extends M.impl.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {function} template template of this control
    * @api stable
    */
@@ -51,9 +51,9 @@ export default class PrinterMapControl extends M.impl.Control {
    */
   getParametrizedLayers(paramName, layers) {
     let others = this.facadeMap_.getMapImpl().getLayers().getArray().filter((layer) => {
-      return layer.getSource && !M.utils.isNullOrEmpty(layer.getSource())
+      return layer.getSource && !IDEE.utils.isNullOrEmpty(layer.getSource())
         // eslint-disable-next-line no-underscore-dangle
-        && !M.utils.isNullOrEmpty(layer.getSource().params_)
+        && !IDEE.utils.isNullOrEmpty(layer.getSource().params_)
         && layer.getSource().getParams()[paramName] !== undefined;
     });
 
@@ -77,35 +77,38 @@ export default class PrinterMapControl extends M.impl.Control {
   encodeLayer(layer) {
     return (new Promise((success, fail) => {
       try {
+        if (layer.type === IDEE.layer.type.KML
         // eslint-disable-next-line no-underscore-dangle
-        if (layer.type === M.layer.type.KML && layer.getImpl().formater_.extractStyles_ !== false) {
+          && layer.getImpl().formater_.extractStyles_ !== false) {
           success(encodeKML(layer, this.facadeMap_));
-        } else if (layer.type === M.layer.type.KML
+        } else if (layer.type === IDEE.layer.type.KML
           // eslint-disable-next-line no-underscore-dangle
           && layer.getImpl().formater_.extractStyles_ === false) {
           success(this.encodeWFS(layer));
-        } else if (layer.type === M.layer.type.WMS) {
+        } else if (layer.type === IDEE.layer.type.WMS) {
           success(encodeWMS(layer));
-        } else if (layer.type === M.layer.type.WFS) {
+        } else if (layer.type === IDEE.layer.type.WFS) {
           success(this.encodeWFS(layer));
-        } else if (layer.type === M.layer.type.GeoJSON) {
+        } else if (layer.type === IDEE.layer.type.GeoJSON) {
           success(this.encodeWFS(layer));
-        } else if (layer.type === M.layer.type.WMTS) {
+        } else if (layer.type === IDEE.layer.type.WMTS) {
           encodeWMTS(layer).then((encodedLayer) => {
             success(encodedLayer);
           });
-        } else if (M.utils.isNullOrEmpty(layer.type) && layer instanceof M.layer.Vector) {
+        } else if (IDEE.utils.isNullOrEmpty(layer.type) && layer instanceof IDEE.layer.Vector) {
           success(this.encodeWFS(layer));
           // eslint-disable-next-line no-underscore-dangle
         } else if (layer.type === undefined && layer.className_ === 'ol-layer') {
           success(encodeImage(layer));
-        } else if ([M.layer.type.XYZ, M.layer.type.TMS, M.layer.type.OSM].indexOf(layer.type)
+        } else if ([IDEE.layer.type.XYZ,
+          IDEE.layer.type.TMS, IDEE.layer.type.OSM].indexOf(layer.type)
           > -1) {
           success(encodeXYZ(layer));
-        } else if (layer.type === M.layer.type.GeoTIFF) {
+        } else if (layer.type === IDEE.layer.type.GeoTIFF) {
           success(encodeGeoTIFF(layer));
-        } else if (layer.type === M.layer.type.MVT
-          || layer.type === M.layer.type.MBTiles || layer.type === M.layer.type.MBTilesVector) {
+        } else if (layer.type === IDEE.layer.type.MVT
+          || layer.type === IDEE.layer.type.MBTiles
+          || layer.type === IDEE.layer.type.MBTilesVector) {
           this.errors.push(layer.name);
           success('');
         } else {
@@ -123,7 +126,7 @@ export default class PrinterMapControl extends M.impl.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {function} template template of this control
    * @api stable
    */
@@ -214,9 +217,9 @@ export default class PrinterMapControl extends M.impl.Control {
     let featureStyle;
     const fStyle = feature.getStyle();
     let newStyle = `${style}`;
-    if (!M.utils.isNullOrEmpty(fStyle)) {
+    if (!IDEE.utils.isNullOrEmpty(fStyle)) {
       featureStyle = fStyle;
-    } else if (!M.utils.isNullOrEmpty(layerStyle)) {
+    } else if (!IDEE.utils.isNullOrEmpty(layerStyle)) {
       featureStyle = layerStyle;
     }
 
@@ -228,12 +231,12 @@ export default class PrinterMapControl extends M.impl.Control {
     if (featureStyle instanceof Array) {
       // SRC style has priority
       if (featureStyle.length > 1) {
-        styleIcon = !M.utils.isNullOrEmpty(featureStyle[1])
-          && !M.utils.isNullOrEmpty(featureStyle[1].getImage())
+        styleIcon = !IDEE.utils.isNullOrEmpty(featureStyle[1])
+          && !IDEE.utils.isNullOrEmpty(featureStyle[1].getImage())
           && featureStyle[1].getImage().getGlyph
           ? featureStyle[1].getImage()
           : null;
-        featureStyle = (!M.utils.isNullOrEmpty(featureStyle[1].getImage())
+        featureStyle = (!IDEE.utils.isNullOrEmpty(featureStyle[1].getImage())
           && featureStyle[1].getImage().getSrc)
           ? featureStyle[1]
           : featureStyle[0];
@@ -242,12 +245,12 @@ export default class PrinterMapControl extends M.impl.Control {
       }
     }
 
-    if (!M.utils.isNullOrEmpty(featureStyle)) {
+    if (!IDEE.utils.isNullOrEmpty(featureStyle)) {
       const image = featureStyle.getImage();
-      const imgSize = M.utils
+      const imgSize = IDEE.utils
         .isNullOrEmpty(image) ? [0, 0] : (image.getImageSize() || [24, 24]);
       let text = featureStyle.getText();
-      if (M.utils.isNullOrEmpty(text) && !M.utils.isNullOrEmpty(featureStyle.textPath)) {
+      if (IDEE.utils.isNullOrEmpty(text) && !IDEE.utils.isNullOrEmpty(featureStyle.textPath)) {
         text = featureStyle.textPath;
       }
 
@@ -262,10 +265,10 @@ export default class PrinterMapControl extends M.impl.Control {
         parseType = feature.getGeometry().getType().toLowerCase();
       }
 
-      const stroke = M.utils.isNullOrEmpty(image)
+      const stroke = IDEE.utils.isNullOrEmpty(image)
         ? featureStyle.getStroke()
         : (image.getStroke && image.getStroke());
-      const fill = M.utils.isNullOrEmpty(image)
+      const fill = IDEE.utils.isNullOrEmpty(image)
         ? featureStyle.getFill()
         : (image.getFill && image.getFill());
 
@@ -276,17 +279,17 @@ export default class PrinterMapControl extends M.impl.Control {
         : undefined;
       const styleGeom = {
         type: parseType,
-        fillColor: M.utils.isNullOrEmpty(fill) || (layer.name.indexOf(' Reverse') > -1 && layer.name.indexOf('Cobertura') > -1) ? '#000000' : M.utils.rgbaToHex(fill.getColor()).slice(0, 7),
-        fillOpacity: M.utils.isNullOrEmpty(fill)
+        fillColor: IDEE.utils.isNullOrEmpty(fill) || (layer.name.indexOf(' Reverse') > -1 && layer.name.indexOf('Cobertura') > -1) ? '#000000' : IDEE.utils.rgbaToHex(fill.getColor()).slice(0, 7),
+        fillOpacity: IDEE.utils.isNullOrEmpty(fill)
           ? 0
-          : M.utils.getOpacityFromRgba(fill.getColor()),
-        strokeColor: M.utils.isNullOrEmpty(stroke) ? '#000000' : M.utils.rgbaToHex(stroke.getColor()).slice(0, 7),
-        strokeOpacity: M.utils.isNullOrEmpty(stroke)
+          : IDEE.utils.getOpacityFromRgba(fill.getColor()),
+        strokeColor: IDEE.utils.isNullOrEmpty(stroke) ? '#000000' : IDEE.utils.rgbaToHex(stroke.getColor()).slice(0, 7),
+        strokeOpacity: IDEE.utils.isNullOrEmpty(stroke)
           ? 0
-          : M.utils.getOpacityFromRgba(stroke.getColor()),
-        strokeWidth: M.utils.isNullOrEmpty(stroke) ? 0 : (stroke.getWidth && stroke.getWidth()),
-        pointRadius: M.utils.isNullOrEmpty(image) ? '' : (image.getRadius && image.getRadius()),
-        externalGraphic: M.utils.isNullOrEmpty(image) ? '' : (image.getSrc && image.getSrc()),
+          : IDEE.utils.getOpacityFromRgba(stroke.getColor()),
+        strokeWidth: IDEE.utils.isNullOrEmpty(stroke) ? 0 : (stroke.getWidth && stroke.getWidth()),
+        pointRadius: IDEE.utils.isNullOrEmpty(image) ? '' : (image.getRadius && image.getRadius()),
+        externalGraphic: IDEE.utils.isNullOrEmpty(image) ? '' : (image.getSrc && image.getSrc()),
         graphicHeight: imgSize[0],
         graphicWidth: imgSize[1],
         strokeLinecap: 'round',
@@ -326,9 +329,9 @@ export default class PrinterMapControl extends M.impl.Control {
         }
       }
 
-      const imageIcon = !M.utils.isNullOrEmpty(styleIcon)
+      const imageIcon = !IDEE.utils.isNullOrEmpty(styleIcon)
         && styleIcon.getImage ? styleIcon.getImage() : null;
-      if (!M.utils.isNullOrEmpty(imageIcon)) {
+      if (!IDEE.utils.isNullOrEmpty(imageIcon)) {
         if (styleIcon.getRadius && styleIcon.getRadius()) {
           styleGeom.pointRadius = styleIcon.getRadius && styleIcon.getRadius();
         }
@@ -340,41 +343,41 @@ export default class PrinterMapControl extends M.impl.Control {
         styleGeom.externalGraphic = imageIcon.toDataURL();
       }
 
-      if (!M.utils.isNullOrEmpty(text)) {
+      if (!IDEE.utils.isNullOrEmpty(text)) {
         let tAlign = text.getTextAlign();
         let tBLine = text.getTextBaseline();
         let align = '';
-        if (!M.utils.isNullOrEmpty(tAlign)) {
-          if (tAlign === M.style.align.LEFT) {
+        if (!IDEE.utils.isNullOrEmpty(tAlign)) {
+          if (tAlign === IDEE.style.align.LEFT) {
             tAlign = 'l';
-          } else if (tAlign === M.style.align.RIGHT) {
+          } else if (tAlign === IDEE.style.align.RIGHT) {
             tAlign = 'r';
-          } else if (tAlign === M.style.align.CENTER) {
+          } else if (tAlign === IDEE.style.align.CENTER) {
             tAlign = 'c';
           } else {
             tAlign = '';
           }
         }
-        if (!M.utils.isNullOrEmpty(tBLine)) {
-          if (tBLine === M.style.baseline.BOTTOM) {
+        if (!IDEE.utils.isNullOrEmpty(tBLine)) {
+          if (tBLine === IDEE.style.baseline.BOTTOM) {
             tBLine = 'b';
-          } else if (tBLine === M.style.baseline.MIDDLE) {
+          } else if (tBLine === IDEE.style.baseline.MIDDLE) {
             tBLine = 'm';
-          } else if (tBLine === M.style.baseline.TOP) {
+          } else if (tBLine === IDEE.style.baseline.TOP) {
             tBLine = 't';
           } else {
             tBLine = '';
           }
         }
-        if (!M.utils.isNullOrEmpty(tAlign) && !M.utils.isNullOrEmpty(tBLine)) {
+        if (!IDEE.utils.isNullOrEmpty(tAlign) && !IDEE.utils.isNullOrEmpty(tBLine)) {
           align = tAlign.concat(tBLine);
         }
         const font = text.getFont();
-        const fontWeight = !M.utils.isNullOrEmpty(font) && font.indexOf('bold') > -1 ? 'bold' : 'normal';
+        const fontWeight = !IDEE.utils.isNullOrEmpty(font) && font.indexOf('bold') > -1 ? 'bold' : 'normal';
         let fontSize = '11px';
-        if (!M.utils.isNullOrEmpty(font)) {
+        if (!IDEE.utils.isNullOrEmpty(font)) {
           const px = font.substr(0, font.indexOf('px'));
-          if (!M.utils.isNullOrEmpty(px)) {
+          if (!IDEE.utils.isNullOrEmpty(px)) {
             const space = px.lastIndexOf(' ');
             if (space > -1) {
               fontSize = px.substr(space, px.length).trim().concat('px');
@@ -387,7 +390,7 @@ export default class PrinterMapControl extends M.impl.Control {
         styleText = {
           type: 'text',
           label: text.getText(),
-          fontColor: M.utils.isNullOrEmpty(text.getFill()) ? '#000000' : M.utils.rgbToHex(text.getFill().getColor()),
+          fontColor: IDEE.utils.isNullOrEmpty(text.getFill()) ? '#000000' : IDEE.utils.rgbToHex(text.getFill().getColor()),
           fontSize,
           fontFamily: 'Helvetica, sans-serif',
           fontStyle: 'normal',
@@ -397,8 +400,8 @@ export default class PrinterMapControl extends M.impl.Control {
           labelYOffset: text.getOffsetY(),
           fillColor: styleGeom.fillColor || '#FF0000',
           fillOpacity: styleGeom.fillOpacity || 1,
-          labelOutlineColor: M.utils.isNullOrEmpty(text.getStroke()) ? '' : M.utils.rgbToHex(text.getStroke().getColor() || '#FF0000'),
-          labelOutlineWidth: M.utils.isNullOrEmpty(text.getStroke()) ? '' : text.getStroke().getWidth(),
+          labelOutlineColor: IDEE.utils.isNullOrEmpty(text.getStroke()) ? '' : IDEE.utils.rgbToHex(text.getStroke().getColor() || '#FF0000'),
+          labelOutlineWidth: IDEE.utils.isNullOrEmpty(text.getStroke()) ? '' : text.getStroke().getWidth(),
           labelAlign: align,
         };
       } else if (layer.name === 'infocoordinatesLayerFeatures') {
@@ -421,17 +424,17 @@ export default class PrinterMapControl extends M.impl.Control {
       }
 
       nameFeature = `draw${index}`;
-      if ((!M.utils.isNullOrEmpty(geometry) && geometry.intersectsExtent(bbox))
-        || !M.utils.isNullOrEmpty(text)) {
+      if ((!IDEE.utils.isNullOrEmpty(geometry) && geometry.intersectsExtent(bbox))
+        || !IDEE.utils.isNullOrEmpty(text)) {
         const styleStr = JSON.stringify(styleGeom);
         const styleTextStr = JSON.stringify(styleText);
         let styleName = stylesNames[styleStr];
         let styleNameText = stylesNamesText[styleTextStr];
-        if (M.utils.isUndefined(styleName) || M.utils.isUndefined(styleNameText)) {
+        if (IDEE.utils.isUndefined(styleName) || IDEE.utils.isUndefined(styleNameText)) {
           const symbolizers = [];
           let flag = 0;
-          if (!M.utils.isNullOrEmpty(geometry) && geometry.intersectsExtent(bbox)
-            && M.utils.isUndefined(styleName)) {
+          if (!IDEE.utils.isNullOrEmpty(geometry) && geometry.intersectsExtent(bbox)
+            && IDEE.utils.isUndefined(styleName)) {
             styleName = indexGeom;
             // eslint-disable-next-line no-param-reassign
             stylesNames[styleStr] = styleName;
@@ -440,7 +443,7 @@ export default class PrinterMapControl extends M.impl.Control {
             plusIndexGeom += 1;
             plusIndex += 1;
           }
-          if (!M.utils.isNullOrEmpty(text) && M.utils.isUndefined(styleNameText)) {
+          if (!IDEE.utils.isNullOrEmpty(text) && IDEE.utils.isUndefined(styleNameText)) {
             styleNameText = indexText;
             // eslint-disable-next-line no-param-reassign
             stylesNamesText[styleTextStr] = styleNameText;
@@ -458,7 +461,7 @@ export default class PrinterMapControl extends M.impl.Control {
             styleNameText = 0;
           }
           filter = `"[_gx_style ='${styleName + styleNameText}']"`;
-          if (!M.utils.isNullOrEmpty(symbolizers)) {
+          if (!IDEE.utils.isNullOrEmpty(symbolizers)) {
             const a = `${filter}: {"symbolizers": [${symbolizers}]}`;
             if (newStyle.indexOf(filter) === -1) {
               if (newStyle !== '') {
@@ -473,7 +476,7 @@ export default class PrinterMapControl extends M.impl.Control {
         }
 
         let geoJSONFeature;
-        if (projection.code !== 'EPSG:3857' && this.facadeMap_.getLayers().some((layerParam) => (layerParam.type === M.layer.type.OSM || layerParam.type === M.layer.type.Mapbox))) {
+        if (projection.code !== 'EPSG:3857' && this.facadeMap_.getLayers().some((layerParam) => (layerParam.type === IDEE.layer.type.OSM || layerParam.type === IDEE.layer.type.Mapbox))) {
           geoJSONFeature = geoJSONFormat.writeFeatureObject(feature, {
             featureProjection: projection.code,
             dataProjection: 'EPSG:3857',
@@ -533,13 +536,13 @@ export default class PrinterMapControl extends M.impl.Control {
         };
 
         nameFeature = `draw${index}`;
-        if (!M.utils.isNullOrEmpty(geometry) && geometry.intersectsExtent(bbox)) {
+        if (!IDEE.utils.isNullOrEmpty(geometry) && geometry.intersectsExtent(bbox)) {
           const styleStr = JSON.stringify(styleGeom);
           let styleName = stylesNames[styleStr];
-          if (M.utils.isUndefined(styleName)) {
+          if (IDEE.utils.isUndefined(styleName)) {
             const symbolizers = [];
-            if (!M.utils.isNullOrEmpty(geometry) && geometry.intersectsExtent(bbox)
-              && M.utils.isUndefined(styleName)) {
+            if (!IDEE.utils.isNullOrEmpty(geometry) && geometry.intersectsExtent(bbox)
+              && IDEE.utils.isUndefined(styleName)) {
               styleName = indexGeom;
               stylesNames[styleStr] = styleName;
               symbolizers.push(styleStr);
@@ -551,7 +554,7 @@ export default class PrinterMapControl extends M.impl.Control {
               styleName = 0;
             }
             filter = `"[_gx_style ='${styleName}']"`;
-            if (!M.utils.isNullOrEmpty(symbolizers)) {
+            if (!IDEE.utils.isNullOrEmpty(symbolizers)) {
               const a = `${filter}: {"symbolizers": [${symbolizers}]}`;
               if (newStyle !== '') {
                 // eslint-disable-next-line no-param-reassign

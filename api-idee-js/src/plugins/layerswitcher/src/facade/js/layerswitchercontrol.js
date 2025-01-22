@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle,no-param-reassign */
 /**
- * @module M/control/LayerswitcherControl
+ * @module IDEE/control/LayerswitcherControl
  */
 
 import LayerswitcherImplControl from 'impl/layerswitchercontrol';
@@ -63,11 +63,12 @@ const SPINER_FATHER = '.m-layerswitcher-search-panel';
 
 const SHOW_BUTTON = [1, 2, 3]; // Añadir más numeros para mostrar más botones
 
-export default class LayerswitcherControl extends M.Control {
+export default class LayerswitcherControl extends IDEE.Control {
   constructor(options = {}) {
-    if (M.utils.isUndefined(LayerswitcherImplControl) || (M.utils.isObject(LayerswitcherImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(LayerswitcherImplControl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(LayerswitcherImplControl)
+      || (IDEE.utils.isObject(LayerswitcherImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(LayerswitcherImplControl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
 
     const impl = new LayerswitcherImplControl();
@@ -106,10 +107,11 @@ export default class LayerswitcherControl extends M.Control {
     this.statusShowHideAllLayers = true;
 
     // Añadir control añadir capas
-    this.isAddLayers = M.utils.isNullOrEmpty(options.addLayers) ? true : options.addLayers;
+    this.isAddLayers = IDEE.utils.isNullOrEmpty(options.addLayers) ? true : options.addLayers;
 
     // Añadir control mostrar/ocultar capas
-    this.isStatusLayers = M.utils.isNullOrEmpty(options.statusLayers) ? true : options.statusLayers;
+    this.isStatusLayers = IDEE.utils.isNullOrEmpty(options.statusLayers)
+      ? true : options.statusLayers;
 
     // Herramientas para mostrar en las capas
     this.tools = options.tools;
@@ -177,7 +179,7 @@ export default class LayerswitcherControl extends M.Control {
   // Esta función crea la vista
   createView(map) {
     this.map_ = map;
-    if (M.utils.isString(this.tools)) {
+    if (IDEE.utils.isString(this.tools)) {
       this.tools = this.tools.split(',');
     }
     this.tools.forEach((tool) => {
@@ -201,12 +203,12 @@ export default class LayerswitcherControl extends M.Control {
       }
     });
 
-    map.on(M.evt.ADDED_LAYER, (layers) => {
+    map.on(IDEE.evt.ADDED_LAYER, (layers) => {
       if (this.modeSelectLayers === 'radio'
       && this.isCheckedLayerRadio === true) {
         layers.forEach((layer) => {
           if (layer.isBase === false && layer.displayInLayerSwitcher) {
-            if (layer instanceof M.layer.LayerGroup) {
+            if (layer instanceof IDEE.layer.LayerGroup) {
               this.recursiveVisibleHide_(layer, false);
             } else {
               layer.setVisible(false);
@@ -218,7 +220,7 @@ export default class LayerswitcherControl extends M.Control {
 
     return new Promise((success) => {
       this.getTemplateVariables(map).then((templateVars) => {
-        const html = M.template.compileSync(template, {
+        const html = IDEE.template.compileSync(template, {
           vars: templateVars,
         });
 
@@ -238,7 +240,7 @@ export default class LayerswitcherControl extends M.Control {
 
   recursiveVisibleHide_(layerGroup, visible) {
     layerGroup.getLayers().forEach((subLayer) => {
-      if (subLayer instanceof M.layer.LayerGroup) {
+      if (subLayer instanceof IDEE.layer.LayerGroup) {
         this.recursiveVisibleHide_(subLayer, visible);
       } else {
         subLayer.setVisible(visible);
@@ -256,18 +258,18 @@ export default class LayerswitcherControl extends M.Control {
     panel.getButtonPanel().addEventListener('click', this.collapsedPlugin.bind(this), false);
 
     if (this.isDraggable_) {
-      M.utils.draggabillyPlugin(panel, '#m-layerswitcher-title');
+      IDEE.utils.draggabillyPlugin(panel, '#m-layerswitcher-title');
     }
   }
 
   // Esta función devuelve las variables para la plantilla
   getTemplateVariables(map) {
     return new Promise((success, fail) => {
-      if (!M.utils.isNullOrEmpty(map)) {
+      if (!IDEE.utils.isNullOrEmpty(map)) {
         this.overlayLayers = map.getLayers().filter((layer) => {
           const isTransparent = (layer.transparent === true);
           const displayInLayerSwitcher = (layer.displayInLayerSwitcher === true);
-          const isLayerGroup = (layer instanceof M.layer.LayerGroup);
+          const isLayerGroup = (layer instanceof IDEE.layer.LayerGroup);
           return isTransparent && displayInLayerSwitcher && !isLayerGroup;
         });
 
@@ -318,18 +320,18 @@ export default class LayerswitcherControl extends M.Control {
   // Esta función monta objeto con propiedades de la capa para la plantilla
   parseLayerForTemplate_(layer) {
     const layerTitle = layer.legend || layer.name;
-    const hasMetadata = !M.utils.isNullOrEmpty(layer.capabilitiesMetadata)
-      && !M.utils.isNullOrEmpty(layer.capabilitiesMetadata.abstract);
+    const hasMetadata = !IDEE.utils.isNullOrEmpty(layer.capabilitiesMetadata)
+      && !IDEE.utils.isNullOrEmpty(layer.capabilitiesMetadata.abstract);
 
     return new Promise((success) => {
       let hasStyles = (hasMetadata && layer.capabilitiesMetadata.style.length > 1)
-        || (layer instanceof M.layer.Vector && !M.utils.isNullOrEmpty(layer.predefinedStyles)
+        || (layer instanceof IDEE.layer.Vector && !IDEE.utils.isNullOrEmpty(layer.predefinedStyles)
           && layer.predefinedStyles.length > 1);
       if (layer.type === 'KML') {
         if (layer.options === null) {
           hasStyles = false;
         } else if (layer.options.extractStyles
-          || M.utils.isUndefined(layer.options.extractStyles)) {
+          || IDEE.utils.isUndefined(layer.options.extractStyles)) {
           hasStyles = false;
         }
       }
@@ -360,7 +362,7 @@ export default class LayerswitcherControl extends M.Control {
 
     // eslint-disable-next-line no-restricted-syntax
     for (const layer of layersFilter) {
-      if (layer instanceof M.layer.LayerGroup) {
+      if (layer instanceof IDEE.layer.LayerGroup) {
         // eslint-disable-next-line no-await-in-loop
         const layerGroupHTML = await this.recursiveLayerGroupTemplate_(layer);
 
@@ -377,7 +379,7 @@ export default class LayerswitcherControl extends M.Control {
     return new Promise((resolve, reject) => {
       this.parseLayerForTemplate_(layer)
         .then((varsGroup) => {
-          const html = M.template.compileSync(layerGroupTemplate, {
+          const html = IDEE.template.compileSync(layerGroupTemplate, {
             vars: {
               changeName: getValue('change_name'),
               displayGroup: layer.display === undefined ? true : layer.display,
@@ -391,13 +393,13 @@ export default class LayerswitcherControl extends M.Control {
 
           const layerPromises = reorderLayers(filterGroups(layer.getLayers(), false))
             .map((sublayer) => {
-              if (sublayer instanceof M.layer.LayerGroup) {
+              if (sublayer instanceof IDEE.layer.LayerGroup) {
                 return this.recursiveLayerGroupTemplate_(sublayer).then((subLayerGroupHTML) => {
                   html.querySelector('.m-layerswitcher-ullayersGroup').appendChild(subLayerGroupHTML);
                 });
               }
               return this.parseLayerForTemplate_(sublayer).then((varsSubLayer) => {
-                const li = M.template.compileSync(layerGroupChildTemplate, {
+                const li = IDEE.template.compileSync(layerGroupChildTemplate, {
                   vars: {
                     nameRadio: layer.name,
                     ...varsSubLayer,
@@ -443,7 +445,7 @@ export default class LayerswitcherControl extends M.Control {
       scroll = document.querySelector('.m-plugin-layerswitcher.opened ul.m-layerswitcher-ullayers').scrollTop;
     }
 
-    const html = M.template.compileSync(templateAux, {
+    const html = IDEE.template.compileSync(templateAux, {
       vars: templateVars,
     });
 
@@ -530,8 +532,8 @@ export default class LayerswitcherControl extends M.Control {
             const metadataURL = `${layer.url}${layer.name}?f=json`;
             const htmlURL = `${layer.url}${layer.name}?f=html`;
             let jsonResponseOgc;
-            M.proxy(this.useProxy);
-            M.remote.get(metadataURL).then((response) => {
+            IDEE.proxy(this.useProxy);
+            IDEE.remote.get(metadataURL).then((response) => {
               jsonResponseOgc = JSON.parse(response.text);
               const vars = {
                 title: jsonResponseOgc.title,
@@ -553,16 +555,16 @@ export default class LayerswitcherControl extends M.Control {
                 const headerAtt = Object.keys(features[0].getAttributes());
                 features.forEach((feature) => {
                   const properties = Object.values(feature.getAttributes());
-                  if (!M.utils.isNullOrEmpty(properties)) {
+                  if (!IDEE.utils.isNullOrEmpty(properties)) {
                     attributes.push({
                       properties,
                     });
                   }
                 });
-                if (!M.utils.isUndefined(headerAtt)) {
+                if (!IDEE.utils.isUndefined(headerAtt)) {
                   vars.pages = this.pageResults_(attributes);
                   vars.allAttributes = attributes;
-                  vars.attributes = (M.utils.isNullOrEmpty(attributes)) ? false : attributes
+                  vars.attributes = (IDEE.utils.isNullOrEmpty(attributes)) ? false : attributes
                     .slice(this.pages_.element, this.pages_.element + this.numPages_);
                 } else {
                   vars.attributes = attributes;
@@ -571,7 +573,7 @@ export default class LayerswitcherControl extends M.Control {
               }
               this.renderInfo(vars, 'OGCAPIFeatures');
               this.latestVars_ = vars;
-              if (layer instanceof M.layer.Vector) {
+              if (layer instanceof IDEE.layer.Vector) {
                 if (document.querySelector('#m-layerswitcher-next')) {
                   const next = document.querySelector('#m-layerswitcher-next');
                   next.addEventListener('click', this.nextPage_.bind(this));
@@ -595,7 +597,7 @@ export default class LayerswitcherControl extends M.Control {
                 }
               }
             });
-            M.proxy(this.statusProxy);
+            IDEE.proxy(this.statusProxy);
           } else if (layer.type === 'WMS' || layer.type === 'WMTS') {
             const vars = {
               name: layer.name, // nombre
@@ -609,16 +611,16 @@ export default class LayerswitcherControl extends M.Control {
               vars.metadata = layer.capabilitiesMetadata.metadataURL[0].OnlineResource;
             }
             vars.provider = this.informationProvider(layer);
-            M.proxy(this.useProxy);
-            M.remote.get(vars.capabilities).then((response) => {
+            IDEE.proxy(this.useProxy);
+            IDEE.remote.get(vars.capabilities).then((response) => {
               const source = response.text;
               const urlService = source.split('<inspire_common:URL>')[1].split('<')[0].split('&amp;').join('&');
-              if (!M.utils.isNullOrEmpty(urlService) && M.utils.isUrl(urlService)) {
+              if (!IDEE.utils.isNullOrEmpty(urlService) && IDEE.utils.isUrl(urlService)) {
                 vars.metadata_service = urlService;
                 vars.hasMetadata = true;
               }
 
-              if (M.utils.isNullOrEmpty(vars.metadata) || !M.utils.isUrl(vars.metadata)) {
+              if (IDEE.utils.isNullOrEmpty(vars.metadata) || !IDEE.utils.isUrl(vars.metadata)) {
                 if (vars.metadata_service !== undefined) {
                   this.infoDownloadCenter(vars.metadata_service, vars);
                 } else {
@@ -631,7 +633,7 @@ export default class LayerswitcherControl extends M.Control {
             }).catch((err) => {
               this.renderInfo(vars);
             });
-            M.proxy(this.statusProxy);
+            IDEE.proxy(this.statusProxy);
           } else {
             let rendInfo = true;
             const vars = {
@@ -639,11 +641,11 @@ export default class LayerswitcherControl extends M.Control {
               title: layer.legend, // titulo
               translations: TRANSLATIONS_INFO_LAYER,
             };
-            if (layer instanceof M.layer.Vector) {
+            if (layer instanceof IDEE.layer.Vector) {
               const nFeatures = layer.getFeatures().length;
               vars.numberFeatures = nFeatures;
               const ext = layer.getMaxExtent();
-              vars.extension = M.utils.isNullOrEmpty(ext) ? ext : ext.toString().replaceAll(',', ', ');
+              vars.extension = IDEE.utils.isNullOrEmpty(ext) ? ext : ext.toString().replaceAll(',', ', ');
               if (nFeatures > 0) {
                 this.pages_ = {
                   total: 0,
@@ -655,16 +657,16 @@ export default class LayerswitcherControl extends M.Control {
                 const headerAtt = Object.keys(features[0].getAttributes());
                 features.forEach((feature) => {
                   const properties = Object.values(feature.getAttributes());
-                  if (!M.utils.isNullOrEmpty(properties)) {
+                  if (!IDEE.utils.isNullOrEmpty(properties)) {
                     attributes.push({
                       properties,
                     });
                   }
                 });
-                if (!M.utils.isUndefined(headerAtt)) {
+                if (!IDEE.utils.isUndefined(headerAtt)) {
                   vars.pages = this.pageResults_(attributes);
                   vars.allAttributes = attributes;
-                  vars.attributes = (M.utils.isNullOrEmpty(attributes)) ? false : attributes
+                  vars.attributes = (IDEE.utils.isNullOrEmpty(attributes)) ? false : attributes
                     .slice(this.pages_.element, this.pages_.element + this.numPages_);
                 } else {
                   vars.attributes = attributes;
@@ -680,9 +682,9 @@ export default class LayerswitcherControl extends M.Control {
               const regex = /\{z\}\/\{x\}\/\{(-?)y\}\/?.*$/;
               url = url.replace(regex, 'metadata.json');
               const ext = layer.getMaxExtent();
-              vars.extension = M.utils.isNullOrEmpty(ext) ? ext : ext.toString().replaceAll(',', ', ');
-              M.proxy(this.useProxy);
-              M.remote.get(url).then((response) => {
+              vars.extension = IDEE.utils.isNullOrEmpty(ext) ? ext : ext.toString().replaceAll(',', ', ');
+              IDEE.proxy(this.useProxy);
+              IDEE.remote.get(url).then((response) => {
                 if (response.code === 200) {
                   const res = JSON.parse(response.text);
                   const others = {};
@@ -710,16 +712,16 @@ export default class LayerswitcherControl extends M.Control {
                 }
                 this.renderInfo(vars, 'Others');
               });
-              M.proxy(this.statusProxy);
+              IDEE.proxy(this.statusProxy);
             } else if (type === 'OSM' || type === 'MBTiles') {
               const ext = layer.getMaxExtent();
-              vars.extension = M.utils.isNullOrEmpty(ext) ? ext : ext.toString().replaceAll(',', ', ');
+              vars.extension = IDEE.utils.isNullOrEmpty(ext) ? ext : ext.toString().replaceAll(',', ', ');
             }
             if (rendInfo) {
               this.renderInfo(vars, 'Others');
               this.latestVars_ = vars;
             }
-            if (layer instanceof M.layer.Vector) {
+            if (layer instanceof IDEE.layer.Vector) {
               // Esperar que se muestre el modal
               const loadFeatures = () => {
                 setTimeout(() => {
@@ -805,7 +807,7 @@ export default class LayerswitcherControl extends M.Control {
     const tableBody = document.querySelector('#m-layerswitcher-table tbody');
     tableBody.innerHTML = '';
 
-    this.latestVars_.attributes = (M.utils.isNullOrEmpty(this.latestVars_.allAttributes))
+    this.latestVars_.attributes = (IDEE.utils.isNullOrEmpty(this.latestVars_.allAttributes))
       ? false
       // eslint-disable-next-line max-len
       : this.latestVars_.allAttributes.slice(this.pages_.element, this.pages_.element + this.numPages_);
@@ -836,8 +838,8 @@ export default class LayerswitcherControl extends M.Control {
    */
   hasNext_(html) {
     let element;
-    if (!M.utils.isNullOrEmpty(html)) element = html;
-    if (M.utils.isNullOrEmpty(element)) element = document;
+    if (!IDEE.utils.isNullOrEmpty(html)) element = html;
+    if (IDEE.utils.isNullOrEmpty(element)) element = document;
     if (this.pages_.actual < this.pages_.total) {
       element.querySelector('#m-layerswitcher-next').classList.remove('m-layerswitcher-hidden');
     } else {
@@ -853,8 +855,8 @@ export default class LayerswitcherControl extends M.Control {
    */
   hasPrevious_(html) {
     let element;
-    if (!M.utils.isNullOrEmpty(html)) element = html;
-    if (M.utils.isNullOrEmpty(element)) element = document;
+    if (!IDEE.utils.isNullOrEmpty(html)) element = html;
+    if (IDEE.utils.isNullOrEmpty(element)) element = document;
     if (this.pages_.actual <= this.pages_.total && this.pages_.actual !== 1) {
       element.querySelector('#m-layerswitcher-previous').classList.remove('m-layerswitcher-hidden');
     } else {
@@ -872,7 +874,7 @@ export default class LayerswitcherControl extends M.Control {
     this.getImpl().removeRenderComplete();
 
     const evt = (evtParameter || window.event);
-    if (!M.utils.isNullOrEmpty(evt.target)) {
+    if (!IDEE.utils.isNullOrEmpty(evt.target)) {
       const layer = this.findLayer(evt);
       if (layer.length > 0) {
         evt.stopPropagation();
@@ -890,7 +892,7 @@ export default class LayerswitcherControl extends M.Control {
     const idLayers = evt.target.getAttribute('data-layer-id');
 
     let result = [];
-    if (!M.utils.isNullOrEmpty(idLayers)) {
+    if (!IDEE.utils.isNullOrEmpty(idLayers)) {
       const allLayers = getAllLayersGroup(this.map_).concat(this.overlayLayers);
       result = allLayers.filter((l) => l.idLayer === idLayers);
     }
@@ -905,21 +907,21 @@ export default class LayerswitcherControl extends M.Control {
     vars.translations.previous = getValue('previous');
     vars.translations.next = getValue('next');
     if (type === 'OGCAPIFeatures') {
-      info = M.template.compileSync(infoTemplateOGC, {
+      info = IDEE.template.compileSync(infoTemplateOGC, {
         jsonp: false,
         parseToHtml: false,
         vars,
       });
       focusModal('.m-layerswitcher-info-cap p');
     } else if (type === 'Others') {
-      info = M.template.compileSync(infoTemplateOthers, {
+      info = IDEE.template.compileSync(infoTemplateOthers, {
         jsonp: false,
         parseToHtml: false,
         vars,
       });
       focusModal('.m-layerswitcher-info-cap p');
     } else {
-      info = M.template.compileSync(infoTemplate, {
+      info = IDEE.template.compileSync(infoTemplate, {
         jsonp: false,
         parseToHtml: false,
         vars,
@@ -927,7 +929,7 @@ export default class LayerswitcherControl extends M.Control {
       focusModal('.m-layerswitcher-info-cap p');
     }
 
-    M.dialog.info(info, getValue('layer_info'), this.order);
+    IDEE.dialog.info(info, getValue('layer_info'), this.order);
     setTimeout(() => {
       document.querySelector('div.m-api-idee-container div.m-dialog div.m-title').style.backgroundColor = '#71a7d3';
       const button = document.querySelector('div.m-dialog.info div.m-button > button');
@@ -940,18 +942,18 @@ export default class LayerswitcherControl extends M.Control {
   // Obtiene la información de la capa del GetCapabilities
   addCapabilitiesInformation(layer) {
     if (layer.type === 'WMS') {
-      return M.utils.getWMSGetCapabilitiesUrl(layer.url, layer.version);
+      return IDEE.utils.getWMSGetCapabilitiesUrl(layer.url, layer.version);
     }
 
     if (layer.type === 'WMTS') {
-      return M.utils.getWMTSGetCapabilitiesUrl(layer.url);
+      return IDEE.utils.getWMTSGetCapabilitiesUrl(layer.url);
     }
     return false;
   }
 
   // Obtiene información del provider
   informationProvider(layer) {
-    if (M.utils.isNullOrEmpty(layer.capabilitiesMetadata.attribution)) {
+    if (IDEE.utils.isNullOrEmpty(layer.capabilitiesMetadata.attribution)) {
       return false;
     }
     let provider = '';
@@ -966,7 +968,7 @@ export default class LayerswitcherControl extends M.Control {
       provider = `${layer.capabilitiesMetadata.attribution.ProviderName}`
         + `<p><a class="m-layerswitcher-provider-link" href="${layer.capabilitiesMetadata.attribution.ProviderSite}" target="_blank">${layer.capabilitiesMetadata.attribution.ProviderSite}</a></p>`;
       const sc = layer.capabilitiesMetadata.attribution.ServiceContact;
-      if (!M.utils.isNullOrEmpty(sc) && !M.utils.isNullOrEmpty(sc.ContactInfo)) {
+      if (!IDEE.utils.isNullOrEmpty(sc) && !IDEE.utils.isNullOrEmpty(sc.ContactInfo)) {
         const mail = sc.ContactInfo.Address.ElectronicMailAddress;
         provider += `<p><a class="m-layerswitcher-provider-link" href="mailto:${mail}">${mail}</a></p>`;
       }
@@ -977,8 +979,8 @@ export default class LayerswitcherControl extends M.Control {
 
   // Centro de descarga
   infoDownloadCenter(url, vars) {
-    M.proxy(this.useProxy);
-    M.remote.get(url).then((response) => {
+    IDEE.proxy(this.useProxy);
+    IDEE.remote.get(url).then((response) => {
       const metadataText = response.text;
       const unfiltered = metadataText.split('<gmd:MD_DigitalTransferOptions>')[1].split('<gmd:URL>').filter((elem) => {
         return elem.indexOf('centrodedescargas') > -1 && elem.indexOf('atom') === -1;
@@ -993,7 +995,7 @@ export default class LayerswitcherControl extends M.Control {
     }).catch((err) => {
       this.renderInfo(vars);
     });
-    M.proxy(this.statusProxy);
+    IDEE.proxy(this.statusProxy);
   }
 
   // Esta función muestra/oculta todas las capas
@@ -1073,8 +1075,8 @@ export default class LayerswitcherControl extends M.Control {
     addSuggestions.style.display = 'none';
     const url = searchInput.value.trim().split('?')[0];
     this.removeContains(evt);
-    if (!M.utils.isNullOrEmpty(url)) {
-      if (M.utils.isUrl(url)) {
+    if (!IDEE.utils.isNullOrEmpty(url)) {
+      if (IDEE.utils.isUrl(url)) {
         if (this.http && !this.https) {
           const expReg = /^(http:)/;
           HTTPeval = expReg.test(url);
@@ -1106,8 +1108,8 @@ export default class LayerswitcherControl extends M.Control {
             } else if (url.indexOf('{z}/{x}/{y}' && !url.indexOf('.pbf')) >= 0) {
               this.printLayerModal(url, 'xyz');
             } else {
-              M.proxy(this.useProxy);
-              M.remote.get(metadata).then((meta) => {
+              IDEE.proxy(this.useProxy);
+              IDEE.remote.get(metadata).then((meta) => {
                 if (json && meta.text.indexOf('sources') !== -1 && meta.text.indexOf('version') !== -1 && meta.text.indexOf('layers') !== -1) {
                   this.printLayerModal(url, 'maplibre');
                 } else if (json && meta.text.replaceAll('\r\n', '').replaceAll(' ', '').indexOf('"type":"FeatureCollection"') >= 0) {
@@ -1115,8 +1117,8 @@ export default class LayerswitcherControl extends M.Control {
                 } else {
                   let parse = JSON.parse(meta.text);
                   let url2;
-                  if (!M.utils.isNullOrEmpty(parse)) {
-                    if (!M.utils.isNullOrEmpty(parse.json)) {
+                  if (!IDEE.utils.isNullOrEmpty(parse)) {
+                    if (!IDEE.utils.isNullOrEmpty(parse.json)) {
                       parse = JSON.parse(parse.json);
                     }
                     url2 = metadata.substring(0, metadata.lastIndexOf('/') + 1).concat(orderxyz);
@@ -1125,7 +1127,7 @@ export default class LayerswitcherControl extends M.Control {
                   }
                   let layers = parse.vector_layers || [];
                   let urlLayer = parse.tileurl || parse.tiles || url2 || url;
-                  if (M.utils.isString(urlLayer)) {
+                  if (IDEE.utils.isString(urlLayer)) {
                     urlLayer = [urlLayer];
                   }
                   layers = layers.map((layer) => {
@@ -1141,7 +1143,7 @@ export default class LayerswitcherControl extends M.Control {
                   }
                 }
               });
-              M.proxy(this.statusProxy);
+              IDEE.proxy(this.statusProxy);
             }
 
             // GeoTIFF
@@ -1159,20 +1161,20 @@ export default class LayerswitcherControl extends M.Control {
           } else {
             const promise = new Promise((success, reject) => {
               const id = setTimeout(() => reject(), 15000);
-              M.proxy(this.useProxy);
-              M.remote.get(M.utils.getWMTSGetCapabilitiesUrl(url)).then((response) => {
+              IDEE.proxy(this.useProxy);
+              IDEE.remote.get(IDEE.utils.getWMTSGetCapabilitiesUrl(url)).then((response) => {
                 clearTimeout(id);
                 success(response);
               });
-              M.proxy(this.statusProxy);
+              IDEE.proxy(this.statusProxy);
             });
 
             promise.then((response) => {
-              if (response.text && !M.utils.isNullOrEmpty(response.text) && response.text.indexOf('<TileMatrixSetLink>') >= 0 && response.text.indexOf('Operation name="GetTile"') >= 0) {
-                const getCapabilitiesParser = new M.impl.format.WMTSCapabilities();
+              if (response.text && !IDEE.utils.isNullOrEmpty(response.text) && response.text.indexOf('<TileMatrixSetLink>') >= 0 && response.text.indexOf('Operation name="GetTile"') >= 0) {
+                const getCapabilitiesParser = new IDEE.impl.format.WMTSCapabilities();
                 const getCapabilities = getCapabilitiesParser.read(response.xml);
                 this.serviceCapabilities = getCapabilities.capabilities || {};
-                const layers = M.impl.util.wmtscapabilities.getLayers(
+                const layers = IDEE.impl.util.wmtscapabilities.getLayers(
                   getCapabilities.capabilities,
                   url,
                   this.map_.getProjection().code,
@@ -1182,38 +1184,38 @@ export default class LayerswitcherControl extends M.Control {
               } else {
                 const promise2 = new Promise((success, reject) => {
                   const id = setTimeout(() => reject(), 15000);
-                  M.proxy(this.useProxy);
-                  M.remote.get(M.utils.getWMSGetCapabilitiesUrl(url, '1.3.0')).then((response2) => {
+                  IDEE.proxy(this.useProxy);
+                  IDEE.remote.get(IDEE.utils.getWMSGetCapabilitiesUrl(url, '1.3.0')).then((response2) => {
                     clearTimeout(id);
                     success(response2);
                   });
-                  M.proxy(this.statusProxy);
+                  IDEE.proxy(this.statusProxy);
                 });
                 const promisewfs = new Promise((success, reject) => {
                   const id = setTimeout(() => reject(), 15000);
                   let urlAux = url;
-                  urlAux = M.utils.addParameters(url, 'request=GetCapabilities');
-                  urlAux = M.utils.addParameters(urlAux, 'service=WFS');
+                  urlAux = IDEE.utils.addParameters(url, 'request=GetCapabilities');
+                  urlAux = IDEE.utils.addParameters(urlAux, 'service=WFS');
 
-                  urlAux = M.utils.addParameters(urlAux, {
+                  urlAux = IDEE.utils.addParameters(urlAux, {
                     version: '1.3.0',
                   });
-                  M.proxy(this.useProxy);
-                  M.remote.get(urlAux).then((responsewfs) => {
+                  IDEE.proxy(this.useProxy);
+                  IDEE.remote.get(urlAux).then((responsewfs) => {
                     clearTimeout(id);
                     success(responsewfs);
                   });
-                  M.proxy(this.statusProxy);
+                  IDEE.proxy(this.statusProxy);
                 });
                 Promise.all([promise2, promisewfs]).then((response2) => {
                   let wms = false;
                   let wfs = false;
 
-                  if (!M.utils.isNullOrEmpty(response2[0].text) && response2[0].text.indexOf('<TileMatrixSetLink>') === -1 && response2[0].text.indexOf('<GetMap>') >= 0) {
+                  if (!IDEE.utils.isNullOrEmpty(response2[0].text) && response2[0].text.indexOf('<TileMatrixSetLink>') === -1 && response2[0].text.indexOf('<GetMap>') >= 0) {
                     wms = true;
                   }
 
-                  if (!M.utils.isNullOrEmpty(response2[1].text) && response2[1].text.indexOf('<TileMatrixSetLink>') === -1 && response2[1].text.indexOf('Operation name="GetFeature"') >= 0) {
+                  if (!IDEE.utils.isNullOrEmpty(response2[1].text) && response2[1].text.indexOf('<TileMatrixSetLink>') === -1 && response2[1].text.indexOf('Operation name="GetFeature"') >= 0) {
                     wfs = true;
                   }
 
@@ -1221,10 +1223,10 @@ export default class LayerswitcherControl extends M.Control {
                     try {
                       // WMS
                       if (wms) {
-                        const getCapabilitiesParser = new M.impl.format.WMSCapabilities();
+                        const getCapabilitiesParser = new IDEE.impl.format.WMSCapabilities();
                         const getCapabilities = getCapabilitiesParser.read(response2[0].xml || new DOMParser().parseFromString(response2[0].text, 'text/xml'));
                         this.serviceCapabilities = getCapabilities.Service || {};
-                        const getCapabilitiesUtils = new M.impl.GetCapabilities(
+                        const getCapabilitiesUtils = new IDEE.impl.GetCapabilities(
                           getCapabilities,
                           url,
                           this.map_.getProjection().code,
@@ -1243,7 +1245,7 @@ export default class LayerswitcherControl extends M.Control {
                       }
                       this.showResults(wfsDatas);
                     } catch (error) {
-                      M.dialog.error(getValue('exception.capabilities'), undefined, this.order);
+                      IDEE.dialog.error(getValue('exception.capabilities'), undefined, this.order);
                       this.removeLoading();
                     }
                   } else {
@@ -1253,24 +1255,24 @@ export default class LayerswitcherControl extends M.Control {
                           if (responseIsOGC) {
                             this.printOGCModal(url);
                           } else {
-                            M.dialog.error(getValue('exception.ogcfeatures'), undefined, this.order);
+                            IDEE.dialog.error(getValue('exception.ogcfeatures'), undefined, this.order);
                             this.removeLoading();
                           }
                         });
                       } else {
-                        M.proxy(this.useProxy);
+                        IDEE.proxy(this.useProxy);
                         const extension = url.includes('.') ? url.substring(url.lastIndexOf('.') + 1, url.length) : '';
                         if (['zip', 'gpx', 'gml'].includes(extension)) {
                           this.openFileFromUrl(url, extension);
                         } else {
-                          M.remote.get(url).then((response3) => {
+                          IDEE.remote.get(url).then((response3) => {
                             // GEOJSON
-                            if (M.utils.isNullOrEmpty(response3.text)) {
-                              M.remote.get(searchInput.value.trim()).then((response4) => {
-                                if (!M.utils.isNullOrEmpty(response4.text) && response4.text.replaceAll('\r\n', '').replaceAll(' ', '').indexOf('"type":"FeatureCollection"') >= 0) {
+                            if (IDEE.utils.isNullOrEmpty(response3.text)) {
+                              IDEE.remote.get(searchInput.value.trim()).then((response4) => {
+                                if (!IDEE.utils.isNullOrEmpty(response4.text) && response4.text.replaceAll('\r\n', '').replaceAll(' ', '').indexOf('"type":"FeatureCollection"') >= 0) {
                                   this.printLayerModal(searchInput.value.trim(), 'geojson');
                                 } else {
-                                  M.dialog.error(getValue('exception.capabilities'), undefined, this.order);
+                                  IDEE.dialog.error(getValue('exception.capabilities'), undefined, this.order);
                                   this.removeLoading();
                                 }
                               });
@@ -1290,18 +1292,18 @@ export default class LayerswitcherControl extends M.Control {
                             }
                           });
                         }
-                        M.proxy(this.statusProxy);
+                        IDEE.proxy(this.statusProxy);
                       }
                     });
-                    M.proxy(this.statusProxy);
+                    IDEE.proxy(this.statusProxy);
                   }
                 }).catch((eerror) => {
-                  M.dialog.error(getValue('exception.capabilities'), undefined, this.order);
+                  IDEE.dialog.error(getValue('exception.capabilities'), undefined, this.order);
                   this.removeLoading();
                 });
               }
             }).catch((err) => {
-              M.dialog.error(getValue('exception.capabilities'), undefined, this.order);
+              IDEE.dialog.error(getValue('exception.capabilities'), undefined, this.order);
               this.removeLoading();
             });
           }
@@ -1314,13 +1316,13 @@ export default class LayerswitcherControl extends M.Control {
           } else if (!this.http && !this.https) {
             errorMsg = getValue('exception.no_http_https');
           }
-          M.dialog.error(errorMsg, undefined, this.order);
+          IDEE.dialog.error(errorMsg, undefined, this.order);
         }
       } else {
-        M.dialog.error(getValue('exception.valid_url'), undefined, this.order);
+        IDEE.dialog.error(getValue('exception.valid_url'), undefined, this.order);
       }
     } else {
-      M.dialog.error(getValue('exception.empty'), undefined, this.order);
+      IDEE.dialog.error(getValue('exception.empty'), undefined, this.order);
     }
   }
 
@@ -1331,7 +1333,7 @@ export default class LayerswitcherControl extends M.Control {
       || (precharged.services !== undefined && precharged.services.length > 0);
     const codsiActive = this.codsiActive;
     const accept = '.kml, .zip, .gpx, .geojson, .gml, .json';
-    const addServices = M.template.compileSync(addServicesTemplate, {
+    const addServices = IDEE.template.compileSync(addServicesTemplate, {
       jsonp: true,
       parseToHtml: false,
       vars: {
@@ -1354,7 +1356,7 @@ export default class LayerswitcherControl extends M.Control {
         },
       },
     });
-    M.dialog.info(addServices, getValue('load_ext_services'), this.order);
+    IDEE.dialog.info(addServices, getValue('load_ext_services'), this.order);
 
     setTimeout(() => {
       // Se modifica texto bt cerrar modal
@@ -1422,28 +1424,28 @@ export default class LayerswitcherControl extends M.Control {
   }
 
   changeFile(inputFile) {
-    M.loadFiles.addFileToMap(this.map_, inputFile.files[0]);
+    IDEE.loadFiles.addFileToMap(this.map_, inputFile.files[0]);
     inputFile.value = '';
     const buttonClose = document.querySelector('div.m-dialog.info div.m-button > button');
     buttonClose.click();
   }
 
   openFileFromUrl(url, extension) {
-    if (M.utils.isUrl(url)) {
+    if (IDEE.utils.isUrl(url)) {
       const fileName = url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'));
       if (['zip', 'kml', 'gpx', 'geojson', 'gml', 'json'].includes(extension) > -1) {
         if (extension === 'zip') {
           this.downloadShp(url, fileName);
         } else {
-          M.remote.get(url).then((response) => {
+          IDEE.remote.get(url).then((response) => {
             const source = response.text;
-            M.utils.loadFeaturesFromSource(this.map_, source, fileName, extension);
+            IDEE.utils.loadFeaturesFromSource(this.map_, source, fileName, extension);
             const buttonClose = document.querySelector('div.m-dialog.info div.m-button > button');
             buttonClose.click();
           });
         }
       } else {
-        M.dialog.error(getValue('exception.url_not_valid'));
+        IDEE.dialog.error(getValue('exception.url_not_valid'));
       }
     }
   }
@@ -1452,23 +1454,23 @@ export default class LayerswitcherControl extends M.Control {
     window.fetch(url)
       .then((response) => {
         if (!response.ok) {
-          M.dialog.error(getValue('exception.url_not_valid'));
+          IDEE.dialog.error(getValue('exception.url_not_valid'));
           return null;
         }
         return response.blob();
       }).then((blob) => {
         if (blob) {
           blob.arrayBuffer().then((buffer) => {
-            M.utils.loadFeaturesFromSource(this.map_, buffer, fileName, 'zip');
+            IDEE.utils.loadFeaturesFromSource(this.map_, buffer, fileName, 'zip');
             const buttonClose = document.querySelector('div.m-dialog.info div.m-button > button');
             buttonClose.click();
           });
         } else {
-          M.dialog.error(getValue('exception.url_not_valid'));
+          IDEE.dialog.error(getValue('exception.url_not_valid'));
         }
       })
       .catch((error) => {
-        M.dialog.error(getValue('exception.url_not_valid'));
+        IDEE.dialog.error(getValue('exception.url_not_valid'));
       });
   }
 
@@ -1712,7 +1714,7 @@ export default class LayerswitcherControl extends M.Control {
     this.removeLoading();
     const result = [];
     let serviceType = 'WMS';
-    if (!M.utils.isUndefined(this.capabilities)) {
+    if (!IDEE.utils.isUndefined(this.capabilities)) {
       this.capabilities.forEach((capability) => {
         const add = capability.getImpl();
         add.abstract = capability.capabilitiesMetadata.abstract.trim();
@@ -1722,7 +1724,7 @@ export default class LayerswitcherControl extends M.Control {
     }
 
     const container = document.querySelector(ADDSERVICES_RESULTS);
-    if (result.length > 0 || !M.utils.isUndefined(wfsDatas)) {
+    if (result.length > 0 || !IDEE.utils.isUndefined(wfsDatas)) {
       const serviceCapabilities = {};
       let showgeneral = true;
       if (serviceType === 'WMTS') {
@@ -1743,14 +1745,14 @@ export default class LayerswitcherControl extends M.Control {
         if (sp !== undefined) {
           let contact = `${sp.ProviderName}<p><a class="m-layerswitcher-provider-link" href="${sp.ProviderSite}" target="_blank">${sp.ProviderSite}</a></p>`;
           const ci = sp.ServiceContact.ContactInfo;
-          if (!M.utils.isNullOrEmpty(sp.ServiceContact) && !M.utils.isNullOrEmpty(ci)) {
+          if (!IDEE.utils.isNullOrEmpty(sp.ServiceContact) && !IDEE.utils.isNullOrEmpty(ci)) {
             const mail = ci.Address.ElectronicMailAddress;
             contact += `<p><a class="m-layerswitcher-provider-link" href="mailto:${mail}">${mail}</a></p>`;
           }
 
           serviceCapabilities.contact = contact;
         }
-      } else if (!M.utils.isUndefined(this.serviceCapabilities)) {
+      } else if (!IDEE.utils.isUndefined(this.serviceCapabilities)) {
         const ci = this.serviceCapabilities.ContactInformation;
         if (this.serviceCapabilities.Title !== undefined) {
           serviceCapabilities.title = this.serviceCapabilities.Title.trim();
@@ -1792,13 +1794,13 @@ export default class LayerswitcherControl extends M.Control {
         },
       };
 
-      if (!M.utils.isUndefined(wfsDatas)) {
+      if (!IDEE.utils.isUndefined(wfsDatas)) {
         vars.layersWFS = wfsDatas.services;
         vars.serviceCapabilitieswfs = wfsDatas.capabilities;
         vars.isWFS = true;
       }
 
-      const html = M.template.compileSync(resultstemplate, {
+      const html = IDEE.template.compileSync(resultstemplate, {
         vars,
       });
 
@@ -1829,16 +1831,16 @@ export default class LayerswitcherControl extends M.Control {
       checkboxResults.forEach((l) => l.addEventListener('keydown', (e) => (e.keyCode === 13) && this.registerCheckFromName(e)));
 
       const sAll = container.querySelector('#m-layerswitcher-addservices-selectall');
-      if (!M.utils.isNull(sAll)) {
+      if (!IDEE.utils.isNull(sAll)) {
         sAll.addEventListener('click', (evt) => this.registerCheck(evt));
       }
       const selAllWFS = container.querySelector('#m-layerswitcher-addservices-selectall-wfs');
-      if (!M.utils.isNull(selAllWFS)) {
+      if (!IDEE.utils.isNull(selAllWFS)) {
         selAllWFS.addEventListener('click', (evt) => this.registerCheckWFS(evt));
       }
       container.querySelector('.m-layerswitcher-addservices-add').addEventListener('click', (evt) => this.addSelected_WMS_WMTS_WFS(evt));
       const elem = container.querySelector('.m-layerswitcher-show-capabilities');
-      if (!M.utils.isNull(elem)) {
+      if (!IDEE.utils.isNull(elem)) {
         elem.addEventListener('click', () => {
           const block = container.querySelector('.m-layerswitcher-capabilities-container');
           if (block.style.display !== 'block') {
@@ -1851,7 +1853,7 @@ export default class LayerswitcherControl extends M.Control {
         });
       }
       const elem2 = container.querySelector('.m-layerswitcher-show-capabilities-wfs');
-      if (!M.utils.isNull(elem2)) {
+      if (!IDEE.utils.isNull(elem2)) {
         elem2.addEventListener('click', () => {
           const block = container.querySelector('.m-layerswitcher-capabilities-container-wfs');
           if (block.style.display !== 'block') {
@@ -1872,10 +1874,10 @@ export default class LayerswitcherControl extends M.Control {
 
   // Determina si es OGCAPI
   checkIfOGCAPIFeatures(url) {
-    M.proxy(this.useProxy);
-    return M.remote.get(`${url}?f=json`).then((response) => {
+    IDEE.proxy(this.useProxy);
+    return IDEE.remote.get(`${url}?f=json`).then((response) => {
       let isJson = false;
-      if (!M.utils.isNullOrEmpty(response) && !M.utils.isNullOrEmpty(response.text) && response.text.indexOf('collections') !== -1) {
+      if (!IDEE.utils.isNullOrEmpty(response) && !IDEE.utils.isNullOrEmpty(response.text) && response.text.indexOf('collections') !== -1) {
         isJson = true;
       }
       return isJson;
@@ -1885,17 +1887,17 @@ export default class LayerswitcherControl extends M.Control {
   }
 
   checkIfOGCAPICollection(url) {
-    M.proxy(this.useProxy);
+    IDEE.proxy(this.useProxy);
     const collections = `${(url.endsWith('/') ? url : `${url}/`)}collections?f=json`;
-    return M.remote.get(collections).then((response) => {
+    return IDEE.remote.get(collections).then((response) => {
       let isOGCAPI = false;
-      if (!M.utils.isNullOrEmpty(response) && !M.utils.isNullOrEmpty(response.text)) {
+      if (!IDEE.utils.isNullOrEmpty(response) && !IDEE.utils.isNullOrEmpty(response.text)) {
         const responseJson = JSON.parse(response.text);
         if (responseJson.collections.length > 0 && responseJson.collections[0].itemType === 'feature') {
           isOGCAPI = true;
         } else {
           const collections2 = `${(url.endsWith('/') ? url : `${url}/`)}collections/${responseJson.collections[0].id}/items?f=json&limit=1`;
-          return M.remote.get(collections2).then((response2) => {
+          return IDEE.remote.get(collections2).then((response2) => {
             const responseJson2 = JSON.parse(response2.text);
             if (responseJson2.type === 'FeatureCollection') {
               isOGCAPI = true;
@@ -1913,7 +1915,7 @@ export default class LayerswitcherControl extends M.Control {
   // Registra los checks de las capas
   registerCheck(evt) {
     const e = (evt || window.event);
-    if (!M.utils.isNullOrEmpty(e.target) && e.target.classList.contains('m-check-layerswitcher-addservices')) {
+    if (!IDEE.utils.isNullOrEmpty(e.target) && e.target.classList.contains('m-check-layerswitcher-addservices')) {
       const container = document.querySelector(ADDSERVICES_RESULTS);
       let numNotChecked = container.querySelectorAll('.m-check-layerswitcher-addservices.m-layerswitcher-icons-check').length;
       numNotChecked += (e.target.classList.contains('m-layerswitcher-icons-check') ? -1 : 1);
@@ -1929,7 +1931,7 @@ export default class LayerswitcherControl extends M.Control {
         document.querySelector('#m-layerswitcher-addservices-selectall').classList.remove('m-layerswitcher-icons-check');
         document.querySelector('#m-layerswitcher-addservices-selectall').classList.add('m-layerswitcher-icons-check-seleccionado');
       }
-    } else if (!M.utils.isNullOrEmpty(e.target) && e.target.id === 'm-layerswitcher-addservices-selectall') {
+    } else if (!IDEE.utils.isNullOrEmpty(e.target) && e.target.id === 'm-layerswitcher-addservices-selectall') {
       if (this.stateSelectAll) {
         e.target.classList.remove('m-layerswitcher-icons-check-seleccionado');
         e.target.classList.add('m-layerswitcher-icons-check');
@@ -1947,7 +1949,7 @@ export default class LayerswitcherControl extends M.Control {
   // Registra los checks de las WFS
   registerCheckWFS(evt) {
     const e = (evt || window.event);
-    if (!M.utils.isNullOrEmpty(e.target) && e.target.classList.contains('m-check-layerswitcher-addservices-wfs')) {
+    if (!IDEE.utils.isNullOrEmpty(e.target) && e.target.classList.contains('m-check-layerswitcher-addservices-wfs')) {
       const container = document.querySelector(ADDSERVICES_RESULTS);
       let numNotChecked = container.querySelectorAll('.m-check-layerswitcher-addservices-wfs.m-layerswitcher-icons-check').length;
       numNotChecked += (e.target.classList.contains('m-layerswitcher-icons-check') ? -1 : 1);
@@ -1963,7 +1965,7 @@ export default class LayerswitcherControl extends M.Control {
         document.querySelector('#m-layerswitcher-addservices-selectall-wfs').classList.remove('m-layerswitcher-icons-check');
         document.querySelector('#m-layerswitcher-addservices-selectall-wfs').classList.add('m-layerswitcher-icons-check-seleccionado');
       }
-    } else if (!M.utils.isNullOrEmpty(e.target) && e.target.id === 'm-layerswitcher-addservices-selectall-wfs') {
+    } else if (!IDEE.utils.isNullOrEmpty(e.target) && e.target.id === 'm-layerswitcher-addservices-selectall-wfs') {
       if (this.stateSelectAll) {
         e.target.classList.remove('m-layerswitcher-icons-check-seleccionado');
         e.target.classList.add('m-layerswitcher-icons-check');
@@ -2005,7 +2007,7 @@ export default class LayerswitcherControl extends M.Control {
           extact: true,
           format: format || 'application/json',
         };
-        if (M.utils.isUndefined(name)) {
+        if (IDEE.utils.isUndefined(name)) {
           obj.name = namespace;
         } else {
           obj.name = name;
@@ -2023,7 +2025,7 @@ export default class LayerswitcherControl extends M.Control {
     const elmSel = document.querySelectorAll('#m-layerswitcher-addservices-results #m-layerswitcher-all .m-layerswitcher-icons-check-seleccionado');
     const elmSelWFS = document.querySelectorAll('#m-layerswitcher-addservices-results #m-layerswitcher-wfs .m-layerswitcher-icons-check-seleccionado');
     if (elmSel.length === 0 && elmSelWFS.length === 0) {
-      M.dialog.error(getValue('exception.select_layer'), undefined, this.order);
+      IDEE.dialog.error(getValue('exception.select_layer'), undefined, this.order);
     } else {
       for (let i = 0; i < elmSel.length; i += 1) {
         for (let j = 0; j < this.capabilities.length; j += 1) {
@@ -2136,7 +2138,7 @@ export default class LayerswitcherControl extends M.Control {
 
   // Plantilla para añadir capas (Generales)
   printLayerModal(url, type, layers) {
-    const modal = M.template.compileSync(layerModalTemplate, {
+    const modal = IDEE.template.compileSync(layerModalTemplate, {
       jsonp: true,
       parseToHtml: false,
       vars: {
@@ -2161,7 +2163,7 @@ export default class LayerswitcherControl extends M.Control {
 
     if (type === 'mvt' || type === 'kml') {
       const selAll = document.querySelector('#m-layerswitcher-addservices-selectall');
-      if (!M.utils.isNullOrEmpty(selAll)) {
+      if (!IDEE.utils.isNullOrEmpty(selAll)) {
         selAll.addEventListener('click', (evt) => this.registerCheck(evt));
         const results = document.querySelectorAll('span.m-check-layerswitcher-addservices');
         for (let i = 0; i < results.length; i += 1) {
@@ -2177,14 +2179,14 @@ export default class LayerswitcherControl extends M.Control {
       const randomNumber = Math.floor(Math.random() * 9000) + 1000;
       const nameModal = document.querySelector('#m-layerswitcher-layer-name');
       let name = null;
-      if (M.utils.isNullOrEmpty(name)) {
+      if (IDEE.utils.isNullOrEmpty(name)) {
         name = `layer_${randomNumber}`;
       } else {
         name = name.value || `layer_${randomNumber}`;
       }
       const legend = document.querySelector('#m-layerswitcher-layer-legend').value || name || `layer_${randomNumber}`;
       let matrixSet = document.querySelector('#m-layerswitcher-layer-matrixset');
-      if (!M.utils.isNullOrEmpty(matrixSet)) {
+      if (!IDEE.utils.isNullOrEmpty(matrixSet)) {
         matrixSet = matrixSet.value || 'EPSG:3857';
       }
 
@@ -2215,7 +2217,7 @@ export default class LayerswitcherControl extends M.Control {
     let layer = null;
 
     if (type === 'osm') {
-      layer = new M.layer.OSM({
+      layer = new IDEE.layer.OSM({
         name,
         legend,
         transparent: true,
@@ -2223,21 +2225,21 @@ export default class LayerswitcherControl extends M.Control {
         matrixSet,
       });
     } else if (type === 'geojson') {
-      layer = new M.layer.GeoJSON({
+      layer = new IDEE.layer.GeoJSON({
         extract: true,
         name,
         legend,
         url,
       });
     } else if (type === 'tms') {
-      layer = new M.layer.TMS({
+      layer = new IDEE.layer.TMS({
         name,
         legend,
         url,
         // projection: matrixSet,
       });
     } else if (type === 'xyz') {
-      layer = new M.layer.XYZ({
+      layer = new IDEE.layer.XYZ({
         name,
         legend,
         url,
@@ -2250,7 +2252,7 @@ export default class LayerswitcherControl extends M.Control {
         layersSelected.push(elm.id);
       });
       const nameLayers = document.querySelector('#m-layerswitcher-layer-name');
-      if (!M.utils.isNullOrEmpty(nameLayers) && nameLayers.value.indexOf('layer_') === -1) {
+      if (!IDEE.utils.isNullOrEmpty(nameLayers) && nameLayers.value.indexOf('layer_') === -1) {
         layersSelected = nameLayers.value.split(',');
       }
       const obj = {
@@ -2260,10 +2262,10 @@ export default class LayerswitcherControl extends M.Control {
         projection: matrixSet,
         extract: true,
       };
-      if (!M.utils.isNullOrEmpty(layersSelected)) {
+      if (!IDEE.utils.isNullOrEmpty(layersSelected)) {
         obj.layers = layersSelected;
       }
-      layer = new M.layer.MVT(obj);
+      layer = new IDEE.layer.MVT(obj);
     } else if (type === 'kml') {
       const elmSel = document.querySelectorAll('#m-layerswitcher-addservices-results .m-layerswitcher-icons-check-seleccionado');
       const layersSelected = [];
@@ -2276,33 +2278,33 @@ export default class LayerswitcherControl extends M.Control {
         url,
         extract: true,
       };
-      if (!M.utils.isNullOrEmpty(layersSelected)) {
+      if (!IDEE.utils.isNullOrEmpty(layersSelected)) {
         obj.layers = layersSelected;
       }
-      layer = new M.layer.KML(obj);
+      layer = new IDEE.layer.KML(obj);
     } else if (type === 'geotiff') {
-      layer = new M.layer.GeoTIFF({
+      layer = new IDEE.layer.GeoTIFF({
         name,
         legend,
         url,
       });
     } else if (type === 'maplibre') {
-      layer = new M.layer.MapLibre({
+      layer = new IDEE.layer.MapLibre({
         name,
         legend,
         url,
         extract: true,
       });
     } else if (type === 'layerGroup') {
-      layer = new M.layer.LayerGroup({
+      layer = new IDEE.layer.LayerGroup({
         name,
         legend,
       });
     } else if (type === 'OGCAPIFeatures') {
-      layer = new M.layer.OGCAPIFeatures(OGCAPIFeatures);
+      layer = new IDEE.layer.OGCAPIFeatures(OGCAPIFeatures);
       layer.setZIndex(layer.getZIndex() + 8);
     } else if (type === 'WFS') {
-      layer = new M.layer.WFS({
+      layer = new IDEE.layer.WFS({
         name,
         namespace,
         legend,
@@ -2338,21 +2340,21 @@ export default class LayerswitcherControl extends M.Control {
   ) {
     let prevID;
     let urlOGC = url.trim();
-    if (M.utils.isUrl(urlOGC)) {
+    if (IDEE.utils.isUrl(urlOGC)) {
       document.querySelector(SEARCH_INPUT).value = url;
 
       const collections = `${(urlOGC.endsWith('/') ? urlOGC : `${urlOGC}/`)}collections?f=json`;
-      M.proxy(this.useProxy);
-      M.remote.get(collections).then((response) => {
+      IDEE.proxy(this.useProxy);
+      IDEE.remote.get(collections).then((response) => {
         const resJSON = JSON.parse(response.text);
         const layers = resJSON.collections;
-        if (M.utils.isNullOrEmpty(summary)) {
+        if (IDEE.utils.isNullOrEmpty(summary)) {
           summary = undefined;
           filterByID = undefined;
           filterByOtherFilters = undefined;
         }
 
-        const ogcModal = M.template.compileSync(ogcModalTemplate, {
+        const ogcModal = IDEE.template.compileSync(ogcModalTemplate, {
           jsonp: true,
           parseToHtml: false,
           vars: {
@@ -2403,9 +2405,9 @@ export default class LayerswitcherControl extends M.Control {
         );
       }).catch((err) => {
         urlOGC = '';
-        M.dialog.error(getValue('exception.error_ogc'), undefined, this.order);
+        IDEE.dialog.error(getValue('exception.error_ogc'), undefined, this.order);
       });
-      M.proxy(this.statusProxy);
+      IDEE.proxy(this.statusProxy);
     }
   }
 
@@ -2478,7 +2480,7 @@ export default class LayerswitcherControl extends M.Control {
 
     btnAddLayer.addEventListener('click', () => {
       if (selectValue === getValue('select_service')) {
-        M.dialog.error(getValue('no_results'), undefined, this.order);
+        IDEE.dialog.error(getValue('no_results'), undefined, this.order);
       } else {
         properties = this.getProperties(selectValue, summary);
 
@@ -2491,7 +2493,7 @@ export default class LayerswitcherControl extends M.Control {
 
     btnCheck.addEventListener('click', () => {
       if (selectValue === getValue('select_service')) {
-        M.dialog.error(getValue('no_results'), undefined, this.order);
+        IDEE.dialog.error(getValue('no_results'), undefined, this.order);
       } else {
         properties = this.getProperties(selectValue, summary);
         this.getNumberFeaturesOGCAPIFeaturesLayer(properties).then((numberFeatures) => {
@@ -2511,7 +2513,7 @@ export default class LayerswitcherControl extends M.Control {
           .then(() => {
             document.querySelector('#m-layerswitcher-ogc-check-results').focus();
           });
-        M.proxy(this.statusProxy);
+        IDEE.proxy(this.statusProxy);
       }
     });
 
@@ -2523,8 +2525,8 @@ export default class LayerswitcherControl extends M.Control {
       const limit = document.querySelector('#m-layerswitcher-ogc-limit-items').value;
       const checked = document.querySelector('#m-layerswitcher-ogc-search-bbox').checked;
       const urlQueryables = `${urlOGC}/collections/${selectValue}/queryables`;
-      M.proxy(this.useProxy);
-      M.remote.get(urlQueryables).then((queryablesResponse) => {
+      IDEE.proxy(this.useProxy);
+      IDEE.remote.get(urlQueryables).then((queryablesResponse) => {
         try {
           const res = JSON.parse(queryablesResponse.text);
           const props = res.properties;
@@ -2553,7 +2555,7 @@ export default class LayerswitcherControl extends M.Control {
         } catch (error) { /* Continue */ }
         const urlInput = document.querySelector(SEARCH_INPUT).value;
 
-        const customQueryTemplate = M.template.compileSync(customQueryFiltersTemplate, {
+        const customQueryTemplate = IDEE.template.compileSync(customQueryFiltersTemplate, {
           jsonp: true,
           parseToHtml: false,
           vars: {
@@ -2568,8 +2570,8 @@ export default class LayerswitcherControl extends M.Control {
           },
         });
         const msg = `${getValue('custom_query_btn')}`;
-        M.dialog.remove(ogcModalTemplate, undefined, this.order);
-        M.dialog.info(customQueryTemplate, msg, this.order);
+        IDEE.dialog.remove(ogcModalTemplate, undefined, this.order);
+        IDEE.dialog.info(customQueryTemplate, msg, this.order);
         const btnApplyFilters = document.createElement('button');
         const btnBack = document.createElement('button');
         setTimeout(() => {
@@ -2621,7 +2623,7 @@ export default class LayerswitcherControl extends M.Control {
             return capa.id === selectValue;
           });
 
-          if (M.utils.isNullOrEmpty(cDict)) {
+          if (IDEE.utils.isNullOrEmpty(cDict)) {
             this.printOGCModal(url, indexCurrentLayer, limit, checked);
           } else if (Object.keys(cDict).length === 0) {
             this.printOGCModal(url, indexCurrentLayer, limit, checked);
@@ -2654,9 +2656,9 @@ export default class LayerswitcherControl extends M.Control {
           );
         });
       }).catch((err) => {
-        M.dialog.error(getValue('no_results'), undefined, this.order);
+        IDEE.dialog.error(getValue('no_results'), undefined, this.order);
       });
-      M.proxy(this.statusProxy);
+      IDEE.proxy(this.statusProxy);
     });
   }
 
@@ -2739,13 +2741,13 @@ export default class LayerswitcherControl extends M.Control {
           // }
           break;
         case 'date':
-          if (!M.utils.isNullOrEmpty(inputForm.value)) {
+          if (!IDEE.utils.isNullOrEmpty(inputForm.value)) {
             const date = new Date(inputForm.value);
             formData[attrName] = date.toISOString().split('T')[0];
           }
           break;
         default:
-          if (!M.utils.isNullOrEmpty(inputForm.value)) {
+          if (!IDEE.utils.isNullOrEmpty(inputForm.value)) {
             // formData[attrName] = encodeURIComponent(inputForm.value);
             formData[attrName] = inputForm.value;
           }
@@ -2777,12 +2779,12 @@ export default class LayerswitcherControl extends M.Control {
 
   // Devuelve el número de features de un layer OGCAPI
   getNumberFeaturesOGCAPIFeaturesLayer(layerParameters) {
-    const layer = new M.layer.OGCAPIFeatures(layerParameters);
+    const layer = new IDEE.layer.OGCAPIFeatures(layerParameters);
     const url = this.getFeatureUrl(layer);
     let numberFeatures;
     let jsonResponseOgc;
-    M.proxy(this.useProxy);
-    return M.remote.get(url).then((response) => {
+    IDEE.proxy(this.useProxy);
+    return IDEE.remote.get(url).then((response) => {
       jsonResponseOgc = JSON.parse(response.text);
       if (jsonResponseOgc !== null) {
         if (jsonResponseOgc.type === 'Feature') {
@@ -2818,35 +2820,35 @@ export default class LayerswitcherControl extends M.Control {
     };
     let fUrl;
     /* eslint-disable no-param-reassign */
-    if (!M.utils.isNullOrEmpty(layer.name)) {
+    if (!IDEE.utils.isNullOrEmpty(layer.name)) {
       layer.url = `${layer.url}${layer.name}/items`;
     }
 
-    if (!M.utils.isNullOrEmpty(layer.format)) {
+    if (!IDEE.utils.isNullOrEmpty(layer.format)) {
       getFeatureParams.f = layer.format;
     }
 
-    if (!M.utils.isNullOrEmpty(layer.id)) {
+    if (!IDEE.utils.isNullOrEmpty(layer.id)) {
       layer.url = `${layer.url}${layer.id}?`;
-      fUrl = M.utils.addParameters(M.utils
+      fUrl = IDEE.utils.addParameters(IDEE.utils
         .addParameters(layer.url, getFeatureParams), layer.getFeatureVendor);
     } else {
       layer.url = `${layer.url}?`;
       /* eslint-enable no-param-reassign */
-      if (!M.utils.isNullOrEmpty(layer.limit)) {
+      if (!IDEE.utils.isNullOrEmpty(layer.limit)) {
         getFeatureParams.limit = layer.limit;
       }
 
-      if (!M.utils.isNullOrEmpty(layer.offset)) {
+      if (!IDEE.utils.isNullOrEmpty(layer.offset)) {
         getFeatureParams.offset = layer.offset;
       }
 
-      if (!M.utils.isNullOrEmpty(layer.bbox)) {
+      if (!IDEE.utils.isNullOrEmpty(layer.bbox)) {
         getFeatureParams.bbox = layer.bbox;
       }
-      fUrl = M.utils.addParameters(M.utils
+      fUrl = IDEE.utils.addParameters(IDEE.utils
         .addParameters(layer.url, getFeatureParams), layer.getFeatureVendor);
-      if (!M.utils.isNullOrEmpty(layer.conditional)) {
+      if (!IDEE.utils.isNullOrEmpty(layer.conditional)) {
         let text = '';
         Object.keys(layer.conditional).forEach((key) => {
           const param = `&${key}=${layer.conditional[key]}&`;
@@ -2894,8 +2896,8 @@ export default class LayerswitcherControl extends M.Control {
     const DATA_SUMMARY = '@count';
 
     const url = this.generateUrlCODSI(pageNumber);
-    M.proxy(this.useProxy);
-    M.remote.get(url).then((response) => {
+    IDEE.proxy(this.useProxy);
+    IDEE.remote.get(url).then((response) => {
       const data = JSON.parse(response.text);
       const total = data.summary[DATA_SUMMARY];
 
@@ -2904,9 +2906,9 @@ export default class LayerswitcherControl extends M.Control {
       this.renderCODSIResults(results);
       this.renderCODSIPagination(pageNumber, total);
     }).catch((err) => {
-      M.dialog.error(getValue('exception.codsi'), undefined, this.order);
+      IDEE.dialog.error(getValue('exception.codsi'), undefined, this.order);
     });
-    M.proxy(this.statusProxy);
+    IDEE.proxy(this.statusProxy);
   }
 
   getResultCODSI(data) {
@@ -3119,7 +3121,7 @@ export default class LayerswitcherControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {

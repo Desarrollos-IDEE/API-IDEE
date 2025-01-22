@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
 </p>
-<h1 align="center"><strong>API IDEE</strong> <small>🔌 M.plugin.Attributions</small></h1>
+<h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.Attributions</small></h1>
 
 # Descripción
 
@@ -43,7 +43,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
          + **url**: Url del archivo de atribuciones a utilizar. Por defecto: 'https://componentes.cnig.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml'.
          + **type**: En el caso de no pasar nada por el parámetro 'layer' o pasar una capa que no sea de tipo vectorial, generará la capa de atribuciones con el tipo indicado en este parámetro. Los valores permitidos son ('kml' y 'geojson'). Por defecto: 'kml'.
          + **layerName**: Nombre asociado a la capa de atribuciones (nombre de la capa). Se usa para la construcción de la capa. Por defecto: 'attributions'.
-         + **layer**: Capa definida por el usuario para determinar las atribuciones {M.layer.GeoJSON | M.layer.KML}. No requiere los parámetros anteriores (type, url y layerName)
+         + **layer**: Capa definida por el usuario para determinar las atribuciones {IDEE.layer.GeoJSON | IDEE.layer.KML}. No requiere los parámetros anteriores (type, url y layerName)
          + **attributionParam**: Nombre del campo de atribución en el archivo. Por defecto: 'atribucion'.
          + **urlParam**: Nombre del campo de url en el archivo. Por defecto: 'url'.
      - **2** ` NO DISPONIBLE`: Atribuciones mediante consulta de parámetros de Capabilities de los servicios cargados en el mapa.
@@ -184,10 +184,10 @@ https://componentes.cnig.es/api-idee?attributions=BL*Plugin%20atribuciones*1*100
 
 ### Ejemplo de uso API-REST en base64
 
-Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad M.utils.encodeBase64.
+Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad IDEE.utils.encodeBase64.
 Ejemplo:
 ```javascript
-M.utils.encodeBase64(obj_params);
+IDEE.utils.encodeBase64(obj_params);
 ```
 
 Ejemplo de constructor:
@@ -207,11 +207,11 @@ https://componentes.cnig.es/api-idee/?attributions=base64=eyJtb2RlIjoxLCJzY2FsZS
 # Ejemplo de uso
 
 ```javascript
-const map = M.map({
+const map = IDEE.map({
   container: 'map'
 });
 
-const mp = new M.plugin.Attributions({
+const mp = new IDEE.plugin.Attributions({
   mode: 1,
   scale: 10000,
   /*Uso de type, para generar una capa de tipo GeoJSON o KML*/
@@ -222,7 +222,7 @@ const mp = new M.plugin.Attributions({
   + Se puede defenir una capa directamente sin usar los
     parámetros anteriores (type, url y layerName).
 
-  layer: new M.layer.GeoJSON({
+  layer: new IDEE.layer.GeoJSON({
     name: 'Ejemplo Attributions',
       source: {
         url: 'http://www.ign.es/resources/viewer/data/20200206_atribucionPNOA-3857.geojson',

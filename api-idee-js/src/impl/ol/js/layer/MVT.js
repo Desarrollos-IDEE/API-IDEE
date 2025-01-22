@@ -1,21 +1,21 @@
 /* eslint-disable no-underscore-dangle */
 /**
- * @module M/impl/layer/MVT
+ * @module IDEE/impl/layer/MVT
  */
 import OLSourceVectorTile from 'ol/source/VectorTile';
 import OLLayerVectorTile from 'ol/layer/VectorTile';
-import { compileSync as compileTemplate } from 'M/util/Template';
+import { compileSync as compileTemplate } from 'IDEE/util/Template';
 import geojsonPopupTemplate from 'templates/geojson_popup';
-import Popup from 'M/Popup';
-import { isNullOrEmpty, extend } from 'M/util/Utils';
-import * as EventType from 'M/event/eventtype';
+import Popup from 'IDEE/Popup';
+import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
+import * as EventType from 'IDEE/event/eventtype';
 import TileEventType from 'ol/source/TileEventType';
 import TileState from 'ol/TileState';
 import MVTFormatter from 'ol/format/MVT';
 import { get as getProj } from 'ol/proj';
 import Feature from 'ol/Feature';
 import RenderFeature from 'ol/render/Feature';
-import { mode } from 'M/layer/MVT';
+import { mode } from 'IDEE/layer/MVT';
 import Vector from './Vector';
 import ImplUtils from '../util/Utils';
 
@@ -27,7 +27,7 @@ import ImplUtils from '../util/Utils';
  * del área que delimitan.
  *
  * @api
- * @extends {M.impl.layer.Vector}
+ * @extends {IDEE.impl.layer.Vector}
  */
 
 class MVT extends Vector {
@@ -36,8 +36,8 @@ class MVT extends Vector {
    * con parámetros especificados por el usuario.
    *
    * @constructor
-   * @implements {M.impl.layer.Vector}
-   * @param {M.layer.MVT.parameters} parameters Opciones de la fachada, la fachada se refiere a
+   * @implements {IDEE.impl.layer.Vector}
+   * @param {IDEE.layer.MVT.parameters} parameters Opciones de la fachada, la fachada se refiere a
    * un patrón estructural como una capa de abstracción con un patrón de diseño.
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
    * - style: Define el estilo de la capa.
@@ -125,7 +125,7 @@ class MVT extends Vector {
    *
    * @public
    * @function
-   * @param {M.impl.Map} map Mapa de la implementación.
+   * @param {IDEE.impl.Map} map Mapa de la implementación.
    * @api
    */
   addTo(map, addLayer = true) {
@@ -283,8 +283,8 @@ class MVT extends Vector {
    * @function
    * @public
    * @param {boolean} skipFilter Indica si el filtro es de tipo "skip".
-   * @param {M.Filter} filter Filtro que se ejecutará.
-   * @return {Array<M.Feature>} Devuelve los objetos geográficos.
+   * @param {IDEE.Filter} filter Filtro que se ejecutará.
+   * @return {Array<IDEE.Feature>} Devuelve los objetos geográficos.
    * @api
    */
   getFeatures(skipFilter, filter) {
@@ -319,7 +319,7 @@ class MVT extends Vector {
    * @function
    * @public
    * @param {string|number} id Identificador del objeto geográfico..
-   * @return {Array<M.feature>} Objeto Geográfico - Devuelve el objeto geográfico con
+   * @return {Array<IDEE.feature>} Objeto Geográfico - Devuelve el objeto geográfico con
    * ese id si se encuentra, en caso de que no se encuentre o no indique el id devuelve array vacío.
    * @api stable
    */

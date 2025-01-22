@@ -3,7 +3,7 @@
     "name": "predefinedzoom",
     "separator": "*"
   },
-  "constructor": "M.plugin.PredefinedZoom",
+  "constructor": "IDEE.plugin.PredefinedZoom",
   "parameters": [{
     "type": "object",
     "properties": [{

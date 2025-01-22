@@ -1,5 +1,5 @@
 /**
- * @module M/style/chart/Variable
+ * @module IDEE/style/chart/Variable
  */
 
 /**

@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 /**
- * @module M/control/ComparepanelControl
+ * @module IDEE/control/ComparepanelControl
  */
 
 import ComparepanelImplControl from 'impl/comparepanelcontrol';
@@ -11,21 +11,22 @@ import Timeline from './cptimeline';
 import LyrCompare from './cplyrcompare';
 import Transparency from './cptransparency';
 
-export default class ComparepanelControl extends M.Control {
+export default class ComparepanelControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(options) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(ComparepanelImplControl) || (M.utils.isObject(ComparepanelImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(ComparepanelImplControl)))) {
-      M.exception(getValue('exception'));
+    if (IDEE.utils.isUndefined(ComparepanelImplControl)
+      || (IDEE.utils.isObject(ComparepanelImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(ComparepanelImplControl)))) {
+      IDEE.exception(getValue('exception'));
     }
     // 2. implementation of this control
     const impl = new ComparepanelImplControl();
@@ -95,7 +96,7 @@ export default class ComparepanelControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
@@ -115,7 +116,7 @@ export default class ComparepanelControl extends M.Control {
         },
       };
 
-      this.template = M.template.compileSync(template, options);
+      this.template = IDEE.template.compileSync(template, options);
       success(this.template);
       this.addComparators(map);
     });
@@ -273,7 +274,7 @@ export default class ComparepanelControl extends M.Control {
   }
 
   /**
-   * Transform StringLayers to api-idee M.Layer
+   * Transform StringLayers to api-idee IDEE.Layer
    * Entra tantas veces como mapas lienzo activos haya.
    * @public
    * @function
@@ -288,7 +289,7 @@ export default class ComparepanelControl extends M.Control {
         if (layer.indexOf('*') >= 0) {
           const urlLayer = layer.split('*');
           if (urlLayer[0].toUpperCase() === 'WMS') {
-            newLayer = new M.layer.WMS({
+            newLayer = new IDEE.layer.WMS({
               url: urlLayer[2],
               name: urlLayer[3],
               legend: urlLayer[1],
@@ -302,7 +303,7 @@ export default class ComparepanelControl extends M.Control {
               // this.map.addLayers(newLayer);
             }
           } else if (urlLayer[0].toUpperCase() === 'WMTS') {
-            /* newLayer = new M.layer.WMTS({
+            /* newLayer = new IDEE.layer.WMTS({
               url: urlLayer[2] + '?',
               name: urlLayer[3],
               legend: urlLayer[1],
@@ -314,7 +315,7 @@ export default class ComparepanelControl extends M.Control {
               format: urlLayer[5],
             }), this.map.addWMTS(newLayer); */
 
-            newLayer = new M.layer.WMTS({
+            newLayer = new IDEE.layer.WMTS({
               url: urlLayer[2],
               name: urlLayer[3],
               legend: urlLayer[1],
@@ -368,7 +369,7 @@ export default class ComparepanelControl extends M.Control {
        * @function
        */
   loadCoverPNOALyr() {
-    const estiloPoly = new M.style.Polygon({
+    const estiloPoly = new IDEE.style.Polygon({
       fill: {
         color: 'green',
         opacity: 0.0,
@@ -383,7 +384,7 @@ export default class ComparepanelControl extends M.Control {
       name: 'coverpnoa',
       url: this.urlCover,
     };
-    this.lyrCoverture = new M.layer.GeoJSON(optionsLayer, { displayInLayerSwitcher: false });
+    this.lyrCoverture = new IDEE.layer.GeoJSON(optionsLayer, { displayInLayerSwitcher: false });
 
     // this.map.addLayers(this.lyrCoverture);
     this.lyrCoverture.displayInLayerSwitcher = false;
@@ -425,7 +426,7 @@ export default class ComparepanelControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    * @return {Boolean}
    */

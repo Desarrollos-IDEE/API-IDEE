@@ -1,5 +1,5 @@
 /**
- * @module M/impl/Control
+ * @module IDEE/impl/Control
  */
 
 /**
@@ -29,7 +29,7 @@ class Control {
    *
    * @public
    * @function
-   * @param {M.Map} map Mapa.
+   * @param {IDEE.Map} map Mapa.
    * @param {function} template Plantilla del control.
    * @api stable
    * @export

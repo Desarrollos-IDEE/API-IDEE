@@ -1,8 +1,8 @@
-import { map as Mmap, proxy } from 'M/mapea';
-import GeoJSON from 'M/layer/GeoJSON';
+import { map as Mmap, proxy } from 'IDEE/mapea';
+import GeoJSON from 'IDEE/layer/GeoJSON';
 
-import Generic from 'M/style/Generic';
-import { CLAMP_TO_GROUND, RELATIVE_TO_GROUND, RELATIVE_TO_TERRAIN } from 'M/style/HeightReference';
+import Generic from 'IDEE/style/Generic';
+import { CLAMP_TO_GROUND, RELATIVE_TO_GROUND, RELATIVE_TO_TERRAIN } from 'IDEE/style/HeightReference';
 
 const mapa = Mmap({
   container: 'map',

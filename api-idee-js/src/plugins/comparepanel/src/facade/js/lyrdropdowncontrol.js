@@ -1,26 +1,27 @@
 /**
- * @module M/control/LyrdropdownControl
+ * @module IDEE/control/LyrdropdownControl
  */
 
 import LyrdropdownImplControl from 'impl/lyrdropdowncontrol';
 import template from 'templates/lyrdropdown';
 import { getValue } from './i18n/language'; // e2m: Multilanguage support. Alias -> getValue is too generic
 
-export default class LyrdropdownControl extends M.Control {
+export default class LyrdropdownControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(values) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(LyrdropdownImplControl) || (M.utils.isObject(LyrdropdownImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(LyrdropdownImplControl)))) {
-      M.exception(getValue('exception'));
+    if (IDEE.utils.isUndefined(LyrdropdownImplControl)
+      || (IDEE.utils.isObject(LyrdropdownImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(LyrdropdownImplControl)))) {
+      IDEE.exception(getValue('exception'));
     }
 
     // 2. implementation of this control
@@ -60,7 +61,7 @@ export default class LyrdropdownControl extends M.Control {
     /**
      * layerSelected
      * @public
-     * @type { M.layer }
+     * @type { IDEE.layer }
      */
     this.layerSelected = null;
 
@@ -84,7 +85,7 @@ export default class LyrdropdownControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
@@ -92,7 +93,7 @@ export default class LyrdropdownControl extends M.Control {
 
     // Se hace esto para poder añadir ol3Layers a la instancia
     // this.layers. Ol3Layers tiene valor cuando se añade al mapa
-    this.map.on(M.evt.ADDED_LAYER, (evt) => {
+    this.map.on(IDEE.evt.ADDED_LAYER, (evt) => {
       evt.forEach((l) => {
         if (l.type === 'WMS' || l.type === 'WMTS') {
           this.layers = this.layers.map((layers) => {
@@ -126,12 +127,12 @@ export default class LyrdropdownControl extends M.Control {
         };
       }
 
-      this.template = M.template.compileSync(template, options);
+      this.template = IDEE.template.compileSync(template, options);
       // Si no hay capas a las que aplicar la transparencia, el plugin no funciona e informa
       if (this.layers.length === 0) {
-        M.dialog.error(getValue('no_layers_plugin'));
+        IDEE.dialog.error(getValue('no_layers_plugin'));
       } else {
-        // M.dialog.info(getValue('title'));
+        // IDEE.dialog.info(getValue('title'));
         this.activate();
       }
 
@@ -231,7 +232,7 @@ export default class LyrdropdownControl extends M.Control {
   }
 
   /**
-   * Transform StringLayers to api-idee M.Layer
+   * Transform StringLayers to api-idee IDEE.Layer
    *
    * WMTS*http://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*EPSG:25830*PNOA
    * WMS*IGN*http://www.ign.es/wms-inspire/ign-base*IGNBaseTodo
@@ -244,7 +245,7 @@ export default class LyrdropdownControl extends M.Control {
    */
 
   /**
-   * Transform StringLayers to api-idee M.Layer
+   * Transform StringLayers to api-idee IDEE.Layer
    * Entra tantas veces como mapas lienzo activos haya.
    * @public
    * @function
@@ -259,7 +260,7 @@ export default class LyrdropdownControl extends M.Control {
         if (layer.indexOf('*') >= 0) {
           const urlLayer = layer.split('*');
           if (urlLayer[0].toUpperCase() === 'WMS') {
-            newLayer = new M.layer.WMS({
+            newLayer = new IDEE.layer.WMS({
               url: urlLayer[2],
               name: urlLayer[3],
               legend: urlLayer[1],
@@ -273,7 +274,7 @@ export default class LyrdropdownControl extends M.Control {
               // this.map.addLayers(newLayer);
             }
           } else if (urlLayer[0].toUpperCase() === 'WMTS') {
-            /* newLayer = new M.layer.WMTS({
+            /* newLayer = new IDEE.layer.WMTS({
               url: urlLayer[2] + '?',
               name: urlLayer[3],
               legend: urlLayer[1],
@@ -285,7 +286,7 @@ export default class LyrdropdownControl extends M.Control {
               format: urlLayer[5],
             }), this.map.addWMTS(newLayer); */
 
-            newLayer = new M.layer.WMTS({
+            newLayer = new IDEE.layer.WMTS({
               url: urlLayer[2],
               name: urlLayer[3],
               legend: urlLayer[1],
@@ -337,7 +338,7 @@ export default class LyrdropdownControl extends M.Control {
   }
 
   /**
-   * This function transform string to M.Layer
+   * This function transform string to IDEE.Layer
    *
    * @public
    * @function
@@ -354,7 +355,7 @@ export default class LyrdropdownControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

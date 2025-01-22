@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/Mirrorpanel
+ * @module IDEE/plugin/Mirrorpanel
  */
 
 import 'assets/css/cpmirrorpanel';
@@ -7,14 +7,14 @@ import MirrorpanelControl from './cpmirrorpanelcontrol';
 import api from '../../api';
 import { getValue } from './i18n/language'; // e2m: Multilanguage support
 
-export default class Mirrorpanel extends M.Plugin {
+export default class Mirrorpanel extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -31,14 +31,14 @@ export default class Mirrorpanel extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -180,7 +180,7 @@ export default class Mirrorpanel extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
@@ -204,10 +204,10 @@ export default class Mirrorpanel extends M.Plugin {
     this.control_ = new MirrorpanelControl(values);
     this.controls_.push(this.control_);
     this.map_ = map;
-    this.panel_ = new M.ui.Panel('panelMirrorpanel', {
+    this.panel_ = new IDEE.ui.Panel('panelMirrorpanel', {
       collapsible: this.collapsible,
       collapsed: this.collapsed,
-      position: M.ui.position[this.position],
+      position: IDEE.ui.position[this.position],
       modeViz: this.modeViz,
       showCursors: this.showCursors,
       className: this.interface ? 'm-plugin-panelMirrorpanel' : 'm-plugin-panelMirrorpanel hidden',

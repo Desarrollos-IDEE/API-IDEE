@@ -1,5 +1,5 @@
 /**
- * @module M/style/form
+ * @module IDEE/style/form
  */
 
 /**

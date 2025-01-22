@@ -1,13 +1,13 @@
 /**
- * @module M/impl/layer/Heatmap
+ * @module IDEE/impl/layer/Heatmap
  */
-import * as dialog from 'M/dialog';
-import { getValue } from 'M/i18n/language';
+import * as dialog from 'IDEE/dialog';
+import { getValue } from 'IDEE/i18n/language';
 import OLLayerHeatmap from 'ol/layer/Heatmap';
 import OLFeature from 'ol/Feature';
 import OLStyle from 'ol/style/Style';
 import OLStyleIcon from 'ol/style/Icon';
-import Feature from 'M/feature/Feature';
+import Feature from 'IDEE/feature/Feature';
 import { clamp } from 'ol/math';
 import Simple from '../style/Simple';
 /**

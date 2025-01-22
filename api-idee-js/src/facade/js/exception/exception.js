@@ -1,7 +1,7 @@
 /**
- * @module M/exception
+ * @module IDEE/exception
  * @example
- * import exception from "M/exception";
+ * import exception from "IDEE/exception";
  */
 
 /**

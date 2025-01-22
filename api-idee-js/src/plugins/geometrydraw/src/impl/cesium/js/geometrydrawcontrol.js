@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/GeometryDrawControl
+ * @module IDEE/impl/control/GeometryDrawControl
  */

@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/RescaleControl
+ * @module IDEE/impl/control/RescaleControl
  */

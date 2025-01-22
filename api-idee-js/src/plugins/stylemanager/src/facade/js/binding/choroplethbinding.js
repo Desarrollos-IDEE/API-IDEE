@@ -41,21 +41,21 @@ export class ChoroplethBinding extends Binding {
     const colors = opts.options.colors;
     let quantification = null;
     if (opts.quantification === 'ARITHMETIC_PROGRESSION') {
-      quantification = M.style.quantification.ARITHMETIC_PROGRESSION;
+      quantification = IDEE.style.quantification.ARITHMETIC_PROGRESSION;
     } else if (opts.quantification === 'EQUAL_INTERVAL') {
-      quantification = M.style.quantification.EQUAL_INTERVAL;
+      quantification = IDEE.style.quantification.EQUAL_INTERVAL;
     } else if (opts.quantification === 'GEOMETRIC_PROGRESSION') {
-      quantification = M.style.quantification.GEOMETRIC_PROGRESSION;
+      quantification = IDEE.style.quantification.GEOMETRIC_PROGRESSION;
     } else if (opts.quantification === 'MEDIA_SIGMA') {
-      quantification = M.style.quantification.MEDIA_SIGMA;
+      quantification = IDEE.style.quantification.MEDIA_SIGMA;
     } else if (opts.quantification === 'JENKS') {
-      quantification = M.style.quantification.JENKS;
+      quantification = IDEE.style.quantification.JENKS;
     } else if (opts.quantification === 'QUANTILE') {
-      quantification = M.style.quantification.QUANTILE;
+      quantification = IDEE.style.quantification.QUANTILE;
     }
     let style = null;
     if (opts.attributeName !== '') {
-      style = new M.style.Choropleth(opts.attributeName, colors, quantification(ranges));
+      style = new IDEE.style.Choropleth(opts.attributeName, colors, quantification(ranges));
     }
     return style;
   }
@@ -68,7 +68,7 @@ export class ChoroplethBinding extends Binding {
     if (numberColors < number) {
       this.addColorTemplate(numberColors);
     } else {
-      M.dialog.info(getValue('exception.moreColorsRanges'), getValue('exception.numberColors'));
+      IDEE.dialog.info(getValue('exception.moreColorsRanges'), getValue('exception.numberColors'));
     }
   }
 

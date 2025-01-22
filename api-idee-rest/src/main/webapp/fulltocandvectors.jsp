@@ -59,9 +59,9 @@
    %>
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
-        M.language.setLang(urlParams.get('language') || 'es');
+        IDEE.language.setLang(urlParams.get('language') || 'es');
 
-        const map = M.map({
+        const map = IDEE.map({
             container: 'mapjs',
             zoom: 5,
             maxZoom: 20,
@@ -69,7 +69,7 @@
             center: [-467062.8225, 4783459.6216],
         });
 
-        const mp = new M.plugin.FullTOC({
+        const mp = new IDEE.plugin.FullTOC({
                 position: 'TR',
                 collapsed: true,
                 http: true,
@@ -120,7 +120,7 @@
 
             map.addPlugin(mp);
 
-            const ocupacionSuelo = new M.layer.WMTS({
+            const ocupacionSuelo = new IDEE.layer.WMTS({
                 url: 'http://wmts-mapa-lidar.idee.es/lidar',
                 name: 'EL.GridCoverageDSM',
                 legend: 'Modelo Digital de Superficies LiDAR',
@@ -129,14 +129,14 @@
                 visibility: false,
             });
 
-            const layerUA = new M.layer.WMS({
+            const layerUA = new IDEE.layer.WMS({
               url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
               name: 'AU.AdministrativeUnit',
               legend: 'Unidad administrativa',
               tiled: false,
             }, {});
 
-            const layerinicial = new M.layer.WMS({
+            const layerinicial = new IDEE.layer.WMS({
               url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
               name: 'AU.AdministrativeBoundary',
               legend: 'Limite administrativo',
@@ -149,7 +149,7 @@
             map.addLayers(layerUA);
             map.addLayers(layerinicial);
 
-            const  mp2 = new M.plugin.Vectors({
+            const  mp2 = new IDEE.plugin.Vectors({
                 collapsed: true,
                 collapsible: true,
                 position: 'TL',

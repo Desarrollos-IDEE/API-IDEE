@@ -1,18 +1,18 @@
 /**
  * Este fichero es el punto de entrada de la API, sirve para inicializar las clases de la API-IDEE.
- * @module M
+ * @module IDEE
  */
 import 'assets/css/fonts';
 import 'assets/css/animations';
 import 'impl/projections';
 import MapImpl from 'impl/Map';
-import Map from 'M/Map';
-import WFS from 'M/layer/WFS';
-import TMS from 'M/layer/TMS';
-import LayerGroup from 'M/layer/LayerGroup';
-import WMTS from 'M/layer/WMTS';
-import MapLibre from 'M/layer/MapLibre';
-import Point from 'M/style/Point';
+import Map from 'IDEE/Map';
+import WFS from 'IDEE/layer/WFS';
+import TMS from 'IDEE/layer/TMS';
+import LayerGroup from 'IDEE/layer/LayerGroup';
+import WMTS from 'IDEE/layer/WMTS';
+import MapLibre from 'IDEE/layer/MapLibre';
+import Point from 'IDEE/style/Point';
 import 'assets/css/idee';
 import { isUndefined, isNullOrEmpty } from './util/Utils';
 import Exception from './exception/exception';
@@ -40,7 +40,7 @@ export const config = (configKey, configValue) => {
  * @param {string|Mx.parameters.Map} parameters Para construir el mapa.
  * @param {Mx.parameters.MapOptions} options Opciones personalizadas para construir el mapa.
  * @property {object} viewVendorOptions Parámetros para la vista del mapa de la librería base.
- * @returns {M.Map}
+ * @returns {IDEE.Map}
  * @api
  */
 export const map = (parameters, options, viewOptions) => {
@@ -324,7 +324,7 @@ export const addQuickLayers = (layers, force) => {
 /**
  * Esta función devuelve un objeto con las capas rápidas.
  * @param {string} layer - Nombre de la capa rápida para filtrar el objeto.
- * @returns {string|M.layer} - Objeto con las capas rápidas o la capa rápida especificada.
+ * @returns {string|IDEE.layer} - Objeto con las capas rápidas o la capa rápida especificada.
  * @public
  * @api
  */

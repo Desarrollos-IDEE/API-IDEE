@@ -1,7 +1,7 @@
 /**
- * @module M/impl/format/WMSCapabilities
+ * @module IDEE/impl/format/WMSCapabilities
  */
-import { isArray, isObject, isNullOrEmpty } from 'M/util/Utils';
+import { isArray, isObject, isNullOrEmpty } from 'IDEE/util/Utils';
 import CesiumFormatWMSCapabilities from './CesiumWMSCapabilities';
 
 /**
@@ -335,7 +335,7 @@ const parseLayersProps = (objLayer, parsedLayerNodes) => {
   * Implementación del formateador WMS.
   *
   * @api
-  * @extends {M.impl.format.CesiumWMSCapabilities}
+  * @extends {IDEE.impl.format.CesiumWMSCapabilities}
   */
 class WMSCapabilities extends CesiumFormatWMSCapabilities {
   /**

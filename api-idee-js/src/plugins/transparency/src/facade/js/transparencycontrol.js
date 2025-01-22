@@ -1,26 +1,27 @@
 /**
- * @module M/control/TransparencyControl
+ * @module IDEE/control/TransparencyControl
  */
 
 import TransparencyImplControl from 'impl/transparencycontrol';
 import template from 'templates/transparency';
 import { getValue } from './i18n/language';
 
-export default class TransparencyControl extends M.Control {
+export default class TransparencyControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(values) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(TransparencyImplControl) || (M.utils.isObject(TransparencyImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(TransparencyImplControl)))) {
-      M.exception(getValue('excepcion'));
+    if (IDEE.utils.isUndefined(TransparencyImplControl)
+      || (IDEE.utils.isObject(TransparencyImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(TransparencyImplControl)))) {
+      IDEE.exception(getValue('excepcion'));
     }
     // 2. implementation of this control
     const impl = new TransparencyImplControl();
@@ -41,7 +42,7 @@ export default class TransparencyControl extends M.Control {
     /**
      * Layer selected
      * @public
-     * @type {M.layer}
+     * @type {IDEE.layer}
      */
     this.layerSelected = null;
 
@@ -58,7 +59,7 @@ export default class TransparencyControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
@@ -87,7 +88,7 @@ export default class TransparencyControl extends M.Control {
         options.vars.options = names;
       }
 
-      this.template = M.template.compileSync(template, options);
+      this.template = IDEE.template.compileSync(template, options);
 
       // Radius
       this.template.querySelector('#input-transparent-radius').value = this.radius;
@@ -97,7 +98,7 @@ export default class TransparencyControl extends M.Control {
       });
 
       if (this.layers.length === 0 || this.layers === '') {
-        M.dialog.error(getValue('errorLayer'));
+        IDEE.dialog.error(getValue('errorLayer'));
       } else {
         // Botón efecto transparencia
         this.template.querySelector('#m-transparency-transparent').addEventListener('click', (evt) => {
@@ -205,7 +206,7 @@ export default class TransparencyControl extends M.Control {
   }
 
   /**
-   * This function transform string to M.Layer
+   * This function transform string to IDEE.Layer
    *
    * @public
    * @function
@@ -220,13 +221,13 @@ export default class TransparencyControl extends M.Control {
         if (layer.indexOf('*') >= 0) {
           const urlLayer = layer.split('*');
           if (urlLayer[0].toUpperCase() === 'WMS') {
-            newLayer = new M.layer.WMS({
+            newLayer = new IDEE.layer.WMS({
               url: urlLayer[2],
               name: urlLayer[3],
             });
             this.map.addLayers(newLayer);
           } else if (urlLayer[0].toUpperCase() === 'WMTS') {
-            newLayer = new M.layer.WMTS({
+            newLayer = new IDEE.layer.WMTS({
               url: urlLayer[1],
               name: urlLayer[2],
               matrixSet: urlLayer[3],
@@ -252,7 +253,7 @@ export default class TransparencyControl extends M.Control {
   }
 
   /**
-   * This function transform string to M.Layer
+   * This function transform string to IDEE.Layer
    *
    * @public
    * @function
@@ -269,7 +270,7 @@ export default class TransparencyControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    * @return {Boolean}
    */

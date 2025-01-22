@@ -1,10 +1,10 @@
 /**
- * @module M/impl/layer/Terrain
+ * @module IDEE/impl/layer/Terrain
  */
-import { isNullOrEmpty, extend } from 'M/util/Utils';
+import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
 import { CesiumTerrainProvider, EllipsoidTerrainProvider } from 'cesium';
-import { getValue } from 'M/i18n/language';
-import * as EventType from 'M/event/eventtype';
+import { getValue } from 'IDEE/i18n/language';
+import * as EventType from 'IDEE/event/eventtype';
 import Layer from './Layer';
 
 /**
@@ -18,7 +18,7 @@ import Layer from './Layer';
  * @property {Boolean} displayInLayerSwitcher Mostrar en el selector de capas.
  *
  * @api
- * @extends {M.impl.Layer}
+ * @extends {IDEE.impl.Layer}
  */
 class Terrain extends Layer {
   /**
@@ -130,7 +130,7 @@ class Terrain extends Layer {
    *
    * @public
    * @function
-   * @param {M.impl.Map} map Mapa de la implementación.
+   * @param {IDEE.impl.Map} map Mapa de la implementación.
    * @api
    */
   addTo(map) {

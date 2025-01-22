@@ -1,6 +1,6 @@
 /**
- * @module M/parameter/mbtiles
- * @example import mbtilesParameter from 'M/parameter/mbtiles';
+ * @module IDEE/parameter/mbtiles
+ * @example import mbtilesParameter from 'IDEE/parameter/mbtiles';
  */
 import {
   isArray, isNullOrEmpty, isObject, isString, normalize,

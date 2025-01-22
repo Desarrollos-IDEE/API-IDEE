@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/ViewHistory
+ * @module IDEE/plugin/ViewHistory
  */
 import 'assets/css/viewhistory';
 import ViewHistoryControl from './viewhistorycontrol';
@@ -8,14 +8,14 @@ import api from '../../api';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class ViewHistory extends M.Plugin {
+export default class ViewHistory extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -24,7 +24,7 @@ export default class ViewHistory extends M.Plugin {
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -63,7 +63,7 @@ export default class ViewHistory extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).viewhistory;
+    return IDEE.language.getTranslation(lang).viewhistory;
   }
 
   /**
@@ -71,16 +71,16 @@ export default class ViewHistory extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
     this.facadeMap_ = map;
     this.control_ = new ViewHistoryControl();
     this.controls_.push(this.control_);
-    this.panel_ = new M.ui.Panel('panelViewHistory', {
+    this.panel_ = new IDEE.ui.Panel('panelViewHistory', {
       collapsible: false,
-      position: M.ui.position[this.position],
+      position: IDEE.ui.position[this.position],
       className: 'viewhistory-plugin',
     });
     this.panel_.addControls(this.controls_);

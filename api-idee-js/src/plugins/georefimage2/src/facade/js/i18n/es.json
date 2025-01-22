@@ -6,7 +6,7 @@
     "teselaError": "La petición de alguna tesela ha provocado un error en la impresión. <br/>Por favor, inténtelo de nuevo.",
     "printError": "Se ha producido un error en la impresión.",
     "imageError": "No ha podido realizarse la descarga en este momento. Por favor, inténtelo más tarde.",
-    "georefimage2_obsolete": "Mensaje para el desarrollador: M.plugin.georefimage2 ha quedado obsoleto, utilice en su lugar M.plugin.PrintViewManagement"
+    "georefimage2_obsolete": "Mensaje para el desarrollador: IDEE.plugin.georefimage2 ha quedado obsoleto, utilice en su lugar IDEE.plugin.PrintViewManagement"
   },
   "errorProjectionCapabilities": "La proyeccion seleccionada no está disponible para esta capa base. Por favor elija otra proyección.",
   "printInfo": "Impresión generada a través de api-idee",

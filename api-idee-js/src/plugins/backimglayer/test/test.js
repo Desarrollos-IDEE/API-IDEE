@@ -1,16 +1,16 @@
 /* eslint-disable no-unused-vars,max-len */
 import BackImgLayer from 'facade/backimglayer';
 
-M.language.setLang('es');
-// M.language.setLang('en');
+IDEE.language.setLang('es');
+// IDEE.language.setLang('en');
 
-// const wmstTestLayer0 = new M.layer.WMTS({url: 'https://www.ign.es/wmts/pnoa-ma?', name: 'OI.OrthoimageCoverage', matrixSet: 'GoogleMapsCompatible', legend: 'Imagen', transparent: true, displayInLayerSwitcher: false, queryable: false, visible: true, format: 'image/jpeg', minZoom: 5, maxZoom: 10}); // NO BASE
-// const wmstTestLayer0 = new M.layer.WMTS({url: 'https://www.ign.es/wmts/pnoa-ma?', name: 'OI.OrthoimageCoverage', matrixSet: 'GoogleMapsCompatible', legend: 'Imagen', transparent: false, displayInLayerSwitcher: false, queryable: false, visible: true, format: 'image/jpeg', minZoom: 5, maxZoom: 10}); // BASE
-const map = M.map({
+// const wmstTestLayer0 = new IDEE.layer.WMTS({url: 'https://www.ign.es/wmts/pnoa-ma?', name: 'OI.OrthoimageCoverage', matrixSet: 'GoogleMapsCompatible', legend: 'Imagen', transparent: true, displayInLayerSwitcher: false, queryable: false, visible: true, format: 'image/jpeg', minZoom: 5, maxZoom: 10}); // NO BASE
+// const wmstTestLayer0 = new IDEE.layer.WMTS({url: 'https://www.ign.es/wmts/pnoa-ma?', name: 'OI.OrthoimageCoverage', matrixSet: 'GoogleMapsCompatible', legend: 'Imagen', transparent: false, displayInLayerSwitcher: false, queryable: false, visible: true, format: 'image/jpeg', minZoom: 5, maxZoom: 10}); // BASE
+const map = IDEE.map({
   container: 'mapjs',
   controls: ['scale'],
   center: [-458756.9690741142, 4682774.665868655],
-  layers: ['OSM'], // [wmstTestLayer0], // Este layer OSM o wmstTestLayer se quitan al añadir el plugin, si son layer base, en este caso si fue configurado como transparente false. Parece ser por map.getBaseLayers().forEach((layer) => {layer.on(M.evt.LOAD, map.removeLayers(layer));});.
+  layers: ['OSM'], // [wmstTestLayer0], // Este layer OSM o wmstTestLayer se quitan al añadir el plugin, si son layer base, en este caso si fue configurado como transparente false. Parece ser por map.getBaseLayers().forEach((layer) => {layer.on(IDEE.evt.LOAD, map.removeLayers(layer));});.
   zoom: 6,
 });
 
@@ -25,7 +25,7 @@ const pwImg2 = 'https://www.ign.es/iberpix/static/media/raster.c7a904f3.png';
 const pwImg3 = '../src/facade/assets/images/svqmapa.png';
 const pwImg4 = '../src/facade/assets/images/svqhibrid.png';
 
-// const i = new M.plugin.Information({}); map.addPlugin(i);
+// const i = new IDEE.plugin.Information({}); map.addPlugin(i);
 
 const mp = new BackImgLayer({
   // position: 'BL', // 'TL' | 'TR' | 'BR' | 'BL'
@@ -68,7 +68,7 @@ const mp = new BackImgLayer({
       title: 'WMS',
       preview: pwImg1,
       layers: [
-        new M.layer.WMS({
+        new IDEE.layer.WMS({
           url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
           name: 'AU.AdministrativeUnit',
           legend: 'Unidad administrativa',
@@ -85,7 +85,7 @@ const mp = new BackImgLayer({
       preview: pwImg2,
       title: 'TMS',
       layers: [
-        new M.layer.TMS({
+        new IDEE.layer.TMS({
           url: 'https://tms-ign-base.idee.es/1.0.0/IGNBaseOrto/{z}/{x}/{-y}.png',
           name: 'IGNBaseOrto',
           legend: 'Topónimos',

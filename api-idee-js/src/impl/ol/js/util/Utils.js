@@ -1,9 +1,9 @@
 /**
- * @module M/impl/utils
+ * @module IDEE/impl/utils
  */
-import Feature from 'M/feature/Feature';
-import * as WKT from 'M/geom/WKT';
-import { isNullOrEmpty, isString, generateRandom } from 'M/util/Utils';
+import Feature from 'IDEE/feature/Feature';
+import * as WKT from 'IDEE/geom/WKT';
+import { isNullOrEmpty, isString, generateRandom } from 'IDEE/util/Utils';
 import { extend, getWidth } from 'ol/extent';
 import { get as getProj, getTransform, transformExtent } from 'ol/proj';
 import OLFeature from 'ol/Feature';

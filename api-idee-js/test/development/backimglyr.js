@@ -1,4 +1,4 @@
-// import { map as Mmap } from 'M/api-idee';
+// import { map as Mmap } from 'IDEE/api-idee';
 import IGNSearch from 'plugins/ignsearch/src/facade/js/ignsearch';
 import Attributions from 'plugins/attributions/src/facade/js/attributions';
 import ShareMap from 'plugins/sharemap/src/facade/js/sharemap';
@@ -8,7 +8,7 @@ import MouseSRS from 'plugins/mousesrs/src/facade/js/mousesrs';
 import TOC from 'plugins/toc/src/facade/js/toc';
 import BackImgLayer from 'plugins/backimglayer/src/facade/js/backimglayer';
 
-const mapjs = M.map({
+const mapjs = IDEE.map({
   container: 'map',
   controls: ['panzoom', 'scale*true', 'scaleline', 'rotate', 'location', 'getfeatureinfo'],
   zoom: 5,
@@ -59,7 +59,7 @@ const mp9 = new BackImgLayer({
       id: 'mapa',
       preview: 'svqmapa.png',
       title: 'Mapa',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'http://www.ign.es/wmts/ign-base?',
         name: 'IGNBaseTodo',
         legend: 'Mapa IGN',
@@ -72,7 +72,7 @@ const mp9 = new BackImgLayer({
       id: 'imagen',
       title: 'Imagen',
       preview: 'svqimagen.png',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'http://www.ign.es/wmts/pnoa-ma?',
         name: 'OI.OrthoimageCoverage',
         legend: 'Imagen (PNOA)',
@@ -85,14 +85,14 @@ const mp9 = new BackImgLayer({
       id: 'hibrido',
       title: 'Híbrido',
       preview: 'svqhibrid.png',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'http://www.ign.es/wmts/pnoa-ma?',
         name: 'OI.OrthoimageCoverage',
         legend: 'Imagen (PNOA)',
         matrixSet: 'GoogleMapsCompatible',
       }, {
         format: 'image/png',
-      }), new M.layer.WMTS({
+      }), new IDEE.layer.WMTS({
         url: 'http://www.ign.es/wmts/ign-base?',
         name: 'IGNBaseOrto',
         matrixSet: 'GoogleMapsCompatible',
@@ -105,7 +105,7 @@ const mp9 = new BackImgLayer({
       id: 'lidar',
       preview: 'svqlidar.png',
       title: 'LIDAR',
-      layers: [new M.layer.WMTS({
+      layers: [new IDEE.layer.WMTS({
         url: 'https://wmts-mapa-lidar.idee.es/lidar?',
         name: 'EL.GridCoverageDSM',
         legend: 'Modelo Digital de Superficies LiDAR',

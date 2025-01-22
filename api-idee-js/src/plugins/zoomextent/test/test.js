@@ -1,8 +1,8 @@
 import ZoomExtent from 'facade/zoomextent';
 
-// M.language.setLang('en');
+// IDEE.language.setLang('en');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
 });
 

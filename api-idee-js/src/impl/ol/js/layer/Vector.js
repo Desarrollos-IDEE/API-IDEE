@@ -1,12 +1,12 @@
 /**
- * @module M/impl/layer/Vector
+ * @module IDEE/impl/layer/Vector
  */
-import { isNullOrEmpty, isFunction, includes } from 'M/util/Utils';
-import { compileSync as compileTemplate } from 'M/util/Template';
-import Popup from 'M/Popup';
+import { isNullOrEmpty, isFunction, includes } from 'IDEE/util/Utils';
+import { compileSync as compileTemplate } from 'IDEE/util/Template';
+import Popup from 'IDEE/Popup';
 import geojsonPopupTemplate from 'templates/geojson_popup';
-import * as EventType from 'M/event/eventtype';
-import Style from 'M/style/Style';
+import * as EventType from 'IDEE/event/eventtype';
+import Style from 'IDEE/style/Style';
 import { get as getProj } from 'ol/proj';
 import OLLayerVector from 'ol/layer/Vector';
 import OLSourceVector from 'ol/source/Vector';
@@ -21,7 +21,7 @@ import Feature from '../feature/Feature';
  * de esta clase heredan todas las capas vectoriales del API-IDEE.
  *
  * @api
- * @extends {M.impl.layer.Layer}
+ * @extends {IDEE.impl.layer.Layer}
  */
 class Vector extends Layer {
   /**
@@ -29,7 +29,7 @@ class Vector extends Layer {
    * con parámetros especificados por el usuario.
    *
    * @constructor
-   * @implements {M.impl.Layer}
+   * @implements {IDEE.impl.Layer}
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
    * - style. Define el estilo de la capa.
    * - minZoom. Zoom mínimo aplicable a la capa.
@@ -96,7 +96,7 @@ class Vector extends Layer {
    *
    * @public
    * @function
-   * @param {M.impl.Map} map Implementación del mapa.
+   * @param {IDEE.impl.Map} map Implementación del mapa.
    * @api stable
    */
   addTo(map, addLayer = true) {
@@ -211,7 +211,7 @@ class Vector extends Layer {
    *
    * @function
    * @public
-   * @param {Array<M.feature>} features Objetos geográficos.
+   * @param {Array<IDEE.feature>} features Objetos geográficos.
    * @param {Boolean} update Actualiza la capa.
    * @api stable
    */
@@ -252,8 +252,8 @@ class Vector extends Layer {
    * @function
    * @public
    * @param {boolean} skipFilter Indica el filtro.
-   * @param {M.Filter} filter Filtro que se ejecuta.
-   * @return {Array<M.Feature>} Devuelve todos los objetos geográficos que coincidan.
+   * @param {IDEE.Filter} filter Filtro que se ejecuta.
+   * @return {Array<IDEE.Feature>} Devuelve todos los objetos geográficos que coincidan.
    * @api stable
    */
   getFeatures(skipFilter, filter) {
@@ -268,7 +268,7 @@ class Vector extends Layer {
    * @function
    * @public
    * @param {string|number} id Identificador del objeto geográfico..
-   * @return {null|M.feature} Objeto Geográfico - Devuelve el objeto geográfico con
+   * @return {null|IDEE.feature} Objeto Geográfico - Devuelve el objeto geográfico con
    * ese id si se encuentra, en caso de que no se encuentre o no indique el id devuelve nulo.
    * @api stable
    */
@@ -281,7 +281,7 @@ class Vector extends Layer {
    *
    * @function
    * @public
-   * @param {Array<M.feature>} features Objetos geográficos que se eliminarán.
+   * @param {Array<IDEE.feature>} features Objetos geográficos que se eliminarán.
    * @api stable
    */
   removeFeatures(features) {
@@ -318,7 +318,7 @@ class Vector extends Layer {
    *
    * @function
    * @param {boolean} skipFilter Indica si se filtrará por "skip".
-   * @param {M.Filter} filter Filtro que se ejecutará.
+   * @param {IDEE.Filter} filter Filtro que se ejecutará.
    * @return {Array<number>} Devuelve los objetos geográficos.
    * @api stable
    */
@@ -436,7 +436,7 @@ class Vector extends Layer {
    *
    * @function
    * @param {boolean} skipFilter Indica si se filtra por el filtro "skip".
-   * @param {M.Filter} filter Filtro.
+   * @param {IDEE.Filter} filter Filtro.
    * @return {Array<number>} Extensión de los objetos geográficos.
    * @api stable
    */

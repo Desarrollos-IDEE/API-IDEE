@@ -1,4 +1,4 @@
-import LayerGroup from 'M/layer/LayerGroup';
+import LayerGroup from 'IDEE/layer/LayerGroup';
 
 // import { vector_001 } from '../vector/vector'; window.vector = vector_001;
 import { geojson_001 } from '../geojson/geojson'; window.geojson = geojson_001;

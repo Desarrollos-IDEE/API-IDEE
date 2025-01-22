@@ -1,5 +1,5 @@
 /**
- * @module M/layer/Tiles3D
+ * @module IDEE/layer/Tiles3D
  */
 import Tiles3DImpl from 'impl/layer/Tiles3D';
 import LayerBase from './Layer';
@@ -26,7 +26,7 @@ import { getValue } from '../i18n/language';
  * @property {Object} options Opciones de la capa.
  *
  * @api
- * @extends {M.Layer}
+ * @extends {IDEE.Layer}
  */
 class Tiles3D extends LayerBase {
   /**
@@ -71,8 +71,8 @@ class Tiles3D extends LayerBase {
     /**
      * Implementación.
      * @public
-     * @implements {M.layer.Tiles3DImpl}
-     * @type {M.layer.Tiles3DImpl}
+     * @implements {IDEE.layer.Tiles3DImpl}
+     * @type {IDEE.layer.Tiles3DImpl}
      */
     const impl = new Tiles3DImpl(userParameters, optionsVar, vendorOptions);
     // Calls the super constructor.

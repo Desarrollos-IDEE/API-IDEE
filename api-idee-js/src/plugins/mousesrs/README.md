@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
 </p>
-<h1 align="center"><strong>API IDEE</strong> <small>🔌 M.plugin.MouseSRS</small></h1>
+<h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.MouseSRS</small></h1>
 
 # Descripción
 
@@ -132,10 +132,10 @@ https://componentes.cnig.es/api-idee?mousesrs=Muestra%20coordenadas*EPSG:4326*WG
 
 ### Ejemplo de uso API-REST en base64
 
-Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad M.utils.encodeBase64.
+Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad IDEE.utils.encodeBase64.
 Ejemplo:
 ```javascript
-M.utils.encodeBase64(obj_params);
+IDEE.utils.encodeBase64(obj_params);
 ```
 
 Ejemplo del constructor:
@@ -155,7 +155,7 @@ https://componentes.cnig.es/api-idee?mousesrs=base64=eyJsYWJlbCI6IkVQU0c6NDMyNiI
 # Ejemplo de uso
 
 ```javascript
-const mp = new M.plugin.MouseSRS({
+const mp = new IDEE.plugin.MouseSRS({
   position: 'BL',
   tooltip: 'Muestra coordenadas',
   srs: 'EPSG:4326',

@@ -1,5 +1,5 @@
 /**
- * @module M/style/Heatmap
+ * @module IDEE/style/Heatmap
  */
 import HeatmapImpl from 'impl/style/Heatmap';
 import Style from './Style';
@@ -15,7 +15,7 @@ import { getValue } from '../i18n/language';
  * Crea un mapa de calor de estilo
  * con parámetros especificados por el usuario.
  * @api
- * @extends {M.style}
+ * @extends {IDEE.style}
  */
 class Heatmap extends Style {
   /**
@@ -99,7 +99,7 @@ class Heatmap extends Style {
    * Este método elimina los estilos.
    * @function
    * @public
-   * @param {M.Layer.Vector} layer Capa.
+   * @param {IDEE.Layer.Vector} layer Capa.
    * @api
    */
   unapply(layer) {
@@ -275,7 +275,7 @@ class Heatmap extends Style {
     };
     const vendorOptions = this.vendorOptions_;
     const parameters = [attribute, serializedOptions, vendorOptions];
-    const deserializedMethod = 'M.style.Heatmap.deserialize';
+    const deserializedMethod = 'IDEE.style.Heatmap.deserialize';
     return { parameters, deserializedMethod };
   }
 
@@ -285,7 +285,7 @@ class Heatmap extends Style {
    * @public
    * @param {Array} parametrers Parámetros ("serializedAttribute",
    * "serializedOptions" y "serializedVendorOptions").
-   * @return {M.style.Heatmap} Devuelve el estilo deserializado.
+   * @return {IDEE.style.Heatmap} Devuelve el estilo deserializado.
    */
   static deserialize([serializedAttribute, serializedOptions, serializedVendorOptions]) {
     const attribute = serializedAttribute;
@@ -293,7 +293,7 @@ class Heatmap extends Style {
     const vendorOptions = defineFunctionFromString(serializedVendorOptions);
 
     /* eslint-disable */
-    const styleFn = new Function(['attribute', 'options', 'vendorOptions'], `return new M.style.Heatmap(attribute, options, vendorOptions)`);
+    const styleFn = new Function(['attribute', 'options', 'vendorOptions'], `return new IDEE.style.Heatmap(attribute, options, vendorOptions)`);
     /* eslint-enable */
     return styleFn(attribute, options, vendorOptions);
   }

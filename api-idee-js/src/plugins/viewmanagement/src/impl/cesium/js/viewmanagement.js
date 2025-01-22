@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/ViewManagementControl
+ * @module IDEE/impl/control/ViewManagementControl
  */

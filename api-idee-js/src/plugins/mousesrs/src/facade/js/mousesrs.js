@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/MouseSRS
+ * @module IDEE/plugin/MouseSRS
  */
 import '../assets/css/fonts';
 import '../assets/css/mousesrs';
@@ -24,14 +24,14 @@ const DEFAULT_COVERAGE_PRECISSIONS = [
   },
 ];
 
-export default class MouseSRS extends M.Plugin {
+export default class MouseSRS extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -41,14 +41,14 @@ export default class MouseSRS extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -83,7 +83,7 @@ export default class MouseSRS extends M.Plugin {
      * @private
      * @type {number}
      */
-    this.precision_ = M.utils.isNullOrEmpty(options.precision) ? 4 : options.precision;
+    this.precision_ = IDEE.utils.isNullOrEmpty(options.precision) ? 4 : options.precision;
 
     /**
      * Coordinates decimal digits for geographical projections
@@ -154,7 +154,7 @@ export default class MouseSRS extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).mousesrs;
+    return IDEE.language.getTranslation(lang).mousesrs;
   }
 
   /**
@@ -162,7 +162,7 @@ export default class MouseSRS extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
@@ -183,7 +183,7 @@ export default class MouseSRS extends M.Plugin {
     );
     this.controls_.push(this.control_);
     this.map_ = map;
-    this.panel_ = new M.ui.Panel('panelMouseSRS', {
+    this.panel_ = new IDEE.ui.Panel('panelMouseSRS', {
       collapsible: false,
       tooltip: this.tooltip_,
       className: 'm-plugin-mousesrs',
@@ -294,7 +294,7 @@ export default class MouseSRS extends M.Plugin {
    * @api
    */
   getAPIRestBase64() {
-    return `${this.name}=base64=${M.utils.encodeBase64(this.options)}`;
+    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   /**
@@ -308,9 +308,9 @@ export default class MouseSRS extends M.Plugin {
     return {
       title: this.name,
       content: new Promise((success) => {
-        const html = M.template.compileSync(myhelp, {
+        const html = IDEE.template.compileSync(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}plugins/mousesrs/images/`,
+            urlImages: `${IDEE.config.API_IDEE_URL}plugins/mousesrs/images/`,
             translations: {
               help1: getValue('textHelp.help1'),
               help2: getValue('textHelp.help2'),

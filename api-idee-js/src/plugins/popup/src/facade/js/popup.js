@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/Popup
+ * @module IDEE/plugin/Popup
  */
 import 'assets/css/popup';
 import PopupControl from './popupcontrol';
@@ -9,14 +9,14 @@ import { getValue } from './i18n/language';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class Popup extends M.Plugin {
+export default class Popup extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -25,14 +25,14 @@ export default class Popup extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -65,8 +65,8 @@ export default class Popup extends M.Plugin {
      * @type {String}
      */
     if (options.helpLink && Object.keys(options.helpLink).length > 0) {
-      this.url_ = options.helpLink[`${M.language.getLang()}`];
-    } else if (M.language.getLang() === 'en') {
+      this.url_ = options.helpLink[`${IDEE.language.getLang()}`];
+    } else if (IDEE.language.getLang() === 'en') {
       this.url_ = options.url_en || 'template_en';
     } else {
       this.url_ = options.url_es || 'template_es';
@@ -120,7 +120,7 @@ export default class Popup extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).popup;
+    return IDEE.language.getTranslation(lang).popup;
   }
 
   /**
@@ -128,19 +128,19 @@ export default class Popup extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
     this.control_ = new PopupControl(this.url_);
     this.controls_.push(this.control_);
     this.map_ = map;
-    this.panel_ = new M.ui.Panel('Popup', {
+    this.panel_ = new IDEE.ui.Panel('Popup', {
       className: 'm-panel-popup',
       collapsible: this.collapsible_,
       collapsed: this.collapsed_,
       collapsedButtonClass: 'icon-help',
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       tooltip: this.tooltip_,
       order: this.order,
     });
@@ -169,7 +169,7 @@ export default class Popup extends M.Plugin {
    * @api
    */
   getAPIRestBase64() {
-    return `${this.name}=base64=${M.utils.encodeBase64(this.options)}`;
+    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   /**

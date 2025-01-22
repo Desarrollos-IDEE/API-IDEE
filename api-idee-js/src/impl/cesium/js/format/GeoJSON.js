@@ -1,8 +1,8 @@
 /**
- * @module M/impl/format/GeoJSON
+ * @module IDEE/impl/format/GeoJSON
  */
-import { isNullOrEmpty, generateRandom, isUndefined } from 'M/util/Utils';
-import Feature from 'M/feature/Feature';
+import { isNullOrEmpty, generateRandom, isUndefined } from 'IDEE/util/Utils';
+import Feature from 'IDEE/feature/Feature';
 import {
   Cartographic,
   GeoJsonDataSource,
@@ -50,7 +50,7 @@ class GeoJSON {
     * @function
     * @param {Object} object Objeto GeoJSON.
     * @param {Object} options Opciones.
-    * @returns {M.Feature} Objetos geográficos.
+    * @returns {IDEE.Feature} Objetos geográficos.
     * @public
     * @api
     */
@@ -203,7 +203,7 @@ class GeoJSON {
     * Este método escribe un objeto geográfico en un objeto GeoJSON.
     *
     * @function
-    * @param {M.Feature} feature Objeto geográfico a escribir.
+    * @param {IDEE.Feature} feature Objeto geográfico a escribir.
     * @returns {Object} Objeto GeoJSON.
     * @public
     * @api
@@ -278,7 +278,7 @@ class GeoJSON {
     * Este método establece el estilo del icono de un objetos geográficos.
     *
     * @function
-    * @param {M.Feature} feature Objetos geográficos.
+    * @param {IDEE.Feature} feature Objetos geográficos.
     * @param {Object} icon Objeto con las opciones del icono.
     * @public
     * @api
@@ -318,7 +318,7 @@ class GeoJSON {
     * Este método escribe una lista de objetos geográficos en objetos GeoJSON.
     *
     * @function
-    * @param {Array<M.Feature>} features Lista de objetos geográficos.
+    * @param {Array<IDEE.Feature>} features Lista de objetos geográficos.
     * @returns {Array<Object>} Lista de objetos GeoJSON.
     * @public
     * @api
@@ -333,8 +333,8 @@ class GeoJSON {
     * @function
     * @param {Object} geojson Objeto GeoJSON.
     * @param {Array<Object>} geojsonFeatures Lista de objetos GeoJSON.
-    * @param {M.Projection} projection Proyección.
-    * @return {Array<M.Feature>} Lista de objetos geográficos.
+    * @param {IDEE.Projection} projection Proyección.
+    * @return {Array<IDEE.Feature>} Lista de objetos geográficos.
     * @public
     * @api
     */

@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/BufferControl
+ * @module IDEE/impl/control/BufferControl
  */

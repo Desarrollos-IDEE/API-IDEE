@@ -1,7 +1,7 @@
 /**
  * Este fichero contiene funciones de "polyfill" para la API.
- * @module M/polyfill
- * @example import polyfill from 'M/polyfill';
+ * @module IDEE/polyfill
+ * @example import polyfill from 'IDEE/polyfill';
  */
 
 /**

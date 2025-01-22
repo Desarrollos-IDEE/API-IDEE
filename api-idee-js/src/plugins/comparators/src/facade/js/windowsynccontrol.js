@@ -1,5 +1,5 @@
 /**
- * @module M/control/WindowSyncControl
+ * @module IDEE/control/WindowSyncControl
  */
 import template from 'templates/windowsync';
 import WindowSyncImplControl from 'impl/windowsynccontrol';
@@ -251,21 +251,22 @@ const CONFIG_IBERPIX_LAYERSWITCHER = {
   order: 12,
 };
 
-export default class WindowSyncControl extends M.Control {
+export default class WindowSyncControl extends IDEE.Control {
   /**
      * @classdesc
      * Main constructor of the class. Creates a PluginControl
      * control
      *
      * @constructor
-     * @extends {M.Control}
+     * @extends {IDEE.Control}
      * @api stable
      */
   constructor({ controls, plugins = [], layersPlugin }, controlsLayers, map) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(WindowSyncImplControl) || (M.utils.isObject(WindowSyncImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(WindowSyncImplControl)))) {
-      M.exception(getValue('exception'));
+    if (IDEE.utils.isUndefined(WindowSyncImplControl)
+      || (IDEE.utils.isObject(WindowSyncImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(WindowSyncImplControl)))) {
+      IDEE.exception(getValue('exception'));
     }
 
     // 2. implementation of this control
@@ -283,7 +284,7 @@ export default class WindowSyncControl extends M.Control {
     /**
       * Facade of the map
       * @private
-      * @type {M.Map}
+      * @type {IDEE.Map}
       */
     this.map_ = map;
 
@@ -329,7 +330,7 @@ export default class WindowSyncControl extends M.Control {
      *
      * @public
      * @function
-     * @param {M.Map} map to add the control
+     * @param {IDEE.Map} map to add the control
      * @api stable
      */
   active(html) {
@@ -344,7 +345,7 @@ export default class WindowSyncControl extends M.Control {
         },
       };
 
-      this.template = M.template.compileSync(template, options);
+      this.template = IDEE.template.compileSync(template, options);
 
       success(this.template);
     });
@@ -402,7 +403,7 @@ export default class WindowSyncControl extends M.Control {
 
     this.handerCloseWindow(newWindow, id);
 
-    newWindow.NEW_API_MAP.on(M.evt.COMPLETED, () => {
+    newWindow.NEW_API_MAP.on(IDEE.evt.COMPLETED, () => {
       this.implControl_.removeEventListeners(this.mapsWindows_);
       this.implControl_.handleMoveMap(this.mapsWindows_);
     });
@@ -454,7 +455,7 @@ export default class WindowSyncControl extends M.Control {
            <div id="map"></div>
            ${this.pluginScript.join(' ')}
            <script>
-           const newMap = M.map({
+           const newMap = IDEE.map({
              container: 'map',
              center: ${center},
              zoom: ${zoom},
@@ -481,7 +482,7 @@ export default class WindowSyncControl extends M.Control {
    */
   getScriptAndLink(type) {
     const attr = type === 'link' ? 'href' : 'src';
-    let elements = [...document.querySelectorAll(`${type}[${attr}*="${M.config.API_IDEE_URL}"]`)];
+    let elements = [...document.querySelectorAll(`${type}[${attr}*="${IDEE.config.API_IDEE_URL}"]`)];
     if (elements.length === 0) {
       elements = this.getAPIRestScriptAndLink(type, attr);
     }
@@ -512,7 +513,7 @@ export default class WindowSyncControl extends M.Control {
     const plugins = this.plugins.map(({ name, params = {} }) => {
       this.handlePluginScrips(name);
       try {
-        return `newMap.addPlugin(new M.plugin.${name}(${JSON.stringify(params)}));`;
+        return `newMap.addPlugin(new IDEE.plugin.${name}(${JSON.stringify(params)}));`;
       } catch (error) {
         handlerErrorPluginWindowSync(error, name);
         return '';
@@ -536,7 +537,7 @@ export default class WindowSyncControl extends M.Control {
     const script = this.getScriptAndLink('script').some((s) => s.includes(`${name.toLowerCase()}.ol.min.js`));
 
     const currentUrl = window.location.href;
-    if (currentUrl.includes('comparators') && (currentUrl.includes(M.config.API_IDEE_URL))) {
+    if (currentUrl.includes('comparators') && (currentUrl.includes(IDEE.config.API_IDEE_URL))) {
       this.pluginScriptAndLinkAPI(style, script, name.toLowerCase());
     } else {
       handlerErrorURLWindowSync(style, script, name);
@@ -572,7 +573,7 @@ export default class WindowSyncControl extends M.Control {
      *
      * @public
      * @function
-     * @param {M.Control} control to compare
+     * @param {IDEE.Control} control to compare
      * @api stable
      * @return {Boolean}
      */

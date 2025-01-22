@@ -1,5 +1,5 @@
-import { map } from 'M/api-idee';
-import WFS from 'M/layer/WFS';
+import { map } from 'IDEE/api-idee';
+import WFS from 'IDEE/layer/WFS';
 
 const mapjs = map({
   container: 'map',

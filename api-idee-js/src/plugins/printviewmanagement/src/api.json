@@ -3,7 +3,7 @@
     "name": "printviewmanagement",
     "separator": "*"
   },
-  "constructor": "M.plugin.PrintViewManagement",
+  "constructor": "IDEE.plugin.PrintViewManagement",
   "parameters": [{
     "type": "object",
     "properties": [

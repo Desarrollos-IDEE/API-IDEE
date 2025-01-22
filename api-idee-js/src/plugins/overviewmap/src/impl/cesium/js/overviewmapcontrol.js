@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/OverviewMapControl
+ * @module IDEE/impl/control/OverviewMapControl
  */

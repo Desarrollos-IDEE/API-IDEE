@@ -1,5 +1,5 @@
 /**
- * @module M/style/quantification
+ * @module IDEE/style/quantification
  */
 
 /**

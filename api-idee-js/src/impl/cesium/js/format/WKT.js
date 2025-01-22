@@ -1,3 +1,3 @@
 /**
- * @module M/impl/format/WKT
+ * @module IDEE/impl/format/WKT
  */

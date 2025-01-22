@@ -14,7 +14,7 @@ class WKT extends ol.format.WKT {
    */
   constructor(options = {}) {
     super(options);
-    this.gjFormat_ = new M.impl.format.GeoJSON();
+    this.gjFormat_ = new IDEE.impl.format.GeoJSON();
   }
 
   /**

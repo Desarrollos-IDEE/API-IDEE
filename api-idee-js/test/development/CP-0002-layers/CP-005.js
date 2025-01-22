@@ -1,4 +1,4 @@
-import { map as Mmap } from 'M/api-idee';
+import { map as Mmap } from 'IDEE/api-idee';
 import { tms_001, tms_002 } from '../layers/tms/tms';
 
 

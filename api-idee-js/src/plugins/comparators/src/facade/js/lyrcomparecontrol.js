@@ -1,5 +1,5 @@
 /**
- * @module M/control/LyrCompareControl
+ * @module IDEE/control/LyrCompareControl
  */
 
 import LyrcompareImplControl from 'impl/lyrcomparecontrol';
@@ -19,21 +19,22 @@ Array.prototype.unique = (a) => {
   return c.indexOf(a, b + 1) < 0;
 });
 
-export default class LyrCompareControl extends M.Control {
+export default class LyrCompareControl extends IDEE.Control {
   /**
     * @classdesc
     * Main constructor of the class. Creates a PluginControl
     * control
     *
     * @constructor
-    * @extends {M.Control}
+    * @extends {IDEE.Control}
     * @api stable
     */
   constructor(values, controlsLayers, map, fatherControl) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(LyrcompareImplControl) || (M.utils.isObject(LyrcompareImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(LyrcompareImplControl)))) {
-      M.exception(getValue('exception'));
+    if (IDEE.utils.isUndefined(LyrcompareImplControl)
+      || (IDEE.utils.isObject(LyrcompareImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(LyrcompareImplControl)))) {
+      IDEE.exception(getValue('exception'));
     }
 
     // 2. implementation of this control
@@ -67,28 +68,28 @@ export default class LyrCompareControl extends M.Control {
     /**
       * Layer selected A
       * @public
-      * @type {M.layer}
+      * @type {IDEE.layer}
       */
     this.layerSelectedA = null;
 
     /**
       * Layer selected B
       * @public
-      * @type {M.layer}
+      * @type {IDEE.layer}
       */
     this.layerSelectedB = null;
 
     /**
       * Layer selected C
       * @public
-      * @type {M.layer}
+      * @type {IDEE.layer}
       */
     this.layerSelectedC = null;
 
     /**
       * Layer selected D
       * @public
-      * @type {M.layer}
+      * @type {IDEE.layer}
       */
     this.layerSelectedD = null;
 
@@ -171,7 +172,7 @@ export default class LyrCompareControl extends M.Control {
     }
 
     if (this.defaultLyrA === this.defaultLyrB) {
-      M.dialog.error(getValue('repeated_layers'), 'lyrcompare');
+      IDEE.dialog.error(getValue('repeated_layers'), 'lyrcompare');
       this.error_ = true;
     }
 
@@ -189,7 +190,7 @@ export default class LyrCompareControl extends M.Control {
     }
 
     if ((this.defaultLyrA === this.defaultLyrC) || (this.defaultLyrB === this.defaultLyrC)) {
-      M.dialog.error(getValue('repeated_layers'), 'lyrcompare');
+      IDEE.dialog.error(getValue('repeated_layers'), 'lyrcompare');
       this.error_ = true;
     }
 
@@ -209,7 +210,7 @@ export default class LyrCompareControl extends M.Control {
     if ((this.defaultLyrA === this.defaultLyrD)
     || (this.defaultLyrB === this.defaultLyrD)
     || (this.defaultLyrC === this.defaultLyrD)) {
-      M.dialog.error(getValue('repeated_layers'), 'lyrcompare');
+      IDEE.dialog.error(getValue('repeated_layers'), 'lyrcompare');
       this.error_ = true;
     }
 
@@ -219,7 +220,7 @@ export default class LyrCompareControl extends M.Control {
       */
     this.interface = values.interface === undefined ? true : values.interface;
 
-    this.dicAccesibilityButton = (M.language.getLang() === 'es') ? dicAccesibilityButtonES : dicAccesibilityButtonEN;
+    this.dicAccesibilityButton = (IDEE.language.getLang() === 'es') ? dicAccesibilityButtonES : dicAccesibilityButtonEN;
 
     this.fatherControl_ = fatherControl;
   }
@@ -235,7 +236,7 @@ export default class LyrCompareControl extends M.Control {
     const templateResult = new Promise((success, fail) => {
       this.comparisonMode = 0;
 
-      const emptyLayer = new M.layer.WMS({
+      const emptyLayer = new IDEE.layer.WMS({
         url: 'https://www.ign.es/wms-inspire/ign-base?',
         name: 'empty_layer',
         legend: getValue('selector'),
@@ -474,7 +475,7 @@ export default class LyrCompareControl extends M.Control {
     };
 
     // template with default options
-    this.template = M.template.compileSync(template, options);
+    this.template = IDEE.template.compileSync(template, options);
     this.setEventsAndValues();
     this.updateControls();
 
@@ -483,7 +484,7 @@ export default class LyrCompareControl extends M.Control {
     // }
 
     if ((this.layers.length - 1) === 0) {
-      M.dialog.error(getValue('no_layers_plugin'));
+      IDEE.dialog.error(getValue('no_layers_plugin'));
     } else {
       this.activateCurtain();
       this.template.querySelectorAll('button[id^="m-lyrcompare-"]').forEach((button, i) => {
@@ -492,7 +493,7 @@ export default class LyrCompareControl extends M.Control {
           this.changeSpanText(evt.target.id);
 
           if (nLayers < 3 && button.value === 'multicurtain') {
-            M.toast.error(getValue('exception.fourLayers'), null, 6000);
+            IDEE.toast.error(getValue('exception.fourLayers'), null, 6000);
             return;
           }
 
@@ -615,7 +616,7 @@ export default class LyrCompareControl extends M.Control {
 
         // e2m: de esta forma pasamos los parámetros en forma de array
         if (this.checkLayersAreDifferent(...lstLayers) === false) {
-          M.toast.error(getValue('advice_sameLayer'), null, 6000);
+          IDEE.toast.error(getValue('advice_sameLayer'), null, 6000);
           if (item.id === 'm-lyrcompare-lyrA') {
             this.template.querySelector(`#${item.id}`).value = this.layerSelectedA.name;
           } else if (item.id === 'm-lyrcompare-lyrB') {
@@ -770,7 +771,7 @@ export default class LyrCompareControl extends M.Control {
       const selectA = this.template.querySelector('#m-lyrcompare-lyrA');
       selectA.selectedIndex = this.defaultLyrA;
       if (!selectA.options[this.defaultLyrA]) {
-        M.dialog.error('Error layerSelectedA', 'lyrcompare');
+        IDEE.dialog.error('Error layerSelectedA', 'lyrcompare');
         this.deactiveByError_();
         return;
       }
@@ -788,7 +789,7 @@ export default class LyrCompareControl extends M.Control {
       selectB.options[this.defaultLyrB].setAttribute('selected', '');
 
       if (!selectB.options[this.defaultLyrB]) {
-        M.dialog.error('Error layerSelectedB', 'lyrcompare');
+        IDEE.dialog.error('Error layerSelectedB', 'lyrcompare');
         this.deactiveByError_();
         return;
       }
@@ -807,7 +808,7 @@ export default class LyrCompareControl extends M.Control {
       selectC.options[this.defaultLyrC].setAttribute('selected', '');
 
       if (!selectC.options[this.defaultLyrC]) {
-        M.dialog.error('Error layerSelectedC', 'lyrcompare');
+        IDEE.dialog.error('Error layerSelectedC', 'lyrcompare');
         this.deactiveByError_();
         return;
       }
@@ -827,7 +828,7 @@ export default class LyrCompareControl extends M.Control {
       selectD.options[this.defaultLyrD].setAttribute('selected', '');
 
       if (!selectD.options[this.defaultLyrD]) {
-        M.dialog.error('Error layerSelectedD', 'lyrcompare');
+        IDEE.dialog.error('Error layerSelectedD', 'lyrcompare');
         this.deactiveByError_();
         return;
       }
@@ -1024,7 +1025,7 @@ export default class LyrCompareControl extends M.Control {
   }
 
   /**
-    * This function transform string to M.Layer
+    * This function transform string to IDEE.Layer
     *
     * @public
     * @function
@@ -1041,7 +1042,7 @@ export default class LyrCompareControl extends M.Control {
     *
     * @public
     * @function
-    * @param {M.Control} control to compare
+    * @param {IDEE.Control} control to compare
     * @api stable
     * @return {Boolean}
     */

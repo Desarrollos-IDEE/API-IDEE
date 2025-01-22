@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/StoryMapControl
+ * @module IDEE/impl/control/StoryMapControl
  */

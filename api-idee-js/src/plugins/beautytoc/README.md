@@ -1,4 +1,4 @@
-# M.plugin.BeautyTOC
+# IDEE.plugin.BeautyTOC
 
 Muestra una tabla de contenidos con las capas disponibles para mostrar.
 
@@ -37,11 +37,11 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 # Ejemplos de uso
 
 ```javascript
-   const map = M.map({
+   const map = IDEE.map({
      container: 'map'
    });
 
-  const capaRaster = new M.layer.WMS({
+  const capaRaster = new IDEE.layer.WMS({
     url: 'https://www.ign.es/wms/pnoa-historico?',
     name: 'OLISTAT',
     legend: 'OLISTAT (1997-1998)',
@@ -49,7 +49,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
     version: '1.3.0',
   });
 
-  const capaVectorial = new M.layer.WMS({
+  const capaVectorial = new IDEE.layer.WMS({
     url: 'http://www.ign.es/wms-inspire/cuadriculas?',
     name: 'Grid-ETRS89-lonlat-25k,Grid-REGCAN95-lonlat-25k',
     legend: 'Cuadrícula cartográfica del MTN25',
@@ -60,7 +60,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 map.addLayers([capaRaster, capaVectorial]);
 
 
-   const mp = new M.plugin.BeautyTOC({
+   const mp = new IDEE.plugin.BeautyTOC({
         postition: 'TL',
     });
 

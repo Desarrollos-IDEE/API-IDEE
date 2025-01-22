@@ -1,24 +1,24 @@
 /**
- * @module M/control/XYLocatorControl
+ * @module IDEE/control/XYLocatorControl
  */
 
 import template from 'templates/xylocator';
 import XYLocatorImpl from 'impl/xylocatorcontrol';
 import { getValue } from './i18n/language';
 
-export default class XYLocatorControl extends M.Control {
+export default class XYLocatorControl extends IDEE.Control {
   /**
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api
    */
   constructor(map, zoom, pointStyle, options, positionPlugin) {
-    if (M.utils.isUndefined(XYLocatorImpl) || (M.utils.isObject(XYLocatorImpl)
-      && M.utils.isNullOrEmpty(Object.keys(XYLocatorImpl)))) {
-      M.exception(getValue('exception.impl_xylocator'));
+    if (IDEE.utils.isUndefined(XYLocatorImpl) || (IDEE.utils.isObject(XYLocatorImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(XYLocatorImpl)))) {
+      IDEE.exception(getValue('exception.impl_xylocator'));
     }
     const impl = new XYLocatorImpl(map);
     super(impl, 'XYLocatorImpl');
@@ -85,9 +85,9 @@ export default class XYLocatorControl extends M.Control {
         document.querySelector('.m-plugin-locator').classList.add('m-plugin-locator-tc-withpanel');
       }
       this.html_.querySelector('#m-locator-xylocator').classList.add('activated');
-      const panel = M.template.compileSync(template, {
+      const panel = IDEE.template.compileSync(template, {
         vars: {
-          hasHelp: !M.utils.isUndefined(this.help) && M.utils.isUrl(this.help),
+          hasHelp: !IDEE.utils.isUndefined(this.help) && IDEE.utils.isUrl(this.help),
           helpUrl: this.help,
           projections: this.projections,
           translations: {
@@ -135,7 +135,7 @@ export default class XYLocatorControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {
@@ -232,17 +232,17 @@ export default class XYLocatorControl extends M.Control {
             y = -y;
           }
         } else {
-          M.dialog.error(getValue('exception.wrong_values'), 'Error');
+          IDEE.dialog.error(getValue('exception.wrong_values'), 'Error');
         }
       }
       try {
         const coordinatesTransform = this.getImpl().reproject(origin, [x, y]);
         this.locator_(coordinatesTransform);
       } catch (ex) {
-        M.dialog.error(getValue('exception.transforming'), 'Error');
+        IDEE.dialog.error(getValue('exception.transforming'), 'Error');
       }
     } catch (ex) {
-      M.dialog.error(getValue('exception.wrong_coords'), 'Error');
+      IDEE.dialog.error(getValue('exception.wrong_coords'), 'Error');
       throw ex;
     }
   }
@@ -268,11 +268,11 @@ export default class XYLocatorControl extends M.Control {
         center: [x, y],
       }]);
 
-      this.coordinatesLayer = new M.layer.Vector({
+      this.coordinatesLayer = new IDEE.layer.Vector({
         name: 'coordinatexylocator',
       }, { displayInLayerSwitcher: false });
 
-      const feature = new M.Feature('localizacion', {
+      const feature = new IDEE.Feature('localizacion', {
         type: 'Feature',
         properties: {},
         geometry: {
@@ -285,7 +285,7 @@ export default class XYLocatorControl extends M.Control {
       this.createGeometryStyles();
       this.map.addLayers(this.coordinatesLayer);
     } else {
-      M.dialog.error(getValue('exception.wrong_coords'), 'Error');
+      IDEE.dialog.error(getValue('exception.wrong_coords'), 'Error');
     }
   }
 
@@ -315,7 +315,7 @@ export default class XYLocatorControl extends M.Control {
       style = {
         radius: 5,
         icon: {
-          src: M.utils.concatUrlPaths([M.config.THEME_URL, '/img/marker.svg']),
+          src: IDEE.utils.concatUrlPaths([IDEE.config.THEME_URL, '/img/marker.svg']),
           scale: 1.4,
           fill: {
             color: '#71a7d3',
@@ -331,18 +331,18 @@ export default class XYLocatorControl extends M.Control {
       style = {
         radius: 5,
         icon: {
-          src: M.utils.concatUrlPaths([M.config.THEME_URL, '/img/pinign.svg']),
+          src: IDEE.utils.concatUrlPaths([IDEE.config.THEME_URL, '/img/pinign.svg']),
         },
       };
     } else if (this.pointStyle === 'pinMorado') {
       style = {
         radius: 5,
         icon: {
-          src: M.utils.concatUrlPaths([M.config.THEME_URL, '/img/m-pin-24.svg']),
+          src: IDEE.utils.concatUrlPaths([IDEE.config.THEME_URL, '/img/m-pin-24.svg']),
         },
       };
     }
-    this.coordinatesLayer.setStyle(new M.style.Point(style));
+    this.coordinatesLayer.setStyle(new IDEE.style.Point(style));
   }
 
   /**

@@ -1,5 +1,5 @@
 /**
- * @module M/filter/spatial
+ * @module IDEE/filter/spatial
  */
 import { GeoJSONReader } from 'jsts/org/locationtech/jts/io';
 import RelateOp from 'jsts/org/locationtech/jts/operation/relate/RelateOp';
@@ -13,7 +13,7 @@ import Feature from '../feature/Feature';
   * Transforma parámetros a geometrías.
   *
   * @function
-  * @param {M.layer.Vector|M.Feature|object|Array<M.Feature|object>} paramParameter
+  * @param {IDEE.layer.Vector|IDEE.Feature|object|Array<IDEE.Feature|object>} paramParameter
   * Capa o geometría sobre la que se realiza la consulta.
   * @return {Array} Geometría.
   * @api
@@ -73,7 +73,7 @@ const toCQLFilter = (operation, geometries) => {
   * Esta función crea un filtro espacial para saber qué entidades contienen otra entidad o capa.
   *
   * @function
-  * @param {M.layer.Vector|object} param Capa o geometría sobre la que se realiza la consulta.
+  * @param {IDEE.layer.Vector|object} param Capa o geometría sobre la que se realiza la consulta.
   * @return {Spatial} Filtro.
   * @api
   */
@@ -96,7 +96,7 @@ export const CONTAIN = (param) => {
   * separan otros objetos geográficos o capa.
   *
   * @function
-  * @param {M.layer.Vector|object} param Capa o geometría sobre la que se realiza la consulta.
+  * @param {IDEE.layer.Vector|object} param Capa o geometría sobre la que se realiza la consulta.
   * @return {Spatial} Filtro.
   * @api
   */
@@ -119,7 +119,7 @@ export const DISJOINT = (param) => {
   * geográficos dentro de otros objetos geográficos o capa.
   *
   * @function
-  * @param {M.layer.Vector|object} param Capa o geometría sobre la que se realiza la consulta.
+  * @param {IDEE.layer.Vector|object} param Capa o geometría sobre la que se realiza la consulta.
   * @return {Spatial} Filtro.
   * @api
   */
@@ -142,7 +142,7 @@ export const WITHIN = (param) => {
   * se cruza con otra entidad o capa.
   *
   * @function
-  * @param {M.layer.Vector|M.Feature|object|Array<M.Feature|object>} param
+  * @param {IDEE.layer.Vector|IDEE.Feature|object|Array<IDEE.Feature|object>} param
   * Capa o geometría sobre la que se realiza la consulta.
   * @return {Spatial} Filtro.
   * @api

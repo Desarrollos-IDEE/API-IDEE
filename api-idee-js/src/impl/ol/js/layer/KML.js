@@ -1,12 +1,12 @@
 /**
- * @module M/impl/layer/KML
+ * @module IDEE/impl/layer/KML
  */
-import { compileSync as compileTemplate } from 'M/util/Template';
+import { compileSync as compileTemplate } from 'IDEE/util/Template';
 import { get as getProj } from 'ol/proj';
 import popupKMLTemplate from 'templates/kml_popup';
-import Popup from 'M/Popup';
-import { isNullOrEmpty, extend } from 'M/util/Utils';
-import * as EventType from 'M/event/eventtype';
+import Popup from 'IDEE/Popup';
+import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
+import * as EventType from 'IDEE/event/eventtype';
 import OLLayerVector from 'ol/layer/Vector';
 import OLSourceVector from 'ol/source/Vector';
 import Vector from './Vector';
@@ -19,7 +19,7 @@ import ImplUtils from '../util/Utils';
  * KML (Keyhole Markup Language). Las capas KML pueden ser estáticas o dinámicas.
  *
  * @api
- * @extends {M.impl.layer.Vector}
+ * @extends {IDEE.impl.layer.Vector}
  */
 class KML extends Vector {
   /**
@@ -28,7 +28,7 @@ class KML extends Vector {
    * con parámetros especificados por el usuario.
    *
    * @constructor
-   * @implements {M.impl.layer.Vector}
+   * @implements {IDEE.impl.layer.Vector}
    * @param {Mx.parameters.LayerOptions} options Opciones personalizadas para esta capa.
    * - label: Define si se muestra la etiqueta o no. Por defecto mostrará la etiqueta.
    * - visibility: Define si la capa es visible o no.
@@ -142,7 +142,7 @@ class KML extends Vector {
    *
    * @public
    * @function
-   * @param {M.impl.Map} map Implementación del mapa.
+   * @param {IDEE.impl.Map} map Implementación del mapa.
    * @api stable
    */
   addTo(map, addLayer = true) {
@@ -318,7 +318,7 @@ class KML extends Vector {
    *
    * @function
    * @param {boolean} skipFilter Indica si se utilizará el filtro de tipo "skip".
-   * @param {M.Filter} filter Filtro que se ejecutará.
+   * @param {IDEE.Filter} filter Filtro que se ejecutará.
    * @return {Array<number>} Extensión de los objetos geográficos.
    * @api stable
    */
@@ -344,7 +344,7 @@ class KML extends Vector {
    *
    * @public
    * @function
-   * @returns {M.layer.GeoJSON.impl.loadFeaturesPromise_} Devuelve los objetos geográficos
+   * @returns {IDEE.layer.GeoJSON.impl.loadFeaturesPromise_} Devuelve los objetos geográficos
    * tras realizar la petición, asincrono.
    * @api stable
    */

@@ -10,7 +10,7 @@ import MeasureImpl from './measurebase';
  * control
  *
  * @constructor
- * @extends {M.impl.control.Measure}
+ * @extends {IDEE.impl.control.Measure}
  * @api stable
  */
 export default class MeasureArea extends MeasureImpl {

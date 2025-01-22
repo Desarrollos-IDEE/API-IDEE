@@ -3,7 +3,7 @@
     "name": "comparators",
     "separator": "*"
   },
-  "constructor": "M.plugin.Comparators",
+  "constructor": "IDEE.plugin.Comparators",
   "parameters": [{
     "type": "object",
     "properties": [

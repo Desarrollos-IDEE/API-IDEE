@@ -1,6 +1,6 @@
 /* eslint-disable */
 /**
- * @module M/impl/format/CesiumWMSCapabilities
+ * @module IDEE/impl/format/CesiumWMSCapabilities
  */
 import XML from './CesiumXML';
 import {
@@ -55,7 +55,7 @@ const CAPABILITY_PARSERS = makeStructureNS(NAMESPACE_URIS, {
  * de la petición "GetCapabilities" de las capas WMS.
  *
  * @api
- * @extends {M.impl.format.CesiumXML}
+ * @extends {IDEE.impl.format.CesiumXML}
  */
 class WMSCapabilities extends XML {
   /**

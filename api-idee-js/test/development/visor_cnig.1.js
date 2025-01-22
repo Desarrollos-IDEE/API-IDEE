@@ -1,8 +1,8 @@
-import { map as Mmap } from 'M/api-idee';
+import { map as Mmap } from 'IDEE/api-idee';
 
-import WMS from 'M/layer/WMS';
-import WMTS from 'M/layer/WMTS';
-import KML from 'M/layer/KML';
+import WMS from 'IDEE/layer/WMS';
+import WMTS from 'IDEE/layer/WMTS';
+import KML from 'IDEE/layer/KML';
 
 import IGNSearch from 'plugins/ignsearch/src/facade/js/ignsearch';
 import Attributions from 'plugins/attributions/facade/js/attributions';

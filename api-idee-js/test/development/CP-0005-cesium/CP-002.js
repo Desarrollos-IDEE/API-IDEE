@@ -1,5 +1,5 @@
-import { map as Mmap, proxy } from 'M/mapea';
-import KML from 'M/layer/KML';
+import { map as Mmap, proxy } from 'IDEE/mapea';
+import KML from 'IDEE/layer/KML';
 
 const mapa = Mmap({
   container: 'map',

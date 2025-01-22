@@ -1,14 +1,14 @@
 /**
- * @module M/impl/control/ComparepanelControl
+ * @module IDEE/impl/control/ComparepanelControl
  */
 
-export default class ComparepanelControl extends M.impl.Control {
+export default class ComparepanelControl extends IDEE.impl.Control {
   /**
    * This function adds the control to the specified map
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api stable
    */

@@ -1,5 +1,5 @@
 /**
- * @module M/layer/MBTilesVector
+ * @module IDEE/layer/MBTilesVector
  */
 import MBTilesVectorImpl from 'impl/layer/MBTilesVector';
 import RenderFeatureImpl from 'impl/feature/RenderFeature';
@@ -33,7 +33,7 @@ export const mode = {
  * clic en el objeto geográfico,
  *
  * @api
- * @extends {M.layer.Vector}
+ * @extends {IDEE.layer.Vector}
  */
 class MBTilesVector extends Vector {
   /**
@@ -86,8 +86,8 @@ class MBTilesVector extends Vector {
     /**
      * Implementación.
      * @public
-     * @implements {M.impl.layer.MBTilesVector}
-     * @type {M.impl.layer.MBTilesVector}
+     * @implements {IDEE.impl.layer.MBTilesVector}
+     * @type {IDEE.impl.layer.MBTilesVector}
      */
     if (isUndefined(MBTilesVectorImpl) || (isObject(MBTilesVectorImpl)
       && isNullOrEmpty(Object.keys(MBTilesVectorImpl)))) {
@@ -121,10 +121,10 @@ class MBTilesVector extends Vector {
    * Este método establece el estilo de la capa.
    *
    * @function
-   * @param {M.Style|String} styleParam Estilo que se aplicará a la capa.
+   * @param {IDEE.Style|String} styleParam Estilo que se aplicará a la capa.
    * @param {bool} applyToFeature Si el valor es verdadero se aplicará a los objetos
    * geográficos, falso no. Por defecto, es falso.
-   * @param {M.Style} defaultStyle Estilo por defecto, se define en MBTilesVector.js
+   * @param {IDEE.Style} defaultStyle Estilo por defecto, se define en MBTilesVector.js
    * @public
    * @api
    */
@@ -169,7 +169,7 @@ class MBTilesVector extends Vector {
    *
    * @function
    * @public
-   * @returns {Array<M.RenderFeature>} Objetos geográficos.
+   * @returns {Array<IDEE.RenderFeature>} Objetos geográficos.
    * @api
    */
   getFeatures() {

@@ -1,6 +1,6 @@
 {
   "exception": {
-  "popup_obsolete": "Message to the developer: M.plugin.Popup has been deprecated, please use M.plugin.Modal instead"
+  "popup_obsolete": "Message to the developer: IDEE.plugin.Popup has been deprecated, please use IDEE.plugin.Modal instead"
 },
 "tooltip": "More information",
 "exception_popupcontrol": "The implementation used cannot create PopupControl controls"

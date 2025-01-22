@@ -1,5 +1,5 @@
 /**
- * @module M/control/AddLayer
+ * @module IDEE/control/AddLayer
  */
 import AddLayerImplControl from 'impl/addlayercontrol';
 import { getValue } from './i18n/language';
@@ -9,21 +9,21 @@ import { getValue } from './i18n/language';
  * Add layer api-idee control.
  * This control can create vector layers.
  */
-export default class AddLayerControl extends M.Control {
+export default class AddLayerControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(map) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(AddLayerImplControl) || (M.utils.isObject(AddLayerImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(AddLayerImplControl)))) {
-      M.exception(getValue('exception.impl_addlayercontrol'));
+    if (IDEE.utils.isUndefined(AddLayerImplControl) || (IDEE.utils.isObject(AddLayerImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(AddLayerImplControl)))) {
+      IDEE.exception(getValue('exception.impl_addlayercontrol'));
     }
 
     // 2. implementation of this control
@@ -64,7 +64,7 @@ export default class AddLayerControl extends M.Control {
    * @api stable
    */
   showLayerDialog() {
-    M.dialog.info(
+    IDEE.dialog.info(
       `<div id="chooseLayerName">
         <label for="layer-name">${getValue('layerName')}: </label>
         <input type="text" id="layer-name" style="width: 10rem;">
@@ -90,7 +90,7 @@ export default class AddLayerControl extends M.Control {
     btn.addEventListener('click', () => {
       this.addLayer(inputName.value);
 
-      M.toast.info(getValue('creationLayer_done'), null, 6000);
+      IDEE.toast.info(getValue('creationLayer_done'), null, 6000);
       // Seleccionar en el desplegable la capa que acabamos de crear
       const selectionLayer = document.querySelector('#m-selectionlayer');
       selectionLayer.options.selectedIndex = 1;
@@ -115,7 +115,7 @@ export default class AddLayerControl extends M.Control {
    * @api stable
    */
   addLayer(name) {
-    const newVector = new M.layer.Vector({
+    const newVector = new IDEE.layer.Vector({
       name: name || `vector_${Math.floor(Math.random() * 9000) + 1000}`,
       legend: name || `Vector_${Math.floor(Math.random() * 9000) + 1000}`,
     });
@@ -159,7 +159,7 @@ export default class AddLayerControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

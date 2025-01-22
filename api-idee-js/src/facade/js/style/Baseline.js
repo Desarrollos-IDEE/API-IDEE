@@ -1,5 +1,5 @@
 /**
- * @module M/style/baseline
+ * @module IDEE/style/baseline
  */
 
 /**

@@ -1,9 +1,9 @@
 /**
  * Esta clase contiene funciones de utilidad.
- * @module M/utils
- * @example import utils from 'M/utils';
+ * @module IDEE/utils
+ * @example import utils from 'IDEE/utils';
  */
-import { get as remoteGet } from 'M/util/Remote';
+import { get as remoteGet } from 'IDEE/util/Remote';
 import chroma from 'chroma-js';
 import Draggabilly from 'draggabilly';
 import * as dynamicImage from 'assets/img/dynamic_legend';
@@ -939,8 +939,8 @@ export const generateIntervals = (array, breaks) => {
  * Esta función devuelve la diferencia en el orden de estilos.
  * @function
  * @public
- * @param {M.Style} style Estilo.
- * @param {M.Style} style2 Estilo.
+ * @param {IDEE.Style} style Estilo.
+ * @param {IDEE.Style} style2 Estilo.
  * @return {number} Orden de estilos, 0 si tienen el mismo.
  * @api
  */
@@ -1117,7 +1117,7 @@ export const getEnvolvedExtent = (extents) => {
  */
 export const bytesToBase64 = (bytes, format = 'image/png') => {
   const base64abc = [
-    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'IDEE',
     'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
     'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
@@ -1343,7 +1343,7 @@ export const decodeBase64 = (base64) => {
  * Esta función proporciona movimiento a un plugin.
  *
  * @function
- * @param {M.ui.Panel} panel Panel del "plugin"
+ * @param {IDEE.ui.Panel} panel Panel del "plugin"
  * @param {string} handleEl Elemento o selector en el que
  * comienza la interacción del arrastre
  * @api
@@ -1357,7 +1357,7 @@ export const draggabillyPlugin = (panel, handleEl) => {
       handle: handleEl,
     });
 
-    if (!M.utils.isNull(draggable) && !panel.isCollapsed()) {
+    if (!IDEE.utils.isNull(draggable) && !panel.isCollapsed()) {
       draggable.enable();
     }
 
@@ -1427,7 +1427,7 @@ export const returnPositionHtmlElement = (className, map) => {
 
 /**
  * Esta funcion fusiona todos los canvas del mapa en uno solo
- * @param {M.map} map objeto mapa
+ * @param {IDEE.map} map objeto mapa
  * @param {String} imageType formato de imagen resultante
  * @returns {HTMLCanvasElement} canvas resultante
  */
@@ -1478,7 +1478,7 @@ const joinCanvas = (map, imageType = 'image/jpeg') => {
 /**
  * Esta función devuelve una captura de pantalla del mapa en una promesa
  * @function
- * @param {M.Map} map mapa del que se obtiene el canvas
+ * @param {IDEE.Map} map mapa del que se obtiene el canvas
  * @param {String} type formato de la imagen resultante
  * @api
  * @returns {String} Imagen en base64 o Promesa con esta
@@ -1569,7 +1569,7 @@ const getImageMapReplacementWithJoin = (map, type = 'image/jpeg') => { // getIma
 /**
  * Esta función devuelve una captura de pantalla del mapa
  * @function
- * @param {M.Map} map mapa del que se obtiene el canvas
+ * @param {IDEE.Map} map mapa del que se obtiene el canvas
  * @param {String} type formato de la imagen resultante
  * @param {HTMLCanvasElement} canva elemento canvas
  * @param {Boolean} isPromise si tiene que devolver una promesa (MapLibre)
@@ -1590,7 +1590,7 @@ export const getImageMap = (map, type = 'image/jpeg', canva = undefined, isPromi
 /**
  * Esta función copia una imagen en el portapapeles
  * @function
- * @param {M.Map} map mapa del que se obtiene el canvas
+ * @param {IDEE.Map} map mapa del que se obtiene el canvas
  * @param {HTMLCanvasElement} canva elemento canvas
  * @api
  */
@@ -1695,7 +1695,7 @@ export const transfomContent = (text, pSizes = {}) => {
  * @api
  */
 export const ObjectToArrayExtent = (bbox, epsg) => {
-  const { def } = M.impl.ol.js.projections.getSupportedProjs()
+  const { def } = IDEE.impl.ol.js.projections.getSupportedProjs()
     .find((proj) => proj.codes.includes(epsg));
 
   const typeCoordinates = def.includes('+proj=longlat');

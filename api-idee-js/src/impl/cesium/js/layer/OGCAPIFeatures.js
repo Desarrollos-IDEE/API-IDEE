@@ -1,12 +1,12 @@
 /**
- * @module M/impl/layer/OGCAPIFeatures
+ * @module IDEE/impl/layer/OGCAPIFeatures
  */
-import FormatGeoJSON from 'M/format/GeoJSON';
-import { compileSync as compileTemplate } from 'M/util/Template';
+import FormatGeoJSON from 'IDEE/format/GeoJSON';
+import { compileSync as compileTemplate } from 'IDEE/util/Template';
 import geojsonPopupTemplate from 'templates/geojson_popup';
-import * as EventType from 'M/event/eventtype';
-import { isNullOrEmpty, isFunction } from 'M/util/Utils';
-import Popup from 'M/Popup';
+import * as EventType from 'IDEE/event/eventtype';
+import { isNullOrEmpty, isFunction } from 'IDEE/util/Utils';
+import Popup from 'IDEE/Popup';
 import { GeoJsonDataSource } from 'cesium';
 import ServiceOGCAPIFeatures from '../service/OGCAPIFeatures';
 import FormatImplGeoJSON from '../format/GeoJSON';
@@ -19,7 +19,7 @@ import Vector from './Vector';
  * capacidad de crear, modificar y consultar datos
  * espaciales en la Web y especifica requisitos y recomendaciones para las API que desean seguir una
  * forma estándar de compartir datos de entidades.
- * @extends {M.impl.layer.Vector}
+ * @extends {IDEE.impl.layer.Vector}
  * @api
  */
 class OGCAPIFeatures extends Vector {
@@ -28,7 +28,7 @@ class OGCAPIFeatures extends Vector {
    * con parámetros especificados por el usuario.
    *
    * @constructor
-   * @implements {M.impl.layer.Vector}
+   * @implements {IDEE.impl.layer.Vector}
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
    * - predefinedStyles: Estilos predefinidos para la capa.
    * - visibility: Define si la capa es visible o no. Verdadero por defecto.
@@ -107,7 +107,7 @@ class OGCAPIFeatures extends Vector {
    *
    * @public
    * @function
-   * @param {M.Map} map Implementación del mapa.
+   * @param {IDEE.Map} map Implementación del mapa.
    * @api stable
    */
   addTo(map) {

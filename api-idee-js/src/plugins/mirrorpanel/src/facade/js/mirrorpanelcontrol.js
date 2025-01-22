@@ -1,26 +1,27 @@
 /**
- * @module M/control/MirrorpanelControl
+ * @module IDEE/control/MirrorpanelControl
  */
 
 import MirrorpanelImplControl from 'impl/mirrorpanelcontrol';
 import template from 'templates/mirrorpanel';
 import { getValue as getValueTranslate } from './i18n/language';
 
-export default class MirrorpanelControl extends M.Control {
+export default class MirrorpanelControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(values) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(MirrorpanelImplControl) || (M.utils.isObject(MirrorpanelImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(MirrorpanelImplControl)))) {
-      M.exception('La implementación usada no puede crear controles MirrorpanelControl');
+    if (IDEE.utils.isUndefined(MirrorpanelImplControl)
+      || (IDEE.utils.isObject(MirrorpanelImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(MirrorpanelImplControl)))) {
+      IDEE.exception('La implementación usada no puede crear controles MirrorpanelControl');
     }
     // 2. implementation of this control
     const impl = new MirrorpanelImplControl();
@@ -70,9 +71,9 @@ export default class MirrorpanelControl extends M.Control {
     /**
      * Defining cursor style
      */
-    this.styleCursor = new M.style.Point({
+    this.styleCursor = new IDEE.style.Point({
       icon: {
-        form: M.style.form.CIRCLE,
+        form: IDEE.style.form.CIRCLE,
         fontsize: 0.5,
         radius: 5,
         rotation: 0,
@@ -114,25 +115,25 @@ export default class MirrorpanelControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
     // eslint-disable-next-line
     console.warn(getValueTranslate('mirrorpanel_obsolete'));
-    if (!M.template.compileSync) {
-      M.template.compileSync = (string, options) => {
+    if (!IDEE.template.compileSync) {
+      IDEE.template.compileSync = (string, options) => {
         let templateCompiled;
         let templateVars = {};
         let parseToHtml;
-        if (!M.utils.isUndefined(options)) {
-          templateVars = M.utils.extends(templateVars, options.vars);
+        if (!IDEE.utils.isUndefined(options)) {
+          templateVars = IDEE.utils.extends(templateVars, options.vars);
           parseToHtml = options.parseToHtml;
         }
         const templateFn = Handlebars.compile(string);
         const htmlText = templateFn(templateVars);
         if (parseToHtml !== false) {
-          templateCompiled = M.utils.stringToHtml(htmlText);
+          templateCompiled = IDEE.utils.stringToHtml(htmlText);
         } else {
           templateCompiled = htmlText;
         }
@@ -170,7 +171,7 @@ export default class MirrorpanelControl extends M.Control {
         },
       };
 
-      this.template = M.template.compileSync(template, templateOptions);
+      this.template = IDEE.template.compileSync(template, templateOptions);
 
       // Button's click events
       this.template.querySelectorAll('button[id^="set-mirror-"]')
@@ -223,7 +224,7 @@ export default class MirrorpanelControl extends M.Control {
     layersArray.forEach((baseLayer, idx) => {
       let backgroundLayers = baseLayer.split('sumar');
       backgroundLayers = backgroundLayers.map((urlLayer) => {
-        const apiIdeeLayer = (urlLayer.slice(0, 3) === 'TMS') ? new M.layer.TMS(urlLayer) : new M.layer.WMTS(urlLayer);
+        const apiIdeeLayer = (urlLayer.slice(0, 3) === 'TMS') ? new IDEE.layer.TMS(urlLayer) : new IDEE.layer.WMTS(urlLayer);
         return apiIdeeLayer;
       });
       const apiIdeeLyrsObject = {
@@ -359,7 +360,7 @@ export default class MirrorpanelControl extends M.Control {
           // eslint-disable-next-line no-underscore-dangle
           if (itemPlug.metadata_.name === 'FullTOC') {
             // FullTOC
-            plugin4map = new M.plugin.FullTOC({
+            plugin4map = new IDEE.plugin.FullTOC({
               http: itemPlug.http,
               https: itemPlug.https,
               precharged: itemPlug.precharged,
@@ -368,14 +369,14 @@ export default class MirrorpanelControl extends M.Control {
           // eslint-disable-next-line no-underscore-dangle
           if (itemPlug.metadata_.name === 'backimglayer') {
             // BackImgLayer
-            mpBILmap = new M.plugin.BackImgLayer(
+            mpBILmap = new IDEE.plugin.BackImgLayer(
               this.copyBackImgLayersParams(this.backImgLayersParams, mapLyr),
             );
           }
         }
       });
     }
-    this.mapL[mapLyr] = M.map({
+    this.mapL[mapLyr] = IDEE.map({
       container: `mapjs${mapLyr}`,
       layers: ((this.defaultBaseLyrs.length >= 1) && (mpBILmap == null))
         ? [this.defaultBaseLyrs[0]]
@@ -414,11 +415,11 @@ export default class MirrorpanelControl extends M.Control {
    */
   addLayerCursor(mapLyr) {
     // Cursor Layer
-    this.lyrCursor[mapLyr] = new M.layer.Vector({
+    this.lyrCursor[mapLyr] = new IDEE.layer.Vector({
       name: `Coordenadas centro ${mapLyr}`,
     }, { displayInLayerSwitcher: false });
 
-    this.featureLyrCursor[mapLyr] = new M.Feature(`Center${mapLyr}`, {
+    this.featureLyrCursor[mapLyr] = new IDEE.Feature(`Center${mapLyr}`, {
       type: 'Feature',
       properties: {},
       geometry: {
@@ -483,7 +484,7 @@ export default class MirrorpanelControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

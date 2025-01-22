@@ -1,7 +1,7 @@
 /**
  * Este módulo contiene las constantes de las unidades.
- * @module M/units
- * @example import { METERS_PER_UNIT } from 'M/units';
+ * @module IDEE/units
+ * @example import { METERS_PER_UNIT } from 'IDEE/units';
  */
 /**
  * 0.02540005080010160020 (Un valor predeterminado sensato)

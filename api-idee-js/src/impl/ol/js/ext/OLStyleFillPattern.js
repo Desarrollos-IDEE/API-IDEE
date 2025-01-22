@@ -1,5 +1,5 @@
 /**
- * @module M/impl/ol/js/ext/OLStyleFillPattern
+ * @module IDEE/impl/ol/js/ext/OLStyleFillPattern
  */
 
 import OLStyleFill from 'ol/style/Fill';

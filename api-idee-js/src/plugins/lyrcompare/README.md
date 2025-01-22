@@ -1,4 +1,4 @@
-# M.plugin.LyrCompare
+# IDEE.plugin.LyrCompare
 
 Plugin que permite comparar varias capas sobre una cartografía base.
 
@@ -94,7 +94,7 @@ El modo de división es 1 por lo que será estático.
 La interfaz está activa.
 
 ```javascript
-const pluginLyrCompare = new M.plugin.LyrCompare({
+const pluginLyrCompare = new IDEE.plugin.LyrCompare({
   position: 'TL',
   layers: [
     'WMS*SIGPAC*https://www.ign.es/wms/pnoa-historico*SIGPAC',
@@ -121,7 +121,7 @@ map.addPlugin(pluginLyrCompare);
 Al no indicar capas mostrará un error en pantalla: El número de capas es insuficiente para aplicar el efecto.
 
 ```javascript
-const pluginLyrCompare = new M.plugin.LyrCompare({
+const pluginLyrCompare = new IDEE.plugin.LyrCompare({
   position: 'TL',
   collapsed: false,
   collapsible: true,
@@ -141,7 +141,7 @@ map.addPlugin(pluginLyrCompare);
 WMS con formato api-idee y sin interfaz.
 
 ```javascript
-const pluginLyrCompare = new M.plugin.LyrCompare({
+const pluginLyrCompare = new IDEE.plugin.LyrCompare({
   position: 'TL',
   layers: [
     'WMS*SIGPAC*https://www.ign.es/wms/pnoa-historico*SIGPAC',
@@ -168,7 +168,7 @@ map.addPlugin(pluginLyrCompare);
 WMTS con formato api-idee y sin interfaz.
 
 ```javascript
-const pluginLyrCompare = new M.plugin.LyrCompare({
+const pluginLyrCompare = new IDEE.plugin.LyrCompare({
   position: 'TL',
   layers: [
     'WMTS*https://www.ign.es/wmts/mapa-raster?*MTN*GoogleMapsCompatible*MTN*true*image/jpeg*false*false*true',
@@ -194,13 +194,13 @@ map.addPlugin(pluginLyrCompare);
 WMS como objeto.
 
 ```javascript
-const wms1 = new M.layer.WMS('WMS*SIGPAC*https://www.ign.es/wms/pnoa-historico*SIGPAC');
-const wms2 = new M.layer.WMS('WMS*OLISTAT*https://www.ign.es/wms/pnoa-historico*OLISTAT');
-const wms3 = new M.layer.WMS('WMS*Nacional_1981-1986*https://www.ign.es/wms/pnoa-historico*Nacional_1981-1986');
-const wms4 = new M.layer.WMS('WMS*Interministerial_1973-1986*https://www.ign.es/wms/pnoa-historico*Interministerial_1973-1986');
+const wms1 = new IDEE.layer.WMS('WMS*SIGPAC*https://www.ign.es/wms/pnoa-historico*SIGPAC');
+const wms2 = new IDEE.layer.WMS('WMS*OLISTAT*https://www.ign.es/wms/pnoa-historico*OLISTAT');
+const wms3 = new IDEE.layer.WMS('WMS*Nacional_1981-1986*https://www.ign.es/wms/pnoa-historico*Nacional_1981-1986');
+const wms4 = new IDEE.layer.WMS('WMS*Interministerial_1973-1986*https://www.ign.es/wms/pnoa-historico*Interministerial_1973-1986');
 map.addLayers([wms1, wms2, wms3, wms4]);
 
-const pluginLyrCompare = new M.plugin.LyrCompare({
+const pluginLyrCompare = new IDEE.plugin.LyrCompare({
   position: 'TL',
   layers: [
     wms1, wms2, wms3, wms4
@@ -218,13 +218,13 @@ map.addPlugin(pluginLyrCompare);
 WMTS como objeto.
 
 ```javascript
-const wmts1 = new M.layer.WMTS('WMTS*https://www.ign.es/wmts/mapa-raster?*MTN*GoogleMapsCompatible*MTN*true*image/jpeg*false*false*true');
-const wmts2 = new M.layer.WMTS('WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*imagen*false*image/jpeg*false*false*true');
-const wmts3 = new M.layer.WMTS('WMTS*https://www.ign.es/wmts/ign-base?*IGNBaseOrto*GoogleMapsCompatible*Callejero*true*image/png*false*false*true');
-const wmts4 = new M.layer.WMTS('WMTS*https://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*base*false*image/jpeg*false*false*true');
+const wmts1 = new IDEE.layer.WMTS('WMTS*https://www.ign.es/wmts/mapa-raster?*MTN*GoogleMapsCompatible*MTN*true*image/jpeg*false*false*true');
+const wmts2 = new IDEE.layer.WMTS('WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*imagen*false*image/jpeg*false*false*true');
+const wmts3 = new IDEE.layer.WMTS('WMTS*https://www.ign.es/wmts/ign-base?*IGNBaseOrto*GoogleMapsCompatible*Callejero*true*image/png*false*false*true');
+const wmts4 = new IDEE.layer.WMTS('WMTS*https://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*base*false*image/jpeg*false*false*true');
 map.addLayers([wmts1, wmts2, wmts3, wmts4]);
 
-const pluginLyrCompare = new M.plugin.LyrCompare({
+const pluginLyrCompare = new IDEE.plugin.LyrCompare({
   position: 'TL',
   layers: [
     wmts1, wmts2, wmts3, wmts4
@@ -242,13 +242,13 @@ map.addPlugin(pluginLyrCompare);
 WMS + WMTS como objeto.
 
 ```javascript
-const wms1 = new M.layer.WMS('WMS*SIGPAC*https://www.ign.es/wms/pnoa-historico*SIGPAC');
-const wms2 = new M.layer.WMS('WMS*OLISTAT*https://www.ign.es/wms/pnoa-historico*OLISTAT');
-const wmts1 = new M.layer.WMTS('WMTS*https://www.ign.es/wmts/mapa-raster?*MTN*GoogleMapsCompatible*MTN*true*image/jpeg*false*false*true');
-const wmts2 = new M.layer.WMTS('WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*imagen*false*image/jpeg*false*false*true');
+const wms1 = new IDEE.layer.WMS('WMS*SIGPAC*https://www.ign.es/wms/pnoa-historico*SIGPAC');
+const wms2 = new IDEE.layer.WMS('WMS*OLISTAT*https://www.ign.es/wms/pnoa-historico*OLISTAT');
+const wmts1 = new IDEE.layer.WMTS('WMTS*https://www.ign.es/wmts/mapa-raster?*MTN*GoogleMapsCompatible*MTN*true*image/jpeg*false*false*true');
+const wmts2 = new IDEE.layer.WMTS('WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*imagen*false*image/jpeg*false*false*true');
 map.addLayers([wms1, wms2, wmts1, wmts2]);
 
-const pluginLyrCompare = new M.plugin.LyrCompare({
+const pluginLyrCompare = new IDEE.plugin.LyrCompare({
   position: 'TL',
   layers: [
     wms1, wms2, wmts1, wmts2

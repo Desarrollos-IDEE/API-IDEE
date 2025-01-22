@@ -1,5 +1,5 @@
 /**
- * @module M/control/PrinterMapControl
+ * @module IDEE/control/PrinterMapControl
  */
 
 import JsZip from 'jszip';
@@ -8,13 +8,13 @@ import PrinterMapControlImpl from 'impl/printermapcontrol';
 import printermapHTML from '../../templates/printermap';
 import { getValue } from './i18n/language';
 
-export default class PrinterMapControl extends M.Control {
+export default class PrinterMapControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class.
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(
@@ -30,16 +30,16 @@ export default class PrinterMapControl extends M.Control {
     filterTemplates,
     order,
   ) {
-    if (M.utils.isUndefined(PrinterMapControlImpl) || (M.utils.isObject(PrinterMapControlImpl)
-      && M.utils.isNullOrEmpty(Object.keys(PrinterMapControlImpl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(PrinterMapControlImpl) || (IDEE.utils.isObject(PrinterMapControlImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(PrinterMapControlImpl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
     const impl = new PrinterMapControlImpl();
 
     super(impl, PrinterMapControl.NAME);
 
-    if (M.utils.isUndefined(PrinterMapControlImpl.prototype.encodeLayer)) {
-      M.exception(getValue('exception.encode'));
+    if (IDEE.utils.isUndefined(PrinterMapControlImpl.prototype.encodeLayer)) {
+      IDEE.exception(getValue('exception.encode'));
     }
 
     /**
@@ -236,26 +236,26 @@ export default class PrinterMapControl extends M.Control {
    * @param {Function} callback - function that removes loading icon class.
    */
   getStatus(url, callback) {
-    M.proxy(false);
+    IDEE.proxy(false);
     const param = new Date().getTime();
-    M.remote.get(`${url}?timestamp=${param}`).then((response) => {
+    IDEE.remote.get(`${url}?timestamp=${param}`).then((response) => {
       const statusJson = JSON.parse(response.text);
       const { status } = statusJson;
       if (status === 'finished') {
-        M.proxy(true);
+        IDEE.proxy(true);
         callback();
       } else if (status === 'error' || status === 'cancelled') {
-        M.proxy(true);
+        IDEE.proxy(true);
         callback();
         if (statusJson.error.toLowerCase().indexOf('network is unreachable') > -1 || statusJson.error.toLowerCase().indexOf('illegalargument') > -1) {
-          M.dialog.error(getValue('exception.tile'));
+          IDEE.dialog.error(getValue('exception.tile'));
         } else {
-          M.dialog.error(getValue('exception.error'));
+          IDEE.dialog.error(getValue('exception.error'));
         }
 
         this.queueContainer_.lastChild.remove();
       } else {
-        M.proxy(true);
+        IDEE.proxy(true);
         setTimeout(() => this.getStatus(url, callback), 1000);
       }
     });
@@ -266,7 +266,7 @@ export default class PrinterMapControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stabletrue
    */
   createView(map) {
@@ -397,7 +397,7 @@ export default class PrinterMapControl extends M.Control {
           fototeca: getValue('fototeca'),
         };
 
-        const html = M.template.compileSync(printermapHTML, {
+        const html = IDEE.template.compileSync(printermapHTML, {
           jsonp: true,
           vars: capabilities,
         });
@@ -416,7 +416,7 @@ export default class PrinterMapControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   addEvents(html) {
@@ -561,7 +561,7 @@ export default class PrinterMapControl extends M.Control {
     });
 
     this.queueContainer_ = this.element_.querySelector('.queue > ul.queue-container');
-    M.utils.enableTouchScroll(this.queueContainer_);
+    IDEE.utils.enableTouchScroll(this.queueContainer_);
     document.addEventListener('keydown', (evt) => {
       if (evt.key === 'Escape') {
         const elem = document.querySelector('.m-panel.m-printermap.opened');
@@ -657,7 +657,7 @@ export default class PrinterMapControl extends M.Control {
         download = this.downloadGeoPrint.bind(this, printData.attributes.map.bbox);
       }
 
-      let url = M.utils.concatUrlPaths([printUrl, `report.${printData.outputFormat}`]);
+      let url = IDEE.utils.concatUrlPaths([printUrl, `report.${printData.outputFormat}`]);
       const queueEl = this.createQueueElement();
       if (Array.prototype.slice.call(this.queueContainer_.childNodes).length > 0) {
         this.queueContainer_.insertBefore(queueEl, this.queueContainer_.firstChild);
@@ -666,7 +666,7 @@ export default class PrinterMapControl extends M.Control {
       }
 
       queueEl.classList.add(PrinterMapControl.LOADING_CLASS);
-      url = M.utils.addParameters(url, 'apiIdeeop=geoprint');
+      url = IDEE.utils.addParameters(url, 'apiIdeeop=geoprint');
       const profilControl = this.map_.getMapImpl().getControls().getArray().filter((c) => {
         return c.element !== undefined && c.element.classList !== undefined && c.element.classList.contains('ol-profil');
       });
@@ -677,12 +677,12 @@ export default class PrinterMapControl extends M.Control {
       }
 
       // FIXME: delete proxy deactivation and uncomment if/else when proxy is fixed on api-idee
-      M.proxy(false);
-      M.remote.post(url, printData).then((responseParam) => {
+      IDEE.proxy(false);
+      IDEE.remote.post(url, printData).then((responseParam) => {
         let response = responseParam;
         const responseStatusURL = JSON.parse(response.text);
         const ref = responseStatusURL.ref;
-        const statusURL = M.utils.concatUrlPaths([this.printStatusUrl_, `${ref}.json`]);
+        const statusURL = IDEE.utils.concatUrlPaths([this.printStatusUrl_, `${ref}.json`]);
         this.getStatus(statusURL, () => queueEl.classList.remove(PrinterMapControl.LOADING_CLASS));
 
         // if (response.error !== true) { // withoud proxy, response.error === true
@@ -690,10 +690,10 @@ export default class PrinterMapControl extends M.Control {
         try {
           response = JSON.parse(response.text);
           const imageUrl = response.downloadURL.substring(response.downloadURL.indexOf('/print'), response.downloadURL.length);
-          downloadUrl = M.utils.concatUrlPaths([this.serverUrl_, imageUrl]);
+          downloadUrl = IDEE.utils.concatUrlPaths([this.serverUrl_, imageUrl]);
           this.documentRead_.src = downloadUrl;
         } catch (err) {
-          M.exception(err);
+          IDEE.exception(err);
         }
         queueEl.setAttribute(PrinterMapControl.DOWNLOAD_ATTR_NAME, downloadUrl);
         queueEl.addEventListener('click', download);
@@ -701,13 +701,13 @@ export default class PrinterMapControl extends M.Control {
           if (key === 'Enter') download();
         });
         // } else {
-        //   M.dialog.error('Se ha producido un error en la impresión.');
+        //   IDEE.dialog.error('Se ha producido un error en la impresión.');
         // }
       });
-      M.proxy(true);
+      IDEE.proxy(true);
     });
-    if (!M.utils.isNullOrEmpty(this.getImpl().errors)) {
-      M.toast.error(getValue('exception.error_layers') + this.getImpl().errors.join(', '), null, 6000);
+    if (!IDEE.utils.isNullOrEmpty(this.getImpl().errors)) {
+      IDEE.toast.error(getValue('exception.error_layers') + this.getImpl().errors.join(', '), null, 6000);
       this.getImpl().errors = [];
     }
   }
@@ -717,25 +717,25 @@ export default class PrinterMapControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   getCapabilities() {
-    if (M.utils.isNullOrEmpty(this.capabilitiesPromise_)) {
+    if (IDEE.utils.isNullOrEmpty(this.capabilitiesPromise_)) {
       this.capabilitiesPromise_ = new Promise((success, fail) => {
-        const capabilitiesUrl = M.utils.concatUrlPaths([this.printTemplateUrl_, 'capabilities.json']);
-        M.proxy(false);
-        M.remote.get(capabilitiesUrl).then((response) => {
+        const capabilitiesUrl = IDEE.utils.concatUrlPaths([this.printTemplateUrl_, 'capabilities.json']);
+        IDEE.proxy(false);
+        IDEE.remote.get(capabilitiesUrl).then((response) => {
           let capabilities = {};
           try {
             capabilities = JSON.parse(response.text);
           } catch (err) {
-            M.exception(err);
+            IDEE.exception(err);
           }
           success(capabilities);
         });
 
-        M.proxy(true);
+        IDEE.proxy(true);
       });
     }
     return this.capabilitiesPromise_;
@@ -871,7 +871,7 @@ export default class PrinterMapControl extends M.Control {
       this.params_.layout.outputFilename = fileTitle;
     }
 
-    const printData = M.utils.extend({
+    const printData = IDEE.utils.extend({
       layout,
       outputFormat,
       attributes: {
@@ -897,14 +897,14 @@ export default class PrinterMapControl extends M.Control {
     }, this.params_.layout);
 
     return this.encodeLayers().then((encodedLayers) => {
-      printData.attributes.map.layers = encodedLayers.filter((l) => M.utils.isObject(l));
+      printData.attributes.map.layers = encodedLayers.filter((l) => IDEE.utils.isObject(l));
       printData.attributes = Object.assign(printData.attributes, parameters);
-      if (projection !== 'EPSG:3857' && this.map_.getLayers().some((layer) => (layer.type === M.layer.type.OSM || layer.type === M.layer.type.Mapbox))) {
+      if (projection !== 'EPSG:3857' && this.map_.getLayers().some((layer) => (layer.type === IDEE.layer.type.OSM || layer.type === IDEE.layer.type.Mapbox))) {
         printData.attributes.map.projection = 'EPSG:3857';
       }
 
       printData.attributes.map.bbox = [bbox.x.min, bbox.y.min, bbox.x.max, bbox.y.max];
-      if (projection !== 'EPSG:3857' && this.map_.getLayers().some((layer) => (layer.type === M.layer.type.OSM || layer.type === M.layer.type.Mapbox))) {
+      if (projection !== 'EPSG:3857' && this.map_.getLayers().some((layer) => (layer.type === IDEE.layer.type.OSM || layer.type === IDEE.layer.type.Mapbox))) {
         printData.attributes.map.bbox = this.getImpl().transformExt(printData.attributes.map.bbox, projection, 'EPSG:3857');
       }
 
@@ -935,7 +935,7 @@ export default class PrinterMapControl extends M.Control {
     const dpi = this.dpiGeo_;
     const outputFormat = 'jpg';
     const parameters = this.paramsGeo_.parameters;
-    const printData = M.utils.extend({
+    const printData = IDEE.utils.extend({
       layout,
       outputFormat,
       attributes: {
@@ -1045,7 +1045,7 @@ export default class PrinterMapControl extends M.Control {
       const encodedLayers = [];
       layers.forEach((layer, index) => {
         this.getImpl().encodeLayer(layer).then((encodedLayer) => {
-          if (!M.utils.isNullOrEmpty(encodedLayer)) {
+          if (!IDEE.utils.isNullOrEmpty(encodedLayer)) {
             encodedLayers[index] = encodedLayer;
           }
 
@@ -1155,7 +1155,7 @@ export default class PrinterMapControl extends M.Control {
       const encodedLayers = [];
       layers.forEach((layer, index) => {
         this.getImpl().encodeLayer(layer).then((encodedLayer) => {
-          if (!M.utils.isNullOrEmpty(encodedLayer)) {
+          if (!IDEE.utils.isNullOrEmpty(encodedLayer)) {
             encodedLayers[index] = encodedLayer;
           }
 
@@ -1180,7 +1180,7 @@ export default class PrinterMapControl extends M.Control {
     const queueElem = document.createElement('li');
     queueElem.setAttribute('tabindex', '0');
     let title = this.inputTitle_.value;
-    if (M.utils.isNullOrEmpty(title)) {
+    if (IDEE.utils.isNullOrEmpty(title)) {
       title = getValue('no_title');
     }
     queueElem.innerHTML = title;
@@ -1197,7 +1197,7 @@ export default class PrinterMapControl extends M.Control {
   downloadPrint(event) {
     event.preventDefault();
     const downloadUrl = this.getAttribute(PrinterMapControl.DOWNLOAD_ATTR_NAME);
-    if (!M.utils.isNullOrEmpty(downloadUrl)) {
+    if (!IDEE.utils.isNullOrEmpty(downloadUrl)) {
       window.open(downloadUrl, '_blank');
     }
   }
@@ -1228,7 +1228,7 @@ export default class PrinterMapControl extends M.Control {
         saveAs(content, titulo.concat('.zip'));
       });
     }).catch((err) => {
-      M.dialog.error(getValue('exception.imageError'));
+      IDEE.dialog.error(getValue('exception.imageError'));
     });
   }
 
@@ -1319,7 +1319,7 @@ export default class PrinterMapControl extends M.Control {
 PrinterMapControl.NAME = 'printermapcontrol';
 
 /**
- * M.template for this controls
+ * IDEE.template for this controls
  * @const
  * @type {string}
  * @public
@@ -1328,7 +1328,7 @@ PrinterMapControl.NAME = 'printermapcontrol';
 PrinterMapControl.TEMPLATE = 'printermap.html';
 
 /**
- * M.template for this controls
+ * IDEE.template for this controls
  * @const
  * @type {string}
  * @public
@@ -1337,7 +1337,7 @@ PrinterMapControl.TEMPLATE = 'printermap.html';
 PrinterMapControl.LOADING_CLASS = 'printing';
 
 /**
- * M.template for this controls
+ * IDEE.template for this controls
  * @const
  * @type {string}
  * @public

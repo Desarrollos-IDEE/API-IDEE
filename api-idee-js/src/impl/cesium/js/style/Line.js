@@ -1,9 +1,9 @@
 /**
- * @module M/impl/style/Line
+ * @module IDEE/impl/style/Line
  */
-import { isNullOrEmpty, extend } from 'M/util/Utils';
-import * as Baseline from 'M/style/Baseline';
-import * as Align from 'M/style/Align';
+import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
+import * as Baseline from 'IDEE/style/Baseline';
+import * as Align from 'IDEE/style/Align';
 import {
   Cartesian2,
   Color,
@@ -21,7 +21,7 @@ import Simple from './Simple';
  * Crea un estilo de línea
  * con parámetros especificados por el usuario.
  * @api
- * @namespace M.impl.style.Line
+ * @namespace IDEE.impl.style.Line
  *
  */
 class Line extends Simple {
@@ -30,7 +30,7 @@ class Line extends Simple {
    * @constructor
    * @param {Object} options Opciones de la clase.
    * - icon (src): Ruta del icono.
-   * @implements {M.impl.style.Simple}
+   * @implements {IDEE.impl.style.Simple}
    * @api stable
    */
   constructor(options) {
@@ -141,7 +141,7 @@ class Line extends Simple {
    * Este método aplica los estilos a la capa.
    * @public
    * @function
-   * @param {M.layer.Vector} layer Capa.
+   * @param {IDEE.layer.Vector} layer Capa.
    * @api stable
    */
   applyToLayer(layer) {
@@ -153,7 +153,7 @@ class Line extends Simple {
    *
    * @function
    * @protected
-   * @param {M.layer.Vector} layer Capa.
+   * @param {IDEE.layer.Vector} layer Capa.
    * @api stable
    */
   unapply() {

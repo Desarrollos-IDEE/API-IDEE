@@ -1,6 +1,6 @@
-import { map as Mmap } from 'M/api-idee';
-import WMS from 'M/layer/WMS';
-import { compileSync } from 'M/util/Template';
+import { map as Mmap } from 'IDEE/api-idee';
+import WMS from 'IDEE/layer/WMS';
+import { compileSync } from 'IDEE/util/Template';
 
 let VERSION = '1.3.0';
 let TILED = false;

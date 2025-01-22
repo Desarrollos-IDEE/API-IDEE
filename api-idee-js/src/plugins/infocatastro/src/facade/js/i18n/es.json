@@ -3,7 +3,7 @@
   "informacionCatastral": "Información catastral",
   "errorConexion": "No es posible establecer conexión con el servidor de Catastro.",
   "consultar": "Consultar Catastro",
-  "infocatastro_obsolete": "Mensaje para el desarrollador: M.plugin.InfoCatastro ha quedado obsoleto, utilice en su lugar M.plugin.Locator",
+  "infocatastro_obsolete": "Mensaje para el desarrollador: IDEE.plugin.InfoCatastro ha quedado obsoleto, utilice en su lugar IDEE.plugin.Locator",
   "description": "Descripción",
   "reference": "Referencia catastral",
   "noReference": "No hay referencia",

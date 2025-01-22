@@ -1,5 +1,5 @@
 /**
- * @module M/layer/Vector
+ * @module IDEE/layer/Vector
  */
 import VectorImpl from 'impl/layer/Vector';
 import { geojsonTo4326 } from 'impl/util/Utils';
@@ -23,13 +23,13 @@ import Generic from '../style/Generic';
  * Esta clase es la base de todas las capas de tipo vectorial,
  * de esta clase heredan todas las capas vectoriales del API-IDEE.
  *
- * @extends {M.Layer}
+ * @extends {IDEE.Layer}
  * @property {Number} minZoom Zoom mínimo.
  * @property {Number} maxZoom Zoom máximo.
  * @property {Array} predefinedStyles Estilos prefefinidos.
  *
  * @api
- * @extends {M.layer}
+ * @extends {IDEE.layer}
  */
 class Vector extends LayerBase {
   /**
@@ -96,7 +96,7 @@ class Vector extends LayerBase {
     /**
      * Vector style_. Estilo de la capa.
      * @private
-     * @type {M.style}
+     * @type {IDEE.style}
      * @api
      */
     this.style_ = null;
@@ -158,7 +158,7 @@ class Vector extends LayerBase {
    *
    * @function
    * @public
-   * @return {M.Filter} Devuelve el filtro.
+   * @return {IDEE.Filter} Devuelve el filtro.
    * @api
    */
   getFilter() {
@@ -182,7 +182,7 @@ class Vector extends LayerBase {
    *
    * @function
    * @public
-   * @param {Array<M.feature>} features Objetos geográficos que
+   * @param {Array<IDEE.feature>} features Objetos geográficos que
    * se incluirán a la capa.
    * @param {Boolean} update Verdadero se vuelve a cargar la capa,
    * falso no la vuelve a cargar.
@@ -204,7 +204,7 @@ class Vector extends LayerBase {
    * @function
    * @public
    * @param {Boolean} applyFilter Indica si se ejecuta filtro.
-   * @return {Array<M.Feature>} Devuelve todos los objetos geográficos o discriminando por
+   * @return {Array<IDEE.Feature>} Devuelve todos los objetos geográficos o discriminando por
    * el filtro.
    * @api
    */
@@ -220,7 +220,7 @@ class Vector extends LayerBase {
    * @function
    * @public
    * @param {String|Number} id - Id objeto geográfico.
-   * @return {Null|M.feature} objeto geográfico: devuelve el objeto geográfico con esa
+   * @return {Null|IDEE.feature} objeto geográfico: devuelve el objeto geográfico con esa
    * identificación si se encuentra,
    * en caso de que no se encuentre o no indique el id devuelve nulo.
    * @api
@@ -240,7 +240,7 @@ class Vector extends LayerBase {
    *
    * @function
    * @public
-   * @param {Array<M.feature>} features El objeto geográfico que se eliminará.
+   * @param {Array<IDEE.feature>} features El objeto geográfico que se eliminará.
    * @api
    */
   removeFeatures(featuresParam) {
@@ -355,11 +355,11 @@ class Vector extends LayerBase {
    *
    * @function
    * @public
-   * @param {M.Style} style Estilo que se aplicará a la capa.
+   * @param {IDEE.Style} style Estilo que se aplicará a la capa.
    * @param {Boolean} applyToFeature Si el valor es verdadero se aplicará a los
    * objetos geográficos, falso no.
    * Por defecto, falso.
-   * @param {M.layer.Vector.DEFAULT_OPTIONS_STYLE} defaultStyle Estilo por defecto,
+   * @param {IDEE.layer.Vector.DEFAULT_OPTIONS_STYLE} defaultStyle Estilo por defecto,
    * se define en Vector.js.
    * @api
    */
@@ -427,7 +427,7 @@ class Vector extends LayerBase {
    *
    * @function
    * @public
-   * @returns {M.layer.Vector.style}
+   * @returns {IDEE.layer.Vector.style}
    * @api
    */
   getStyle() {
@@ -450,7 +450,7 @@ class Vector extends LayerBase {
    * Devuelve el legendURL.
    *
    * @function
-   * @returns {M.layer.Vector.legendUrl} Devuelve el legendURL.
+   * @returns {IDEE.layer.Vector.legendUrl} Devuelve el legendURL.
    * @api
    */
   getLegendURL() {
@@ -468,7 +468,7 @@ class Vector extends LayerBase {
    * MLINE (Multiples línes), POLYGON (Polígono), or MPOLYGON (Multiples polígonos).
    * @function
    * @public
-   * @param {M.layer.Vector} layer Capa vectorial.
+   * @param {IDEE.layer.Vector} layer Capa vectorial.
    * @return {String} Tipo de geometría de la capa.
    * @api
    */
@@ -487,7 +487,7 @@ class Vector extends LayerBase {
    * Este método indica la extensión máxima de la capa.
    *
    * @function
-   * @returns {M.layer.Vector.impl.getFeaturesExtent} Devuelve la extensión de
+   * @returns {IDEE.layer.Vector.impl.getFeaturesExtent} Devuelve la extensión de
    * los objeto geográfico.
    * @api
    */
@@ -499,7 +499,7 @@ class Vector extends LayerBase {
    * Este método indica la extensión máxima de la capa.
    *
    * @function
-   * @returns {M.layer.Vector.impl.getFeaturesExtentPromise} Devuelve la extensión de
+   * @returns {IDEE.layer.Vector.impl.getFeaturesExtentPromise} Devuelve la extensión de
    * los objetos geográficos.
    * @api
    */
@@ -512,7 +512,7 @@ class Vector extends LayerBase {
    *
    * @function
    * @public
-   * @param {M.Filter} filter Filtro para configurar.
+   * @param {IDEE.Filter} filter Filtro para configurar.
    * @api
    */
   setFilter(filter) {

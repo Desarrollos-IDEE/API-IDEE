@@ -121,7 +121,7 @@ export class Binding {
     };
 
     return new Promise((resolve) => {
-      const html = M.template.compileSync(htmlName, {
+      const html = IDEE.template.compileSync(htmlName, {
         vars: opt,
       });
       resolve(html);
@@ -232,7 +232,7 @@ export class Binding {
       const prop = element.dataset['arrayOptions'];
       const value = element.value;
 
-      if (!M.utils.isArray(styleOpts['options'][prop])) {
+      if (!IDEE.utils.isArray(styleOpts['options'][prop])) {
         styleOpts['options'][prop] = [];
       }
 
@@ -418,7 +418,7 @@ export class Binding {
   /**
    * This function sets the layer of a binding class.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   setLayer(layer) {
@@ -429,7 +429,7 @@ export class Binding {
   /**
    * This function sets the layer of a binding class.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   getActivateButton() {
@@ -439,7 +439,7 @@ export class Binding {
   /**
    * This function sets the layer of a binding class.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   getSelectButton() {
@@ -449,12 +449,12 @@ export class Binding {
   /**
    * This function sets the layer of a binding class.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   setIntegerAttributes() {
     const layer = this.layer_;
-    if (layer instanceof M.layer.Vector) {
+    if (layer instanceof IDEE.layer.Vector) {
       const attributeNames = this.filterAttributesFeature('number').map((element) => {
         return {
           name: element,
@@ -477,7 +477,7 @@ export class Binding {
   /**
    * This function sets the layer of a binding class.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   filterAttributesFeature(type) {
@@ -500,7 +500,7 @@ export class Binding {
   /**
    * This function sets the layer of a binding class.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   getFeaturesAttributes() {
@@ -510,7 +510,7 @@ export class Binding {
   /**
    * This function search all attributes of each feature.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   getAllFeaturesAttributes() {
@@ -527,7 +527,7 @@ export class Binding {
   /**
    * This function sets the layer of a binding class.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   hideAllOptionsSections() {
@@ -539,7 +539,7 @@ export class Binding {
   /**
    * This function sets the layer of a binding class.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   hideOptionSection(option) {
@@ -550,7 +550,7 @@ export class Binding {
   /**
    * This function sets the layer of a binding class.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    * @returns {Binding}
    */
   showOptionSection(option) {
@@ -618,19 +618,19 @@ export class Binding {
    * @param {number|string|object}
    */
   static createObj(obj, path, value) {
-    const keys = M.utils.isArray(path) ? path : path.split('.');
+    const keys = IDEE.utils.isArray(path) ? path : path.split('.');
     const keyLength = keys.length;
     const key = keys[0];
     /* eslint-disable no-param-reassign */
     if (keyLength === 1) { // base case
-      if (M.utils.isArray(value)) {
+      if (IDEE.utils.isArray(value)) {
         value = [...value];
-      } else if (M.utils.isObject(value)) {
+      } else if (IDEE.utils.isObject(value)) {
         value = { ...value };
       }
       obj[key] = value;
     } else if (keyLength > 1) { // recursive case
-      if (M.utils.isNullOrEmpty(obj[key])) {
+      if (IDEE.utils.isNullOrEmpty(obj[key])) {
         obj[key] = {};
       }
       Binding.createObj(obj[key], keys.slice(1, keyLength), value);

@@ -1,7 +1,7 @@
 import Comparepanel from 'facade/comparepanel';
 
-M.language.setLang('es'); // Español
-M.proxy(false);
+IDEE.language.setLang('es'); // Español
+IDEE.proxy(false);
 
 /*
 const customBGLids = ['cartomtn','imagen','hibrido','mapa'];
@@ -22,9 +22,9 @@ const customBGLoptions = customBGLids.map((id, index) => {
   };
 });
 
-M.config('backgroundlayers', customBGLoptions);
+IDEE.config('backgroundlayers', customBGLoptions);
 */
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   center: {
     x: -667143.31,
@@ -39,7 +39,7 @@ const map = M.map({
   zoom: 6,
 });
 
-const objWMTSsiose = new M.layer.WMTS({
+const objWMTSsiose = new IDEE.layer.WMTS({
   url: 'https://servicios.idee.es/wmts/ocupacion-suelo',
   name: 'LC.LandCoverSurfaces',
   matrixSet: 'GoogleMapsCompatible',
@@ -47,7 +47,7 @@ const objWMTSsiose = new M.layer.WMTS({
   format: 'image/png',
 });
 
-/* const objWMTSMapa = new M.layer.WMTS({
+/* const objWMTSMapa = new IDEE.layer.WMTS({
   url: 'https://www.ign.es/wmts/mapa-raster',
   name: 'MTN',
   matrixSet: 'GoogleMapsCompatible',
@@ -55,7 +55,7 @@ const objWMTSsiose = new M.layer.WMTS({
   format: 'image/jpeg',
 });
 
-const lyrIGNBaseXYZ = new M.layer.XYZ({
+const lyrIGNBaseXYZ = new IDEE.layer.XYZ({
   url: 'https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/{z}/{x}/{-y}.jpeg',
   name: 'IGNBaseTodo',
   legend: 'Mapa IGN',
@@ -67,7 +67,7 @@ const lyrIGNBaseXYZ = new M.layer.XYZ({
   tileGridMaxZoom: 17,
 }); */
 
-const lyrMTN501EdiWMTS = new M.layer.WMTS({
+const lyrMTN501EdiWMTS = new IDEE.layer.WMTS({
   url: 'https://www.ign.es/wmts/primera-edicion-mtn?',
   name: 'mtn50-edicion1',
   legend: 'MTN50 1Edi',
@@ -79,7 +79,7 @@ const lyrMTN501EdiWMTS = new M.layer.WMTS({
   format: 'image/jpeg',
 });
 
-const lyrPNOAXYZ = new M.layer.XYZ({
+const lyrPNOAXYZ = new IDEE.layer.XYZ({
   url: 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
   name: 'PNOA-MA',
   legend: 'Ortoimagen',
@@ -91,7 +91,7 @@ const lyrPNOAXYZ = new M.layer.XYZ({
   tileGridMaxZoom: 19,
 });
 
-const lyrCartografiaXYZ = new M.layer.XYZ({
+const lyrCartografiaXYZ = new IDEE.layer.XYZ({
   url: 'https://tms-mapa-raster.ign.es/1.0.0/mapa-raster/{z}/{x}/{-y}.jpeg',
   name: 'MTN',
   legend: 'Mapa Raster',
@@ -103,7 +103,7 @@ const lyrCartografiaXYZ = new M.layer.XYZ({
   tileGridMaxZoom: 17,
 });
 
-const lyrIGNBaseWMTS = new M.layer.WMTS({
+const lyrIGNBaseWMTS = new IDEE.layer.WMTS({
   url: 'https://www.ign.es/wmts/ign-base?',
   name: 'IGNBaseTodo',
   legend: 'Mapa IGN',
@@ -115,7 +115,7 @@ const lyrIGNBaseWMTS = new M.layer.WMTS({
   format: 'image/jpeg',
 });
 
-/* const lyrIGNPNOAWMTS = new M.layer.WMTS({
+/* const lyrIGNPNOAWMTS = new IDEE.layer.WMTS({
   url: 'https://www.ign.es/wmts/pnoa-ma?',
   name: 'OI.OrthoimageCoverage',
   legend: 'Imagen PNOA',
@@ -127,7 +127,7 @@ const lyrIGNBaseWMTS = new M.layer.WMTS({
   format: 'image/jpeg',
 }); */
 
-const lyrLiDARWMTS = new M.layer.WMTS({
+const lyrLiDARWMTS = new IDEE.layer.WMTS({
   url: 'https://wmts-mapa-lidar.idee.es/lidar?',
   name: 'EL.GridCoverageDSM',
   matrixSet: 'GoogleMapsCompatible',
@@ -139,7 +139,7 @@ const lyrLiDARWMTS = new M.layer.WMTS({
   format: 'image/png',
 });
 
-const lyrIGNBaseWMTSTextos = new M.layer.WMTS({
+const lyrIGNBaseWMTSTextos = new IDEE.layer.WMTS({
   url: 'https://www.ign.es/wmts/ign-base?',
   name: 'IGNBaseOrto',
   matrixSet: 'GoogleMapsCompatible',
@@ -152,7 +152,7 @@ const lyrIGNBaseWMTSTextos = new M.layer.WMTS({
 });
 
 const getWMTSLyrs = () => {
-  return new M.plugin.BackImgLayer({
+  return new IDEE.plugin.BackImgLayer({
     position: 'TR',
     layerId: 0,
     layerVisibility: true,
@@ -222,7 +222,7 @@ const getWMTSLyrs = () => {
 // Configuración de las capas de fondo
 const backImgLayersConfig = getWMTSLyrs();
 
-const mpBILBasico = new M.plugin.BackImgLayer(backImgLayersConfig);
+const mpBILBasico = new IDEE.plugin.BackImgLayer(backImgLayersConfig);
 
 map.addPlugin(mpBILBasico);
 
@@ -293,13 +293,13 @@ const SENTINELlistBaseLayersByString = [
   ['Fondo', '2001', 'WMS*Fondo*https://wms-satelites-historicos.idee.es/satelites-historicos*fondo*true'],
 ]; */ /* 40 capas */
 
-const mpTOC = new M.plugin.FullTOC({
+const mpTOC = new IDEE.plugin.FullTOC({
   position: 'TR',
 });
 
 map.addPlugin(mpTOC);
 
-const mpVector = new M.plugin.Vectors({
+const mpVector = new IDEE.plugin.Vectors({
   position: 'TR',
   collapsed: true,
   collapsible: true,

@@ -3,7 +3,7 @@
     "name": "transparency",
     "separator": "*!"
   },
-  "constructor": "M.plugin.Transparency",
+  "constructor": "IDEE.plugin.Transparency",
   "parameters": [{
     "type": "object",
     "properties": [{

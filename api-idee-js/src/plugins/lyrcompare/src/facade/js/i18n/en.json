@@ -21,5 +21,5 @@
   "advice_sameLayer": "One layer in different places is not allowed",
   "no_layers_plugin": "The number of layers is insufficient to apply the effect",
   "repeated_layers": "Selected layers cannot be repeated",
-  "lyrcompare_obsolete": "Message to developer: M.plugin.LyrCompare has been deprecated, please use M.plugin.Comparators instead"
+  "lyrcompare_obsolete": "Message to developer: IDEE.plugin.LyrCompare has been deprecated, please use IDEE.plugin.Comparators instead"
 }

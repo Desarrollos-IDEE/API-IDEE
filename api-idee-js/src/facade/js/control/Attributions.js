@@ -1,5 +1,5 @@
 /**
- * @module M/control/Attributions
+ * @module IDEE/control/Attributions
  */
 import 'assets/css/controls/attributions';
 import attributionsTemplate from 'templates/attributions';
@@ -107,7 +107,7 @@ class Attributions extends ControlBase {
    *
    * @public
    * @function
-   * @param {M.Map} map Mapa
+   * @param {IDEE.Map} map Mapa
    * @returns {Promise} Plantilla HTML.
    * @api
    */
@@ -200,7 +200,7 @@ class Attributions extends ControlBase {
       } else if (type === 'kml') {
         layer = new KML(optionsLayer, { displayInLayerSwitcher: false });
       } else if (this.type === 'topojson') {
-        // TODO: Implement in api-idee M.layer.TopoJSON
+        // TODO: Implement in api-idee IDEE.layer.TopoJSON
       }
     }
 
@@ -534,7 +534,7 @@ class Attributions extends ControlBase {
       content: new Promise((success) => {
         const html = compileTemplate(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}assets/images`,
+            urlImages: `${IDEE.config.API_IDEE_URL}assets/images`,
             translations: {
               help1: textHelp.text1,
               help2: textHelp.text2,

@@ -1,5 +1,5 @@
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
 });
-const mp = new M.plugin.ZoomExtent();
+const mp = new IDEE.plugin.ZoomExtent();
 map.addPlugin(mp);

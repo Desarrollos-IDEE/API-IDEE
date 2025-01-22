@@ -1,5 +1,5 @@
 /**
- * @module M/Feature
+ * @module IDEE/Feature
  */
 import FeatureImpl from 'impl/feature/Feature';
 import Base from '../Base';
@@ -14,7 +14,7 @@ import { getValue } from '../i18n/language';
 /**
  * @classdesc
  * Crea un objeto geográfico.
- * @extends {M.facade.Base}
+ * @extends {IDEE.facade.Base}
  * @api
  */
 class Feature extends Base {
@@ -31,7 +31,7 @@ class Feature extends Base {
     /**
      * Implementación de objetos geográficos.
      * @public
-     * @type {M.impl.Feature}
+     * @type {IDEE.impl.Feature}
      */
     const impl = new FeatureImpl(id, geojson, style);
 
@@ -40,14 +40,14 @@ class Feature extends Base {
     /**
      * Estilo de los objetos geográficos.
      * @private
-     * @type {M.style.Feature}
+     * @type {IDEE.style.Feature}
      */
     this.style_ = null;
 
     /**
      * Formato del GeoJSON.
      * @private
-     * @type {M.format.GeoJSON}
+     * @type {IDEE.format.GeoJSON}
      */
     this.formatGeoJSON_ = new GeoJSON();
 
@@ -202,7 +202,7 @@ class Feature extends Base {
    *
    * @public
    * @function
-   * @param {M.style.Feature} style Nuevo estilo.
+   * @param {IDEE.style.Feature} style Nuevo estilo.
    * @api
    */
   setStyle(style) {
@@ -220,7 +220,7 @@ class Feature extends Base {
    * Este método retorna si dos objetos geográficos son iguales.
    * @public
    * @function
-   * @param {M.Feature} feature Objeto geográfico.
+   * @param {IDEE.Feature} feature Objeto geográfico.
    * @return {bool} Retorna el resultado de comparar los dos objetos geográficos.
    * @api
    */
@@ -233,7 +233,7 @@ class Feature extends Base {
    *
    * @public
    * @function
-   * @return {M.style.Feature} Retorna el estilo del objeto geográfico.
+   * @return {IDEE.style.Feature} Retorna el estilo del objeto geográfico.
    * @api
    */
   getStyle() {
@@ -245,7 +245,7 @@ class Feature extends Base {
    *
    * @public
    * @function
-   * @return {M.style.Feature} Retorna el estilo del objeto geográfico.
+   * @return {IDEE.style.Feature} Retorna el estilo del objeto geográfico.
    * @api
    */
   clearStyle() {
@@ -257,7 +257,7 @@ class Feature extends Base {
    *
    * @public
    * @function
-   * @return {M.Feature} Centroide del objeto geográfico.
+   * @return {IDEE.Feature} Centroide del objeto geográfico.
    * @api
    */
   getCentroid() {

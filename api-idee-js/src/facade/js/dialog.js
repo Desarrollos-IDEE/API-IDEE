@@ -1,6 +1,6 @@
 /**
  * Este modulo contiene las funciones para mostrar un modal.
- * @module M/dialog
+ * @module IDEE/dialog
  */
 import 'assets/css/dialog';
 import dialogTemplate from 'templates/dialog';
@@ -55,7 +55,7 @@ export const show = (message, title, severity, order = 300, configuration = {}) 
   };
 
   const intelligence = isUndefined(configuration.intelligence)
-    ? M.config.DIALOG_INTELLIGENCE : configuration.intelligence;
+    ? IDEE.config.DIALOG_INTELLIGENCE : configuration.intelligence;
 
   if (typeof intelligence === 'object' && intelligence.activate) {
     vars.message = transfomContent(message, intelligence.sizes);

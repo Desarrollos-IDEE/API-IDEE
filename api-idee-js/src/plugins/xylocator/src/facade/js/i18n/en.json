@@ -4,7 +4,7 @@
     "wrong_coords": "The coordinates entered are not correct.",
     "transforming": "Error performing the transformation.",
     "wrong_values": "Some value entered are not correct. Remember that minutes and seconds must be between 0 and 59 and degrees between 0 and 180.",
-    "xylocator_obsolete": "Message to the developer: M.plugin.XYLocator has been deprecated, please use M.plugin.Locator instead"
+    "xylocator_obsolete": "Message to the developer: IDEE.plugin.XYLocator has been deprecated, please use IDEE.plugin.Locator instead"
   },
   "coordinateresult": "coordinateresult",
   "tooltip": "Search by coordinates",

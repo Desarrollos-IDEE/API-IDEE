@@ -1,6 +1,6 @@
 /* eslint-disable camelcase,import/prefer-default-export */
-import Vector from 'M/layer/Vector';
-import Feature from 'M/feature/Feature';
+import Vector from 'IDEE/layer/Vector';
+import Feature from 'IDEE/feature/Feature';
 
 export const vector_001 = new Vector({
   name: 'capaVectorial',

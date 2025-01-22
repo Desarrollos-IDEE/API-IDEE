@@ -1,4 +1,4 @@
-import { map as Mmap } from 'M/api-idee';
+import { map as Mmap } from 'IDEE/api-idee';
 // OKS
 // import { vector_001 } from '../layers/vector/vector';
 // import { wfs_001 } from '../layers/wfs/wfs';
@@ -13,7 +13,7 @@ import { map as Mmap } from 'M/api-idee';
 // import { ogcAPIFeatures_002 } from '../layers/ogcApiFeatures/ogcApiFeatures';
 // import { mbtileVector_001 } from '../layers/mbTilesVector/mbTilesVector';
 // import { mbtile_01 } from '../layers/mbtiles/mbtiles';
-// import MBTiles from 'M/layer/MBTiles';
+// import MBTiles from 'IDEE/layer/MBTiles';
 // import { osm } from '../layers/osm/osm';
 // import { xyz_002 } from '../layers/xyz/xyz';
 // import { tms_001 } from '../layers/tms/tms';

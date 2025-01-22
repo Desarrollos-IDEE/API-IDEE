@@ -3,7 +3,7 @@
     "name": "overviewmap",
     "separator": "*!"
   },
-  "constructor": "M.plugin.OverviewMap",
+  "constructor": "IDEE.plugin.OverviewMap",
   "parameters": [{
     "type": "object",
     "properties": [{

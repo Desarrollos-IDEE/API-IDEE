@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
 </p>
-<h1 align="center"><strong>API IDEE</strong> <small>🔌 M.plugin.StoryMap</small></h1>
+<h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.StoryMap</small></h1>
 
 # Descripción
 
@@ -158,10 +158,10 @@ https://componentes.cnig.es/?storymap=TL*true*true*tooltip*delay*isDraggable
 
 ### Ejemplos de uso API-REST en base64
 
-Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad M.utils.encodeBase64.
+Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad IDEE.utils.encodeBase64.
 Ejemplo:
 ```javascript
-M.utils.encodeBase64(obj_params);
+IDEE.utils.encodeBase64(obj_params);
 ```
 
 Ejemplo de constructor del plugin:
@@ -192,14 +192,14 @@ https://componentes.cnig.es/?storymap=base64=eyJjb2xsYXBzZWQiOmZhbHNlLCJjb2xsYXB
 import StoryMapJSON2 from './StoryMapJSON2';
 import StoryMapJSON1 from './StoryMapJSON1';
 
-M.language.setLang('es');
+IDEE.language.setLang('es');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
 
 });
 
-const mp = M.plugin.new StoryMap({
+const mp = IDEE.plugin.new StoryMap({
   collapsed: false,
   collapsible: true,
   position: 'TR',

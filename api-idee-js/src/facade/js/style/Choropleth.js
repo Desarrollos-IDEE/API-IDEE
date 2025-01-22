@@ -1,5 +1,5 @@
 /**
- * @module M/style/Choropleth
+ * @module IDEE/style/Choropleth
  */
 import StyleBase from './Style';
 import StyleComposite from './Composite';
@@ -38,13 +38,13 @@ const calcCanvasNumber = (number) => {
  * con parámetros especificados por el usuario.
  *
  * @property {String} attributeName_ Nombre del atributo.
- * @property {M.quantification|function} quantification_ Cuantificación.
+ * @property {IDEE.quantification|function} quantification_ Cuantificación.
  * @property {Array<Number>} breakPoints_ Puntos de "puntos de ruptura".
  * @property {Array<Style.Simple>} choroplethStyles_ Estilos de coropletas.
  * @property {String} borderColor Color del borde.
  *
  * @api
- * @extends {M.style.Composite}
+ * @extends {IDEE.style.Composite}
  */
 class Choropleth extends StyleComposite {
   /**
@@ -93,7 +93,7 @@ class Choropleth extends StyleComposite {
    * Este método aplica el estilo especificado a la capa.
    * @function
    * @public
-   * @param {M.Layer.Vector} layer Capa.
+   * @param {IDEE.Layer.Vector} layer Capa.
    * @api
    */
   applyInternal(layer) {
@@ -142,7 +142,7 @@ class Choropleth extends StyleComposite {
    * @function
    * @public
    * @param {Style.quantification|function} quantification Modifica la cuantificación.
-   * @return {M.style.Choropleth} "this".
+   * @return {IDEE.style.Choropleth} "this".
    * @api
    */
   setQuantification(quantification) {
@@ -187,7 +187,7 @@ class Choropleth extends StyleComposite {
    * @function
    * @public
    * @param {Array<StylePoint>|Array<StyleLine>|Array<StylePolygon>} styles Estilo.
-   * @return {M.style.Choropleth} "this".
+   * @return {IDEE.style.Choropleth} "this".
    * @api
    */
   setStyles(stylesParam) {
@@ -478,7 +478,7 @@ class Choropleth extends StyleComposite {
     const compStyles = this.getStyles().map((style) => style.serialize());
 
     const parameters = [attributeName, styles, quantification, options, compStyles];
-    const deserializedMethod = 'M.style.Choropleth.deserialize';
+    const deserializedMethod = 'IDEE.style.Choropleth.deserialize';
     return { parameters, deserializedMethod };
   }
 
@@ -489,7 +489,7 @@ class Choropleth extends StyleComposite {
    * @param {Array} parametrers Parámetros para deserializar
    * ("serializedAttributeName", "serializedStyles",
    * "serializedQuantification", "serializedOptions", "serializedCompStyles").
-   * @return {M.style.Choropleth} Devuelve los estilos del objeto "Choropleth".
+   * @return {IDEE.style.Choropleth} Devuelve los estilos del objeto "Choropleth".
    */
   static deserialize([serializedAttributeName, serializedStyles,
     serializedQuantification, serializedOptions, serializedCompStyles,
@@ -515,7 +515,7 @@ class Choropleth extends StyleComposite {
     }
     const options = defineFunctionFromString(serializedOptions);
     /* eslint-disable */
-    const styleFn = new Function(['attributeName', 'styles', 'quantification', 'options'], `return new M.style.Choropleth(attributeName, styles, quantification, options)`);
+    const styleFn = new Function(['attributeName', 'styles', 'quantification', 'options'], `return new IDEE.style.Choropleth(attributeName, styles, quantification, options)`);
     /* eslint-enable */
     const deserializedStyle = styleFn(attributeName, styles, quantification, options);
 

@@ -1,5 +1,5 @@
 /**
- * @module M/language
+ * @module IDEE/language
  */
 import en from './en';
 import es from './es';

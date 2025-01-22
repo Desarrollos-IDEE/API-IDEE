@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/GeorefimageControl
+ * @module IDEE/impl/control/GeorefimageControl
  */

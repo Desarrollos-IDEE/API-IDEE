@@ -1,4 +1,4 @@
-import { map as Mmap } from 'M/api-idee';
+import { map as Mmap } from 'IDEE/api-idee';
 import { wfs_001 } from '../layers/wfs/wfs';
 
 

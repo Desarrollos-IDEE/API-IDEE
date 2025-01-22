@@ -1,5 +1,5 @@
 /**
- * @module M/style/pattern
+ * @module IDEE/style/pattern
  */
 
 /**

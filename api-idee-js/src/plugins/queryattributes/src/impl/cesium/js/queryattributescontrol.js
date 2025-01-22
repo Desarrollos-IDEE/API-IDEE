@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/QueryAttributesControl
+ * @module IDEE/impl/control/QueryAttributesControl
  */

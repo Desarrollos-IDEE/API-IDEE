@@ -1,7 +1,7 @@
 /**
- * @module M/impl/control/Scale
+ * @module IDEE/impl/control/Scale
  */
-import { isNullOrEmpty } from 'M/util/Utils';
+import { isNullOrEmpty } from 'IDEE/util/Utils';
 import Utils from 'impl/util/Utils';
 import Control from './Control';
 
@@ -79,7 +79,7 @@ class Scale extends Control {
    *
    * @public
    * @function
-   * @param {M.Map} map Mapa.
+   * @param {IDEE.Map} map Mapa.
    * @param {function} template Plantilla del control.
    * @api stable
    */

@@ -1,13 +1,13 @@
 import { getValue } from './i18n/language';
 
-export default class Measure extends M.Control {
+export default class Measure extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a Measure
    * control to provides measure tools
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(impl, template, name, order) {
@@ -28,12 +28,12 @@ export default class Measure extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map - Map to add the control
+   * @param {IDEE.Map} map - Map to add the control
    * @returns {HTMLElement} HTML template
    * @api stable
    */
   createView(map) {
-    return M.template.compileSync(this.template_, {
+    return IDEE.template.compileSync(this.template_, {
       jsonp: true,
       vars: {
         translations: getValue('text'),

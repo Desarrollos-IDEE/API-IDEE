@@ -1,5 +1,5 @@
 /**
- * @module M/layer/MVT
+ * @module IDEE/layer/MVT
  */
 import MVTTileImpl from 'impl/layer/MVT';
 import RenderFeatureImpl from 'impl/feature/RenderFeature';
@@ -36,7 +36,7 @@ export const mode = {
  * por defecto falso.
  *
  * @api
- * @extends {M.layer.Vector}
+ * @extends {IDEE.layer.Vector}
  */
 class MVT extends Vector {
   /**
@@ -121,7 +121,7 @@ class MVT extends Vector {
    * Devuelve el valor de la propiedad "extract". La propiedad "extract"
    * activa la consulta al hacer clic sobre un objeto geográfico, por defecto falso.
    * @function
-   * @return {M.layer.MVT.impl.extract} Devuelve valor del "extract".
+   * @return {IDEE.layer.MVT.impl.extract} Devuelve valor del "extract".
    * @api
    */
   get extract() {
@@ -152,10 +152,10 @@ class MVT extends Vector {
    *
    * @function
    * @public
-   * @param {M.Style} styleParam Estilos que proporciona el usuario.
+   * @param {IDEE.Style} styleParam Estilos que proporciona el usuario.
    * @param {Boolean} applyToFeature Verdadero el estilo se aplicará a los objetos geográficos,
    * por defecto falso.
-   * @param {M.layer.MVT.DEFAULT_OPTIONS_STYLE} defaultStyle Estilos por defecto de la capa.
+   * @param {IDEE.layer.MVT.DEFAULT_OPTIONS_STYLE} defaultStyle Estilos por defecto de la capa.
    * @api
    */
   setStyle(styleParam, applyToFeature = false, defaultStyle = MVT.DEFAULT_OPTIONS_STYLE) {
@@ -167,7 +167,7 @@ class MVT extends Vector {
    *
    * @function
    * @public
-   * @returns {M.layer.MVT.impl.getProjection} Devuelve la proyección.
+   * @returns {IDEE.layer.MVT.impl.getProjection} Devuelve la proyección.
    * @api
    */
   getProjection() {
@@ -200,7 +200,7 @@ class MVT extends Vector {
    *
    * @function
    * @public
-   * @return {Array<M.RenderFeature>} Devuelve un array con los objetos geográficos.
+   * @return {Array<IDEE.RenderFeature>} Devuelve un array con los objetos geográficos.
    * @api
    */
   getFeatures() {
@@ -222,8 +222,8 @@ class MVT extends Vector {
    * @function
    * @public
    * @param {String|Number} id - Id objeto geográfico.
-   * @return {Null|Array<M.RenderFeature>} objeto geográfico: devuelve el objeto geográfico con esa
-   * identificación si se encuentra, en caso de que no se encuentre o no indique el id
+   * @return {Null|Array<IDEE.RenderFeature>} objeto geográfico: devuelve el objeto geográfico
+   * con esa identificación si se encuentra, en caso de que no se encuentre o no indique el id
    * devuelve array vacío.
    * @api
    */

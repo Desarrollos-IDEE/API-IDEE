@@ -1,9 +1,9 @@
 /**
- * @module M/impl/Label
+ * @module IDEE/impl/Label
  */
-import { compileSync as compileTemplate } from 'M/util/Template';
-import FacadePopup from 'M/Popup';
-import { isNullOrEmpty } from 'M/util/Utils';
+import { compileSync as compileTemplate } from 'IDEE/util/Template';
+import FacadePopup from 'IDEE/Popup';
+import { isNullOrEmpty } from 'IDEE/util/Utils';
 import labelPopupTemplate from 'templates/label_popup';
 
 /**
@@ -12,8 +12,8 @@ import labelPopupTemplate from 'templates/label_popup';
  *
  * @property {String} text_ Texto para mostrar.
  * @property {Array} coord_ Coordenadas donde mostrar el "popup".
- * @property {M.Popup} popup_ "Popup" para mostrar información.
- * @property {M.Map} facadeMap_ Mapa.
+ * @property {IDEE.Popup} popup_ "Popup" para mostrar información.
+ * @property {IDEE.Map} facadeMap_ Mapa.
  * @property {Boolean} panMapIfOutOfView Indica si el mapa se desplaza o no.
  *
  * @api
@@ -47,14 +47,14 @@ class Label {
     /**
      * "Popup" para mostrar información.
      * @private
-     * @type {M.Popup}
+     * @type {IDEE.Popup}
      */
     this.popup_ = null;
 
     /**
      * Mapa.
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.facadeMap_ = null;
 
@@ -70,7 +70,7 @@ class Label {
    * Este método muestra un "popup" con información.
    *
    * @function
-   * @param {M.Map} map Mapa donde mostrar el "popup".
+   * @param {IDEE.Map} map Mapa donde mostrar el "popup".
    * @public
    * @api
    */
@@ -109,7 +109,7 @@ class Label {
    * Este método devuelve el "popup" creado.
    *
    * @function
-   * @returns {M.Popup} "Popup" creado.
+   * @returns {IDEE.Popup} "Popup" creado.
    * @public
    * @api
    */

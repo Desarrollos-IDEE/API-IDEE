@@ -1,3 +1,3 @@
 /**
- * @module M/impl/layer/Tiles3D
+ * @module IDEE/impl/layer/Tiles3D
  */

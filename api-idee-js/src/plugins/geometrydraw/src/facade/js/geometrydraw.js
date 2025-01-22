@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/GeometryDraw
+ * @module IDEE/plugin/GeometryDraw
  */
 import '../assets/css/geometrydraw';
 import GeometryDrawControl from './geometrydrawcontrol';
@@ -9,14 +9,14 @@ import { getValue } from './i18n/language';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class GeometryDraw extends M.Plugin {
+export default class GeometryDraw extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -25,14 +25,14 @@ export default class GeometryDraw extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -94,7 +94,7 @@ export default class GeometryDraw extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).geometrydraw;
+    return IDEE.language.getTranslation(lang).geometrydraw;
   }
 
   /**
@@ -102,16 +102,16 @@ export default class GeometryDraw extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
     this.map_ = map;
-    this.panel_ = new M.ui.Panel('panelGeometryDraw', {
+    this.panel_ = new IDEE.ui.Panel('panelGeometryDraw', {
       className: 'm-geometrydraw',
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       collapsedButtonClass: 'icon-geom',
       tooltip: this.tooltip_,
     });

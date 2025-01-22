@@ -1,5 +1,5 @@
 /**
- * @module M/control/SelectionControl
+ * @module IDEE/control/SelectionControl
  */
 import SelectionImplControl from 'impl/selectioncontrol';
 // import template from '../../templates/selection';
@@ -8,21 +8,21 @@ import { getValue } from './i18n/language';
 const DISABLED_BUTTON_ID_POINT = ['holedrawing', 'rotatedrawing', 'scaledrawing'];
 const DISABLED_BUTTON_ID_LINE = ['holedrawing'];
 
-export default class SelectionControl extends M.Control {
+export default class SelectionControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(map, managementControl) {
     // 1. checks if the implementation can create PluginControl
-    if (M.utils.isUndefined(SelectionImplControl) || (M.utils.isObject(SelectionImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(SelectionImplControl)))) {
-      M.exception(getValue('exception.impl_selectioncontrol'));
+    if (IDEE.utils.isUndefined(SelectionImplControl) || (IDEE.utils.isObject(SelectionImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(SelectionImplControl)))) {
+      IDEE.exception(getValue('exception.impl_selectioncontrol'));
     }
 
     // 2. implementation of this control
@@ -81,7 +81,7 @@ export default class SelectionControl extends M.Control {
     if (layers.length > 0) {
       this.selectionLayer = layers[0];
     } else {
-      this.selectionLayer = new M.layer.Vector({
+      this.selectionLayer = new IDEE.layer.Vector({
         extract: false,
         name: 'selectLayer',
         source: this.layer_.getImpl().getLayer().getSource(),
@@ -165,7 +165,7 @@ export default class SelectionControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Feature} feature
+   * @param {IDEE.Feature} feature
    * @api stable
    */
   addFeatureToSelection(feature) {
@@ -261,7 +261,7 @@ export default class SelectionControl extends M.Control {
       if ((this.geometry === 'Point' || this.geometry === 'MultiPoint')) {
         this.emphasis = this.getImpl().getApiIdeeFeatureClone();
 
-        this.emphasis.setStyle(new M.style.Point({
+        this.emphasis.setStyle(new IDEE.style.Point({
           radius: 20,
           stroke: {
             color: '#FF0000',
@@ -271,8 +271,8 @@ export default class SelectionControl extends M.Control {
       } else {
         // eslint-disable-next-line no-underscore-dangle
         const extent = this.getImpl().getFeatureExtent();
-        this.emphasis = M.impl.Feature.feature2Facade(this.getImpl().newPolygonFeature(extent));
-        this.emphasis.setStyle(new M.style.Line({
+        this.emphasis = IDEE.impl.Feature.feature2Facade(this.getImpl().newPolygonFeature(extent));
+        this.emphasis.setStyle(new IDEE.style.Line({
           stroke: {
             color: '#FF0000',
             width: 2,
@@ -297,7 +297,7 @@ export default class SelectionControl extends M.Control {
    * @public
    * @function
    * @api
-   * @param {M.layer} layer
+   * @param {IDEE.layer} layer
    */
   setLayer(layer) {
     this.layer_ = layer;
@@ -372,7 +372,7 @@ export default class SelectionControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {

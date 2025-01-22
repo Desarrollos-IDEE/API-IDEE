@@ -108,9 +108,9 @@
     %>
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
-        M.language.setLang(urlParams.get('language') || 'es');
+        IDEE.language.setLang(urlParams.get('language') || 'es');
 
-        const map = M.map({
+        const map = IDEE.map({
             container: 'mapjs',
         });
         let mp,collapsed,collapsible,isdraggable,zoomextent,viewhistory,zoompanel,predefinedzoom;
@@ -157,7 +157,7 @@
         }
 
         function crearPlugin(propiedades){
-            mp = new M.plugin.ViewManagement(propiedades);
+            mp = new IDEE.plugin.ViewManagement(propiedades);
             map.addPlugin(mp);
         }
         const botonEliminar = document.getElementById("botonEliminar");

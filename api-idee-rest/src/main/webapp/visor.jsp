@@ -63,7 +63,7 @@
       }
    %>
     <script type="text/javascript">
-        const map = M.map({
+        const map = IDEE.map({
             container: 'mapjs',
             controls: ['panzoom', 'scale*true', 'scaleline', 'rotate', 'location', 'backgroundlayers', 'getfeatureinfo'],
             zoom: 5,
@@ -72,21 +72,21 @@
             center: [-467062.8225, 4683459.6216],
         });
 
-        const layerinicial = new M.layer.WMS({
+        const layerinicial = new IDEE.layer.WMS({
             url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
             name: 'AU.AdministrativeBoundary',
             legend: 'Limite administrativo',
             tiled: false,
         }, {});
 
-        const layerUA = new M.layer.WMS({
+        const layerUA = new IDEE.layer.WMS({
             url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
             name: 'AU.AdministrativeUnit',
             legend: 'Unidad administrativa',
             tiled: false
         }, {});
 
-        const ocupacionSuelo = new M.layer.WMTS({
+        const ocupacionSuelo = new IDEE.layer.WMTS({
             url: 'https://wmts-mapa-lidar.idee.es/lidar',
             name: 'EL.GridCoverageDSM',
             legend: 'Modelo Digital de Superficies LiDAR',
@@ -95,7 +95,7 @@
         }, {});
 
 
-        const kml = new M.layer.KML({
+        const kml = new IDEE.layer.KML({
           url: 'https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml',
           name:  'delegacionesIGN',
           extract: false,
@@ -105,19 +105,19 @@
 
         map.addLayers([ocupacionSuelo, layerinicial, layerUA, kml]);
 
-        const pluginAttributions = new M.plugin.Attributions({
+        const pluginAttributions = new IDEE.plugin.Attributions({
             mode: 1,
             scale: 10000,
         });
 
-        const pluginShareMap = new M.plugin.ShareMap({
+        const pluginShareMap = new IDEE.plugin.ShareMap({
             baseUrl: 'https://componentes.ign.es/api-idee/',
             position: 'BR',
         });
 
-        const pluginViewManagement = new M.plugin.ViewManagement();
+        const pluginViewManagement = new IDEE.plugin.ViewManagement();
 
-        const pluginMouseSRS = new M.plugin.MouseSRS({
+        const pluginMouseSRS = new IDEE.plugin.MouseSRS({
             srs: 'EPSG:4326',
             label: 'WGS84',
             precision: 6,
@@ -125,7 +125,7 @@
             utmDecimalDigits: 2,
         });
 
-        const pluginTOC = new M.plugin.TOC({
+        const pluginTOC = new IDEE.plugin.TOC({
             collapsible: true,
             collapsed: true,
         });

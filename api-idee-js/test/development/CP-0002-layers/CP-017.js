@@ -1,6 +1,6 @@
-import { map as Mmap } from 'M/api-idee';
+import { map as Mmap } from 'IDEE/api-idee';
 
-import WMS from 'M/layer/WMS';
+import WMS from 'IDEE/layer/WMS';
 
 const mapa = Mmap({container: 'map'});
 

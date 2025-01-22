@@ -1,5 +1,5 @@
 /**
- * @module M/impl/util/TextPath
+ * @module IDEE/impl/util/TextPath
  */
 import OLStyle from 'ol/style/Style';
 import OLStyleText from 'ol/style/Text';

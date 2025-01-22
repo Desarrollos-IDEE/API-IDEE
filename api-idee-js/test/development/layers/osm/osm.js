@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import OSM from 'M/layer/OSM';
+import OSM from 'IDEE/layer/OSM';
 import SourceOSM from 'ol/source/OSM';
 
 export const osm = new OSM({

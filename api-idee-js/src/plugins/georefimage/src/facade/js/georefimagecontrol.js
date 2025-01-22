@@ -1,5 +1,5 @@
 /**
- * @module M/control/GeorefimageControl
+ * @module IDEE/control/GeorefimageControl
  */
 
 import JsZip from 'jszip';
@@ -8,26 +8,27 @@ import GeorefimageControlImpl from 'impl/georefimagecontrol';
 import georefimageHTML from '../../templates/georefimage';
 import { getValue } from './i18n/language';
 
-export default class GeorefimageControl extends M.Control {
+export default class GeorefimageControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class.
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(serverUrl, printTemplateUrl, printStatusUrl) {
-    if (M.utils.isUndefined(GeorefimageControlImpl) || (M.utils.isObject(GeorefimageControlImpl)
-      && M.utils.isNullOrEmpty(Object.keys(GeorefimageControlImpl)))) {
-      M.exception('La implementación usada no puede crear controles Georefimage');
+    if (IDEE.utils.isUndefined(GeorefimageControlImpl)
+      || (IDEE.utils.isObject(GeorefimageControlImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(GeorefimageControlImpl)))) {
+      IDEE.exception('La implementación usada no puede crear controles Georefimage');
     }
 
     const impl = new GeorefimageControlImpl();
     super(impl, GeorefimageControl.NAME);
 
-    if (M.utils.isUndefined(GeorefimageControlImpl.prototype.encodeLayer)) {
-      M.exception('La implementación usada no posee el método encodeLayer');
+    if (IDEE.utils.isUndefined(GeorefimageControlImpl.prototype.encodeLayer)) {
+      IDEE.exception('La implementación usada no posee el método encodeLayer');
     }
 
     /**
@@ -157,10 +158,10 @@ export default class GeorefimageControl extends M.Control {
    * @param {Function} callback - function that removes loading icon class.
    */
   getStatus(url, callback) {
-    M.proxy(false);
+    IDEE.proxy(false);
     const newUrl = `${url}?timestamp=${new Date().getTime()}`;
-    M.remote.get(newUrl).then((response) => {
-      M.proxy(true);
+    IDEE.remote.get(newUrl).then((response) => {
+      IDEE.proxy(true);
       const statusJson = JSON.parse(response.text);
       const { status } = statusJson;
       if (status === 'finished') {
@@ -168,9 +169,9 @@ export default class GeorefimageControl extends M.Control {
       } else if (status === 'error' || status === 'cancelled') {
         callback();
         if (statusJson.error.toLowerCase().indexOf('network is unreachable') > -1 || statusJson.error.toLowerCase().indexOf('illegalargument') > -1) {
-          M.dialog.error(getValue('exception.teselaError'), 'Error');
+          IDEE.dialog.error(getValue('exception.teselaError'), 'Error');
         } else {
-          M.dialog.error(getValue('exception.printError'), 'Error');
+          IDEE.dialog.error(getValue('exception.printError'), 'Error');
         }
 
         this.queueContainer_.lastChild.remove();
@@ -178,7 +179,7 @@ export default class GeorefimageControl extends M.Control {
         setTimeout(() => this.getStatus(url, callback), 1000);
       }
     }).catch((err) => {
-      M.proxy(true);
+      IDEE.proxy(true);
     });
   }
 
@@ -187,7 +188,7 @@ export default class GeorefimageControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stabletrue
    */
   createView(map) {
@@ -237,7 +238,7 @@ export default class GeorefimageControl extends M.Control {
 
         // forceScale
         capabilities.forceScale = this.options_.forceScale;
-        const html = M.template.compileSync(georefimageHTML, {
+        const html = IDEE.template.compileSync(georefimageHTML, {
           jsonp: true,
           vars: {
             capabilities,
@@ -266,7 +267,7 @@ export default class GeorefimageControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   addEvents(html) {
@@ -311,7 +312,7 @@ export default class GeorefimageControl extends M.Control {
     });
 
     this.queueContainer_ = this.element_.querySelector('.queue > ul.queue-container');
-    M.utils.enableTouchScroll(this.queueContainer_);
+    IDEE.utils.enableTouchScroll(this.queueContainer_);
   }
 
   /**
@@ -363,7 +364,7 @@ export default class GeorefimageControl extends M.Control {
   printClick_(evt) {
     evt.preventDefault();
     this.getPrintData().then((printData) => {
-      let printUrl = M.utils.concatUrlPaths([this.printTemplateUrl_, `report.${printData.outputFormat}`]);
+      let printUrl = IDEE.utils.concatUrlPaths([this.printTemplateUrl_, `report.${printData.outputFormat}`]);
       const queueEl = this.createQueueElement();
       if (Array.prototype.slice.call(this.queueContainer_.childNodes).length > 0) {
         this.queueContainer_.insertBefore(queueEl, this.queueContainer_.firstChild);
@@ -372,14 +373,14 @@ export default class GeorefimageControl extends M.Control {
       }
 
       queueEl.classList.add(GeorefimageControl.LOADING_CLASS);
-      printUrl = M.utils.addParameters(printUrl, 'apiIdeeop=geoprint');
+      printUrl = IDEE.utils.addParameters(printUrl, 'apiIdeeop=geoprint');
       // FIXME: delete proxy deactivation and uncomment if/else when proxy is fixed on api-idee
-      M.proxy(false);
-      M.remote.post(printUrl, printData).then((responseParam) => {
+      IDEE.proxy(false);
+      IDEE.remote.post(printUrl, printData).then((responseParam) => {
         let response = responseParam;
         const responseStatusURL = JSON.parse(response.text);
         const ref = responseStatusURL.ref;
-        const statusURL = M.utils.concatUrlPaths([this.printStatusUrl_, `${ref}.json`]);
+        const statusURL = IDEE.utils.concatUrlPaths([this.printStatusUrl_, `${ref}.json`]);
         this.getStatus(statusURL, () => queueEl.classList.remove(GeorefimageControl.LOADING_CLASS));
 
         // if (response.error !== true) { // withoud proxy, response.error === true
@@ -388,22 +389,22 @@ export default class GeorefimageControl extends M.Control {
           response = JSON.parse(response.text);
           if (this.serverUrl_.endsWith('/geoprint')) {
             const url = this.serverUrl_.substring(0, this.serverUrl_.lastIndexOf('/geoprint'));
-            downloadUrl = M.utils.concatUrlPaths([url, response.downloadURL]);
+            downloadUrl = IDEE.utils.concatUrlPaths([url, response.downloadURL]);
           } else {
-            downloadUrl = M.utils.concatUrlPaths([this.serverUrl_, response.downloadURL]);
+            downloadUrl = IDEE.utils.concatUrlPaths([this.serverUrl_, response.downloadURL]);
           }
           this.documentRead_.src = downloadUrl;
         } catch (err) {
-          M.exception(err);
+          IDEE.exception(err);
         }
         queueEl.setAttribute(GeorefimageControl.DOWNLOAD_ATTR_NAME, downloadUrl);
         queueEl.addEventListener('click', this.downloadPrint.bind(this));
         // } else {
-        //   M.dialog.error('Se ha producido un error en la impresión.');
+        //   IDEE.dialog.error('Se ha producido un error en la impresión.');
         // }
       });
 
-      M.proxy(true);
+      IDEE.proxy(true);
     });
   }
 
@@ -421,25 +422,25 @@ export default class GeorefimageControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   getCapabilities() {
-    if (M.utils.isNullOrEmpty(this.capabilitiesPromise_)) {
+    if (IDEE.utils.isNullOrEmpty(this.capabilitiesPromise_)) {
       this.capabilitiesPromise_ = new Promise((success, fail) => {
-        const capabilitiesUrl = M.utils.concatUrlPaths([this.printTemplateUrl_, 'capabilities.json']);
-        M.proxy(false);
-        M.remote.get(capabilitiesUrl).then((response) => {
+        const capabilitiesUrl = IDEE.utils.concatUrlPaths([this.printTemplateUrl_, 'capabilities.json']);
+        IDEE.proxy(false);
+        IDEE.remote.get(capabilitiesUrl).then((response) => {
           let capabilities = {};
           try {
             capabilities = JSON.parse(response.text);
           } catch (err) {
-            M.exception(err);
+            IDEE.exception(err);
           }
           success(capabilities);
         });
 
-        M.proxy(true);
+        IDEE.proxy(true);
       });
     }
 
@@ -549,7 +550,7 @@ export default class GeorefimageControl extends M.Control {
     const dpi = keepView ? 120 : this.dpi_;
     const outputFormat = 'jpg';
     const parameters = this.params_.parameters;
-    const printData = M.utils.extend({
+    const printData = IDEE.utils.extend({
       layout,
       outputFormat,
       attributes: {
@@ -691,7 +692,7 @@ export default class GeorefimageControl extends M.Control {
       const encodedLayers = [];
       layers.forEach((layer, index) => {
         this.getImpl().encodeLayer(layer).then((encodedLayer) => {
-          if (!M.utils.isNullOrEmpty(encodedLayer)) {
+          if (!IDEE.utils.isNullOrEmpty(encodedLayer)) {
             encodedLayers[index] = encodedLayer;
           }
 
@@ -715,7 +716,7 @@ export default class GeorefimageControl extends M.Control {
   createQueueElement() {
     const queueElem = document.createElement('li');
     let title = this.inputTitle_.value;
-    if (M.utils.isNullOrEmpty(title)) {
+    if (IDEE.utils.isNullOrEmpty(title)) {
       title = getValue('notitle');
     }
 
@@ -850,7 +851,7 @@ export default class GeorefimageControl extends M.Control {
 GeorefimageControl.NAME = 'georefimagecontrol';
 
 /**
- * M.template for this controls
+ * IDEE.template for this controls
  * @const
  * @type {string}
  * @public
@@ -859,7 +860,7 @@ GeorefimageControl.NAME = 'georefimagecontrol';
 GeorefimageControl.TEMPLATE = 'georefimage.html';
 
 /**
- * M.template for this controls
+ * IDEE.template for this controls
  * @const
  * @type {string}
  * @public
@@ -868,7 +869,7 @@ GeorefimageControl.TEMPLATE = 'georefimage.html';
 GeorefimageControl.LOADING_CLASS = 'printing';
 
 /**
- * M.template for this controls
+ * IDEE.template for this controls
  * @const
  * @type {string}
  * @public
@@ -877,7 +878,7 @@ GeorefimageControl.LOADING_CLASS = 'printing';
 GeorefimageControl.DOWNLOAD_ATTR_NAME = 'data-donwload-url-print';
 
 /**
- * M.template for this controls
+ * IDEE.template for this controls
  * @const
  * @type {string}
  * @public

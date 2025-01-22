@@ -3,7 +3,7 @@
     "name": "timeline",
     "separator": "*!"
   },
-  "constructor": "M.plugin.Timeline",
+  "constructor": "IDEE.plugin.Timeline",
   "parameters": [{
     "type": "object",
     "properties": [{

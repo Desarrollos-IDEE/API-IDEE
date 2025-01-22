@@ -1,5 +1,5 @@
 /**
- * @module M/layer/GeoJSON
+ * @module IDEE/layer/GeoJSON
  */
 import GeoJSONImpl from 'impl/layer/GeoJSON';
 import LayerVector from './Vector';
@@ -34,7 +34,7 @@ import { getValue } from '../i18n/language';
  * }
  * </code></pre>
  * @api
- * @extends {M.layer.Vector}
+ * @extends {IDEE.layer.Vector}
  */
 class GeoJSON extends LayerVector {
   /**
@@ -90,8 +90,8 @@ class GeoJSON extends LayerVector {
     /**
      * Implementación
      * @public
-     * @implements {M.impl.layer.GeoJSON}
-     * @type {M.impl.layer.GeoJSON}
+     * @implements {IDEE.impl.layer.GeoJSON}
+     * @type {IDEE.impl.layer.GeoJSON}
      */
     const impl = new GeoJSONImpl(parameters, optionsVar, vendorOptions);
 
@@ -270,11 +270,11 @@ class GeoJSON extends LayerVector {
    *
    * @function
    * @public
-   * @param {M.Style|String} styleParam Estilo que se aplicará a la capa.
+   * @param {IDEE.Style|String} styleParam Estilo que se aplicará a la capa.
    * @param {bool} applyToFeature Si el valor es verdadero se aplicará a los objetos geográficos,
    * falso no.
    * Por defecto, falso.
-   * @param {M.layer.GeoJSON.DEFAULT_OPTIONS_STYLE} defaultStyle Estilo por defecto,
+   * @param {IDEE.layer.GeoJSON.DEFAULT_OPTIONS_STYLE} defaultStyle Estilo por defecto,
    * se define en GeoJSON.js.
    * @api
    */

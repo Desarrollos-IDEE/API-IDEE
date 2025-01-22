@@ -1,9 +1,9 @@
 import Basic from 'facade/basic';
 
-// M.language.setLang('es');
-// M.language.setLang('en');
+// IDEE.language.setLang('es');
+// IDEE.language.setLang('en');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
 });
 window.map = map;
@@ -19,4 +19,4 @@ window.mp = mp;
 
 map.addPlugin(mp);
 
-map.addPlugin(new M.plugin.Help({}));
+map.addPlugin(new IDEE.plugin.Help({}));

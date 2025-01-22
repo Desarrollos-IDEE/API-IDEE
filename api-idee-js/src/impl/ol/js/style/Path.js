@@ -1,5 +1,5 @@
 /**
- * @module M/impl/style/Path
+ * @module IDEE/impl/style/Path
  */
 import OLStyleText from 'ol/style/Text';
 
@@ -7,7 +7,7 @@ import OLStyleText from 'ol/style/Text';
  * @classdesc
  *  De esta clase heredan los estilo de tipo "Text".
  * @api
- * @namespace M.impl.style.TextPath
+ * @namespace IDEE.impl.style.TextPath
  */
 
 class Path extends OLStyleText {

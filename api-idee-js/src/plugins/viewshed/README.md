@@ -1,4 +1,4 @@
-# M.plugin.ViewShed
+# IDEE.plugin.ViewShed
 
 Muestra referencia catastral para un punto y provee de enlace a la información de la DGC.
 
@@ -30,11 +30,11 @@ Ejemplo:
 
 ### Ejemplo 1
 ```javascript
-   const map = M.map({
+   const map = IDEE.map({
      container: 'map'
    });
 
-const mp = new M.plugin.ViewShed({
+const mp = new IDEE.plugin.ViewShed({
   RCCOOR_url: 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCoordenadas.asmx/Consulta_RCCOOR',
   CMC_url: 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejeroCodigos.asmx/ConsultaMunicipioCodigos',
   DNPRC_url: 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejeroCodigos.asmx/Consulta_DNPRC_Codigos',

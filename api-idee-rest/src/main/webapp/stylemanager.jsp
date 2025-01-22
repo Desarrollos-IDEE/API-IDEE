@@ -90,12 +90,12 @@
         %>
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
-        M.language.setLang(urlParams.get('language') || 'es');
+        IDEE.language.setLang(urlParams.get('language') || 'es');
 
-        const map = M.map({
+        const map = IDEE.map({
             container: 'mapjs',
         });
-        const points = new M.layer.WFS({
+        const points = new IDEE.layer.WFS({
             url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/sepim/ows?',
             namespace: 'sepim',
             name: 'campamentos',
@@ -105,7 +105,7 @@
         map.addLayers(points);
 
 
-        const polygons = new M.layer.WFS({
+        const polygons = new IDEE.layer.WFS({
             url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?',
             namespace: 'tematicos',
             name: 'Provincias',
@@ -114,7 +114,7 @@
         });
         map.addLayers(polygons);
 
-        const allgeoms = new M.layer.GeoJSON({
+        const allgeoms = new IDEE.layer.GeoJSON({
             name: "allgeoms",
             source: {
                 "type": "FeatureCollection",
@@ -254,7 +254,7 @@
 
         function crearPlugin(propiedades) {
 
-            mp = new M.plugin.StyleManager(propiedades);
+            mp = new IDEE.plugin.StyleManager(propiedades);
             map.addPlugin(mp);
         }
         const botonEliminar = document.getElementById("botonEliminar");
@@ -262,7 +262,7 @@
             map.removePlugins(mp);
         });
 
-        const vectors = new M.plugin.Vectors({});
+        const vectors = new IDEE.plugin.Vectors({});
         map.addPlugin(vectors);
     </script>
 </body>

@@ -1,5 +1,5 @@
 /**
- * @module M/impl/layer/TMS
+ * @module IDEE/impl/layer/TMS
  */
 import MXYZ from './XYZ';
 import * as LayerType from '../../../../facade/js/layer/Type';
@@ -17,7 +17,7 @@ import ImplMap from '../Map';
  * {z} especifica el nivel de zoom; {x} el número de columna; {y} el número de fila.
  *
  * @api
- * @extends {M.impl.layer.XYZ}
+ * @extends {IDEE.impl.layer.XYZ}
  */
 class TMS extends MXYZ {
   /**
@@ -25,7 +25,7 @@ class TMS extends MXYZ {
    * con parámetros especificados por el usuario.
    *
    * @constructor
-   * @implements {M.impl.layer.Vector}
+   * @implements {IDEE.impl.layer.Vector}
    * @param {Mx.parameters.TMS} userParameters Parámetros para la construcción de la capa.
    * - attribution: Atribución de la capa.
    * - name: Nombre de la capa.

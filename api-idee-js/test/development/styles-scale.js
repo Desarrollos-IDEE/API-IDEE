@@ -1,7 +1,7 @@
-import { map as Mmap } from 'M/api-idee';
-import MlayerWFS from 'M/layer/WFS';
-import MstylePolygon from 'M/style/Polygon';
-import MstylePoint from 'M/style/Point';
+import { map as Mmap } from 'IDEE/api-idee';
+import MlayerWFS from 'IDEE/layer/WFS';
+import MstylePolygon from 'IDEE/style/Polygon';
+import MstylePoint from 'IDEE/style/Point';
 
 const mapjs = Mmap({
   container: 'map',

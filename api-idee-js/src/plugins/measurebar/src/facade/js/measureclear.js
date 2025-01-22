@@ -8,18 +8,18 @@ import { getValue } from './i18n/language';
  * control to provides clean items drawn on the map
  *
  * @constructor
- * @param {M.control.Measure} measureLengthControl - Control measure distances
- * @param {M.control.Measure} measureAreaControl - Control measure areas
- * @extends {M.Control}
+ * @param {IDEE.control.Measure} measureLengthControl - Control measure distances
+ * @param {IDEE.control.Measure} measureAreaControl - Control measure areas
+ * @extends {IDEE.Control}
  * @api stable
  */
 
-export default class MeasureClear extends M.Control {
+export default class MeasureClear extends IDEE.Control {
   constructor(measureLengthControl, measureAreaControl, order) {
     // checks if the implementation can create MeasureClear
-    if (M.utils.isUndefined(MeasureClearImpl) || (M.utils.isObject(MeasureClearImpl)
-      && M.utils.isNullOrEmpty(Object.keys(MeasureClearImpl)))) {
-      M.exception(getValue('exception.impl_clear'));
+    if (IDEE.utils.isUndefined(MeasureClearImpl) || (IDEE.utils.isObject(MeasureClearImpl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(MeasureClearImpl)))) {
+      IDEE.exception(getValue('exception.impl_clear'));
     }
 
     // implementation of this control
@@ -36,12 +36,12 @@ export default class MeasureClear extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map - Map to add the control
+   * @param {IDEE.Map} map - Map to add the control
    * @returns {HTMLElement} HTML template
    * @api stable
    */
   createView(map) {
-    return M.template.compileSync(measureclearHTML, {
+    return IDEE.template.compileSync(measureclearHTML, {
       jsonp: true,
       vars: {
         translations: getValue('text'),

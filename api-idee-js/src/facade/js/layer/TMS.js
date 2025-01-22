@@ -1,5 +1,5 @@
 /**
- * @module M/layer/TMS
+ * @module IDEE/layer/TMS
  */
 import TMSImpl from 'impl/layer/TMS';
 import LayerBase from './Layer';
@@ -28,9 +28,9 @@ import { getValue } from '../i18n/language';
  * @property {Number} tileGridMaxZoom Url del servicio TMS.
  * @property {Object} options Opciones de la capa.
  * @property {Number} zindex_ Indice de la capa, (+40).
- * @property {M.impl.layer.TMS} impl_ Implementación de la capa.
+ * @property {IDEE.impl.layer.TMS} impl_ Implementación de la capa.
  * @property {Evt} eventsManager_ Manejador de eventos.
- * @property {M.map} map_ Mapa donde se añade la capa.
+ * @property {IDEE.map} map_ Mapa donde se añade la capa.
  * @property {Array<Number>} userMaxExtent Extensión máxima [x.min, y.min, x.max, y.max].
  * @property {String} legend Indica el nombre que queremos que aparezca en el
  * árbol de contenidos, si lo hay.
@@ -38,7 +38,7 @@ import { getValue } from '../i18n/language';
  * @property {Boolean} displayInLayerSwitcher Indica si la capa se muestra en el selector de capas.
  * @property {Boolean} isbase Define si la capa es base.
  * @api
- * @extends {M.layer}
+ * @extends {IDEE.layer}
  */
 class TMS extends LayerBase {
   /**
@@ -46,7 +46,7 @@ class TMS extends LayerBase {
    * con parámetros especificados por el usuario.
    *
    * @constructor
-   * @extends {M.Layer}
+   * @extends {IDEE.Layer}
    * @param {string|Mx.parameters.TMS} userParameters Parámetros para la construcción de la capa.
    * - attribution: Atribución de la capa.
    * - name: Nombre de la capa.
@@ -99,8 +99,8 @@ class TMS extends LayerBase {
     /**
      * Implementación.
      * @public
-     * @implements {M.impl.layer.TMS}
-     * @type {M.impl.layer.TMS}
+     * @implements {IDEE.impl.layer.TMS}
+     * @type {IDEE.impl.layer.TMS}
      */
     const impl = new TMSImpl(parameters, optionsVars, vendorOptions);
     // calls the super constructor

@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
-import { map as Mmap } from 'M/api-idee';
-import GeoJSON from 'M/layer/GeoJSON';
-import WFS from 'M/layer/WFS';
+import { map as Mmap } from 'IDEE/api-idee';
+import GeoJSON from 'IDEE/layer/GeoJSON';
+import WFS from 'IDEE/layer/WFS';
 
 const geojson = new GeoJSON({
   name: 'Municipios',

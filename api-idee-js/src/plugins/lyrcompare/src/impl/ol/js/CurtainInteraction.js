@@ -1,5 +1,5 @@
 /**
- * @module M/impl/control/CurtainInteraction
+ * @module IDEE/impl/control/CurtainInteraction
 
  */
 export default class CurtainInteraction extends ol.interaction.Pointer {

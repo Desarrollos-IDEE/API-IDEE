@@ -3,7 +3,7 @@
     "name": "iberpixcompare",
     "separator": "*!"
   },
-  "constructor": "M.plugin.IberpixCompare",
+  "constructor": "IDEE.plugin.IberpixCompare",
   "parameters": [{
     "type": "object",
     "properties": [{

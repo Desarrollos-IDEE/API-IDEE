@@ -21,7 +21,7 @@ export const getAllLayersGroup = (map) => {
     if (group.displayInLayerSwitcher) {
       allLayers.push(group);
       group.getLayers().forEach((layer) => {
-        if (layer.type !== M.layer.type.LayerGroup) {
+        if (layer.type !== IDEE.layer.type.LayerGroup) {
           allLayers.push(layer);
         }
       });
@@ -61,7 +61,7 @@ export const fiendLayerInGroup = (layer, map) => {
     layerGroup.getLayers().forEach((subLayer) => {
       if (subLayer.name === layer.name) {
         group = layerGroup;
-      } else if (subLayer.type === M.layer.type.LayerGroup) {
+      } else if (subLayer.type === IDEE.layer.type.LayerGroup) {
         findRecursiveGroup(subLayer);
       }
     });
@@ -78,7 +78,7 @@ export const createSelectGroup = (map) => {
   const groups = map.getLayerGroup()
     .filter((l) => l.isBase === false && l.displayInLayerSwitcher).reverse();
 
-  const select = M.template.compileSync(addInGroupTemplate, {
+  const select = IDEE.template.compileSync(addInGroupTemplate, {
     vars: {
       groups,
       translations: {
@@ -103,7 +103,7 @@ export const filterGroups = (layers, inLayerGroup = true) => {
     return layers.filter((l) => {
       const isTransparent = (l.transparent === true);
       const displayInLayerSwitcher = (l.displayInLayerSwitcher === true);
-      const isLayerGroup = (l instanceof M.layer.LayerGroup);
+      const isLayerGroup = (l instanceof IDEE.layer.LayerGroup);
       return isTransparent && displayInLayerSwitcher && isLayerGroup;
     });
   }

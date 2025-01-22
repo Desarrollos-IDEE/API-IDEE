@@ -1,18 +1,18 @@
 import Comparators from 'facade/comparators';
 
-// M.language.setLang('en');
-M.language.setLang('es');
-// M.proxy(false);
+// IDEE.language.setLang('en');
+IDEE.language.setLang('es');
+// IDEE.proxy(false);
 
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   zoom: 5,
   bbox: [323020, 4126873, 374759, 4152013],
 });
 window.map = map;
 
-const mpLayerswitcher = new M.plugin.Layerswitcher({
+const mpLayerswitcher = new IDEE.plugin.Layerswitcher({
   collapsed: true,
   position: 'TR',
 });
@@ -44,7 +44,7 @@ map.addPlugin(mpLayerswitcher);
 ];
 const WMSObject = x.map((layer) => {
   const [type, legend, url, name, useCapabilities] = layer.split('*');
-  return new M.layer.WMS({ // [type]
+  return new IDEE.layer.WMS({ // [type]
     url,
     name,
     legend,
@@ -65,7 +65,7 @@ const wmtsString = [
 ];
 const wmtsObject = wmtsString.map((layer) => {
   const [type, url, name, matrixSet, legend, format] = layer.split('*');
-  return new M.layer.WMTS({ // [type]
+  return new IDEE.layer.WMTS({ // [type]
     url,
     name,
     matrixSet,
@@ -80,32 +80,32 @@ const wmtsObject = wmtsString.map((layer) => {
 map.addLayers(wmtsObject); // Falta este addLayers para usarlo igual que WMSObject */
 
 /* // PRUEBA 
-// const objWMTSMapaSoloTextos = new M.layer.WMTS({
+// const objWMTSMapaSoloTextos = new IDEE.layer.WMTS({
 //  url: 'https://www.ign.es/wmts/mapa-raster', name: 'MTN_Fondo',
 //  matrixSet: 'GoogleMapsCompatible', legend: 'MTN Fondo', transparent: true,
 //  displayInLayerSwitcher: false, queryable: false, visible: true, format: 'image/jpeg',
 // });
-const objWMTSMapa = new M.layer.WMTS({
+const objWMTSMapa = new IDEE.layer.WMTS({
   url: 'https://www.ign.es/wmts/mapa-raster', name: 'MTN',
   matrixSet: 'GoogleMapsCompatible', legend: 'Mapa MTN', transparent: false,
   displayInLayerSwitcher: false, queryable: false, visible: true, format: 'image/jpeg',
 });
-const objWMTSLidar = new M.layer.WMTS({
+const objWMTSLidar = new IDEE.layer.WMTS({
   url: 'https://wmts-mapa-lidar.idee.es/lidar', name: 'EL.GridCoverageDSM',
   matrixSet: 'GoogleMapsCompatible', legend: 'Modelo Digital de Superficies LiDAR', transparent: true,
   displayInLayerSwitcher: false, queryable: false, visible: false, format: 'image/png',
 });
-const objWMTSsiose = new M.layer.WMTS({
+const objWMTSsiose = new IDEE.layer.WMTS({
   url: 'https://servicios.idee.es/wmts/ocupacion-suelo', name: 'LC.LandCoverSurfaces',
   matrixSet: 'GoogleMapsCompatible', legend: 'CORINE / SIOSE', transparent: false,
   displayInLayerSwitcher: false, queryable: false, visible: true, format: 'image/png',
 });
-const objWMTSMTN501Edi = new M.layer.WMTS({
+const objWMTSMTN501Edi = new IDEE.layer.WMTS({
   url: 'https://www.ign.es/wmts/primera-edicion-mtn?', name: 'mtn50-edicion1',
   matrixSet: 'GoogleMapsCompatible', legend: 'MTN50 1Edi', transparent: false,
   displayInLayerSwitcher: false, queryable: false, visible: true, format: 'image/jpeg',
 });
-const bkmp = new M.plugin.BackImgLayer({
+const bkmp = new IDEE.plugin.BackImgLayer({
   position: 'TR',
   layerId: 0,
   layerVisibility: true,
@@ -142,7 +142,7 @@ const bkmp = new M.plugin.BackImgLayer({
 }); map.addPlugin(bkmp); window.bkmp = bkmp; // */
 
 /* // PRUEBA ?,
-const ocupacionSuelo = new M.layer.WMTS({
+const ocupacionSuelo = new IDEE.layer.WMTS({
   url: 'https://wmts-mapa-lidar.idee.es/lidar',
   name: 'EL.GridCoverageDSM',
   legend: 'Modelo Digital de Superficies LiDAR',

@@ -1,9 +1,9 @@
 /**
- * @module M/impl/handler/Feature
+ * @module IDEE/impl/handler/Feature
  */
-// import ClusteredFeature from 'M/feature/Clustered';
-// import Cluster from 'M/style/Cluster';
-import { isNullOrEmpty } from 'M/util/Utils';
+// import ClusteredFeature from 'IDEE/feature/Clustered';
+// import Cluster from 'IDEE/style/Cluster';
+import { isNullOrEmpty } from 'IDEE/util/Utils';
 // import RenderFeature from 'ol/render/Feature';
 import {
   Cesium3DTilePointFeature,
@@ -11,7 +11,7 @@ import {
   Entity,
   ScreenSpaceEventType,
 } from 'cesium';
-import FeatureFacade from 'M/feature/Feature';
+import FeatureFacade from 'IDEE/feature/Feature';
 
 // import AnimatedCluster from '../layer/AnimatedCluster';
 // import RenderFeatureImpl from '../feature/RenderFeature';
@@ -58,7 +58,7 @@ class Feature {
     /**
      * Mapa de Cesium.
      * @private
-     * @type {M.impl.Map}
+     * @type {IDEE.impl.Map}
      */
     this.map_ = null;
 
@@ -76,7 +76,7 @@ class Feature {
    *
    * @public
    * @function
-   * @param {M.Map} map Mapa de API-IDEE.
+   * @param {IDEE.Map} map Mapa de API-IDEE.
    * @api stable
    */
   addTo(map) {
@@ -88,9 +88,9 @@ class Feature {
    *
    * @public
    * @param {Cesium.ScreenSpaceEventHandler.PositionedEvent} evt Evento del mapa.
-   * @param {M.layer} layer Capa.
+   * @param {IDEE.layer} layer Capa.
    * @function
-   * @returns {Array<M.Feature>} Lista de objetos geográficos.
+   * @returns {Array<IDEE.Feature>} Lista de objetos geográficos.
    * @api stable
    */
   getFeaturesByLayer(evt, layer) {

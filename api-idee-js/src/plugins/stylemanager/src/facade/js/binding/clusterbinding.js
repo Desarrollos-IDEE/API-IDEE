@@ -15,7 +15,7 @@ export class ClusterBinding extends Binding {
   /**
    * This function sets the attribute layer to the binding.
    * @function
-   * @param {M.layer.Vector}
+   * @param {IDEE.layer.Vector}
    */
   setLayer(layer) {
     this.layer_ = layer;
@@ -78,7 +78,7 @@ export class ClusterBinding extends Binding {
    * This function generates the cluster style from GUI Options.
    *
    * @function
-   * @returns {M.style.Cluster}
+   * @returns {IDEE.style.Cluster}
    */
   generateStyle() {
     const opts = this.generateOptions();
@@ -87,11 +87,11 @@ export class ClusterBinding extends Binding {
       return {
         min: obj['minRange'],
         max: obj['maxRange'],
-        style: new M.style.Point(obj['style']),
+        style: new IDEE.style.Point(obj['style']),
       };
     });
     opts.options['ranges'] = ranges;
-    return new M.style.Cluster(opts.options, {
+    return new IDEE.style.Cluster(opts.options, {
       distanceSelectFeatures: opts.options.distanceSelectFeatures,
     });
   }

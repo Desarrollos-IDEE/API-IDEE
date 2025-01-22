@@ -1,5 +1,5 @@
 /**
- * @module M/layer/OGCAPIFeatures
+ * @module IDEE/layer/OGCAPIFeatures
  */
 import OGCAPIFeaturesImpl from 'impl/layer/OGCAPIFeatures';
 import {
@@ -30,7 +30,7 @@ import { getValue } from '../i18n/language';
  * El parámetro offset tiene valor 10 con límite de 5 objetos geográficos, devolverá los 5 primeros
  * objetos geográficos desde número 10 de los resultados.
  * @property {Number} id Filtro por ID para un objeto geográfico.
- * @property {Array<M.style>} predefinedStyles Estilos predefinidos para la capa.
+ * @property {Array<IDEE.style>} predefinedStyles Estilos predefinidos para la capa.
  * @property {String} cql Declaración CQL para filtrar las características
  * (Sólo disponible para servicios en PostgreSQL).
  * @property {Object} conditional Declaración de filtros literales por atributos del objeto
@@ -43,7 +43,7 @@ import { getValue } from '../i18n/language';
  * clic en el objeto geográfico.
  *
  * @api
- * @extends {M.layer.Vector}
+ * @extends {IDEE.layer.Vector}
  */
 class OGCAPIFeatures extends Vector {
   /**
@@ -119,8 +119,8 @@ class OGCAPIFeatures extends Vector {
     /**
      * Implementación
      * @public
-     * @implements {M.impl.layer.OGCAPIFeatures}
-     * @type {M.impl.layer.OGCAPIFeatures}
+     * @implements {IDEE.impl.layer.OGCAPIFeatures}
+     * @type {IDEE.impl.layer.OGCAPIFeatures}
      */
     const impl = new OGCAPIFeaturesImpl(optionsVar, vendorOpts);
 
@@ -219,7 +219,7 @@ class OGCAPIFeatures extends Vector {
   /**
    * Devuelve el nombre de la capa.
    * @function
-   * @return {M.layer.OGCAPIFeature.impl.name} Devuelve el nombre de la capa.
+   * @return {IDEE.layer.OGCAPIFeature.impl.name} Devuelve el nombre de la capa.
    * @api
    */
   get name() {
@@ -243,7 +243,7 @@ class OGCAPIFeatures extends Vector {
   /**
    * Devuelve el límite de resultados.
    * @function
-   * @return { M.layer.OGCAPIFeature.impl.limit } Devuelve el límite de resultados.
+   * @return { IDEE.layer.OGCAPIFeature.impl.limit } Devuelve el límite de resultados.
    * @api
    */
   get limit() {
@@ -267,7 +267,7 @@ class OGCAPIFeatures extends Vector {
   /**
    * Devuelve el rectángulo geográfico envolvente.
    * @function
-   * @return { M.layer.OGCAPIFeature.impl.bbox } Devuelve el rectángulo geográfico envolvente.
+   * @return { IDEE.layer.OGCAPIFeature.impl.bbox } Devuelve el rectángulo geográfico envolvente.
    * @api
    */
   get bbox() {
@@ -291,7 +291,7 @@ class OGCAPIFeatures extends Vector {
   /**
    * Devuelve el formato aplicado.
    * @function
-   * @return { M.layer.OGCAPIFeature.impl.format } Devuelve el formato aplicado.
+   * @return { IDEE.layer.OGCAPIFeature.impl.format } Devuelve el formato aplicado.
    * @api
    */
   get format() {
@@ -314,7 +314,7 @@ class OGCAPIFeatures extends Vector {
   /**
    * Devuelve el offset aplicado.
    * @function
-   * @return { M.layer.OGCAPIFeature.impl.offset } Devuelve el offset aplicado.
+   * @return { IDEE.layer.OGCAPIFeature.impl.offset } Devuelve el offset aplicado.
    * @api
    */
   get offset() {
@@ -338,7 +338,7 @@ class OGCAPIFeatures extends Vector {
   /**
    * Devuelve el id aplicado.
    * @function
-   * @return { M.layer.OGCAPIFeature.impl.id } Devuelve el id aplicado.
+   * @return { IDEE.layer.OGCAPIFeature.impl.id } Devuelve el id aplicado.
    * @api
    */
   get id() {
@@ -362,7 +362,7 @@ class OGCAPIFeatures extends Vector {
   /**
    * Devuelve el condicional aplicado.
    * @function
-   * @return {M.layer.OGCAPIFeature.impl.conditional} Devuelve el conditional aplicado.
+   * @return {IDEE.layer.OGCAPIFeature.impl.conditional} Devuelve el conditional aplicado.
    * @api
    */
   get conditional() {
@@ -388,11 +388,11 @@ class OGCAPIFeatures extends Vector {
    *
    * @function
    * @public
-   * @param {M.Style} styleParam Estilo que se aplicará a la capa.
+   * @param {IDEE.Style} styleParam Estilo que se aplicará a la capa.
    * @param {Boolean} applyToFeature Si el valor es verdadero se aplicará a los objetos geográficos,
    * falso no.
    * Por defecto, falso.
-   * @param {M.layer.OGCAPIFeatures.DEFAULT_OPTIONS_STYLE} defaultStyle Estilo por defecto,
+   * @param {IDEE.layer.OGCAPIFeatures.DEFAULT_OPTIONS_STYLE} defaultStyle Estilo por defecto,
    * se define en OGCAPIFeatures.js.
    * @api
    */

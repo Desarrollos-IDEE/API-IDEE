@@ -1,5 +1,5 @@
-import { map as Mmap } from 'M/api-idee';
-import WMTS from 'M/layer/WMTS';
+import { map as Mmap } from 'IDEE/api-idee';
+import WMTS from 'IDEE/layer/WMTS';
 
 const mapa1 = Mmap({
   container: 'map1',

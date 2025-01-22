@@ -3,7 +3,7 @@
     "name": "mirrorpanel",
     "separator": "*!"
   },
-  "constructor": "M.plugin.Mirrorpanel",
+  "constructor": "IDEE.plugin.Mirrorpanel",
   "parameters": [
     {
       "type": "object",

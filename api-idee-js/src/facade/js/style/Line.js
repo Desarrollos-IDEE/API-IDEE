@@ -1,5 +1,5 @@
 /**
- * @module M/style/Line
+ * @module IDEE/style/Line
  */
 import StyleLineImpl from 'impl/style/Line';
 import Simple from './Simple';
@@ -10,7 +10,7 @@ import { isNull, extendsObj } from '../util/Utils';
  * Crea un estilo de línea
  * con parámetros especificados por el usuario.
  * @api
- * @extends {M.style.Simple}
+ * @extends {IDEE.style.Simple}
  */
 class Line extends Simple {
   /**
@@ -55,7 +55,7 @@ class Line extends Simple {
    *
    * @function
    * @protected
-   * @param {M.layer.Vector} layer Capa.
+   * @param {IDEE.layer.Vector} layer Capa.
    * @api
    */
   unapply(layer) {
@@ -63,22 +63,22 @@ class Line extends Simple {
   }
 
   /**
-   * Deserializa el método M.style.Simple.deserialize.
+   * Deserializa el método IDEE.style.Simple.deserialize.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function
    * @public
-   * @return {Function} Devuelve la función M.style.Simple.deserialize.
+   * @return {Function} Devuelve la función IDEE.style.Simple.deserialize.
    * @api
    */
   getDeserializedMethod_() {
-    return "((serializedParameters) => M.style.Simple.deserialize(serializedParameters, 'M.style.Line'))";
+    return "((serializedParameters) => IDEE.style.Simple.deserialize(serializedParameters, 'IDEE.style.Line'))";
   }
 
   /**
    * Este método clona el estilo.
    *
    * @public
-   * @return {M.style.Line} Devuelve un "new Line".
+   * @return {IDEE.style.Line} Devuelve un "new Line".
    * @function
    * @api
    */

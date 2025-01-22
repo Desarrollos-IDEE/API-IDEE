@@ -1,13 +1,13 @@
 /**
- * @module M/impl/control/FullTOCControl
+ * @module IDEE/impl/control/FullTOCControl
  */
-export default class FullTOCControl extends M.impl.Control {
+export default class FullTOCControl extends IDEE.impl.Control {
   /**
    * This function adds the control to the specified map
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api stable
    */
@@ -26,7 +26,7 @@ export default class FullTOCControl extends M.impl.Control {
    * @api stable
    */
   registerEvents() {
-    if (!M.utils.isNullOrEmpty(this.facadeMap_)) {
+    if (!IDEE.utils.isNullOrEmpty(this.facadeMap_)) {
       const olMap = this.facadeMap_.getMapImpl();
       this.registerViewEvents_(olMap.getView());
       this.registerLayersEvents_(olMap.getLayers());
@@ -42,7 +42,7 @@ export default class FullTOCControl extends M.impl.Control {
    * @api stable
    */
   unregisterEvents() {
-    if (!M.utils.isNullOrEmpty(this.facadeMap_)) {
+    if (!IDEE.utils.isNullOrEmpty(this.facadeMap_)) {
       const olMap = this.facadeMap_.getMapImpl();
       this.unregisterViewEvents_(olMap.getView());
       this.unregisterLayersEvents_(olMap.getLayers());
@@ -132,7 +132,7 @@ export default class FullTOCControl extends M.impl.Control {
    * @param {*} layerParameters -
    */
   loadOGCAPIFeaturesLayer(layerParameters) {
-    const layer = new M.layer.OGCAPIFeatures(layerParameters);
+    const layer = new IDEE.layer.OGCAPIFeatures(layerParameters);
     this.facadeMap_.addLayers(layer);
     layer.setZIndex(layer.getZIndex() + 8);
   }
@@ -144,11 +144,11 @@ export default class FullTOCControl extends M.impl.Control {
    * @param {*} layerParameters -
    */
   getNumberFeaturesOGCAPIFeaturesLayer(layerParameters) {
-    const layer = new M.layer.OGCAPIFeatures(layerParameters);
+    const layer = new IDEE.layer.OGCAPIFeatures(layerParameters);
     const url = this.getFeatureUrl(layer);
     let numberFeatures;
     let jsonResponseOgc;
-    return M.remote.get(url).then((response) => {
+    return IDEE.remote.get(url).then((response) => {
       jsonResponseOgc = JSON.parse(response.text);
       if (jsonResponseOgc !== null) {
         if (jsonResponseOgc.type === 'Feature') {
@@ -180,36 +180,36 @@ export default class FullTOCControl extends M.impl.Control {
     };
     let fUrl;
     /* eslint-disable no-param-reassign */
-    if (!M.utils.isNullOrEmpty(layer.name)) {
+    if (!IDEE.utils.isNullOrEmpty(layer.name)) {
       layer.url = `${layer.url}${layer.name}/items/`;
     }
 
-    if (!M.utils.isNullOrEmpty(layer.format)) {
+    if (!IDEE.utils.isNullOrEmpty(layer.format)) {
       getFeatureParams.f = layer.format;
     }
 
-    if (!M.utils.isNullOrEmpty(layer.id)) {
+    if (!IDEE.utils.isNullOrEmpty(layer.id)) {
       layer.url = `${layer.url}${layer.id}?`;
       /* eslint-disable-next-line max-len */
-      fUrl = M.utils.addParameters(M.utils.addParameters(layer.url, getFeatureParams), layer.getFeatureVendor);
+      fUrl = IDEE.utils.addParameters(IDEE.utils.addParameters(layer.url, getFeatureParams), layer.getFeatureVendor);
     } else {
       layer.url = `${layer.url}?`;
 
-      if (!M.utils.isNullOrEmpty(layer.limit)) {
+      if (!IDEE.utils.isNullOrEmpty(layer.limit)) {
         getFeatureParams.limit = layer.limit;
       }
 
-      if (!M.utils.isNullOrEmpty(layer.offset)) {
+      if (!IDEE.utils.isNullOrEmpty(layer.offset)) {
         getFeatureParams.offset = layer.offset;
       }
 
-      if (!M.utils.isNullOrEmpty(layer.bbox)) {
+      if (!IDEE.utils.isNullOrEmpty(layer.bbox)) {
         getFeatureParams.bbox = layer.bbox;
       }
       /* eslint-disable-next-line max-len */
-      fUrl = M.utils.addParameters(M.utils.addParameters(layer.url, getFeatureParams), layer.getFeatureVendor);
+      fUrl = IDEE.utils.addParameters(IDEE.utils.addParameters(layer.url, getFeatureParams), layer.getFeatureVendor);
 
-      if (!M.utils.isNullOrEmpty(layer.conditional)) {
+      if (!IDEE.utils.isNullOrEmpty(layer.conditional)) {
         let text = '';
         Object.keys(layer.conditional).forEach((key) => {
           const param = `&${key}=${layer.conditional[key]}&`;
@@ -231,7 +231,7 @@ export default class FullTOCControl extends M.impl.Control {
    * @param {*} features -
    */
   centerFeatures(features, isGPX) {
-    if (!M.utils.isNullOrEmpty(features)) {
+    if (!IDEE.utils.isNullOrEmpty(features)) {
       if ((features.length === 1) && (features[0].getGeometry().type === 'Point')) {
         const pointView = new ol.View({
           center: features[0].getGeometry().coordinates,
@@ -239,7 +239,7 @@ export default class FullTOCControl extends M.impl.Control {
         });
         this.facadeMap_.getMapImpl().setView(pointView);
       } else {
-        const extent = M.impl.utils.getFeaturesExtent(features);
+        const extent = IDEE.impl.utils.getFeaturesExtent(features);
         this.facadeMap_.getMapImpl().getView().fit(extent, {
           duration: 500,
           minResolution: 1,
@@ -285,11 +285,11 @@ export default class FullTOCControl extends M.impl.Control {
               };
             }
 
-            if (f !== undefined) f.setStyle(new M.style.Point(newPointStyle));
+            if (f !== undefined) f.setStyle(new IDEE.style.Point(newPointStyle));
             break;
           case 'LineString':
           case 'MultiLineString':
-            const newLineStyle = new M.style.Line({
+            const newLineStyle = new IDEE.style.Line({
               stroke: {
                 color: '#71a7d3',
                 width: 3,
@@ -300,7 +300,7 @@ export default class FullTOCControl extends M.impl.Control {
             break;
           case 'Polygon':
           case 'MultiPolygon':
-            const newPolygonStyle = new M.style.Polygon({
+            const newPolygonStyle = new IDEE.style.Polygon({
               fill: {
                 color: '#71a7d3',
                 opacity: 0.2,

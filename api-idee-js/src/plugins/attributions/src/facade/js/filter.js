@@ -19,7 +19,7 @@ class Base {
    * This function execute a function filter
    *
    * @protected
-   * @param {Array<M.Feature>} features - Features on which the filter runs
+   * @param {Array<IDEE.Feature>} features - Features on which the filter runs
    * @function
    */
   execute(features) {}
@@ -28,8 +28,8 @@ class Base {
    * This function execute a function filter
    *
    * @protected
-   * @param {Array<M.Feature>} features - Features on which the filter runs
-   * @return {Array<M.Feature>} Result of execute
+   * @param {Array<IDEE.Feature>} features - Features on which the filter runs
+   * @return {Array<IDEE.Feature>} Result of execute
    * @function
    */
   toCQL() {}
@@ -61,7 +61,7 @@ class Function extends Base {
      * @type {String}
      */
     this.cqlFilter_ = '';
-    if (!M.utils.isNullOrEmpty(options.cqlFilter)) {
+    if (!IDEE.utils.isNullOrEmpty(options.cqlFilter)) {
       this.cqlFilter_ = options.cqlFilter;
     }
   }
@@ -82,7 +82,7 @@ class Function extends Base {
    *
    * @public
    * @function
-   * @return {M.filter.Function} filter to execute
+   * @return {IDEE.filter.Function} filter to execute
    * @api
    */
   getFunctionFilter() {
@@ -94,8 +94,8 @@ class Function extends Base {
    *
    * @public
    * @function
-   * @param {Array<M.Feature>} features - Features on which the filter runs
-   * @return {Array<M.Feature>} features to passed filter
+   * @param {Array<IDEE.Feature>} features - Features on which the filter runs
+   * @return {Array<IDEE.Feature>} features to passed filter
    * @api
    */
   execute(features) {
@@ -128,7 +128,7 @@ class Spatial extends Function {
   constructor(FunctionParam, options) {
     const filterFunction = (feature, index) => {
       let geometry = null;
-      if (!M.utils.isNullOrEmpty(feature)) {
+      if (!IDEE.utils.isNullOrEmpty(feature)) {
         geometry = feature.getGeometry();
       }
       return FunctionParam(geometry, index);
@@ -144,17 +144,17 @@ class Spatial extends Function {
 export const parseParamToGeometries = (paramParameter) => {
   let param = paramParameter;
   let geometries = [];
-  if (param instanceof M.layer.Vector) {
+  if (param instanceof IDEE.layer.Vector) {
     geometries = [...param.getFeatures().map((feature) => feature.getGeometry())];
   } else {
-    if (!M.utils.isArray(param)) {
+    if (!IDEE.utils.isArray(param)) {
       param = [param];
     }
     geometries = param.map((p) => {
       let geom;
-      if (p instanceof M.Feature) {
+      if (p instanceof IDEE.Feature) {
         geom = p.getGeometry();
-      } else if (M.isObject(p)) {
+      } else if (IDEE.isObject(p)) {
         geom = p;
       }
       return geom;
@@ -170,14 +170,14 @@ export const parseParamToGeometries = (paramParameter) => {
  */
 const toCQLFilter = (operation, geometries) => {
   let cqlFilter = '';
-  const wktFormat = new M.format.WKT();
+  const wktFormat = new IDEE.format.WKT();
   geometries.forEach((value, index) => {
     if (index !== 0) {
       // es un OR porque se hace una interseccion completa con todas
       // las geometries
       cqlFilter += ' OR ';
     }
-    const geometry = new M.Feature('filtered_geom', {
+    const geometry = new IDEE.Feature('filtered_geom', {
       type: 'Feature',
       geometry: value,
     });

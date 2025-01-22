@@ -1,5 +1,5 @@
 /**
- * @module M/layer/GenericRaster
+ * @module IDEE/layer/GenericRaster
  */
 import GenericRasterImpl from 'impl/layer/GenericRaster';
 import Utils from 'impl/util/Utils';
@@ -24,7 +24,7 @@ import * as LayerType from './Type';
  * @property {Boolean} isbase Define si la capa es base.
  *
  * @api
- * @extends {M.Layer}
+ * @extends {IDEE.Layer}
  */
 class GenericRaster extends LayerBase {
   /**
@@ -149,7 +149,7 @@ class GenericRaster extends LayerBase {
    * Este método calcula la extensión máxima de esta capa.
    *
    * @function
-   * @returns {M.layer.maxExtent} Devuelve una promesa, con la extensión máxima de esta capa.
+   * @returns {IDEE.layer.maxExtent} Devuelve una promesa, con la extensión máxima de esta capa.
    * @api
    */
   calculateMaxExtent() {
@@ -207,7 +207,7 @@ class GenericRaster extends LayerBase {
    *
    * @function
    * @getter
-   * @return {M.layer.GenericRaster.impl.version} Versión del servicio.
+   * @return {IDEE.layer.GenericRaster.impl.version} Versión del servicio.
    * @api
    */
   get version() {

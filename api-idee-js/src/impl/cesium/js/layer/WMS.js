@@ -1,5 +1,5 @@
 /**
- * @module M/impl/layer/WMS
+ * @module IDEE/impl/layer/WMS
  */
 import {
   isNullOrEmpty,
@@ -8,12 +8,12 @@ import {
   getWMSGetCapabilitiesUrl,
   extend,
   isArray,
-} from 'M/util/Utils';
-import FacadeLayerBase from 'M/layer/Layer';
-import { get as getRemote } from 'M/util/Remote';
-import * as EventType from 'M/event/eventtype';
+} from 'IDEE/util/Utils';
+import FacadeLayerBase from 'IDEE/layer/Layer';
+import { get as getRemote } from 'IDEE/util/Remote';
+import * as EventType from 'IDEE/event/eventtype';
 import { ImageryLayer, Rectangle, WebMapServiceImageryProvider } from 'cesium';
-import { getValue } from 'M/i18n/language';
+import { getValue } from 'IDEE/i18n/language';
 import LayerBase from './Layer';
 import GetCapabilities from '../util/WMSCapabilities';
 import FormatWMS from '../format/WMS';
@@ -25,10 +25,10 @@ import ImplUtils from '../util/Utils';
  * Permitiendo las personalización de las capas mediante estilos. Se trata de un mapa dínamico.
  *
  * @property {Object} options Opciones de la capa WMS.
- * @property {Array<M.layer.WMS>} layers Intancia de WMS con metadatos.
+ * @property {Array<IDEE.layer.WMS>} layers Intancia de WMS con metadatos.
  *
  * @api
- * @extends {M.impl.layer.Layer}
+ * @extends {IDEE.impl.layer.Layer}
  */
 class WMS extends LayerBase {
   /**
@@ -36,7 +36,7 @@ class WMS extends LayerBase {
    * con parámetros especificados por el usuario.
    *
    * @constructor
-   * @implements {M.impl.Layer}
+   * @implements {IDEE.impl.Layer}
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
    * - opacity: Opacidad de capa, por defecto 1.
    * - singleTile: Indica si la tesela es única o no.
@@ -201,7 +201,7 @@ class WMS extends LayerBase {
    *
    * @public
    * @function
-   * @param {M.impl.Map} map Mapa de la implementación.
+   * @param {IDEE.impl.Map} map Mapa de la implementación.
    * @api stable
    */
   addTo(map) {
@@ -219,7 +219,8 @@ class WMS extends LayerBase {
     }
 
     if (!this.isWMSfull
-      && this.legendUrl_ === concatUrlPaths([M.config.THEME_URL, FacadeLayerBase.LEGEND_DEFAULT])) {
+      && this.legendUrl_ === concatUrlPaths([IDEE.config.THEME_URL,
+        FacadeLayerBase.LEGEND_DEFAULT])) {
       this.legendUrl_ = addParameters(this.url, {
         SERVICE: 'WMS',
         VERSION: this.version,

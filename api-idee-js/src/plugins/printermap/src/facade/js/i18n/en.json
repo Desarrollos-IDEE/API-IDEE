@@ -6,7 +6,7 @@
     "error": "An error has occurred while printing.",
     "imageError": "The download could not be completed at this time. Please try again later.",
     "error_layers": "The following layers will not be displayed when printing the map: ",
-    "printermap_obsolete": "Message to the developer: M.plugin.printermap has been deprecated, please use M.plugin.PrintViewManagement instead"
+    "printermap_obsolete": "Message to the developer: IDEE.plugin.printermap has been deprecated, please use IDEE.plugin.PrintViewManagement instead"
   },
   "errorProjectionCapabilities": "The selected projection is not available for this base layer. Please choose another projection.",
   "tooltip": "Map Printing",

@@ -1,12 +1,12 @@
 /**
- * @module M/impl/layer/OGCAPIFeatures
+ * @module IDEE/impl/layer/OGCAPIFeatures
  */
-import FormatGeoJSON from 'M/format/GeoJSON';
-import { compileSync as compileTemplate } from 'M/util/Template';
+import FormatGeoJSON from 'IDEE/format/GeoJSON';
+import { compileSync as compileTemplate } from 'IDEE/util/Template';
 import geojsonPopupTemplate from 'templates/geojson_popup';
-import { isNullOrEmpty, isFunction } from 'M/util/Utils';
-import * as EventType from 'M/event/eventtype';
-import Popup from 'M/Popup';
+import { isNullOrEmpty, isFunction } from 'IDEE/util/Utils';
+import * as EventType from 'IDEE/event/eventtype';
+import Popup from 'IDEE/Popup';
 import OLSourceVector from 'ol/source/Vector';
 import { get as getProj } from 'ol/proj';
 import { all } from 'ol/loadingstrategy';
@@ -23,7 +23,7 @@ import ImplUtils from '../util/Utils';
  * capacidad de crear, modificar y consultar datos
  * espaciales en la Web y especifica requisitos y recomendaciones para las API que desean seguir una
  * forma estándar de compartir datos de entidades.
- * @extends {M.impl.layer.Vector}
+ * @extends {IDEE.impl.layer.Vector}
  * @api
  */
 class OGCAPIFeatures extends Vector {
@@ -32,7 +32,7 @@ class OGCAPIFeatures extends Vector {
    * con parámetros especificados por el usuario.
    *
    * @constructor
-   * @implements {M.impl.layer.Vector}
+   * @implements {IDEE.impl.layer.Vector}
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
    * - predefinedStyles: Estilos predefinidos para la capa.
    * - visibility: Define si la capa es visible o no. Verdadero por defecto.
@@ -101,7 +101,7 @@ class OGCAPIFeatures extends Vector {
    *
    * @public
    * @function
-   * @param {M.Map} map Implementación del mapa.
+   * @param {IDEE.Map} map Implementación del mapa.
    * @api stable
    */
   addTo(map, addLayer = true) {
@@ -262,7 +262,7 @@ class OGCAPIFeatures extends Vector {
    *
    * @function
    * @param {boolean} skipFilter Indica si se salta el filtro.
-   * @param {M.Filter} filter Filtro para ejecutar.
+   * @param {IDEE.Filter} filter Filtro para ejecutar.
    * @return {Array<number>} Alcance de los objetos geográficos.
    * @api stable
    */

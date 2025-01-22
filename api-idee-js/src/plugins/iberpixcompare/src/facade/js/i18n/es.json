@@ -44,5 +44,5 @@
   "printmap": "Impresión del mapa",
   "georef_download": "Descargar Imagen georreferenciada",
   "no_layer": "Sin capa",
-  "iberpixcompare_obsolete": "Mensaje para el desarrollador: M.plugin.IberpixCompare ha quedado obsoleto, utilice en su lugar M.plugin.Comparators"
+  "iberpixcompare_obsolete": "Mensaje para el desarrollador: IDEE.plugin.IberpixCompare ha quedado obsoleto, utilice en su lugar IDEE.plugin.Comparators"
 }

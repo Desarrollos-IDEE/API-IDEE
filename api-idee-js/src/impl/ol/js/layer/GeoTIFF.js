@@ -1,12 +1,12 @@
 /* eslint-disable no-underscore-dangle */
 /**
- * @module M/impl/layer/GeoTIFF
+ * @module IDEE/impl/layer/GeoTIFF
  */
 import {
   isUndefined, isNull, isNullOrEmpty, getResolutionFromScale, extend,
-} from 'M/util/Utils';
-import * as LayerType from 'M/layer/Type';
-import * as EventType from 'M/event/eventtype';
+} from 'IDEE/util/Utils';
+import * as LayerType from 'IDEE/layer/Type';
+import * as EventType from 'IDEE/event/eventtype';
 import TileLayer from 'ol/layer/WebGLTile';
 import GeoTIFFSource from 'ol/source/GeoTIFF';
 import { get as getProj } from 'ol/proj';
@@ -28,7 +28,7 @@ import ImplUtils from '../util/Utils';
  * @property {Object} style Opciones de la capa GeoTIFF.
  *
  * @api
- * @extends {M.impl.layer.Layer}
+ * @extends {IDEE.impl.layer.Layer}
  */
 class GeoTIFF extends LayerBase {
   /**
@@ -36,7 +36,7 @@ class GeoTIFF extends LayerBase {
    * con parámetros especificados por el usuario.
    *
    * @constructor
-   * @implements {M.impl.Layer}
+   * @implements {IDEE.impl.Layer}
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
    * - url: url del servicio.
    * - blob: url del blob.
@@ -209,7 +209,7 @@ class GeoTIFF extends LayerBase {
    *
    * @public
    * @function
-   * @param {M.impl.Map} map Mapa de la implementación.
+   * @param {IDEE.impl.Map} map Mapa de la implementación.
    * @api stable
    */
   addTo(map, addLayer = true) {

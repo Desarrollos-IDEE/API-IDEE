@@ -1,4 +1,4 @@
-# M.plugin.ZoomPanel
+# IDEE.plugin.ZoomPanel
 
 Ofrece diferentes herramientas de zoom.
 
@@ -38,11 +38,11 @@ El constructor se inicializa con un JSON de options con los siguientes atributos
 # Ejemplos de uso
 
 ```javascript
-   const map = M.map({
+   const map = IDEE.map({
      container: 'map'
    });
 
-   const mp = new M.plugin.ZoomPanel({
+   const mp = new IDEE.plugin.ZoomPanel({
         position: 'TL',
         collapsed: true,
         collapsible: true,

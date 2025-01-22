@@ -1,5 +1,5 @@
 /**
- * @module M/style/Polygon
+ * @module IDEE/style/Polygon
  */
 import PolygonImpl from 'impl/style/Polygon';
 import Simple from './Simple';
@@ -9,7 +9,7 @@ import { isNull, extendsObj } from '../util/Utils';
  * @classdesc
  * Crea el estilo de un polígono.
  * @api
- * @extends {M.style.Simple}
+ * @extends {IDEE.style.Simple}
  */
 class Polygon extends Simple {
   /**
@@ -60,22 +60,22 @@ class Polygon extends Simple {
   }
 
   /**
-   * Deserializa el método M.style.Simple.deserialize.
+   * Deserializa el método IDEE.style.Simple.deserialize.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function
    * @public
-   * @return {Function} Devuelve la función M.style.Simple.deserialize.
+   * @return {Function} Devuelve la función IDEE.style.Simple.deserialize.
    * @api
    */
   getDeserializedMethod_() {
-    return "((serializedParameters) => M.style.Simple.deserialize(serializedParameters, 'M.style.Polygon'))";
+    return "((serializedParameters) => IDEE.style.Simple.deserialize(serializedParameters, 'IDEE.style.Polygon'))";
   }
 
   /**
    * Este método clona el estilo.
    *
    * @public
-   * @return {M.style.Polygon} Devuelve un "new Polygon".
+   * @return {IDEE.style.Polygon} Devuelve un "new Polygon".
    * @function
    * @api
    */

@@ -1,6 +1,6 @@
-import { map as Mmap } from 'M/api-idee';
-import WMS from 'M/layer/WMS';
-import WMTS from 'M/layer/WMTS';
+import { map as Mmap } from 'IDEE/api-idee';
+import WMS from 'IDEE/layer/WMS';
+import WMTS from 'IDEE/layer/WMTS';
 
 let getfeatureinfoLayers;
 // Escoger el Control que se quiere probar:

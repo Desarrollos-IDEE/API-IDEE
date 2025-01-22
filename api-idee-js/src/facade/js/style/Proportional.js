@@ -1,5 +1,5 @@
 /**
- * @module M/style/Proportional
+ * @module IDEE/style/Proportional
  */
 import StyleBase from './Style';
 import StyleComposite from './Composite';
@@ -19,7 +19,7 @@ import { getValue } from '../i18n/language';
  * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
  * @function
  * @public
- * @param {Array<M.Feature>} features Matriz de objetos geográficos.
+ * @param {Array<IDEE.Feature>} features Matriz de objetos geográficos.
  * @param {String} attributeName Nombre de los atributos con estilos.
  * @api
  */
@@ -86,7 +86,7 @@ const defaultProportionalFunction = ((value, minValue, maxValue, minRadius, maxR
  * @property {String} attributeName_ Nombre del atributo.
  *
  * @api
- * @extends {M.Style}
+ * @extends {IDEE.Style}
  */
 class Proportional extends StyleComposite {
   /**
@@ -144,7 +144,7 @@ class Proportional extends StyleComposite {
     /**
      * El punto de estilo definido por el usuario..
      * @private
-     * @type {M.Style}
+     * @type {IDEE.Style}
      * @api
      * @expose
      */
@@ -175,7 +175,7 @@ class Proportional extends StyleComposite {
    * Este método aplica el estilo a la capa especificada.
    * @function
    * @public
-   * @param {M.Layer.Vector} layer Capa donde aplicar el estilo de coropletas.
+   * @param {IDEE.Layer.Vector} layer Capa donde aplicar el estilo de coropletas.
    * @api
    */
   applyInternal(layer) {
@@ -187,7 +187,7 @@ class Proportional extends StyleComposite {
    * Este método aplica el estilo a los objetos geográficos especificados.
    * @function
    * @public
-   * @param {M.Layer.Vector} feature Objeto geográfico.
+   * @param {IDEE.Layer.Vector} feature Objeto geográfico.
    * @api
    */
   applyToFeature(feature, resolution) {
@@ -585,7 +585,7 @@ class Proportional extends StyleComposite {
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function
    * @public
-   * @param {M.Feature} feature Objeto geográfico.
+   * @param {IDEE.Feature} feature Objeto geográfico.
    * @param {object} options Valores: "minRadius", "maxRadius", "minValue" y "maxValue"
    * @param {StylePoint} styleVar Estilo.
    * @return {StyleSimple} Devuelve el objeto geográfico con el estilo.
@@ -658,7 +658,7 @@ class Proportional extends StyleComposite {
     let options = extendsObj({}, this.getOptions());
     options = stringifyFunctions(options);
     const parameters = [attributeName, minRadius, maxRadius, styles, proportionalFunction, options];
-    const deserializedMethod = 'M.style.Proportional.deserialize';
+    const deserializedMethod = 'IDEE.style.Proportional.deserialize';
     return { parameters, deserializedMethod };
   }
 
@@ -673,7 +673,7 @@ class Proportional extends StyleComposite {
    * - serializedStyles
    * - serializedProportionalFunction
    * - serializedOptions
-   * @return {M.style.Proportional}
+   * @return {IDEE.style.Proportional}
    */
   static deserialize([serializedAttributeName, serializedMinRadius, serializedMaxRadius,
     serializedStyles, serializedProportionalFunction, serializedOptions,
@@ -687,7 +687,7 @@ class Proportional extends StyleComposite {
     /* eslint-disable */
     const styleFn = new Function(['attributeName', 'minRadius', 'maxRadius', 'style',
       'proportionalFunction', 'options'
-    ], `return new M.style.Proportional(attributeName,
+    ], `return new IDEE.style.Proportional(attributeName,
     minRadius, maxRadius, style, proportionalFunction, options)`);
     const deserializedStyle = styleFn(attributeName, minRadius, maxRadius, undefined, proportionalFunction, options);
     /* eslint-enable */

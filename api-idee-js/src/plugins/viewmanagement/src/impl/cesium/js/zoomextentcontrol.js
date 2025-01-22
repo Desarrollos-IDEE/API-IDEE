@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/ZoomExtentControl
+ * @module IDEE/impl/control/ZoomExtentControl
  */

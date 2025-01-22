@@ -1,10 +1,10 @@
 /* eslint-disable max-len */
 import OverviewMap from 'facade/overviewmap';
 
-M.language.setLang('es');
-// M.language.setLang('en');
+IDEE.language.setLang('es');
+// IDEE.language.setLang('en');
 
-const map = M.map({
+const map = IDEE.map({
   center: [-467062.8225, 4783459.6216],
   container: 'mapjs',
   layers: ['WMTS*http://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*Mapa IGN*false*image/jpeg*false*false*true'],

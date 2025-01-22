@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/IberpixCompare
+ * @module IDEE/plugin/IberpixCompare
  */
 
 import 'assets/css/iberpixcompare';
@@ -10,14 +10,14 @@ import { getValue } from './i18n/language';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class IberpixCompare extends M.Plugin {
+export default class IberpixCompare extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -34,14 +34,14 @@ export default class IberpixCompare extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -158,7 +158,7 @@ export default class IberpixCompare extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).iberpixcompare;
+    return IDEE.language.getTranslation(lang).iberpixcompare;
   }
 
   /**
@@ -166,7 +166,7 @@ export default class IberpixCompare extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
@@ -182,10 +182,10 @@ export default class IberpixCompare extends M.Plugin {
     });
 
     this.controls_.push(this.control_);
-    this.panel_ = new M.ui.Panel('panelIberpixCompare', {
+    this.panel_ = new IDEE.ui.Panel('panelIberpixCompare', {
       collapsible: this.collapsible,
       collapsed: this.collapsed,
-      position: M.ui.position[this.position],
+      position: IDEE.ui.position[this.position],
       className: this.className,
       collapsedButtonClass: 'cp-icon',
       tooltip: this.tooltip_,
@@ -272,10 +272,10 @@ export default class IberpixCompare extends M.Plugin {
 
   /**
    * This function compare if pluging recieved
-   * by param is instance of M.plugin.IberpixCompare
+   * by param is instance of IDEE.plugin.IberpixCompare
    * @public
    * @function
-   * @param {M.plugin} plugin to compare
+   * @param {IDEE.plugin} plugin to compare
    * @api stable
    */
   equals(plugin) {

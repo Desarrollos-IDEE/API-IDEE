@@ -1,5 +1,5 @@
 /**
- * @module M/control/VectorsControl
+ * @module IDEE/control/VectorsControl
  */
 
 import Sortable from 'sortablejs';
@@ -38,20 +38,20 @@ const LINES = [10, 15];
 const LINE_POINTS = [1, 15, 20, 15];
 const PLUS_ZINDEX = 1000;
 
-export default class VectorsControl extends M.Control {
+export default class VectorsControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(options) {
-    if (M.utils.isUndefined(VectorsImplControl) || (M.utils.isObject(VectorsImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(VectorsImplControl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(VectorsImplControl) || (IDEE.utils.isObject(VectorsImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(VectorsImplControl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
 
     const impl = new VectorsImplControl(options.order);
@@ -63,7 +63,7 @@ export default class VectorsControl extends M.Control {
     /**
      * Selected api-idee feature
      * @private
-     * @type {M.feature}
+     * @type {IDEE.feature}
      */
     this.feature = undefined;
 
@@ -71,7 +71,7 @@ export default class VectorsControl extends M.Control {
      * Feature that is drawn on selection layer around this.feature
      * to emphasize it.
      * @private
-     * @type {M.feature}
+     * @type {IDEE.feature}
      */
     this.emphasis = undefined;
 
@@ -143,7 +143,7 @@ export default class VectorsControl extends M.Control {
      * @private
      * @type {*}
      */
-    this.selectionLayer = new M.layer.Vector({
+    this.selectionLayer = new IDEE.layer.Vector({
       extract: false,
       name: 'selectLayer',
       source: this.getImpl().newVectorSource(true),
@@ -171,7 +171,7 @@ export default class VectorsControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
@@ -179,7 +179,7 @@ export default class VectorsControl extends M.Control {
     console.warn(getValue('exception.obsolete'));
     this.map = map;
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         jsonp: true,
         vars: {
           translations: {
@@ -222,7 +222,7 @@ export default class VectorsControl extends M.Control {
     filtered.forEach((layer) => {
       if (!(layer.type.toLowerCase() === 'kml' && layer.name.toLowerCase() === 'attributions')) {
         const newLayer = layer;
-        const geometry = !M.utils.isNullOrEmpty(layer.geometry)
+        const geometry = !IDEE.utils.isNullOrEmpty(layer.geometry)
           ? layer.geometry
           : layer.getGeometryType();
 
@@ -232,11 +232,11 @@ export default class VectorsControl extends M.Control {
           });
         }
 
-        if (!M.utils.isNullOrEmpty(geometry) && geometry.toLowerCase().indexOf('point') > -1) {
+        if (!IDEE.utils.isNullOrEmpty(geometry) && geometry.toLowerCase().indexOf('point') > -1) {
           newLayer.point = true;
-        } else if (!M.utils.isNullOrEmpty(geometry) && geometry.toLowerCase().indexOf('polygon') > -1) {
+        } else if (!IDEE.utils.isNullOrEmpty(geometry) && geometry.toLowerCase().indexOf('polygon') > -1) {
           newLayer.polygon = true;
-        } else if (!M.utils.isNullOrEmpty(geometry) && geometry.toLowerCase().indexOf('line') > -1) {
+        } else if (!IDEE.utils.isNullOrEmpty(geometry) && geometry.toLowerCase().indexOf('line') > -1) {
           newLayer.line = true;
         }
 
@@ -252,7 +252,7 @@ export default class VectorsControl extends M.Control {
       }
     });
 
-    const html = M.template.compileSync(layersTemplate, {
+    const html = IDEE.template.compileSync(layersTemplate, {
       jsonp: true,
       vars: {
         layers,
@@ -316,7 +316,7 @@ export default class VectorsControl extends M.Control {
    * @api
    */
   createDrawingTemplate() {
-    this.drawingTools = M.template.compileSync(drawingTemplate, {
+    this.drawingTools = IDEE.template.compileSync(drawingTemplate, {
       jsonp: true,
       vars: {
         translations: {
@@ -421,7 +421,7 @@ export default class VectorsControl extends M.Control {
    */
   createUploadingTemplate() {
     const accept = '.kml, .zip, .gpx, .geojson, .gml, .json';
-    this.uploadingTemplate = M.template.compileSync(uploadingTemplate, {
+    this.uploadingTemplate = IDEE.template.compileSync(uploadingTemplate, {
       jsonp: true,
       vars: {
         accept,
@@ -445,7 +445,7 @@ export default class VectorsControl extends M.Control {
   }
 
   openFromURL() {
-    const fromURL = M.template.compileSync(fromURLTemplate, {
+    const fromURL = IDEE.template.compileSync(fromURLTemplate, {
       jsonp: true,
       parseToHtml: false,
       vars: {
@@ -457,19 +457,19 @@ export default class VectorsControl extends M.Control {
       },
     });
 
-    M.dialog.info(fromURL, getValue('add_from_url'), this.order);
+    IDEE.dialog.info(fromURL, getValue('add_from_url'), this.order);
     setTimeout(() => {
       const input = document.querySelector('#m-vectors-fromurl-search-input');
       document.querySelector('#m-vectors-fromurl-add-btn').addEventListener('click', () => {
         const url = input.value.trim();
-        if (M.utils.isUrl(url)) {
+        if (IDEE.utils.isUrl(url)) {
           const fileName = url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'));
           const extension = url.substring(url.lastIndexOf('.') + 1, url.length);
           if (['zip', 'kml', 'gpx', 'geojson', 'gml', 'json'].indexOf(extension) > -1) {
             const content = `<div class="m-vectors-loading"><p>${getValue('loading')}...</p><span class="icon-spinner" /></div>`;
             const previous = document.querySelector('.m-dialog .m-vectors-fromurl').innerHTML;
             document.querySelector('.m-dialog .m-vectors-fromurl').innerHTML = previous + content;
-            M.remote.get(url).then((response) => {
+            IDEE.remote.get(url).then((response) => {
               const source = response.text;
               let features = [];
               if (extension === 'zip') {
@@ -484,12 +484,12 @@ export default class VectorsControl extends M.Control {
               } else if (extension === 'gml') {
                 features = this.getImpl().loadGMLLayer(source, fileName);
               } else {
-                M.dialog.error(getValue('exception.load'));
+                IDEE.dialog.error(getValue('exception.load'));
                 return;
               }
 
               if (features.length === 0) {
-                M.dialog.info(getValue('exception.no_geoms'), null, this.order);
+                IDEE.dialog.info(getValue('exception.no_geoms'), null, this.order);
               } else {
                 this.getImpl().centerFeatures(features, extension === 'gpx');
               }
@@ -498,15 +498,15 @@ export default class VectorsControl extends M.Control {
               document.querySelector('.m-dialog .m-vectors-fromurl .m-vectors-loading').remove();
             }).catch((err) => {
               input.value = '';
-              M.dialog.error(getValue('exception.load_correct'));
+              IDEE.dialog.error(getValue('exception.load_correct'));
             });
           } else {
             input.value = '';
-            M.dialog.error(getValue('exception.extension'));
+            IDEE.dialog.error(getValue('exception.extension'));
           }
         } else {
           input.value = '';
-          M.dialog.error(getValue('exception.url_not_valid'));
+          IDEE.dialog.error(getValue('exception.url_not_valid'));
         }
       });
 
@@ -541,11 +541,11 @@ export default class VectorsControl extends M.Control {
   }
 
   createHelp() {
-    const help = M.template.compileSync(helpTemplate, {
+    const help = IDEE.template.compileSync(helpTemplate, {
       jsonp: true,
       parseToHtml: false,
     });
-    M.dialog.info(help, getValue('help_template.help'), this.order);
+    IDEE.dialog.info(help, getValue('help_template.help'), this.order);
     document.querySelector('#m-vectors-help-create-layers').innerHTML = getValue('help_template.create_layers');
     document.querySelector('#m-vectors-help-create-layers-content').innerHTML = getValue('help_template.create_layers_content');
     document.querySelector('#m-vectors-help-addWFS').innerHTML = getValue('help_template.add_wfs');
@@ -563,7 +563,7 @@ export default class VectorsControl extends M.Control {
   }
 
   openAddWFS() {
-    const addWFS = M.template.compileSync(addWFSTemplate, {
+    const addWFS = IDEE.template.compileSync(addWFSTemplate, {
       jsonp: true,
       parseToHtml: false,
       vars: {
@@ -580,7 +580,7 @@ export default class VectorsControl extends M.Control {
       },
     });
 
-    M.dialog.info(addWFS, getValue('add_wfs_layer'), this.order);
+    IDEE.dialog.info(addWFS, getValue('add_wfs_layer'), this.order);
     setTimeout(() => {
       if (document.querySelector('#m-vectors-addwfs-list-btn') !== null) {
         document.querySelector('#m-vectors-addwfs-list-btn').addEventListener('click', (e) => this.showSuggestions(e));
@@ -627,11 +627,11 @@ export default class VectorsControl extends M.Control {
     document.querySelector('#m-vectors-addwfs-suggestions').style.display = 'none';
     let url = document.querySelector('div.m-dialog #m-vectors-addwfs-search-input').value.trim();
     const auxurl = document.querySelector('div.m-dialog #m-vectors-addwfs-search-input').value.trim();
-    if (!M.utils.isNullOrEmpty(url)) {
-      if (M.utils.isUrl(url)) {
+    if (!IDEE.utils.isNullOrEmpty(url)) {
+      if (IDEE.utils.isUrl(url)) {
         url += url.endsWith('?') ? '' : '?';
         url += 'service=WFS&request=GetCapabilities';
-        M.remote.get(url).then((response) => {
+        IDEE.remote.get(url).then((response) => {
           try {
             const services = [];
             const prenode = response.text.split('<FeatureTypeList>')[1].split('</FeatureTypeList>')[0];
@@ -683,19 +683,19 @@ export default class VectorsControl extends M.Control {
             document.querySelector('div.m-dialog #m-vectors-addwfs-search-input').value = auxurl;
             this.showResults(services, capabilities, hasCapabilities);
           } catch (err) {
-            M.dialog.error(getValue('exception.capabilities'));
+            IDEE.dialog.error(getValue('exception.capabilities'));
           }
         });
       } else {
-        M.dialog.error(getValue('exception.valid_url'));
+        IDEE.dialog.error(getValue('exception.valid_url'));
       }
     } else {
-      M.dialog.error(getValue('exception.empty'));
+      IDEE.dialog.error(getValue('exception.empty'));
     }
   }
 
   showResults(services, capabilities, hasCapabilities) {
-    const selectWFS = M.template.compileSync(selectWFSTemplate, {
+    const selectWFS = IDEE.template.compileSync(selectWFSTemplate, {
       jsonp: true,
       vars: {
         services,
@@ -771,7 +771,7 @@ export default class VectorsControl extends M.Control {
 
   addNewLayer(geom) {
     const layerName = `temp_${new Date().getTime()}`;
-    const layer = new M.layer.Vector({ name: layerName, legend: layerName, extract: true });
+    const layer = new IDEE.layer.Vector({ name: layerName, legend: layerName, extract: true });
     layer.geometry = geom;
     this.map.addLayers(layer);
     layer.setZIndex(layer.getZIndex() + PLUS_ZINDEX);
@@ -811,13 +811,13 @@ export default class VectorsControl extends M.Control {
           }
 
           if (this.feature !== undefined) {
-            this.feature.setStyle(new M.style.Point(newPointStyle));
+            this.feature.setStyle(new IDEE.style.Point(newPointStyle));
             this.style = this.feature.getStyle();
           }
           break;
         case 'LineString':
         case 'MultiLineString':
-          const newLineStyle = new M.style.Line({
+          const newLineStyle = new IDEE.style.Line({
             stroke: {
               color: this.currentColor,
               width: this.currentThickness,
@@ -831,7 +831,7 @@ export default class VectorsControl extends M.Control {
           break;
         case 'Polygon':
         case 'MultiPolygon':
-          const newPolygonStyle = new M.style.Polygon({
+          const newPolygonStyle = new IDEE.style.Polygon({
             fill: {
               color: this.currentColor,
               opacity: 0.2,
@@ -867,7 +867,7 @@ export default class VectorsControl extends M.Control {
     switch (geometryType) {
       case 'Point':
       case 'MultiPoint':
-        feature.setStyle(new M.style.Point({
+        feature.setStyle(new IDEE.style.Point({
           radius: this.currentThickness,
           fill: {
             color: this.currentColor,
@@ -880,7 +880,7 @@ export default class VectorsControl extends M.Control {
         break;
       case 'LineString':
       case 'MultiLineString':
-        feature.setStyle(new M.style.Line({
+        feature.setStyle(new IDEE.style.Line({
           stroke: {
             color: this.currentColor,
             width: this.currentThickness,
@@ -890,7 +890,7 @@ export default class VectorsControl extends M.Control {
         break;
       case 'Polygon':
       case 'MultiPolygon':
-        feature.setStyle(new M.style.Polygon({
+        feature.setStyle(new IDEE.style.Polygon({
           fill: {
             color: this.currentColor,
             opacity: 0.2,
@@ -918,7 +918,7 @@ export default class VectorsControl extends M.Control {
       document.querySelector(selector).innerHTML = '';
       this.isDownloadActive = false;
     } else {
-      const html = M.template.compileSync(downloadingTemplate, {
+      const html = IDEE.template.compileSync(downloadingTemplate, {
         jsonp: true,
         vars: {
           translations: {
@@ -1058,7 +1058,7 @@ export default class VectorsControl extends M.Control {
    * @public
    * @function
    * @api
-   * @returns {M.layer.Vector}
+   * @returns {IDEE.layer.Vector}
    */
   toGeoJSON(layer) {
     const code = this.map.getProjection().code;
@@ -1111,7 +1111,7 @@ export default class VectorsControl extends M.Control {
         shpWrite.download(json, options);
         break;
       default:
-        M.dialog.error(getValue('exception.format_not_selected'));
+        IDEE.dialog.error(getValue('exception.format_not_selected'));
         break;
     }
 
@@ -1134,7 +1134,7 @@ export default class VectorsControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api stable
    */
   equals(control) {
@@ -1153,9 +1153,9 @@ export default class VectorsControl extends M.Control {
    */
   changeFile(evt, file) {
     this.file_ = file;
-    if (!M.utils.isNullOrEmpty(file)) {
+    if (!IDEE.utils.isNullOrEmpty(file)) {
       if (file.size > 20971520) {
-        M.dialog.info(getValue('exception.size'), null, this.order);
+        IDEE.dialog.info(getValue('exception.size'), null, this.order);
         this.file_ = null;
         this.uploadingTemplate.querySelector('#vectors-uploading>input').value = '';
       } else {
@@ -1191,12 +1191,12 @@ export default class VectorsControl extends M.Control {
         } else if (fileExt === 'gml') {
           features = this.getImpl().loadGMLLayer(fileReader.result, fileName);
         } else {
-          M.dialog.error(getValue('exception.load'));
+          IDEE.dialog.error(getValue('exception.load'));
           return;
         }
 
         if (features.length === 0) {
-          M.dialog.info(getValue('exception.no_geoms'), null, this.order);
+          IDEE.dialog.info(getValue('exception.no_geoms'), null, this.order);
         } else {
           this.getImpl().centerFeatures(features, fileExt === 'gpx');
         }
@@ -1204,7 +1204,7 @@ export default class VectorsControl extends M.Control {
         this.uploadingTemplate.querySelector('#vectors-uploading>input').value = '';
       } catch (error) {
         this.uploadingTemplate.querySelector('#vectors-uploading>input').value = '';
-        M.dialog.error(getValue('exception.load_correct'));
+        IDEE.dialog.error(getValue('exception.load_correct'));
       }
     });
 
@@ -1213,7 +1213,7 @@ export default class VectorsControl extends M.Control {
     } else if (fileExt === 'kml' || fileExt === 'gpx' || fileExt === 'geojson' || fileExt === 'gml' || fileExt === 'json') {
       fileReader.readAsText(this.file_);
     } else {
-      M.dialog.error(getValue('exception.extension'));
+      IDEE.dialog.error(getValue('exception.extension'));
     }
   }
 
@@ -1373,11 +1373,11 @@ export default class VectorsControl extends M.Control {
     const layerName = evt.target.getAttribute('data-layer-name');
     const layerURL = evt.target.getAttribute('data-layer-url');
     let render = false;
-    if (!M.utils.isNullOrEmpty(layerName)) {
+    if (!IDEE.utils.isNullOrEmpty(layerName)) {
       evt.stopPropagation();
       const layer = this.map.getLayers().filter((l) => l.name === layerName && (l.url === layerURL || layerURL === ''))[0];
       if (evt.target.classList.contains('m-vector-layer-legend-change')) {
-        const changeName = M.template.compileSync(changeNameTemplate, {
+        const changeName = IDEE.template.compileSync(changeNameTemplate, {
           jsonp: true,
           parseToHtml: false,
           vars: {
@@ -1389,7 +1389,7 @@ export default class VectorsControl extends M.Control {
           },
         });
 
-        M.dialog.info(changeName, getValue('change_name'), this.order);
+        IDEE.dialog.info(changeName, getValue('change_name'), this.order);
         setTimeout(() => {
           const selector = 'div.m-api-idee-container div.m-dialog #m-layer-change-name button';
           document.querySelector(selector).addEventListener('click', this.changeLayerLegend.bind(this, layer));
@@ -1418,7 +1418,7 @@ export default class VectorsControl extends M.Control {
           const extent = this.getImpl().getGeoJSONExtent(layer);
           this.map.setBbox(extent);
         } else {
-          M.dialog.info(getValue('exception.not_extent'), getValue('info'), this.order);
+          IDEE.dialog.info(getValue('exception.not_extent'), getValue('info'), this.order);
         }
       } else if (evt.target.classList.contains('m-vector-layer-reload')) {
         this.getImpl().reloadFeaturesUpdatables(layer.name, layer.url);
@@ -1537,7 +1537,7 @@ export default class VectorsControl extends M.Control {
         const selector = `#m-vector-list li[name="${layer.name}"] div.m-vector-layer-actions .m-vector-layer-edit`;
         document.querySelector(selector).classList.add('active-tool');
       } else if (!afterDelete) {
-        M.dialog.error(getValue('exception.no_features'), getValue('warning'));
+        IDEE.dialog.error(getValue('exception.no_features'), getValue('warning'));
       }
     } else {
       this.isEditionActive = false;
@@ -1609,7 +1609,7 @@ export default class VectorsControl extends M.Control {
   onDraw(event) {
     this.feature = event.feature;
     this.feature.setId(`${this.drawLayer.name}.${new Date().getTime()}`);
-    this.feature = M.impl.Feature.feature2Facade(this.feature);
+    this.feature = IDEE.impl.Feature.feature2Facade(this.feature);
     this.geometry = this.feature.getGeometry().type;
     this.setFeatureStyle(this.feature, this.geometry);
     document.querySelector('.m-vectors #drawingtools button').style.display = 'block';
@@ -1635,7 +1635,7 @@ export default class VectorsControl extends M.Control {
     if (this.feature) {
       if ((this.geometry === 'Point' || this.geometry === 'MultiPoint')) {
         this.emphasis = this.getImpl().getApiIdeeFeatureClone();
-        this.emphasis.setStyle(new M.style.Point({
+        this.emphasis.setStyle(new IDEE.style.Point({
           radius: 20,
           stroke: {
             color: '#FF0000',
@@ -1645,8 +1645,8 @@ export default class VectorsControl extends M.Control {
       } else {
         // eslint-disable-next-line no-underscore-dangle
         const extent = this.getImpl().getFeatureExtent();
-        this.emphasis = M.impl.Feature.feature2Facade(this.getImpl().newPolygonFeature(extent));
-        this.emphasis.setStyle(new M.style.Line({
+        this.emphasis = IDEE.impl.Feature.feature2Facade(this.getImpl().newPolygonFeature(extent));
+        this.emphasis.setStyle(new IDEE.style.Line({
           stroke: {
             color: '#FF0000',
             width: 2,

@@ -1,5 +1,5 @@
 /**
- * @module M/impl/control/ZoomPanelControl
+ * @module IDEE/impl/control/ZoomPanelControl
  */
 
 /**
@@ -22,13 +22,13 @@ class Properties {
   }
 }
 
-export default class ZoomPanelControl extends M.impl.Control {
+export default class ZoomPanelControl extends IDEE.impl.Control {
   /**
    * This function adds the control to the specified map
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api stable
    */

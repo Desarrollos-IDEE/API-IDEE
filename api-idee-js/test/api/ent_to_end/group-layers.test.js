@@ -14,7 +14,7 @@ module.exports = {
       .url(URL)
       .waitForElementPresent('div#mapLoaded')
       .execute(`
-        const provincias = new M.layer.WFS({
+        const provincias = new IDEE.layer.WFS({
           url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?',
           namespace: 'tematicos',
           name: 'Provincias',
@@ -22,15 +22,15 @@ module.exports = {
           geometry: 'MPOLYGON',
           ids: '3,4',
         });
-        const municipios = new M.layer.GeoJSON({
+        const municipios = new IDEE.layer.GeoJSON({
           url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=tematicos:Municipios&maxFeatures=50&outputFormat=application%2Fjson',
           name: 'Municipios',
         });
-        const distritosSanitarios = new M.layer.GeoJSON({
+        const distritosSanitarios = new IDEE.layer.GeoJSON({
           url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=tematicos:distrito_sanitario&maxFeatures=50&outputFormat=application%2Fjson',
           name: 'Distritos Sanitarios',
         });
-        const layerGroup = new M.layer.LayerGroup(undefined, 'Grupo de Prueba');
+        const layerGroup = new IDEE.layer.LayerGroup(undefined, 'Grupo de Prueba');
         layerGroup.addChild(provincias);
         layerGroup.addChild(municipios);
         layerGroup.addChild(distritosSanitarios);

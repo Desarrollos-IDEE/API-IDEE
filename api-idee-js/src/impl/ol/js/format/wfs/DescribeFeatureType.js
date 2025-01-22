@@ -1,7 +1,7 @@
 /**
- * @module M/impl/format/DescribeFeatureType
+ * @module IDEE/impl/format/DescribeFeatureType
  */
-import { isGeometryType } from 'M/util/Utils';
+import { isGeometryType } from 'IDEE/util/Utils';
 import DescribeFeatureTypeXML from './DescribeFeatureTypeXML';
 
 /**
@@ -10,7 +10,7 @@ import DescribeFeatureTypeXML from './DescribeFeatureTypeXML';
   *
   * @property {String} typeName_ Nombre del "FeatureType".
   * @property {String} outputFormat_ Formato de salida.
-  * @property {M.Projection} projection_ Proyección.
+  * @property {IDEE.Projection} projection_ Proyección.
   * @property {ol.format.GML2 | ol.format.GML3} gmlFormatter_ Formateador GML.
   *
   * @api
@@ -24,7 +24,7 @@ class DescribeFeatureType {
     * @constructor
     * @param {String} typeName Nombre del "FeatureType".
     * @param {String} outputFormat Formato de salida.
-    * @param {M.Projection} projection Proyección.
+    * @param {IDEE.Projection} projection Proyección.
     * @api
     */
   constructor(typeName, outputFormat, projection) {
@@ -45,7 +45,7 @@ class DescribeFeatureType {
     /**
       * Proyección.
       * @private
-      * @type {M.Projection}
+      * @type {IDEE.Projection}
       */
     this.projection_ = projection;
 

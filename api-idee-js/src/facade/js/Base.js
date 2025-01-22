@@ -1,5 +1,5 @@
 /**
- * @module M/facade/Base
+ * @module IDEE/facade/Base
  */
 import { isNullOrEmpty, isFunction } from './util/Utils';
 import MObject from './Object';
@@ -11,7 +11,7 @@ import MObject from './Object';
  * la implementación.
  *
  * @api
- * @extends {M.facade.Object}
+ * @extends {IDEE.facade.Object}
  */
 class Base extends MObject {
   /**
@@ -19,7 +19,7 @@ class Base extends MObject {
    *
    * @constructor
    * @param {Object} impl Implementación.
-   * @extends {M.Object}
+   * @extends {IDEE.Object}
    * @api
    */
   constructor(impl) {
@@ -54,7 +54,7 @@ class Base extends MObject {
    *
    * @public
    * @function
-   * @param {M.Map} impl Implementación.
+   * @param {IDEE.Map} impl Implementación.
    * @api
    */
   setImpl(value) {

@@ -3,7 +3,7 @@
     "name": "contactlink",
     "separator": "*"
   },
-  "constructor": "M.plugin.ContactLink",
+  "constructor": "IDEE.plugin.ContactLink",
   "parameters": [{
     "type": "object",
     "properties": [{

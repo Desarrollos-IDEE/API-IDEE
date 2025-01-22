@@ -1,5 +1,5 @@
 /**
- * @module M/impl/cesium/js/projections
+ * @module IDEE/impl/cesium/js/projections
  */
 
 import proj4 from 'proj4';

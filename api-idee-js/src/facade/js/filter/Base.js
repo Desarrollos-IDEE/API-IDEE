@@ -1,5 +1,5 @@
 /**
- * @module M/filter/Base
+ * @module IDEE/filter/Base
  */
 /**
  * @classdesc
@@ -20,7 +20,7 @@ class Base {
    * Este método ejecuta un filtro.
    *
    * @protected
-   * @param {Array<M.Feature>} features Objetos geográficos.
+   * @param {Array<IDEE.Feature>} features Objetos geográficos.
    * @function
    */
   execute(features) {}

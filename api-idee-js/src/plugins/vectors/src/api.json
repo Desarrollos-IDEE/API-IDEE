@@ -3,7 +3,7 @@
     "name": "vectors",
     "separator": "*"
   },
-  "constructor": "M.plugin.Vectors",
+  "constructor": "IDEE.plugin.Vectors",
   "parameters": [{
     "type": "object",
     "properties": [{

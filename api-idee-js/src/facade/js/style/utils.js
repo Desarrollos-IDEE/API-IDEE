@@ -10,8 +10,8 @@ import StyleGeneric from './Generic';
  * @function
  * @public
  * @param {object} options Opciones de estilo.
- * @param {M.layer.Vector} layer Capa a la que se le aplicará.
- * @return {M.style.Simple} Nuevo estilo.
+ * @param {IDEE.layer.Vector} layer Capa a la que se le aplicará.
+ * @return {IDEE.style.Simple} Nuevo estilo.
  */
 const generateStyleLayer = (options, layer) => {
   let style;

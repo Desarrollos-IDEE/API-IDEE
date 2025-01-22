@@ -3,7 +3,7 @@
     "name": "ignsearch",
     "separator": "*"
   },
-  "constructor": "M.plugin.IGNSearch",
+  "constructor": "IDEE.plugin.IGNSearch",
   "parameters": [{
     "type": "object",
     "properties": [{

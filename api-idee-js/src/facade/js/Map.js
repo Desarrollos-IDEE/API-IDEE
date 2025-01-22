@@ -1,5 +1,5 @@
 /**
- * @module M/Map
+ * @module IDEE/Map
  */
 import MapImpl from 'impl/Map';
 import Base from './Base';
@@ -64,7 +64,7 @@ import Attributions from './control/Attributions';
  * es por defecto.
  * @property {object} panel Objeto del panel.
  * @property {Array<Number>} userMaxExtent Extensión máxima proporcionada por el usuario.
- * @extends {M.facade.Base}
+ * @extends {IDEE.facade.Base}
  * @api
  */
 class Map extends Base {
@@ -72,7 +72,7 @@ class Map extends Base {
    * Constructor principal de la clase.
    *
    * @constructor
-   * @extends { M.facade.Base }
+   * @extends { IDEE.facade.Base }
    * @param { string | Mx.parameters.Map } userParameters Parámetros.
    * - bbox: Extensión del mapa.
    * - center: Centro del mapa.
@@ -278,7 +278,7 @@ class Map extends Base {
     if (!isNullOrEmpty(params.projection)) {
       this.setProjection(params.projection);
     } else { // default projection
-      this.setProjection(M.config.DEFAULT_PROJ, true);
+      this.setProjection(IDEE.config.DEFAULT_PROJ, true);
     }
 
     // bbox
@@ -297,7 +297,7 @@ class Map extends Base {
       this.setMaxExtent(params.maxExtent, zoomToMaxExtent);
     }
 
-    this.addQuickLayers(M.config.terrain.default);
+    this.addQuickLayers(IDEE.config.terrain.default);
 
     // layers
     if (!isNullOrEmpty(params.layers)) {
@@ -326,7 +326,7 @@ class Map extends Base {
 
     // default TMS
     if (isNullOrEmpty(params.layers) && !isArray(params.layers)) {
-      this.addQuickLayers(M.config.tms.base);
+      this.addQuickLayers(IDEE.config.tms.base);
     }
 
     // center
@@ -617,7 +617,7 @@ class Map extends Base {
    * Este método devuelve los manejadores de objetos geográficos.
    *
    * @function
-   * @returns {M.handler.Feature} Devuelve los manejadores de objetos geográficos
+   * @returns {IDEE.handler.Feature} Devuelve los manejadores de objetos geográficos
    * @public
    * @api
    */
@@ -863,7 +863,7 @@ class Map extends Base {
    * Este método devuelve los grupos que tenga el mapa.
    *
    * @function
-   * @returns {Array<M.layer.Group>}
+   * @returns {Array<IDEE.layer.Group>}
    * @api stable
    */
   getLayerGroup() {
@@ -878,8 +878,8 @@ class Map extends Base {
    * Añade un grupo de capa al mapa.
    *
    * @function
-   * @param {Array<M.layer.Group>} layerGroups
-   * @returns {M.Map}
+   * @param {Array<IDEE.layer.Group>} layerGroups
+   * @returns {IDEE.Map}
    * @api stable
    */
   addLayerGroups(layerGroups) {
@@ -930,9 +930,9 @@ class Map extends Base {
    * Elimina un grupo de capa al mapa.
    *
    * @function
-   * @param {Array<M.layer.Group>} layerGroups
+   * @param {Array<IDEE.layer.Group>} layerGroups
    * specified by the user
-   * @returns {M.Map}
+   * @returns {IDEE.Map}
    * @api stable
    */
   removeLayerGroup(layerGroups) {
@@ -1897,7 +1897,7 @@ class Map extends Base {
    * @function
    * @param {Array<string>|Array<Mx.parameters.MBTiles>} layersParam Opcional.
    * - Matriz de capas de nombres, tipo MBTiles.
-   * @returns {Array<M.layer.MBTiles>} Capas del mapa.
+   * @returns {Array<IDEE.layer.MBTiles>} Capas del mapa.
    * @api
    */
   getMBTiles(layersParamVar) {
@@ -1980,7 +1980,7 @@ class Map extends Base {
    * @function
    * @param {Array<string>|Array<Mx.parameters.MBTilesVector>} layersParamVar Opcional.
    * - Matriz de capas de nombres, tipo MBTilesVector.
-   * @returns {Array<M.layer.MBTilesVector>} Capas del mapa.
+   * @returns {Array<IDEE.layer.MBTilesVector>} Capas del mapa.
    * @api
    */
   getMBTilesVector(layersParamVar) {
@@ -2067,7 +2067,7 @@ class Map extends Base {
    * @function
    * @param {Array<string>|Array<Mx.parameters.Layer>} layersParam Opcional.
    * - Matriz de capas de nombres, tipo XYZ.
-   * @returns {Array<M.layer.XYZ>} Capas del mapa.
+   * @returns {Array<IDEE.layer.XYZ>} Capas del mapa.
    * @api
    */
   getXYZs(layersParamVar) {
@@ -2160,7 +2160,7 @@ class Map extends Base {
    * @function
    * @param {Array<string>|Array<Mx.parameters.Layer>} layersParam Opcional.
    * - Matriz de capas de nombres, tipo TMS.
-   * @returns {Array<M.layer.TMS>} Capas del mapa.
+   * @returns {Array<IDEE.layer.TMS>} Capas del mapa.
    * @api
    */
   getTMS(layersParamVar) {
@@ -2253,7 +2253,7 @@ class Map extends Base {
    * @function
    * @param {Array<string>|Array<Mx.parameters.Layer>} layersParamVar Opcional.
    * - Matriz de capas de nombres, tipo Tiles3D.
-   * @returns {Array<M.layer.Tiles3D>} Capas del mapa.
+   * @returns {Array<IDEE.layer.Tiles3D>} Capas del mapa.
    * @api
    */
   getTiles3D(layersParamVar) {
@@ -2356,7 +2356,7 @@ class Map extends Base {
      * @function
      * @param {Array<string>|Array<Mx.parameters.Layer>} layersParamVar Opcional.
      * - Matriz de capas de nombres, tipo Terrain.
-     * @returns {Array<M.layer.Terrain>} Capas del mapa.
+     * @returns {Array<IDEE.layer.Terrain>} Capas del mapa.
      * @api
      */
   getTerrain(layersParamVar) {
@@ -2652,7 +2652,7 @@ class Map extends Base {
                     className: 'm-plugin-baselayer',
                   });
                 } else {
-                  const getControlsAvailable = concatUrlPaths([M.config.API_IDEE_URL, '/api/actions/controls']);
+                  const getControlsAvailable = concatUrlPaths([IDEE.config.API_IDEE_URL, '/api/actions/controls']);
                   Dialog.error(`El control ${controlParam} no está definido. Consulte los controles disponibles <a href='${getControlsAvailable}' target="_blank">aquí</a>`);
                 }
             }
@@ -3378,7 +3378,7 @@ class Map extends Base {
     } catch (err) {
       Dialog.error(err.toString());
       if (String(err).indexOf('El formato del parámetro projection no es correcto') >= 0) {
-        this.setProjection(M.config.DEFAULT_PROJ, true);
+        this.setProjection(IDEE.config.DEFAULT_PROJ, true);
       }
     }
 
@@ -3539,11 +3539,11 @@ class Map extends Base {
    */
   setTicket(ticket) {
     if (!isNullOrEmpty(ticket)) {
-      if (M.config.PROXY_POST_URL.indexOf('ticket=') === -1) {
-        M.config('PROXY_POST_URL', addParameters(M.config.PROXY_POST_URL, { ticket }));
+      if (IDEE.config.PROXY_POST_URL.indexOf('ticket=') === -1) {
+        IDEE.config('PROXY_POST_URL', addParameters(IDEE.config.PROXY_POST_URL, { ticket }));
       }
-      if (M.config.PROXY_URL.indexOf('ticket=') === -1) {
-        M.config('PROXY_URL', addParameters(M.config.PROXY_URL, { ticket }));
+      if (IDEE.config.PROXY_URL.indexOf('ticket=') === -1) {
+        IDEE.config('PROXY_URL', addParameters(IDEE.config.PROXY_URL, { ticket }));
       }
     }
 
@@ -3960,7 +3960,7 @@ class Map extends Base {
    *
    * @public
    * @function
-   * @param {M.evt} eventType Tipo de evento.
+   * @param {IDEE.evt} eventType Tipo de evento.
    * @param {Function} listener "Callback".
    * @param {Object} optThis Opciones de la instancia del mapa.
    * @api
@@ -4075,8 +4075,8 @@ class Map extends Base {
    * Ordenar capas por zindex.
    * @public
    * @function
-   * @param {M.layer} layer1 Capa.
-   * @param {M.layer} layer2 Otra Capa.
+   * @param {IDEE.layer} layer1 Capa.
+   * @param {IDEE.layer} layer2 Otra Capa.
    * @api
    */
   static LAYER_SORT(layer1, layer2, thisClass) {
@@ -4110,7 +4110,7 @@ class Map extends Base {
   /**
    * Devuelve las areas del contenedor.
    * @public
-   * @returns {M.map.areaContainer} Devuelve las areas del contenedor.
+   * @returns {IDEE.map.areaContainer} Devuelve las areas del contenedor.
    */
   get areasContainer() {
     return this._areasContainer;

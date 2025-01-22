@@ -145,7 +145,7 @@ export function getBase64Image(imgUrl, format) {
 
     img.onerror = function rej() {
       Promise.reject(new Error(getValue('exception.loaderror')));
-      M.dialog.error(getValue('exception.imageError'));
+      IDEE.dialog.error(getValue('exception.imageError'));
     };
   });
 }

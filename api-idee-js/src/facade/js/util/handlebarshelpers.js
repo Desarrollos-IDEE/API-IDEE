@@ -1,7 +1,7 @@
 /**
  * Este fichero contiene métodos para ayudar a "Handlebars".
- * @module M/handlebarshelpers
- * @example import handlebarshelpers from 'M/handlebarshelpers';
+ * @module IDEE/handlebarshelpers
+ * @example import handlebarshelpers from 'IDEE/handlebarshelpers';
  */
 
 import { getTextFromHtml } from './Utils';

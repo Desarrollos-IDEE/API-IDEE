@@ -1,5 +1,5 @@
 /**
- * @module M/Tile
+ * @module IDEE/Tile
  */
 import sqljs from 'sql.js';
 import { inflate } from 'pako';
@@ -52,7 +52,7 @@ class Tile {
   init(data) {
     this.initPromise_ = new Promise((resolve, reject) => {
       sqljs({
-        locateFile: (file) => `${M.config.SQL_WASM_URL}${file}`,
+        locateFile: (file) => `${IDEE.config.SQL_WASM_URL}${file}`,
       }).then((SQL) => {
         getUint8ArrayFromData(data).then((uint8Array) => {
           this.db_ = new SQL.Database(uint8Array);

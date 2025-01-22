@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/XYLocatorControl
+ * @module IDEE/impl/control/XYLocatorControl
  */

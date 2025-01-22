@@ -1,13 +1,13 @@
 /**
- * @module M/impl/control/IGNSearchLocatorControl
+ * @module IDEE/impl/control/IGNSearchLocatorControl
  */
-export default class IGNSearchLocatorControl extends M.impl.Control {
+export default class IGNSearchLocatorControl extends IDEE.impl.Control {
   /**
    * This function adds the control to the specified map
    *
    * @public
    * @function
-   * @param {M.Map} map to add the plugin
+   * @param {IDEE.Map} map to add the plugin
    * @param {HTMLElement} html of the plugin
    * @api stable
    */
@@ -141,10 +141,10 @@ export default class IGNSearchLocatorControl extends M.impl.Control {
 
   wrapComplexFeature(feature) {
     const featureGeom = feature.getGeometry();
-    if ((featureGeom.getType() === M.geom.wkt.type.POLYGON)
-      || (featureGeom.getType() === M.geom.wkt.type.MULTI_POLYGON)) {
+    if ((featureGeom.getType() === IDEE.geom.wkt.type.POLYGON)
+      || (featureGeom.getType() === IDEE.geom.wkt.type.MULTI_POLYGON)) {
       let centroid;
-      if (featureGeom.getType() === M.geom.wkt.type.POLYGON) {
+      if (featureGeom.getType() === IDEE.geom.wkt.type.POLYGON) {
         centroid = featureGeom.getInteriorPoint();
       } else {
         centroid = featureGeom.getInteriorPoints();

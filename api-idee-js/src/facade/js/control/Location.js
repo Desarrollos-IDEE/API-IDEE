@@ -1,5 +1,5 @@
 /**
- * @module M/control/Location
+ * @module IDEE/control/Location
  */
 import LocationImpl from 'impl/control/Location';
 import locationTemplate from 'templates/location';
@@ -16,7 +16,7 @@ import { compileSync as compileTemplate } from '../util/Template';
  * Localiza la posición del usuario en el mapa.
  *
  * @api
- * @extends {M.Control}
+ * @extends {IDEE.Control}
  */
 class Location extends ControlBase {
   /**
@@ -49,7 +49,7 @@ class Location extends ControlBase {
    *
    * @public
    * @function
-   * @param {M.Map} map Mapa
+   * @param {IDEE.Map} map Mapa
    * @returns {Promise} Plantilla HTML.
    * @api
    */
@@ -90,7 +90,7 @@ class Location extends ControlBase {
       content: new Promise((success) => {
         const html = compileTemplate(myhelp, {
           vars: {
-            urlImages: `${M.config.API_IDEE_URL}assets/images`,
+            urlImages: `${IDEE.config.API_IDEE_URL}assets/images`,
             translations: {
               help1: textHelp.text1,
               help2: textHelp.text2,

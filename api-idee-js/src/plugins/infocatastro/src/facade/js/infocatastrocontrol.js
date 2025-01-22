@@ -1,25 +1,26 @@
 /**
- * @module M/control/InfoCatastroControl
+ * @module IDEE/control/InfoCatastroControl
  */
 
 import InfoCatastroImplControl from 'impl/infocatastrocontrol';
 import template from 'templates/infocatastro';
 import { getValue } from './i18n/language';
 
-export default class InfoCatastroControl extends M.Control {
+export default class InfoCatastroControl extends IDEE.Control {
   /**
    * @classdesc
    * Main constructor of the class. Creates a PluginControl
    * control
    *
    * @constructor
-   * @extends {M.Control}
+   * @extends {IDEE.Control}
    * @api stable
    */
   constructor(parameters) {
-    if (M.utils.isUndefined(InfoCatastroImplControl) || (M.utils.isObject(InfoCatastroImplControl)
-      && M.utils.isNullOrEmpty(Object.keys(InfoCatastroImplControl)))) {
-      M.exception(getValue('exception.impl'));
+    if (IDEE.utils.isUndefined(InfoCatastroImplControl)
+      || (IDEE.utils.isObject(InfoCatastroImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(InfoCatastroImplControl)))) {
+      IDEE.exception(getValue('exception.impl'));
     }
     const impl = new InfoCatastroImplControl();
     super(impl, 'InfoCatastro');
@@ -62,7 +63,7 @@ export default class InfoCatastroControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Map} map to add the control
+   * @param {IDEE.Map} map to add the control
    * @api stable
    */
   createView(map) {
@@ -70,7 +71,7 @@ export default class InfoCatastroControl extends M.Control {
     // eslint-disable-next-line
     console.warn(getValue('infocatastro_obsolete'));
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template, {
+      const html = IDEE.template.compileSync(template, {
         vars: {
           translations: {
             consultar: this.tooltip || getValue('consultar'),
@@ -95,7 +96,7 @@ export default class InfoCatastroControl extends M.Control {
     if (this.activated) {
       this.deactivate();
     } else {
-      this.facadeMap_.on(M.evt.CLICK, this.buildUrl_, this);
+      this.facadeMap_.on(IDEE.evt.CLICK, this.buildUrl_, this);
       this.activated = true;
       this.element_.querySelector('#m-infocatastro-btn').classList.add('activated');
       document.addEventListener('keydown', this.checkEscKey.bind(this));
@@ -118,7 +119,7 @@ export default class InfoCatastroControl extends M.Control {
    */
   deactivate() {
     this.facadeMap_.removePopup();
-    this.facadeMap_.un(M.evt.CLICK, this.buildUrl_, this);
+    this.facadeMap_.un(IDEE.evt.CLICK, this.buildUrl_, this);
     this.activated = false;
     this.element_.querySelector('#m-infocatastro-btn').classList.remove('activated');
   }
@@ -136,7 +137,7 @@ export default class InfoCatastroControl extends M.Control {
     };
 
     const srs = this.facadeMap_.getProjection().code;
-    M.remote.get(this.catastroWMS, {
+    IDEE.remote.get(this.catastroWMS, {
       SRS: srs,
       Coordenada_X: evt.coord[0],
       Coordenada_Y: evt.coord[1],
@@ -168,8 +169,8 @@ export default class InfoCatastroControl extends M.Control {
 
       let popup = this.facadeMap_.getPopup();
 
-      if (M.utils.isNullOrEmpty(popup)) {
-        popup = new M.Popup();
+      if (IDEE.utils.isNullOrEmpty(popup)) {
+        popup = new IDEE.Popup();
         popup.addTab(tab);
         this.facadeMap_.addPopup(popup, coordinates);
       } else if (popup.getCoordinate()[0] === coordinates[0]
@@ -185,18 +186,18 @@ export default class InfoCatastroControl extends M.Control {
         if (hasExternalContent) {
           popup.addTab(tab);
         } else {
-          popup = new M.Popup();
+          popup = new IDEE.Popup();
           popup.addTab(tab);
           this.facadeMap_.addPopup(popup, coordinates);
         }
       } else {
-        popup = new M.Popup();
+        popup = new IDEE.Popup();
         popup.addTab(tab);
         this.facadeMap_.addPopup(popup, coordinates);
       }
     } else {
       this.facadeMap_.removePopup();
-      M.dialog.error(getValue('errorConexion'));
+      IDEE.dialog.error(getValue('errorConexion'));
     }
   }
 
@@ -240,19 +241,19 @@ export default class InfoCatastroControl extends M.Control {
       link = `https://www1.sedecatastro.gob.es/CYCBienInmueble/OVCListaBienes.aspx?del==${codProv}&mun=${codMun}&rc1=${pc1Node}&rc2=${pc2Node}`;
     }
 
-    let formatedInfo = `${M.utils.beautifyAttribute(getValue('informacionCatastral'))}
+    let formatedInfo = `${IDEE.utils.beautifyAttribute(getValue('informacionCatastral'))}
     <div class='divinfo'>
     <table class='api-idee-table'>
     <tbody>
     <tr><td class='header' colspan='4'></td></tr>
-    <tr><td class='key'><b>${M.utils.beautifyAttribute(getValue('reference'))}</b></td><td class='value'></b>
+    <tr><td class='key'><b>${IDEE.utils.beautifyAttribute(getValue('reference'))}</b></td><td class='value'></b>
     <a href='${link}' target='_blank'>${valuePopup}</a></td></tr>
-    <tr><td class='key'><b>${M.utils.beautifyAttribute(getValue('description'))}</b></td>
+    <tr><td class='key'><b>${IDEE.utils.beautifyAttribute(getValue('description'))}</b></td>
     <td class='value'>${ldtNode}</td></tr>
     </tbody></table></div>`;
 
     if (valuePopup.toLowerCase().indexOf(getValue('noReference')) > -1) {
-      formatedInfo = `${M.utils.beautifyAttribute(getValue('informacionCatastral'))}
+      formatedInfo = `${IDEE.utils.beautifyAttribute(getValue('informacionCatastral'))}
       <div class='divinfo'>
       <table class='api-idee-table'>
       <tbody>
@@ -270,7 +271,7 @@ export default class InfoCatastroControl extends M.Control {
    *
    * @public
    * @function
-   * @param {M.Control} control to compare
+   * @param {IDEE.Control} control to compare
    * @api
    */
   equals(control) {

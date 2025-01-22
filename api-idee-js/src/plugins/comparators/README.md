@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
 </p>
-<h1 align="center"><strong>API IDEE</strong> <small>🔌 M.plugin.Comparators</small></h1>
+<h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.Comparators</small></h1>
 
 <p align="center">
   <a title="MIT License" href="LICENSE">
@@ -170,7 +170,7 @@ Ctrl + Shift + Flecha hacia abajo: Disminuye el radio, si el radio llega al valo
 Insertar intervalos a través de servicios WMS. La URL en formato api-idee sigue la siguiente estructura:
   - Servicio,Leyenda,URL,Nombre. Separados por "*".
 ```javascript
- const mp = new M.plugin.Comparators({
+ const mp = new IDEE.plugin.Comparators({
   position: 'TR',
   enabledDisplayInLayerSwitcher: true,
   collapsed: false,
@@ -222,7 +222,7 @@ Insertar intervalos a través de servicios WMS. La URL en formato api-idee sigue
             id: 'mapa',
             preview: 'plugins/backimglayer/images/svqmapa.png', // ruta relativa, edite por la deseada
             title: 'Mapa',
-            layers: [new M.layer.WMTS({
+            layers: [new IDEE.layer.WMTS({
               url: 'http://www.ign.es/wmts/ign-base?',
               name: 'IGNBaseTodo',
               legend: 'Mapa IGN',
@@ -238,7 +238,7 @@ Insertar intervalos a través de servicios WMS. La URL en formato api-idee sigue
             id: 'imagen',
             title: 'Imagen',
             preview: 'plugins/backimglayer/images/svqimagen.png', // ruta relativa, edite por la deseada
-            layers: [new M.layer.WMTS({
+            layers: [new IDEE.layer.WMTS({
               url: 'http://www.ign.es/wmts/pnoa-ma?',
               name: 'OI.OrthoimageCoverage',
               legend: 'Imagen (PNOA)',
@@ -254,7 +254,7 @@ Insertar intervalos a través de servicios WMS. La URL en formato api-idee sigue
             id: 'hibrido',
             title: 'Híbrido',
             preview: 'plugins/backimglayer/images/svqhibrid.png', // ruta relativa, edite por la deseada
-            layers: [new M.layer.WMTS({
+            layers: [new IDEE.layer.WMTS({
               url: 'http://www.ign.es/wmts/pnoa-ma?',
               name: 'OI.OrthoimageCoverage',
               legend: 'Imagen (PNOA)',
@@ -265,7 +265,7 @@ Insertar intervalos a través de servicios WMS. La URL en formato api-idee sigue
               visible: true,
               format: 'image/png',
             }),
-            new M.layer.WMTS({
+            new IDEE.layer.WMTS({
               url: 'http://www.ign.es/wmts/ign-base?',
               name: 'IGNBaseOrto',
               matrixSet: 'GoogleMapsCompatible',
@@ -282,7 +282,7 @@ Insertar intervalos a través de servicios WMS. La URL en formato api-idee sigue
             id: 'lidar',
             preview: 'plugins/backimglayer/images/svqlidar.png', // ruta relativa, edite por la deseada
             title: 'LIDAR',
-            layers: [new M.layer.WMTS({
+            layers: [new IDEE.layer.WMTS({
               url: 'https://wmts-mapa-lidar.idee.es/lidar?',
               name: 'EL.GridCoverageDSM',
               legend: 'Modelo Digital de Superficies LiDAR',
@@ -402,10 +402,10 @@ No funciona ```https://componentes.cnig.es/api-idee?comparators``` es necesario 
 
 ### Ejemplo de uso API-REST en base64
 
-Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad M.utils.encodeBase64.
+Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad IDEE.utils.encodeBase64.
 Ejemplo:
 ```javascript
-M.utils.encodeBase64(obj_params);
+IDEE.utils.encodeBase64(obj_params);
 ```
 
 Ejemplo de constructor:

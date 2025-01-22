@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/PopupControl
+ * @module IDEE/impl/control/PopupControl
  */

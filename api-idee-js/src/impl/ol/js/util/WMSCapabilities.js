@@ -1,10 +1,10 @@
 /**
- * @module M/impl/GetCapabilities
+ * @module IDEE/impl/GetCapabilities
  */
 import {
   isUndefined, isArray, isNullOrEmpty, isObject, isString,
-} from 'M/util/Utils';
-import WMS from 'M/layer/WMS';
+} from 'IDEE/util/Utils';
+import WMS from 'IDEE/layer/WMS';
 import { get as getProjection } from 'ol/proj';
 import ImplUtils from './Utils';
 
@@ -166,7 +166,7 @@ class GetCapabilities {
     * Este método obtiene las capas a partir de su 'GetCapabilities'.
     *
     * @function
-    * @return {Array<M.Layer>} Capas WMS.
+    * @return {Array<IDEE.Layer>} Capas WMS.
     * @public
     * @api
     */
@@ -182,7 +182,7 @@ class GetCapabilities {
     *
     * @function
     * @param {Mx.GetCapabilities} layer Lista de capas disponibles en el servicio.
-    * @return {Array<M.Layer>} Capas WMS.
+    * @return {Array<IDEE.Layer>} Capas WMS.
     * @private
     * @api
     */

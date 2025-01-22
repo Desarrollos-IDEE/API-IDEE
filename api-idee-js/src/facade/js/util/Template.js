@@ -1,11 +1,11 @@
 /**
  * Esta clase contiene funciones para la gestión de plantillas.
- * @module M/template
- * @example import template from 'M/template';
+ * @module IDEE/template
+ * @example import template from 'IDEE/template';
  */
 import Handlebars from 'handlebars';
 import { allowInsecurePrototypeAccess } from '@handlebars/allow-prototype-access';
-import { get as remoteGet } from 'M/util/Remote';
+import { get as remoteGet } from 'IDEE/util/Remote';
 import registerHelpers from './handlebarshelpers';
 import {
   isUndefined, isNullOrEmpty, stringToHtml, extendsObj,
@@ -60,7 +60,7 @@ export const compileSync = (string, options) => {
 const getTemplateUrl = (templatePath) => {
   let templateUrl = null;
   if (!isNullOrEmpty(templatePath)) {
-    templateUrl = M.config.API_IDEE_URL.concat(M.config.TEMPLATES_PATH);
+    templateUrl = IDEE.config.API_IDEE_URL.concat(IDEE.config.TEMPLATES_PATH);
     templateUrl = templateUrl.concat(templatePath);
   }
   return templateUrl;

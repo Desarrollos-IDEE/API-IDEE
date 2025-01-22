@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/Rotate
+ * @module IDEE/impl/control/Rotate
  */

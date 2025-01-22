@@ -1,6 +1,6 @@
 /* eslint-disable camelcase,import/prefer-default-export */
-import MBTilesVector from 'M/layer/MBTilesVector';
-import Generic from 'M/style/Generic';// eslint-disable-line no-unused-vars
+import MBTilesVector from 'IDEE/layer/MBTilesVector';
+import Generic from 'IDEE/style/Generic';// eslint-disable-line no-unused-vars
 import OLSourceVectorTile from 'ol/source/VectorTile';
 import TileGrid from 'ol/tilegrid/TileGrid';
 import MVTFormat from 'ol/format/MVT';

@@ -1,5 +1,5 @@
 /**
- * @module M/plugin/PredefinedZoom
+ * @module IDEE/plugin/PredefinedZoom
  */
 import 'assets/css/predefinedzoom';
 import PredefinedZoomControl from './predefinedzoomcontrol';
@@ -8,14 +8,14 @@ import api from '../../api';
 import es from './i18n/es';
 import en from './i18n/en';
 
-export default class PredefinedZoom extends M.Plugin {
+export default class PredefinedZoom extends IDEE.Plugin {
   /**
    * @classdesc
    * Main facade plugin object. This class creates a plugin
    * object which has an implementation Object
    *
    * @constructor
-   * @extends {M.Plugin}
+   * @extends {IDEE.Plugin}
    * @param {Object} impl implementation object
    * @api stable
    */
@@ -24,14 +24,14 @@ export default class PredefinedZoom extends M.Plugin {
     /**
      * Facade of the map
      * @private
-     * @type {M.Map}
+     * @type {IDEE.Map}
      */
     this.map_ = null;
 
     /**
      * Array of controls
      * @private
-     * @type {Array<M.Control>}
+     * @type {Array<IDEE.Control>}
      */
     this.controls_ = [];
 
@@ -90,7 +90,7 @@ export default class PredefinedZoom extends M.Plugin {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return M.language.getTranslation(lang).predefinedzoom;
+    return IDEE.language.getTranslation(lang).predefinedzoom;
   }
 
   /**
@@ -98,7 +98,7 @@ export default class PredefinedZoom extends M.Plugin {
    *
    * @public
    * @function
-   * @param {M.Map} map the map to add the plugin
+   * @param {IDEE.Map} map the map to add the plugin
    * @api stable
    */
   addTo(map) {
@@ -106,9 +106,9 @@ export default class PredefinedZoom extends M.Plugin {
     this.control_ = new PredefinedZoomControl(zooms);
     this.controls_.push(this.control_);
     this.map_ = map;
-    this.panel_ = new M.ui.Panel('PredefinedZoom', {
+    this.panel_ = new IDEE.ui.Panel('PredefinedZoom', {
       collapsible: false,
-      position: M.ui.position[this.position_],
+      position: IDEE.ui.position[this.position_],
       className: 'm-predefinedzoom',
     });
     this.panel_.addControls(this.controls_);

@@ -1,5 +1,5 @@
 /**
- * @module M/impl/style/builder
+ * @module IDEE/impl/style/builder
  */
 import {
   isNullOrEmpty,
@@ -7,10 +7,10 @@ import {
   isString,
   isUndefined,
   extend,
-} from 'M/util/Utils';
-import * as Align from 'M/style/Align';
-import * as Baseline from 'M/style/Baseline';
-import * as HeightReference from 'M/style/HeightReference';
+} from 'IDEE/util/Utils';
+import * as Align from 'IDEE/style/Align';
+import * as Baseline from 'IDEE/style/Baseline';
+import * as HeightReference from 'IDEE/style/HeightReference';
 import {
   BillboardGraphics,
   BoundingRectangle,

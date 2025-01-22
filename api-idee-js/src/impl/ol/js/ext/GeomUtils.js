@@ -1,7 +1,7 @@
 /**
  * Este fichero contiene las funciones de utilidad para la gestión de geometrías
- * @module M/impl/ol/js/ext/GeomUtils
- * @example import 'M/impl/ol/js/ext/GeomUtils';
+ * @module IDEE/impl/ol/js/ext/GeomUtils
+ * @example import 'IDEE/impl/ol/js/ext/GeomUtils';
  */
 
 /**

@@ -1,5 +1,5 @@
 /**
- * @module M/layer/LayerGroup
+ * @module IDEE/layer/LayerGroup
  */
 
 import LayerGroupImpl from 'impl/layer/LayerGroup';
@@ -15,10 +15,10 @@ import { getValue } from '../i18n/language';
  * @classdesc
  * Representa un grupo de capas.
  *
- * @property {Array<M.LayerBase|M.LayerGroup>} layers Capas del grupo.
+ * @property {Array<IDEE.LayerBase|IDEE.LayerGroup>} layers Capas del grupo.
  * @property {boolean} display Indica si el grupo se muestra en el árbol de contenidos.
  *
- * @extends {M.facade.Base}
+ * @extends {IDEE.facade.Base}
  * @api
  */
 class LayerGroup extends LayerBase {
@@ -71,7 +71,7 @@ class LayerGroup extends LayerBase {
     /**
      * Implementation of this layer
      * @public
-     * @type {M.impl.layer.LayerGroup}
+     * @type {IDEE.impl.layer.LayerGroup}
      */
     const impl = new LayerGroupImpl(parameters, opt, vendorOptions);
     super(parameters, impl);
@@ -96,7 +96,7 @@ class LayerGroup extends LayerBase {
    * Elimina las capas del grupo.
    *
    * @function
-   * @param {Array<M.LayerBase|M.LayerGroup>} layers Capas a eliminar.
+   * @param {Array<IDEE.LayerBase|IDEE.LayerGroup>} layers Capas a eliminar.
    * @api
    */
   removeLayers(layers = []) {
@@ -124,7 +124,7 @@ class LayerGroup extends LayerBase {
   /**
    * Saca una capa del grupo.
    * @function
-   * @param {M.LayerBase|M.LayerGroup} layer Capa a sacar.
+   * @param {IDEE.LayerBase|IDEE.LayerGroup} layer Capa a sacar.
    * @param {boolean} upToMap Indica si se saca hasta el mapa.
    * @api
    */
@@ -144,7 +144,7 @@ class LayerGroup extends LayerBase {
   /**
    * Añade capas al grupo.
    * @function
-   * @param {Array<M.LayerBase|M.LayerGroup>} layers Capas a añadir.
+   * @param {Array<IDEE.LayerBase|IDEE.LayerGroup>} layers Capas a añadir.
    * @api
    */
   addLayers(layers = []) {
@@ -198,7 +198,7 @@ class LayerGroup extends LayerBase {
   /**
    * Devuelve las capas del grupo.
    * @function
-   * @return {Array<M.LayerBase|M.LayerGroup>} Capas del grupo.
+   * @return {Array<IDEE.LayerBase|IDEE.LayerGroup>} Capas del grupo.
    * @api
    */
   getLayers() {
@@ -208,7 +208,7 @@ class LayerGroup extends LayerBase {
   /**
    * Devuelve las capas del grupo.
    * @function
-   * @return {Array<M.LayerBase|M.LayerGroup>} Capas del grupo.
+   * @return {Array<IDEE.LayerBase|IDEE.LayerGroup>} Capas del grupo.
    * @api
    */
   equals(obj) {

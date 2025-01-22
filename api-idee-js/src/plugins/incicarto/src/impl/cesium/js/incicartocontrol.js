@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/IncicartoControl
+ * @module IDEE/impl/control/IncicartoControl
  */

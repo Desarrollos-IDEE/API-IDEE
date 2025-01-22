@@ -1,16 +1,16 @@
 /* eslint-disable max-len */
 import Timeline from 'facade/timeline';
 
-M.language.setLang('es');
+IDEE.language.setLang('es');
 
-const map = M.map({
+const map = IDEE.map({
   container: 'mapjs',
   controls: ['getfeatureinfo'],
 });
 window.map = map;
 
 // Primera capa de pruebas GeoJson
-const geoJSON = new M.layer.GeoJSON({
+const geoJSON = new IDEE.layer.GeoJSON({
   name: 'cosas1_poligono',
   source: {
     type: 'FeatureCollection',
@@ -29,7 +29,7 @@ const geoJSON = new M.layer.GeoJSON({
 }); // */
 
 /* / Segunda capa de pruebas GeoJson
-const geoJSON = new M.layer.GeoJSON({
+const geoJSON = new IDEE.layer.GeoJSON({
   name: 'cosas2_puntos',
   source: {
     crs: { type: 'name', properties: { name: 'urn:ogc:def:crs:OGC:1.3:CRS84' } },
@@ -141,7 +141,7 @@ const geoJSON = new M.layer.GeoJSON({
 
 // Plugin test 'absolute' o 'relative'
 const terremotosText = 'WMS*Eventos sísmicos*https://www.ign.es/wms-inspire/geofisica*NZ.ObservedEvent'; // Al ser definido con string, crea este layer automáticamente cada vez que se usa.
-// const terremotosText = new M.layer.WMS('WMS*Eventos sísmicos*https://www.ign.es/wms-inspire/geofisica*NZ.ObservedEvent');
+// const terremotosText = new IDEE.layer.WMS('WMS*Eventos sísmicos*https://www.ign.es/wms-inspire/geofisica*NZ.ObservedEvent');
 // map.addLayers([geoJSON]);
 const pluginTimeline = new Timeline({
   position: 'TR', // 'TL' | 'TR' | 'BR' | 'BL'
