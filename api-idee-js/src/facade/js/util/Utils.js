@@ -1620,13 +1620,25 @@ export const copyImageClipBoard = (map, canva) => {
  * @api
  */
 export const findUrls = (text) => {
-  const regex = /https?:\/\/[^\s<]+(?![^<>]*>)/g;
+  const regex = /https?:\/\/[^\s"'<>]+/g;
   const matches = text.match(regex);
+  const uniqueMatches = [...new Set(matches)];
 
-  if (!matches) return [];
+  // Regex para encontrar URLs dentro de los atributos href o src (preservando el atributo completo)
+  const regexHtmlAttrs = /(?:href|src)\s*=\s*(?:"|'|)(https?:\/\/[^\s"'>]+)(?:"|'|)/g;
+  const matchesHTML = text.match(regexHtmlAttrs);
+  const uniquematchesHTML = [...new Set(matchesHTML)];
+
+  if (!uniqueMatches) return [];
+
+  // Extraemos las URLs de array2
+  const urlsArray2 = uniquematchesHTML.map((item) => item.split('=')[1].trim());
+
+  // Filtramos array1, eliminando las URLs que están en array2
+  const filteredArray = uniqueMatches.filter((url) => !urlsArray2.includes(url));
 
   // Filtrar las URLs que están dentro de etiquetas HTML
-  const outsideURLs = matches.filter((url) => {
+  const outsideURLs = filteredArray.concat(uniquematchesHTML).filter((url) => {
     const startIndex = text.indexOf(url);
     const beforeChar = text[startIndex - 1];
     const afterChar = text[startIndex + url.length];
@@ -1670,17 +1682,22 @@ export const transfomContent = (text, pSizes = {}) => {
     const regexDocument = /\.(pdf||txt|json|geojson)$/i;
     const regexVideo = /\.(mp4|mov|3gp)$/i;
     const regexAudio = /\.(mp3|ogg|ogv|wav)$/i;
+    const regexHrefOrSrc = /(?:href|src)\s*=\s*['"]?(https?:\/\/[^\s"'<>]+)['"]?/i;
     if (regexImg.test(url)) {
-      content = content.replace(`${url}${aux}`, `</br><img src='${url}' style='max-width: ${sizes.images[0]}; max-height: ${sizes.images[1]};'/></br>${aux}`);
+      content = content.replaceAll(`${url}${aux}`, `</br><img src='${url}' style='max-width: ${sizes.images[0]}; max-height: ${sizes.images[1]};'/></br>${aux}`);
     } else if (regexDocument.test(url)) {
-      content = content.replace(`${url}${aux}`, `</br><iframe src='${url}' width='${sizes.documents[0]}' height='${sizes.documents[1]}'></iframe></br>${aux}`);
+      content = content.replaceAll(`${url}${aux}`, `</br><iframe src='${url}' width='${sizes.documents[0]}' height='${sizes.documents[1]}'></iframe></br>${aux}`);
     } else if (regexVideo.test(url)) {
-      content = content.replace(`${url}${aux}`, `</br><video style='max-width: ${sizes.videos[0]}; max-height: ${sizes.videos[1]}' controls><source src='${url}'>
+      content = content.replaceAll(`${url}${aux}`, `</br><video style='max-width: ${sizes.videos[0]}; max-height: ${sizes.videos[1]}' controls><source src='${url}'>
         <p>${getValue('exception').browser_video}</p></video></br>${aux}`);
     } else if (regexAudio.test(url)) {
-      content = content.replace(`${url}${aux}`, `</br><audio style='max-width: ${sizes.audios[0]}; max-height: ${sizes.audios[1]}'controls><source src='${url}'>${getValue('exception').browser_audio}</audio></br>${aux}`);
+      content = content.replaceAll(`${url}${aux}`, `</br><audio style='max-width: ${sizes.audios[0]}; max-height: ${sizes.audios[1]}'controls><source src='${url}'>${getValue('exception').browser_audio}</audio></br>${aux}`);
+    } else if (regexHrefOrSrc.test(url)) {
+      if (/href\s*=\s*/i.test(url)) {
+        content = content.replaceAll(`${url}${aux}`, ` target='_blank' ${url}${aux}`);
+      }
     } else {
-      content = content.replace(`${url}${aux}`, `<a target='blank' href=${url}>${url}</a>${aux}`);
+      content = content.replaceAll(`${url}${aux}`, `<a target='blank' href=${url}>${url}</a>${aux}`);
     }
   });
   return content;
