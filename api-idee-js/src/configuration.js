@@ -290,5 +290,5 @@ params.forEach((param) => {
       audios: ['250px', '40px'],
     },
   });
-  window.IDEE = IDEE;
+  window.M = IDEE;
 }(window.IDEE));

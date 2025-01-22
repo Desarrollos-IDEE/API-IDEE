@@ -32,6 +32,7 @@ module.exports = {
       cesium: path.resolve('node_modules/cesium/Source/Cesium'),
       templates: path.resolve(__dirname, '..', 'src', 'templates'),
       assets: path.resolve(__dirname, '..', 'src', 'facade', 'assets'),
+      M: path.resolve(__dirname, '../src/facade/js'),
       IDEE: path.resolve(__dirname, '../src/facade/js'),
       impl: path.resolve(__dirname, '..', 'src', 'impl', 'cesium', 'js'),
       'impl-assets': path.resolve(__dirname, '..', 'src', 'impl', 'cesium', 'assets'),

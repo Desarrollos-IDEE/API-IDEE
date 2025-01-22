@@ -16,6 +16,7 @@ const config = (configKey, configValue) => {
 if (!window.IDEE) {
   const IDEE = {};
   window.IDEE = IDEE;
+  window.M = IDEE;
 }
 IDEE.config = config;
 
