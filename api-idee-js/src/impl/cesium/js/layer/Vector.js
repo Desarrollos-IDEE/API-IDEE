@@ -386,6 +386,51 @@ class Vector extends Layer {
    * @api stable
    */
   addFeatures(features, update) {
+    if (!isNullOrEmpty(this.map)) {
+      const cesiumMap = this.map.getMapImpl();
+      const terrain = this.map.getTerrain();
+      // eslint-disable-next-line no-underscore-dangle
+      if (terrain.length === 1 && terrain[0].getImpl().isLoaded_
+        && cesiumMap.scene.globe.tilesLoaded) {
+        this.handlerAddFeatures_(features, update);
+      } else if (terrain.length === 0 && cesiumMap.scene.globe.tilesLoaded) {
+        this.handlerAddFeatures_(features, update);
+      } else {
+        this.tileLoadHandler = this.handlerAddFeatures_.bind(this, features, update);
+        cesiumMap.scene.globe.tileLoadProgressEvent.addEventListener(this.tileLoadHandler);
+      }
+    } else {
+      this.addFeatures_(features, update);
+    }
+  }
+
+  /**
+   * Este método añade los objetos geográficos cuando el mapa
+   * y el terreno (si está añadido) estén cargados.
+   *
+   * @private
+   * @function
+   * @param {Array<M.feature>} features Objetos geográficos.
+   * @param {Boolean} update Actualiza la capa.
+   * @api
+   */
+  handlerAddFeatures_(features, update) {
+    const cesiumMap = this.map.getMapImpl();
+    if (cesiumMap.scene.globe.tilesLoaded) {
+      this.addFeatures_(features, update);
+    }
+  }
+
+  /**
+   * Este método añade los objetos geográficos a la capa.
+   *
+   * @function
+   * @private
+   * @param {Array<M.feature>} features Objetos geográficos.
+   * @param {Boolean} update Actualiza la capa.
+   * @api stable
+   */
+  addFeatures_(features, update) {
     const promises = [];
     features.forEach((newFeature) => {
       // eslint-disable-next-line no-underscore-dangle
@@ -395,6 +440,7 @@ class Vector extends Layer {
     Promise.all(promises).then(() => {
       const styleLayer = this.facadeVector_.getStyle();
       const othersEntities = [];
+
       features.forEach((newFeature) => {
         const feature = this.features_.find((feature2) => feature2.equals(newFeature));
         if (isNullOrEmpty(feature)) {
@@ -447,6 +493,11 @@ class Vector extends Layer {
 
       if (update) {
         this.updateLayer_();
+      }
+
+      if (!isNullOrEmpty(this.tileLoadHandler)) {
+        this.map.getMapImpl().scene.globe.tileLoadProgressEvent
+          .removeEventListener(this.tileLoadHandler);
       }
 
       this.fire(EventType.LOAD, [this.features_]);

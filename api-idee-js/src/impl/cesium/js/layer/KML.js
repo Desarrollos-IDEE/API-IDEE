@@ -236,7 +236,6 @@ class KML extends Vector {
         this.facadeVector_.clear();
         this.facadeVector_.addFeatures(response.features);
         this.loaded_ = true;
-        this.fire(EventType.LOAD, [response.features]);
         if (!isNullOrEmpty(screenOverlay)) {
           const screenOverLayImg = ImplUtils.addOverlayImage(
             screenOverlay,
@@ -268,12 +267,12 @@ class KML extends Vector {
    * Este método añade los objetos geográficos a la capa.
    *
    * @function
-   * @public
+   * @private
    * @param {Array<IDEE.feature>} features Objetos geográficos.
    * @param {Boolean} update Actualiza la capa.
    * @api stable
    */
-  addFeatures(features, update) {
+  addFeatures_(features, update) {
     const promises = [];
     features.forEach((newFeature) => {
       // eslint-disable-next-line no-underscore-dangle
@@ -300,7 +299,7 @@ class KML extends Vector {
 
           const entity = Feature.facade2Feature(newFeature);
 
-          if (isNullOrEmpty(featureStyle) && this.extractStyles_ === false) {
+          if (isNullOrEmpty(featureStyle)) {
             if (newFeature.getAttribute('vendor.api_idee.icon')) {
               // eslint-disable-next-line no-underscore-dangle, no-param-reassign
               newFeature.getImpl().hasPropertyIcon_ = true;
@@ -337,6 +336,11 @@ class KML extends Vector {
 
       if (update) {
         this.updateLayer_();
+      }
+
+      if (!isNullOrEmpty(this.tileLoadHandler)) {
+        this.map.getMapImpl().scene.globe.tileLoadProgressEvent
+          .removeEventListener(this.tileLoadHandler);
       }
 
       this.fire(EventType.LOAD, [this.features_]);
