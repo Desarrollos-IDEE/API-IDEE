@@ -153,7 +153,7 @@ function fun(IDEE_) {
    * @private
    * @type {object}
    */
-  IDEE_.config('tms', {
+  IDEE_.config('baseLayer', {
     base: 'QUICK*Base_IGNBaseTodo_TMS',
   });
 

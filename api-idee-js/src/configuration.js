@@ -179,8 +179,8 @@ params.forEach((param) => {
    * @private
    * @type {object}
    */
-  IDEE.config('tms', {
-    base: '${tms.base}',
+  IDEE.config('baseLayer', {
+    base: '${baseLayer}',
   });
 
   /**
