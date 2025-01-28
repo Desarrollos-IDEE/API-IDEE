@@ -179,9 +179,7 @@ params.forEach((param) => {
    * @private
    * @type {object}
    */
-  IDEE.config('baseLayer', {
-    base: '${baseLayer}',
-  });
+  IDEE.config('baseLayer', '${baseLayer}');
 
   /**
    * Terrain configuration
