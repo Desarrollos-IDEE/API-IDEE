@@ -66,18 +66,28 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
+// import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
+// import org.apache.http.auth.Credentials;
+// import org.apache.http.auth.UsernamePasswordCredentials;
+// import org.apache.http.client.CredentialsProvider;
+// import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet; 
 import org.apache.http.client.methods.HttpPost; 
+// import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
+// import org.apache.http.impl.client.BasicCredentialsProvider;
+// import org.apache.http.impl.client.BasicResponseHandler;
+// import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+// import org.apache.http.protocol.HTTP;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.log4j.Logger;
 
 import es.guadaltel.framework.ticket.Ticket;
 import es.guadaltel.framework.ticket.TicketFactory;
@@ -128,18 +138,14 @@ public class ProxyRedirect extends HttpServlet {
         url = url.replaceAll("\\&?\\??apiIdeeop=getcapabilities", "");
         url = url.replaceAll("\\&?\\??apiIdeeop=wmsinfo", "");
 
-        // CHANGED: Use HttpClient 4.x
-        CloseableHttpClient client = null;
+        CloseableHttpClient client = HttpClientBuilder.create().build();
+        HttpGet httpget = null;
         CloseableHttpResponse httpResponse = null;
-        try {
-          // Provide a way to handle redirects up to numMaxRedirects
-          RequestConfig rc = RequestConfig.custom()
-                             .setRedirectsEnabled(true)
-                             .setMaxRedirects(numMaxRedirects)
-                             .build();
-          client = HttpClients.custom().setDefaultRequestConfig(rc).build();
 
-          HttpGet httpget = new HttpGet(url);
+        try {
+          httpget = new HttpGet(url);
+          httpget.setConfig(RequestConfig.custom().setMaxRedirects(numMaxRedirects).build());
+
           httpResponse = client.execute(httpget);
 
           if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
@@ -242,11 +248,10 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
     if (!serverUrl.equals("ERROR")) {
       if (serverUrl.startsWith("http://") || serverUrl.startsWith("https://")) {
         if (!serverUrl.contains("/processes/")) {
-          // CHANGED: we now use HttpClient 4.x for POST
-          CloseableHttpClient client = null;
           CloseableHttpResponse postResp = null;
+          CloseableHttpClient client = null;
           try {
-            client = HttpClients.createDefault();
+            client = HttpClientBuilder.create().build();
             HttpPost httppost = new HttpPost(serverUrl);
 
             // PATH
@@ -322,8 +327,7 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
               httppost.addHeader("SOAPAction", serverUrl);
             }
 
-            // Execute
-            postResp = client.execute(httppost);
+            postResp = client.execute(httppost); // CAMBIO: HttpResponse -> CloseableHttpResponse
 
             // PATH_FOLLOW_REDIRECT_POST - minimal equivalent
             int j = 0;
@@ -445,10 +449,10 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
           }
         } else {
           // "Processes" logic unchanged
-          HttpPost pm = new HttpPost(serverUrl); // minimal adaptation
+          HttpPost pm = new HttpPost(serverUrl);
           String outputBody;
-          CloseableHttpClient client = null;
           CloseableHttpResponse pmResp = null;
+          CloseableHttpClient client = null;
           try {
             outputBody = inputStreamAsString(request.getInputStream());
             // CHANGED: Use "UTF-8" string for the 3rd param, not StandardCharsets.UTF_8
@@ -456,7 +460,7 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
             pm.setEntity(requestEntity);
             pm.addHeader("Content-Type", "application/json");
 
-            client = HttpClients.createDefault();
+            client = HttpClientBuilder.create().build();
             pmResp = client.execute(pm);
             int status = pmResp.getStatusLine().getStatusCode();
             if (status == HttpStatus.SC_OK) {
