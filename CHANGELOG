@@ -1,3 +1,4 @@
 22/05/24 - Versión 1.0.0
 - Se incluye implementación 3D con Cesium
 - Modificación del contexto API-CNIG a API-IDEE
+- Se modifica tms.base por baseLayer en IDEE
