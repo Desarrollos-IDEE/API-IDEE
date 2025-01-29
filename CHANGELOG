@@ -1,10 +1,7 @@
 22/05/24 - Versión 1.0.0
 - Se incluye implementación 3D con Cesium
 - Modificación del contexto API-CNIG a API-IDEE
-<<<<<<< HEAD
 - Actualización de la librería commons-httpclient 3.1 a httpclient 4.5.2 
 - Adaptación de las clases proxy tras el cambio de librería commons-httpclient
 - Mejoras sobre el proxy tras la unificación con Mapea
-=======
 - Se modifica tms.base por baseLayer en IDEE
->>>>>>> feat_6_baseLayer
