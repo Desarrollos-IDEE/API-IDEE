@@ -65,28 +65,27 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.codec.binary.Base64;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
-// import org.apache.http.HttpEntity;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-// import org.apache.http.auth.Credentials;
-// import org.apache.http.auth.UsernamePasswordCredentials;
-// import org.apache.http.client.CredentialsProvider;
-// import org.apache.http.client.ResponseHandler;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet; 
-import org.apache.http.client.methods.HttpPost; 
-// import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
-// import org.apache.http.impl.client.BasicCredentialsProvider;
-// import org.apache.http.impl.client.BasicResponseHandler;
-// import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
-// import org.apache.http.protocol.HTTP;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
 
 import es.guadaltel.framework.ticket.Ticket;
@@ -101,7 +100,7 @@ public class ProxyRedirect extends HttpServlet {
   private static final Pattern GETINFO_PLAIN_REGEX = Pattern.compile(".*INFO_FORMAT=TEXT(\\/|\\%2F)PLAIN.*",
   Pattern.CASE_INSENSITIVE);
   private static final Pattern GETINFO_GML_REGEX = Pattern
-  .compile(".*INFO_FORMAT=APPLICATION(\\/|%2F)VND\\.OGC\\.GML.*", Pattern.CASE_INSENSITIVE);
+	.compile(".*INFO_FORMAT=APPLICATION(\\/|%2F)VND\\.OGC\\.GML.*", Pattern.CASE_INSENSITIVE);
   private static final Pattern GETINFO_HTML_REGEX = Pattern.compile(".*INFO_FORMAT=TEXT(\\/|\\%2F)HTML.*",
   Pattern.CASE_INSENSITIVE);
   private static final String WWW_AUTHENTICATE = "WWW-Authenticate"; // PATH
@@ -117,7 +116,7 @@ public class ProxyRedirect extends HttpServlet {
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
     context_ = config.getServletContext();
-    // log.info("proxysig.ProxyRedirect: context initialized to: " + context_.getServletContextName());
+    log.info("proxysig.ProxyRedirect: context initialized to: " + context_.getServletContextName());
   }
 
   /***************************************************************************
@@ -126,43 +125,35 @@ public class ProxyRedirect extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
     String serverUrl = request.getParameter("url");
     // manages a get request if it's the geoprint or getcapabilities operation
-    boolean isGeoprint = serverUrl.toLowerCase().contains("apiIdeeop=geoprint");
+    boolean isGeoprint = serverUrl.toLowerCase().contains("apiideeop=geoprint");
     boolean isGetCapabilities = serverUrl.toLowerCase().contains("getcapabilities");
     boolean isGetFeatureInfo = serverUrl.toLowerCase().contains("wmsinfo");
     if (isGeoprint || isGetCapabilities || isGetFeatureInfo) {
       String strErrorMessage = "";
       serverUrl = checkTypeRequest(serverUrl);
       if (!serverUrl.equals("ERROR")) {
-        // removes apiIdeeop parameter
-        String url = serverUrl.replaceAll("\\&?\\??apiIdeeop=geoprint", "");
-        url = url.replaceAll("\\&?\\??apiIdeeop=getcapabilities", "");
-        url = url.replaceAll("\\&?\\??apiIdeeop=wmsinfo", "");
+        // removes apiideeop parameter
+        String url = serverUrl.replaceAll("\\&?\\??apiideeop=geoprint", "");
+        url = url.replaceAll("\\&?\\??apiideeop=getcapabilities", "");
+        url = url.replaceAll("\\&?\\??apiideeop=wmsinfo", "");
 
-        CloseableHttpClient client = HttpClientBuilder.create().build();
-        HttpGet httpget = null;
-        CloseableHttpResponse httpResponse = null;
+				HttpClient client = HttpClientBuilder.create().build();
+				HttpGet httpget = null;
 
         try {
           httpget = new HttpGet(url);
           httpget.setConfig(RequestConfig.custom().setMaxRedirects(numMaxRedirects).build());
 
-          httpResponse = client.execute(httpget);
+          HttpResponse httpResponse = client.execute(httpget);
 
           if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            // PATH_SECURITY_PROXY - AG
-            Header[] respHeaders = httpResponse.getAllHeaders();
-            // we read body to get length
-            byte[] bodyBytes = null;
-            try {
-              bodyBytes = IOUtils.toByteArray(httpResponse.getEntity().getContent());
-            } catch (Exception ex) {
-              log.error("Error reading response body: " + ex.getMessage(), ex);
-            }
-            int compSize = (bodyBytes != null) ? bodyBytes.length : 0;
-            ArrayList<Header> headerList = new ArrayList<Header>(Arrays.asList(respHeaders));
-            String headersString = headerList.toString();
-            boolean checkedContent = checkContent(headersString, compSize, serverUrl);
-            // FIN_PATH_SECURITY_PROXY
+           // PATH_SECURITY_PROXY - AG
+						Header[] respHeaders = httpResponse.getAllHeaders();
+						int compSize = (int) httpResponse.getEntity().getContentLength();
+						ArrayList<Header> headerList = new ArrayList<Header>(Arrays.asList(respHeaders));
+						String headersString = headerList.toString();
+						boolean checkedContent = checkContent(headersString, compSize, serverUrl);
+						// FIN_PATH_SECURITY_PROXY
             if (checkedContent) {
               if (request.getProtocol().compareTo("HTTP/1.0") == 0) {
                 response.setHeader("Pragma", "no-cache");
@@ -188,10 +179,9 @@ public class ProxyRedirect extends HttpServlet {
               } else if (GETINFO_HTML_REGEX.matcher(requesteredUrl).matches()) {
                 response.setContentType("text/html");
               }
-              if (bodyBytes != null) {
-                ServletOutputStream sos = response.getOutputStream();
-                IOUtils.write(bodyBytes, sos);
-              }
+              InputStream st = httpResponse.getEntity().getContent();
+							ServletOutputStream sos = response.getOutputStream();
+							IOUtils.copy(st, sos);
             } else {
               strErrorMessage += errorType;
               log.error(strErrorMessage);
@@ -203,13 +193,9 @@ public class ProxyRedirect extends HttpServlet {
         } catch (Exception e) {
           log.error("Error al tratar el contenido de la peticion: " + e.getMessage(), e);
         } finally {
-          // release connections
-          if (httpResponse != null) {
-            try { httpResponse.close(); } catch (IOException ign) {}
-          }
-          if (client != null) {
-            try { client.close(); } catch (IOException ign) {}
-          }
+         if (httpget != null) {
+						httpget.releaseConnection();
+					}
         }
       } else {
         // String errorXML = strErrorMessage;
@@ -247,27 +233,26 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
     serverUrl = checkTypeRequest(serverUrl);
     if (!serverUrl.equals("ERROR")) {
       if (serverUrl.startsWith("http://") || serverUrl.startsWith("https://")) {
-        if (!serverUrl.contains("/processes/")) {
-          CloseableHttpResponse postResp = null;
-          CloseableHttpClient client = null;
-          try {
-            client = HttpClientBuilder.create().build();
-            HttpPost httppost = new HttpPost(serverUrl);
-
-            // PATH
-            Enumeration<?> enume = request.getHeaderNames();
-            ArrayList<String> removeHeaders = new ArrayList<>(Arrays.asList("accept-encoding"));
-            while (enume.hasMoreElements()) {
-              String name = (String) enume.nextElement();
-              String value = request.getHeader(name);
-              log.debug("request header:" + name + ":" + value);
-              if (!removeHeaders.contains(name.toLowerCase())) {
-                httppost.addHeader(name, value);
-              }
-            }
-
-            // We won't replicate "httppost.setDoAuthentication(false)" or "DefaultHttpMethodRetryHandler"
-            // because they don't exist in 4.x. Usually you'd use RequestConfig or HttpClientBuilder here.
+				HttpPost httppost = null;
+				try {
+					String host = System.getProperty("https.proxyHost");
+					HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+					clientBuilder.setRetryHandler(new DefaultHttpRequestRetryHandler(3, false));
+					if (host != null) {
+						Integer port = Integer.parseInt(System.getProperty("https.proxyPort"));
+						clientBuilder.useSystemProperties();
+						String user = System.getProperty("https.proxyUser");
+						if (user != null) {
+							Credentials credentials = new UsernamePasswordCredentials(user,
+									System.getProperty("https.proxyPassword"));
+							AuthScope authScope = new AuthScope(host, port);
+							CredentialsProvider credsProvider = new BasicCredentialsProvider();
+							credsProvider.setCredentials(authScope, credentials);
+							clientBuilder.setDefaultCredentialsProvider(credsProvider);
+						}
+					}
+					  HttpClient client = clientBuilder.build();
+					  httppost = new HttpPost(serverUrl);
 
             // PATH_apiideeDITA_SECURITY - AP
             // PATCH_TICKET_MJM-20112405-POST
@@ -277,7 +262,8 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
               String pass = (String) request.getSession().getAttribute("pass");
               if (user != null && pass != null) {
                 String userAndPass = user + ":" + pass;
-                String encodedLogin = new String(Base64.encodeBase64(userAndPass.getBytes()));
+							String encodedLogin = new String(
+									org.apache.commons.codec.binary.Base64.encodeBase64(userAndPass.getBytes()));
                 httppost.addHeader(AUTHORIZATION, "Basic " + encodedLogin);
               } else {
                 String ticketParameter = request.getParameter("ticket");
@@ -290,7 +276,8 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
                       user = props.get("user");
                       pass = props.get("pass");
                       String userAndPass = user + ":" + pass;
-                      String encodedLogin = new String(Base64.encodeBase64(userAndPass.getBytes()));
+										  String encodedLogin = new String(org.apache.commons.codec.binary.Base64
+												.encodeBase64(userAndPass.getBytes()));
                       httppost.addHeader(AUTHORIZATION, "Basic " + encodedLogin);
                     } catch (Exception e) {
                       log.info("-------------------------------------------");
@@ -309,75 +296,62 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
             // FIN_PATH_apiideeDITA_SECURITY - AP
 
             // Build POST entity
-            String body = null;
-            try {
-              body = inputStreamAsString(request.getInputStream());
-            } catch (IOException ioe) {
-              log.error("Error reading request body: " + ioe.getMessage(), ioe);
-            }
-            if (body != null) {
-              // CHANGED: use "UTF-8" as String (no Charset -> compile error)
-              StringEntity bodyEntity = new StringEntity(body, StandardCharsets.UTF_8);
-              // We do not set explicit content type here => it was null in old code
-              httppost.setEntity(bodyEntity);
-            }
+					  String body = inputStreamAsString(request.getInputStream());
+					  HttpEntity bodyEntity = new ByteArrayEntity(body.getBytes("UTF-8"));
+					  httppost.setEntity(bodyEntity); // PATCH
 
-            // if (soap) ...
-            if (soap) {
-              httppost.addHeader("SOAPAction", serverUrl);
-            }
+					  if (!legend)
+						  request.setCharacterEncoding("UTF-8");
+					  if (soap) {
+						  httppost.setHeader("SOAPAction", serverUrl);
+					  }
 
-            postResp = client.execute(httppost); // CAMBIO: HttpResponse -> CloseableHttpResponse
+					  HttpResponse httpResponse = client.execute(httppost);
 
-            // PATH_FOLLOW_REDIRECT_POST - minimal equivalent
-            int j = 0;
-            Header locationHeader = postResp.getFirstHeader("location");
-            // We do a simple loop for 3xx responses
-            while (locationHeader != null && j < numMaxRedirects
-                   && (postResp.getStatusLine().getStatusCode() >= 300
-                       && postResp.getStatusLine().getStatusCode() < 400)) {
-              String redirectLocation = locationHeader.getValue();
-              log.debug("Redirecting to: " + redirectLocation);
-              postResp.close();
-
-              HttpPost newPost = new HttpPost(redirectLocation);
-              if (redirectLocation.toLowerCase().contains("wsdl")) {
-                // from old code
-                String newLocNoWSDL = serverUrl.replace("?wsdl", "");
-                newPost.addHeader("SOAPAction", newLocNoWSDL);
-                newPost.addHeader("Content-type", "text/xml");
-              }
-              // set same body again
-              if (body != null) {
-                StringEntity bodyEntityPost = new StringEntity(body, StandardCharsets.UTF_8);
-                newPost.setEntity(bodyEntityPost);
-              }
-              postResp = client.execute(newPost);
-              locationHeader = postResp.getFirstHeader("location");
-              j++;
-            }
-            log.info("Number of followed redirections: " + j);
-            if (locationHeader != null && j == numMaxRedirects) {
-              log.error("The maximum number of redirects (" + numMaxRedirects + ") is exceed.");
-            }
-
-            // dump response to out
-            byte[] postRespBodyBytes = IOUtils.toByteArray(postResp.getEntity().getContent());
-            String res = new String(postRespBodyBytes, StandardCharsets.UTF_8);
-
-            if (postResp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-              // PATH_SECURITY_PROXY - AG
-              Header[] respHeaders = postResp.getAllHeaders();
-              int compSize = postRespBodyBytes.length;
-              ArrayList<Header> headerList = new ArrayList<Header>(Arrays.asList(respHeaders));
-              String headersString = headerList.toString();
-              checkedContent = checkContent(headersString, compSize, serverUrl);
-              // FIN_PATH_SECURITY_PROXY - AG
-              if (checkedContent) {
-                /*
-                 * checks if it has requested an getfeatureinfo to modify the response content
-                 * type.
-                 */
+					// PATH_FOLLOW_REDIRECT_POST
+					int j = 0;
+					String redirectLocation;
+					Header[] locationHeader = httpResponse.getHeaders("location");
+					while (locationHeader.length != 0 && j < numMaxRedirects) {
+						redirectLocation = locationHeader[0].getValue();
+						StringEntity bodyEntityPost = new StringEntity(body);
+						httppost.releaseConnection();
+						httppost = new HttpPost(redirectLocation);
+						// AGG 20110912 Añadidas cabeceras petición SOAP
+						if (redirectLocation.toLowerCase().contains("wsdl")) {
+							redirectLocation = serverUrl.replace("?wsdl", "");
+							httppost.setHeader("SOAPAction", redirectLocation);
+							httppost.setHeader("Content-type", "text/xml");
+						}
+						httppost.setEntity(bodyEntityPost);
+						httpResponse = client.execute(httppost);
+						locationHeader = httppost.getHeaders("location");
+						j++;
+					}
+					log.info("Number of followed redirections: " + j);
+					if (locationHeader != null && j == numMaxRedirects) {
+						log.error("The maximum number of redirects (" + numMaxRedirects + ") is exceed.");
+					}
+					// FIN_PATH_FOLLOW_REDIRECT_POST
+					if (log.isDebugEnabled()) {
+						Header[] responseHeaders = httpResponse.getAllHeaders();
+						for (int i = 0; i < responseHeaders.length; ++i) {
+							String headerName = responseHeaders[i].getName();
+							String headerValue = responseHeaders[i].getValue();
+							log.debug("responseHeaders:" + headerName + "=" + headerValue);
+						}
+					}
+					if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+						// PATH_SECURITY_PROXY - AG
+						final Header[] respHeaders = httpResponse.getAllHeaders();
+						final ResponseHandler<String> handler = new BasicResponseHandler();
+						final String responseBody = handler.handleResponse(httpResponse);
+						final int compSize = responseBody.length();
+						final ArrayList<Header> headerList = new ArrayList<Header>(Arrays.asList(respHeaders));
+						final String headersString = headerList.toString();
+						checkedContent = checkContent(headersString, compSize, serverUrl);
+						// FIN_PATH_SECURITY_PROXY - AG
+						if (checkedContent == true) {
                 String requesteredUrl = request.getParameter("url");
                 if (GETINFO_PLAIN_REGEX.matcher(requesteredUrl).matches()) {
                   response.setContentType("text/plain");
@@ -385,23 +359,22 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
                   response.setContentType("application/gml+xml");
                 } else if (GETINFO_HTML_REGEX.matcher(requesteredUrl).matches()) {
                   response.setContentType("text/html");
-                } else if (requesteredUrl.toLowerCase().contains("apiIdeeop=geosearch")
-                        || requesteredUrl.toLowerCase().contains("apiIdeeop=geoprint")) {
+                } else if (requesteredUrl.toLowerCase().contains("apiideeop=geosearch")
+                        || requesteredUrl.toLowerCase().contains("apiideeop=geoprint")) {
                   response.setContentType("application/json");
                 } else {
                   response.setContentType("text/xml");
                 }
                 if (legend) {
-                  // old logic
-                  String responseBody = res;
-                  if (responseBody.contains("ServiceExceptionReport") && serverUrl.contains("LegendGraphic")) {
-                    response.sendRedirect("Componente/img/blank.gif");
-                  } else {
-                    response.setContentLength(responseBody.length());
-                    PrintWriter out = response.getWriter();
-                    out.print(responseBody);
-                    response.flushBuffer();
-                  }
+								  if (responseBody.contains("ServiceExceptionReport")
+										  && serverUrl.contains("LegendGraphic")) {
+									  response.sendRedirect("Componente/img/blank.gif");
+								  } else {
+									  response.setContentLength(responseBody.length());
+									  final PrintWriter out = response.getWriter();
+									  out.print(responseBody);
+									  response.flushBuffer();
+								  }
                 } else {
                   // Patch_AGG 20112505 Prevents IE cache
                   if (request.getProtocol().compareTo("HTTP/1.0") == 0) {
@@ -412,86 +385,28 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
                   response.setDateHeader("Expires", -1);
                   // END patch
                   // Copy response to output
-                  InputStream st = null;
-                  try {
-                    st = org.apache.commons.io.IOUtils.toInputStream(res, "UTF-8"); 
-                    // CHANGED: pass "UTF-8" string instead of StandardCharsets.UTF_8
-                    ServletOutputStream sos = response.getOutputStream();
-                    IOUtils.copy(st, sos);
-                  } finally {
-                    if (st != null) st.close();
-                  }
-                }
-              } else {
-                strErrorMessage += errorType;
-                log.error(strErrorMessage);
-              }
-            } else if (postResp.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-              response.setStatus(HttpStatus.SC_UNAUTHORIZED);
-              Header wh = postResp.getFirstHeader(WWW_AUTHENTICATE);
-              if (wh != null) {
-                response.addHeader(WWW_AUTHENTICATE, wh.getValue());
-              }
-            } else {
-              strErrorMessage = "Unexpected failure: ".concat(postResp.getStatusLine().toString())
-                      .concat(" ").concat(res);
-              log.error("Unexpected failure: " + postResp.getStatusLine().toString());
-            }
-          } catch (Exception e) {
-            log.error("Error al tratar el contenido de la peticion: " + e.getMessage(), e);
-          } finally {
-            if (postResp != null) {
-              try { postResp.close(); } catch (IOException ign) {}
-            }
-            if (client != null) {
-              try { client.close(); } catch (IOException ign) {}
-            }
-          }
-        } else {
-          // "Processes" logic unchanged
-          HttpPost pm = new HttpPost(serverUrl);
-          String outputBody;
-          CloseableHttpResponse pmResp = null;
-          CloseableHttpClient client = null;
-          try {
-            outputBody = inputStreamAsString(request.getInputStream());
-            // CHANGED: Use "UTF-8" string for the 3rd param, not StandardCharsets.UTF_8
-            StringEntity requestEntity = new StringEntity(outputBody, "application/json", "UTF-8");
-            pm.setEntity(requestEntity);
-            pm.addHeader("Content-Type", "application/json");
-
-            client = HttpClientBuilder.create().build();
-            pmResp = client.execute(pm);
-            int status = pmResp.getStatusLine().getStatusCode();
-            if (status == HttpStatus.SC_OK) {
-              response.setContentType("application/json");
-              InputStream st = pmResp.getEntity().getContent();
-              final ServletOutputStream sos = response.getOutputStream();
-              IOUtils.copy(st, sos);
-            } else if (status == HttpStatus.SC_UNAUTHORIZED) {
-              response.setStatus(HttpStatus.SC_UNAUTHORIZED);
-              Header wh = pmResp.getFirstHeader(WWW_AUTHENTICATE);
-              if (wh != null) {
-                response.addHeader(WWW_AUTHENTICATE, wh.getValue());
-              }
-            } else {
-              // CHANGED: pass "UTF-8" string
-              String failBody = IOUtils.toString(pmResp.getEntity().getContent(), "UTF-8");
-              strErrorMessage = "Unexpected failure: ".concat(pmResp.getStatusLine().toString())
-                  .concat(" ").concat(failBody);
-              log.error("Unexpected failure: " + pmResp.getStatusLine().toString());
-            }
-          } catch (IOException e) {
-            log.error("Error al tratar el contenido de la peticion: " + e.getMessage(), e);
-          } finally {
-            if (pmResp != null) {
-              try { pmResp.close(); } catch (IOException ign) {}
-            }
-            if (client != null) {
-              try { client.close(); } catch (IOException ign) {}
-            }
-          }
-        }
+								  final PrintWriter out = response.getWriter();
+								  out.print(responseBody);
+								  response.flushBuffer();
+							  }
+						  } else {
+							  strErrorMessage += errorType.toString();
+							  log.error(strErrorMessage);
+						  }
+					  } else if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+						  response.setStatus(HttpStatus.SC_UNAUTHORIZED);
+						  response.setHeader(WWW_AUTHENTICATE, httpResponse.getAllHeaders()[0].getName());
+					  } else {
+						  strErrorMessage = "Unexpected failure: " + httpResponse.getStatusLine().getStatusCode()
+								  + "".concat(" ") + httppost.getEntity().getContent();
+						  log.error("Unexpected failure: " + httpResponse.getStatusLine().getStatusCode());
+					  }
+					  httppost.releaseConnection();
+				  } catch (Exception e) {
+					  log.error("Error al tratar el contenido de la peticion: " + e.getMessage(), e);
+				  } finally {
+					httppost.releaseConnection();
+				}
       } else {
         strErrorMessage += "Only HTTP(S) protocol supported";
         log.error("Only HTTP(S) protocol supported");
@@ -522,7 +437,8 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
   * inputStreamAsString
   **************************************************************************/
   public static String inputStreamAsString(InputStream stream) throws IOException {
-    BufferedReader br = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+    BufferedReader br = new BufferedReader(new InputStreamReader(stream));
+    // BufferedReader br = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
     StringBuilder sb = new StringBuilder();
     String line = null;
     while ((line = br.readLine()) != null) {
@@ -577,24 +493,24 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
   **************************************************************************/
   private String checkTypeRequest(String serverUrl) {
     String serverUrlChecked = "ERROR";
-    if (serverUrl.contains("&apiIdeeop=wmc")) {
-      serverUrlChecked = serverUrl.replaceAll("&apiIdeeop=wmc", "");
+    if (serverUrl.contains("&apiideeop=wmc")) {
+      serverUrlChecked = serverUrl.replaceAll("&apiideeop=wmc", "");
       // Check if the beginning is http(s)
       String protocol = serverUrlChecked.toUpperCase().substring(0, 4);
       if (!protocol.equalsIgnoreCase("HTTP") && !protocol.equalsIgnoreCase("HTTPS")) {
-        log.debug("ProxyRedirect (apiIdeeop=wmc) - Protocol=" + protocol);
+        log.debug("ProxyRedirect (apiideeop=wmc) - Protocol=" + protocol);
         serverUrlChecked = "ERROR";
       }
-    } else if (serverUrl.contains("&apiIdeeop=kml")) {
-      serverUrlChecked = serverUrl.replaceAll("&apiIdeeop=kml", "");
+    } else if (serverUrl.contains("&apiideeop=kml")) {
+      serverUrlChecked = serverUrl.replaceAll("&apiideeop=kml", "");
       // Check if the beginning is http
       String protocol = serverUrlChecked.toUpperCase().substring(0, 4);
       if (!protocol.equalsIgnoreCase("HTTP") && !protocol.equalsIgnoreCase("HTTPS")) {
-        log.debug("ProxyRedirect (apiIdeeop=kml) - Protocol=" + protocol);
+        log.debug("ProxyRedirect (apiideeop=kml) - Protocol=" + protocol);
         serverUrlChecked = "ERROR";
       }
-    } else if (serverUrl.contains("&apiIdeeop=wmsfull")) {
-      serverUrlChecked = serverUrl.replaceAll("&apiIdeeop=wmsfull", "");
+    } else if (serverUrl.contains("&apiideeop=wmsfull")) {
+      serverUrlChecked = serverUrl.replaceAll("&apiideeop=wmsfull", "");
       String[] tokens = serverUrlChecked.split("\\&");
       int numTokens = tokens.length;
       if (numTokens == 3) {
@@ -602,21 +518,21 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
         String protocol = tokens[0].toUpperCase().substring(0, 4);
         if (!protocol.equals("HTTP")) {
           serverUrlChecked = "ERROR";
-          log.debug("ProxyRedirect (apiIdeeop=wmsfull) - Protocol=" + protocol);
+          log.debug("ProxyRedirect (apiideeop=wmsfull) - Protocol=" + protocol);
         }
         if (!tokens[1].equals("service=WMS") || !tokens[2].equals("request=GetCapabilities")) {
           serverUrlChecked = "ERROR";
-          log.debug("ProxyRedirect (apiIdeeop=wmsfull) - service=" + tokens[1] + " request=" + tokens[2]);
+          log.debug("ProxyRedirect (apiideeop=wmsfull) - service=" + tokens[1] + " request=" + tokens[2]);
         } else {
           serverUrlChecked = tokens[0] + "&service=WMS&request=GetCapabilities";
         }
       } else {
-        log.debug("ProxyRedirect (apiIdeeop=wmsfull) - Error en el número de parámetros");
+        log.debug("ProxyRedirect (apiideeop=wmsfull) - Error en el número de parámetros");
         serverUrlChecked = "ERROR";
       }
-    } else if (serverUrl.contains("apiIdeeop=wmsinfo")) { // GET
-      serverUrlChecked = serverUrl.replaceAll("&apiIdeeop=wmsinfo", "");
-      serverUrlChecked = serverUrlChecked.replaceAll("apiIdeeop=wmsinfo", "");
+    } else if (serverUrl.contains("apiideeop=wmsinfo")) { // GET
+      serverUrlChecked = serverUrl.replaceAll("&apiideeop=wmsinfo", "");
+      serverUrlChecked = serverUrlChecked.replaceAll("apiideeop=wmsinfo", "");
       String[] tokens = serverUrlChecked.split("\\&");
       int numTokens = tokens.length;
       if (numTokens == 3) { // GetCapabilities
@@ -624,21 +540,21 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
         String protocol = tokens[0].toUpperCase().substring(0, 4);
         if (!protocol.equals("HTTP")) {
           serverUrlChecked = "ERROR";
-          log.debug("ProxyRedirect (apiIdeeop=wmsinfo) - Protocol=" + protocol);
+          log.debug("ProxyRedirect (apiideeop=wmsinfo) - Protocol=" + protocol);
         }
         if (!tokens[1].equals("service=WMS") || !tokens[2].equals("request=GetCapabilities")) {
           serverUrlChecked = "ERROR";
-          log.debug("ProxyRedirect (apiIdeeop=wmsinfo) - service=" + tokens[1] + " request=" + tokens[2]);
+          log.debug("ProxyRedirect (apiideeop=wmsinfo) - service=" + tokens[1] + " request=" + tokens[2]);
         } else {
           serverUrlChecked = tokens[0] + "service=WMS&request=GetCapabilities";
         }
       }
-    } else if (serverUrl.contains("apiIdeeop=geosearch")) {
-      serverUrlChecked = serverUrl.replaceAll("&apiIdeeop=geosearch", "");
+    } else if (serverUrl.contains("apiideeop=geosearch")) {
+      serverUrlChecked = serverUrl.replaceAll("&apiideeop=geosearch", "");
       // Check if the beginning is http
       String protocol = serverUrlChecked.toUpperCase().substring(0, 4);
       if (!protocol.equalsIgnoreCase("HTTP") && !protocol.equalsIgnoreCase("HTTPS")) {
-        log.debug("ProxyRedirect (apiIdeeop=geosearch) - Protocol=" + protocol);
+        log.debug("ProxyRedirect (apiideeop=geosearch) - Protocol=" + protocol);
         serverUrlChecked = "ERROR";
       }
     } else if (serverUrl.toLowerCase().contains("legendgraphic")) {
@@ -652,10 +568,8 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
       soap = true;
       serverUrl = serverUrl.replace("?wsdl", "");
       serverUrlChecked = serverUrl;
-    } else if (serverUrl.toLowerCase().contains("apiIdeeop=geoprint")) {
-      serverUrlChecked = serverUrl.replaceAll("\\&?\\??apiIdeeop=geoprint", "");
-    } else if (serverUrl.toLowerCase().contains("/processes/")) {
-      serverUrlChecked = serverUrl;
+    } else if (serverUrl.toLowerCase().contains("apiideeop=geoprint")) {
+      serverUrlChecked = serverUrl.replaceAll("\\&?\\??apiideeop=geoprint", "");
     }
 
     return serverUrlChecked;
