@@ -326,7 +326,7 @@ class Map extends Base {
 
     // default TMS
     if (isNullOrEmpty(params.layers) && !isArray(params.layers)) {
-      this.addQuickLayers(IDEE.config.tms.base);
+      this.addLayers(IDEE.config.baseLayer);
     }
 
     // center

@@ -6,8 +6,10 @@ import { compileSync as compileTemplate } from 'IDEE/util/Template';
 import Popup from 'IDEE/Popup';
 import {
   isNullOrEmpty,
+  isUndefined,
 } from 'IDEE/util/Utils';
 import { getValue } from 'IDEE/i18n/language';
+import { Color, KmlDataSource, PointGraphics } from 'cesium';
 import geojsonPopupTemplate from 'templates/geojson_popup';
 import Vector from './Vector';
 import Feature from '../feature/Feature';
@@ -103,12 +105,21 @@ class GenericVector extends Vector {
         if (this.cesiumLayer.entities && this.cesiumLayer.entities.values.length > 0
           && !this.cesiumLayer.isLoading) {
           const features = this.cesiumLayer.entities.values.map((f) => {
+            if (!(this.cesiumLayer instanceof KmlDataSource) && !isUndefined(f.billboard)) {
+              // eslint-disable-next-line no-param-reassign
+              f.point = new PointGraphics({
+                color: Color.WHITE,
+                outlineColor: Color.BLACK,
+                pixelSize: 5,
+              });
+              // eslint-disable-next-line no-param-reassign
+              f.billboard = undefined;
+            }
             return Feature.feature2Facade(f);
           });
           this.cesiumLayer.entities.removeAll();
           this.loaded_ = true;
           this.facadeLayer_.addFeatures(features);
-          this.fire(EventType.LOAD, [this.features_]);
         } else {
           // ? Features todavía no han sido cargados
           this.fnAddFeatures_ = this.addFeaturesToFacade.bind(this);
@@ -138,6 +149,16 @@ class GenericVector extends Vector {
     if (this.cesiumLayer && !this.loaded_) {
       if (this.cesiumLayer.entities.values.length > 0) {
         const features = this.cesiumLayer.entities.values.map((f) => {
+          if (!(this.cesiumLayer instanceof KmlDataSource) && !isUndefined(f.billboard)) {
+            // eslint-disable-next-line no-param-reassign
+            f.point = new PointGraphics({
+              color: Color.WHITE,
+              outlineColor: Color.BLACK,
+              pixelSize: 5,
+            });
+            // eslint-disable-next-line no-param-reassign
+            f.billboard = undefined;
+          }
           return Feature.feature2Facade(f);
         });
         this.cesiumLayer.entities.removeAll();
@@ -145,7 +166,6 @@ class GenericVector extends Vector {
           this.loaded_ = true;
           this.facadeLayer_.addFeatures(features);
           this.deactivate();
-          this.fire(EventType.LOAD, [this.features_]);
         }
       } else if (this.cesiumLayer && this.loaded_) {
         this.deactivate();

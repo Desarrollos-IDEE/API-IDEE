@@ -7,9 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
@@ -21,13 +19,15 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.Header;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet; 
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 
 import es.api_idee.bean.ProxyResponse;
 import es.api_idee.builder.JSBuilder;
@@ -59,14 +59,17 @@ public class Proxy {
 	 * Cross-Domain restriction.
 	 * 
 	 * @param url        URL of the request
-	 * @param op         type of api-idee operation
+	 * @param ticket     user ticket
+	 * @param method     GET or POST
 	 * @param callbackFn function to execute as callback
 	 * 
 	 * @return the javascript code
 	 */
 	@GET
-	public String proxy(@QueryParam("url") String url, @QueryParam("ticket") String ticket,
-			@DefaultValue("GET") @QueryParam("method") String method, @QueryParam("callback") String callbackFn) {
+	public String proxy(@QueryParam("url") String url,
+	                    @QueryParam("ticket") String ticket,
+	                    @DefaultValue("GET") @QueryParam("method") String method,
+	                    @QueryParam("callback") String callbackFn) {
 		String response;
 		ProxyResponse proxyResponse;
 		try {
@@ -79,10 +82,6 @@ public class Proxy {
 				proxyResponse = this.error(url, "Method ".concat(method).concat(" not supported"));
 			}
 			this.checkResponse(proxyResponse, url);
-		} catch (HttpException e) {
-			// TODO Auto-generated catch block
-			LOG.error(e);
-			proxyResponse = this.error(url, e);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			LOG.error(e);
@@ -125,9 +124,6 @@ public class Proxy {
 				}
 			}
 			response = Response.ok(new ByteArrayInputStream(data), contentType).build();
-		} catch (HttpException e) {
-			LOG.error(e);
-			response = Response.status(Status.BAD_REQUEST).build();
 		} catch (IOException e) {
 			LOG.error(e);
 			response = Response.status(Status.BAD_REQUEST).build();
@@ -143,41 +139,66 @@ public class Proxy {
 	 * Sends a GET operation request to the URL and gets its response.
 	 * 
 	 * @param url             URL of the request
-	 * @param op              type of api-idee operation
 	 * @param ticketParameter user ticket
 	 *
 	 * @return the response of the request
 	 */
-	private ProxyResponse get(String url, String ticketParameter) throws HttpException, IOException {
+	private ProxyResponse get(String url, String ticketParameter) throws IOException {
 		ProxyResponse response = new ProxyResponse();
-		HttpClient client = new HttpClient();
-		GetMethod httpget = new GetMethod(url);
-		String proxyHost = configProperties.getString("proxy.host");
-		String proxPort = configProperties.getString("proxy.port");
-		if (proxyHost.length() > 0 && proxPort.length() > 0) {
-			HostConfiguration configuration = client.getHostConfiguration();
-			configuration.setProxy(proxyHost, Integer.parseInt(proxPort));
-		}
-		// sets ticket if the user specified one
-		if (ticketParameter != null) {
-		}
 
-		client.executeMethod(httpget);
+		// Create HttpClient from HttpClient 4.x
+		CloseableHttpClient client = null;
+		CloseableHttpResponse httpResponse = null;
 
-		int statusCode = httpget.getStatusCode();
-		response.setStatusCode(statusCode);
-		if (statusCode == HttpStatus.SC_OK) {
-			String encoding = this.getResponseEncoding(httpget);
-			if (encoding == null) {
-				encoding = "UTF-8";
+		try {
+			client = HttpClients.createDefault();
+
+			// Use HttpGet instead of GetMethod
+			HttpGet httpGet = new HttpGet(url);
+
+			String proxyHost = configProperties.getString("proxy.host");
+			String proxPort = configProperties.getString("proxy.port");
+			if (proxyHost.length() > 0 && proxPort.length() > 0) {
+				// Minimal proxy config for 4.x
+				HttpHost proxy = new HttpHost(proxyHost, Integer.parseInt(proxPort));
+				RequestConfig config = RequestConfig.custom()
+					.setProxy(proxy)
+					.build();
+				httpGet.setConfig(config);
 			}
-			InputStream responseStream = httpget.getResponseBodyAsStream();
-			byte[] data = IOUtils.toByteArray(responseStream);
-			response.setData(data);
-			String responseContent = new String(data, encoding);
-			response.setContent(responseContent);
+
+			// Execute GET
+			httpResponse = client.execute(httpGet);
+
+			int statusCode = httpResponse.getStatusLine().getStatusCode();
+			response.setStatusCode(statusCode);
+
+			if (statusCode == HttpStatus.SC_OK) {
+				// Get encoding via new method
+				String encoding = this.getResponseEncoding(httpResponse);
+				if (encoding == null) {
+					encoding = "UTF-8";
+				}
+				InputStream responseStream = httpResponse.getEntity().getContent();
+				byte[] data = IOUtils.toByteArray(responseStream);
+				response.setData(data);
+				String responseContent = new String(data, encoding);
+				response.setContent(responseContent);
+			}
+
+			// Store headers
+			Header[] headers = httpResponse.getAllHeaders();
+			response.setHeaders(headers);
+
+		} finally {
+			if (httpResponse != null) {
+				try { httpResponse.close(); } catch (IOException ign) {}
+			}
+			if (client != null) {
+				try { client.close(); } catch (IOException ign) {}
+			}
 		}
-		response.setHeaders(httpget.getResponseHeaders());
+
 		return response;
 	}
 
@@ -285,15 +306,15 @@ public class Proxy {
 	/**
 	 * Gets the encoding of a response
 	 */
-	private String getResponseEncoding(GetMethod httpget) {
+	private String getResponseEncoding(CloseableHttpResponse httpResponse) {
 		String regexp = ".*charset\\=([^;]+).*";
-		Boolean isCharset = null;
 		String encoding = null;
-		Header[] headerResponse = httpget.getResponseHeaders("Content-Type");
+
+		Header[] headerResponse = httpResponse.getHeaders("Content-Type");
 		for (Header header : headerResponse) {
 			String contentType = header.getValue();
 			if (!contentType.isEmpty()) {
-				isCharset = Pattern.matches(regexp, contentType);
+				boolean isCharset = Pattern.matches(regexp, contentType);
 				if (isCharset) {
 					encoding = contentType.replaceAll(regexp, "$1");
 					break;
