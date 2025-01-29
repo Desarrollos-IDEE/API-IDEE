@@ -153,9 +153,7 @@ function fun(IDEE_) {
    * @private
    * @type {object}
    */
-  IDEE_.config('tms', {
-    base: 'QUICK*Base_IGNBaseTodo_TMS',
-  });
+  IDEE_.config('baseLayer', 'QUICK*Base_IGNBaseTodo_TMS');
 
   /**
    * Terrain configuration

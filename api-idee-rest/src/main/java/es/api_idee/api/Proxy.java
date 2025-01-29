@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
@@ -28,7 +29,18 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpClient;
+import org.apache.http.HttpException;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
 
+import es.guadaltel.framework.ticket.Ticket;
+import es.guadaltel.framework.ticket.TicketFactory;
 import es.api_idee.bean.ProxyResponse;
 import es.api_idee.builder.JSBuilder;
 import es.api_idee.exception.InvalidResponseException;
@@ -86,6 +98,9 @@ public class Proxy {
 			// TODO Auto-generated catch block
 			LOG.error(e);
 			proxyResponse = this.error(url, e);
+		} catch (HttpException e) {
+			// TODO Auto-generated catch block
+			proxyResponse = this.error(url, e);
 		}
 		response = JSBuilder.wrapCallback(proxyResponse.toJSON(), callbackFn);
 
@@ -130,6 +145,8 @@ public class Proxy {
 		} catch (InvalidResponseException e) {
 			LOG.error(e);
 			response = Response.ok(e.getLocalizedMessage()).status(Status.BAD_REQUEST).build();
+		} catch (HttpException e) {
+			response = Response.status(Status.BAD_REQUEST).build();
 		}
 
 		return response;
@@ -139,66 +156,72 @@ public class Proxy {
 	 * Sends a GET operation request to the URL and gets its response.
 	 * 
 	 * @param url             URL of the request
+	 * @param op              type of idee operation
 	 * @param ticketParameter user ticket
 	 *
 	 * @return the response of the request
 	 */
-	private ProxyResponse get(String url, String ticketParameter) throws IOException {
+	private ProxyResponse get(String url, String ticketParameter) throws HttpException, IOException {
 		ProxyResponse response = new ProxyResponse();
 
-		// Create HttpClient from HttpClient 4.x
-		CloseableHttpClient client = null;
-		CloseableHttpResponse httpResponse = null;
-
-		try {
-			client = HttpClients.createDefault();
-
-			// Use HttpGet instead of GetMethod
-			HttpGet httpGet = new HttpGet(url);
-
-			String proxyHost = configProperties.getString("proxy.host");
-			String proxPort = configProperties.getString("proxy.port");
-			if (proxyHost.length() > 0 && proxPort.length() > 0) {
-				// Minimal proxy config for 4.x
-				HttpHost proxy = new HttpHost(proxyHost, Integer.parseInt(proxPort));
-				RequestConfig config = RequestConfig.custom()
-					.setProxy(proxy)
-					.build();
-				httpGet.setConfig(config);
-			}
-
-			// Execute GET
-			httpResponse = client.execute(httpGet);
-
-			int statusCode = httpResponse.getStatusLine().getStatusCode();
-			response.setStatusCode(statusCode);
-
-			if (statusCode == HttpStatus.SC_OK) {
-				// Get encoding via new method
-				String encoding = this.getResponseEncoding(httpResponse);
-				if (encoding == null) {
-					encoding = "UTF-8";
-				}
-				InputStream responseStream = httpResponse.getEntity().getContent();
-				byte[] data = IOUtils.toByteArray(responseStream);
-				response.setData(data);
-				String responseContent = new String(data, encoding);
-				response.setContent(responseContent);
-			}
-
-			// Store headers
-			Header[] headers = httpResponse.getAllHeaders();
-			response.setHeaders(headers);
-
-		} finally {
-			if (httpResponse != null) {
-				try { httpResponse.close(); } catch (IOException ign) {}
-			}
-			if (client != null) {
-				try { client.close(); } catch (IOException ign) {}
+		String host = System.getProperty("https.proxyHost");
+		HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+		if (host != null) {
+			Integer port = Integer.parseInt(System.getProperty("https.proxyPort"));
+			clientBuilder.useSystemProperties();
+			String user = System.getProperty("https.proxyUser");
+			if (user != null) {
+				Credentials credentials = new UsernamePasswordCredentials(user,
+						System.getProperty("https.proxyPassword"));
+				AuthScope authScope = new AuthScope(host, port);
+				CredentialsProvider credsProvider = new BasicCredentialsProvider();
+				credsProvider.setCredentials(authScope, credentials);
+				clientBuilder.setDefaultCredentialsProvider(credsProvider);
 			}
 		}
 
+		HttpClient client = clientBuilder.build();
+		HttpGet httpget = new HttpGet(url);
+
+		// sets ticket if the user specified one
+		if (ticketParameter != null) {
+			ticketParameter = ticketParameter.trim();
+			if (!ticketParameter.isEmpty()) {
+				Ticket ticket = TicketFactory.createInstance();
+				try {
+					Map<String, String> props = ticket.getProperties(ticketParameter);
+					String user = props.get("user");
+					String pass = props.get("pass");
+					String userAndPass = user + ":" + pass;
+					String encodedLogin = new String(
+							org.apache.commons.codec.binary.Base64.encodeBase64(userAndPass.getBytes()));
+					httpget.setHeader(AUTHORIZATION, "Basic " + encodedLogin);
+				} catch (Exception e) {
+					System.out.println("-------------------------------------------");
+					System.out.println("EXCEPCTION THROWED BY PROXYREDIRECT CLASS");
+					System.out.println("METHOD: doPost");
+					System.out.println("TICKET VALUE: " + ticketParameter);
+					System.out.println("-------------------------------------------");
+				}
+			}
+		}
+
+		HttpResponse httpResponse = client.execute(httpget);
+
+		int statusCode = httpResponse.getStatusLine().getStatusCode();
+		response.setStatusCode(statusCode);
+		if (statusCode == HttpStatus.SC_OK) {
+			String encoding = this.getResponseEncoding(httpget);
+			if (encoding == null) {
+				encoding = "UTF-8";
+			}
+			InputStream responseStream = httpResponse.getEntity().getContent();
+			byte[] data = IOUtils.toByteArray(responseStream);
+			response.setData(data);
+			String responseContent = new String(data, encoding);
+			response.setContent(responseContent);
+		}
+		response.setHeaders(httpResponse.getAllHeaders());
 		return response;
 	}
 
@@ -303,18 +326,19 @@ public class Proxy {
 		return error(url, exception.getLocalizedMessage());
 	}
 
+
 	/**
 	 * Gets the encoding of a response
 	 */
-	private String getResponseEncoding(CloseableHttpResponse httpResponse) {
+	private String getResponseEncoding(HttpGet httpget) {
 		String regexp = ".*charset\\=([^;]+).*";
+		Boolean isCharset = null;
 		String encoding = null;
-
-		Header[] headerResponse = httpResponse.getHeaders("Content-Type");
+		Header[] headerResponse = httpget.getHeaders("Content-Type");
 		for (Header header : headerResponse) {
 			String contentType = header.getValue();
 			if (!contentType.isEmpty()) {
-				boolean isCharset = Pattern.matches(regexp, contentType);
+				isCharset = Pattern.matches(regexp, contentType);
 				if (isCharset) {
 					encoding = contentType.replaceAll(regexp, "$1");
 					break;
