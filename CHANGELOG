@@ -4,3 +4,4 @@
 - Actualización de la librería commons-httpclient 3.1 a httpclient 4.5.2 
 - Adaptación de las clases proxy tras el cambio de librería commons-httpclient
 - Mejoras sobre el proxy tras la unificación con Mapea
+- Se modifica tms.base por baseLayer en IDEE
