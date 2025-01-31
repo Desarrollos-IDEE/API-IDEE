@@ -5,3 +5,4 @@
 - Adaptación de las clases proxy tras el cambio de librería commons-httpclient
 - Mejoras sobre el proxy tras la unificación con Mapea
 - Se modifica tms.base por baseLayer en IDEE
+- Actualización y eliminación de librerías del fichero package.json
