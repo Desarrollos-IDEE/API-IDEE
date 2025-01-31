@@ -328,7 +328,7 @@ export default class GeorefimageControl extends IDEE.impl.Control {
             }
 
             let geoJSONFeature;
-            if (projection.code !== 'EPSG:3857' && this.facadeMap_.getLayers().some((layerParam) => (layerParam.type === IDEE.layer.type.OSM || layerParam.type === IDEE.layer.type.Mapbox))) {
+            if (projection.code !== 'EPSG:3857' && this.facadeMap_.getLayers().some((layerParam) => (layerParam.type === IDEE.layer.type.OSM))) {
               geoJSONFeature = geoJSONFormat.writeFeatureObject(feature, {
                 featureProjection: projection.code,
                 dataProjection: 'EPSG:3857',
@@ -405,47 +405,6 @@ export default class GeorefimageControl extends IDEE.impl.Control {
       type: 'OSM',
       extension: 'png',
     };
-    return encodedLayer;
-  }
-
-  /**
-   * This function adds the control to the specified map
-   *
-   * @public
-   * @function
-   * @param {IDEE.Map} map to add the plugin
-   * @param {function} template template of this control
-   * @api stable
-   */
-  encodeMapbox(layer) {
-    let encodedLayer = null;
-
-    const layerImpl = layer.getImpl();
-    const olLayer = layerImpl.getLayer();
-    const layerSource = olLayer.getSource();
-    const tileGrid = layerSource.getTileGrid();
-
-    const layerUrl = IDEE.utils.concatUrlPaths([IDEE.config.MAPBOX_URL, layer.name]);
-    const layerOpacity = olLayer.getOpacity();
-    const layerExtent = tileGrid.getExtent();
-
-    const tileSize = tileGrid.getTileSize();
-    const resolutions = tileGrid.getResolutions();
-
-    const customParams = {};
-    customParams[IDEE.config.MAPBOX_TOKEN_NAME] = IDEE.config.MAPBOX_TOKEN_VALUE;
-    encodedLayer = {
-      opacity: layerOpacity,
-      baseURL: layerUrl,
-      customParams,
-      maxExtent: layerExtent,
-      tileSize: [tileSize, tileSize],
-      resolutions,
-      extension: IDEE.config.MAPBOX_EXTENSION,
-      type: 'xyz',
-      path_format: '/${z}/${x}/${y}.png',
-    };
-
     return encodedLayer;
   }
 

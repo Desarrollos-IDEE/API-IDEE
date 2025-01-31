@@ -118,7 +118,6 @@
     "visibility_param": "No ha especificado ningún parámetro de visibilidad",
     "setvisible_method": "La implementación usada no posee el método setVisible",
     "inrange_method": "La implementación usada no posee el método inRange",
-    "mapbox_method": "La implementación usada no puede crear capas Mapbox",
     "osm_method": "La implementación usada no puede crear capas OSM",
     "vectorlayer_method": "La implementación usada no puede crear capas Vector",
     "wfslayer_method": "La implementación usada no puede crear capas WFS",

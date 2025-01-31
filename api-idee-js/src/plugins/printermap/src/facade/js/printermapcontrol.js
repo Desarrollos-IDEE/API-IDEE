@@ -899,12 +899,12 @@ export default class PrinterMapControl extends IDEE.Control {
     return this.encodeLayers().then((encodedLayers) => {
       printData.attributes.map.layers = encodedLayers.filter((l) => IDEE.utils.isObject(l));
       printData.attributes = Object.assign(printData.attributes, parameters);
-      if (projection !== 'EPSG:3857' && this.map_.getLayers().some((layer) => (layer.type === IDEE.layer.type.OSM || layer.type === IDEE.layer.type.Mapbox))) {
+      if (projection !== 'EPSG:3857' && this.map_.getLayers().some((layer) => (layer.type === IDEE.layer.type.OSM))) {
         printData.attributes.map.projection = 'EPSG:3857';
       }
 
       printData.attributes.map.bbox = [bbox.x.min, bbox.y.min, bbox.x.max, bbox.y.max];
-      if (projection !== 'EPSG:3857' && this.map_.getLayers().some((layer) => (layer.type === IDEE.layer.type.OSM || layer.type === IDEE.layer.type.Mapbox))) {
+      if (projection !== 'EPSG:3857' && this.map_.getLayers().some((layer) => (layer.type === IDEE.layer.type.OSM))) {
         printData.attributes.map.bbox = this.getImpl().transformExt(printData.attributes.map.bbox, projection, 'EPSG:3857');
       }
 
