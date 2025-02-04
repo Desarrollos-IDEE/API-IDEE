@@ -233,180 +233,219 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
     serverUrl = checkTypeRequest(serverUrl);
     if (!serverUrl.equals("ERROR")) {
       if (serverUrl.startsWith("http://") || serverUrl.startsWith("https://")) {
-				HttpPost httppost = null;
-				try {
-					String host = System.getProperty("https.proxyHost");
-					HttpClientBuilder clientBuilder = HttpClientBuilder.create();
-					clientBuilder.setRetryHandler(new DefaultHttpRequestRetryHandler(3, false));
-					if (host != null) {
-						Integer port = Integer.parseInt(System.getProperty("https.proxyPort"));
-						clientBuilder.useSystemProperties();
-						String user = System.getProperty("https.proxyUser");
-						if (user != null) {
-							Credentials credentials = new UsernamePasswordCredentials(user,
-									System.getProperty("https.proxyPassword"));
-							AuthScope authScope = new AuthScope(host, port);
-							CredentialsProvider credsProvider = new BasicCredentialsProvider();
-							credsProvider.setCredentials(authScope, credentials);
-							clientBuilder.setDefaultCredentialsProvider(credsProvider);
-						}
-					}
-					  HttpClient client = clientBuilder.build();
-					  httppost = new HttpPost(serverUrl);
+        if (!serverUrl.contains("/processes/")) { 
+          HttpPost httppost = null;
+          try {
+            String host = System.getProperty("https.proxyHost");
+            HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+            clientBuilder.setRetryHandler(new DefaultHttpRequestRetryHandler(3, false));
+            if (host != null) {
+              Integer port = Integer.parseInt(System.getProperty("https.proxyPort"));
+              clientBuilder.useSystemProperties();
+              String user = System.getProperty("https.proxyUser");
+              if (user != null) {
+                Credentials credentials = new UsernamePasswordCredentials(user,
+                    System.getProperty("https.proxyPassword"));
+                AuthScope authScope = new AuthScope(host, port);
+                CredentialsProvider credsProvider = new BasicCredentialsProvider();
+                credsProvider.setCredentials(authScope, credentials);
+                clientBuilder.setDefaultCredentialsProvider(credsProvider);
+              }
+            }
+              HttpClient client = clientBuilder.build();
+              httppost = new HttpPost(serverUrl);
 
-            // PATH_apiideeDITA_SECURITY - AP
-            // PATCH_TICKET_MJM-20112405-POST
-            String authorizationValue = request.getHeader(AUTHORIZATION); // ADD_SECURITY_20091210
-            if (authorizationValue == null) {
-              String user = (String) request.getSession().getAttribute("user");
-              String pass = (String) request.getSession().getAttribute("pass");
-              if (user != null && pass != null) {
-                String userAndPass = user + ":" + pass;
-							String encodedLogin = new String(
-									org.apache.commons.codec.binary.Base64.encodeBase64(userAndPass.getBytes()));
-                httppost.addHeader(AUTHORIZATION, "Basic " + encodedLogin);
-              } else {
-                String ticketParameter = request.getParameter("ticket");
-                if (ticketParameter != null) {
-                  ticketParameter = ticketParameter.trim();
-                  if (!ticketParameter.isEmpty()) {
-                    Ticket ticket = TicketFactory.createInstance();
-                    try {
-                      Map<String, String> props = ticket.getProperties(ticketParameter);
-                      user = props.get("user");
-                      pass = props.get("pass");
-                      String userAndPass = user + ":" + pass;
-										  String encodedLogin = new String(org.apache.commons.codec.binary.Base64
-												.encodeBase64(userAndPass.getBytes()));
-                      httppost.addHeader(AUTHORIZATION, "Basic " + encodedLogin);
-                    } catch (Exception e) {
-                      log.info("-------------------------------------------");
-                      log.info("EXCEPCTION THROWED BY PROXYREDIRECT CLASS");
-                      log.info("METHOD: doPost");
-                      log.info("TICKET VALUE: " + ticketParameter);
-                      log.info("-------------------------------------------");
+              // PATH_apiideeDITA_SECURITY - AP
+              // PATCH_TICKET_MJM-20112405-POST
+              String authorizationValue = request.getHeader(AUTHORIZATION); // ADD_SECURITY_20091210
+              if (authorizationValue == null) {
+                String user = (String) request.getSession().getAttribute("user");
+                String pass = (String) request.getSession().getAttribute("pass");
+                if (user != null && pass != null) {
+                  String userAndPass = user + ":" + pass;
+                String encodedLogin = new String(
+                    org.apache.commons.codec.binary.Base64.encodeBase64(userAndPass.getBytes()));
+                  httppost.addHeader(AUTHORIZATION, "Basic " + encodedLogin);
+                } else {
+                  String ticketParameter = request.getParameter("ticket");
+                  if (ticketParameter != null) {
+                    ticketParameter = ticketParameter.trim();
+                    if (!ticketParameter.isEmpty()) {
+                      Ticket ticket = TicketFactory.createInstance();
+                      try {
+                        Map<String, String> props = ticket.getProperties(ticketParameter);
+                        user = props.get("user");
+                        pass = props.get("pass");
+                        String userAndPass = user + ":" + pass;
+                        String encodedLogin = new String(org.apache.commons.codec.binary.Base64
+                          .encodeBase64(userAndPass.getBytes()));
+                        httppost.addHeader(AUTHORIZATION, "Basic " + encodedLogin);
+                      } catch (Exception e) {
+                        log.info("-------------------------------------------");
+                        log.info("EXCEPCTION THROWED BY PROXYREDIRECT CLASS");
+                        log.info("METHOD: doPost");
+                        log.info("TICKET VALUE: " + ticketParameter);
+                        log.info("-------------------------------------------");
+                      }
                     }
                   }
                 }
+              } else {
+                httppost.addHeader(AUTHORIZATION, authorizationValue);
+              }
+              // FIN_PATH_TICKET_MJM-20112405-POST
+              // FIN_PATH_apiideeDITA_SECURITY - AP
+
+              // Build POST entity
+              String body = inputStreamAsString(request.getInputStream());
+              HttpEntity bodyEntity = new ByteArrayEntity(body.getBytes("UTF-8"));
+              httppost.setEntity(bodyEntity); // PATCH
+
+              if (!legend)
+                request.setCharacterEncoding("UTF-8");
+              if (soap) {
+                httppost.setHeader("SOAPAction", serverUrl);
+              }
+
+              HttpResponse httpResponse = client.execute(httppost);
+
+            // PATH_FOLLOW_REDIRECT_POST
+            int j = 0;
+            String redirectLocation;
+            Header[] locationHeader = httpResponse.getHeaders("location");
+            while (locationHeader.length != 0 && j < numMaxRedirects) {
+              redirectLocation = locationHeader[0].getValue();
+              StringEntity bodyEntityPost = new StringEntity(body);
+              httppost.releaseConnection();
+              httppost = new HttpPost(redirectLocation);
+              // AGG 20110912 Añadidas cabeceras petición SOAP
+              if (redirectLocation.toLowerCase().contains("wsdl")) {
+                redirectLocation = serverUrl.replace("?wsdl", "");
+                httppost.setHeader("SOAPAction", redirectLocation);
+                httppost.setHeader("Content-type", "text/xml");
+              }
+              httppost.setEntity(bodyEntityPost);
+              httpResponse = client.execute(httppost);
+              locationHeader = httppost.getHeaders("location");
+              j++;
+            }
+            log.info("Number of followed redirections: " + j);
+            if (locationHeader != null && j == numMaxRedirects) {
+              log.error("The maximum number of redirects (" + numMaxRedirects + ") is exceed.");
+            }
+            // FIN_PATH_FOLLOW_REDIRECT_POST
+            if (log.isDebugEnabled()) {
+              Header[] responseHeaders = httpResponse.getAllHeaders();
+              for (int i = 0; i < responseHeaders.length; ++i) {
+                String headerName = responseHeaders[i].getName();
+                String headerValue = responseHeaders[i].getValue();
+                log.debug("responseHeaders:" + headerName + "=" + headerValue);
+              }
+            }
+            if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+              // PATH_SECURITY_PROXY - AG
+              final Header[] respHeaders = httpResponse.getAllHeaders();
+              final ResponseHandler<String> handler = new BasicResponseHandler();
+              final String responseBody = handler.handleResponse(httpResponse);
+              final int compSize = responseBody.length();
+              final ArrayList<Header> headerList = new ArrayList<Header>(Arrays.asList(respHeaders));
+              final String headersString = headerList.toString();
+              checkedContent = checkContent(headersString, compSize, serverUrl);
+              // FIN_PATH_SECURITY_PROXY - AG
+              if (checkedContent == true) {
+                  String requesteredUrl = request.getParameter("url");
+                  if (GETINFO_PLAIN_REGEX.matcher(requesteredUrl).matches()) {
+                    response.setContentType("text/plain");
+                  } else if (GETINFO_GML_REGEX.matcher(requesteredUrl).matches()) {
+                    response.setContentType("application/gml+xml");
+                  } else if (GETINFO_HTML_REGEX.matcher(requesteredUrl).matches()) {
+                    response.setContentType("text/html");
+                  } else if (requesteredUrl.toLowerCase().contains("apiideeop=geosearch")
+                          || requesteredUrl.toLowerCase().contains("apiideeop=geoprint")) {
+                    response.setContentType("application/json");
+                  } else {
+                    response.setContentType("text/xml");
+                  }
+                  if (legend) {
+                    if (responseBody.contains("ServiceExceptionReport")
+                        && serverUrl.contains("LegendGraphic")) {
+                      response.sendRedirect("Componente/img/blank.gif");
+                    } else {
+                      response.setContentLength(responseBody.length());
+                      final PrintWriter out = response.getWriter();
+                      out.print(responseBody);
+                      response.flushBuffer();
+                    }
+                  } else {
+                    // Patch_AGG 20112505 Prevents IE cache
+                    if (request.getProtocol().compareTo("HTTP/1.0") == 0) {
+                      response.setHeader("Pragma", "no-cache");
+                    } else if (request.getProtocol().compareTo("HTTP/1.1") == 0) {
+                      response.setHeader("Cache-Control", "no-cache");
+                    }
+                    response.setDateHeader("Expires", -1);
+                    // END patch
+                    // Copy response to output
+                    final PrintWriter out = response.getWriter();
+                    out.print(responseBody);
+                    response.flushBuffer();
+                  }
+                } else {
+                  strErrorMessage += errorType.toString();
+                  log.error(strErrorMessage);
+                }
+              } else if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+                response.setStatus(HttpStatus.SC_UNAUTHORIZED);
+                response.setHeader(WWW_AUTHENTICATE, httpResponse.getAllHeaders()[0].getName());
+              } else {
+                strErrorMessage = "Unexpected failure: " + httpResponse.getStatusLine().getStatusCode()
+                    + "".concat(" ") + httppost.getEntity().getContent();
+                log.error("Unexpected failure: " + httpResponse.getStatusLine().getStatusCode());
+              }
+              httppost.releaseConnection();
+            } catch (Exception e) {
+              log.error("Error al tratar el contenido de la peticion: " + e.getMessage(), e);
+            } finally {
+            httppost.releaseConnection();
+          }
+        } else {
+          HttpPost pm = new HttpPost(serverUrl);
+          String outputBody;
+          HttpClient client = null;
+          HttpResponse pmResp = null;
+          
+          try {
+            outputBody = inputStreamAsString(request.getInputStream());
+            StringEntity requestEntity = new StringEntity(outputBody, "application/json", "UTF-8");
+            pm.setEntity(requestEntity);
+            pm.addHeader("Content-Type", "application/json");
+
+            client = HttpClientBuilder.create().build();
+            pmResp = client.execute(pm);
+            int status = pmResp.getStatusLine().getStatusCode();
+            if (status == HttpStatus.SC_OK) {
+              response.setContentType("application/json");
+              InputStream st = pmResp.getEntity().getContent();
+              final ServletOutputStream sos = response.getOutputStream();
+              IOUtils.copy(st, sos);
+            } else if (status == HttpStatus.SC_UNAUTHORIZED) {
+              response.setStatus(HttpStatus.SC_UNAUTHORIZED);
+              Header wh = pmResp.getFirstHeader(WWW_AUTHENTICATE);
+              if (wh != null) {
+                response.addHeader(WWW_AUTHENTICATE, wh.getValue());
               }
             } else {
-              httppost.addHeader(AUTHORIZATION, authorizationValue);
+              String failBody = IOUtils.toString(pmResp.getEntity().getContent(), "UTF-8");
+              strErrorMessage = "Unexpected failure: ".concat(pmResp.getStatusLine().toString())
+                  .concat(" ").concat(failBody);
+              log.error("Unexpected failure: " + pmResp.getStatusLine().toString());
             }
-            // FIN_PATH_TICKET_MJM-20112405-POST
-            // FIN_PATH_apiideeDITA_SECURITY - AP
-
-            // Build POST entity
-					  String body = inputStreamAsString(request.getInputStream());
-					  HttpEntity bodyEntity = new ByteArrayEntity(body.getBytes("UTF-8"));
-					  httppost.setEntity(bodyEntity); // PATCH
-
-					  if (!legend)
-						  request.setCharacterEncoding("UTF-8");
-					  if (soap) {
-						  httppost.setHeader("SOAPAction", serverUrl);
-					  }
-
-					  HttpResponse httpResponse = client.execute(httppost);
-
-					// PATH_FOLLOW_REDIRECT_POST
-					int j = 0;
-					String redirectLocation;
-					Header[] locationHeader = httpResponse.getHeaders("location");
-					while (locationHeader.length != 0 && j < numMaxRedirects) {
-						redirectLocation = locationHeader[0].getValue();
-						StringEntity bodyEntityPost = new StringEntity(body);
-						httppost.releaseConnection();
-						httppost = new HttpPost(redirectLocation);
-						// AGG 20110912 Añadidas cabeceras petición SOAP
-						if (redirectLocation.toLowerCase().contains("wsdl")) {
-							redirectLocation = serverUrl.replace("?wsdl", "");
-							httppost.setHeader("SOAPAction", redirectLocation);
-							httppost.setHeader("Content-type", "text/xml");
-						}
-						httppost.setEntity(bodyEntityPost);
-						httpResponse = client.execute(httppost);
-						locationHeader = httppost.getHeaders("location");
-						j++;
-					}
-					log.info("Number of followed redirections: " + j);
-					if (locationHeader != null && j == numMaxRedirects) {
-						log.error("The maximum number of redirects (" + numMaxRedirects + ") is exceed.");
-					}
-					// FIN_PATH_FOLLOW_REDIRECT_POST
-					if (log.isDebugEnabled()) {
-						Header[] responseHeaders = httpResponse.getAllHeaders();
-						for (int i = 0; i < responseHeaders.length; ++i) {
-							String headerName = responseHeaders[i].getName();
-							String headerValue = responseHeaders[i].getValue();
-							log.debug("responseHeaders:" + headerName + "=" + headerValue);
-						}
-					}
-					if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-						// PATH_SECURITY_PROXY - AG
-						final Header[] respHeaders = httpResponse.getAllHeaders();
-						final ResponseHandler<String> handler = new BasicResponseHandler();
-						final String responseBody = handler.handleResponse(httpResponse);
-						final int compSize = responseBody.length();
-						final ArrayList<Header> headerList = new ArrayList<Header>(Arrays.asList(respHeaders));
-						final String headersString = headerList.toString();
-						checkedContent = checkContent(headersString, compSize, serverUrl);
-						// FIN_PATH_SECURITY_PROXY - AG
-						if (checkedContent == true) {
-                String requesteredUrl = request.getParameter("url");
-                if (GETINFO_PLAIN_REGEX.matcher(requesteredUrl).matches()) {
-                  response.setContentType("text/plain");
-                } else if (GETINFO_GML_REGEX.matcher(requesteredUrl).matches()) {
-                  response.setContentType("application/gml+xml");
-                } else if (GETINFO_HTML_REGEX.matcher(requesteredUrl).matches()) {
-                  response.setContentType("text/html");
-                } else if (requesteredUrl.toLowerCase().contains("apiideeop=geosearch")
-                        || requesteredUrl.toLowerCase().contains("apiideeop=geoprint")) {
-                  response.setContentType("application/json");
-                } else {
-                  response.setContentType("text/xml");
-                }
-                if (legend) {
-								  if (responseBody.contains("ServiceExceptionReport")
-										  && serverUrl.contains("LegendGraphic")) {
-									  response.sendRedirect("Componente/img/blank.gif");
-								  } else {
-									  response.setContentLength(responseBody.length());
-									  final PrintWriter out = response.getWriter();
-									  out.print(responseBody);
-									  response.flushBuffer();
-								  }
-                } else {
-                  // Patch_AGG 20112505 Prevents IE cache
-                  if (request.getProtocol().compareTo("HTTP/1.0") == 0) {
-                    response.setHeader("Pragma", "no-cache");
-                  } else if (request.getProtocol().compareTo("HTTP/1.1") == 0) {
-                    response.setHeader("Cache-Control", "no-cache");
-                  }
-                  response.setDateHeader("Expires", -1);
-                  // END patch
-                  // Copy response to output
-								  final PrintWriter out = response.getWriter();
-								  out.print(responseBody);
-								  response.flushBuffer();
-							  }
-						  } else {
-							  strErrorMessage += errorType.toString();
-							  log.error(strErrorMessage);
-						  }
-					  } else if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-						  response.setStatus(HttpStatus.SC_UNAUTHORIZED);
-						  response.setHeader(WWW_AUTHENTICATE, httpResponse.getAllHeaders()[0].getName());
-					  } else {
-						  strErrorMessage = "Unexpected failure: " + httpResponse.getStatusLine().getStatusCode()
-								  + "".concat(" ") + httppost.getEntity().getContent();
-						  log.error("Unexpected failure: " + httpResponse.getStatusLine().getStatusCode());
-					  }
-					  httppost.releaseConnection();
-				  } catch (Exception e) {
-					  log.error("Error al tratar el contenido de la peticion: " + e.getMessage(), e);
-				  } finally {
-					httppost.releaseConnection();
-				}
+          } catch (IOException e) {
+            log.error("Error al tratar el contenido de la peticion: " + e.getMessage(), e);
+          } finally {
+            pm.releaseConnection();
+          }
+        }
       } else {
         strErrorMessage += "Only HTTP(S) protocol supported";
         log.error("Only HTTP(S) protocol supported");
@@ -570,7 +609,9 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
       serverUrlChecked = serverUrl;
     } else if (serverUrl.toLowerCase().contains("apiideeop=geoprint")) {
       serverUrlChecked = serverUrl.replaceAll("\\&?\\??apiideeop=geoprint", "");
-    }
+    } else if (serverUrl.toLowerCase().contains("/processes/")) {
+			serverUrlChecked = serverUrl;
+		} 
 
     return serverUrlChecked;
   }
