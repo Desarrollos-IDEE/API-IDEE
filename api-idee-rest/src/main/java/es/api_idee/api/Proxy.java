@@ -163,10 +163,16 @@ public class Proxy {
 	 */
 	private ProxyResponse get(String url, String ticketParameter) throws HttpException, IOException {
 		ProxyResponse response = new ProxyResponse();
-
+		String proxyHost = configProperties.getString("proxy.host");
+		String proxPort = configProperties.getString("proxy.port");
 		String host = System.getProperty("https.proxyHost");
 		HttpClientBuilder clientBuilder = HttpClientBuilder.create();
-		if (host != null) {
+		
+		if (proxyHost.length() > 0 && proxPort.length() > 0) {
+			HttpHost proxy = new HttpHost(proxyHost, Integer.parseInt(proxPort));
+			clientBuilder = HttpClients.custom();
+  			clientBuilder.setProxy(proxy);
+		} else if (host != null) {
 			Integer port = Integer.parseInt(System.getProperty("https.proxyPort"));
 			clientBuilder.useSystemProperties();
 			String user = System.getProperty("https.proxyUser");
