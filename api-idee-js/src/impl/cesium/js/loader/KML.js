@@ -271,6 +271,12 @@ class KML extends MObject {
                         feature.getImpl().getFeature().point
                           .heightReference = HeightReference.CLAMP_TO_GROUND;
                       }
+                    } else if ((cesiumFeature.billboard && !isKMLBillboard)) {
+                      feature.getImpl().getFeature().point = cesiumFeature.billboard;
+                      if (clamp) {
+                        feature.getImpl().getFeature().point
+                          .heightReference = HeightReference.CLAMP_TO_GROUND;
+                      }
                     } else if (cesiumFeature.billboard && isKMLBillboard) {
                       feature.getImpl().getFeature().billboard = cesiumFeature.billboard;
                       if (clamp) {
