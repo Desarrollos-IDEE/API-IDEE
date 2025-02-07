@@ -59,15 +59,6 @@ function fun(IDEE_) {
   IDEE_.config('PROXY_POST_URL', `${location.protocol}//componentes-desarrollo.idee.es/api-idee/proxyPost`);
 
   /**
-   * The path to the API IDEE templates
-   * @const
-   * @type {string}
-   * @public
-   * @api stable
-   */
-  IDEE_.config('TEMPLATES_PATH', '/files/templates/');
-
-  /**
    * The path to the API IDEE theme
    * @const
    * @type {string}
