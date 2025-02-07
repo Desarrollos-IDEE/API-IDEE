@@ -75,9 +75,9 @@ class OSM extends Layer {
     this.hasAttributtion = false;
 
     /**
-     * OSM haveOSMorMapboxlayer. La OSM no es de Mapbox.
+     * OSM haveOSMLayer. Existe alguna capa que necesite el attributions.
      */
-    this.haveOSMorMapboxLayer = false;
+    this.haveOSMLayer = false;
 
     /**
      * OSM visibility. DDefine si la capa es visible o no.
@@ -313,11 +313,11 @@ class OSM extends Layer {
 
     this.map.getLayers().forEach((layer) => {
       if (layer instanceof FacadeOSM) {
-        this.haveOSMorMapboxLayer = true;
+        this.haveOSMLayer = true;
       }
     });
 
-    if (!this.haveOSMorMapboxLayer) {
+    if (!this.haveOSMLayer) {
       this.map.getImpl().getMapImpl().getControls().getArray()
         .forEach((data) => {
           if (data instanceof OLControlAttribution) {
