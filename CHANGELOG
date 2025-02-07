@@ -6,3 +6,4 @@
 - Mejoras sobre el proxy tras la unificación con Mapea
 - Se modifica tms.base por baseLayer en IDEE
 - Se elimina la configuración de Mapbox y su uso.
+- Actualización y eliminación de librerías del fichero package.json
