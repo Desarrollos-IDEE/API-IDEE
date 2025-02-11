@@ -88,10 +88,12 @@
     "start:ol": "webpack-dev-server --config=webpack-config/webpack.development-ol.config.js",
     "start:cesium": "webpack-dev-server --config=webpack-config/webpack.development-cesium.config.js",
     "start:build": "npm run build && npm run debug:build",
+    "start:test-ol": "cross-env OPEN_BROWSER=false webpack-dev-server --config=webpack-config/webpack.development-ol.config.js",
+    "start:test-cesium": "cross-env OPEN_BROWSER=false webpack-dev-server --config=webpack-config/webpack.development-cesium.config.js",
     "test:jest-ol": "jest --config=jest-ol.config.js",
     "test:jest-cesium": "jest --config=jest-cesium.config.js",
-    "test:playwright": "playwright test",
-    "test:all": "npm run test:jest-ol; npm run test:jest-cesium; npm run test:playwright",
-    "start:test": "webpack-dev-server --config=webpack-config/webpack.test-ol.config.js"
+    "test:playwright-ol": "playwright test --config=playwright-ol.config.js",
+    "test:playwright-cesium": "playwright test --config=playwright-cesium.config.js",
+    "test:all": "npm run test:jest-ol; npm run test:jest-cesium; npm run test:playwright-ol; npm run test:playwright-cesium"
   }
 }
