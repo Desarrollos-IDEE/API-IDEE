@@ -695,8 +695,7 @@ export default class PrinterMapControl extends IDEE.impl.Control {
 
           /*
           if (projection.code !== 'EPSG:3857' && this.facadeMap_.getLayers()
-            .some((layerParam) => (layerParam.type === IDEE.layer.type.OSM
-              || layerParam.type === IDEE.layer.type.Mapbox))) {
+            .some((layerParam) => (layerParam.type === IDEE.layer.type.OSM))) {
             geoJSONFeature = geoJSONFormat.writeFeatureObject(feature.getImpl().getFeature(), {
               featureProjection: projection.code,
               dataProjection: 'EPSG:3857',
@@ -1097,7 +1096,7 @@ export default class PrinterMapControl extends IDEE.impl.Control {
         }
 
         let geoJSONFeature;
-        if (projection.code !== 'EPSG:3857' && this.facadeMap_.getLayers().some((layerParam) => (layerParam.type === IDEE.layer.type.OSM || layerParam.type === IDEE.layer.type.Mapbox))) {
+        if (projection.code !== 'EPSG:3857' && this.facadeMap_.getLayers().some((layerParam) => (layerParam.type === IDEE.layer.type.OSM))) {
           geoJSONFeature = geoJSONFormat.writeFeatureObject(feature, {
             featureProjection: projection.code,
             dataProjection: 'EPSG:3857',

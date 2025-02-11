@@ -459,8 +459,6 @@ function layerToParam(layer, map) {
   let param;
   if (layer.name === 'osm' || layer.type === 'OSM') {
     param = layer.transparent === true ? getOSM(layer) : 'OSM';
-  } else if (/mapbox/.test(layer.name)) {
-    param = `MAPBOX.${layer.name}`;
   } else if (layer.type === 'WMS') {
     param = getWMS(layer);
   } else if (layer.type === 'WMTS') {

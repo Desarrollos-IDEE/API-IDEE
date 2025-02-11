@@ -575,8 +575,6 @@ export default class ShareMapControl extends IDEE.Control {
     let param;
     if (layer.name === 'osm') {
       param = layer.name;
-    } else if (/mapbox/.test(layer.name)) {
-      param = `MAPBOX.${layer.name}`;
     } else if (layer.type === 'WMS') {
       param = this.getWMS(layer);
     } else if (layer.type === 'WMTS') {
