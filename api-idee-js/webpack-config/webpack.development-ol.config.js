@@ -6,7 +6,6 @@ const ESLintPlugin = require('eslint-webpack-plugin');
 const AllowMutateEsmExports = require('./AllowMutateEsmExportsPlugin');
 
 const testName = argv.name;
-const openBrowser = process.env.OPEN_BROWSER !== 'false' ? `test/development/${testName}.html` : undefined;
 // const coremin = argv['core-min']; // no-unused-vars
 if (testName === undefined) {
   const error = new Error('Test name is undefined. Use: npm start -- --name=<test-name>');
@@ -122,8 +121,7 @@ module.exports = {
     // host: '0.0.0.0',
     // open: true,
     // port: 6123,
-    open: openBrowser,
-    // open: `test/development/${testName}.html`,
+    open: `test/development/${testName}.html`,
     static: {
       directory: path.join(__dirname, '/../'),
       watch: {

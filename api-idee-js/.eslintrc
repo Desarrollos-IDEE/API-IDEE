@@ -66,13 +66,5 @@
     "consistent-return": "off",
     "array-callback-return": "off",
     "grouped-accessor-pairs": "off"
-  },
-  "overrides": [
-    {
-      "files": ["test/unit_tests/jest/**"],
-      "env": {
-        "jest": true
-      }
-    }
-  ]
+  }
 }

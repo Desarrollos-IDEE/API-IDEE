@@ -130,6 +130,14 @@ module.exports = {
     new CopywebpackPlugin({
       patterns: [
         {
+          from: 'src/domain-configuration.js',
+          to: 'filter/domain-configuration.js',
+        },
+      ],
+    }),
+    new CopywebpackPlugin({
+      patterns: [
+        {
           from: 'src/facade/assets/images',
           to: 'assets/images',
         },
