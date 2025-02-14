@@ -1,0 +1,15 @@
+{
+  "exception": {
+    "exists": "No existe dirección asociada para esta ubicación.",
+    "results": "No se han encontrado resultados",
+    "ignsearch_obsolete": "Mensaje para el desarrollador: M.plugin.IGNSearch ha quedado obsoleto, utilice en su lugar M.plugin.Locator"
+  },
+  "searchresult": "searchresult",
+  "tooltip": "Búsqueda de lugares",
+  "tooltip_input": "Topónimo, dirección o código postal",
+  "deleteresults": "Borrar resultados de la búsqueda",
+  "obtener": "Obtener dirección en un punto del mapa",
+  "direccion": "Topónimo, dirección o código postal",
+  "aprox": "Dirección aproximada",
+  "exact": "Dirección exacta"
+}

@@ -1,0 +1,38 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "extends": "eslint:recommended",
+  "globals": {
+    "M": true,
+    "ol": true,
+    "CustomEvent": true,
+    "Handlebars": true,
+    "proj4": true,
+    "ActiveXObject": true,
+    "jsts": true,
+    "document": true,
+    "window": true,
+    "DOMParser": true,
+    "XMLHttpRequest": true,
+    "Image": true,
+    "Draggabilly": true,
+    "XMLSerializer": true
+  },
+  "rules": {
+    "import/no-absolute-path": "off",
+    "no-console":"off", //0 = off, 1 = warn, 2 = error
+    "no-unused-vars": [
+      "error",
+      {
+        "vars": "all",
+        "args": "none"
+      }
+    ]
+  }
+}

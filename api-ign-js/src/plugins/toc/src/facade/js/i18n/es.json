@@ -1,0 +1,7 @@
+{
+  "exception": {
+    "toc_obsolete": "Mensaje para el desarrollador: M.plugin.TOC ha quedado obsoleto, utilice en su lugar M.plugin.Layerswitcher"
+  },
+  "tooltip": "Capas",
+  "capas": "Capas"
+}

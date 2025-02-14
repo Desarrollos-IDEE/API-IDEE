@@ -1,0 +1,95 @@
+{
+  "url": {
+    "name": "printviewmanagement",
+    "separator": "*"
+  },
+  "constructor": "M.plugin.PrintViewManagement",
+  "parameters": [{
+    "type": "object",
+    "properties": [
+    {
+      "type": "simple",
+      "name": "position",
+      "position": 0,
+      "possibleValues": [
+        "TL",
+        "TR",
+        "BR",
+        "BL"
+      ]
+    },
+    {
+      "type": "boolean",
+      "name": "collapsed",
+      "position": 1
+    },
+    {
+      "type": "boolean",
+      "name": "collapsible",
+      "position": 2
+    },
+    {
+      "type": "simple",
+      "name": "tooltip",
+      "position": 3
+    },
+    {
+      "type": "simple",
+      "name": "isDraggable",
+      "position": 4
+    },
+    {
+      "type": "simple",
+      "name": "serverUrl",
+      "position": 5
+    },
+    {
+      "type": "simple",
+      "name": "printStatusUrl",
+      "position": 6
+    },
+    {
+      "type": "boolean",
+      "name": "georefImageEpsg",
+      "position": 7
+    },
+    {
+      "type": "boolean",
+      "name": "georefImage",
+      "position": 8
+    },
+    {
+      "type": "boolean",
+      "name": "printermap",
+      "position": 9
+    },
+    {
+      "type": "number",
+      "name": "defaultOpenControl",
+      "position": 10,
+      "possibleValues": [0, 1, 2, 3]
+    }
+  ]
+  }],
+  "files": {
+    "ol": {
+      "scripts": [
+        "printviewmanagement.ol.min.js"
+      ],
+      "styles": [
+        "printviewmanagement.ol.min.css"
+      ]
+    }
+  },
+  "metadata": {
+    "name": "printviewmanagement",
+    "description": "Offer different zoom tools",
+    "text": "It offers different zoom tools.",
+    "version": "3.0.0",
+    "date": "27th April 2023",
+    "author": "CNIG",
+    "org": "CNIG",
+    "tags": "mapea,plugin",
+    "icon": "./facade/assets/icons/icons.svg"
+  }
+}

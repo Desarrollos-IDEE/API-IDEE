@@ -1,0 +1,7 @@
+{
+  "exception": {
+    "impl": "La implementación usada no puede crear controles ZoomExtentControl.",
+    "zoomextent_obsolete": "Mensaje para el desarrollador: M.plugin.ZoomExtent ha quedado obsoleto, utilice en su lugar M.plugin.ViewManagement"
+  },
+  "tooltip": "Zoom al recuadro"
+}

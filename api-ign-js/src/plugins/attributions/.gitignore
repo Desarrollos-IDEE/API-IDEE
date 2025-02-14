@@ -1,0 +1,11 @@
+# Directorios y ficheros ignorados por git
+build/
+dist/
+node_modules/
+node
+target
+externs
+libraries
+doc
+src/index.js
+*~

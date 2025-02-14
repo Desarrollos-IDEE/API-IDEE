@@ -1,0 +1,30 @@
+{
+  "exception": {
+    "impl": "La implementación usada no puede crear controles Georefimage2",
+    "encode_method": "La implementación usada no posee el método encodeLayer",
+    "loaderror": "La imagen no ha podido ser cargada.",
+    "teselaError": "La petición de alguna tesela ha provocado un error en la impresión. <br/>Por favor, inténtelo de nuevo.",
+    "printError": "Se ha producido un error en la impresión.",
+    "imageError": "No ha podido realizarse la descarga en este momento. Por favor, inténtelo más tarde.",
+    "georefimage2_obsolete": "Mensaje para el desarrollador: M.plugin.georefimage2 ha quedado obsoleto, utilice en su lugar M.plugin.PrintViewManagement"
+  },
+  "errorProjectionCapabilities": "La proyeccion seleccionada no está disponible para esta capa base. Por favor elija otra proyección.",
+  "printInfo": "Impresión generada a través de Mapea",
+  "tooltip": "Descargar Imagen georreferenciada",
+  "generating": "Generando imagen georreferenciada",
+  "referenced": "Imagen georreferenciada",
+  "projection": "Proyección",
+  "downImg": "Descargar imagen",
+  "delete": "Borrar",
+  "down": "Descargar",
+  "title": "Título",
+  "notitle": "(Sin título)",
+  "keep": "Conservar vista",
+  "cancel": "Cancelar",
+  "accept": "Aceptar",
+  "download_modal": "El uso de la información de los productos y servicios de datos geográficos definidos en la <a tabindex=\"0\" target=\"_blank\" href=\"https://www.boe.es/boe/dias/2015/12/26/pdfs/BOE-A-2015-14129.pdf\">Orden FOM/2807/2015</a>, así como sus derivados, conlleva la aceptación por el usuario de las condiciones generales de dicha orden, concretada en la siguiente <a tabindex=\"0\" target=\"_blank\" href=\"http://www.ign.es/resources/licencia/Condiciones_licenciaUso_IGN.pdf\">licencia de uso</a>, compatible con CC-BY 4.0.",
+  "use_license": "Licencia de uso",
+  "map": "Mapa",
+  "pnoa": "Imagen (PNOA)",
+  "screen": "Imagen Pantalla"
+}

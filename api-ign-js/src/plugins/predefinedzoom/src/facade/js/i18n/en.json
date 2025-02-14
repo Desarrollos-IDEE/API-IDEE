@@ -1,0 +1,4 @@
+{
+    "exception_predefinedzoomcontrol": "The implementation used cannot create controls PredefinedZoomControl",
+    "predefinedzoom_obsolete": "Message to the developer: M.plugin.PredefinedZoom has been deprecated, please use M.plugin.ViewManagement instead"
+}

@@ -1,0 +1,41 @@
+{
+  "url": {
+    "name": "toc",
+    "separator": "*"
+  },
+  "constructor": "M.plugin.TOC",
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+      "type": "simple",
+      "name": "position",
+      "position": 0,
+      "possibleValues": ["TL", "TR", "BL", "BR"]
+    }, {
+      "type": "boolean",
+      "name": "collapsed",
+      "position": 1
+    }, {
+      "type": "boolean",
+      "name": "collapsible",
+      "position": 2
+    }]
+  }],
+  "files": {
+    "ol": {
+      "scripts": ["toc.ol.min.js"],
+      "styles": ["toc.ol.min.css"]
+    }
+  },
+  "metadata": {
+    "name": "TOC",
+    "description": "",
+    "text": "",
+    "version": "2.0.1",
+    "date": "2019-07-10",
+    "author": "Guadaltel",
+    "org": "CNIG",
+    "tags": "mapea,plugin",
+    "icon": "./facade/assets/icons/icons.svg"
+  }
+}

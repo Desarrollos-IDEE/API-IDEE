@@ -1,0 +1,84 @@
+{
+  "url": {
+    "name": "printermap",
+    "separator": "*"
+  },
+  "constructor": "M.plugin.PrinterMap",
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+      "type": "simple",
+      "name": "position",
+      "position": 0
+    }, {
+      "type": "boolean",
+      "name": "collapsed",
+      "position": 1
+    }, {
+      "type": "boolean",
+      "name": "collapsible",
+      "position": 2
+    }, {
+      "type": "simple",
+      "name": "tooltip",
+      "position": 3
+    }, {
+      "type": "simple",
+      "name": "serverUrl",
+      "position": 4
+    }, {
+      "type": "simple",
+      "name": "printTemplateUrl",
+      "position": 5
+    }, {
+      "type": "simple",
+      "name": "printTemplateGeoUrl",
+      "position": 6
+    }, {
+      "type": "simple",
+      "name": "printStatusUrl",
+      "position": 7
+    }, {
+      "type": "simple",
+      "name": "georefActive",
+      "position": 8
+    }, {
+      "type": "simple",
+      "name": "logo",
+      "position": 9
+    }, {
+      "type": "simple",
+      "name": "headerLegend",
+      "position": 10
+    }, {
+      "type": "simple",
+      "name": "fototeca",
+      "position": 11
+    }, {
+      "type": "simple",
+      "name": "credits",
+      "position": 12
+    }]
+  }],
+  "files": {
+    "ol": {
+      "scripts": [
+        "printermap.ol.min.js"
+      ],
+      "styles": [
+        "printermap.ol.min.css"
+      ]
+    }
+  },
+  "metadata": {
+    "name": "PrinterMap",
+    "description": "Prints map",
+    "text": "Prints current map using Mapfish in pdf, jpeg or png formats",
+    "version": "2.0.1",
+    "date": "",
+    "author": "",
+    "org": "",
+    "tags": "mapea,plugin",
+    "icon": "./facade/assets/icons/icons.svg"
+  }
+}

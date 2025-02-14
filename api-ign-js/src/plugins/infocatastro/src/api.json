@@ -1,0 +1,41 @@
+{
+  "url": {
+    "name": "infocatastro",
+    "separator": "*"
+  },
+  "constructor": "M.plugin.InfoCatastro",
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+      "type": "simple",
+      "name": "position",
+      "position": 0,
+      "possibleValues": ["TL", "TR", "BL", "BR"]
+    }, {
+      "type": "simple",
+      "name": "tooltip",
+      "position": 1
+    }, {
+      "type": "simple",
+      "name": "catastroWMS",
+      "position": 2
+    }]
+  }],
+  "files": {
+    "ol": {
+      "scripts": ["infocatastro.ol.min.js"],
+      "styles": ["infocatastro.ol.min.css"]
+    }
+  },
+  "metadata": {
+    "name": "InfoCatastro",
+    "description": "Muestra referencia catastral para un punto y provee de enlace a la información de la DGC",
+    "text": "Búsqueda catastral mediante click",
+    "version": "2.0.1",
+    "date": "09/12/2019",
+    "author": "Guadaltel",
+    "org": "CNIG",
+    "tags": "mapea,plugin",
+    "icon": "./facade/assets/icons/icon.svg"
+  }
+}

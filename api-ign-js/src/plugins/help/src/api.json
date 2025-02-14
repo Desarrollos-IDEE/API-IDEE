@@ -1,0 +1,49 @@
+{
+  "url": {
+    "name": "help",
+    "separator": "*"
+  },
+  "constructor": "M.plugin.Help",
+  "parameters": [
+    {
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "position": 0,
+          "possibleValues": [
+            "TL",
+            "TR",
+            "BR",
+            "BL"
+          ]
+        },
+        {
+          "type": "simple",
+          "name": "tooltip",
+          "position": 1
+        }
+      ]
+    }
+  ],
+  "files": {
+    "ol": {
+      "scripts": [
+        "help.ol.min.js"
+      ],
+      "styles": [
+        "help.ol.min.css"
+      ]
+    }
+  },
+  "metadata": {
+    "name": "Help",
+    "description": "Shows help for plugins added to the map",
+    "version": "3.0.0",
+    "date": "15/02/24",
+    "author": "Guadaltel",
+    "org": "CNIG",
+    "tags": "plugin"
+  }
+}

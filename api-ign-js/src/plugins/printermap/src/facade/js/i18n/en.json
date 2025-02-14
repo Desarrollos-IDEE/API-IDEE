@@ -1,0 +1,29 @@
+{
+  "exception": {
+    "impl": "The implementation used cannot create PrinterMap.",
+    "encode": "The implementation used cannot use encodeLayer.",
+    "tile": "The request for some tile has caused a printing error. <br/>Please try again.",
+    "error": "An error has occurred while printing.",
+    "imageError": "The download could not be completed at this time. Please try again later.",
+    "error_layers": "The following layers will not be displayed when printing the map: ",
+    "printermap_obsolete": "Message to the developer: M.plugin.printermap has been deprecated, please use M.plugin.PrintViewManagement instead"
+  },
+  "errorProjectionCapabilities": "The selected projection is not available for this base layer. Please choose another projection.",
+  "tooltip": "Map Printing",
+  "credits": "Print generated through api-core",
+  "no_title": "(Untitled)",
+  "zone": "zone",
+  "base": "Base Cartography",
+  "title": "Title",
+  "description": "Description",
+  "layout": "Layout",
+  "format": "Format",
+  "projection": "Projection",
+  "keep": "Keep view",
+  "geo": "Georeferenced Image",
+  "print": "Print",
+  "delete": "Remove",
+  "download": "Download",
+  "minimize": "Minimize print control",
+  "fototeca": "This document has no legal validity"
+}

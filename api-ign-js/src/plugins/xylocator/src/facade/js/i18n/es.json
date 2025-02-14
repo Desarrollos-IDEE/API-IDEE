@@ -1,0 +1,25 @@
+{
+  "exception": {
+    "impl": "La implementación usada no puede crear controles XYLocatorControl.",
+    "wrong_coords": "Las coordenadas introducidas no son correctas.",
+    "transforming": "Error realizando la transformación.",
+    "wrong_values": "Algún valor introducido no es correcto. Recuerda que los minutos y los segundos tienen que tener un valor entre 0 y 59 y los grados entre 0 y 180.",
+    "xylocator_obsolete": "Mensaje para el desarrollador: M.plugin.XYLocator ha quedado obsoleto, utilice en su lugar M.plugin.Locator"
+  },
+  "coordinateresult": "coordinateresult",
+  "tooltip": "Buscar por coordenadas",
+  "geographic": "Geograficas",
+  "zone": "huso",
+  "title": "Localizador por coordenadas",
+  "srs": "Sistema de coordenadas",
+  "longitude": "Longitud",
+  "latitude": "Latitud",
+  "locate": "Localizar",
+  "clean": "Limpiar",
+  "north": "Norte",
+  "south": "Sur",
+  "east": "Este",
+  "west": "Oeste",
+  "dms": "GMS",
+  "dd": "GD"
+}

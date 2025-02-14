@@ -1,0 +1,40 @@
+{
+  "url": {
+    "name": "selectiondraw",
+    "separator": "*"
+  },
+  "constructor": "M.plugin.SelectionDraw",
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+      "type": "simple",
+      "name": "position",
+      "position": 0
+    }, {
+      "type": "boolean",
+      "name": "collapsed",
+      "position": 1
+    }, {
+      "type": "boolean",
+      "name": "collapsible",
+      "position": 2
+    }]
+  }],
+  "files": {
+    "ol": {
+      "scripts": ["selectiondraw.ol.min.js"],
+      "styles": ["selectiondraw.ol.min.css"]
+    }
+  },
+  "metadata": {
+    "name": "SelectionDraw",
+    "description": "Description of the plugin",
+    "text": "A full text about plugin",
+    "version": "2.0.1",
+    "date": "",
+    "author": "",
+    "org": "",
+    "tags": "mapea,plugin",
+    "icon": "./facade/assets/icons/icons.svg"
+  }
+}

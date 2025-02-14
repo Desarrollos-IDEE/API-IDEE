@@ -1,0 +1,234 @@
+{
+  "panzoom": {
+    "textHelp": {
+      "text1": "Esta herramienta permite cambiar el zoom del visualizador a partir de un panel con un desplazador. El mapa del visualizador cambia acercándose o alejándose según se cambie el desplazador hacia arriba o hacia abajo."
+    }
+  },
+  "panzoombar": {
+    "textHelp": {
+      "text1": "Esta herramienta permite cambiar el zoom del visualizador a partir de un panel con un desplazador. El mapa del visualizador cambia acercándose o alejándose según se cambie el desplazador hacia arriba o hacia abajo."
+    }
+  },
+  "backgroundlayers": {
+    "textHelp": {
+      "text1": "La herramienta de selector de capas base permite cambiar entre distintas capas base o capas de fondo, configuradas en un visualizador."
+    }
+  },
+  "location": {
+    "error": "El control ubicación no acepta http. Debe usar https.",
+    "title": "Obtener ubicación actual",
+    "textHelp": {
+      "text1": "La herramienta de localización permite obtener la posición de un dispositivo y posicionarla en el mapa. Su funcionamiento queda restringido a páginas WEB que se publiquen de forma segura sobre el protocolo HTTPS y en entornos locales.",
+      "text2": "En el caso de su utilización en un dispositivo móvil provisto de un sistema GNSS, se obtendrá la posición según los permisos de localización del dispositivo.",
+      "text3": "En dispositivos sin sistemas GNSS, la obtención del posicionamiento se realiza mediante la dirección IP asignada por el operador de internet en una zona delimitada."
+    }
+  },
+  "layerswitcher": {
+    "title": "Selector de capas"
+  },
+  "scale": {
+    "title": "Escala",
+    "scale": "Escala",
+    "level": "Nivel de zoom",
+    "textHelp": {
+      "text1": "Panel informativo que muestra el nivel de zoom y la escala aproximada de la vista actual.",
+      "text2": "El nivel de zoom es el correspondiente para para el sistema de coordenadas EPSG: 3857 WGS84 / Pseudo-Mercator."
+    }
+  },
+  "scaleline": {
+    "textHelp": {
+      "text1": "La escala gráfica es una línea situada en el mapa, a menudo en el margen de la hoja, que se ha subdividido en segmentos para indicar las longitudes sobre el mapa de las unidades terrestres de distancia.",
+      "text2": "Gracias a este elemento es posible medir la distancia real directamente sobre el mapa con la ayuda de una regla o un compás.",
+      "text3": "Fuente"
+    }
+  },
+  "attributionsControl": {
+    "attribution": "atribución",
+    "tooltip": "Reconocimientos",
+    "textHelp": {
+      "text1": "La herramienta de selector de capas base permite cambiar entre distintas capas base o capas de fondo, configuradas en un visualizador.",
+      "text2": "Con esta información, se puede dar la atribución a cada capa, permitiendo al usuario saber su fuente."
+    }
+  },
+  "getfeatureinfo": {
+    "info": "Información",
+    "title": "Consultar capa",
+    "no_info": "No existe información asociada",
+    "info_of": "Información de",
+    "unsupported_format": "Formato no soportado",
+    "textHelp": {
+      "text1": "La herramienta de obtener información permite obtener el GetFeatureInfo (la información asociada al punto clickado sobre el visualizador) en servicios WMS y WMTS."
+    }
+  },
+  "wmcselector": {
+    "title": "Selector de contextos"
+  },
+  "rotate": {
+    "title": "Girar al norte",
+    "textHelp": {
+      "text1": "La herramienta de rotación permite volver a una orientación Norte al visualizador.",
+      "text2": "Para poder girar el mapa en el visualizador, se realiza con la combinación de teclas Shit + Alt + click izquierdo del ratón + mover ratón para girar."
+    }
+  },
+  "mouse": {
+    "title": "Coordenadas del puntero"
+  },
+  "dialog": {
+    "info": "INFORMACIÓN",
+    "error": "ERROR",
+    "success": "ÉXITO",
+    "id_feature": "No se ha indicado un ID para obtener el feature",
+    "invalid_type_layer": "No se ha especificado un tipo válido para la capa",
+    "vector_filter": "El filtro indicado no es correcto",
+    "unauthorized_user": "Ha ocurrido un error al cargar la capa: Usuario no autorizado.",
+    "only_one_filter": "FeatureID y CQL son mutuamente excluyentes. Indicar sólo un tipo de filtrado.",
+    "any_format": "TXT, ni HTML ni GML están soportados"
+  },
+  "toast": {
+    "close": "Cerrar"
+  },
+  "feature": {
+    "incorrect_attributes": "No se han especificado correctamente los atributos."
+  },
+  "heatmap": {
+    "features": "La capa no tiene ninguna feature <br/> con el atributo especificado en simbología establecida. <br/>Se setea una ponderación por defecto",
+    "name": "Mapa de calor"
+  },
+  "exception": {
+    "addto_method": "La implementación usada no posee el método addTo",
+    "getelement_method": "La implementación usada no posee el método getElement",
+    "getfeatureinfo_method": "La implementación usada no puede crear controles GetFeatureInfo",
+    "mouse_method": "La implementación usada no puede crear controles Mouse",
+    "navtoolbar_method": "La implementación usada no puede crear controles Navtoolbar",
+    "overviewmap_method": "La implementación usada no puede crear controles OverviewMap",
+    "panzoom_method": "La implementación usada no puede crear controles Panzoom",
+    "panzoombar_method": "La implementación usada no puede crear controles Panzoombar",
+    "scale_method": "La implementación usada no puede crear controles Scale",
+    "scaleline_method": "La implementación usada no puede crear controles ScaleLine",
+    "wmcselector_method": "La implementación usada no puede crear controles WMCSelector",
+    "geojson_method": "La implementación usada no puede crear objetos M.impl.format.GeoJSON",
+    "wkt_method": "La implementación usada no puede creat objetos M.impl.format.WKT",
+    "getfeaturesbylayer_method": "La implementación usada no posee el método getFeaturesByLayer",
+    "geojsonlayer_method": "La implementación usada no puede crear capas GeoJSON",
+    "no_param": "No se ha especificado ningun parámetro",
+    "no_name": "No ha especificado ningún nombre",
+    "kmllayer_method": "La implementación usada no puede crear capas KML",
+    "isvisible_method": "La implementación usada no posee el método isVisible",
+    "isqueryable_methd": "La implementación usada no posee el método isQueryable",
+    "visibility_param": "No ha especificado ningún parámetro de visibilidad",
+    "setvisible_method": "La implementación usada no posee el método setVisible",
+    "inrange_method": "La implementación usada no posee el método inRange",
+    "mapbox_method": "La implementación usada no puede crear capas Mapbox",
+    "osm_method": "La implementación usada no puede crear capas OSM",
+    "vectorlayer_method": "La implementación usada no puede crear capas Vector",
+    "wfslayer_method": "La implementación usada no puede crear capas WFS",
+    "wmclayer_method": "La implementación usada no puede crear capas WMC",
+    "select_method": "La implementación usada no posee el método select",
+    "unselect_method": "La implementación usada no posee el método unselect",
+    "constructor_impl": "La implementación usada no posee un constructor.",
+    "getlayers_method": "La implementación usada no posee el método getLayers.",
+    "getbaselayers_method": "La implementación usada no posee el método getBaseLayers.",
+    "addlayers_method": "La implementación usada no posee el método addLayers.",
+    "removelayers_method": "La implementación usada no posee el método removeLayers.",
+    "getwmc_method": "La implementación usada no posee el método getWMC.",
+    "addwmc_method": "La implementación usada no posee el método addWMC.",
+    "removewmc_method": "La implementación usada no posee el método removeWMC.",
+    "getkml_method": "La implementación usada no posee el método getKML.",
+    "addkml_method": "La implementación usada no posee el método addKML.",
+    "addLayerGroup_method": "La implementación usada no posee el método addLayerGroup.",
+    "removekml_method": "La implementación usada no posee el método removeKML.",
+    "getwms_method": "La implementación usada no posee el método getWMS.",
+    "getgeotiff_method": "La implementación usada no posee el método getGeoTIFF.",
+    "addwms_method": "La implementación usada no posee el método addWMS.",
+    "addgeotiff_method": "La implementación usada no posee el método addGeoTIFF.",
+    "removewms_method": "La implementación usada no posee el método removeWMS.",
+    "removegeotiff_method": "La implementación usada no posee el método removeGeoTIFF.",
+    "getwfs_method": "La implementación usada no posee el método getWFS.",
+    "getgeojson_method": "La implementación usada no posee el método getGeoJSON.",
+    "getogcapif_method": "La implementación usada no posee el método getOGCAPIFeatures.",
+    "addwfs_method": "La implementación usada no posee el método addWFS.",
+    "removewfs_method": "La implementación usada no posee el método removeWFS.",
+    "getwmts_method": "La implementación usada no posee el método getWMTS.",
+    "addwmts_method": "La implementación usada no posee el método addWMTS.",
+    "removewmts_method": "La implementación usada no posee el método removeWMTS.",
+    "getmbtiles_method": "La implementación usada no posee el método getMBtiles.",
+    "getxyzs_method": "La implementación usada no posee el método getXYZs.",
+    "gettms_method": "La implementación usada no posee el método getTMS.",
+    "getcontrols_method": "La implementación usada no posee el método getControls.",
+    "addcontrols_method": "La implementación usada no posee el método addControls.",
+    "remove_control": "No ha especificado ningún control a eliminar.",
+    "removecontrol_method": "La implementación usada no posee el método removeControls.",
+    "setmaxextent_method": "La implementación usada no posee el método setMaxExtent.",
+    "getbbox_method": "La implementación usada no posee el método getBbox.",
+    "no_bbox": "No ha especificado ningún bbox.",
+    "setbbox_method": "La implementación usada no posee el método setBbox.",
+    "incorrect_bbox_format": "El formato del parámetro bbox no es el correcto.",
+    "getzoom_method": "La implementación usada no posee el método getZoom.",
+    "no_zoom": "No ha especificado ningún zoom.",
+    "setzoom_method": "La implementación usada no posee el método setZoom.",
+    "getcenter_method": "La implementación usada no posee el método getCenter.",
+    "setcenter_method": "La implementación usada no posee el método setCenter.",
+    "getresolutions_method": "La implementación usada no posee el método getResolutions.",
+    "no_resolutions": "No ha especificado ninguna resolución.",
+    "setresolutions_method": "La implementación usada no posee el método setResolutions.",
+    "getscale_method": "La implementación usada no posee el método getScale.",
+    "getprojection_method": "La implementación usada no posee el método getProjection.",
+    "no_projection": "No ha especificado ninguna proyección.",
+    "setprojection_method": "La implementación usada no posee el método setProjection.",
+    "no_plugins": "No ha especificado ningún plugin.",
+    "no_add_plugin_to_map": "El plugin no puede añadirse al mapa.",
+    "no_plugin_to_remove": "No ha especificado ningún plugin a eliminar.",
+    "destroy_method": "La implementación usada no posee el método destroy.",
+    "addlabel_method": "La implementación usada no posee el método addLabel.",
+    "no_point": "No ha especificado ningún punto.",
+    "remove_control_from_panel": "Debe eliminar los controles del panel previamente.",
+    "getcontainer_method": "La implementación usada no posee el método getContainer.",
+    "getmapimpl_method": "La implementación usada no posee el método getMapImpl.",
+    "removepopup_method": "La implementación usada no posee el método removePopup.",
+    "no_popup": "No ha especificado ningún popup.",
+    "invalid_popup": "El popup especificado no es válido.",
+    "no_maxextent": "No ha especificado ningún maxExtent",
+    "must_be_document": "doc.nodeType debe ser de tipo DOCUMENT",
+    "no_service_response": "No hubo respuesta del servicio",
+    "no_kml_response": "No hubo respuesta del KML",
+    "no_getfeature_response": "No hubo respuesta en la operación GetFeature",
+    "no_map": "No ha especificado ningun mapa",
+    "layerswitcher_method": "La implementación usada no puede crear controles LayerSwitcher",
+    "location_method": "La implementación usada no puede crear controles Location",
+    "wms_method": "La implementación usada no puede crear capas WMS",
+    "geotiff_method": "La implementación usada no puede crear capas GeoTIFF",
+    "mapLibre_method": "La implementación usada no puede crear capas MapLibre",
+    "generic_method": "La implementación usada no puede crear capas Genéricas",
+    "wmts_method": "La implementación usada no puede crear capas WMTS",
+    "no_impl": "No se ha especificado ninguna implementación",
+    "no_container": "No ha especificado ningún parámetro contenedor",
+    "no_id_container": "No existe ningún contenedor con el id especificado",
+    "no_center": "No ha especificado ningún parámetro center",
+    "no_attr_name": "No se ha especificado el nombre del atributo",
+    "no_empty": "El nombre de atributo no puede ser nulo. Especifique cadena o función",
+    "invalid_center_param": "El formato del parámetro center no es correcto",
+    "invalid_maxextent_param": "El formato del parámetro maxExtent no es correcto",
+    "invalid_resolutions_param": "El formato del parámetro resolutions no es correcto",
+    "invalid_zoom_param": "El formato del parámetro zoom no es correcto",
+    "min_gt_max": "No puede establecerse un radio mínimo mayor que el máximo.",
+    "max_lt_min": "No puede establecerse un radio máximo menor que el mínimo.",
+    "no_geojson": "No se ha especificado ningun GeoJSON",
+    "unsupported_lang": "Se ha establecido un idioma sin soporte",
+    "mbtilesvector_method": "La implementación usada no puede crear capas MBTilesVector",
+    "mbtiles_method": "La implementación usada no puede crear capas MBTiles",
+    "no_source": "Fuente no especificada.",
+    "addmbtiles_method": "La implementación usada no posee el método addMBTilesVector.",
+    "removembtiles_method": "La implementación usada no posee el método removeMBTilesVector.",
+    "browser_audio": "Su navegador no soporta el elemento de audio",
+    "browser_video": "Su navegador no soporta el elemento de video",
+    "versionError": "La capa [replace1] de tipo [replace2] no soporta la versión.",
+    "sldBODYError": "La capa [replace1] de tipo [replace2] no soporta SLD_BODY",
+    "styleError": "La capa [replace1] de tipo [replace2] no soporta STYLE",
+    "formatError": "La capa [replace1] de tipo [replace2] no soporta FORMAT",
+    "file_size": "El fichero seleccionado sobrepasa el máximo de 20 MB permitido.",
+    "file_load": "Error al cargar el fichero.",
+    "no_geoms": "No se han detectado geometrías en este fichero.",
+    "file_load_correct": "Error al cargar el fichero. Compruebe que se trata del fichero correcto.",
+    "file_extension": "No se ha insertado una extensión de archivo permitida. Las permitidas son: KML, SHP(.zip), GPX, GML y GeoJSON."
+  }
+}

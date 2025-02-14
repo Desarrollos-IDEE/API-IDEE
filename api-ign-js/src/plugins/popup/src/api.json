@@ -1,0 +1,57 @@
+{
+  "url": {
+    "name": "popup",
+    "separator": "*"
+  },
+  "constructor": "M.plugin.Popup",
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+      "type": "simple",
+      "name": "position",
+      "position": 0,
+      "possibleValues": ["TL", "TR", "BR", "BL"]
+    }, {
+      "type": "boolean",
+      "name": "collapsed",
+      "position": 1
+    }, {
+      "type": "boolean",
+      "name": "collapsible",
+      "position": 2
+    }, {
+      "type": "simple",
+      "name": "tooltip",
+      "position": 3
+    }, {
+      "type": "simple",
+      "name": "url_es",
+      "position": 4
+    }, {
+      "type": "simple",
+      "name": "url_en",
+      "position": 5
+    }]
+  }],
+  "files": {
+    "ol": {
+      "scripts": [
+        "popup.ol.min.js"
+      ],
+      "styles": [
+        "popup.ol.min.css"
+      ]
+    }
+  },
+  "metadata": {
+    "name": "Popup",
+    "description": "Shows a information panel.",
+    "text": "Opens a window with information.",
+    "version": "2.0.1",
+    "date": "1st June 2020",
+    "author": "CNIG",
+    "org": "CNIG",
+    "tags": "mapea,plugin",
+    "icon": "./facade/assets/icons/icons.svg"
+  }
+}

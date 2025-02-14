@@ -1,0 +1,7 @@
+{
+    "exception": {
+        "obsolete": "Developer message: M.plugin.SelectionDraw has been deprecated, use the M.plugin.VectorsManagement instead"
+    },
+    "tooltip": "Search by geometry",
+    "exception_selectiondrawcontrol": "The implementation used cannot create SelectionDrawImplControl controls"
+}

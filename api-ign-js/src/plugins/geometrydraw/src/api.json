@@ -1,0 +1,41 @@
+{
+  "url": {
+    "name": "geometrydraw",
+    "separator": "*"
+  },
+  "constructor": "M.plugin.GeometryDraw",
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+      "type": "simple",
+      "name": "position",
+      "position": 0,
+      "possibleValues": ["TL", "TR", "BL", "BR"]
+    }, {
+      "type": "boolean",
+      "name": "collapsed",
+      "position": 1
+    }, {
+      "type": "boolean",
+      "name": "collapsible",
+      "position": 2
+    }]
+  }],
+  "files": {
+    "ol": {
+      "scripts": ["geometrydraw.ol.min.js"],
+      "styles": ["geometrydraw.ol.min.css"]
+    }
+  },
+  "metadata": {
+    "name": "GeometryDraw",
+    "description": "Permite el dibujo y edición de geometrías sobre un mapa, así como su carga y descarga",
+    "text": "Geometry drawing and downloading",
+    "version": "2.0.1",
+    "date": "October 2019",
+    "author": "",
+    "org": "",
+    "tags": "mapea,plugin",
+    "icon": "./facade/assets/icons/icons.svg"
+  }
+}

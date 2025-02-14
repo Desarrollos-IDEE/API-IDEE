@@ -1,0 +1,16 @@
+{
+  "tooltip": "Mirror Comparison",
+  "title": "Mirror Maps",
+  "modViz0": "Standard map",
+  "modViz1": "Vertical two maps",
+  "modViz2": "Horizontal two maps",
+  "modViz3": "Vertical three maps",
+  "modViz4": "Vertical four maps",
+  "modViz5": "Mosaic maps",
+  "modViz6": "Horizontal four maps",
+  "modViz7": "Vertical 2-1-1 proportional maps",
+  "modViz8": "One map above and two below",
+  "modViz9": "Two maps above and one below",
+  "backimglayersparams_undefined":"BackImgLayers' parameters are not defined correctly.",
+  "mirrorpanel_obsolete": "Message to developer: M.plugin.Mirrorpanel has been deprecated, please use M.plugin.Comparators instead"
+}

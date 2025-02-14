@@ -1,0 +1,41 @@
+{
+  "url": {
+    "name": "calendar",
+    "separator": "*"
+  },
+  "constructor": "M.plugin.Calendar",
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+      "type": "simple",
+      "name": "position",
+      "position": 0,
+      "possibleValues": ["TL", "TR", "BR", "BL"]
+    }, {
+      "type": "boolean",
+      "name": "collapse",
+      "position": 1
+    }]
+  }],
+  "files": {
+    "ol": {
+      "scripts": [
+        "calendar.ol.min.js"
+      ],
+      "styles": [
+        "calendar.ol.min.css"
+      ]
+    }
+  },
+  "metadata": {
+    "name": "Calendar",
+    "description": "Shows a information panel.",
+    "text": "Opens a window with information.",
+    "version": "2.0.1",
+    "date": "1st June 2020",
+    "author": "CNIG",
+    "org": "CNIG",
+    "tags": "mapea,plugin",
+    "icon": "./facade/assets/icons/icons.svg"
+  }
+}

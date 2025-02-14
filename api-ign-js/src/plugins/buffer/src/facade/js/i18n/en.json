@@ -1,0 +1,15 @@
+{
+  "exception": {
+    "buffer_obsolete": "Developer message: M.plugin.Buffer has been deprecated, use the M.plugin.VectorsManagement instead"
+  },
+  "tooltip": "Influence Area",
+  "tooltip_point": "Draw Point",
+  "tooltip_line": "Draw Line",
+  "tooltip_polygon": "Draw Polygon",
+  "tooltip_remove": "Remove",
+  "title_popup": "INFLUENCE AREA",
+  "unit_m": "Metres",
+  "unit_km": "Kilometres",
+  "exception_layer": "The implementation used cannot create BufferLayer layers",
+  "exception_control": "The implementation used cannot create influenceareaControl controls"
+}

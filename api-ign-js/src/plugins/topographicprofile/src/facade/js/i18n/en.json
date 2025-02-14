@@ -1,0 +1,17 @@
+{
+  "exception": {
+    "impl": "The implementation used cannot create Perfiltopografico controls.",
+    "obsolete": "Developer message: M.plugin.Topographicprofile has been deprecated, use the M.plugin.VectorsManagement instead"
+  },
+  "tooltip": "Topography Profile",
+  "title": "Topography Profile",
+  "profil": {
+    "title": "Topographic Profile",
+    "zmin": "Min Alt.",
+    "zmax": "Max Alt.",
+    "altitude": "Alt.",
+    "distance": "Full Distance",
+    "ytitle": "Altitude (m)",
+    "xtitle": "Distance (km)"
+  }
+}
