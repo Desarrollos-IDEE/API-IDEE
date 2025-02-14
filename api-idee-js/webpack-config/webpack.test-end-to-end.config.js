@@ -27,6 +27,7 @@ module.exports = {
     }),
   ],
   devServer: {
+    port: 8081,
     static: {
       directory: path.join(__dirname, '/../'),
       watch: {
