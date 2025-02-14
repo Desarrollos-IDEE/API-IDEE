@@ -1,0 +1,129 @@
+{
+  "url": {
+    "name": "mirrorpanel",
+    "separator": "*!"
+  },
+  "constructor": "IDEE.plugin.Mirrorpanel",
+  "parameters": [
+    {
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "possibleValues": [
+            "TL",
+            "TR",
+            "BL",
+            "BR"
+          ],
+          "position": 0
+        },
+        {
+          "type": "boolean",
+          "name": "collapsed",
+          "position": 1
+        },
+        {
+          "type": "boolean",
+          "name": "collapsible",
+          "position": 2
+        },
+        {
+          "type": "simple",
+          "name": "modeViz",
+          "position": 3
+        },
+        {
+          "type": "boolean",
+          "name": "enabledPlugins",
+          "position": 4
+        },
+        {
+          "type": "boolean",
+          "name": "enabledKeyFunctions",
+          "position": 5
+        },
+        {
+          "type": "boolean",
+          "name": "showCursors",
+          "position": 6
+        },
+        {
+          "type": "simple",
+          "name": "mirrorLayers",
+          "position": 7
+        },
+        {
+          "type": "simple",
+          "name": "defaultBaseLyrs",
+          "position": 8
+        },
+        {
+          "type": "simple",
+          "name": "backImgLayersParams",
+          "position": 9
+        },
+        {
+          "type": "boolean",
+          "name": "interface",
+          "position": 10
+        }
+      ]
+    }
+  ],
+  "files": {
+    "ol": {
+      "scripts": ["mirrorpanel.ol.min.js"],
+      "styles": ["mirrorpanel.ol.min.css"]
+    },
+    "cesium": {
+      "scripts": ["mirrorpanel.cesium.min.js"],
+      "styles": ["mirrorpanel.cesium.min.css"]
+    }
+  },
+  "metadata": {
+    "uuid_plugin": "",
+    "uuid_version_plugin": "",
+    "version_ficha_metadatos": "",
+    "name": "Mirrorpanel",
+    "description": "Plugin que permite comparar varias capas dividiendo la pantalla en varias partes.",
+    "text": "Plugin que permite comparar varias capas dividiendo la pantalla en varias partes. Los mapas tienen sus vistas sincronizadas, y podemos ver la representación de una misma zona por distintas capas.",
+    "version": "2.0.2",
+    "date": "Julio, 2020",
+    "author": "",
+    "org": "",
+    "tags": "api-idee,plugin",
+    "icon": "./facade/assets/icons/icons.svg",
+    "buttons": [
+      {
+        "title": "",
+        "description": "",
+        "querySelector": ""
+      },
+      {
+        "title": "",
+        "description": "",
+        "querySelector": ""
+      }
+    ],
+    "dependencies": {
+      "modules": [
+        "",
+        ""
+      ],
+      "plugins": [
+        {
+          "uuid": "",
+          "name": ""
+        }
+      ],
+      "services": [
+        {
+          "name": "",
+          "description": ""
+        }
+      ]
+    }
+  }
+}

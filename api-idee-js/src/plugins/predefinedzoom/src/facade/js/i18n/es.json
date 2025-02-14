@@ -1,0 +1,4 @@
+{
+    "exception_predefinedzoomcontrol": "La implementación usada no puede crear controles PredefinedZoomControl",
+    "predefinedzoom_obsolete": "Mensaje para el desarrollador: IDEE.plugin.PredefinedZoom ha quedado obsoleto, utilice en su lugar IDEE.plugin.ViewManagement"
+}

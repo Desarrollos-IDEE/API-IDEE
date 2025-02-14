@@ -1,0 +1,29 @@
+{
+  "exception": {
+    "impl": "La implementación usada no puede crear controles PrinterMap.",
+    "encode": "La implementación usada no posee el método encodeLayer.",
+    "tile": "La petición de alguna tesela ha provocado un error en la impresión. <br/>Por favor, inténtelo de nuevo.",
+    "error": "Se ha producido un error en la impresión.",
+    "imageError": "No ha podido realizarse la descarga en este momento. Por favor, inténtelo más tarde.",
+    "error_layers": "Las siguientes capas no se visualizarán al imprimir el mapa: ",
+    "printermap_obsolete": "Mensaje para el desarrollador: IDEE.plugin.printermap ha quedado obsoleto, utilice en su lugar IDEE.plugin.PrintViewManagement"
+  },
+  "errorProjectionCapabilities": "La proyeccion seleccionada no está disponible para esta capa base. Por favor elija otra proyección.",
+  "tooltip": "Impresión del mapa",
+  "credits": "Impresión generada a través del api-idee",
+  "no_title": "(Sin título)",
+  "zone": "huso",
+  "base": "Cartografía base",
+  "title": "Título",
+  "description": "Descripción",
+  "layout": "Plantilla",
+  "format": "Formato",
+  "projection": "Proyección",
+  "keep": "Conservar vista",
+  "geo": "Imagen Georreferenciada",
+  "print": "Imprimir",
+  "delete": "Borrar",
+  "download": "Descargar",
+  "minimize": "Minimizar el control de impresión",
+  "fototeca": "Este documento carece de validez legal"
+}

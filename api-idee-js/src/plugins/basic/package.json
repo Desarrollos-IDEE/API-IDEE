@@ -1,0 +1,59 @@
+{
+  "name": "Basic",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [
+    "map",
+    "mapping",
+    "tool",
+    "cnig",
+    "ign",
+    "plugin"
+  ],
+  "license": "ISC",
+  "scripts": {
+    "start": "webpack serve --config=webpack-config/webpack.development-ol.config.js",
+    "start:ol": "webpack serve --config=webpack-config/webpack.development-ol.config.js",
+    "start:cesium": "webpack serve --config=webpack-config/webpack.development-cesium.config.js",
+    "prebuild": "npm run prebuild:ol && npm run prebuild:cesium",
+    "prebuild:ol": "node task/create-entrypoint-ol.js",
+    "prebuild:cesium": "node task/create-entrypoint-cesium.js",
+    "build": "webpack --config=webpack-config/webpack.production-ol.config.js && webpack --config=webpack-config/webpack.production-cesium.config.js",
+    "test-build": "npm run build && live-server --open=test/prod.html",
+    "check": "eslint ./src",
+    "fix": "eslint --fix ./src"
+  },
+  "author": "",
+  "devDependencies": {
+    "@babel/core": "^7.0.0-beta.51",
+    "@babel/plugin-proposal-export-default-from": "^7.0.0-beta.51",
+    "@babel/preset-env": "^7.14.8",
+    "async": "2.1.4",
+    "babel-eslint": "^10.0.1",
+    "babel-loader": "^8.0.0-beta.4",
+    "copy-webpack-plugin": "11.0.0",
+    "css-loader": "6.8.1",
+    "css-minimizer-webpack-plugin": "5.0.1",
+    "eslint": "8.51.0",
+    "eslint-config-airbnb": "19.0.4",
+    "eslint-plugin-import": "2.28.1",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-plugin-react": "^7.7.0",
+    "eslint-webpack-plugin": "^4.0.1",
+    "fs-extra": "11.2.0",
+    "handlebars": "^4.1.2",
+    "html-loader": "^0.5.5",
+    "live-server": "^1.2.1",
+    "mini-css-extract-plugin": "2.7.6",
+    "slash": "^3.0.0",
+    "style-loader": "3.3.3",
+    "terser-webpack-plugin": "5.3.9",
+    "webpack": "5.88.2",
+    "webpack-cli": "5.1.4",
+    "webpack-dev-server": "4.15.1"
+  },
+  "overrides": {
+    "webpack": "5.88.2",
+    "eslint": "8.51.0"
+  }
+}

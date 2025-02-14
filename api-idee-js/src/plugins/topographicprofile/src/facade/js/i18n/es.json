@@ -1,0 +1,17 @@
+{
+  "exception": {
+    "impl": "La implementación no puede crear controles de Perfiltopografico.",
+    "obsolete": "Mensaje para el desarrollador: IDEE.plugin.Topographicprofile ha quedado obsoleto, utilice en su lugar IDEE.plugin.VectorsManagement"
+  },
+  "tooltip": "Perfil Topográfico",
+  "title": "Perfil Topográfico",
+  "profil": {
+    "title": "Perfil Topográfico",
+    "zmin": "Alt. min",
+    "zmax": "Alt. max",
+    "altitude": "Altitud",
+    "distance": "Dist. total",
+    "ytitle": "Altitud (m)",
+    "xtitle": "Distancia (km)"
+  }
+}

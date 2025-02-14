@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="idee" content="yes">
+
+    <title>PRUEBA DESARROLLO</title>
+    <style rel="stylesheet">
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: auto;
+        }
+
+        .makidentist:before {
+            content: '\e814';
+            color: 'red'
+        }
+
+        .toc {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: white;
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .params {
+            position: absolute;
+            z-index: 9999;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="params">
+        <select name="version" id="version">
+            <option value="1.3.0">1.3.0</option>
+            <option value="1.1.1">1.1.1</option>
+            <option value="1.1.0">1.1.0</option>
+        </select>
+        <select name="proj" id="proj">
+            <option value="EPSG:4326*d">EPSG:4326</option>
+            <option value="EPSG:4258*d">EPSG:4258</option>
+            <option value="EPSG:3857*m">EPSG:3857</option>
+            <option value="EPSG:25830*m">EPSG:25830</option>
+            <option value="EPSG:4230*d">EPSG:4230</option>
+        </select>
+        <select name="tiled" id="tiled">
+            <option value="false">false</option>
+            <option value="true">true</option>
+        </select>
+    </div>
+    <div id="mapa" class="map"></div>
+    <script src="/config.js" charset="utf-8"></script>
+    <script src="/wms_130.js" charset="utf-8"></script>
+</body>
+
+</html>

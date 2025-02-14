@@ -1,0 +1,7 @@
+{
+  "exception": {
+    "toc_obsolete": "Message to the developer: IDEE.plugin.TOC has been deprecated, please use IDEE.plugin.Layerswitcher instead"
+  },
+  "tooltip": "Layers",
+  "capas": "Layers"
+}

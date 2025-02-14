@@ -1,0 +1,64 @@
+{
+  "url": {
+    "name": "incicarto",
+    "separator": "*"
+  },
+  "constructor": "IDEE.plugin.Incicarto",
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+      "type": "simple",
+      "name": "position",
+      "position": 0,
+      "possibleValues": ["TL", "TR", "BL", "BR"]
+    }, {
+      "type": "boolean",
+      "name": "collapsed",
+      "position": 1
+    }, {
+      "type": "boolean",
+      "name": "collapsible",
+      "position": 2
+    }, {
+      "type": "simple",
+      "name": "tooltip",
+      "position": 3
+    }, {
+      "type": "simple",
+      "name": "wfszoom",
+      "position": 4
+    }, {
+      "type": "simple",
+      "name": "prefixSubject",
+      "position": 5
+    }, {
+      "type": "simple",
+      "name": "interfazmode",
+      "position": 6
+    }, {
+      "type": "boolean",
+      "name": "isDraggable",
+      "position": 7
+    }]
+  }],
+  "files": {
+    "ol": {
+      "scripts": ["incicarto.ol.min.js"],
+      "styles": ["incicarto.ol.min.css"]
+    },
+    "cesium": {
+      "scripts": ["incicarto.cesium.min.js"],
+      "styles": ["incicarto.cesium.min.css"]
+    }
+  },
+  "metadata": {
+    "name": "Incicarto",
+    "description": "Geometry drawing",
+    "text": "Geometry management and downloading",
+    "version": "2.0.2",
+    "date": "May 2020",
+    "author": "",
+    "org": "",
+    "tags": "api-idee,plugin"
+  }
+}

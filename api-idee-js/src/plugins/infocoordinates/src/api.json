@@ -1,0 +1,64 @@
+{
+  "url": {
+    "name": "infocoordinates",
+    "separator": "*"
+  },
+  "constructor": "IDEE.plugin.Infocoordinates",
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+      "type": "simple",
+      "name": "position",
+      "position": 0
+    }, {
+      "type": "boolean",
+      "name": "collapsed",
+      "position": 1
+    }, {
+      "type": "boolean",
+      "name": "collapsible",
+      "position": 2
+    }, {
+      "type": "simple",
+      "name": "tooltip",
+      "position": 3
+    }, {
+      "type": "simple",
+      "name": "decimalGEOcoord",
+      "position": 4
+    }, {
+      "type": "simple",
+      "name": "decimalUTMcoord",
+      "position": 5
+    }, {
+      "type": "simple",
+      "name": "helpUrl",
+      "position": 6
+    },{
+      "type": "simple",
+      "name": "outputDownloadFormat",
+      "position": 7
+    }]
+  }],
+  "files": {
+    "ol": {
+      "scripts": ["infocoordinates.ol.min.js"],
+      "styles": ["infocoordinates.ol.min.css"]
+    },
+    "cesium": {
+      "scripts": ["infocoordinates.cesium.min.js"],
+      "styles": ["infocoordinates.cesium.min.css"]
+    }
+  },
+  "metadata": {
+    "name": "Infocoordinates",
+    "description": "Show coordinates points when clicked on map",
+    "text": "Show coordinates points when clicked on map. Change its SRC and format decimal or DMS",
+    "version": "2.0.2",
+    "date": "May, 2020",
+    "author": "",
+    "org": "",
+    "tags": "api-idee,plugin",
+    "icon": "./facade/assets/icons/icons.svg"
+  }
+}
