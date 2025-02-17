@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="idee" content="yes">
+    <title>Locatorscn Production TEST</title>
+    <link href="https://componentes-desarrollo.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
+    <link href="../dist/locatorscn.ol.min.css" rel="stylesheet" />
+    <style rel="stylesheet">
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="mapjs" class="container"></div>
+    <script type="text/javascript"
+        src="https://componentes-desarrollo.idee.es/api-idee/js/apiidee.ol.min.js"></script>
+    <script type="text/javascript"
+        src="https://componentes-desarrollo.idee.es/api-idee/js/configuration.js"></script>
+    <script type="text/javascript" src="../dist/locatorscn.ol.min.js"></script>
+    <script type="text/javascript">
+        const map = IDEE.map({
+            container: 'mapjs',
+        });
+        const mp = new IDEE.plugin.Locatorscn({
+            position: 'TR',
+            collapsed: true,
+            collapsible: true,
+            tooltip: 'Localizador',
+            byCoordinates: {
+                projections: [
+                    { title: 'ETRS89 (4258)', code: 'EPSG:4258', units: 'd' },
+                    { title: 'WGS84 (4326)', code: 'EPSG:4326', units: 'd' },
+                ],
+                zoom: 16,
+                CPMRC_url: 'xxx',
+                help: 'xxx'
+            },
+            byParcelCadastre: {
+                cadastreWMS: 'xxx',
+                CMC_url: 'xxx',
+                DNPPP_url: 'xxx',
+                CPMRC_url: 'xxx',
+            },
+            byPlaceAddressPostal: {
+                zoom: 16,
+                servicesToSearch: 'g',
+                maxResults: 10,
+                noProcess: 'poblacion',
+                countryCode: 'es',
+                reverse: true,
+                resultVisibility: true,
+                urlCandidates: 'xxx',
+                urlFind: 'xxx',
+                urlReverse: 'xxx',
+                urlPrefix: 'xxx',
+                urlAssistant: 'xxx',
+                urlDispatcher: 'xxx',
+                pointStyle: 'pinRojo',
+                searchPosition: 'nomenclator,geocoder',
+            }
+        });
+        map.addPlugin(mp);
+    </script>
+</body>
+
+</html>

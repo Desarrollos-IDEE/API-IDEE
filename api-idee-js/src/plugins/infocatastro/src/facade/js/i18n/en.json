@@ -1,0 +1,14 @@
+{
+  "tooltip": "Cadastre information",
+  "informacionCatastral": "Cadastre information",
+  "errorConexion": "It is not possible to establish a connection with the Cadastre server.",
+  "consultar": "Cadastre information",
+  "infocatastro_obsolete": "Message to the developer: IDEE.plugin.InfoCatastro has been deprecated, please use IDEE.plugin.Locator instead",
+  "description": "Description",
+  "reference": "Cadastral reference",
+  "noReference": "No reference",
+  "noInfo": "NO REFERENCES AVAILABLE FOR THESE COORDINATES ",
+  "exception": {
+    "impl": "The implementation used cannot create InfoCatastro controls."
+  }
+}

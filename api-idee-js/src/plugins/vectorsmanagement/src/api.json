@@ -1,0 +1,85 @@
+{
+  "url": {
+    "name": "vectorsmanagement",
+    "separator": "*!"
+  },
+  "constructor": "IDEE.plugin.VectorsManagement",
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+      "type": "simple",
+      "name": "position",
+      "position": 0,
+      "possibleValues": ["TL", "TR", "BR", "BL"]
+    }, {
+      "type": "boolean",
+      "name": "collapsed",
+      "position": 1
+    }, {
+      "type": "boolean",
+      "name": "collapsible",
+      "position": 2
+    }, {
+      "type": "boolean",
+      "name": "selection",
+      "position": 3
+    }, {
+      "type": "boolean",
+      "name": "addlayer",
+      "position": 4
+    }, {
+      "type": "boolean",
+      "name": "analysis",
+      "position": 5
+    }, {
+      "type": "boolean",
+      "name": "creation",
+      "position": 6
+    }, {
+      "type": "boolean",
+      "name": "download",
+      "position": 7
+    }, {
+      "type": "boolean",
+      "name": "edition",
+      "position": 8
+    }, {
+      "type": "simple",
+      "name": "help",
+      "position": 9
+    }, {
+      "type": "boolean",
+      "name": "style",
+      "position": 10
+    }]
+  }],
+  "files": {
+    "ol": {
+      "scripts": [
+        "vectorsmanagement.ol.min.js"
+      ],
+      "styles": [
+        "vectorsmanagement.ol.min.css"
+      ]
+    },
+    "cesium": {
+      "scripts": [
+        "vectorsmanagement.cesium.min.js"
+      ],
+      "styles": [
+        "vectorsmanagement.cesium.min.css"
+      ]
+    }
+  },
+  "metadata": {
+    "name": "vectorsmanagement",
+    "description": "Geometry drawing",
+    "text": "Geometry management and downloading",
+    "version": "2.0.2",
+    "date": "3rd February 2024",
+    "author": "CNIG",
+    "org": "CNIG",
+    "tags": "api-idee,plugin",
+    "icon": "./facade/assets/icons/icons.svg"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "exception": {
+    "impl": "La implementación no puede crear controles de Zoompanel."
+  },
+  "tooltip": "Herramientas de zoom",
+  "zoomin": "Aumentar zoom",
+  "zoomout": "Disminuir zoom",
+  "previouszoom": "Zoom anterior",
+  "nextzoom": "Zoom posterior",
+  "rectzoom": "Zoom ventana",
+  "zoom_extent": "Zoom a la extensión del mapa",
+  "zoompanel_obsolete": "Mensaje para el desarrollador: IDEE.plugin.ZoomPanel ha quedado obsoleto, utilice en su lugar IDEE.plugin.ViewManagement"
+}

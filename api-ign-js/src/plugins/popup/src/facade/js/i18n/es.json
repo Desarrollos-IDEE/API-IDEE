@@ -1,7 +1,0 @@
-{
-  "exception": {
-  "popup_obsolete": "Mensaje para el desarrollador: M.plugin.Popup ha quedado obsoleto, utilice en su lugar M.plugin.Modal"
-},
-"tooltip": "Más información",
-"exception_popupcontrol": "La implementación usada no puede crear controles PopupControl"
-}

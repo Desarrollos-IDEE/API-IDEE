@@ -1,0 +1,11 @@
+{
+  "exception": {
+    "impl": "The implementation used cannot create Attributions controls.",
+    "mode": "Options mode is bad setted. Tip: {mode: 1 | 2 | 3}.",
+    "type": "Missing 'type' options. When 'url' option is setted the plugin needs 'type' option. Values = geojson | kml | topojson.",
+    "layer_name": "Missing 'layerName' options. When 'url' option is setted the plugin needs 'layerName' option.",
+    "attribution_obsolete": "Developer message: IDEE.plugin.Attributions has been deprecated, use the Attributions control instead"
+  },
+  "attribution": "attribution",
+  "tooltip": "Acknowledgments"
+}

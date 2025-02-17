@@ -1,0 +1,12 @@
+# Directorios y ficheros ignorados por git
+build/
+node_modules/
+dist/
+node
+target
+externs
+libraries
+doc
+src/index-ol.js
+src/index-cesium.js
+*~

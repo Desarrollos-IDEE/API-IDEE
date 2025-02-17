@@ -1,0 +1,89 @@
+{
+  "url": {
+    "name": "backimglayer",
+    "separator": "*!"
+  },
+  "constructor": "IDEE.plugin.BackImgLayer",
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+      "type": "simple",
+      "name": "position",
+      "position": 0,
+      "possibleValues": ["TL", "TR", "BR", "BL"]
+    }, {
+      "type": "boolean",
+      "name": "collapsed",
+      "position": 1
+    }, {
+      "type": "boolean",
+      "name": "collapsible",
+      "position": 2
+    }, {
+      "type": "simple",
+      "name": "tooltip",
+      "position": 3
+    }, {
+      "type": "boolean",
+      "name": "layerVisibility",
+      "position": 4
+    }, {
+      "type": "number",
+      "name": "layerId",
+      "position": 5
+    }, {
+      "type": "number",
+      "name": "columnsNumber",
+      "position": 6
+    }, {
+      "type": "boolean",
+      "name": "empty",
+      "position": 7
+    }, {
+      "type": "simple",
+      "name": "ids",
+      "position": 8
+    }, {
+      "type": "simple",
+      "name": "titles",
+      "position": 9
+    }, {
+      "type": "simple",
+      "name": "previews",
+      "position": 10
+    }, {
+      "type": "simple",
+      "name": "layers",
+      "position": 11
+    }]
+  }],
+  "files": {
+    "ol": {
+      "scripts": [
+        "backimglayer.ol.min.js"
+      ],
+      "styles": [
+        "backimglayer.ol.min.css"
+      ]
+    },
+    "cesium": {
+      "scripts": [
+        "backimglayer.cesium.min.js"
+      ],
+      "styles": [
+        "backimglayer.cesium.min.css"
+      ]
+    }
+  },
+  "metadata": {
+    "name": "backimglayer",
+    "description": "Sets background layer",
+    "text": "Shows different options for background layer as clickable images and changes background layer on click on an option.",
+    "version": "2.0.2",
+    "date": "3rd September 2019",
+    "author": "CNIG",
+    "org": "CNIG",
+    "tags": "api-idee,plugin",
+    "icon": "./facade/assets/icons/icons.svg"
+  }
+}

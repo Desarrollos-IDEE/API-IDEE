@@ -1,7 +1,0 @@
-{
-    "exception": {
-        "obsolete": "Mensaje para el desarrollador: M.plugin.SelectionDraw ha quedado obsoleto, utilice en su lugar M.plugin.VectorsManagement"
-    },
-    "tooltip": "Búsqueda por geometría",
-    "exception_selectiondrawcontrol": "La implementación usada no puede crear controles SelectionDrawImplControl"
-}

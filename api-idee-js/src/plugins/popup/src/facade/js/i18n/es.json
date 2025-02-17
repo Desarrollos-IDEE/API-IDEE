@@ -1,0 +1,7 @@
+{
+  "exception": {
+  "popup_obsolete": "Mensaje para el desarrollador: IDEE.plugin.Popup ha quedado obsoleto, utilice en su lugar IDEE.plugin.Modal"
+},
+"tooltip": "Más información",
+"exception_popupcontrol": "La implementación usada no puede crear controles PopupControl"
+}

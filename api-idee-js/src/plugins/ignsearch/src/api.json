@@ -1,0 +1,94 @@
+{
+  "url": {
+    "name": "ignsearch",
+    "separator": "*"
+  },
+  "constructor": "IDEE.plugin.IGNSearch",
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+        "type": "simple",
+        "name": "servicesToSearch",
+        "position": 0
+      }, {
+        "type": "number",
+        "name": "maxResults",
+        "position": 1
+      }, {
+        "type": "simple",
+        "name": "noProcess",
+        "position": 2
+      }, {
+        "type": "simple",
+        "name": "countryCode",
+        "position": 3
+      }, {
+        "type": "boolean",
+        "name": "resultVisibility",
+        "position": 4
+      }, {
+        "type": "boolean",
+        "name": "isCollapsed",
+        "position": 5
+      },
+      {
+        "type": "boolean",
+        "name": "collapsible",
+        "position": 6
+      }, {
+        "type": "simple",
+        "name": "position",
+        "position": 7
+      }, {
+        "type": "boolean",
+        "name": "reverse",
+        "position": 8
+      }, {
+        "type": "simple",
+        "name": "requestStreet",
+        "position": 9
+      }, {
+        "type": "simple",
+        "name": "locationID",
+        "position": 10
+      }, {
+        "type": "simple",
+        "name": "geocoderCoords",
+        "position": 11
+      }, {
+        "type": "simple",
+        "name": "zoom",
+        "position": 12
+      }, {
+        "type": "simple",
+        "name": "searchPosition",
+        "position": 13
+      }, {
+        "type": "simple",
+        "name": "pointStyle",
+        "position": 14
+      }
+    ]
+  }],
+  "files": {
+    "ol": {
+      "scripts": ["ignsearch.ol.min.js"],
+      "styles": ["ignsearch.ol.min.css"]
+    },
+    "cesium": {
+      "scripts": ["ignsearch.cesium.min.js"],
+      "styles": ["ignsearch.cesium.min.css"]
+    }
+  },
+  "metadata": {
+    "name": "IGNSearch",
+    "description": "Searches location on IGN geocoding services",
+    "text": "Searches location on IGN geocoding services",
+    "version": "2.0.2",
+    "date": "",
+    "author": "",
+    "org": "",
+    "tags": "api-idee,plugin",
+    "icon": "./facade/assets/icons/icons.svg"
+  }
+}

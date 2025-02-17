@@ -1,0 +1,10 @@
+{
+  "tooltip": "Más información",
+  "exception_modalcontrol": "La implementación usada no puede crear controles ModalControl",
+  "textHelp": {
+    "help1": "La extensión modal abre una ventana dentro de un visualizador mostrando información relevante al propio visualizador.",
+    "help2": "El contenido de la ventana es personalizable, por lo que el contenido puede cambiar de un visualizador a otro. Por defecto, se muestra información sobre la API-IDEE.",
+    "help3": "La información relevante a la extensión y su posible parametrización está documentada en",
+    "help4": "El ejemplo de uso de sus parámetros puede comprobarse en"
+  }
+ }

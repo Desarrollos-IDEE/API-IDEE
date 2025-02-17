@@ -1,0 +1,48 @@
+{
+  "url": {
+    "name": "vectors",
+    "separator": "*"
+  },
+  "constructor": "IDEE.plugin.Vectors",
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+      "type": "simple",
+      "name": "position",
+      "position": 0,
+      "possibleValues": ["TL", "TR", "BL", "BR"]
+    }, {
+      "type": "boolean",
+      "name": "collapsed",
+      "position": 1
+    }, {
+      "type": "boolean",
+      "name": "collapsible",
+      "position": 2
+    }, {
+      "type": "simple",
+      "name": "wfszoom",
+      "position": 3
+    }]
+  }],
+  "files": {
+    "ol": {
+      "scripts": ["vectors.ol.min.js"],
+      "styles": ["vectors.ol.min.css"]
+    },
+    "cesium": {
+      "scripts": ["vectors.cesium.min.js"],
+      "styles": ["vectors.cesium.min.css"]
+    }
+  },
+  "metadata": {
+    "name": "Vectors",
+    "description": "Geometry drawing",
+    "text": "Geometry management and downloading",
+    "version": "2.0.2",
+    "date": "May 2020",
+    "author": "",
+    "org": "",
+    "tags": "api-idee,plugin"
+  }
+}

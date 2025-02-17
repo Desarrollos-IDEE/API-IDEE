@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="idee" content="yes">
+    <title>ContactLink Production TEST</title>
+    <link href="https://componentes-desarrollo.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
+    <link href="../dist/contactlink.ol.min.css" rel="stylesheet" />
+    <style rel="stylesheet">
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="mapjs" class="container"></div>
+    <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/apiidee.ol.min.js"></script>
+    <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/configuration.js"></script>
+    <script type="text/javascript" src="../dist/contactlink.ol.min.js"></script>
+    <script type="text/javascript">
+        const map = IDEE.map({
+            container: 'mapjs',
+        });
+        const mp = new IDEE.plugin.ContactLink();
+        map.addPlugin(mp);
+    </script>
+</body>
+
+</html>

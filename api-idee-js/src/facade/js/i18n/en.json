@@ -1,0 +1,270 @@
+{
+  "panzoom": {
+    "textHelp": {
+      "text1": "This tool allows you to change the zoom of the viewer from a panel with a slider. The display map changes zoom in or out as you move the slider up or down."
+    }
+  },
+  "panzoombar": {
+    "textHelp": {
+      "text1": "This tool allows you to change the zoom of the viewer from a panel with a slider. The display map changes zoom in or out as you move the slider up or down."
+    }
+  },
+  "backgroundlayers": {
+    "textHelp": {
+      "text1": "The base layer selector tool allows you to switch between different base layers or background layers, configured in a viewer."
+    }
+  },
+  "location": {
+    "title": "Get current location",
+    "textHelp": {
+      "text1": "The location tool allows you to obtain the position of a device and position it on the map. Its operation is restricted to WEB pages that are published securely over the HTTPS protocol and in local environments.",
+      "text2": "If used on a mobile device equipped with a GNSS system, the position will be obtained according to the device's location permissions.",
+      "text3": "On devices without GNSS systems, positioning is obtained using the IP address assigned by the internet operator in a delimited area."
+    }
+  },
+  "layerswitcher": {
+    "title": "Layer selector"
+  },
+  "scale": {
+    "title": "Scale",
+    "scale": "Scale",
+    "level": "Zoom level",
+    "textHelp": {
+      "text1": "Information panel showing the zoom level and approximate scale of the current view.",
+      "text2": "The zoom level is the corresponding one for the EPSG coordinate system: 3857 WGS84 / Pseudo-Mercator."
+    }
+  },
+  "scaleline": {
+    "textHelp": {
+      "text1": "The graphic scale is a line located on the map, often in the margin of the sheet, that has been subdivided into segments to indicate the lengths on the map of terrestrial distance units.",
+      "text2": "Thanks to this element it is possible to measure the real distance directly on the map with the help of a ruler or a compass.",
+      "text3": "Source"
+    }
+  },
+  "attributionsControl": {
+    "attribution": "attribution",
+    "tooltip": "Recognitions",
+    "textHelp": {
+      "text1": "The base layer selector tool allows you to switch between different base layers or background layers, configured in a viewer.",
+      "text2": "With this information, attribution can be given to each layer, allowing the user to know its source."
+    }
+  },
+  "getfeatureinfo": {
+    "info": "Information",
+    "title": "Consult layer",
+    "no_info": "No associated info",
+    "info_of": "Information about",
+    "unsupported_format": "Unsupported format",
+    "textHelp": {
+      "text1": "The obtain information tool allows obtaining the GetFeatureInfo (the information associated with the point clicked on the viewer) in WMS and WMTS services."
+    }
+  },
+  "wmcselector": {
+    "title": "Context selector"
+  },
+  "rotate": {
+    "title": "Turn north",
+    "textHelp": {
+      "text1": "The rotation tool allows you to return the viewer to a North orientation.",
+      "text2": "To be able to rotate the map in the viewer, it is done with the key combination Shit + Alt + left mouse click + move mouse to rotate."
+    }
+  },
+  "mouse": {
+    "title": "Pointer coordinates"
+  },
+  "dialog": {
+    "info": "INFORMATION",
+    "error": "ERROR",
+    "success": "SUCCESS",
+    "id_feature": "An ID has not been indicated to obtain the feature",
+    "invalid_type_layer": "A valid type was not specified for the layer",
+    "vector_filter": "The indicated filter is not correct",
+    "unauthorized_user": "An error occurred while loading the layer: Unauthorized user.",
+    "only_one_filter": "FeatureID and CQL are mutually exclusive, indicate only one type of filtering.",
+    "any_format": "TXT, HTML and GML are and unsupported"
+  },
+  "toast": {
+    "close": "Cerrar"
+  },
+  "feature": {
+    "incorrect_attributes": "The attributes were not specified correctly."
+  },
+  "heatmap": {
+    "features": "The layer does not have any <br/> features with the specified attribute in set symbology. <br/>A default weighting is set",
+    "name": "Heatmap"
+  },
+  "exception": {
+    "addto_method": "The used implementation does not have the addTo method",
+    "getelement_method": "The used implementation does not have the getElement method",
+    "getfeatureinfo_method": "The used implementation can not create GetFeatureInfo controls",
+    "mouse_method": "The used implementation can not create Mouse controls",
+    "navtoolbar_method": "The used implementation can not create navtoolbar controls",
+    "overviewmap_method": "The used implementation can not create OverviewMap controls",
+    "panzoom_method": "The used implementation can not create Panzoom controls",
+    "panzoombar_method": "The used implementation can not create Panzoombar controls",
+    "scale_method": "The used implementation can not create Scale controls",
+    "scaleline_method": "The used implementation can not create ScaleLine controls",
+    "wmcselector_method": "The used implementation can not create WMCSelector controls",
+    "geojson_method": "The used implementation can not create objects IDEE.impl.format.GeoJSON",
+    "wkt_method": "The used implementation can not creat objects IDEE.impl.format.WKT",
+    "getfeaturesbylayer_method": "The used implementation does not have the getFeaturesByLayer method",
+    "geojsonlayer_method": "The used implementation can not create GeoJSON layers",
+    "no_param": "No parameters specified",
+    "no_name": "You have not specified any name",
+    "kmllayer_method": "The used implementation can not create KML layers",
+    "isvisible_method": "The used implementation does not have the isVisible method",
+    "isqueryable_methd": "The used implementation does not have the isQueryable method",
+    "visibility_param": "You have not specified any visibility parameters",
+    "setvisible_method": "The used implementation does not have the setVisible method",
+    "inrange_method": "The used implementation does not have the inRange method",
+    "osm_method": "The used implementation can not create OSM layers",
+    "vectorlayer_method": "The used implementation can not create Vector layers",
+    "wfslayer_method": "The used implementation can not create WFS layers",
+    "wmclayer_method": "The used implementation can not create WMC layers",
+    "select_method": "The used implementation does not have the select method",
+    "unselect_method": "The used implementation does not have the unselect method",
+    "constructor_impl": "The used implementation does not have a constructor.",
+    "getlayers_method": "The used implementation does not have the getLayers method.",
+    "getbaselayers_method": "The used implementation does not have the getBaseLayers method.",
+    "addlayers_method": "The used implementation does not have the addLayers method.",
+    "removelayers_method": "The used implementation does not have the removeLayers method.",
+    "getwmc_method": "The implementation used does not have the getWMC method.",
+    "addwmc_method": "The used implementation does not have the addWMC method.",
+    "removewmc_method": "The used implementation does not have the removeWMC method.",
+    "getkml_method": "The used implementation does not have the getKML method.",
+    "addkml_method": "The implementation used does not have the addKML method.",
+    "addLayerGroup_method": "The used implementation does not have the addLayerGroup method.",
+    "removekml_method": "The implementation used does not have the removeKML method.",
+    "getwms_method": "The used implementation does not have the getWMS method.",
+    "getgeotiff_method": "The used implementation does not have the getWMS method.",
+    "addwms_method": "The used implementation does not have the addWMS method.",
+    "addgeotiff_method": "The used implementation does not have the addGeoTIFF method.",
+    "removewms_method": "The used implementation does not have the removeWMS method.",
+    "removegeotiff_method": "The used implementation does not have the removeGeoTIFF method.",
+    "getwfs_method": "The implementation used does not have the getWFS method.",
+    "getgeojson_method": "The used implementation does not have the getGeoJSON method.",
+    "getogcapif_method": "The used implementation does not have the getOGCAPIFeatures method.",
+    "addwfs_method": "The used implementation does not have the addWFS method.",
+    "removewfs_method": "The used implementation does not have the removeWFS method.",
+    "getwmts_method": "The implementation used does not have the getWMTS method.",
+    "addwmts_method": "The used implementation does not have the addWMTS method.",
+    "removewmts_method": "The used implementation does not have the removeWMTS method.",
+    "getmbtiles_method": "The used implementation does not have the getMBtiles method.",
+    "getxyzs_method": "The used implementation does not have the getXYZs method.",
+    "gettms_method": "The used implementation does not have the getTMS method.",
+    "getcontrols_method": "The used implementation does not have the getControls method.",
+    "addcontrols_method": "The used implementation does not have the addControls method.",
+    "remove_control": "You have not specified any control to delete.",
+    "removecontrol_method": "The used implementation does not have the removeControls method.",
+    "setmaxextent_method": "The used implementation does not have the setMaxExtent method.",
+    "getbbox_method": "The used implementation does not have the getBbox method.",
+    "no_bbox": "You have not specified any bbox.",
+    "setbbox_method": "The used implementation does not have the setBbox method.",
+    "incorrect_bbox_format": "The format of the bbox parameter is not correct.",
+    "getzoom_method": "The used implementation does not have the getZoom method.",
+    "no_zoom": "You have not specified any zoom.",
+    "setzoom_method": "The implementation used does not have the setZoom method.",
+    "getcenter_method": "The used implementation does not have the getCenter method.",
+    "setcenter_method": "The used implementation does not have the setCenter method.",
+    "getresolutions_method": "The used implementation does not have the getResolutions method.",
+    "no_resolutions": "You have not specified any resolution.",
+    "setresolutions_method": "The used implementation does not have the setResolutions method.",
+    "getscale_method": "The used implementation does not have the getScale method.",
+    "getprojection_method": "The implementation used does not have the getProjection method.",
+    "no_projection": "You have not specified any projection.",
+    "setprojection_method": "The used implementation does not have the setProjection method.",
+    "no_plugins": "You have not specified any plugins.",
+    "no_add_plugin_to_map": "The plugin can not be added to the map.",
+    "no_plugin_to_remove": "You have not specified any plugins to delete.",
+    "destroy_method": "The used implementation does not have the destroy method.",
+    "addlabel_method": "The used implementation does not have the addLabel method.",
+    "no_point": "You have not specified any points.",
+    "remove_control_from_panel": "You must remove the controls from the panel previously.",
+    "getcontainer_method": "The used implementation does not have the getContainer method.",
+    "getmapimpl_method": "The used implementation does not have the getMapImpl method.",
+    "removepopup_method": "The used implementation does not have the removePopup method.",
+    "no_popup": "You have not specified any popup.",
+    "invalid_popup": "The specified popup is not valid.",
+    "no_maxextent": "You have not specified any maxExtent",
+    "must_be_document": "doc.nodeType must be DOCUMENT type",
+    "no_service_response": "There was no reply from the service",
+    "no_kml_response": "There was no response from the KML",
+    "no_getfeature_response": "There was no response in the GetFeature operation",
+    "no_map": "You have not specified any map",
+    "layerswitcher_method": "The used implementation can not create LayerSwitcher controls",
+    "location_method": "The used implementation can not create Location controls",
+    "wms_method": "The used implementation can not create WMS layers",
+    "geotiff_method": "The used implementation can not create GeoTIFF layers",
+    "mapLibre_method": "The used implementation can not create MapLibre layers",
+    "generic_method": "The used implementation can not create Generic layers",
+    "wmts_method": "The used implementation can not create WMTS layers",
+    "no_impl": "No implementation specified",
+    "no_container": "You have not specified any container parameters",
+    "no_id_container": "There is no container with the specified id",
+    "no_center": "You have not specified any center parameters",
+    "no_attr_name": "The name of the attribute was not specified",
+    "no_empty": "The attribute name can not be null. Specify string or function",
+    "invalid_center_param": "The format of the center parameter is not correct",
+    "invalid_maxextent_param": "The format of the maxExtent parameter is not correct",
+    "invalid_resolutions_param": "The format of the resolutions parameter is not correct",
+    "invalid_zoom_param": "The format of the zoom parameter is not correct",
+    "min_gt_max": "A minimum radius greater than the maximum can not be established.",
+    "max_lt_min": "A maximum radius of less than the minimum can not be established.",
+    "no_geojson": "No GeoJSON has been specified",
+    "unsupported_lang": "A language without support has been established",
+    "mbtilesvector_method": "The used implementation can not create MBTilesVector layers",
+    "mbtiles_method": "The used implementation can not create MBTiles layers",
+    "no_source": "No source was specified.",
+    "addmbtiles_method": "The implementation used does not have the method addMBTilesVector.",
+    "removembtiles_method": "The implementation used does not have the method removeMBTilesVector.",
+    "browser_audio": "Your browser does not support the audio element",
+    "browser_video": "Your browser does not support the video element",
+    "versionError": "Layer [replace1] of type [replace2] does not support the version.",
+    "sldBODYError": "Layer [replace1] of type [replace2] does not support SLD_BODY.",
+    "styleError": "Layer [replace1] of type [replace2] does not support STYLE.",
+    "formatError": "Layer [replace1] of type [replace2] does not support FORMAT.",
+    "file_size": "The selected file exceeds the maximum 20 MB allowed.",
+    "file_load": "Error when loading the file.",
+    "no_geoms": "No geometries have been detected in this file.",
+    "file_load_correct": "Error when loading the file. Check that it is the right file.",
+    "file_extension": "A not allowed file extension has been inserted. The allowed ones are: KML, SHP(.zip), GPX, GML and GeoJSON.",
+    "no_setprojection": "The implementation used cannot change the map projection.",
+    "no_zoomconstrains": "The implementation used cannot use the zoomConstrains parameter.",
+    "no_opacity": "The implementation used cannot change the opacity.",
+    "no_scale": "The implementation used cannot get the map scale.",
+    "index_error": "Index must be less than or equal to the number of layers",
+    "tiles3d_method": "The used implementation can not create Tiles3D layers",
+    "gettiles3d_method": "The implementation used does not have the getTiles3D method.",
+    "addtiles3d_method": "The implementation used does not have the addTiles3D method.",
+    "removetiles3d_method": "The implementation used does not have the removeTiles3D method.",
+    "getterrain_method": "The implementation used does not have the getTerrain method.",
+    "addterrain_method": "The implementation used does not have the addTerrain method",
+    "terrain_method": "The used implementation can not create Terrain layers.",
+    "terrain_exists": "Only one Terrain type layer can be added to the map.",
+    "rotate_method": "The used implementation can not create Rotate controls.",
+    "attributions_method": "The used implementation can not create Attributions controls.",
+    "not_geometry_found": "No type geometry found.",
+    "no_getresolutions": "The implementation used can not get the map resolutions.",
+    "no_setresolutions": "The implementation used can not change the map resolutions.",
+    "no_lod": "You have not specified any scaling factor for rendering resolution.",
+    "getlod_method": "The implementation used does not have the getLOD method.",
+    "setlod_method": "The implementation used does not have the setLOD method.",
+    "no_settileurlfunction": "The implementation used does not have the setTileUrlFunction method.",
+    "no_setresolutionslayer": "The implementation used does not have setResolutions.",
+    "no_updateminmaxresolution": "The implementation used does not have updateMinMaxResolution.",
+    "no_renderFeature": "The implementation used does not allow using RenderFeature.",
+    "no_notiled": "WMS layers do not have the tiled parameter available in this implementation, so they will always be loaded tiled.",
+    "setminzoom_method": "The implementation used does not have setMinZoom method.",
+    "setmaxzoom_method": "The implementation used does not have setMaxZoom method.",
+    "seturlservice_method": "The implementation used does not have setURLService method.",
+    "geturlservice_method": "The implementation used does not have getURLService method.",
+    "setversion_method": "The implementation used does not have setVersion method.",
+    "geometry_point": "It is not possible to add coordinates to point-type geometries in PointGraphics",
+    "getmbtilesvector_method": "The used implementation does not have the getMBTilesVector method.",
+    "cluster_method": "The implementation used can not create Cluster styles.",
+    "layergroup_method": "The implementation used can not create LayerGroup.",
+    "chart_method": "The implementation used can not create Chart styles.",
+    "heatmap_method": "The implementation used can not create Heatmap styles.",
+    "flowline_method": "The implementation used can not create Flowline styles."
+  }
+}

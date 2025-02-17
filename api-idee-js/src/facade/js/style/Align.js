@@ -1,0 +1,40 @@
+/**
+ * @module IDEE/style/align
+ */
+
+/**
+ * Alineación de estilo a la izquierda.
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+export const LEFT = 'left';
+
+/**
+ * Alineación de estilo central.
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+export const CENTER = 'center';
+
+/**
+ * Alineación de estilo derecha.
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+export const RIGHT = 'right';
+
+/**
+ * Justificar la alineación del estilo.
+ * Solo disponible para OpenLayers.
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+export const JUSTIFY = 'justify';
