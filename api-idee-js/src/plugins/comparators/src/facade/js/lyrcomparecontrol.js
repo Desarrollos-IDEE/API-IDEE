@@ -770,6 +770,7 @@ export default class LyrCompareControl extends IDEE.Control {
       this.layerSelectedA = this.layers[this.defaultLyrA];
       const selectA = this.template.querySelector('#m-lyrcompare-lyrA');
       selectA.selectedIndex = this.defaultLyrA;
+
       if (!selectA.options[this.defaultLyrA]) {
         IDEE.dialog.error('Error layerSelectedA', 'lyrcompare');
         this.deactiveByError_();
@@ -786,7 +787,6 @@ export default class LyrCompareControl extends IDEE.Control {
       this.layerSelectedB = this.layers[this.defaultLyrB];
       const selectB = this.template.querySelector('#m-lyrcompare-lyrB');
       selectB.selectedIndex = this.defaultLyrB;
-      selectB.options[this.defaultLyrB].setAttribute('selected', '');
 
       if (!selectB.options[this.defaultLyrB]) {
         IDEE.dialog.error('Error layerSelectedB', 'lyrcompare');
@@ -804,15 +804,14 @@ export default class LyrCompareControl extends IDEE.Control {
     if (this.layerSelectedC === null && this.layers.length >= 3) {
       this.layerSelectedC = this.layers[this.defaultLyrC];
       const selectC = this.template.querySelector('#m-lyrcompare-lyrC');
-      selectC.selectedIndex = this.defaultLyrC;
-      selectC.options[this.defaultLyrC].setAttribute('selected', '');
 
       if (!selectC.options[this.defaultLyrC]) {
         IDEE.dialog.error('Error layerSelectedC', 'lyrcompare');
         this.deactiveByError_();
         return;
       }
-
+      selectC.selectedIndex = this.defaultLyrC;
+      selectC.options[this.defaultLyrC].setAttribute('selected', '');
       selectC.selectedIndex = this.defaultLyrC;
       selectC.options[this.defaultLyrC].setAttribute('selected', '');
 
@@ -825,7 +824,6 @@ export default class LyrCompareControl extends IDEE.Control {
       this.layerSelectedD = this.layers[this.defaultLyrD];
       const selectD = this.template.querySelector('#m-lyrcompare-lyrD');
       selectD.selectedIndex = this.defaultLyrD;
-      selectD.options[this.defaultLyrD].setAttribute('selected', '');
 
       if (!selectD.options[this.defaultLyrD]) {
         IDEE.dialog.error('Error layerSelectedD', 'lyrcompare');

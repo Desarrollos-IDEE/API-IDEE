@@ -73,9 +73,14 @@ export default class AddLayerControl extends IDEE.Control {
     );
     const color = '#71a7d3';
     const dialog = document.querySelector('.m-dialog > div.m-modal > div.m-content');
-    dialog.style.minWidth = 'auto';
     const buttons = dialog.querySelector('.m-button');
     const cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.innerHTML = getValue('cancel');
+    cancel.style.width = 'auto';
+    cancel.style.backgroundColor = '#71a7d3';
+    buttons.appendChild(cancel);
+    dialog.style.minWidth = 'auto';
     cancel.type = 'button';
     cancel.innerHTML = getValue('cancel');
     cancel.style.width = 'auto';
