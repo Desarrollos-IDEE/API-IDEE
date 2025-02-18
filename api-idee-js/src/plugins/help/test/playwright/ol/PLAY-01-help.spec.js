@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('Click help', async ({ page }) => {
-  await page.goto('/src/plugins/help/test/end_to_end/ol/help-ol.html');
+  await page.goto('/src/plugins/help/test/playwright/ol/help-ol.html');
   let mapjs;
   let mp;
   await page.evaluate(() => {

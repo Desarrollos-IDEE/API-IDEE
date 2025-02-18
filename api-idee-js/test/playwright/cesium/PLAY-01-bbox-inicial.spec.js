@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 const TEST_BBOX = [4.0436553, 34.3787588, 4.3187731, 34.5288746];
 
 test('Comprobamos que el bbox inicial es el especificado', async ({ page }) => {
-  await page.goto('/test/end_to_end/cesium/basic-cesium.html');
+  await page.goto('/test/playwright/cesium/basic-cesium.html');
   let mapjs;
   await page.evaluate((bbox) => {
     mapjs = IDEE.map({

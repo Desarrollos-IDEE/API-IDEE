@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 const TEST_BBOX = [450137.6602065728, 4079774.2048711563, 480763.617682564, 4100039.975169722];
 
 test('Comprobamos que el bbox inicial es el especificado', async ({ page }) => {
-  await page.goto('/test/end_to_end/ol/basic-ol.html');
+  await page.goto('/test/playwright/ol/basic-ol.html');
   let mapjs;
   await page.evaluate((bbox) => {
     mapjs = IDEE.map({

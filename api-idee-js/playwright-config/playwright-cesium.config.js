@@ -12,8 +12,8 @@ import { defineConfig, devices } from '@playwright/test';
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testMatch: 'test/end_to_end/cesium/**/*.spec.js',
-  // testDir: './test/end_to_end/cesium',
+  testDir: '../',
+  testMatch: 'test/playwright/cesium/**/*.spec.js',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */

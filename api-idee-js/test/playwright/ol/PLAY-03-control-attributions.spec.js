@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('Click attributions', async ({ page }) => {
-  await page.goto('/test/end_to_end/ol/basic-ol.html');
+  await page.goto('/test/playwright/ol/basic-ol.html');
   let mapjs;
   await page.evaluate(() => {
     mapjs = IDEE.map({

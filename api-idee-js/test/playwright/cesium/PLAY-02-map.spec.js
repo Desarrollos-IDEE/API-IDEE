@@ -4,7 +4,7 @@ test.describe('IDEE.map', () => {
   test.describe('constructor', () => {
     let map;
     test.beforeEach(async ({ page }) => {
-      await page.goto('/test/end_to_end/ol/basic-ol.html');
+      await page.goto('/test/playwright/cesium/basic-cesium.html');
       await page.evaluate(() => {
         map = IDEE.map({ container: 'map' });
       });
