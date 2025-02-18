@@ -80,7 +80,7 @@
     "start": "webpack-dev-server --config=webpack-config/webpack.development-ol.config.js",
     "start:ol": "webpack-dev-server --config=webpack-config/webpack.development-ol.config.js",
     "start:cesium": "webpack-dev-server --config=webpack-config/webpack.development-cesium.config.js",
-    "start:test": "webpack-dev-server --config=webpack-config/webpack.test-end-to-end.config.js",
+    "start:test": "webpack-dev-server --config=webpack-config/webpack.playwright.config.js",
     "start:build": "npm run build && npm run debug:build",
     "test:playwright-ol": "playwright test --config=./playwright-config/playwright-ol.config.js",
     "test:playwright-cesium": "playwright test --config=./playwright-config/playwright-cesium.config.js",
