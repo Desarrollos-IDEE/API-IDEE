@@ -12,7 +12,8 @@ import { defineConfig, devices } from '@playwright/test';
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: './test/end_to_end/cesium',
+  testMatch: 'test/end_to_end/cesium/**/*.spec.js',
+  // testDir: './test/end_to_end/cesium',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -81,5 +82,7 @@ export default defineConfig({
     command: 'npm run start:test',
     url: 'http://localhost:8081',
     reuseExistingServer: !process.env.CI,
+    // timeout: 120000,
+    // waitOn: 'http://localhost:8081',
   },
 });
