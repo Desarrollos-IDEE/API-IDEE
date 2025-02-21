@@ -44,31 +44,13 @@
      <profile>
         <id>cnig-desarrollo</id>
         <activation>
-           <activeByDefault>false</activeByDefault>
+           <activeByDefault>true</activeByDefault>
         </activation>
         <properties>
            <environment>cnig-desarrollo</environment>
         </properties>
      </profile>
-      <profile>
-         <id>desarrollo</id>
-         <activation>
-            <activeByDefault>false</activeByDefault>
-         </activation>
-         <properties>
-            <environment>desarrollo</environment>
-         </properties>
-      </profile>
-      <profile>
-         <id>produccion</id>
-         <activation>
-            <activeByDefault>true</activeByDefault>
-         </activation>
-         <properties>
-            <environment>produccion</environment>
-         </properties>
-      </profile>
-       <profile>
+     <profile>
         <id>cnig-guadaltel</id>
         <activation>
            <activeByDefault>false</activeByDefault>
