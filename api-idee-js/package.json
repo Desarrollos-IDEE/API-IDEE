@@ -12,6 +12,7 @@
   "repository": {},
   "license": "EUPL",
   "devDependencies": {
+    "@playwright/test": "1.50.1",
     "buffer": "6.0.3",
     "chromedriver": "115.0.1",
     "copy-webpack-plugin": "11.0.0",
@@ -28,14 +29,8 @@
     "fs-extra": "11.2.0",
     "html-loader": "0.5.5",
     "jsdoc-plugin-typescript": "2.3.0",
-    "karma": "6.4.3",
-    "karma-chrome-launcher": "3.2.0",
-    "karma-firefox-launcher": "2.1.3",
-    "karma-mocha": "2.0.1",
-    "karma-webpack": "5.0.0",
     "mini-css-extract-plugin": "2.7.6",
     "mocha": "10.2.0",
-    "nightwatch": "2.6.25",
     "style-loader": "3.3.3",
     "terser-webpack-plugin": "5.3.9",
     "walk": "2.3.15",
@@ -78,7 +73,6 @@
     "generate-doc:ol": "jsdoc config/jsdoc/api/index.md -c config/jsdoc/api/conf-ol.json",
     "generate-doc:cesium": "jsdoc config/jsdoc/api/index.md -c config/jsdoc/api/conf-cesium.json",
     "generate-test": "node tasks/test-generator",
-    "karma": "karma start ./karma.conf.js",
     "prebuild": "node tasks/clean-build.js --path=dist && npm run prebuild:ol && npm run prebuild:cesium",
     "prebuild:ol": "node tasks/generate-index-ol.js",
     "prebuild:cesium": "node tasks/generate-index-cesium.js",
@@ -86,7 +80,10 @@
     "start": "webpack-dev-server --config=webpack-config/webpack.development-ol.config.js",
     "start:ol": "webpack-dev-server --config=webpack-config/webpack.development-ol.config.js",
     "start:cesium": "webpack-dev-server --config=webpack-config/webpack.development-cesium.config.js",
+    "start:test": "webpack-dev-server --config=webpack-config/webpack.playwright.config.js",
     "start:build": "npm run build && npm run debug:build",
-    "test": "npm run karma"
+    "test:playwright-ol": "playwright test --config=./playwright-config/playwright-ol.config.js",
+    "test:playwright-cesium": "playwright test --config=./playwright-config/playwright-cesium.config.js",
+    "test:all": "npm run test:playwright-ol; npm run test:playwright-cesium"
   }
 }

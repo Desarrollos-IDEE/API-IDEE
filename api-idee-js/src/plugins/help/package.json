@@ -18,6 +18,8 @@
     "prebuild:cesium": "node task/create-entrypoint-cesium.js",
     "build": "webpack --config=webpack-config/webpack.production-ol.config.js && webpack --config=webpack-config/webpack.production-cesium.config.js",
     "test-build": "npm run build && live-server --open=test/prod.html",
+    "test:playwright-ol": "playwright test /help/test/playwright/ol/* --config=../../../playwright-config/playwright-ol.config.js",
+    "test:all": "npm run test:playwright-ol",
     "check": "eslint ./src",
     "fix": "eslint --fix ./src"
   },
