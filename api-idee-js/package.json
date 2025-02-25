@@ -40,7 +40,7 @@
     "yargs": "17.0.0"
   },
   "dependencies": {
-    "@geoblocks/ol-maplibre-layer": "1.0.0",
+    "@geoblocks/ol-maplibre-layer": "1.0.3",
     "@handlebars/allow-prototype-access": "1.0.5",
     "cesium": "1.118.0",
     "chroma-js": "1.4.1",
@@ -50,7 +50,7 @@
     "jsdoc": "3.6.11",
     "jsts": "2.12.1",
     "maplibre-gl": "4.3.2",
-    "ol": "8.1",
+    "ol": "10.4.0",
     "pako": "1.0.11",
     "proj4": "2.15.0",
     "shpjs": "6.1.0",

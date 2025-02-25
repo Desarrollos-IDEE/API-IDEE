@@ -163,6 +163,7 @@ public class ActionsWS {
 
 		JSONObject version = new JSONObject();
 
+		version.put("number-cesium", versionProperties.getString("number-cesium"));
 		version.put("number-ol", versionProperties.getString("number-ol"));
 		version.put("number", versionProperties.getString("number"));
 		version.put("date", versionProperties.getString("date"));
