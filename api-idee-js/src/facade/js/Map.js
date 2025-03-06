@@ -54,6 +54,7 @@ import LayerGroup from './layer/LayerGroup';
 import Tiles3D from './layer/Tiles3D';
 import Terrain from './layer/Terrain';
 import Attributions from './control/Attributions';
+import ImplementationSwitcher from './control/ImplementationSwitcher';
 
 /**
  * @classdesc
@@ -2638,6 +2639,16 @@ class Map extends Base {
                   collapsible: false,
                   position: Position.TR,
                   className: 'm-plugin-baselayer',
+                });
+                break;
+              case ImplementationSwitcher.NAME:
+                control = new ImplementationSwitcher();
+                panel = new Panel(ImplementationSwitcher.NAME, {
+                  collapsible: true,
+                  position: Position.TR,
+                  className: 'm-implementationswitcher',
+                  collapsedButtonClass: 'g-cartografia-implementacion',
+                  tooltip: getValue('implementationswitcher').title,
                 });
                 break;
               default:

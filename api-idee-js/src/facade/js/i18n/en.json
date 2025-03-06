@@ -93,6 +93,14 @@
     "features": "The layer does not have any <br/> features with the specified attribute in set symbology. <br/>A default weighting is set",
     "name": "Heatmap"
   },
+  "implementationswitcher": {
+    "title": "Implementations",
+    "description": "Select implementation:",
+    "textHelp": {
+      "text1": "This tool allows you to change the implementation of the map.",
+      "text2": "In the dropdown you can see all the available implementations (OpenLayers, Cesium, etc)."
+    }
+  },
   "exception": {
     "addto_method": "The used implementation does not have the addTo method",
     "getelement_method": "The used implementation does not have the getElement method",

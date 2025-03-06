@@ -94,6 +94,14 @@
     "features": "La capa no tiene ninguna feature <br/> con el atributo especificado en simbología establecida. <br/>Se setea una ponderación por defecto",
     "name": "Mapa de calor"
   },
+  "implementationswitcher": {
+    "title": "Implementaciones",
+    "description": "Seleccionar implementación:",
+    "textHelp": {
+      "text1": "Esta herramienta permite cambiar la implementación del mapa.",
+      "text2": "En el desplegable se muestran todas las implementaciones disponibles (OpenLayers, Cesium, etc)."
+    }
+  },
   "exception": {
     "addto_method": "La implementación usada no posee el método addTo",
     "getelement_method": "La implementación usada no posee el método getElement",
