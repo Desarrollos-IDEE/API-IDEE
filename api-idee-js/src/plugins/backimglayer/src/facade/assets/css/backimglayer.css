@@ -156,19 +156,22 @@ div[id^="m-backimglayer-lyr-"]:hover>span {
         width: 100px;
     }
 
-    .m-areas>div.m-area>div.m-panel.m-plugin-backimglayer.opened>div.m-panel-controls>div.m-control.m-container.m-backimglayer>div#m-backimglayer-previews>div>span {
-        font-size: 1.1em;
-        height: 20px;
-        line-height: 23px;
-        top: 80px;
-        width: 100px;
+
+    div[id^="m-backimglayer-lyr-"]:hover>span {
+        height: 100%;
+        top: 0;
+        opacity: 0.7;
+        font-weight: bold;
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-evenly;
     }
 
 
     /* Firefox fix */
     @-moz-document url-prefix() {
         .m-areas>div.m-area>div.m-panel.m-plugin-backimglayer.opened {
-            padding: 10px 50px 0;
+            /* padding: 10px 50px 0; */
         }
 
         .m-areas>div.m-area>div.m-panel.m-plugin-backimglayer.opened>div.m-panel-controls>div.m-control.m-container.m-backimglayer>div#m-backimglayer-previews {
