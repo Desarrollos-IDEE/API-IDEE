@@ -402,7 +402,7 @@ map.addPlugin(new IDEE.plugin.PrinterMap({
 }));
 
 /* const xyz = new IDEE.layer.XYZ({
-  url: 'https://tms-pnoa-ma.ign.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
+  url: 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
   name: 'PNOA-MA',
   projection: 'EPSG:3857',
   displayInLayerSwitcher: false,

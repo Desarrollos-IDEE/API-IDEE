@@ -140,7 +140,7 @@ const mp = new BackImgLayer({
               preview: pwImg4,
               layers: [
                 new IDEE.layer.XYZ({
-                  url: 'https://tms-pnoa-ma.ign.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
+                  url: 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
                   name: 'PNOA-MA',
                   legend: 'Imagen',
                   projection: 'EPSG:3857',
