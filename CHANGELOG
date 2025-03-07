@@ -9,3 +9,4 @@
 - Se elimina la configuración de Mapbox y su uso.
 - Actualización y eliminación de librerías del fichero package.json
 - Eliminación de la configuración de TEMPLATES_PATH y métodos getTemplateUrl, get y compile.
+- Añade nuevo control Implementation Switcher.

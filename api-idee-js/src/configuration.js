@@ -27,6 +27,21 @@ const backgroundlayersOpts = [{
 },
 ];
 
+const implementationSwitcherOpts = [{
+  id: 'OL',
+  type: 'ol',
+  title: 'Open Layers',
+  js: 'js/apiidee.ol.min.js',
+  css: 'assets/css/apiidee.ol.min.css',
+},
+{
+  id: 'CS',
+  type: 'cesium',
+  title: 'Cesium',
+  js: 'js/apiidee.cesium.min.js',
+  css: 'assets/css/apiidee.cesium.min.css',
+}];
+
 const params = window.location.search.split('&');
 let center = '';
 let zoom = '';
@@ -199,6 +214,14 @@ params.forEach((param) => {
    * @type {object}
    */
   IDEE.config('backgroundlayers', backgroundlayersOpts);
+
+  /**
+   * ImplementationSwitcher Control
+   *
+   * @private
+   * @type {object}
+   */
+  IDEE.config('implementationswitcher', implementationSwitcherOpts);
 
   /**
    * URL of sql wasm file

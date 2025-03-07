@@ -563,13 +563,15 @@ export const concatUrlPaths = (paths) => {
   let finalUrl = null;
   if (!isNullOrEmpty(paths)) {
     finalUrl = paths[0];
-    finalUrl = finalUrl.replace(/\/+\s*$/, '');
-    for (let i = 1, ilen = paths.length; i < ilen; i += 1) {
-      const path = paths[i];
-      if (path.indexOf('/') !== 0) {
-        finalUrl = finalUrl.concat('/');
+    if (finalUrl) {
+      finalUrl = finalUrl.replace(/\/+\s*$/, '');
+      for (let i = 1, ilen = paths.length; i < ilen; i += 1) {
+        const path = paths[i];
+        if (path.indexOf('/') !== 0) {
+          finalUrl = finalUrl.concat('/');
+        }
+        finalUrl = finalUrl.concat(path);
       }
-      finalUrl = finalUrl.concat(path);
     }
   }
   return finalUrl;

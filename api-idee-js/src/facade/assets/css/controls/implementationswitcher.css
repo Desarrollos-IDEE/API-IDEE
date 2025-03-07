@@ -1,0 +1,97 @@
+.m-implementationswitcher {
+    padding: 0;
+    order: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.m-panel.opened .m-implementationswitcher {
+    min-width: 150px;
+}
+
+.m-implementationswitcher header {
+    line-height: 41px;
+    background-color: #71a7d3;
+}
+
+.m-implementationswitcher-select-label {
+    display: block;
+    margin: 0 auto;
+    margin: 10px;
+}
+
+.m-implementationswitcher-select {
+    display: block;
+    margin: 10px auto;
+}
+
+.m-implementationswitcher header h1 {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    margin: 0;
+    color: #fff;
+}
+
+.m-implementationswitcher {
+    background-color: rgba(0, 0, 0, 0) !important;
+    box-shadow: none;
+}
+
+.m-areas>div.m-area>div.m-panel.opened.m-implementationswitcher {
+    background-color: rgba(0, 0, 0, 0) !important;
+    box-shadow: none;
+}
+
+.m-implementationswitcher .m-panel-btn.g-cartografia-flecha-derecha,
+.m-implementationswitcher .m-panel-btn.g-cartografia-flecha-izquierda {
+    background-color: #71a7d3 !important;
+    color: white !important;
+}
+
+.m-implementationswitcher.opened .m-panel-btn.g-cartografia-flecha-derecha,
+.m-implementationswitcher.opened .m-panel-btn.g-cartografia-flecha-izquierda {
+    background-color: white !important;
+    color: #71a7d3 !important;
+}
+
+
+.m-container.m-implementationswitcher {
+    background-color: #fff !important;
+    color: #000 !important;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.m-implementationswitcher {
+    font-size: 12px;
+    color: #000 !important;
+    white-space: nowrap;
+}
+
+.m-implementationswitcher div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.m-implementationswitcher #close-button {
+    display: none;
+}
+
+
+.m-implementationswitcher a,
+.m-implementationswitcher p {
+    font-size: 12px;
+    color: #000;
+    white-space: nowrap;
+    text-decoration: none;
+    margin: 0;
+    padding: 0;
+    max-width: 260px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
