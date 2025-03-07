@@ -75,6 +75,7 @@ div[id^="m-backimglayer-lyr-"]:hover>span {
     font-weight: bold;
     display: inline-flex;
     align-items: center;
+    justify-content: space-evenly;
 }
 
 .m-backimglayer .activeBackimglayerDiv {
