@@ -208,7 +208,7 @@
 </body>
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-CTLHMMB5YT"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-19NTRSBP21"></script>
 <script>
     window.dataLayer = window.dataLayer || [];
 
@@ -216,7 +216,7 @@
         dataLayer.push(arguments);
     }
     gtag('js', new Date());
-    gtag('config', 'G-CTLHMMB5YT');
+    gtag('config', 'G-19NTRSBP21');
 </script>
 
 </html>
