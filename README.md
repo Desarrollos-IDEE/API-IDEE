@@ -40,50 +40,11 @@ Se ha creado una [Wiki](https://github.com/Desarrollos-IDEE/API-IDEE/wiki/1.3.-P
 - Android 6+
 - iOS 9+
 
-<h2 id="readme-versions" style="visibility: hidden">Versiones de librerías base</h2>
+## Versiones de librerías base
 
-<script>
-    async function currentBaseLibrariesVersion() {
-        try {
-          const response = await fetch('https://componentes-desarrollo.idee.es/api-idee/api/proxy/?url=https://componentes-desarrollo.idee.es/api-idee/api/actions/version');
-          let json = await response.json();
-          json = JSON.parse(json.content);
-
-          let versionOL = json['number-ol'];
-          let versionCesium = json['number-cesium'];
-
-          // Si la versión de OL en llamada no tiene 3 dígitos
-          if (versionOL.split('.').length < 3) {
-            versionOL = `${versionOL}.0`;
-          }
-          // Si la versión de Cesium en llamada no tiene 3 dígitos
-          if (versionCesium.split('.').length < 3) {
-            versionCesium = `${versionCesium}.0`;
-          }
-
-          // Cabecera
-          document.getElementById('readme-versions').style.visibility = 'visible';
-          document.getElementById('readme-list-versions').style.visibility = 'visible';
-
-          // Version OL
-          document.getElementById('ol-version').href = `https://openlayers.org/en/v${versionOL}/apidoc/`;
-          document.getElementById('ol-version').innerHTML = `OpenLayers v${versionOL}`;
-
-          // Version Cesium
-          document.getElementById('cesium-version').href = 'https://cesium.com/learn/cesiumjs/ref-doc/';
-          document.getElementById('cesium-version').innerHTML = `Cesium v${versionCesium}`;
-        } catch (error) {
-          console.error('Error:', error);
-          document.getElementById('readme-versions').style.visibility = 'hidden';
-          document.getElementById('readme-list-versions').style.visibility = 'hidden';
-        }
-      }
-
-      currentBaseLibrariesVersion();
-</script>
-<ul id="readme-list-versions" style="visibility: hidden">
-<li><a id="ol-version"></a></li>
-<li><a id="cesium-version"></a></li>
+<ul>
+<li><a target="_blank" href="https://openlayers.org/en/v10.4.0/apidoc/">OpenLayers v10.4.0</a></li>
+<li><a target="_blank" href="https://cesium.com/learn/cesiumjs/ref-doc/">Cesium v1.118.0</a></li>
 </ul>
 
 ## Bugs
