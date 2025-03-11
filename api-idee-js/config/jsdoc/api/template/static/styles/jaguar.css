@@ -205,8 +205,8 @@ li {
 .main {
   padding: 20px 20px;
   margin-left: 300px;
-  overflow: scroll;
-  height: 100vh;
+  overflow: auto;
+  max-height: calc(100vh - 50px);
 }
 
 .main .page-title {
