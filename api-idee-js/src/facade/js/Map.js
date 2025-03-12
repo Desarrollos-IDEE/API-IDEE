@@ -353,7 +353,7 @@ class Map extends Base {
     if (!isNullOrEmpty(params.zoomConstrains)) {
       this.setZoomConstrains(params.zoomConstrains);
     } else {
-      this.setZoomConstrains(true);
+      this.setZoomConstrains(false);
     }
 
     // minZoom
@@ -2899,13 +2899,13 @@ class Map extends Base {
      * @public
      * @function
      * @param {Boolean} exact Permite devolver el zoom exacto del mapa en caso de que se permita
-     * niveles de zoom intermedios, Por defecto es false.
+     * niveles de zoom intermedios, Por defecto es true.
      * @param {Boolean} inmeters Si es verdadero el zoom obtenido está en metros, en caso contrario
      * como nivel de zoom. Por defecto, es falso.
      * @returns {Number} Devuelve el zoom actual.
      * @api
      */
-  getZoom(exact = false, inmeters = false) {
+  getZoom(exact = true, inmeters = false) {
     // checks if the implementation can get the zoom
     if (isUndefined(MapImpl.prototype.getZoom)) {
       Exception(getValue('exception').getzoom_method);
@@ -2913,7 +2913,7 @@ class Map extends Base {
 
     let zoom = this.getImpl().getZoom(inmeters);
     if (!exact) {
-      zoom = Math.floor(zoom);
+      zoom = Math.round(zoom);
     }
 
     return zoom;
@@ -3096,7 +3096,14 @@ class Map extends Base {
       Exception(getValue('exception').setZoomConstrains_method);
     }
 
-    this.getImpl().setZoomConstrains(zoomConstrains);
+    try {
+      const zoomCons = parameter.zoomConstrains(zoomConstrains);
+      this.getImpl().setZoomConstrains(zoomCons);
+    } catch (err) {
+      Dialog.error(err.toString());
+      throw err;
+    }
+
     return this;
   }
 
@@ -3110,8 +3117,8 @@ class Map extends Base {
    * @api
    */
   getZoomConstrains() {
-    if (isUndefined(MapImpl.prototype.setZoomConstrains)) {
-      Exception(getValue('exception').setZoomConstrains_method);
+    if (isUndefined(MapImpl.prototype.getZoomConstrains)) {
+      Exception(getValue('exception').getZoomConstrains_method);
     }
 
     const zoomConstrains = this.getImpl().getZoomConstrains();
