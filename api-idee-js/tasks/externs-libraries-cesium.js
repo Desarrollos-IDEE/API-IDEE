@@ -13,6 +13,10 @@ const libraries = [{
 }, {
   name: 'Cesium',
   path: 'cesium',
+},
+{
+  name: 'jsts',
+  path: 'jsts/dist/jsts.min.js',
 }];
 
 module.exports = libraries;
