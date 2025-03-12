@@ -95,7 +95,6 @@
                      <descriptors>
                         <descriptor>assembly/dist-resources.xml</descriptor>
                         <descriptor>assembly/doc-resources.xml</descriptor>
-                        <descriptor>assembly/templates-resources.xml</descriptor>
                      </descriptors>
                   </configuration>
                </execution>
