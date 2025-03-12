@@ -37,6 +37,23 @@
     margin-right: 2px;
 }
 
+#m-level-number {
+    outline: 0px solid transparent;
+    padding: 1px 2px;
+}
+
+.blinking-background {
+    animation: blink 2.5s infinite;
+}
+
+/* Background blink animation */
+
+@keyframes blink {
+    0% { background-color: transparent; }
+    50% { background-color: rgb(20, 75, 131); }
+    100% { background-color: transparent; }
+}
+
 /* Firefox fix */
 
 @-moz-document url-prefix() {

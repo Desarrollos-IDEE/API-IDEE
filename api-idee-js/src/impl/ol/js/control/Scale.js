@@ -3,6 +3,9 @@
  */
 import { isNullOrEmpty } from 'IDEE/util/Utils';
 import Utils from 'impl/util/Utils';
+import { getValue } from 'IDEE/i18n/language';
+import * as Dialog from 'IDEE/dialog';
+import Exception from 'IDEE/exception/exception';
 import Control from './Control';
 
 /**
@@ -47,7 +50,7 @@ const updateElement = (viewState, container, map, exact) => {
   }
   const elem = document.querySelector('#m-level-number');
   if (elem !== null) {
-    elem.innerHTML = Math.round(map.getZoom(), 2);
+    elem.innerHTML = map.getZoom();
   }
 };
 
@@ -84,14 +87,45 @@ class Scale extends Control {
    * @api stable
    */
   addTo(map, element) {
-    this.facadeMap_ = map;
-
     const scaleId = 'm-scale-span';
+    const zoomLevel = 'm-level-number';
+
+    this.facadeMap_ = map;
     this.scaleContainer_ = element.querySelector('#'.concat(scaleId));
+    this.zoomLevelContainer_ = element.querySelector('#'.concat(zoomLevel));
     this.element = element;
     this.render = this.renderCB;
     this.target_ = null;
     map.getMapImpl().addControl(this);
+
+    if (this.scaleContainer_ !== null) {
+      element.addEventListener('mouseenter', () => { this.zoomLevelContainer_.classList.add('blinking-background'); });
+      element.addEventListener('mouseleave', () => { this.zoomLevelContainer_.classList.remove('blinking-background'); });
+      this.zoomLevelContainer_.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          const zoomText = this.zoomLevelContainer_.textContent.trim();
+
+          try {
+            if (!/^-?\d+(\.\d+)?$/.test(zoomText)) {
+              this.zoomLevelContainer_.textContent = map.getZoom();
+              Exception(getValue('exception').invalid_zoom);
+            }
+          } catch (err) {
+            Dialog.error(err.toString());
+            return;
+          }
+          const zoomValue = parseFloat(zoomText);
+          const zoomConstrains = map.getZoomConstrains();
+
+          if (zoomConstrains && !Number.isInteger(zoomValue)) {
+            this.zoomLevelContainer_.textContent = Math.floor(zoomValue);
+          }
+          map.setZoom(zoomConstrains ? Math.round(zoomValue) : zoomValue);
+          this.zoomLevelContainer_.blur();
+        }
+      });
+    }
   }
 
   /**
@@ -119,6 +153,7 @@ class Scale extends Control {
   destroy() {
     super.destroy();
     this.scaleContainer_ = null;
+    this.zoomLevelContainer_ = null;
   }
 }
 

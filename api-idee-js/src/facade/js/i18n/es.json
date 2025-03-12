@@ -172,6 +172,7 @@
     "incorrect_bbox_format": "El formato del parámetro bbox no es el correcto.",
     "getzoom_method": "La implementación usada no posee el método getZoom.",
     "no_zoom": "No ha especificado ningún zoom.",
+    "invalid_zoom": "El zoom especificado no es válido.",
     "setzoom_method": "La implementación usada no posee el método setZoom.",
     "getcenter_method": "La implementación usada no posee el método getCenter.",
     "setcenter_method": "La implementación usada no posee el método setCenter.",
