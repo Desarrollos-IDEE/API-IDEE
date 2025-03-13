@@ -10,5 +10,8 @@
 - Actualización y eliminación de librerías del fichero package.json
 - Eliminación de la configuración de TEMPLATES_PATH y métodos getTemplateUrl, get y compile.
 - Añade nuevo control Implementation Switcher.
-- Eliminación y configuración de pefiles de compilación.
+- Añadir a la documentación de OL y Cesium la versión utilizada de manera dinámica.
+- Eliminar fichero index.md de documentación para utilizar README en su lugar.
+- Se crea nueva página con enlaces a la documentación.
+- Eliminación y configuración de perfiles de compilación.
 - Eliminación de plantillas de /files/templates y /templates dentro del war.
