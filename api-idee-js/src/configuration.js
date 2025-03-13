@@ -47,10 +47,14 @@ let center = '';
 let zoom = '';
 let srs = '';
 let layers = '';
+let zoomConstrains = '';
 params.forEach((param) => {
   if (param.indexOf('center') > -1) {
     const values = param.split('=')[1].split(',');
     center = [parseFloat(values[0]), parseFloat(values[1])];
+  } else if (param.indexOf('zoomConstrains') > -1) {
+    const value = param.split('=')[1];
+    zoomConstrains = value;
   } else if (param.indexOf('zoom') > -1) {
     const value = param.split('=')[1];
     zoom = parseInt(value, 10);
@@ -245,6 +249,14 @@ params.forEach((param) => {
    * @type {object}
    */
   IDEE.config('MAP_VIEWER_ZOOM', zoom);
+
+  /**
+   * MAP Viewer - Zoom Constrains
+   * 
+   * @private
+   * @type {Object}
+   */
+  IDEE.config('MAP_VIEWER_ZOOM_CONSTRAINS', zoomConstrains);
 
   /**
    * MAP Viewer - SRS

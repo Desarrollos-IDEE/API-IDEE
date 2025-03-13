@@ -31,7 +31,7 @@ public abstract class ParametersParser {
       String maxextent = queryParams.getFirst("maxextent");
       String callbackFn = queryParams.getFirst("callback");
       String ticket = queryParams.getFirst("ticket");
-      String zoomconstrains = queryParams.getFirst("zoomconstrains");
+      String zoomconstrains = queryParams.getFirst("zoomConstrains");
       String viewextent = queryParams.getFirst("viewextent");
       
       Parameters parameters = new Parameters();
