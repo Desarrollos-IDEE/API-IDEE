@@ -6,11 +6,17 @@
     "map",
     "mapping",
     "tool",
-    "ign"
+    "IDEE"
   ],
-  "homepage": "https://www.ign.es",
-  "repository": {},
+  "homepage": "https://idee.es",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Desarrollos-IDEE/API-IDEE"
+  },
   "license": "EUPL",
+  "bugs": {
+    "url": "https://github.com/Desarrollos-IDEE/API-IDEE/issues"
+  },
   "devDependencies": {
     "@playwright/test": "1.50.1",
     "buffer": "6.0.3",
