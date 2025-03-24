@@ -212,7 +212,7 @@ const generateLayersTable = () => {
   // Capa KML
   const kml1 = {
     name: 'capaKML',
-    url: 'https://componentes.cnig.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+    url: 'https://componentes.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
     extract: true,
     visibility: true,
     ...applyParam1, // minZoom, maxZoom // NEVER USED

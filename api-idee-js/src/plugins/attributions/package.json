@@ -51,9 +51,6 @@
     "webpack-cli": "5.1.4",
     "webpack-dev-server": "4.15.1"
   },
-  "dependencies": {
-    "jsts": "^2.0.4"
-  },
   "overrides": {
     "webpack": "5.88.2",
     "eslint": "8.51.0"
