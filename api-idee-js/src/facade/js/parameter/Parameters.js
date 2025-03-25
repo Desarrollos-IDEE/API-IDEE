@@ -523,6 +523,26 @@ export const parseViewExtent = (parameter) => {
 };
 
 /**
+ * This functions gets the background color container parameter setted by the user.
+ *
+ * @private
+ * @function
+ */
+const parseBGColorContainer = (parameter) => {
+  let bgColorContainer;
+
+  if (isString(parameter)) {
+    bgColorContainer = getParameterValue('bgColorContainer', parameter);
+  } else if (isObject(parameter)) {
+    bgColorContainer = parameter.bgColorContainer;
+  } else {
+    Exception(`El tipo del parámetro bgColorContainer no es válido: ${typeof parameter}`);
+  }
+
+  return bgColorContainer;
+};
+
+/**
  * @classdesc
  * Analiza y transforma los parámetros especificados por el usuario.
  * @property {Object} container Contenedor del mapa.
@@ -718,6 +738,13 @@ class Parameters {
      * @api
      */
     this.viewExtent = parseViewExtent(userParameters);
+
+    /**
+     * @public
+     * @type {String}
+     * @api
+     */
+    this.bgColorContainer = parseBGColorContainer(userParameters);
   }
 }
 

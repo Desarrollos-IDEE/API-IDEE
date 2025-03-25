@@ -376,6 +376,11 @@ class Map extends Base {
       this.setTicket(params.ticket);
     }
 
+    // bgColorContainer
+    if (!isNullOrEmpty(params.bgColorContainer)) {
+      this.setBGColorContainer(params.bgColorContainer);
+    }
+
     // initial zoom
     if (isNullOrEmpty(params.bbox) && isNullOrEmpty(params.zoom) && isNullOrEmpty(params.center)) {
       this.zoomToMaxExtent(true);
@@ -406,7 +411,7 @@ class Map extends Base {
    * @function
    */
   addDropFileEvent() {
-    const container = this.getContainer().parentNode.parentNode;
+    const container = this.getContainer().closest('.m-api-idee-container');
     container.addEventListener('dragover', (e) => {
       e.preventDefault();
     }, false);
@@ -4123,6 +4128,31 @@ class Map extends Base {
    */
   isFinished() {
     return this._finishedMap;
+  }
+
+  /**
+   * Este método aplica un color al fondo del mapa
+   *
+   * @function
+   * @public
+   * @param {String} color Color para aplicar en el fondo del mapa
+   */
+  setBGColorContainer(color) {
+    if (!isNullOrEmpty(color)) {
+      const containerStyle = this.getContainer().closest('.m-api-idee-container').style;
+      containerStyle.backgroundColor = color;
+      containerStyle.backgroundImage = 'unset';
+    }
+  }
+
+  /**
+   * Este método devuelve el color del fondo del mapa
+   *
+   * @public
+   * @returns {String} Devuelve el color del fondo del mapa
+   */
+  getBGColorContainer() {
+    return this.getContainer().closest('.m-api-idee-container').style.backgroundColor;
   }
 
   /**

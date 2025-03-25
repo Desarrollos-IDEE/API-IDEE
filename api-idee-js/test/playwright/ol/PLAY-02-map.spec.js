@@ -6,7 +6,7 @@ test.describe('IDEE.map', () => {
     test.beforeEach(async ({ page }) => {
       await page.goto('/test/playwright/ol/basic-ol.html');
       await page.evaluate(() => {
-        map = IDEE.map({ container: 'map' });
+        map = IDEE.map({ container: 'map', bgColorContainer: 'red' });
       });
     });
 
@@ -19,6 +19,13 @@ test.describe('IDEE.map', () => {
       await page.evaluate(() => map.destroy());
       const mapImpl = await page.evaluate(() => map.getMapImpl());
       expect(mapImpl).toBeNull();
+    });
+
+    test.describe('Param bgColorContainer', () => {
+      test('Map background color', async ({ page }) => {
+        const changeColor = await page.evaluate(() => map.getContainer().closest('.m-api-idee-container').style.backgroundColor === 'red');
+        expect(changeColor).toBe(true);
+      });
     });
 
     test.describe('Param center', () => {
