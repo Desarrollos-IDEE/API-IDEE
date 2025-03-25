@@ -17,8 +17,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 - **measurebar.ol.min.css**
 
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/measurebar/measurebar.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/measurebar/measurebar.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/measurebar/measurebar.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/measurebar/measurebar.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -26,8 +26,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/measurebar/measurebar-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/measurebar/measurebar-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/measurebar/measurebar-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/measurebar/measurebar-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros
@@ -81,11 +81,11 @@ URL_API?measurebar=position*collapsed*collapsible*tooltip
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.cnig.es/api-idee?measurebar=TL*true*true*measurebar%20plugin
+https://componentes.idee.es/api-idee?measurebar=TL*true*true*measurebar%20plugin
 ```
 
 ```
-https://componentes.cnig.es/api-idee?measurebar=BL
+https://componentes.idee.es/api-idee?measurebar=BL
 ```
 
 ### Ejemplos de uso API-REST en base64
@@ -99,7 +99,7 @@ Ejemplo de constructor del plugin:
 }
 ```
 ```
-https://componentes.cnig.es/api-idee?measurebar=base64=eyJwb3NpdGlvbiI6IlRSIiwiY29sbGFwc2libGUiOnRydWUsImNvbGxhcHNlZCI6dHJ1ZSwidG9vbHRpcCI6Ik1lZGlkYXMifQ==
+https://componentes.idee.es/api-idee?measurebar=base64=eyJwb3NpdGlvbiI6IlRSIiwiY29sbGFwc2libGUiOnRydWUsImNvbGxhcHNlZCI6dHJ1ZSwidG9vbHRpcCI6Ik1lZGlkYXMifQ==
 ```
 
 # Ejemplo de uso

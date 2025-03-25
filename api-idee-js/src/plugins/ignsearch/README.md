@@ -18,8 +18,8 @@ Plugin que permite la búsqueda de Direcciones postales (Geocoder de Cartociudad
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/ignsearch/ignsearch-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/ignsearch/ignsearch-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/ignsearch/ignsearch-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/ignsearch/ignsearch-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros

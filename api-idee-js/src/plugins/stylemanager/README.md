@@ -34,8 +34,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 - **stylemanager.min.css**
 
 ```html
- <link href="https://componentes.cnig.es//plugins/stylemanager/stylemanager.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es//plugins/stylemanager/stylemanager.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/stylemanager/stylemanager.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/stylemanager/stylemanager.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -43,8 +43,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es//plugins/stylemanager/stylemanager-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es//plugins/stylemanager/stylemanager-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/stylemanager/stylemanager-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/stylemanager/stylemanager-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros
@@ -106,11 +106,11 @@ URL_API?stylemanager=position*collapsed*collapsible*tooltip
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.cnig.es/?stylemanager=TR*true*true*tooltip&layers=TMS*TMSBaseIGN*https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/%7Bz%7D/%7Bx%7D/%7B-y%7D.jpeg*true*false*17,KML*Delegaciones%20IGN*https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml*true*true
+https://componentes.idee.es/api-idee/?stylemanager=TR*true*true*tooltip&layers=TMS*TMSBaseIGN*https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/%7Bz%7D/%7Bx%7D/%7B-y%7D.jpeg*true*false*17,KML*Delegaciones%20IGN*https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml*true*true
 ```
 
 ```
-https://componentes.cnig.es/?stylemanager=TR&layers=TMS*TMSBaseIGN*https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/%7Bz%7D/%7Bx%7D/%7B-y%7D.jpeg*true*false*17,KML*Delegaciones%20IGN*https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml*true*true
+https://componentes.idee.es/api-idee/?stylemanager=TR&layers=TMS*TMSBaseIGN*https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/%7Bz%7D/%7Bx%7D/%7B-y%7D.jpeg*true*false*17,KML*Delegaciones%20IGN*https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml*true*true
 ```
 
 ### Ejemplos de uso API-REST en base64
@@ -131,7 +131,7 @@ Ejemplo de constructor del plugin:
 }
 ```
 ```
-https://componentes.cnig.es/?stylemanager=base64=eyJwb3NpdGlvbiI6IlRSIiwiY29sbGFwc2libGUiOnRydWUsImNvbGxhcHNlZCI6dHJ1ZSwidG9vbHRpcCI6Ikdlc3RvciBkZSBlc3RpbG9zIn0=&layers=TMS*TMSBaseIGN*https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/%7Bz%7D/%7Bx%7D/%7B-y%7D.jpeg*true*false*17,KML*Delegaciones%20IGN*https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml*true*true
+https://componentes.idee.es/api-idee/?stylemanager=base64=eyJwb3NpdGlvbiI6IlRSIiwiY29sbGFwc2libGUiOnRydWUsImNvbGxhcHNlZCI6dHJ1ZSwidG9vbHRpcCI6Ikdlc3RvciBkZSBlc3RpbG9zIn0=&layers=TMS*TMSBaseIGN*https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/%7Bz%7D/%7Bx%7D/%7B-y%7D.jpeg*true*false*17,KML*Delegaciones%20IGN*https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml*true*true
 ```
 
 # Ejemplo de uso

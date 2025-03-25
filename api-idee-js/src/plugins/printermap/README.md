@@ -15,8 +15,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 - **printermap.ol.min.css**
 
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/printermap/printermap.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/printermap/printermap.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/printermap/printermap.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/printermap/printermap.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -24,8 +24,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/printermap/printermap-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/printermap/printermap-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/printermap/printermap-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/printermap/printermap-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros
@@ -141,7 +141,7 @@ URL_API?printermap=position*collapsed*collapsible*tooltip*serverUrl*printTemplat
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.cnig.es/api-idee/?printermap=TR*true*true*Imprimir%20mapa*https://componentes.cnig.es/geoprint*https://componentes.cnig.es/geoprint/print/CNIG*https://componentes.cnig.es/geoprint/print/mapexport*https://componentes.cnig.es/geoprint/print/status*true*https://www.ign.es/IGNCNIG/Imagenes/Contenidos/IGN-Header-Tittle.png*https://centrodedescargas.cnig.es/CentroDescargas/imgCdD/escudoInstitucional.png*true*Impresión%20generada
+https://componentes.idee.es/api-idee/?printermap=TR*true*true*Imprimir%20mapa*https://componentes.cnig.es/geoprint*https://componentes.cnig.es/geoprint/print/CNIG*https://componentes.cnig.es/geoprint/print/mapexport*https://componentes.cnig.es/geoprint/print/status*true*https://www.ign.es/IGNCNIG/Imagenes/Contenidos/IGN-Header-Tittle.png*https://centrodedescargas.cnig.es/CentroDescargas/imgCdD/escudoInstitucional.png*true*Impresión%20generada
 ```
 
 ### Ejemplo de uso API-REST en base64
@@ -167,7 +167,7 @@ Ejemplo de constructor:
 }
 ```
 ```
-https://componentes.cnig.es/api-idee/?printermap=base64=eyJwb3NpdGlvbiI6IlRSIiwiY29sbGFwc2VkIjp0cnVlLCJjb2xsYXBzaWJsZSI6dHJ1ZSwidG9vbHRpcCI6IkltcHJpbWlyIG1hcGEiLCJjcmVkaXRzIjoiSW1wcmVzaW4gZ2VuZXJhZGEiLCJmb3RvdGVjYSI6dHJ1ZSwibG9nbyI6Imh0dHBzOi8vd3d3Lmlnbi5lcy9JR05DTklHL0ltYWdlbmVzL0NvbnRlbmlkb3MvSUdOLUhlYWRlci1UaXR0bGUucG5nIiwiaGVhZGVyTGVnZW5kIjoiaHR0cHM6Ly9jZW50cm9kZWRlc2Nhcmdhcy5jbmlnLmVzL0NlbnRyb0Rlc2Nhcmdhcy9pbWdDZEQvZXNjdWRvSW5zdGl0dWNpb25hbC5wbmciLCJmaWx0ZXJUZW1wbGF0ZXMiOlsiQTMgSG9yaXpvbnRhbCJdfQ==
+https://componentes.idee.es/api-idee/?printermap=base64=eyJwb3NpdGlvbiI6IlRSIiwiY29sbGFwc2VkIjp0cnVlLCJjb2xsYXBzaWJsZSI6dHJ1ZSwidG9vbHRpcCI6IkltcHJpbWlyIG1hcGEiLCJjcmVkaXRzIjoiSW1wcmVzaW4gZ2VuZXJhZGEiLCJmb3RvdGVjYSI6dHJ1ZSwibG9nbyI6Imh0dHBzOi8vd3d3Lmlnbi5lcy9JR05DTklHL0ltYWdlbmVzL0NvbnRlbmlkb3MvSUdOLUhlYWRlci1UaXR0bGUucG5nIiwiaGVhZGVyTGVnZW5kIjoiaHR0cHM6Ly9jZW50cm9kZWRlc2Nhcmdhcy5jbmlnLmVzL0NlbnRyb0Rlc2Nhcmdhcy9pbWdDZEQvZXNjdWRvSW5zdGl0dWNpb25hbC5wbmciLCJmaWx0ZXJUZW1wbGF0ZXMiOlsiQTMgSG9yaXpvbnRhbCJdfQ==
 ```
 
 # Eventos
