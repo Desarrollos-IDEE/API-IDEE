@@ -425,6 +425,7 @@ export default class WindowSyncControl extends IDEE.Control {
     const center = JSON.stringify([centerMap.x, centerMap.y]);
     const projection = `${this.map_.getProjection().code}*${this.map_.getProjection().units}`;
     const zoom = this.map_.getZoom();
+    const bgColorContainer = this.map_.getBGColorContainer();
     const controls = JSON.stringify(this.controls);
     const plugins = this.generatePlugins() || '';
     const layers = JSON.stringify([...this.layers, ...getLayers(this.map_)]);
@@ -457,6 +458,7 @@ export default class WindowSyncControl extends IDEE.Control {
            <script>
            const newMap = IDEE.map({
              container: 'map',
+             bgColorContainer: '${bgColorContainer}',
              center: ${center},
              zoom: ${zoom},
              layers: ${baseLayers},

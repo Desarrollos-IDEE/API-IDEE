@@ -767,6 +767,8 @@ export default class IncicartoControl extends IDEE.Control {
     const center = `center=${x},${y}`;
     const zoom = `&zoom=${this.map_.getZoom()}`;
     const srs = `&srs=${this.map_.getProjection().code}`;
+    const bgColorContainer = this.map_.getBGColorContainer();
+    const stringBgColor = bgColorContainer !== '' ? `&bgcolorcontainer=${encodeURIComponent(bgColorContainer)}` : '';
     const layers = `&layers=${this.getLayersInLayerswitcher().toString()}`;
     const controls = (this.getControlsFormat()) ? `&controls=${this.getControlsFormat()}` : '';
     const plugin = (this.getPlugins()) ? `&${this.getPlugins()}` : '';
@@ -786,14 +788,14 @@ export default class IncicartoControl extends IDEE.Control {
       .includes(PATH_NAME)) {
       onlyURL = true;
       url = url.split('?')[0];
-      apiUrl += `?${center}${zoom}${srs}${layers}${controls}${plugin}`;
+      apiUrl += `?${center}${zoom}${stringBgColor}${srs}${layers}${controls}${plugin}`;
     } else {
       // Visor
       // URL del visor - centro, zoom, srs, todas las capas.
       // URL de la API - centro, zoom, srs, todas las capas.
       url = url.split('?')[0];
-      url += `?${center}${zoom}${srs}${layers}`;
-      apiUrl += `?${center}${zoom}${srs}${layers}`;
+      url += `?${center}${zoom}${stringBgColor}${srs}${layers}`;
+      apiUrl += `?${center}${zoom}${stringBgColor}${srs}${layers}`;
     }
 
     if (url.indexOf('.jsp') > -1) {
