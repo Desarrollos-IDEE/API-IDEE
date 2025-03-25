@@ -523,9 +523,10 @@ export const parseViewExtent = (parameter) => {
 };
 
 /**
- * This functions gets the background color container parameter setted by the user.
- *
- * @private
+ * Esta función analiza un parámetro de "bgColorContainer" en un formato legible.
+ * parámetro a API-IDEE y chequea posibles errores. *
+ * @param {string|Mx.parameters.Map} parameter Parámetros.
+ * @returns {String} Devuelve el "bgColorContainer".
  * @function
  */
 const parseBGColorContainer = (parameter) => {
