@@ -1,6 +1,3 @@
-import { GeoJSONReader } from 'jsts/org/locationtech/jts/io';
-import RelateOp from 'jsts/org/locationtech/jts/operation/relate/RelateOp';
-
 /**
  * @classdesc
  * @api
@@ -197,11 +194,11 @@ const toCQLFilter = (operation, geometries) => {
 export const intersect = (param) => {
   const geometries = parseParamToGeometries(param);
   return new Spatial((geometryToFilter, index) => {
-    const geojsonParser = new GeoJSONReader();
+    const geojsonParser = new jsts.io.GeoJSONReader();
     const jtsGeomToFilter = geojsonParser.read(geometryToFilter);
     return geometries.some((geom) => {
       const jtsGeom = geojsonParser.read(geom);
-      return RelateOp.intersects(jtsGeomToFilter, jtsGeom);
+      return jsts.operation.relate.RelateOp.intersects(jtsGeomToFilter, jtsGeom);
     });
   }, {
     cqlFilter: toCQLFilter('INTERSECTS', geometries),

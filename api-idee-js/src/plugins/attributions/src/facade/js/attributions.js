@@ -89,7 +89,7 @@ export default class Attributions extends IDEE.Plugin {
      * @private
      * @type {URLLike}
      */
-    this.url_ = options.url || 'https://componentes.cnig.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml';
+    this.url_ = options.url || 'https://componentes.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml';
     /**
      * Type of the data url
      *

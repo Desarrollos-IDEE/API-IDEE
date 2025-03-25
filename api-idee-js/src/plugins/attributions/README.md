@@ -40,7 +40,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 * **tooltip**: Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información). Por defecto: 'Reconocimientos'.
 * **mode**: Modo de uso del plugin Attributions (1 ó 2). Por defecto: 1
      - **1** `DISPONIBLE`: Atribuciones mediante archivo de atribuciones (modo por defecto). Parámetros específicos:
-         + **url**: Url del archivo de atribuciones a utilizar. Por defecto: 'https://componentes.cnig.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml'.
+         + **url**: Url del archivo de atribuciones a utilizar. Por defecto: 'https://componentes.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml'.
          + **type**: En el caso de no pasar nada por el parámetro 'layer' o pasar una capa que no sea de tipo vectorial, generará la capa de atribuciones con el tipo indicado en este parámetro. Los valores permitidos son ('kml' y 'geojson'). Por defecto: 'kml'.
          + **layerName**: Nombre asociado a la capa de atribuciones (nombre de la capa). Se usa para la construcción de la capa. Por defecto: 'attributions'.
          + **layer**: Capa definida por el usuario para determinar las atribuciones {IDEE.layer.GeoJSON | IDEE.layer.KML}. No requiere los parámetros anteriores (type, url y layerName)

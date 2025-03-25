@@ -15,3 +15,4 @@
 - Se crea nueva página con enlaces a la documentación.
 - Eliminación y configuración de perfiles de compilación.
 - Eliminación de plantillas de /files/templates y /templates dentro del war.
+- Se añade librería jsts como global.

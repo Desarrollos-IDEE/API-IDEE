@@ -16,7 +16,7 @@ const libraries = [{
 },
 {
   name: 'jsts',
-  path: 'jsts/dist/jsts.min.js',
+  path: 'jsts',
 }];
 
 module.exports = libraries;
