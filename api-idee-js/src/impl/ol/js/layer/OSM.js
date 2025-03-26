@@ -176,7 +176,7 @@ class OSM extends Layer {
     this.resolutions_ = generateResolutionsFromExtent(
       this.facadeLayer_.getMaxExtent(),
       size,
-      16,
+      Number(IDEE.config.MAX_ZOOM),
       units,
     );
 
@@ -229,7 +229,7 @@ class OSM extends Layer {
       this.map.getMapImpl().updateSize();
       const size = this.map.getMapImpl().getSize();
       const units = this.map.getProjection().units;
-      const zoomLevels = 16;
+      const zoomLevels = Number(IDEE.config.MAX_ZOOM);
       this.resolutions_ = generateResolutionsFromExtent(
         this.facadeLayer_.getMaxExtent(),
         size,

@@ -238,7 +238,8 @@ class MBTilesVector extends Vector {
         });
       });
     } else {
-      const resolutions = generateResolutions(extent, DEFAULT_TILE_SIZE, this.maxZoomLevel_ || 28);
+      const resolutions = generateResolutions(extent, DEFAULT_TILE_SIZE, this.maxZoomLevel_
+        || Number(IDEE.config.MAX_ZOOM));
       this.createLayer({
         resolutions,
         extent,

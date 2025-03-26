@@ -141,7 +141,7 @@ class WMS extends LayerBase {
      * WMS numZoomLevels. Número de niveles de zoom.
      */
     if (isNullOrEmpty(this.options.numZoomLevels)) {
-      this.options.numZoomLevels = 20; // by default
+      this.options.numZoomLevels = Number(IDEE.config.MAX_ZOOM); // by default
     }
 
     /**

@@ -204,6 +204,22 @@ function fun(IDEE_) {
   IDEE_.config('MOVE_MAP_EXTRACT', false);
 
   /**
+   * Zoom máximo.
+   *
+   * @private
+   * @type {object}
+   */
+  IDEE_.config('MIN_ZOOM', '');
+
+  /**
+   * Zoom mínimo.
+   *
+   * @private
+   * @type {object}
+   */
+  IDEE_.config('MAX_ZOOM', '');
+
+  /**
    * Hace el popup inteligente
    *
    * @private
