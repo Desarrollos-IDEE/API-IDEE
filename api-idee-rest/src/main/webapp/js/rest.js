@@ -66,53 +66,53 @@ const CONTROLS = [
   {
     "name": "Control Attributions",
     "description": "Control Attributions",
-    "url": "https://componentes.idee.es/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=attributions"
+    "url": "/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=attributions"
 },
 {
   "name": "Control backgroundlayers",
   "description": "Control backgroundlayers",
-  "url": "https://componentes.idee.es/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=backgroundlayers"
+  "url": "/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=backgroundlayers"
 
 },
 {
     "name": "Control getfeatureinfo",
     "description": "Control getfeatureinfo",
-    "url": "https://componentes.idee.es/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=getfeatureinfo"
+    "url": "/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=getfeatureinfo"
 },
 {
     "name": "Control location",
     "description": "Control location",
-    "url": "https://componentes.idee.es/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=location"
+    "url": "/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=location"
 },
 {
     "name": "Control panzoom",
     "description": "Control panzoom",
-    "url": "https://componentes.idee.es/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=panzoom"
+    "url": "/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=panzoom"
 },
 {
     "name": "Control panzoombar",
     "description": "Control panzoombar",
-    "url": "https://componentes.idee.es/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=panzoombar"
+    "url": "/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=panzoombar"
 },
 {
     "name": "Control rotate",
     "description": "Control rotate",
-    "url": "https://componentes.idee.es/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=rotate"
+    "url": "/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=rotate"
 },
 {
     "name": "Control scale",
     "description": "Control scale",
-    "url": "https://componentes.idee.es/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=scale"
+    "url": "/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=scale"
 },
 {
     "name": "Control scaleline",
     "description": "Control scaleline",
-    "url": "https://componentes.idee.es/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=scaleline"
+    "url": "/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=scaleline"
 },
 {
     "name": "Todos los controles",
     "description": "Todos los controles",
-    "url": "https://componentes.idee.es/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=attributions,backgroundlayers,getfeatureinfo,location,panzoom,panzoombar,rotate,scale,scaleline"
+    "url": "/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=attributions,backgroundlayers,getfeatureinfo,location,panzoom,panzoombar,rotate,scale,scaleline"
 },
 ]
 
@@ -124,127 +124,127 @@ const PLUGINS = [
   {
     "name": "Plugin backimglayer",
     "description": "Plugin backimglayer",
-    "url": "https://componentes.idee.es/api-idee/?backimglayer"
+    "url": "/api-idee/?backimglayer"
 },
 {
     "name": "Plugin comparators",
     "description": "Plugin comparators",
-    "url": "https://componentes.idee.es/api-idee/?comparators"
+    "url": "/api-idee/?comparators"
 },
 {
     "name": "Plugin contactlink",
     "description": "Plugin contactlink",
-    "url": "https://componentes.idee.es/api-idee/?contactlink"
+    "url": "/api-idee/?contactlink"
 },
 {
     "name": "Plugin help",
     "description": "Plugin help",
-    "url": "https://componentes.idee.es/api-idee/?help"
+    "url": "/api-idee/?help"
 },
 {
     "name": "Plugin incicarto",
     "description": "Plugin incicarto",
-    "url": "https://componentes.idee.es/api-idee/?incicarto"
+    "url": "/api-idee/?incicarto"
 },
 {
     "name": "Plugin infocoordinates",
     "description": "Plugin infocoordinates",
-    "url": "https://componentes.idee.es/api-idee/?infocoordinates"
+    "url": "/api-idee/?infocoordinates"
 },
 {
     "name": "Plugin information",
     "description": "Plugin information",
-    "url": "https://componentes.idee.es/api-idee/?information"
+    "url": "/api-idee/?information"
 },
 {
     "name": "Plugin layerswitcher",
     "description": "Plugin layerswitcher",
-    "url": "https://componentes.idee.es/api-idee/?layerswitcher"
+    "url": "/api-idee/?layerswitcher"
 },
 {
     "name": "Plugin locator",
     "description": "Plugin locator",
-    "url": "https://componentes.idee.es/api-idee/?locator"
+    "url": "/api-idee/?locator"
 },
 {
     "name": "Plugin locatorscn",
     "description": "Plugin locatorscn",
-    "url": "https://componentes.idee.es/api-idee/?locatorscn"
+    "url": "/api-idee/?locatorscn"
 },
 {
     "name": "Plugin measurebar",
     "description": "Plugin measurebar",
-    "url": "https://componentes.idee.es/api-idee/?measurebar"
+    "url": "/api-idee/?measurebar"
 },
 {
     "name": "Plugin modal",
     "description": "Plugin modal",
-    "url": "https://componentes.idee.es/api-idee/?modal"
+    "url": "/api-idee/?modal"
 },
 {
     "name": "Plugin mousesrs",
     "description": "Plugin mousesrs",
-    "url": "https://componentes.idee.es/api-idee/?mousesrs"
+    "url": "/api-idee/?mousesrs"
 },
 {
     "name": "Plugin overviewmap",
     "description": "Plugin overviewmap",
-    "url": "https://componentes.idee.es/api-idee/?overviewmap"
+    "url": "/api-idee/?overviewmap"
 },
 {
     "name": "Plugin printviewmanagement",
     "description": "Plugin printviewmanagement",
-    "url": "https://componentes.idee.es/api-idee/?printviewmanagement"
+    "url": "/api-idee/?printviewmanagement"
 },
 {
     "name": "Plugin queryattributes",
     "description": "Plugin queryattributes",
-    "url": "https://componentes.idee.es/api-idee/?queryattributes"
+    "url": "/api-idee/?queryattributes"
 },
 {
     "name": "Plugin rescale",
     "description": "Plugin rescale",
-    "url": "https://componentes.idee.es/api-idee/?rescale"
+    "url": "/api-idee/?rescale"
 },
 {
     "name": "Plugin selectionzoom",
     "description": "Plugin selectionzoom",
-    "url": "https://componentes.idee.es/api-idee/?selectionzoom"
+    "url": "/api-idee/?selectionzoom"
 },
 {
     "name": "Plugin sharemap",
     "description": "Plugin sharemap",
-    "url": "https://componentes.idee.es/api-idee/?sharemap"
+    "url": "/api-idee/?sharemap"
 },
 {
     "name": "Plugin storymap",
     "description": "Plugin storymap",
-    "url": "https://componentes.idee.es/api-idee/?storymap"
+    "url": "/api-idee/?storymap"
 },
 {
     "name": "Plugin stylemanager",
     "description": "Plugin stylemanager",
-    "url": "https://componentes.idee.es/api-idee/?stylemanager"
+    "url": "/api-idee/?stylemanager"
 },
 {
     "name": "Plugin timeline",
     "description": "Plugin timeline",
-    "url": "https://componentes.idee.es/api-idee/?timeline"
+    "url": "/api-idee/?timeline"
 },
 {
     "name": "Plugin vectorsmanagement",
     "description": "Plugin vectorsmanagement",
-    "url": "https://componentes.idee.es/api-idee/?vectorsmanagement"
+    "url": "/api-idee/?vectorsmanagement"
 },
 {
     "name": "Plugin viewmanagement",
     "description": "Plugin viewmanagement",
-    "url": "https://componentes.idee.es/api-idee/?viewmanagement"
+    "url": "/api-idee/?viewmanagement"
 },
 {
     "name": "Todos los plugins",
     "description": "Todos los plugins",
-    "url": "https://componentes.idee.es/api-idee/?plugins=backimglayer,comparators,contactlink,help,incicarto,infocoordinates,information,layerswitcher,locator,locatorscn,measurebar,modal,mousesrs,overviewmap,printviewmanagement,queryattributes,rescale,selectionzoom,sharemap,storymap,stylemanager,timeline,vectorsmanagement,viewmanagement"
+    "url": "/api-idee/?plugins=backimglayer,comparators,contactlink,help,incicarto,infocoordinates,information,layerswitcher,locator,locatorscn,measurebar,modal,mousesrs,overviewmap,printviewmanagement,queryattributes,rescale,selectionzoom,sharemap,storymap,stylemanager,timeline,vectorsmanagement,viewmanagement"
 }
 ];
 
