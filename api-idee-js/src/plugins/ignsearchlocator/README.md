@@ -13,8 +13,8 @@ Plugin que permite la búsqueda de Direcciones postales (Geocoder de Cartociudad
 - ignsearchlocator.ol.min.css
 
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/ignsearchlocator/ignsearchlocator.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/ignsearchlocator/ignsearchlocator.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/ignsearchlocator/ignsearchlocator.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/ignsearchlocator/ignsearchlocator.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -22,8 +22,8 @@ Plugin que permite la búsqueda de Direcciones postales (Geocoder de Cartociudad
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/ignsearchlocator/ignsearchlocator-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/ignsearchlocator/ignsearchlocator-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/ignsearchlocator/ignsearchlocator-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/ignsearchlocator/ignsearchlocator-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros
@@ -212,15 +212,15 @@ URL_API?ignsearchlocator=position*collapsible*isCollapsed*tooltip*servicesToSear
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.cnig.es/api-idee?ignsearchlocator=TL*true*false*IGNSEARCHLOCATOR*gn*10*poblacion*true*false*https%3A%2F%2Fwww.cartociudad.es%2Fgeocoder%2Fapi%2Fgeocoder%2FfindJsonp%3Fq%3D%3Cspan%2520id%3D%22info%22%3EC%C3%A1ceres%2C%2520C%C3%A1ceres%3C%2Fspan%3E%2520%26type%3DMunicipio%26tip_via%3Dnull%26id%3D10037
+https://componentes.idee.es/api-idee?ignsearchlocator=TL*true*false*IGNSEARCHLOCATOR*gn*10*poblacion*true*false*https%3A%2F%2Fwww.cartociudad.es%2Fgeocoder%2Fapi%2Fgeocoder%2FfindJsonp%3Fq%3D%3Cspan%2520id%3D%22info%22%3EC%C3%A1ceres%2C%2520C%C3%A1ceres%3C%2Fspan%3E%2520%26type%3DMunicipio%26tip_via%3Dnull%26id%3D10037
 ```
 
 ```
-https://componentes.cnig.es/api-idee?ignsearchlocator=TL*true*false*IGNSEARCHLOCATOR*gn*10*poblacion*true*false**ES.IGN.NGBE.2814868
+https://componentes.idee.es/api-idee?ignsearchlocator=TL*true*false*IGNSEARCHLOCATOR*gn*10*poblacion*true*false**ES.IGN.NGBE.2814868
 ```
 
 ```
-https://componentes.cnig.es/api-idee?ignsearchlocator=TL*true*false*IGNSEARCHLOCATOR*gn*10*poblacion*true*false***-5.98351886687987,37.39136733122602
+https://componentes.idee.es/api-idee?ignsearchlocator=TL*true*false*IGNSEARCHLOCATOR*gn*10*poblacion*true*false***-5.98351886687987,37.39136733122602
 ```
 
 

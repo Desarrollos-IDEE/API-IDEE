@@ -33,6 +33,7 @@ public abstract class ParametersParser {
       String ticket = queryParams.getFirst("ticket");
       String zoomconstrains = queryParams.getFirst("zoomConstrains");
       String viewextent = queryParams.getFirst("viewextent");
+      String bgcolorcontainer = queryParams.getFirst("bgcolorcontainer");
       
       Parameters parameters = new Parameters();
       parameters.addContainer(container);
@@ -50,6 +51,7 @@ public abstract class ParametersParser {
       parameters.addTicket(ticket);
       parameters.addZoomConstrains(zoomconstrains);
       parameters.addViewExtent(viewextent);
+      parameters.addBGColorContainer(bgcolorcontainer);
       
       return parameters;
    }

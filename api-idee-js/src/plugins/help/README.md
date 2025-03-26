@@ -18,8 +18,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 
 
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/help/help.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/help/help.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/help/help.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/help/help.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -27,8 +27,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/help/help-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/help/help-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/help/help-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/help/help-1.0.0.ol.min.js"></script>
 ```
 
 
@@ -44,7 +44,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 - **tooltip**: Tooltip que se muestra sobre el plugin (Se muestra al dejar el ratón encima del plugin como información). Por defecto: 'Ayuda'.
 - **header**: Objeto para indicar:
   - **images**: Array de URLs de imágenes para mostrar en la cabecera. Por defecto:
-    ['https://componentes.cnig.es/api-idee/img/logo_ge.svg', 'https://componentes.cnig.es/api-idee/img/ign.svg']
+    ['https://componentes.idee.es/api-idee/img/logo_ge.svg', 'https://componentes.idee.es/api-idee/img/ign.svg']
   - **title**: Título para mostrar en la cabecera. Por defecto: 'Ayuda API-IDEE'.
 - **initialIndex**: Indica en que índice se abrira la página de ayuda.
 - **initialExtraContents**: Contenido extra para mostrar antes de la ayuda de las herramientas. Permite un array de objetos con el siguiente formato:
@@ -120,7 +120,7 @@ URL_API?help=position*tooltip*extendInitialExtraContents
 ### Ejemplo de uso API-REST
 
 ```
-https://componentes.cnig.es/api-idee/?help=TR*Obtener%20ayuda*true
+https://componentes.idee.es/api-idee/?help=TR*Obtener%20ayuda*true
 ```
 
 ### Ejemplo de uso API-REST en base64
@@ -139,7 +139,7 @@ Ejemplo del constructor:
 }
 ```
 ```
-https://componentes.cnig.es/api-idee/?help=base64=ewogIHBvc2l0aW9uOiAiVFIiLAogIHRvb2x0aXA6ICJPYnRlbmVyIGF5dWRhIiwKfQ==
+https://componentes.idee.es/api-idee/?help=base64=ewogIHBvc2l0aW9uOiAiVFIiLAogIHRvb2x0aXA6ICJPYnRlbmVyIGF5dWRhIiwKfQ==
 ```
 
 # Ejemplo de uso

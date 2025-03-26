@@ -15,8 +15,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 - **queryattributes.ol.min.css**
 
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/queryattributes/queryattributes.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/queryattributes/queryattributes.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/queryattributes/queryattributes.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/queryattributes/queryattributes.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -24,8 +24,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/queryattributes/queryattributes-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/queryattributes/queryattributes-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/queryattributes/queryattributes-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/queryattributes/queryattributes-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros
@@ -124,7 +124,7 @@ URL_API?queryattributes=position*collapsed*collapsible*tooltip*filters*refreshBB
 ### Ejemplo de uso API-REST
 
 ```
-https://componentes.cnig.es/api-idee?queryattributes=TR*true*true*atributos*true*true
+https://componentes.idee.es/api-idee?queryattributes=TR*true*true*atributos*true*true
 ```
 
 ### Ejemplo de uso API-REST en base64
@@ -158,7 +158,7 @@ Ejemplo de constructor del plugin:
 }
 ```
 ```
-https://componentes.cnig.es/api-idee/?queryattributes=base64=eyJwb3NpdGlvbiI6IlRMIiwidG9vbHRpcCI6IkNvbnN1bHRhIGRlIGF0cmlidXRvcyIsInJlZnJlc2hCQk9YRmlsdGVyT25QYW5uaW5nIjp0cnVlLCJjb25maWd1cmF0aW9uIjp7ImxheWVyIjoidmVydGljZXMiLCJwayI6ImlkIiwiaW5pdGlhbFNvcnQiOnsibmFtZSI6Im5vbWJyZSIsImRpciI6ImFzYyJ9LCJjb2x1bW5zIjpbeyJuYW1lIjoiaWQiLCJhbGlhcyI6IklkZW50aWZpY2Fkb3IiLCJ2aXNpYmxlIjpmYWxzZSwic2VhcmNoYWJsZSI6ZmFsc2UsInNob3dwYW5lbGluZm8iOnRydWUsImFsaWduIjoicmlnaHQiLCJ0eXBlIjoic3RyaW5nIn0seyJuYW1lIjoibm9tYnJlIiwiYWxpYXMiOiJOb21icmUgVsOpcnRpY2UiLCJ2aXNpYmxlIjp0cnVlLCJzZWFyY2hhYmxlIjp0cnVlLCJzaG93cGFuZWxpbmZvIjp0cnVlLCJhbGlnbiI6ImxlZnQiLCJ0eXBlIjoic3RyaW5nIn0seyJuYW1lIjoidXJsZmljaGEiLCJhbGlhcyI6IlVSTCBQREYgRmljaGEiLCJ2aXNpYmxlIjp0cnVlLCJzZWFyY2hhYmxlIjpmYWxzZSwic2hvd3BhbmVsaW5mbyI6dHJ1ZSwiYWxpZ24iOiJsZWZ0IiwidHlwZSI6ImxpbmtVUkwiLCJ0eXBlcGFyYW0iOiJGaWNoYSB2w6lydGljZSJ9LHsibmFtZSI6ImltYWdlbXRuNTAiLCJhbGlhcyI6IkltYWdlbiBIb2phIE1UTjUwIiwidmlzaWJsZSI6dHJ1ZSwic2VhcmNoYWJsZSI6ZmFsc2UsInNob3dwYW5lbGluZm8iOnRydWUsImFsaWduIjoibGVmdCIsInR5cGUiOiJpbWFnZSJ9XX19&layers=GeoJSON*vertices*https://projects.develmap.com/attributestable/roivertexcenterred.geojson*true,TMS*TMSBaseIGN*https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/%7Bz%7D/%7Bx%7D/%7B-y%7D.jpeg*true*false*17
+https://componentes.idee.es/api-idee/?queryattributes=base64=eyJwb3NpdGlvbiI6IlRMIiwidG9vbHRpcCI6IkNvbnN1bHRhIGRlIGF0cmlidXRvcyIsInJlZnJlc2hCQk9YRmlsdGVyT25QYW5uaW5nIjp0cnVlLCJjb25maWd1cmF0aW9uIjp7ImxheWVyIjoidmVydGljZXMiLCJwayI6ImlkIiwiaW5pdGlhbFNvcnQiOnsibmFtZSI6Im5vbWJyZSIsImRpciI6ImFzYyJ9LCJjb2x1bW5zIjpbeyJuYW1lIjoiaWQiLCJhbGlhcyI6IklkZW50aWZpY2Fkb3IiLCJ2aXNpYmxlIjpmYWxzZSwic2VhcmNoYWJsZSI6ZmFsc2UsInNob3dwYW5lbGluZm8iOnRydWUsImFsaWduIjoicmlnaHQiLCJ0eXBlIjoic3RyaW5nIn0seyJuYW1lIjoibm9tYnJlIiwiYWxpYXMiOiJOb21icmUgVsOpcnRpY2UiLCJ2aXNpYmxlIjp0cnVlLCJzZWFyY2hhYmxlIjp0cnVlLCJzaG93cGFuZWxpbmZvIjp0cnVlLCJhbGlnbiI6ImxlZnQiLCJ0eXBlIjoic3RyaW5nIn0seyJuYW1lIjoidXJsZmljaGEiLCJhbGlhcyI6IlVSTCBQREYgRmljaGEiLCJ2aXNpYmxlIjp0cnVlLCJzZWFyY2hhYmxlIjpmYWxzZSwic2hvd3BhbmVsaW5mbyI6dHJ1ZSwiYWxpZ24iOiJsZWZ0IiwidHlwZSI6ImxpbmtVUkwiLCJ0eXBlcGFyYW0iOiJGaWNoYSB2w6lydGljZSJ9LHsibmFtZSI6ImltYWdlbXRuNTAiLCJhbGlhcyI6IkltYWdlbiBIb2phIE1UTjUwIiwidmlzaWJsZSI6dHJ1ZSwic2VhcmNoYWJsZSI6ZmFsc2UsInNob3dwYW5lbGluZm8iOnRydWUsImFsaWduIjoibGVmdCIsInR5cGUiOiJpbWFnZSJ9XX19&layers=GeoJSON*vertices*https://projects.develmap.com/attributestable/roivertexcenterred.geojson*true,TMS*TMSBaseIGN*https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/%7Bz%7D/%7Bx%7D/%7B-y%7D.jpeg*true*false*17
 ```
 
 # Ejemplo de uso

@@ -15,8 +15,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 - **attributions.ol.min.css**
 
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/attributions/attributions.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/attributions/attributions.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/attributions/attributions.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/attributions/attributions.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -24,8 +24,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/attributions/attributions-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/attributions/attributions-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/attributions/attributions-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/attributions/attributions-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros
@@ -175,11 +175,11 @@ URL_API?attributions=position*tooltip*mode*scale*defaultAttribution*defaultURL*u
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.cnig.es/api-idee?attributions=TR*Plugin%20atribuciones*1*300*attributions*https://componentes.cnig.es/NucleoVisualizador/vectorial_examples/atribucion.kml*https://componentes.ign.es/NucleoVisualizador/vectorial_examples/atribucionPNOA.kml*kml*attributions*atribucion*url*100*200*Gobierno%20de%20España
+https://componentes.idee.es/api-idee?attributions=TR*Plugin%20atribuciones*1*300*attributions*https://componentes.cnig.es/NucleoVisualizador/vectorial_examples/atribucion.kml*https://componentes.ign.es/NucleoVisualizador/vectorial_examples/atribucionPNOA.kml*kml*attributions*atribucion*url*100*200*Gobierno%20de%20España
 ```
 
 ```
-https://componentes.cnig.es/api-idee?attributions=BL*Plugin%20atribuciones*1*10000***http://www.ign.es/resources/viewer/data/20200206_atribucionPNOA-3857.geojson*geojson
+https://componentes.idee.es/api-idee?attributions=BL*Plugin%20atribuciones*1*10000***http://www.ign.es/resources/viewer/data/20200206_atribucionPNOA-3857.geojson*geojson
 ```
 
 ### Ejemplo de uso API-REST en base64
@@ -202,7 +202,7 @@ Ejemplo de constructor:
 }
 ```
 ```
-https://componentes.cnig.es/api-idee/?attributions=base64=eyJtb2RlIjoxLCJzY2FsZSI6MTAwMDAsInVybCI6Imh0dHA6Ly93d3cuaWduLmVzL3Jlc291cmNlcy92aWV3ZXIvZGF0YS8yMDIwMDIwNl9hdHJpYnVjaW9uUE5PQS0zODU3Lmdlb2pzb24iLCJ0eXBlIjoiZ2VvanNvbiIsInBvc2l0aW9uIjoiQkwiLCJ0b29sdGlwIjoiQXRyaWJ1Y2lvbmVzIn0=
+https://componentes.idee.es/api-idee/?attributions=base64=eyJtb2RlIjoxLCJzY2FsZSI6MTAwMDAsInVybCI6Imh0dHA6Ly93d3cuaWduLmVzL3Jlc291cmNlcy92aWV3ZXIvZGF0YS8yMDIwMDIwNl9hdHJpYnVjaW9uUE5PQS0zODU3Lmdlb2pzb24iLCJ0eXBlIjoiZ2VvanNvbiIsInBvc2l0aW9uIjoiQkwiLCJ0b29sdGlwIjoiQXRyaWJ1Y2lvbmVzIn0=
 ```
 # Ejemplo de uso
 

@@ -434,6 +434,8 @@ if (listAllFunctions && listAllFunctions.length > 0) { // Confirmar que existen 
         parameterTest = () => { // setParameterTest
           if (auxName === 'setBbox') {
             showResult(auxButton, 'SET_BBOX', mapa[auxName]({ x: { min: -1054179, max: 1191234 }, y: { min: 4246770, max: 6514198 } }));
+          } else if (auxName === 'setBGColorContainer') {
+            showResult(auxButton, 'SET_BGCOLOR', mapa[auxName]('red'));
           } else if (auxName === 'setCenter') {
             showResult(auxButton, 'SET_CENTER', mapa[auxName]({ x: -690278.9143510933, y: 4477348.883930369 }));
           } else if (auxName === 'setImpl') {

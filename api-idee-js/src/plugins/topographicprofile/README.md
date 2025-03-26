@@ -20,8 +20,8 @@ Plugin que permite realizar un perfil longitudinal en función del eje que dibuj
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es//plugins/topographicprofile/topographicprofile-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es//plugins/topographicprofile/topographicprofile-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/topographicprofile/topographicprofile-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/topographicprofile/topographicprofile-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros

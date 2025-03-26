@@ -100,7 +100,7 @@ export default class BackImgLayer extends IDEE.Plugin {
      * @public
      * @type {String}
      */
-    this.previews = options.previews || 'https://componentes.cnig.es/api-idee/plugins/backimglayer/images/svqmapa.png';
+    this.previews = options.previews || 'https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqmapa.png';
 
     /**
      * Layers separated by ','.

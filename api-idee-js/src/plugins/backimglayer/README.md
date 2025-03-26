@@ -14,8 +14,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 - **backimglayer.ol.min.css**
 
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/backimglayer/backimglayer.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/backimglayer/backimglayer.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/backimglayer/backimglayer.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/backimglayer/backimglayer.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -23,8 +23,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/backimglayer/backimglayer-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/backimglayer/backimglayer-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/backimglayer/backimglayer-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/backimglayer/backimglayer-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros
@@ -52,7 +52,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 - **empty**: Habilita la posibilidad de mostrar el mapa sin las capas de fondo cargadas del plugin (capa de fondo "vacía"). Verdadero "true", se activa esta funcionalidad. Falso por defecto.
 
 - **ids**: (Cuando layerOpts no se define) ids de las capas separados por ','. Por defecto: 'wmts'
-- **previews**: (Cuando layerOpts no se define) Rutas a las imagenes de previsualización de las capas separados por ','. Por defecto: 'https://componentes.cnig.es/api-idee/plugins/backimglayer/images/svqmapa.png'.
+- **previews**: (Cuando layerOpts no se define) Rutas a las imagenes de previsualización de las capas separados por ','. Por defecto: 'https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqmapa.png'.
 - **titles**: (Cuando layerOpts no se define) Titulos de las capas separados por ','. Por defecto: 'IGNBaseTodo'.
 - **layers**: (Cuando layerOpts no se define) Capas que se quieren cargar. Por defecto: ```WMTS*https://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*Mapa IGN*false*image/jpeg*false*false*true```
 
@@ -138,11 +138,11 @@ URL_API?backimglayer=position*!collapsed*!collapsible*!tooltip*!layerVisibility*
 
 ### Ejemplos de uso API-REST
 ```
-https://componentes.cnig.es/api-idee?backimglayer=TR*!true*!true*!Capas%20de%20fondo*!true*!0*!0*!true*!mapa,hibrido*!Mapa,Hibrido*!https://componentes.cnig.es/api-idee/plugins/backimglayer/images/svqmapa.png,https://componentes.cnig.es/api-idee/plugins/backimglayer/images/svqhibrid.png*!WMTS*https://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*Mapa%20IGN*false*image/jpeg*false*false*true,WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*Imagen%20(PNOA)*false*image/png*false*false*true
+https://componentes.idee.es/api-idee?backimglayer=TR*!true*!true*!Capas%20de%20fondo*!true*!0*!0*!true*!mapa,hibrido*!Mapa,Hibrido*!https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqmapa.png,https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqhibrid.png*!WMTS*https://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*Mapa%20IGN*false*image/jpeg*false*false*true,WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*Imagen%20(PNOA)*false*image/png*false*false*true
 ```
 
 ```
-https://componentes.cnig.es/api-idee/?backimglayer=TR*!true*!true*!Capas%20de%20fondo*!true
+https://componentes.idee.es/api-idee/?backimglayer=TR*!true*!true*!Capas%20de%20fondo*!true
 ```
 ### Ejemplo de uso API-REST en base64
 
@@ -165,13 +165,13 @@ Ejemplo de constructor:
   ids: "mapa,hibrido",
   titles: "Mapa,Hibrido",
   previews:
-    "https://componentes.cnig.es/api-idee/plugins/backimglayer/images/svqmapa.png,https://componentes.cnig.es/api-idee/plugins/backimglayer/images/svqhibrid.png",
+    "https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqmapa.png,https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqhibrid.png",
   layers:
     "WMTS*https://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*Mapa IGN*false*image/jpeg*false*false*true,WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*Imagen (PNOA)*false*image/png*false*false*true",
 }
 ```
 ```
-https://componentes.cnig.es/api-idee?backimglayer=base64=eyJwb3NpdGlvbiI6IlRSIiwiY29sbGFwc2VkIjp0cnVlLCJjb2xsYXBzaWJsZSI6dHJ1ZSwidG9vbHRpcCI6IkNhcGFzIGRlIGZvbmRvIiwibGF5ZXJWaXNpYmlsaXR5Ijp0cnVlLCJjb2x1bW5zTnVtYmVyIjowLCJlbXB0eSI6dHJ1ZSwiaWRzIjoibWFwYSxoaWJyaWRvIiwidGl0bGVzIjoiTWFwYSxIaWJyaWRvIiwicHJldmlld3MiOiJodHRwczovL2NvbXBvbmVudGVzLmNuaWcuZXMvYXBpLWNvcmUvcGx1Z2lucy9iYWNraW1nbGF5ZXIvaW1hZ2VzL3N2cW1hcGEucG5nLGh0dHBzOi8vY29tcG9uZW50ZXMuY25pZy5lcy9hcGktY29yZS9wbHVnaW5zL2JhY2tpbWdsYXllci9pbWFnZXMvc3ZxaGlicmlkLnBuZyIsImxheWVycyI6IldNVFMqaHR0cHM6Ly93d3cuaWduLmVzL3dtdHMvaWduLWJhc2U/KklHTkJhc2VUb2RvKkdvb2dsZU1hcHNDb21wYXRpYmxlKk1hcGEgSUdOKmZhbHNlKmltYWdlL2pwZWcqZmFsc2UqZmFsc2UqdHJ1ZSxXTVRTKmh0dHBzOi8vd3d3Lmlnbi5lcy93bXRzL3Bub2EtbWE/Kk9JLk9ydGhvaW1hZ2VDb3ZlcmFnZSpHb29nbGVNYXBzQ29tcGF0aWJsZSpJbWFnZW4gKFBOT0EpKmZhbHNlKmltYWdlL3BuZypmYWxzZSpmYWxzZSp0cnVlIn0=
+https://componentes.idee.es/api-idee?backimglayer=base64=eyJwb3NpdGlvbiI6IlRSIiwiY29sbGFwc2VkIjp0cnVlLCJjb2xsYXBzaWJsZSI6dHJ1ZSwidG9vbHRpcCI6IkNhcGFzIGRlIGZvbmRvIiwibGF5ZXJWaXNpYmlsaXR5Ijp0cnVlLCJjb2x1bW5zTnVtYmVyIjowLCJlbXB0eSI6dHJ1ZSwiaWRzIjoibWFwYSxoaWJyaWRvIiwidGl0bGVzIjoiTWFwYSxIaWJyaWRvIiwicHJldmlld3MiOiJodHRwczovL2NvbXBvbmVudGVzLmNuaWcuZXMvYXBpLWNvcmUvcGx1Z2lucy9iYWNraW1nbGF5ZXIvaW1hZ2VzL3N2cW1hcGEucG5nLGh0dHBzOi8vY29tcG9uZW50ZXMuY25pZy5lcy9hcGktY29yZS9wbHVnaW5zL2JhY2tpbWdsYXllci9pbWFnZXMvc3ZxaGlicmlkLnBuZyIsImxheWVycyI6IldNVFMqaHR0cHM6Ly93d3cuaWduLmVzL3dtdHMvaWduLWJhc2U/KklHTkJhc2VUb2RvKkdvb2dsZU1hcHNDb21wYXRpYmxlKk1hcGEgSUdOKmZhbHNlKmltYWdlL2pwZWcqZmFsc2UqZmFsc2UqdHJ1ZSxXTVRTKmh0dHBzOi8vd3d3Lmlnbi5lcy93bXRzL3Bub2EtbWE/Kk9JLk9ydGhvaW1hZ2VDb3ZlcmFnZSpHb29nbGVNYXBzQ29tcGF0aWJsZSpJbWFnZW4gKFBOT0EpKmZhbHNlKmltYWdlL3BuZypmYWxzZSpmYWxzZSp0cnVlIn0=
 ```
 
 

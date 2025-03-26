@@ -460,12 +460,26 @@ export default class MirrorpanelControl extends IDEE.Control {
      * Create mirror map object synchro with the main map
      */
   createMapObjects(mapLyr) {
-    this.mapL[mapLyr] = IDEE.map({
-      container: `mapjs${mapLyr}`,
-      center: this.map_.getCenter(),
-      projection: `${this.map_.getProjection().code}*${this.map_.getProjection().units}`,
-      zoom: this.map_.getZoom(),
-    });
+    const bgColorContainer = this.map_.getBGColorContainer();
+
+    if (bgColorContainer) {
+      // eslint-disable-next-line no-console
+      console.log('bgColorContainer', bgColorContainer);
+      this.mapL[mapLyr] = IDEE.map({
+        container: `mapjs${mapLyr}`,
+        center: this.map_.getCenter(),
+        projection: `${this.map_.getProjection().code}*${this.map_.getProjection().units}`,
+        zoom: this.map_.getZoom(),
+        bgColorContainer,
+      });
+    } else {
+      this.mapL[mapLyr] = IDEE.map({
+        container: `mapjs${mapLyr}`,
+        center: this.map_.getCenter(),
+        projection: `${this.map_.getProjection().code}*${this.map_.getProjection().units}`,
+        zoom: this.map_.getZoom(),
+      });
+    }
 
     // Le pasa la referencia del mapa principal al resto de mapas y así permite mover
     // todos los mapas a la vez

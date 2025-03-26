@@ -33,7 +33,7 @@ const mpBIL = new IDEE.plugin.BackImgLayer({
     { // LiDAR Híbrido
       id: 'pnoa-hibido',
       title: 'PNOA Híbrido',
-      preview: 'https://componentes.cnig.es/api-idee/plugins/backimglayer/images/svqhibrid.png',
+      preview: 'https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqhibrid.png',
       layers: [new IDEE.layer.WMTS({
         url: 'https://www.ign.es/wmts/pnoa-ma?',
         name: 'OI.OrthoimageCoverage',
@@ -54,7 +54,7 @@ const mpBIL = new IDEE.plugin.BackImgLayer({
     { // PNOA Híbrido
       id: 'lidar-hibrido',
       title: 'LiDAR Híbrido',
-      preview: 'https://componentes.cnig.es/api-idee/plugins/backimglayer/images/svqlidar.png',
+      preview: 'https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqlidar.png',
       layers: [new IDEE.layer.WMTS({
         url: 'https://wmts-mapa-lidar.idee.es/lidar?',
         name: 'EL.GridCoverageDSM',
@@ -74,7 +74,7 @@ const mpBIL = new IDEE.plugin.BackImgLayer({
     },
     { // Mapa base
       id: 'mapa',
-      preview: 'https://componentes.cnig.es/api-idee/plugins/backimglayer/images/svqmapa.png',
+      preview: 'https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqmapa.png',
       title: 'Mapa',
       layers: [new IDEE.layer.WMTS({
         url: 'https://www.ign.es/wmts/ign-base?',
@@ -88,7 +88,7 @@ const mpBIL = new IDEE.plugin.BackImgLayer({
     { //PNOA sin textos
       id: 'imagen',
       title: 'Imagen',
-      preview: 'https://componentes.cnig.es/api-idee/plugins/backimglayer/images/svqimagen.png',
+      preview: 'https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqimagen.png',
       layers: [new IDEE.layer.WMTS({
         url: 'https://www.ign.es/wmts/pnoa-ma?',
         name: 'OI.OrthoimageCoverage',
@@ -100,7 +100,7 @@ const mpBIL = new IDEE.plugin.BackImgLayer({
     },
     { // LiDAR sin textos
       id: 'lidar',
-      preview: 'https://componentes.cnig.es/api-idee/plugins/backimglayer/images/svqlidar.png',
+      preview: 'https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqlidar.png',
       title: 'LIDAR',
       layers: [new IDEE.layer.WMTS({
         url: 'https://wmts-mapa-lidar.idee.es/lidar?',
@@ -113,7 +113,7 @@ const mpBIL = new IDEE.plugin.BackImgLayer({
     },
     { // SIOSE
       id: 'MAPAMTN',
-      preview: 'https://componentes.cnig.es/api-idee/plugins/backimglayer/images/svqmapa.png', // 'img/mtnactual.jpg' No esta esta imagen para probar
+      preview: 'https://componentes.idee.es/api-idee/plugins/backimglayer/images/svqmapa.png', // 'img/mtnactual.jpg' No esta esta imagen para probar
       title: 'Mapa MTN',
       layers: [new IDEE.layer.WMTS({
         url: 'https://www.ign.es/wmts/mapa-raster',
