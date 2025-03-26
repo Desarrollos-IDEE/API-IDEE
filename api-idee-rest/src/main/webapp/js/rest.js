@@ -66,12 +66,12 @@ const CONTROLS = [
   {
     "name": "Control Attributions",
     "description": "Control Attributions",
-    "url": "/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=attributions"
+    "url": "/api-idee/?controls=attributions"
 },
 {
   "name": "Control backgroundlayers",
   "description": "Control backgroundlayers",
-  "url": "/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=backgroundlayers"
+  "url": "/api-idee/?controls=backgroundlayers"
 
 },
 {
@@ -82,37 +82,37 @@ const CONTROLS = [
 {
     "name": "Control location",
     "description": "Control location",
-    "url": "/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=location"
+    "url": "/api-idee/?controls=location"
 },
 {
     "name": "Control panzoom",
     "description": "Control panzoom",
-    "url": "/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=panzoom"
+    "url": "/api-idee/?controls=panzoom"
 },
 {
     "name": "Control panzoombar",
     "description": "Control panzoombar",
-    "url": "/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=panzoombar"
+    "url": "/api-idee/?controls=panzoombar"
 },
 {
     "name": "Control rotate",
     "description": "Control rotate",
-    "url": "/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=rotate"
+    "url": "/api-idee/?controls=rotate"
 },
 {
     "name": "Control scale",
     "description": "Control scale",
-    "url": "/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=scale"
+    "url": "/api-idee/?controls=scale"
 },
 {
     "name": "Control scaleline",
     "description": "Control scaleline",
-    "url": "/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=scaleline"
+    "url": "/api-idee/?controls=scaleline"
 },
 {
     "name": "Todos los controles",
     "description": "Todos los controles",
-    "url": "/api-idee/?layers=WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=attributions,backgroundlayers,getfeatureinfo,location,panzoom,panzoombar,rotate,scale,scaleline"
+    "url": "/api-idee/?layers=QUICK*Base_IGNBaseTodo_TMS,WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5&controls=attributions,backgroundlayers,getfeatureinfo,location,panzoom,panzoombar,rotate,scale,scaleline"
 },
 ]
 
