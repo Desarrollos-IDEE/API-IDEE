@@ -207,7 +207,7 @@ function fun(IDEE_) {
    * Zoom máximo.
    *
    * @private
-   * @type {object}
+   * @type {Number | String}
    */
   IDEE_.config('MIN_ZOOM', '');
 
@@ -215,7 +215,7 @@ function fun(IDEE_) {
    * Zoom mínimo.
    *
    * @private
-   * @type {object}
+   * @type {Number | String}
    */
   IDEE_.config('MAX_ZOOM', '');
 

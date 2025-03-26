@@ -251,16 +251,16 @@ params.forEach((param) => {
   /**
    * Zoom máximo.
    *
-   * @private
-   * @type {object}
+   * @public
+   * @type {Number | String}
    */
   IDEE.config('MAX_ZOOM', '${maxZoom}');
 
   /**
    * Zoom mínimo.
    *
-   * @private
-   * @type {object}
+   * @public
+   * @type {Number | String}
    */
   IDEE.config('MIN_ZOOM', '${minZoom}');
 
