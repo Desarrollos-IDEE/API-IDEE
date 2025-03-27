@@ -1,0 +1,235 @@
+{
+    "plugins": [
+      {
+        "name": "attributions",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/attributions/attributions-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/attributions/attributions-1.0.0.ol.min.css"
+          }
+        ]
+      },
+      {
+        "name": "buffer",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/buffer/buffer-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/buffer/buffer-1.0.0.ol.min.css"
+          }
+        ]
+      },
+      {
+        "name": "comparepanel",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/comparepanel/comparepanel-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/comparepanel/comparepanel-1.0.0.ol.min.css"
+          }
+        ]
+      },
+      {
+        "name": "fulltoc",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/fulltoc/fulltoc-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/fulltoc/fulltoc-1.0.0.ol.min.css"
+          }
+        ]
+      },
+      {
+        "name": "geometrydraw",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/geometrydraw/geometrydraw-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/geometrydraw/geometrydraw-1.0.0.ol.min.css"
+          }
+        ]
+      },
+      {
+        "name": "georefimage",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/georefimage/georefimage-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/georefimage/georefimage-1.0.0.ol.min.css"
+          }
+        ]
+      },
+      {
+        "name": "georefimage2",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/georefimage2/georefimage2-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/georefimage2/georefimage2-1.0.0.ol.min.css"
+          }
+        ]
+      },
+      {
+        "name": "ignsearchlocator",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/ignsearchlocator/ignsearchlocator-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/ignsearchlocator/ignsearchlocator-1.0.0.ol.min.css"
+          }
+        ]
+      },
+      {
+        "name": "infocatastro",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/infocatastro/infocatastro-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/infocatastro/infocatastro-1.0.0.ol.min.css"
+          }
+        ]
+      },
+      {
+        "name": "lyrcompare",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/lyrcompare/lyrcompare-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/lyrcompare/lyrcompare-1.0.0.ol.min.css"
+          }
+        ]
+      },
+      {
+        "name": "mirrorpanel",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/mirrorpanel/mirrorpanel-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/mirrorpanel/mirrorpanel-1.0.0.ol.min.css"
+          }
+        ]
+      },
+      {
+        "name": "predefinedzoom",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/predefinedzoom/predefinedzoom-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/predefinedzoom/predefinedzoom-1.0.0.ol.min.css"
+          }
+        ]
+      },
+      {
+        "name": "printermap",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/printermap/printermap-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/printermap/printermap-1.0.0.ol.min.css"
+          }
+        ]
+      },
+      {
+        "name": "popup",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/popup/popup-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/popup/popup-1.0.0.ol.min.css"
+          }
+        ]
+      },
+      {
+        "name": "selectiondraw",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/selectiondraw/selectiondraw-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/selectiondraw/selectiondraw-1.0.0.ol.min.css"
+          }
+        ]
+      },
+      {
+        "name": "toc",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/toc/toc-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/toc/toc-1.0.0.ol.min.css"
+          }
+        ]
+      },
+      {
+        "name": "topographicprofile",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/topographicprofile/topographicprofile-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/topographicprofile/topographicprofile-1.0.0.ol.min.css"
+          }
+        ]
+      },
+      {
+        "name": "transparency",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/transparency/transparency-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/transparency/transparency-1.0.0.ol.min.css"
+          }
+        ]
+      },
+      {
+        "name": "vectors",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/vectors/vectors-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/vectors/vectors-1.0.0.ol.min.css"
+          }
+        ]
+      },
+      {
+        "name": "viewhistory",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/viewhistory/viewhistory-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/viewhistory/viewhistory-1.0.0.ol.min.css"
+          }
+        ]
+      },
+      {
+        "name": "xylocator",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/xylocator/xylocator-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/xylocator/xylocator-1.0.0.ol.min.css"
+          }
+        ]
+      },
+      {
+        "name": "zoomextent",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/zoomextent/zoomextent-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/zoomextent/zoomextent-1.0.0.ol.min.css"
+          }
+        ]
+      },
+      {
+        "name": "zoompanel",
+        "versions": [
+          {
+            "api-idee": "1.0.0",
+            "js": "${api-idee.url}plugins/zoompanel/zoompanel-1.0.0.ol.min.js",
+            "css": "${api-idee.url}plugins/zoompanel/zoompanel-1.0.0.ol.min.css"
+          }
+        ]
+      }
+    ]
+  }
+  
