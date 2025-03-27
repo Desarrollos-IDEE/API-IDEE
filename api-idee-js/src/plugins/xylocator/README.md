@@ -88,3 +88,6 @@ const mp = new IDEE.plugin.XYLocator({
 
 map.addPlugin(mp);
 ```
+
+## Tabla de compatibilidad de versiones   
+[Consulta el api resourcePlugin](https://componentes.idee.es/api-idee/api/actions/resourcesPlugins?name=xylocator)

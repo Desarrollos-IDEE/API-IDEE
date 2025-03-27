@@ -70,3 +70,8 @@ mapajs.addPlugin(new IDEE.plugin.Georefimage2({
   printStatusUrl: 'https://geoprint.desarrollo.guadaltel.es/print/status',
 
 }));
+
+```  
+
+## Tabla de compatibilidad de versiones   
+[Consulta el api resourcePlugin](https://componentes.idee.es/api-idee/api/actions/resourcesPlugins?name=georefimage) 

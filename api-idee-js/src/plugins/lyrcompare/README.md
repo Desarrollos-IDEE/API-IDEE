@@ -260,5 +260,7 @@ const pluginLyrCompare = new IDEE.plugin.LyrCompare({
   comparisonMode: 1,
 });
 map.addPlugin(pluginLyrCompare);
-```
+```  
 
+## Tabla de compatibilidad de versiones   
+[Consulta el api resourcePlugin](https://componentes.idee.es/api-idee/api/actions/resourcesPlugins?name=lyrcompare)

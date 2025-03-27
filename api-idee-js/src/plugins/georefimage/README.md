@@ -70,3 +70,8 @@ mapajs.addPlugin(new IDEE.plugin.Georefimage({
   printStatusUrl: 'https://componentes.cnig.es/geoprint/print/CNIG/status',
 
 }));
+
+```  
+
+## Tabla de compatibilidad de versiones   
+[Consulta el api resourcePlugin](https://componentes.idee.es/api-idee/api/actions/resourcesPlugins?name=georefimage) 

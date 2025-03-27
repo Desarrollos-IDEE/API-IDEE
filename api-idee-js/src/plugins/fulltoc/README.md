@@ -286,3 +286,6 @@ El listado de capas aparece al pulsar sobre el botón añadir (Listado de alguna
 
    map.addPlugin(mp);
 ```
+
+## Tabla de compatibilidad de versiones   
+[Consulta el api resourcePlugin](https://componentes.idee.es/api-idee/api/actions/resourcesPlugins?name=fulltoc)

@@ -104,3 +104,6 @@ mp.on('ignsearch:entityFound', (extent) => {
 
    map.addPlugin(mp);
 ```
+
+## Tabla de compatibilidad de versiones   
+[Consulta el api resourcePlugin](https://componentes.idee.es/api-idee/api/actions/resourcesPlugins?name=ignsearch)
