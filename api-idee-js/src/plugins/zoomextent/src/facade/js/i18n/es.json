@@ -1,7 +1,0 @@
-{
-  "exception": {
-    "impl": "La implementación usada no puede crear controles ZoomExtentControl.",
-    "zoomextent_obsolete": "Mensaje para el desarrollador: IDEE.plugin.ZoomExtent ha quedado obsoleto, utilice en su lugar IDEE.plugin.ViewManagement"
-  },
-  "tooltip": "Zoom al recuadro"
-}
