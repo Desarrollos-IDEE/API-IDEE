@@ -64,17 +64,17 @@
         <label for="inputServerUrl">Parámetro inputServerUrl</label>
         <input type="text" value="" name="serverUrl" id="inputServerUrl" list="serverUrlSug">
         <datalist id="serverUrlSug">
-            <option value="https://geoprint.desarrollo.guadaltel.es"></option>
+            <option value="https://componentes.cnig.es/geoprint"></option>
         </datalist>
         <label for="inputPrintTemplateUrl">Parámetro inputPrintTemplateUrl</label>
         <input type="text" value="" name="printTemplateUrl" id="inputPrintTemplateUrl" list="printTemplateUrlSug">
         <datalist id="printTemplateUrlSug">
-            <option value="https://geoprint.desarrollo.guadaltel.es/print/mapexport"></option>
+            <option value="https://componentes.cnig.es/geoprint/print/mapexport"></option>
         </datalist>
         <label for="inputPrintStatusUrl">Parámetro inputPrintStatusUrl</label>
         <input type="text" value="" name="printStatusUrl" id="inputPrintStatusUrl" list="printStatusUrlSug">
         <datalist id="printStatusUrlSug">
-            <option value="https://geoprint.desarrollo.guadaltel.es/print/status"></option>
+            <option value=" https://componentes.cnig.es/geoprint/print/status"></option>
         </datalist>
         <input type="button" value="Eliminar Plugin" name="eliminar" id="botonEliminar">
     </div>

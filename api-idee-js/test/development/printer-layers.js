@@ -20,7 +20,7 @@ const campamentos = new IDEE.layer.GeoJSON({
 });
 
 const printer = new Printer({
-  url: 'https://geoprint.desarrollo.guadaltel.es/print/CNIG',
+  url: 'https://componentes.cnig.es/geoprint/print/CNIG',
   params: {
     layout: {
       outputFilename: 'api-idee_${yyyy-MM-dd_hhmmss}',
