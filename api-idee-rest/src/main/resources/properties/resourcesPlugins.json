@@ -7,6 +7,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/backimglayer/backimglayer-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/backimglayer/backimglayer-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/backimglayer/backimglayer.ol.min.js",
+          "css": "${api-idee.url}plugins/backimglayer/backimglayer.ol.min.css"
         }
       ]
     },
@@ -17,6 +22,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/comparators/comparators-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/comparators/comparators-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/comparators/comparators.ol.min.js",
+          "css": "${api-idee.url}plugins/comparators/comparators.ol.min.css"
         }
       ]
     },
@@ -27,6 +37,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/contactlink/contactlink-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/contactlink/contactlink-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/contactlink/contactlink.ol.min.js",
+          "css": "${api-idee.url}plugins/contactlink/contactlink.ol.min.css"
         }
       ]
     },
@@ -37,6 +52,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/help/help-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/help/help-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/help/help.ol.min.js",
+          "css": "${api-idee.url}plugins/help/help.ol.min.css"
         }
       ]
     },
@@ -47,6 +67,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/incicarto/incicarto-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/incicarto/incicarto-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/incicarto/incicarto.ol.min.js",
+          "css": "${api-idee.url}plugins/incicarto/incicarto.ol.min.css"
         }
       ]
     },
@@ -57,6 +82,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/infocoordinates/infocoordinates-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/infocoordinates/infocoordinates-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/infocoordinates/infocoordinates.ol.min.js",
+          "css": "${api-idee.url}plugins/infocoordinates/infocoordinates.ol.min.css"
         }
       ]
     },
@@ -67,6 +97,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/information/information-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/information/information-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/information/information.ol.min.js",
+          "css": "${api-idee.url}plugins/information/information.ol.min.css"
         }
       ]
     },
@@ -77,6 +112,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/layerswitcher/layerswitcher-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/layerswitcher/layerswitcher-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/layerswitcher/layerswitcher.ol.min.js",
+          "css": "${api-idee.url}plugins/layerswitcher/layerswitcher.ol.min.css"
         }
       ]
     },
@@ -87,6 +127,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/locator/locator-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/locator/locator-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/locator/locator.ol.min.js",
+          "css": "${api-idee.url}plugins/locator/locator.ol.min.css"
         }
       ]
     },
@@ -97,6 +142,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/locatorscn/locatorscn-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/locatorscn/locatorscn-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/locatorscn/locatorscn.ol.min.js",
+          "css": "${api-idee.url}plugins/locatorscn/locatorscn.ol.min.css"
         }
       ]
     },
@@ -107,6 +157,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/measurebar/measurebar-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/measurebar/measurebar-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/measurebar/measurebar.ol.min.js",
+          "css": "${api-idee.url}plugins/measurebar/measurebar.ol.min.css"
         }
       ]
     },
@@ -117,6 +172,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/modal/modal-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/modal/modal-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/modal/modal.ol.min.js",
+          "css": "${api-idee.url}plugins/modal/modal.ol.min.css"
         }
       ]
     },
@@ -127,6 +187,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/mousesrs/mousesrs-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/mousesrs/mousesrs-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/mousesrs/mousesrs.ol.min.js",
+          "css": "${api-idee.url}plugins/mousesrs/mousesrs.ol.min.css"
         }
       ]
     },
@@ -137,6 +202,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/overviewmap/overviewmap-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/overviewmap/overviewmap-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/overviewmap/overviewmap.ol.min.js",
+          "css": "${api-idee.url}plugins/overviewmap/overviewmap.ol.min.css"
         }
       ]
     },
@@ -147,6 +217,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/printviewmanagement/printviewmanagement-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/printviewmanagement/printviewmanagement-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/printviewmanagement/printviewmanagement.ol.min.js",
+          "css": "${api-idee.url}plugins/printviewmanagement/printviewmanagement.ol.min.css"
         }
       ]
     },
@@ -157,6 +232,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/queryattributes/queryattributes-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/queryattributes/queryattributes-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/queryattributes/queryattributes.ol.min.js",
+          "css": "${api-idee.url}plugins/queryattributes/queryattributes.ol.min.css"
         }
       ]
     },
@@ -167,6 +247,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/rescale/rescale-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/rescale/rescale-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/rescale/rescale.ol.min.js",
+          "css": "${api-idee.url}plugins/rescale/rescale.ol.min.css"
         }
       ]
     },
@@ -177,6 +262,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/selectionzoom/selectionzoom-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/selectionzoom/selectionzoom-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/selectionzoom/selectionzoom.ol.min.js",
+          "css": "${api-idee.url}plugins/selectionzoom/selectionzoom.ol.min.css"
         }
       ]
     },
@@ -187,6 +277,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/sharemap/sharemap-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/sharemap/sharemap-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/sharemap/sharemap.ol.min.js",
+          "css": "${api-idee.url}plugins/sharemap/sharemap.ol.min.css"
         }
       ]
     },
@@ -197,6 +292,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/storymap/storymap-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/storymap/storymap-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/storymap/storymap.ol.min.js",
+          "css": "${api-idee.url}plugins/storymap/storymap.ol.min.css"
         }
       ]
     },
@@ -207,6 +307,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/stylemanager/stylemanager-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/stylemanager/stylemanager-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/stylemanager/stylemanager.ol.min.js",
+          "css": "${api-idee.url}plugins/stylemanager/stylemanager.ol.min.css"
         }
       ]
     },
@@ -217,6 +322,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/timeline/timeline-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/timeline/timeline-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/timeline/timeline.ol.min.js",
+          "css": "${api-idee.url}plugins/timeline/timeline.ol.min.css"
         }
       ]
     },
@@ -227,6 +337,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/vectorsmanagement/vectorsmanagement-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/vectorsmanagement/vectorsmanagement-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/vectorsmanagement/vectorsmanagement.ol.min.js",
+          "css": "${api-idee.url}plugins/vectorsmanagement/vectorsmanagement.ol.min.css"
         }
       ]
     },
@@ -237,6 +352,11 @@
           "api-idee": "1.0.0",
           "js": "${api-idee.url}plugins/viewmanagement/viewmanagement-1.0.0.ol.min.js",
           "css": "${api-idee.url}plugins/viewmanagement/viewmanagement-1.0.0.ol.min.css"
+        },
+        {
+          "api-idee": "latest",
+          "js": "${api-idee.url}plugins/viewmanagement/viewmanagement.ol.min.js",
+          "css": "${api-idee.url}plugins/viewmanagement/viewmanagement.ol.min.css"
         }
       ]
     }
