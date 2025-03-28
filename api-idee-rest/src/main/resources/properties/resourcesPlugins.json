@@ -131,12 +131,12 @@
       ]
     },
     {
-      "name": "overview",
+      "name": "overviewmap",
       "versions": [
         {
           "api-idee": "1.0.0",
-          "js": "${api-idee.url}plugins/overview/overview-1.0.0.ol.min.js",
-          "css": "${api-idee.url}plugins/overview/overview-1.0.0.ol.min.css"
+          "js": "${api-idee.url}plugins/overviewmap/overviewmap-1.0.0.ol.min.js",
+          "css": "${api-idee.url}plugins/overviewmap/overviewmap-1.0.0.ol.min.css"
         }
       ]
     },
