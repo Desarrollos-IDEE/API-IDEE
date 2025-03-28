@@ -138,5 +138,10 @@
         "name": "Parámetro label con chincheta",
         "description": "Parámetro label con chincheta",
         "url": "/api-idee/?center=-1264453.9015709583,4323899.840546544*true&label=%3Cb%3EPopup%20de%20prueba%3C/b%3E%3Cbr%3EFunciona%20correctamente%20con%20tildes:%20cami%C3%B3n%20%C3%A1%C3%A9%C3%AD%C3%B3%C3%BA"
+    },
+    {
+        "name": "Parámetro bgcolorcontainer",
+        "description": "Parámetro bgcolorcontainer",
+        "url": "/api-idee/?bgcolorcontainer=red&layers=OSM&projection=EPSG:25830*m&plugins=sharemap"
     }
   ]
