@@ -16,8 +16,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 
 
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/buffer/buffer.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/buffer/buffer.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/buffer/buffer.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/buffer/buffer.ol.min.js"></script>
 ```
 
 ## Parámetros
@@ -70,11 +70,11 @@ URL_API?buffer=position*collapsed*collapsible*tooltip
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.cnig.es/api-idee?buffer=TR*true*true*buffer%20plugin
+https://componentes.idee.es/api-idee?buffer=TR*true*true*buffer%20plugin
 ```
 
 ```
-https://componentes.cnig.es/api-idee?buffer=TL
+https://componentes.idee.es/api-idee?buffer=TL
 ```
 ### Ejemplos de uso
 
@@ -94,7 +94,7 @@ Ejemplo de constructor del plugin:
 }
 ```
 ```
-https://componentes.cnig.es/api-idee?buffer=base64=eyJwb3NpdGlvbiI6IlRMIiwiY29sbGFwc2VkIjpmYWxzZSwiY29sbGFwc2libGUiOnRydWUsInRvb2x0aXAiOiJCdWZmZXIifQ==
+https://componentes.idee.es/api-idee?buffer=base64=eyJwb3NpdGlvbiI6IlRMIiwiY29sbGFwc2VkIjpmYWxzZSwiY29sbGFwc2libGUiOnRydWUsInRvb2x0aXAiOiJCdWZmZXIifQ==
 ```
 
 # Ejemplo de uso

@@ -2,8 +2,8 @@
   "extends": "airbnb",
   "globals": {
     "IDEE": true,
-    "ol": "true",
-    "cesium": "true",
+    "ol": true,
+    "cesium": true,
     "Handlebars": true,
     "proj4": true,
     "ActiveXObject": true,

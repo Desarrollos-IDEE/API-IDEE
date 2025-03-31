@@ -194,7 +194,7 @@
             maxZoom: 20,
             minZoom: 2,
             center: [-467062.8225, 4783459.6216],
-	        controls: ['scale', 'panzoom', 'attributions', 'backgroundlayers', 'getfeatureinfo', 'location', 'panzoombar', 'rotate', 'scaleline']
+	        controls: ['scale', 'panzoom', 'attributions', 'backgroundlayers', 'getfeatureinfo', 'location', 'panzoombar', 'rotate', 'scaleline', 'implementationswitcher']
         });
 
         let mp = null;
@@ -413,7 +413,7 @@
 </body>
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-CTLHMMB5YT"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-19NTRSBP21"></script>
 <script>
     window.dataLayer = window.dataLayer || [];
 
@@ -421,7 +421,7 @@
         dataLayer.push(arguments);
     }
     gtag('js', new Date());
-    gtag('config', 'G-CTLHMMB5YT');
+    gtag('config', 'G-19NTRSBP21');
 </script>
 
 </html>

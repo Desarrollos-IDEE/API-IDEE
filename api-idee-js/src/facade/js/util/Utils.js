@@ -563,13 +563,15 @@ export const concatUrlPaths = (paths) => {
   let finalUrl = null;
   if (!isNullOrEmpty(paths)) {
     finalUrl = paths[0];
-    finalUrl = finalUrl.replace(/\/+\s*$/, '');
-    for (let i = 1, ilen = paths.length; i < ilen; i += 1) {
-      const path = paths[i];
-      if (path.indexOf('/') !== 0) {
-        finalUrl = finalUrl.concat('/');
+    if (finalUrl) {
+      finalUrl = finalUrl.replace(/\/+\s*$/, '');
+      for (let i = 1, ilen = paths.length; i < ilen; i += 1) {
+        const path = paths[i];
+        if (path.indexOf('/') !== 0) {
+          finalUrl = finalUrl.concat('/');
+        }
+        finalUrl = finalUrl.concat(path);
       }
-      finalUrl = finalUrl.concat(path);
     }
   }
   return finalUrl;
@@ -1117,7 +1119,7 @@ export const getEnvolvedExtent = (extents) => {
  */
 export const bytesToBase64 = (bytes, format = 'image/png') => {
   const base64abc = [
-    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'IDEE',
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
     'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
     'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',

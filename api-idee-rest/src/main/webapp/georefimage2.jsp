@@ -191,7 +191,7 @@
               title: 'Imagen',
               layers: [
                 new IDEE.layer.XYZ({
-                  url: 'https://tms-pnoa-ma.ign.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
+                  url: 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
                   name: 'PNOA-MA',
                   legend: 'Imagen',
                   projection: 'EPSG:3857',
@@ -239,7 +239,7 @@
               preview: 'img/hibrido.png',
               layers: [
                 new IDEE.layer.XYZ({
-                  url: 'https://tms-pnoa-ma.ign.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
+                  url: 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
                   name: 'PNOA-MA',
                   legend: 'Imagen',
                   projection: 'EPSG:3857',
@@ -334,12 +334,12 @@
 </body>
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-CTLHMMB5YT"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-19NTRSBP21"></script>
 <script>
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', 'G-CTLHMMB5YT');
+gtag('config', 'G-19NTRSBP21');
 </script>
 
 </html>

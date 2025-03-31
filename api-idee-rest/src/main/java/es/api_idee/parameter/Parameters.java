@@ -95,7 +95,7 @@ public class Parameters {
 
    public void addZoomConstrains (String zoomconstrains) {
       if (zoomconstrains != null) {
-         parameters.put("zoomConstrains", Boolean.parseBoolean(zoomconstrains));
+         parameters.put("zoomConstrains", zoomconstrains);
       }
    }
 
@@ -115,6 +115,12 @@ public class Parameters {
             }
             parameters.put("controls", jControls);
          }
+      }
+   }
+
+   public void addBGColorContainer (String color) {
+      if (color != null) {
+         parameters.put("bgColorContainer", color);
       }
    }
    

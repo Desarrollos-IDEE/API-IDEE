@@ -8,8 +8,8 @@ Plugin que muestra una vista 3D, incluye vistas por anaglifos y orbitación 3D.
 - stereoscopic.ol.min.css
 
 ```html
- <link href="https://componentes.cnig.es//plugins/stereoscopic/stereoscopic.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es//plugins/stereoscopic/stereoscopic.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/stereoscopic/stereoscopic.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/stereoscopic/stereoscopic.ol.min.js"></script>
 ```
 
 # Parámetros

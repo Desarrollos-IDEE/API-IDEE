@@ -49,9 +49,7 @@ function getPaths() {
     walker.on('file', (root, stats, next) => {
       const sourcePath = path.join(root, stats.name);
       if (/\.js$/.test(sourcePath)) {
-        if (/^(?!.*node_modules\/ol\/node_modules\/ol-mapbox-style).*/.test(sourcePath)) {
-          paths.push(sourcePath);
-        }
+        paths.push(sourcePath);
       }
       next();
     });

@@ -27,3 +27,6 @@ Control attributions
 
 CP-010
 Pruebas de funciones de los controles
+
+CP-011
+Control Implementation Switcher

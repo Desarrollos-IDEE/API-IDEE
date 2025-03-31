@@ -15,8 +15,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 - **attributions.ol.min.css**
 
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/attributions/attributions.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/attributions/attributions.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/attributions/attributions.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/attributions/attributions.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -24,8 +24,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/attributions/attributions-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/attributions/attributions-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/attributions/attributions-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/attributions/attributions-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros
@@ -40,7 +40,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 * **tooltip**: Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información). Por defecto: 'Reconocimientos'.
 * **mode**: Modo de uso del plugin Attributions (1 ó 2). Por defecto: 1
      - **1** `DISPONIBLE`: Atribuciones mediante archivo de atribuciones (modo por defecto). Parámetros específicos:
-         + **url**: Url del archivo de atribuciones a utilizar. Por defecto: 'https://componentes.cnig.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml'.
+         + **url**: Url del archivo de atribuciones a utilizar. Por defecto: 'https://componentes.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml'.
          + **type**: En el caso de no pasar nada por el parámetro 'layer' o pasar una capa que no sea de tipo vectorial, generará la capa de atribuciones con el tipo indicado en este parámetro. Los valores permitidos son ('kml' y 'geojson'). Por defecto: 'kml'.
          + **layerName**: Nombre asociado a la capa de atribuciones (nombre de la capa). Se usa para la construcción de la capa. Por defecto: 'attributions'.
          + **layer**: Capa definida por el usuario para determinar las atribuciones {IDEE.layer.GeoJSON | IDEE.layer.KML}. No requiere los parámetros anteriores (type, url y layerName)
@@ -175,11 +175,11 @@ URL_API?attributions=position*tooltip*mode*scale*defaultAttribution*defaultURL*u
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.cnig.es/api-idee?attributions=TR*Plugin%20atribuciones*1*300*attributions*https://componentes.cnig.es/NucleoVisualizador/vectorial_examples/atribucion.kml*https://componentes.ign.es/NucleoVisualizador/vectorial_examples/atribucionPNOA.kml*kml*attributions*atribucion*url*100*200*Gobierno%20de%20España
+https://componentes.idee.es/api-idee?attributions=TR*Plugin%20atribuciones*1*300*attributions*https://componentes.cnig.es/NucleoVisualizador/vectorial_examples/atribucion.kml*https://componentes.ign.es/NucleoVisualizador/vectorial_examples/atribucionPNOA.kml*kml*attributions*atribucion*url*100*200*Gobierno%20de%20España
 ```
 
 ```
-https://componentes.cnig.es/api-idee?attributions=BL*Plugin%20atribuciones*1*10000***http://www.ign.es/resources/viewer/data/20200206_atribucionPNOA-3857.geojson*geojson
+https://componentes.idee.es/api-idee?attributions=BL*Plugin%20atribuciones*1*10000***http://www.ign.es/resources/viewer/data/20200206_atribucionPNOA-3857.geojson*geojson
 ```
 
 ### Ejemplo de uso API-REST en base64
@@ -202,7 +202,7 @@ Ejemplo de constructor:
 }
 ```
 ```
-https://componentes.cnig.es/api-idee/?attributions=base64=eyJtb2RlIjoxLCJzY2FsZSI6MTAwMDAsInVybCI6Imh0dHA6Ly93d3cuaWduLmVzL3Jlc291cmNlcy92aWV3ZXIvZGF0YS8yMDIwMDIwNl9hdHJpYnVjaW9uUE5PQS0zODU3Lmdlb2pzb24iLCJ0eXBlIjoiZ2VvanNvbiIsInBvc2l0aW9uIjoiQkwiLCJ0b29sdGlwIjoiQXRyaWJ1Y2lvbmVzIn0=
+https://componentes.idee.es/api-idee/?attributions=base64=eyJtb2RlIjoxLCJzY2FsZSI6MTAwMDAsInVybCI6Imh0dHA6Ly93d3cuaWduLmVzL3Jlc291cmNlcy92aWV3ZXIvZGF0YS8yMDIwMDIwNl9hdHJpYnVjaW9uUE5PQS0zODU3Lmdlb2pzb24iLCJ0eXBlIjoiZ2VvanNvbiIsInBvc2l0aW9uIjoiQkwiLCJ0b29sdGlwIjoiQXRyaWJ1Y2lvbmVzIn0=
 ```
 # Ejemplo de uso
 

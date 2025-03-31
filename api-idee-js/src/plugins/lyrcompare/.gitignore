@@ -8,3 +8,4 @@ libraries
 doc
 src/index.js
 *~
+package-lock.json

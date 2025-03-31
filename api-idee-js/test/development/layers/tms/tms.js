@@ -20,7 +20,7 @@ export const tms_001 = new TMS({
   //   name: 'Name Prueba TMS',
   //   description: 'Description Prueba',
   //   url: 'https://www.ign.es',
-  //   contentAttributions: 'https://componentes.cnig.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+  //   contentAttributions: 'https://componentes.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
   //   contentType: 'kml',
   // }
   // crossOrigin: true,

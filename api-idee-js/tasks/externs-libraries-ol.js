@@ -10,6 +10,10 @@ const libraries = [{
 }, {
   name: 'proj4',
   path: 'proj4',
+},
+{
+  name: 'jsts',
+  path: 'jsts',
 }];
 
 module.exports = libraries;

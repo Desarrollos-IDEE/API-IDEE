@@ -68,17 +68,6 @@
                      <arguments>run build</arguments>
                   </configuration>
                </execution>
-               <!-- RUNNING NPM TEST:ALL -->
-               <execution>
-                  <id>run npm test</id>
-                  <goals>
-                     <goal>npm</goal>
-                  </goals>
-                  <phase>test</phase>
-                  <configuration>
-                     <arguments>run test:all</arguments>
-                  </configuration>
-               </execution>
             </executions>
          </plugin>
          <plugin>
@@ -95,7 +84,6 @@
                      <descriptors>
                         <descriptor>assembly/dist-resources.xml</descriptor>
                         <descriptor>assembly/doc-resources.xml</descriptor>
-                        <descriptor>assembly/templates-resources.xml</descriptor>
                      </descriptors>
                   </configuration>
                </execution>

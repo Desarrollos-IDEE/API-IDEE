@@ -17,8 +17,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 
 
 ```html
- <link href="https://componentes.cnig.es//plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es//plugins/sharemap/sharemap.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/sharemap/sharemap.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -26,8 +26,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es//plugins/sharemap/sharemap-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es//plugins/sharemap/sharemap-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/sharemap/sharemap-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/sharemap/sharemap-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros
@@ -40,7 +40,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
   - 'BL': (bottom left) - Abajo a la izquierda.
   - 'BR': (bottom right) - Abajo a la derecha (por defecto).
 - **tooltip**: Texto para el mensaje cuando se copia la cadena (por defecto '¡Copiado!').
-- **baseUrl**: Url sobre la que está montada la instancia. Por defecto: https://componentes.cnig.es//
+- **baseUrl**: Url sobre la que está montada la instancia. Por defecto: https://componentes.idee.es/api-idee/
 - **minimize**: Genera URL minificada. (por defecto: false).
 - **title**: Título para la cabecera de la ventana (por defecto: 'Compartir Mapa').
 - **btn**: Título para el botón Aceptar (por defecto: 'OK').
@@ -150,11 +150,11 @@ URL_API?sharemap=position*tooltip*baseUrl*minimize*title*btn*copyBtn*text*copyBt
 
 ### Ejemplos de uso API-REST
 ```
-https://componentes.cnig.es//?sharemap=TR*Copiado%20al%20portapapeles*https://componentes.cnig.es//*true*Compartir%20mapa%20title*OK*copyBtn*Compartir%20mapa%20text*copyBtnHtml*false*true
+https://componentes.idee.es/api-idee/?sharemap=TR*Copiado%20al%20portapapeles*https://componentes.idee.es/api-idee/*true*Compartir%20mapa%20title*OK*copyBtn*Compartir%20mapa%20text*copyBtnHtml*false*true
 ```
 
 ```
-https://componentes.cnig.es//?sharemap=TL
+https://componentes.idee.es/api-idee/?sharemap=TL
 ```
 
 ### Ejemplos de uso API-REST en base64
@@ -170,7 +170,7 @@ Ejemplo de constructor del plugin:
 
 ```javascript
 {
-  baseUrl: "https://componentes.cnig.es//",
+  baseUrl: "https://componentes.idee.es/api-idee/",
   position: "TR",
   tooltip: "Copiado al portapapeles",
   minimize: true,
@@ -184,7 +184,7 @@ Ejemplo de constructor del plugin:
 }
 ```
 ```
-https://componentes.cnig.es//?sharemap=base64=eyJiYXNlVXJsIjoiaHR0cHM6Ly9jb21wb25lbnRlcy5jbmlnLmVzL2FwaS1jb3JlLyIsInBvc2l0aW9uIjoiVFIiLCJ0b29sdGlwIjoiQ29waWFkbyBhbCBwb3J0YXBhcGVsZXMiLCJtaW5pbWl6ZSI6dHJ1ZSwidGl0bGUiOiJDb21wYXJ0aXIgbWFwYSB0aXRsZSIsImJ0biI6Ik9LIiwiY29weUJ0biI6ImNvcHlCdG4iLCJ0ZXh0IjoiQ29tcGFydGlyIG1hcGEgdGV4dCIsImNvcHlCdG5IdG1sIjoiY29weUJ0bkh0bWwiLCJ1cmxBUEkiOmZhbHNlLCJzaGFyZUxheWVyIjp0cnVlfQ==
+https://componentes.idee.es/api-idee/?sharemap=base64=eyJiYXNlVXJsIjoiaHR0cHM6Ly9jb21wb25lbnRlcy5jbmlnLmVzL2FwaS1jb3JlLyIsInBvc2l0aW9uIjoiVFIiLCJ0b29sdGlwIjoiQ29waWFkbyBhbCBwb3J0YXBhcGVsZXMiLCJtaW5pbWl6ZSI6dHJ1ZSwidGl0bGUiOiJDb21wYXJ0aXIgbWFwYSB0aXRsZSIsImJ0biI6Ik9LIiwiY29weUJ0biI6ImNvcHlCdG4iLCJ0ZXh0IjoiQ29tcGFydGlyIG1hcGEgdGV4dCIsImNvcHlCdG5IdG1sIjoiY29weUJ0bkh0bWwiLCJ1cmxBUEkiOmZhbHNlLCJzaGFyZUxheWVyIjp0cnVlfQ==
 ```
 #### Ejemplo filtrando las capas
 En este ejemplo, le pasamos por url dos capas y especificamos en el parámetro filterLayers el nombre de la capa que queremos compartir (shareLayer tiene que estar como false o no definido).
@@ -199,7 +199,7 @@ Ejemplo de constructor del plugin:
 ```
 (*) En este ejemplo, le pasamos por url dos capas y especificamos en el parámetro filterLayers el nombre de la capa que queremos compartir.
 ```
-https://componentes.cnig.es//?sharemap=base64=eyJwb3NpdGlvbiI6IlRMIiwic2hhcmVMYXllciI6ZmFsc2UsImZpbHRlckxheWVycyI6WyJPSS5PcnRob2ltYWdlQ292ZXJhZ2UiXX0=&layers=WMTS*http://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*imagen*true*image/jpeg*true*true*true,WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**1.3.0*true*true*true
+https://componentes.idee.es/api-idee/?sharemap=base64=eyJwb3NpdGlvbiI6IlRMIiwic2hhcmVMYXllciI6ZmFsc2UsImZpbHRlckxheWVycyI6WyJPSS5PcnRob2ltYWdlQ292ZXJhZ2UiXX0=&layers=WMTS*http://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*imagen*true*image/jpeg*true*true*true,WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**1.3.0*true*true*true
 ```
 
 # Ejemplo de uso
@@ -210,7 +210,7 @@ const map = IDEE.map({
 });
 
 const mp = new ShareMap({
-  baseUrl: 'https://componentes.cnig.es//',
+  baseUrl: 'https://componentes.idee.es/api-idee/',
   position: 'TR',
   tooltip: '¡Copiado!',
   minimize: true,

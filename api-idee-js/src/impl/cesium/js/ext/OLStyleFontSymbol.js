@@ -669,6 +669,12 @@ CesiumStyleFontSymbol.addDefs({
     name: 'spinner',
     search: 'spinner',
   },
+  'g-cartografia-implementacion': {
+    font: 'g-cartografia',
+    code: 59667,
+    name: 'implementacion',
+    search: 'implementacion',
+  },
 });
 
 export default CesiumStyleFontSymbol;

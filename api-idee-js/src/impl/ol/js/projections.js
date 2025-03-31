@@ -8,6 +8,22 @@ import { register } from 'ol/proj/proj4';
 import { addEquivalentProjections } from 'ol/proj';
 
 /**
+ * EPSG:4979 es una proyección que se refiere a un sistema de coordenadas geodésicas 3D
+ * del mundo. Esta proyección se utiliza comúnmente para la geodesia. Navegación y
+ * posicionamiento mediante sistema satelital GPS.
+ */
+const proj4979 = {
+  def: '+proj=longlat +datum=WGS84 +no_defs',
+  extent: [-180, -90, 180, 90],
+  codes: ['EPSG:4979', 'urn:ogc:def:crs:EPSG::4979'],
+  units: 'd',
+  axisOrientation: 'neu',
+  datum: 'WGS 84',
+  proj: 'longitud, latitud, altura',
+  coordRefSys: 'http://www.opengis.net/def/crs/EPSG/0/4979',
+};
+
+/**
  * EPSG:4258 ETRS89 es una proyección geodésica basada en el elipsoide
  * de referencia internacionalmente reconocido llamado European Terrestrial
  * Reference System 1989 (ETRS89). Esta proyección se utiliza
@@ -500,6 +516,7 @@ const projections = [
   proj3395,
   proj4328,
   proj4346,
+  proj4979,
 ];
 
 /**

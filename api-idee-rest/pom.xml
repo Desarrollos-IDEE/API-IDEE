@@ -199,14 +199,6 @@
          <type>zip</type>
          <scope>provided</scope>
       </dependency>
-      <dependency>
-         <groupId>${project.groupId}</groupId>
-         <artifactId>api-idee-js</artifactId>
-         <version>${project.version}</version>
-         <classifier>templates-resources</classifier>
-         <type>zip</type>
-         <scope>provided</scope>
-      </dependency>
 
       <!-- API IGN PROXY -->
       <dependency>

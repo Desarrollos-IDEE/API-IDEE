@@ -75,7 +75,7 @@
                 name: 'Capa WMS',
                 description: 'Descripción WMS',
                 url: 'https://www.ign.es',
-                contentAttributions: 'https://componentes.cnig.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+                contentAttributions: 'https://componentes.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
                 contentType: 'kml',
             },
         }, {});
@@ -87,12 +87,12 @@
 </body>
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-CTLHMMB5YT"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-19NTRSBP21"></script>
 <script>
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', 'G-CTLHMMB5YT');
+gtag('config', 'G-19NTRSBP21');
 </script>
 
 </html>

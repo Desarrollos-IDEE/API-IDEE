@@ -17,8 +17,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 
 
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/incicarto/incicarto.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/incicarto/incicarto.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/incicarto/incicarto.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/incicarto/incicarto.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -26,8 +26,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/incicarto/incicarto-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/incicarto/incicarto-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/incicarto/incicarto-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/incicarto/incicarto-1.0.0.ol.min.js"></script>
 ```
 
 # Caso práctico de uso
@@ -182,11 +182,11 @@ URL_API?incicarto=position*collapsed*collapsible*tooltip*wfszoom*prefixSubject*i
 
 ### Ejemplos de uso API-REST
 ```
-https://componentes.cnig.es/api-idee?incicarto=TL*true*true*Incicarto%20plugin
+https://componentes.idee.es/api-idee?incicarto=TL*true*true*Incicarto%20plugin
 ```
 
 ```
-https://componentes.cnig.es/api-idee?incicarto=TL*true*true*Incicarto%20plugin*12*Incidencia%20cartográfica%20-%20*simple
+https://componentes.idee.es/api-idee?incicarto=TL*true*true*Incicarto%20plugin*12*Incidencia%20cartográfica%20-%20*simple
 ```
 
 ### Ejemplo de uso API-REST en base64
@@ -280,7 +280,7 @@ Ejemplo del constructor:
 ```
 
 ```
-https://componentes.cnig.es/api-idee?incicarto=base64=eyJjb2xsYXBzZWQiOnRydWUsImNvbGxhcHNpYmxlIjp0cnVlLCJwb3NpdGlvbiI6IlRMIiwid2Zzem9vbSI6MTIsInByZWZpeFN1YmplY3QiOiJJbmNpZGVuY2lhIGNhcnRvZ3JmaWNhIC0gIiwiaW50ZXJmYXptb2RlIjoic2ltcGxlIiwiYnV6b25lcyI6W3sibmFtZSI6IkNhcnRvZ3JhZmEgKE1UTiwgQlROLCBSVCwgSFksIFBvYiwgQkNOLCBQcm92aW5jaWFsZXMsIGVzY2FsYXMgcGVxdWVhcykiLCJlbWFpbCI6ImNhcnRvZ3JhZmlhLmlnbkBtaXRtYS5lcyJ9LHsibmFtZSI6IkF0bGFzIE5hY2lvbmFsIGRlIEVzcGFhIiwiZW1haWwiOiJhbmVAbWl0bWEuZXMifV0sImNvbnRyb2xsaXN0IjpbeyJpZCI6InRoZW1lTGlzdCIsIm5hbWUiOiJUZW1hcyBkZSBlcnJvcmVzIiwibWFuZGF0b3J5Ijp0cnVlfSx7ImlkIjoiZXJyb3JMaXN0IiwibmFtZSI6IlRpcG9zIGRlIGVycm9yZXMiLCJtYW5kYXRvcnkiOnRydWV9LHsiaWQiOiJwcm9kdWN0TGlzdCIsIm5hbWUiOiJMaXN0YSBkZSBwcm9kdWN0b3MiLCJtYW5kYXRvcnkiOnRydWV9XSwidGhlbWVMaXN0IjpbeyJpZFRoZW1lIjoxLCJuYW1lVGhlbWUiOiJObyBlc3BlY2lmaWNhZG8iLCJlbWFpbFRoZW1lIjoiY29uc3VsdGFzQGNuaWcuZXMifSx7ImlkVGhlbWUiOjIsIm5hbWVUaGVtZSI6IlJlbGlldmUiLCJlbWFpbFRoZW1lIjoiY2FydG9ncmFmaWEuaWduQG1pdG1hLmVzIn1dLCJlcnJvckxpc3QiOlsiTm8gZXNwZWNpZmljYWRvIiwiT21pc2luIiwiQ29taXNpbiIsIkNsYXNpZmljYWNpbiIsIk5vbWJyZSIsIlZhbG9yIGRlbCBhdHJpYnV0byIsIkZvcm1hIiwiTG9jYWxpemFjaW4iLCJPdHJvcyJdLCJwcm9kdWN0TGlzdCI6WyJObyBlc3BlY2lmaWNhZG8iLCJTZXJpZSBNVE4yNSIsIlNlcmllIE1UTjUwIiwiQlROMjUiLCJCVE4xMDAiLCJNUDIwMCIsIkJDTjIwMCIsIkJDTjUwMCIsIk1hcGEgQXV0b25taWNvIiwiTWFwYSBFc3BhYSAxOjUwMCAwMDAiLCJNYXBhIEVzcGFhIDE6MSAwMDAgMDAwIiwiQ2FydG9jaXVkYWQiLCJSZWRlcyBkZSBUcmFuc3BvcnRlIiwiSGlkcm9ncmFmYSIsIlBvYmxhY2lvbmVzIiwiTXVuZG8gcmVhbCIsIklHTiBCYXNlIiwiT3Ryb3MgcHJvZHVjdG9zIl19
+https://componentes.idee.es/api-idee?incicarto=base64=eyJjb2xsYXBzZWQiOnRydWUsImNvbGxhcHNpYmxlIjp0cnVlLCJwb3NpdGlvbiI6IlRMIiwid2Zzem9vbSI6MTIsInByZWZpeFN1YmplY3QiOiJJbmNpZGVuY2lhIGNhcnRvZ3JmaWNhIC0gIiwiaW50ZXJmYXptb2RlIjoic2ltcGxlIiwiYnV6b25lcyI6W3sibmFtZSI6IkNhcnRvZ3JhZmEgKE1UTiwgQlROLCBSVCwgSFksIFBvYiwgQkNOLCBQcm92aW5jaWFsZXMsIGVzY2FsYXMgcGVxdWVhcykiLCJlbWFpbCI6ImNhcnRvZ3JhZmlhLmlnbkBtaXRtYS5lcyJ9LHsibmFtZSI6IkF0bGFzIE5hY2lvbmFsIGRlIEVzcGFhIiwiZW1haWwiOiJhbmVAbWl0bWEuZXMifV0sImNvbnRyb2xsaXN0IjpbeyJpZCI6InRoZW1lTGlzdCIsIm5hbWUiOiJUZW1hcyBkZSBlcnJvcmVzIiwibWFuZGF0b3J5Ijp0cnVlfSx7ImlkIjoiZXJyb3JMaXN0IiwibmFtZSI6IlRpcG9zIGRlIGVycm9yZXMiLCJtYW5kYXRvcnkiOnRydWV9LHsiaWQiOiJwcm9kdWN0TGlzdCIsIm5hbWUiOiJMaXN0YSBkZSBwcm9kdWN0b3MiLCJtYW5kYXRvcnkiOnRydWV9XSwidGhlbWVMaXN0IjpbeyJpZFRoZW1lIjoxLCJuYW1lVGhlbWUiOiJObyBlc3BlY2lmaWNhZG8iLCJlbWFpbFRoZW1lIjoiY29uc3VsdGFzQGNuaWcuZXMifSx7ImlkVGhlbWUiOjIsIm5hbWVUaGVtZSI6IlJlbGlldmUiLCJlbWFpbFRoZW1lIjoiY2FydG9ncmFmaWEuaWduQG1pdG1hLmVzIn1dLCJlcnJvckxpc3QiOlsiTm8gZXNwZWNpZmljYWRvIiwiT21pc2luIiwiQ29taXNpbiIsIkNsYXNpZmljYWNpbiIsIk5vbWJyZSIsIlZhbG9yIGRlbCBhdHJpYnV0byIsIkZvcm1hIiwiTG9jYWxpemFjaW4iLCJPdHJvcyJdLCJwcm9kdWN0TGlzdCI6WyJObyBlc3BlY2lmaWNhZG8iLCJTZXJpZSBNVE4yNSIsIlNlcmllIE1UTjUwIiwiQlROMjUiLCJCVE4xMDAiLCJNUDIwMCIsIkJDTjIwMCIsIkJDTjUwMCIsIk1hcGEgQXV0b25taWNvIiwiTWFwYSBFc3BhYSAxOjUwMCAwMDAiLCJNYXBhIEVzcGFhIDE6MSAwMDAgMDAwIiwiQ2FydG9jaXVkYWQiLCJSZWRlcyBkZSBUcmFuc3BvcnRlIiwiSGlkcm9ncmFmYSIsIlBvYmxhY2lvbmVzIiwiTXVuZG8gcmVhbCIsIklHTiBCYXNlIiwiT3Ryb3MgcHJvZHVjdG9zIl19
 ```
 
 # Ejemplo de uso

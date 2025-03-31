@@ -9,6 +9,21 @@ const backgroundlayersOpts = backgroundlayersIds.map((id, index) => {
   };
 });
 
+const implementationSwitcherOpts = [{
+  id: 'OL',
+  type: 'ol',
+  title: 'Open Layers',
+  js: '../../../dist/js/apiidee.ol.min.js',
+  css: '../../../dist/assets/css/apiidee.ol.min.css',
+},
+{
+  id: 'CS',
+  type: 'cesium',
+  title: 'Cesium',
+  js: '../../../dist/js/apiidee.cesium.min.js',
+  css: '../../../dist/assets/css/apiidee.cesium.min.css',
+}];
+
 const config = (configKey, configValue) => {
   config[configKey] = configValue;
 };
@@ -163,6 +178,14 @@ function fun(IDEE_) {
    * @type {object}
    */
   IDEE_.config('backgroundlayers', backgroundlayersOpts);
+
+    /**
+   * ImplementationSwitcher Control
+   *
+   * @private
+   * @type {object}
+   */
+  IDEE_.config('implementationswitcher', implementationSwitcherOpts);
 
   /**
    * Attributions configuration

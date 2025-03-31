@@ -15,8 +15,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 - **popup.ol.min.css**
 
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/popup/popup.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/popup/popup.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/popup/popup.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/popup/popup.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -24,8 +24,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/popup/popup-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/popup/popup-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/popup/popup-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/popup/popup-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros
@@ -91,7 +91,7 @@ URL_API?popup=position*collapse*collapsible*tooltip*url_es*url_en
 ### Ejemplo de uso API-REST
 
 ```
-https://componentes.cnig.es/api-idee?popup=TR*true*true*Ayuda*https%3A%2F%2Fcomponentes.cnig.es%2FayudaIberpix%2Fes.html*https%3A%2F%2Fcomponentes.cnig.es%2FayudaIberpix%2Fen.html
+https://componentes.idee.es/api-idee?popup=TR*true*true*Ayuda*https%3A%2F%2Fcomponentes.cnig.es%2FayudaIberpix%2Fes.html*https%3A%2F%2Fcomponentes.cnig.es%2FayudaIberpix%2Fen.html
 ```
 
 ### Ejemplo de uso API-REST en base64
@@ -115,7 +115,7 @@ Ejemplo de constructor:
 ```
 
 ```
-https://componentes.cnig.es/api-idee?popup=base64=eyJwb3NpdGlvbiI6IlRSIiwiY29sbGFwc2VkIjp0cnVlLCJjb2xsYXBzaWJsZSI6dHJ1ZSwidXJsX2VzIjoiaHR0cHM6Ly9jb21wb25lbnRlcy5jbmlnLmVzL2F5dWRhSWJlcnBpeC9lcy5odG1sIiwidXJsX2VuIjoiaHR0cHM6Ly9jb21wb25lbnRlcy5jbmlnLmVzL2F5dWRhSWJlcnBpeC9lbi5odG1sIiwidG9vbHRpcCI6IkF5dWRhIn0=
+https://componentes.idee.es/api-idee?popup=base64=eyJwb3NpdGlvbiI6IlRSIiwiY29sbGFwc2VkIjp0cnVlLCJjb2xsYXBzaWJsZSI6dHJ1ZSwidXJsX2VzIjoiaHR0cHM6Ly9jb21wb25lbnRlcy5jbmlnLmVzL2F5dWRhSWJlcnBpeC9lcy5odG1sIiwidXJsX2VuIjoiaHR0cHM6Ly9jb21wb25lbnRlcy5jbmlnLmVzL2F5dWRhSWJlcnBpeC9lbi5odG1sIiwidG9vbHRpcCI6IkF5dWRhIn0=
 
 ```
 

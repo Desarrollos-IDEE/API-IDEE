@@ -11,8 +11,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 
 
 ```html
- <link href="https://componentes.cnig.es/)/plugins/viewhistory/viewhistory.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es//plugins/viewhistory/viewhistory.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/?plugins/viewhistory/viewhistory.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/viewhistory/viewhistory.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -20,8 +20,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es//plugins/viewhistory/viewhistory-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es//plugins/viewhistory/viewhistory-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/viewhistory/viewhistory-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/viewhistory/viewhistory-1.0.0.ol.min.js"></script>
 ```
 
 

@@ -594,6 +594,12 @@ OLStyleFontSymbol.addDefs({
     name: 'zoom-extension',
     search: 'zoom-extension',
   },
+  'g-cartografia-implementacion': {
+    font: 'g-cartografia',
+    code: 59667,
+    name: 'implementacion',
+    search: 'implementacion',
+  },
 });
 
 export default OLStyleFontSymbol;

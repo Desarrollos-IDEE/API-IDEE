@@ -6,11 +6,17 @@
     "map",
     "mapping",
     "tool",
-    "ign"
+    "IDEE"
   ],
-  "homepage": "https://www.ign.es",
-  "repository": {},
+  "homepage": "https://idee.es",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Desarrollos-IDEE/API-IDEE"
+  },
   "license": "EUPL",
+  "bugs": {
+    "url": "https://github.com/Desarrollos-IDEE/API-IDEE/issues"
+  },
   "devDependencies": {
     "@playwright/test": "1.50.1",
     "buffer": "6.0.3",
@@ -70,13 +76,13 @@
     "debug:build": "webpack serve --config=webpack-config/webpack.test-production.config.js",
     "debug:prebuild": "node --inspect-brk tasks/generate-index.js",
     "generate-doc": "npm run generate-doc:ol && npm run generate-doc:cesium",
-    "generate-doc:ol": "jsdoc config/jsdoc/api/index.md -c config/jsdoc/api/conf-ol.json",
-    "generate-doc:cesium": "jsdoc config/jsdoc/api/index.md -c config/jsdoc/api/conf-cesium.json",
+    "generate-doc:ol": "jsdoc ../README.md -c config/jsdoc/api/conf-ol.json",
+    "generate-doc:cesium": "jsdoc ../README.md -c config/jsdoc/api/conf-cesium.json",
     "generate-test": "node tasks/test-generator",
     "prebuild": "node tasks/clean-build.js --path=dist && npm run prebuild:ol && npm run prebuild:cesium",
     "prebuild:ol": "node tasks/generate-index-ol.js",
     "prebuild:cesium": "node tasks/generate-index-cesium.js",
-    "postbuild": "npm run generate-doc && node tasks/copy-legacy.js",
+    "postbuild": "npm run generate-doc && node tasks/copy-legacy.js && node tasks/copy-index-doc.js",
     "start": "webpack-dev-server --config=webpack-config/webpack.development-ol.config.js",
     "start:ol": "webpack-dev-server --config=webpack-config/webpack.development-ol.config.js",
     "start:cesium": "webpack-dev-server --config=webpack-config/webpack.development-cesium.config.js",

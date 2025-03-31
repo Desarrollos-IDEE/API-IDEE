@@ -441,6 +441,45 @@ export const zoom = (zoomParam) => {
 };
 
 /**
+ * Analiza el parámetro de zoom intermedio del usuario especificado
+ * en un booleano o cadena de texto.
+ *
+ * @param {Boolean|String} enableIntermediateZooms Parámetro de zoom intermedio especificado.
+ * Por defecto los niveles de zoom intermedios están activados.
+ * @returns {Boolean} niveles de zoom intermedios activos o inactivos
+ * si devuelve true o false, respectivamente.
+ * @public
+ * @function
+ * @api
+ * @throws {IDEE.exception} Si el parámetro no es especificado o de tipo no soportado.
+ */
+export const zoomConstrains = (enableIntermediateZooms) => {
+  let intermediateZoomVar;
+
+  // checks if the param is null or empty
+  if (isNullOrEmpty(enableIntermediateZooms)) {
+    Exception(getValue('exception').no_intermediate_zooms);
+  }
+
+  // boolean
+  if (typeof enableIntermediateZooms === 'boolean') {
+    intermediateZoomVar = enableIntermediateZooms ? 1 : 0;
+  // object
+  } else {
+    const lowerCaseParameter = enableIntermediateZooms.toLowerCase();
+
+    if (lowerCaseParameter === 'true' || lowerCaseParameter === 'false') {
+      intermediateZoomVar = lowerCaseParameter === 'true' ? 1 : 0;
+    } else {
+      // unknown
+      Exception(getValue('exception').invalid_zoomconstrains_param);
+    }
+  }
+
+  return intermediateZoomVar === 1;
+};
+
+/**
  * Analiza el parámetro de zoom mínimo del usuario especificado en un número.
  *
  * @param {String|Number} minZoomParam Parámetro de zoom mínimo especificado.

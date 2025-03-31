@@ -27,15 +27,34 @@ const backgroundlayersOpts = [{
 },
 ];
 
+const implementationSwitcherOpts = [{
+  id: 'OL',
+  type: 'ol',
+  title: 'Open Layers',
+  js: 'js/apiidee.ol.min.js',
+  css: 'assets/css/apiidee.ol.min.css',
+},
+{
+  id: 'CS',
+  type: 'cesium',
+  title: 'Cesium',
+  js: 'js/apiidee.cesium.min.js',
+  css: 'assets/css/apiidee.cesium.min.css',
+}];
+
 const params = window.location.search.split('&');
 let center = '';
 let zoom = '';
 let srs = '';
 let layers = '';
+let zoomConstrains = '';
 params.forEach((param) => {
   if (param.indexOf('center') > -1) {
     const values = param.split('=')[1].split(',');
     center = [parseFloat(values[0]), parseFloat(values[1])];
+  } else if (param.indexOf('zoomConstrains') > -1) {
+    const value = param.split('=')[1];
+    zoomConstrains = value;
   } else if (param.indexOf('zoom') > -1) {
     const value = param.split('=')[1];
     zoom = parseInt(value, 10);
@@ -201,6 +220,14 @@ params.forEach((param) => {
   IDEE.config('backgroundlayers', backgroundlayersOpts);
 
   /**
+   * ImplementationSwitcher Control
+   *
+   * @private
+   * @type {object}
+   */
+  IDEE.config('implementationswitcher', implementationSwitcherOpts);
+
+  /**
    * URL of sql wasm file
    * @private
    * @type {String}
@@ -222,6 +249,14 @@ params.forEach((param) => {
    * @type {object}
    */
   IDEE.config('MAP_VIEWER_ZOOM', zoom);
+
+  /**
+   * MAP Viewer - Zoom Constrains
+   * 
+   * @private
+   * @type {Object}
+   */
+  IDEE.config('MAP_VIEWER_ZOOM_CONSTRAINS', zoomConstrains);
 
   /**
    * MAP Viewer - SRS

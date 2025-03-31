@@ -19,8 +19,8 @@ Plugin que permite el dibujo y edición de geometrías sobre un mapa, así como 
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/geometrydraw/geometrydraw-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/geometrydraw/geometrydraw-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/geometrydraw/geometrydraw-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/geometrydraw/geometrydraw-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros
@@ -42,7 +42,7 @@ URL_API?geometrydraw=position*collapsed*collapsible
 ````
 Ejemplo:
 ```javascript
-https://componentes.cnig.es/api-idee/?geometrydraw=BL*true*true
+https://componentes.idee.es/api-idee/?geometrydraw=BL*true*true
 ```
 
 

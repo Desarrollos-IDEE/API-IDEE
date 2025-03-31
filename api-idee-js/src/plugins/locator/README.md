@@ -24,8 +24,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 - **locator.ol.min.css**
 
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/locator/locator.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/locator/locator.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/locator/locator.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/locator/locator.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -33,8 +33,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/locator/locator-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/locator/locator-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/locator/locator-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/locator/locator-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros
@@ -201,11 +201,11 @@ URL_API?locator=position*collapsed*collapsible*tooltip*zoom*pointStyle*isDraggab
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.cnig.es/api-idee?locator=TL*true*true*tooltip*16
+https://componentes.idee.es/api-idee?locator=TL*true*true*tooltip*16
 ```
 
 ```
-https://componentes.cnig.es/api-idee?locator=TL*true*true*tooltip*16*pinAzul*true*false*true*true
+https://componentes.idee.es/api-idee?locator=TL*true*true*tooltip*16*pinAzul*true*false*true*true
 ```
 
 ### Ejemplo de uso
@@ -219,7 +219,7 @@ IDEE.utils.encodeBase64(obj_params);
 ```
 Ejemplo de constructor del plugin: {position:'TL', collapsible: true, collapsed: true, tooltip: 'Localización', byParcelCadastre: true, byCoordinates: false, byPlaceAddressPostal: true}
 
-https://componentes.cnig.es/api-idee?locator=base64=eyJwb3NpdGlvbiI6IlRMIiwiY29sbGFwc2libGUiOnRydWUsImNvbGxhcHNlZCI6dHJ1ZSwidG9vbHRpcCI6IkxvY2FsaXphY2nDs24iLCJieVBhcmNlbENhZGFzdHJlIjp0cnVlLCJieUNvb3JkaW5hdGVzIjpmYWxzZSwiYnlQbGFjZUFkZHJlc3NQb3N0YWwiOnRydWV9
+https://componentes.idee.es/api-idee?locator=base64=eyJwb3NpdGlvbiI6IlRMIiwiY29sbGFwc2libGUiOnRydWUsImNvbGxhcHNlZCI6dHJ1ZSwidG9vbHRpcCI6IkxvY2FsaXphY2nDs24iLCJieVBhcmNlbENhZGFzdHJlIjp0cnVlLCJieUNvb3JkaW5hdGVzIjpmYWxzZSwiYnlQbGFjZUFkZHJlc3NQb3N0YWwiOnRydWV9
 ```
 
 # Eventos

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>API IDEE Core API</title>
+      <style>
+        body {
+          font-family: "Quattrocento Sans", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
+          background-color: #f4f7fa;
+          margin: 0;
+          padding: 0;
+          color: white;
+          text-align: center;
+          height: 100vh;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        }
+
+        h1 {
+          color: #333;
+          font-size: 2.5em;
+          margin-bottom: 20px;
+          text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        p {
+          font-size: 1.2em;
+          margin-bottom: 40px;
+          color: #7f8c8d;
+        }
+
+        .links-container {
+          display: flex;
+          gap: 20px;
+          flex-direction: row;
+          justify-content: center;
+        }
+
+        .link {
+          font-size: 1.4em;
+          padding: 15px 25px;
+          background-color: #6eb988;
+          color: white;
+          text-decoration: none;
+          border-radius: 10px;
+          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+          transition: all 0.3s ease;
+          transform: scale(0.9);
+        }
+
+        .link:hover {
+          background-color: #6eb988;
+          box-shadow: 0 12px 18px rgba(0, 0, 0, 0.3);
+        }
+
+        .link:active {
+          transform: scale(1);
+        }
+
+      </style>
+  </head>
+  <body>
+      <h1>Documentación API-IDEE Core</h1>
+      <p>Los siguientes enlaces permiten acceder a la documentación en función de la librería base utilizada en API-IDEE:</p>
+
+      <div class="links-container">
+        <a href="../doc/ol/" target="_blank" class="link">Librería base OpenLayers</a>
+        <a href="../doc/cesium/" target="_blank" class="link">Librería base Cesium</a>
+      </div>
+  </body>
+</html>

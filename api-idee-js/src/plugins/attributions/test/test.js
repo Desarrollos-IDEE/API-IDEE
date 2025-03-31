@@ -34,3 +34,4 @@ const mp = new Attributions({
 });
 
 map.addPlugin(mp);
+window.mp = mp;
