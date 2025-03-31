@@ -269,7 +269,8 @@ class MBTiles extends Layer {
         });
       });
     } else {
-      const resolutions = generateResolutions(extent, DEFAULT_TILE_SIZE, this.maxZoomLevel_ || 28);
+      const resolutions = generateResolutions(extent, DEFAULT_TILE_SIZE, this.maxZoomLevel_
+        || Number(IDEE.config.MAX_ZOOM));
       this.maxExtent_ = this.maxExtent_ || extent;
       this.createLayer({
         resolutions,

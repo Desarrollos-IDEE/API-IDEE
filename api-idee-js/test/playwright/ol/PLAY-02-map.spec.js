@@ -72,4 +72,41 @@ test.describe('IDEE.map', () => {
       });
     });
   });
+
+  test.describe('configuration', () => {
+    let map;
+    test.beforeEach(async ({ page }) => {
+      await page.goto('/test/playwright/ol/basic-ol.html');
+
+      // MAX Y MIN ZOOM
+      await page.evaluate(() => IDEE.config.MAX_ZOOM = 19);
+      await page.evaluate(() => IDEE.config.MIN_ZOOM = 10);
+
+      await page.evaluate(() => {
+        map = IDEE.map({ container: 'map' });
+      });
+    });
+
+    test('MAX y MIN Zoom', async ({ page }) => {
+      // Por defecto, tiene valor
+      const maxZoom = await page.evaluate(() => IDEE.config.MAX_ZOOM);
+      const minZoom = await page.evaluate(() => IDEE.config.MIN_ZOOM);
+      expect(true).toBe(minZoom <= maxZoom);
+      expect(true).toBe(maxZoom <= 28)
+      expect(true).toBe(minZoom >= 0);
+
+      // Se comprueba que se aplica al mapa
+      const maxZoomMap = await page.evaluate(() => map.getMaxZoom());
+      const minZoomMap = await page.evaluate(() => map.getMinZoom());
+
+      expect(maxZoom).toBe(maxZoomMap);
+      expect(minZoom).toBe(minZoomMap);
+
+
+      // Modificación del zoom
+      await page.evaluate(() => map.setZoom(4));
+      const currentZoom = await page.evaluate(() => map.getZoom());
+      expect(currentZoom).toBe(minZoom);
+    });
+  });
 });

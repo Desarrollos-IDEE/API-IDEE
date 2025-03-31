@@ -409,12 +409,12 @@ class LayerBase extends MObject {
    * Este método obtiene los niveles de zoom numéricos.
    *
    * @public
-   * @returns {Number} Devuelve la resolución máxima (20).
+   * @returns {Number} Devuelve la resolución máxima.
    * @function
    * @api stable
    */
   getNumZoomLevels() {
-    return this.numZoomLevels || 20; // 20 zoom levels by default
+    return this.numZoomLevels || Number(IDEE.config.MAX_ZOOM);
   }
 
   /**

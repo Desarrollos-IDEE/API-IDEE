@@ -359,11 +359,17 @@ class Map extends Base {
     // minZoom
     if (!isNullOrEmpty(params.minZoom)) {
       this.setMinZoom(params.minZoom);
+    } else if (IDEE.config.MIN_ZOOM !== '') {
+      const minZoom = Number(IDEE.config.MIN_ZOOM);
+      this.setMinZoom(minZoom);
     }
 
     // maxZoom
     if (!isNullOrEmpty(params.maxZoom)) {
       this.setMaxZoom(params.maxZoom);
+    } else if (IDEE.config.MAX_ZOOM !== '') {
+      const maxZoom = Number(IDEE.config.MAX_ZOOM);
+      this.setMaxZoom(maxZoom);
     }
 
     // label

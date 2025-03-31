@@ -233,7 +233,7 @@ class Utils {
       newMinZoom = 0;
     }
     if (isNullOrEmpty(maxZoom)) {
-      const defaultMaxZoom = 20;
+      const defaultMaxZoom = Number(IDEE.config.MAX_ZOOM);
       newMaxZoom = defaultMaxZoom;
     }
     const zoomLevels = newMaxZoom - newMinZoom;

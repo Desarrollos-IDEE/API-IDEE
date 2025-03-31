@@ -284,6 +284,22 @@ params.forEach((param) => {
   IDEE.config('MOVE_MAP_EXTRACT', true);
 
   /**
+   * Zoom máximo.
+   *
+   * @public
+   * @type {Number | String}
+   */
+  IDEE.config('MAX_ZOOM', '${maxZoom}');
+
+  /**
+   * Zoom mínimo.
+   *
+   * @public
+   * @type {Number | String}
+   */
+  IDEE.config('MIN_ZOOM', '${minZoom}');
+
+  /**
    * Hace el popup y dialog inteligente
    *
    * @private
