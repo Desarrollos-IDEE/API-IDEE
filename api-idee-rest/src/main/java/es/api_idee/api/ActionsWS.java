@@ -363,12 +363,8 @@ public class ActionsWS {
 		for (String version : versions) {
 
 			// Versions file names overrides
-			String auxVersion;
-			if (version.equals("legacy")) {
-				auxVersion = "";
-			} else if (version.equals("latest")) {
-				auxVersion = "-" + versions[versions.length - 2];
-			} else {
+			String auxVersion = "";
+			if (!version.equals("latest")) {
 				auxVersion = "-" + version;
 			}
 
