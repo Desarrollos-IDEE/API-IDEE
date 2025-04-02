@@ -1,7 +1,0 @@
-{
-  "exception": {
-    "toc_obsolete": "Mensaje para el desarrollador: IDEE.plugin.TOC ha quedado obsoleto, utilice en su lugar IDEE.plugin.Layerswitcher"
-  },
-  "tooltip": "Capas",
-  "capas": "Capas"
-}

@@ -137,3 +137,6 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 
   map.addPlugin(pluginTimeline);
   ```
+
+## Tabla de compatibilidad de versiones   
+[Consulta el api resourcePlugin](https://componentes.idee.es/api-idee/api/actions/resourcesPlugins?name=timeline)
