@@ -16,3 +16,4 @@
 - Eliminación y configuración de perfiles de compilación
 - Eliminación de plantillas de /files/templates y /templates dentro del war
 - Añadido bgcolorcontainer a los parámetros de mapas para aplicar un color al fondo del html del mapa de OpenLayers.
+- Se elimina la clase ParametersAdapterV3ToV4 de api-idee-rest.

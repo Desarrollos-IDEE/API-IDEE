@@ -3,6 +3,7 @@ package es.api_idee.parameter.parser;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -100,5 +101,14 @@ public abstract class ParametersParser {
          layers = Arrays.asList(layersValues); */
       }
       return layers;
+   }
+
+   public static String getImplementation (Map<String, String[]> query) {
+	   String[] implParam = query.get("implementation");
+	   String library = "ol";
+      if (implParam != null) {
+         library = implParam[0].trim().replace("\"", "").replace("'", "");
+      }
+      return library;
    }
 }

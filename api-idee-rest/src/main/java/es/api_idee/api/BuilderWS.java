@@ -12,7 +12,6 @@ import javax.ws.rs.core.UriInfo;
 
 import es.api_idee.builder.JSBuilder;
 import es.api_idee.parameter.Parameters;
-import es.api_idee.parameter.adapter.ParametersAdapterV3ToV4;
 import es.api_idee.parameter.parser.ParametersParser;
 import es.api_idee.plugins.PluginsManager;
 
@@ -37,10 +36,6 @@ public class BuilderWS {
    public String js(@Context UriInfo uriInfo) {
       MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 
-      // adapts v3 queries to v4
-      ParametersAdapterV3ToV4.adapt(queryParams);
-      
-      
       Parameters parameters = ParametersParser.parse(queryParams);
       
       // plugins
