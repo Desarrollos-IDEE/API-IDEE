@@ -2042,7 +2042,7 @@ export default class LayerswitcherControl extends IDEE.Control {
             this.capabilities[j].options.origen = this.capabilities[j].type;
             const legendUrl = this.capabilities[j].getLegendURL();
             const meta = this.capabilities[j].capabilitiesMetadata;
-            if ((legendUrl.indexOf('GetLegendGraphic') > -1 || legendUrl.indexOf('assets/img/legend-default.png') > -1) && meta !== undefined && meta.style.length > 0) {
+            if ((legendUrl.indexOf('GetLegendGraphic') > -1 || legendUrl.indexOf('https://componentes.idee.es/estaticos/imagenes/leyenda/legend-default.png') > -1) && meta !== undefined && meta.style.length > 0) {
               if (meta.style[0].LegendURL !== undefined && meta.style[0].LegendURL.length > 0) {
                 const style = meta.style[0].LegendURL[0].OnlineResource;
                 if (style !== undefined && style !== null) {

@@ -92,7 +92,7 @@ class Panzoom extends ControlBase {
       content: new Promise((success) => {
         const html = compileTemplate(myhelp, {
           vars: {
-            urlImages: `${IDEE.config.API_IDEE_URL}assets/images`,
+            urlImages: 'https://componentes.idee.es/estaticos/imagenes/controles',
             translations: {
               help1: textHelp.text1,
             },

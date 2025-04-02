@@ -31,7 +31,7 @@
       "help10": "also allows you to style the labels' stroke:",
       "help11": "In the case of specific layers, pictorial symbology can be added either in Source format or through an image. If it is in image format, icon is selected. In the 'icon' section there is the URL parameter, where you can add the URL of an image (If it is SVG, it will allow style changes later).",
       "help12": "In addition you can select size, where the image anchor should go, offset, image scale, enable rotation next to the map, initial rotation and opacity.",
-      "help13": "For the example we will use: https://componentes.idee.es/api-idee/assets/svg/circleIcons/accidenteGeografico.svg :",
+      "help13": "For the example we will use: https://componentes.idee.es/estaticos/Simbologia/svg/circleIcons/accidenteGeografico.svg :",
       "help14": "if you have an SVG, by clicking on 'Modify SVG', you can change the border and padding of the image:",
       "help15": "If you choose the 'Source' option, an internal icon will be added to the point geometry:",
       "help16": "To do this, you can choose a shape of the icon, a family (which allows you to add another icon internally), the radius of the shape, the size of the inner icon, the color, if you want with a gradient, the offset, opacity and enable icon rotation next to the initial rotation.",

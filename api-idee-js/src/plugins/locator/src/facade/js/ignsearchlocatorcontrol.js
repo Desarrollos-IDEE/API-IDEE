@@ -279,7 +279,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
       this.reverseActivated = true;
       this.html_.querySelector('#m-ignsearchlocator-locate-button').style.color = '#71a7d3';
       document.addEventListener('keyup', this.checkEscKey.bind(this));
-      document.getElementsByTagName('body')[0].style.cursor = `url(${IDEE.utils.concatUrlPaths([IDEE.config.THEME_URL, '/img/pushpin.svg'])}) 0 20, auto`;
+      document.getElementsByTagName('body')[0].style.cursor = 'url(https://componentes.idee.es/estaticos/Simbologia/svg/marcadores/pushpin.svg) 0 20, auto';
     } else {
       this.reverseActivated = false;
       this.html_.querySelector('#m-ignsearchlocator-locate-button').style.color = '#7A7A73';
@@ -632,7 +632,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
       this.point = new IDEE.style.Point({
         radius: 5,
         icon: {
-          src: IDEE.utils.concatUrlPaths([IDEE.config.THEME_URL, '/img/marker.svg']),
+          src: 'https://componentes.idee.es/estaticos/Simbologia/svg/marcadores/marker.svg',
           scale: 1.4,
           fill: {
             color: '#71a7d3',
@@ -648,7 +648,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
       this.point = new IDEE.style.Point({
         radius: 5,
         icon: {
-          src: IDEE.utils.concatUrlPaths([IDEE.config.THEME_URL, '/img/pinign.svg']),
+          src: 'https://componentes.idee.es/estaticos/Simbologia/svg/marcadores/pinign.svg',
           anchor: [0.5, 1],
         },
       });
@@ -656,7 +656,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
       this.point = new IDEE.style.Point({
         radius: 5,
         icon: {
-          src: IDEE.utils.concatUrlPaths([IDEE.config.THEME_URL, '/img/m-pin-24.svg']),
+          src: 'https://componentes.idee.es/estaticos/Simbologia/svg/marcadores/m-pin-24.svg',
           anchor: [0.5, 1],
         },
       });

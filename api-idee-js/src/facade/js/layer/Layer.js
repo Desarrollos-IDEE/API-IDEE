@@ -6,7 +6,7 @@ import * as parserParameter from '../parameter/parameter';
 import Base from '../Base';
 import {
   isUndefined, isBoolean, isArray, isNullOrEmpty, isFunction, isObject, isString,
-  normalize, generateRandom, concatUrlPaths,
+  normalize, generateRandom,
 } from '../util/Utils';
 import { getValue } from '../i18n/language';
 import * as EventType from '../event/eventtype';
@@ -566,7 +566,7 @@ class LayerBase extends Base {
   setLegendURL(legendUrlParam) {
     let legendUrl = legendUrlParam;
     if (isNullOrEmpty(legendUrl)) {
-      legendUrl = concatUrlPaths([IDEE.config.THEME_URL, LayerBase.LEGEND_DEFAULT]);
+      legendUrl = LayerBase.LEGEND_DEFAULT;
     }
     this.getImpl().setLegendURL(legendUrl);
   }
@@ -711,7 +711,7 @@ class LayerBase extends Base {
  * @public
  * @api
  */
-LayerBase.LEGEND_DEFAULT = '/img/legend-default.png';
+LayerBase.LEGEND_DEFAULT = 'https://componentes.idee.es/estaticos/imagenes/leyenda/legend-default.png';
 
 /**
  * Imagen de error PNG para la leyenda predeterminada.
@@ -720,6 +720,6 @@ LayerBase.LEGEND_DEFAULT = '/img/legend-default.png';
  * @public
  * @api
  */
-LayerBase.LEGEND_ERROR = '/img/legend-error.png';
+LayerBase.LEGEND_ERROR = 'https://componentes.idee.es/estaticos/imagenes/leyenda/legend-error.png';
 
 export default LayerBase;

@@ -179,7 +179,7 @@ function fun(IDEE_) {
    */
   IDEE_.config('backgroundlayers', backgroundlayersOpts);
 
-    /**
+  /**
    * ImplementationSwitcher Control
    *
    * @private
@@ -196,7 +196,7 @@ function fun(IDEE_) {
   IDEE_.config('attributions', {
     defaultAttribution: 'Instituto Geográfico Nacional',
     defaultURL: 'https://www.ign.es/',
-    url: 'https://componentes-desarrollo.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+    url: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
     type: 'kml',
   });
 

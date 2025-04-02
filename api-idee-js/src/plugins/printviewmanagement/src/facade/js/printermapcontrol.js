@@ -739,11 +739,10 @@ export default class PrinterMapControl extends IDEE.Control {
 
       Promise.all(promises).then((promiseResult) => {
         const result = [];
-        const dRE = new RegExp(`.*${IDEE.Layer.LEGEND_DEFAULT}$`);
-        const eRE = new RegExp(`.*${IDEE.Layer.LEGEND_ERROR}$`);
         promiseResult.forEach((legendURL, index) => {
           if (!IDEE.utils.isNullOrEmpty(legendURL)
-            && !dRE.test(legendURL) && !eRE.test(legendURL)) {
+            && legendURL.indexOf(IDEE.Layer.LEGEND_DEFAULT) === -1
+            && legendURL.indexOf(IDEE.Layer.LEGEND_ERROR) === -1) {
             const legend = {
               name: resultNames[index], // resultLayers[index].name
               icons: [legendURL],

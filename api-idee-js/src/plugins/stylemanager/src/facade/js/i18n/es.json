@@ -31,7 +31,7 @@
       "help10": "también permite aplicar estilo al trazo de las etiquetas:",
       "help11": "En el caso de capas puntuales, se puede añadir simbología pictórica ya sea en formato Fuente o mediante una imagen. Si es en formato imagen se selecciona icono. En la sección 'icono' está el parámetro URL, donde se puede añadir la URL de una imagen (En el caso de ser SVG, permitirá cambios de estilo posteriormente).",
       "help12": "Además se puede seleccionar tamaño, dónde debe ir el anclaje de la imagen, offset, escala de la imagen, habilitar rotación junto al mapa, rotación inicial y la opacidad.",
-      "help13": "Para el ejemplo se usará: https://componentes.idee.es/api-idee/assets/svg/circleIcons/accidenteGeografico.svg :",
+      "help13": "Para el ejemplo se usará: https://componentes.idee.es/estaticos/Simbologia/svg/circleIcons/accidenteGeografico.svg :",
       "help14": "en el caso de tener un SVG, haciendo click sobre 'Modificar SVG', se pueden cambiar el borde y relleno de la imagen:",
       "help15": "En el caso de elegir la opción 'Fuente', se añadirá un icono interno a la geometría puntual:",
       "help16": "Para ello, se puede elegir una forma del icono, una familia (lo que permite añadir internamente otro icono), el radio de la forma, el tamaño del icono interior, el color, si se quiere con gradiente, el offset, la opacidad y habilitar la rotación del icono junto a la rotación inicial.",

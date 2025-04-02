@@ -131,30 +131,6 @@ module.exports = {
     new CopywebpackPlugin({
       patterns: [
         {
-          from: 'src/facade/assets/images',
-          to: 'assets/images',
-        },
-      ],
-    }),
-    new CopywebpackPlugin({
-      patterns: [
-        {
-          from: 'src/facade/assets/img',
-          to: 'assets/img',
-        },
-      ],
-    }),
-    new CopywebpackPlugin({
-      patterns: [
-        {
-          from: 'src/facade/assets/svg',
-          to: 'assets/svg',
-        },
-      ],
-    }),
-    new CopywebpackPlugin({
-      patterns: [
-        {
           from: 'node_modules/sql.js/dist/sql-wasm.wasm',
           to: 'wasm/',
         },
