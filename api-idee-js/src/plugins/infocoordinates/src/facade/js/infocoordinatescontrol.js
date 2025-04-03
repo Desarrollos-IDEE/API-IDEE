@@ -8,8 +8,7 @@ import { getValue } from './i18n/language';
 /* global navigator */
 /* global FileReader */
 /* global MouseEvent */
-
-const NO_DATA_VALUE = 'NODATA_value -9999.000';
+const NO_DATA_VALUE = -9999;
 
 export default class InfocoordinatesControl extends IDEE.Control {
   /**
@@ -229,28 +228,29 @@ export default class InfocoordinatesControl extends IDEE.Control {
     tabsDiv.scrollTop = tabsDiv.scrollHeight;
 
     // Altura
-    let altitudeFromWCSservice;
+    let altitudeFromElevationProcess;
     const altitudeBox = document.getElementById('m-infocoordinates-altitude');
-    IDEE.proxy(false);
-    const promesa = new Promise((success, fail) => {
+
+    const promesa = new Promise((success) => {
       altitudeBox.innerHTML = getValue('readingAltitude');
-      altitudeFromWCSservice = this.getImpl()
-        .readAltitudeFromWCSservice(coordinates, this.map_.getProjection().code);
-      success(altitudeFromWCSservice);
+      altitudeFromElevationProcess = this.getImpl()
+        .readAltitudeFromElevationProcess(coordinates, this.map_.getProjection().code.split(':')[1]);
+      success(altitudeFromElevationProcess);
     });
 
+    IDEE.proxy(false);
     promesa.then((response) => {
-      const responseText = response.text.split(NO_DATA_VALUE).join('');
-      altitudeFromWCSservice = responseText.split(/\n/)[5].split(' ')[1];
-      if (altitudeFromWCSservice === undefined) {
-        altitudeFromWCSservice = getValue('noDatafromWCS');
+      IDEE.proxy(true);
+      if (!response || response === NO_DATA_VALUE) {
+        altitudeFromElevationProcess = getValue('noDatafromElevationProcess');
+      } else {
+        altitudeFromElevationProcess = parseFloat(response).toFixed(2).replace('.', ',');
       }
-      featurePoint.setAttribute('Altitude', altitudeFromWCSservice);
-      altitudeBox.innerHTML = `${parseFloat(altitudeFromWCSservice).toFixed(2)}`.replace('.', ',');
+      featurePoint.setAttribute('Altitude', altitudeFromElevationProcess);
+      altitudeBox.innerHTML = altitudeFromElevationProcess;
       buttonTab.addEventListener('click', () => this.openTabFromTab(numPoint));
-    });
+    }).catch(() => IDEE.proxy(true));
 
-    IDEE.proxy(true);
     this.layerFeatures.addFeatures([featurePoint]);
     this.layerFeatures.setZIndex(999);
     this.openTab(numPoint);
