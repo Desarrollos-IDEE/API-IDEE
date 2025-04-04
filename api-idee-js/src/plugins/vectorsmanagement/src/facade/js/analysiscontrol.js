@@ -229,6 +229,9 @@ export default class AnalysisControl extends IDEE.Control {
    */
   calculateAnalysis() {
     const active = this.getControlActive();
+    document.querySelector('#vectorsmanagement-analysis-btn').style.display = 'none';
+    document.querySelector('#vectorsmanagement-analysis-div').innerHTML = getValue('readingAltitude');
+    document.querySelector('#vectorsmanagement-analysis-div').style.height = '51px';
     if (active.id === 'topographic-profile-btn') {
       this.getProfile();
     } else if (active.id === 'buffer-btn') {

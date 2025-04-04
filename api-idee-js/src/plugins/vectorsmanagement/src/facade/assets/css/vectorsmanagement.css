@@ -177,6 +177,11 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     text-align: center;
 }
 
+#vectorsmanagement-analysis-div {
+    text-align: center;
+    padding-top: 18px;
+}
+
 button#m-vectormanagement-coordinates-draw,
 button#m-vectorsmanagement-download-btn,
 button#m-vectorsmanagement-deletegeom-btn,
@@ -185,6 +190,7 @@ button#vectorsmanagement-analysis-btn,
 button#confirm-clear-btn,
 button#cancel-clear-btn,
 button#set-style-btn {
+    cursor: pointer;
     text-align: center;
     border: none;
     padding: 8px;

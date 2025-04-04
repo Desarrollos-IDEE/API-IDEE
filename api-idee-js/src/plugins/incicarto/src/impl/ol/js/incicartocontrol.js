@@ -8,10 +8,9 @@ import { getValue } from '../../../facade/js/i18n/language';
 const WGS84 = 'EPSG:4326';
 const MERCATOR = 'EPSG:900913';
 const GML_FORMAT = 'text/xml; subtype=gml/3.1.1';
-const PROFILE_URL = 'https://servicios.idee.es/wcs-inspire/mdt?request=GetCoverage&bbox=';
-const PROFILE_URL_SUFFIX = '&service=WCS&version=1.0.0&coverage=Elevacion4258_5&'
-  + 'interpolationMethod=bilinear&crs=EPSG%3A4258&format=ArcGrid&width=2&height=2';
-const NO_DATA_VALUE = 'NODATA_value -9999.000';
+const ELEVATION_PROFILE_PROCESS_URL = 'https://api-processes.idee.es/processes/elevationProfile/execution';
+const NO_DATA_VALUE = -9999;
+
 const WFS_EXCEPTIONS = [
   'https://servicios.idee.es/wfs-inspire/hidrografia?',
   'https://servicios.idee.es/wfs-inspire/hidrografia',
@@ -1088,9 +1087,6 @@ export default class IncicartoControl extends IDEE.impl.Control {
 
       elem.innerHTML = `${length}m`;
       this.facadeControl.feature.setAttribute('3dLength', length);
-    }, () => {
-      elem.innerHTML = '-';
-      IDEE.dialog.error(getValue('try_again'));
     });
   }
 
@@ -1155,208 +1151,72 @@ export default class IncicartoControl extends IDEE.impl.Control {
     return parsedFeatures;
   }
 
-  calculateElevations(feature) {
-    const srs = this.facadeMap_.getProjection().code;
-    const geomType = feature.getGeometry().type;
-    const coordinates = feature.getGeometry().coordinates;
-    let pointsCoord = '';
-    if (geomType.toLowerCase().indexOf('point') > -1) {
-      const newC = ol.proj.transform(coordinates, srs, WGS84);
-      pointsCoord += `${newC[0]},${newC[1]},${newC[0] + 0.000001},${newC[1] + 0.000001}|`;
-    } else if (geomType.toLowerCase().indexOf('linestring') > -1) {
-      coordinates.forEach((c) => {
-        const newC = ol.proj.transform(c, srs, WGS84);
-        pointsCoord += `${newC[0]},${newC[1]},${newC[0] + 0.000001},${newC[1] + 0.000001}|`;
+  calculateElevations(feature, calculateProfile = false, calculateProfilePoints = false, callback) {
+    let coordinates = [];
+
+    if (feature.getGeometry().type === 'MultiLineString') {
+      feature.getGeometry().coordinates.forEach((path) => {
+        coordinates = coordinates.concat(path);
       });
-    } else if (geomType.toLowerCase().indexOf('polygon') > -1) {
-      coordinates[0].forEach((c) => {
-        const newC = ol.proj.transform(c, srs, WGS84);
-        pointsCoord += `${newC[0]},${newC[1]},${newC[0] + 0.000001},${newC[1] + 0.000001}|`;
-      });
+    } else if (feature.getGeometry().type === 'Polygon') {
+      coordinates = [].concat(feature.getGeometry().coordinates[0]);
+      coordinates.pop();
+    } else if (feature.getGeometry().type === 'MultiPolygon') {
+      const polygonsCoords = [].concat(...feature.getGeometry().coordinates.map((c) => c[0]));
+      coordinates = polygonsCoords;
+    } else if (feature.getGeometry().type === 'Point') {
+      coordinates = [].concat([feature.getGeometry().coordinates]);
+    } else {
+      coordinates = [].concat(feature.getGeometry().coordinates);
     }
 
-    const pointsBbox = pointsCoord.split('|').filter((elem) => {
-      return elem !== '' && elem.trim().length > 3;
+    let altitudeFromElevationProfileProcess;
+    const promesa = new Promise((success) => {
+      altitudeFromElevationProfileProcess = this
+        .readAltitudeFromElevationProfileProcess(coordinates, this.facadeMap_.getProjection().code.split(':')[1]);
+      success(altitudeFromElevationProfileProcess);
     });
 
-    const altitudes = [];
-    const promises = [];
     IDEE.proxy(false);
-    pointsBbox.forEach((bbox) => {
-      const url = `${PROFILE_URL}${bbox}${PROFILE_URL_SUFFIX}`;
-      promises.push(IDEE.remote.get(url));
-    });
-
-    Promise.all(promises).then((responses) => {
+    promesa.then((response) => {
       IDEE.proxy(true);
-      responses.forEach((response) => {
-        let alt = 0;
-        const responseText = response.text.split(NO_DATA_VALUE).join('');
-        if (responseText.indexOf('dy') > -1) {
-          alt = responseText.split('dy')[1].split(' ').filter((item) => {
-            return item !== '';
-          })[1];
-        } else if (responseText.indexOf('cellsize') > -1) {
-          alt = responseText.split('cellsize')[1].split(' ').filter((item) => {
-            return item !== '';
-          })[1];
+
+      if (response && response !== NO_DATA_VALUE) {
+        if (calculateProfile) {
+          this.showProfile(response);
+        } else if (calculateProfilePoints) {
+          callback(response);
+        } else {
+          const geom = feature.getGeometry();
+          if (geom.type.toLowerCase().indexOf('point') > -1) {
+            geom.coordinates = response[0];
+          } else if (geom.type.toLowerCase().indexOf('linestring') > -1) {
+            geom.coordinates = response;
+          } else if (geom.type.toLowerCase().indexOf('polygon') > -1) {
+            geom.coordinates = [response];
+          }
+          feature.setGeometry(geom);
         }
-
-        altitudes.push(parseFloat(alt));
-      });
-
-      const geom = feature.getGeometry();
-      if (geomType.toLowerCase().indexOf('point') > -1) {
-        geom.coordinates.push(altitudes[0]);
-      } else if (geomType.toLowerCase().indexOf('linestring') > -1) {
-        geom.coordinates.forEach((c, index) => {
-          c.push(altitudes[index]);
-        });
-      } else if (geomType.toLowerCase().indexOf('polygon') > -1) {
-        geom.coordinates[0].forEach((c, index) => {
-          c.push(altitudes[index]);
-        });
+      } else {
+        if (calculateProfile) {
+          document.querySelector('.m-incicarto .m-incicarto-loading-container').innerHTML = '';
+        }
       }
-
-      feature.setGeometry(geom);
-    }).catch((err) => {
+    }).catch(() => {
       IDEE.proxy(true);
+
+      if (calculateProfile) {
+        document.querySelector('.m-incicarto .m-incicarto-loading-container').innerHTML = '';
+      }
     });
   }
 
-  calculateProfilePoints(feature, callback, callbackError) {
-    const coordinates = feature.getGeometry().coordinates;
-    let pointsCoord = '';
-    for (let i = 1; i < coordinates.length; i += 1) {
-      pointsCoord = pointsCoord.concat(this.findNewPoints(coordinates[i - 1], coordinates[i]));
-    }
-
-    let pointsBbox = pointsCoord.split('|');
-    while (pointsBbox.length > 150) {
-      pointsBbox = pointsBbox.filter((elem, i) => {
-        return i % 2 === 0;
-      });
-    }
-
-    const altitudes = [];
-    const promises = [];
-    pointsBbox = pointsBbox.filter((elem) => {
-      return elem !== '' && elem.trim().length > 3;
-    });
-
-    IDEE.proxy(false);
-    pointsBbox.forEach((bbox) => {
-      const url = `${PROFILE_URL}${bbox}${PROFILE_URL_SUFFIX}`;
-      promises.push(IDEE.remote.get(url));
-    });
-
-    Promise.all(promises).then((responses) => {
-      IDEE.proxy(true);
-      responses.forEach((response) => {
-        let alt = 0;
-        const responseText = response.text.split(NO_DATA_VALUE).join('');
-        if (responseText.indexOf('dy') > -1) {
-          alt = responseText.split('dy')[1].split(' ').filter((item) => {
-            return item !== '';
-          })[1];
-        } else if (responseText.indexOf('cellsize') > -1) {
-          alt = responseText.split('cellsize')[1].split(' ').filter((item) => {
-            return item !== '';
-          })[1];
-        }
-
-        altitudes.push(parseFloat(alt));
-      });
-
-      const arrayXZY = [];
-      altitudes.forEach((data, index) => {
-        const points = pointsBbox[index].split(',');
-        const center = ol.extent.getCenter([parseFloat(points[0]), parseFloat(points[1]),
-          parseFloat(points[2]), parseFloat(points[3])]);
-        arrayXZY.push([center[0], center[1], data]);
-      });
-
-      let arrayXZY2 = arrayXZY.map((coord) => {
-        return ol.proj.transform(coord, 'EPSG:4326', this.facadeMap_.getProjection().code);
-      });
-
-      arrayXZY2 = arrayXZY2.filter((item) => {
-        return item[2] > 0;
-      });
-
-      callback(arrayXZY2);
-    }).catch((err) => {
-      IDEE.proxy(true);
-      callbackError();
-    });
+  calculateProfilePoints(feature, callback) {
+    this.calculateElevations(feature, false, true, callback)
   }
 
   calculateProfile(feature) {
-    const coordinates = feature.getGeometry().coordinates;
-    let pointsCoord = '';
-    for (let i = 1; i < coordinates.length; i += 1) {
-      pointsCoord = pointsCoord.concat(this.findNewPoints(coordinates[i - 1], coordinates[i]));
-    }
-
-    let pointsBbox = pointsCoord.split('|');
-    while (pointsBbox.length > 150) {
-      pointsBbox = pointsBbox.filter((elem, i) => {
-        return i % 2 === 0;
-      });
-    }
-
-    const altitudes = [];
-    const promises = [];
-    pointsBbox = pointsBbox.filter((elem) => {
-      return elem !== '' && elem.trim().length > 3;
-    });
-
-    IDEE.proxy(false);
-    pointsBbox.forEach((bbox) => {
-      const url = `${PROFILE_URL}${bbox}${PROFILE_URL_SUFFIX}`;
-      promises.push(IDEE.remote.get(url));
-    });
-
-    Promise.all(promises).then((responses) => {
-      IDEE.proxy(true);
-      responses.forEach((response) => {
-        let alt = 0;
-        const responseText = response.text.split(NO_DATA_VALUE).join('');
-        if (responseText.indexOf('dy') > -1) {
-          alt = responseText.split('dy')[1].split(' ').filter((item) => {
-            return item !== '';
-          })[1];
-        } else if (responseText.indexOf('cellsize') > -1) {
-          alt = responseText.split('cellsize')[1].split(' ').filter((item) => {
-            return item !== '';
-          })[1];
-        }
-
-        altitudes.push(parseFloat(alt));
-      });
-
-      const arrayXZY = [];
-      altitudes.forEach((data, index) => {
-        const points = pointsBbox[index].split(',');
-        const center = ol.extent.getCenter([parseFloat(points[0]), parseFloat(points[1]),
-          parseFloat(points[2]), parseFloat(points[3])]);
-        arrayXZY.push([center[0], center[1], data]);
-      });
-
-      let arrayXZY2 = arrayXZY.map((coord) => {
-        return ol.proj.transform(coord, 'EPSG:4326', this.facadeMap_.getProjection().code);
-      });
-
-      arrayXZY2 = arrayXZY2.filter((item) => {
-        return item[2] > 0;
-      });
-
-      this.showProfile(arrayXZY2);
-    }).catch((err) => {
-      IDEE.proxy(true);
-      document.querySelector('.m-incicarto .m-incicarto-loading-container').innerHTML = '';
-      IDEE.dialog.error(getValue('exception.query_profile'), 'Error');
-    });
+    this.calculateElevations(feature, true);
   }
 
   showProfile(coord) {
@@ -1372,7 +1232,7 @@ export default class IncicartoControl extends IDEE.impl.Control {
         zmin: getValue('zmin'),
         zmax: getValue('zmax'),
         altitude: getValue('altitude'),
-        distance: getValue('distance'),
+        distance: getValue('distanceT'),
         ytitle: getValue('ytitle'),
         xtitle: getValue('xtitle'),
         altitudeUnits: 'm',
@@ -1739,5 +1599,48 @@ export default class IncicartoControl extends IDEE.impl.Control {
     } else {
       this.facadeControl.renderLayers();
     }
+  }
+
+  readAltitudeFromElevationProfileProcess(coordinates, srcMapa) {
+    let features = '';
+    coordinates.forEach((element) => {
+      features += `,{"geometry": { "type": "Point", "coordinates": [${element[0]},${element[1]}] } }`;
+    });
+    features = features.substring(1);
+    return new Promise((resolve) => {
+      fetch(ELEVATION_PROFILE_PROCESS_URL, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'inputs': {
+            'crs': parseInt(srcMapa, 10),
+            'distance': 9999999,
+            'geom': `{ "type": "FeatureCollection", "features": [${features}] }`,
+            'withCoord': true,
+          },
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            IDEE.toast.error(getValue('exception.query_profile'), 6000);
+            return undefined;
+          }
+          return response.json();
+        })
+        .then((response) => {
+          if (!response) {
+            resolve(undefined);
+          } else {
+            resolve(response.values);
+          }
+        })
+        .catch(() => {
+          IDEE.toast.error(getValue('exception.query_profile'), 6000);
+          resolve(undefined);
+        });
+    });
   }
 }

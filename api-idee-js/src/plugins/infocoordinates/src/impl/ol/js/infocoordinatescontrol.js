@@ -2,6 +2,11 @@
 /**
  * @module IDEE/impl/control/InfocoordinatesControl
  */
+
+import { getValue } from '../../../facade/js/i18n/language';
+
+const ELEVATION_PROCESS_URL = 'https://api-processes.idee.es/processes/getElevation/execution';
+
 export default class InfocoordinatesControl extends IDEE.impl.Control {
   /**
    * This function adds the control to the specified map
@@ -85,22 +90,40 @@ export default class InfocoordinatesControl extends IDEE.impl.Control {
     return datum;
   }
 
-  readAltitudeFromWCSservice(coord, srcMapa) {
-    // 1.- transformo las coordenadas a EPSG4258 ya que el servicio WCS es en ese srs
-    const coordinatesEPSG4528 = ol.proj.transform(coord, srcMapa, 'EPSG:4258');
-
-    // 2.- me genero un bbox de las coordenadas
-    const bbox = [
-      [coordinatesEPSG4528[0], coordinatesEPSG4528[1]],
-      [coordinatesEPSG4528[0] + 0.000001, coordinatesEPSG4528[1] + 0.000001],
-    ];
-
-    // 3.- lanzo el servicio y el método devolverá un texto que lo recogerá una promesa
-    const PROFILE_URL = 'https://servicios.idee.es/wcs-inspire/mdt?request=GetCoverage&bbox=';
-    const PROFILE_URL_SUFFIX = '&service=WCS&version=1.0.0&coverage=Elevacion4258_5&'
-      + 'interpolationMethod=bilinear&crs=EPSG%3A4258&format=ArcGrid&width=2&height=2';
-    const url = `${PROFILE_URL}${bbox}${PROFILE_URL_SUFFIX}`;
-    return IDEE.remote.get(url);
+  readAltitudeFromElevationProcess(coordinates, srcMapa) {
+    return new Promise((resolve) => {
+      fetch(ELEVATION_PROCESS_URL, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'inputs': {
+            'crs': parseInt(srcMapa, 10),
+            'geom': `{ "type": "Feature", "geometry": { "type": "Point", "coordinates": [${coordinates[0]}, ${coordinates[1]}] } }`,
+          },
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            IDEE.toast.error(getValue('exception.query_profile'), 6000);
+            return undefined;
+          }
+          return response.json();
+        })
+        .then((response) => {
+          if (!response) {
+            resolve(undefined);
+          } else {
+            resolve(response.values[0]);
+          }
+        })
+        .catch(() => {
+          IDEE.toast.error(getValue('exception.query_profile'), 6000);
+          resolve(undefined);
+        });
+    });
   }
 
   transform(box, code, currProj) {

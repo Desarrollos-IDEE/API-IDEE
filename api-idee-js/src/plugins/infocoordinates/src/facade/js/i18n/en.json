@@ -1,6 +1,7 @@
 {
   "exception": {
-    "impl": "The implementation used cannot create Infocoordinates controls."
+    "impl": "The implementation used cannot create Infocoordinates controls.",
+    "query_profile": "The altitude data for this point could not be queried."
   },
   "textHelp": {
     "help1": "Click on the map to obtain the coordinates of a point in the selected reference system.",
@@ -28,7 +29,7 @@
   "coordY": "Coord.Y (m):",
   "altitude": "Altitude (m):",
   "readingAltitude": "Reading...",
-  "noDatafromWCS": "No data",
+  "noDatafromElevationProcess": "No data",
   "removePoint": "Removes point",
   "copyLatLon": "Copy latitude/longitude",
   "copyxy": "Copy x/y",

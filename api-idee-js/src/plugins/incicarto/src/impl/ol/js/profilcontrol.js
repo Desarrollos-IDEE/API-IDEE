@@ -1,4 +1,5 @@
 /*eslint-disable*/
+import { getValue } from '../../../facade/js/i18n/language';
 
 const inherits = (child, parent) => {
   child.prototype = Object.create(parent.prototype);
@@ -146,7 +147,7 @@ class Profil extends ol.control.Control {
     div_altitude.innerHTML = (this.info.altitude || 'Altitude') + ': <span class="z">';
     secondTr.appendChild(div_altitude);
     var div_distance2 = document.createElement('td');
-    div_distance2.innerHTML = ('Dist. parcial') + ': <span class="dist">';
+    div_distance2.innerHTML = `${getValue('distanceP')}: <span class="dist">`;
     secondTr.appendChild(div_distance2);
     var div_time2 = document.createElement('td');
     div_time2.innerHTML = (this.info.time || 'Time') + ': <span class="time">';
@@ -204,8 +205,8 @@ class Profil extends ol.control.Control {
         this.cursor_.style.display = 'none';
       }
       this.bar_.parentElement.classList.add('over');
-      this.element.querySelector('.point-info .z').textContent = p[1] + this.info.altitudeUnits;
-      this.element.querySelector('.point-info .dist').textContent = (p[0] / 1000).toFixed(1) + this.info.distanceUnitsKM;
+      this.element.querySelector('.point-info .z').textContent = `${p[1].toFixed(2).replace(".", ",")} ${this.info.altitudeUnits}`;
+      this.element.querySelector('.point-info .dist').textContent = `${(p[0] / 1000).toFixed(2).replace(".", ",")} ${this.info.distanceUnitsKM}`;
       this.element.querySelector('.point-info .time').textContent = p[2];
       if (dx > this.canvas_.width / ratio / 2) this.popup_.classList.add('ol-left');
       else this.popup_.classList.remove('ol-left');
@@ -353,12 +354,12 @@ class Profil extends ol.control.Control {
     }
 
     // Info
-    this.element.querySelector('.track-info .zmin').textContent = zmin.toFixed(2) + this.info.altitudeUnits;
-    this.element.querySelector('.track-info .zmax').textContent = zmax.toFixed(2) + this.info.altitudeUnits;
+    this.element.querySelector('.track-info .zmin').textContent = `${(zmin.toFixed(2)).replace(".", ",")} ${this.info.altitudeUnits}`;
+    this.element.querySelector('.track-info .zmax').textContent = `${(zmax.toFixed(2)).replace(".", ",")} ${this.info.altitudeUnits}`;
     if (d > 1000) {
-      this.element.querySelector('.track-info .dist').textContent = (d / 1000).toFixed(1) + this.info.distanceUnitsKM;
+      this.element.querySelector('.track-info .dist').textContent = `${((d / 1000).toFixed(2)).replace(".", ",")} ${this.info.distanceUnitsKM}`;
     } else {
-      this.element.querySelector('.track-info .dist').textContent = (d).toFixed(1) + this.info.distanceUnitsM;
+      this.element.querySelector('.track-info .dist').textContent = `${((d).toFixed(2)).replace(".", ",")} ${this.info.distanceUnitsM}`;
     }
     //this.element.querySelector('.track-info .time').textContent = ti;
 
