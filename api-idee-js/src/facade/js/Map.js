@@ -472,7 +472,7 @@ class Map extends Base {
         position: Position[position] || Position.BR,
         className: 'm-attributions',
         collapsedButtonClass: 'g-cartografia-comentarios',
-        tooltip: tooltip || getValue('attributions').tooltip,
+        tooltip: tooltip || getValue('attributionsControl').tooltip,
         order,
       });
       this.addPanels(panel);
