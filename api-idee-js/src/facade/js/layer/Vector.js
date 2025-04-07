@@ -572,12 +572,13 @@ class Vector extends LayerBase {
  */
 Vector.DEFAULT_PARAMS = {
   fill: {
-    color: 'rgba(255, 255, 255, 0.4)',
-    opacity: 0.4,
+    color: '#f78c4d',
+    opacity: 0.5,
+    width: 5,
   },
   stroke: {
-    color: '#3399CC',
-    width: 1.5,
+    color: '#ff5e00',
+    width: 2,
   },
 };
 
