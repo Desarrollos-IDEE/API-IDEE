@@ -44,7 +44,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 - **tooltip**: Tooltip que se muestra sobre el plugin (Se muestra al dejar el ratón encima del plugin como información). Por defecto: 'Ayuda'.
 - **header**: Objeto para indicar:
   - **images**: Array de URLs de imágenes para mostrar en la cabecera. Por defecto:
-    ['https://componentes.idee.es/api-idee/img/logo_ge.svg', 'https://componentes.idee.es/api-idee/img/ign.svg']
+['https://componentes.idee.es/estaticos/imagenes/logos/logo_ge.svg', 'https://componentes.idee.es/estaticos/imagenes/logos/ign.svg']
   - **title**: Título para mostrar en la cabecera. Por defecto: 'Ayuda API-IDEE'.
 - **initialIndex**: Indica en que índice se abrira la página de ayuda.
 - **initialExtraContents**: Contenido extra para mostrar antes de la ayuda de las herramientas. Permite un array de objetos con el siguiente formato:

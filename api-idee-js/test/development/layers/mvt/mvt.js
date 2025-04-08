@@ -33,7 +33,7 @@ export const mvt_001 = new MVT({
   //   name: 'Name Prueba MVT',
   //   description: 'Description Prueba',
   //   url: 'https://www.ign.es',
-  //   contentAttributions: 'https://componentes.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+  //   contentAttributions: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
   //   contentType: 'kml',
   // },
   // minZoom: 0,

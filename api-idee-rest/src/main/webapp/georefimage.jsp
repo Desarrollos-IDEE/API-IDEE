@@ -156,7 +156,7 @@
           layerOpts: [
             {
               id: 'raster',
-              preview: 'img/raster.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/raster.png',
               title: 'Mapa',
               layers: [
                 new IDEE.layer.WMTS({
@@ -174,7 +174,7 @@
             },
             {
               id: 'imagen',
-              preview: 'img/image.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/image.png',
               title: 'Imagen',
               layers: [
                 new IDEE.layer.WMTS({
@@ -192,7 +192,7 @@
             },
             {
               id: 'mapa',
-              preview: 'img/mapa.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/mapa.png',
               title: 'Callejero',
               layers: [
                 new IDEE.layer.WMTS({
@@ -211,7 +211,7 @@
             {
               id: 'hibrido',
               title: 'Híbrido',
-              preview: 'img/hibrido.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/hibrido.png',
               layers: [
                 new IDEE.layer.WMTS({
                   url: 'https://www.ign.es/wmts/pnoa-ma?',
@@ -239,7 +239,7 @@
             },
             {
               id: 'lidar',
-              preview: 'img/lidar.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/lidar.png',
               title: 'LiDAR',
               layers: [
                 new IDEE.layer.WMTS({
@@ -257,7 +257,7 @@
             },
             {
               id: 'ocupacion-suelo',
-              preview: 'img/ocupacion_suelo.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/ocupacion_suelo.png',
               title: 'Ocupación',
               layers: [
                 new IDEE.layer.WMTS({
@@ -275,7 +275,7 @@
             },
             {
               id: 'historicos',
-              preview: 'img/historicos.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/historicos.png',
               title: 'Históricos',
               layers: [
                 new IDEE.layer.WMTS({

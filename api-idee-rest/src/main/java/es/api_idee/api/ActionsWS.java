@@ -62,7 +62,6 @@ public class ActionsWS {
 		actions.put("/version");
 		actions.put("/projection");
 		actions.put("/plugins");
-		actions.put("/resources/svg");
 		actions.put("/resourcesPlugins");
 		actions.put("/versions");
 
@@ -177,55 +176,6 @@ public class ActionsWS {
 		version.put("date", versionProperties.getString("date"));
 
 		return JSBuilder.wrapCallback(version, callbackFn);
-	}
-
-	/**
-	 * Provides SVG collections
-	 * 
-	 * @param callbackFn the name of the javascript function to execute as callback
-	 * @param name name collection
-	 * 
-	 * @return the javascript code
-	 */
-	@GET
-	@Path("/resources/svg")
-	public String resourceSVG(@QueryParam("callback") String callbackFn, @QueryParam("name") String name) {
-		JSONObject result = new JSONObject();
-		try {
-			String file = new String(Files.readAllBytes(Paths.get(context.getRealPath("/WEB-INF/classes/resources_svg.json"))));
-
-			JSONArray allCollectionsSVG = (JSONArray) new JSONObject(file).get("collections");
-			JSONObject collectionSVG = null;
-
-			Boolean showAllCollections = false;
-			if (name == null) {
-				showAllCollections = true;
-			}
-			JSONArray arrayCollections = new JSONArray();
-			for (int i = 0; i < allCollectionsSVG.length(); i++) {
-				collectionSVG = (JSONObject) allCollectionsSVG.get(i);
-				String nameCollection = (String) collectionSVG.get("name");
-				boolean findCollection = !showAllCollections && name.equals(nameCollection);
-				if (showAllCollections || findCollection) {
-					JSONObject aux = new JSONObject();
-					aux.put("name", nameCollection);
-					JSONArray data = new JSONArray();
-					JSONArray resources = (JSONArray) collectionSVG.get("resources");
-					data.put(resources);
-					aux.put("resources", data);
-					arrayCollections.put(aux);
-					if (findCollection) {
-						break;
-					}
-				}
-			}
-			result.put("collections", arrayCollections);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return JSBuilder.wrapCallback(result, callbackFn);
-
 	}
 
 	/**

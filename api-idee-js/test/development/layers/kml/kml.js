@@ -6,7 +6,7 @@ import OLKMLFormat from 'ol/format/KML';
 
 export const kml_001 = new KML({
   // url: 'https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml',
-  url: 'https://componentes.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+  url: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
   // url: 'https://componentes-desarrollo.idee.es/files/kml/arbda_sing_se.kml',
   name: 'capaKML',
   // extract: false,
@@ -31,7 +31,7 @@ export const kml_001 = new KML({
   //     name: 'Name Prueba KML',
   //     description: 'Description Prueba',
   //     url: 'https://www.ign.es',
-  //     contentAttributions: 'https://componentes.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+  //     contentAttributions: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
   //     contentType: 'kml',
   //   },
 }, {
@@ -78,7 +78,7 @@ export const kml_002 = new KML({
 });
 
 export const kml_003 = new KML({
-  url: 'https://componentes.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+  url: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
   name: 'capaKML',
   extract: true,
   visibility: true,

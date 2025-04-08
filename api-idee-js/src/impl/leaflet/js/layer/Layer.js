@@ -185,7 +185,7 @@ export default class Layer extends MObject {
    * @expose
    */
   getLegendURL() {
-    return concatUrlPaths([MConfig.THEME_URL, FacadeLayer.LEGEND_DEFAULT]);
+    returnFacadeLayer.LEGEND_DEFAULT;
   }
 
   /**
