@@ -45,8 +45,6 @@ export const generic_001 = new GenericRaster({
   // name: 'Segundo nombre de prueba',
   // isBase: false,
   // isBase: true,
-  // transparent: true,
-  // transparent: false,
   legend: 'capaGenericRaster',
   // legend: 'capaGenericRaster de prueba',
   // version: '1.2.0',

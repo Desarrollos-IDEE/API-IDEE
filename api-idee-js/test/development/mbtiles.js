@@ -17,7 +17,7 @@ fetch('./cabrera.mbtiles').then((response) => {
     name: 'mbtiles',
     legend: 'Cabrera',
     // source: response,
-    transparent: true,
+    isBase: false,
     visibility: true,
     opacity: 0.5,
     // tileSize: 256

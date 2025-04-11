@@ -823,8 +823,8 @@ export default class IncicartoControl extends IDEE.Control {
    */
   getLayersInLayerswitcher() {
     const layers = this.map_.getLayers().filter((layer) => {
-      return (layer.displayInLayerSwitcher === true && layer.transparent === true)
-        || layer.transparent === false;
+      return (layer.displayInLayerSwitcher === true && layer.isBase === false)
+        || layer.isBase === true;
     });
 
     return layers.map((layer) => this.layerToParam(layer)).filter((param) => param != null);

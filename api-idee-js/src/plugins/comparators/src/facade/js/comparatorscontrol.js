@@ -357,7 +357,7 @@ export default class ComparatorsControl extends IDEE.Control {
             const layersStringDefault = [];
 
             otherLayers.forEach((l) => {
-              if (l.displayInLayerSwitcher && l.transparent) {
+              if (l.displayInLayerSwitcher && !l.isBase) {
                 layersStringDefault.push(transformToStringLayers(l, this.map_, false));
               }
             });
@@ -395,7 +395,7 @@ export default class ComparatorsControl extends IDEE.Control {
     this.addZindex_(activeLayerComparators);
     if (otherLayers.length === 0) return;
     otherLayers.forEach((l, i) => {
-      if (l.displayInLayerSwitcher && l.transparent) {
+      if (l.displayInLayerSwitcher && !l.isBase) {
         const stringLayer = transformToStringLayers(l, this.map_, false);
         this.layersPlugin.push(stringLayer); // Evitamos poner las mismas
         // mapjsB, mapjsC, mapjsD
@@ -421,7 +421,7 @@ export default class ComparatorsControl extends IDEE.Control {
     if (otherLayers.length === 0) return;
 
     otherLayers.forEach((l, i) => {
-      if (l.displayInLayerSwitcher && l.transparent) {
+      if (l.displayInLayerSwitcher && !l.isBase) {
         const stringLayer = transformToStringLayers(l, this.map_, false);
         this.layersPlugin.push(stringLayer);
         if (selectes !== undefined && control !== undefined) {

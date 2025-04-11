@@ -102,7 +102,7 @@ const baseMapaBaseIGNBaseTodoWMTS = () => {
       name: 'IGNBaseTodo',
       legend: 'Mapa IGN',
       matrixSet: 'GoogleMapsCompatible',
-      transparent: false,
+      isBase: true,
       attribution: '<p><b>IDEE</b>: <a style="color: #0000FF" href="https://www.scne.es" target="_blank">SCNE</a></p>',
     }, {
       format: 'image/jpeg',
@@ -125,7 +125,7 @@ const quickLayersTMS = (option) => {
           url: 'https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/{z}/{x}/{-y}.jpeg',
           legend: 'IGNBaseTodo',
           visible: true,
-          transparent: false,
+          isBase: true,
           tileGridMaxZoom: 17,
           name: 'IGNBaseTodo',
           attribution: '<p><b>IDEE</b>: <a style="color: #0000FF" href="https://www.scne.es" target="_blank">SCNE</a></p>',
@@ -140,7 +140,7 @@ const quickLayersTMS = (option) => {
           legend: 'IGNBaseOrto',
           name: 'IGNBaseOrto',
           visible: true,
-          transparent: false,
+          isBase: true,
           tileGridMaxZoom: 17,
           attribution: '<p><b>IDEE</b>: <a style="color: #0000FF" href="https://www.scne.es" target="_blank">SCNE</a></p>',
         }, {
@@ -154,7 +154,7 @@ const quickLayersTMS = (option) => {
           legend: 'PNOA_MA',
           name: 'PNOA_MA',
           visible: true,
-          transparent: false,
+          isBase: true,
           tileGridMaxZoom: 19,
           attribution: {
             name: 'PNOA-MA',

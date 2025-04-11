@@ -26,8 +26,10 @@ import Generic from '../style/Generic';
  * @extends {IDEE.Layer}
  * @property {Number} minZoom Zoom mínimo.
  * @property {Number} maxZoom Zoom máximo.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
+ * @property {Boolean} isBase Define si la capa es base.
  * @property {Array} predefinedStyles Estilos prefefinidos.
- *
  * @api
  * @extends {IDEE.layer}
  */
@@ -42,6 +44,8 @@ class Vector extends LayerBase {
    * - type: Tipo de la capa.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
    * - legend: Indica el nombre que queremos que aparezca en el árbol de contenidos, si lo hay.
+   * - isBase: Indica si la capa es base.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
    * @param {Mx.parameters.LayerOptions} options  Estas opciones se mandarán a
    * la implementación de la capa.
    * - style. Define el estilo de la capa.
@@ -71,6 +75,11 @@ class Vector extends LayerBase {
   constructor(parameters = {}, options = {}, vendorOptions = {}, implParam = undefined) {
     const optns = parameters;
     optns.type = !parameters.type ? LayerType.Vector : parameters.type;
+
+    if (!isUndefined(parameters.transparent) && optns.type === LayerType.Vector) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
+    }
 
     const optionsVars = options;
 

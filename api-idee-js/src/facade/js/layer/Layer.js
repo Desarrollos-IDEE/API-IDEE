@@ -17,12 +17,13 @@ import * as EventType from '../event/eventtype';
  * @property {string} type Tipo de la capa.
  * @property {string} url URL del servicio.
  * @property {string} name Nombre de la capa.
- * @property {Boolean} transparent Falso si es una capa base, verdadero en caso contrario.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
  * @property {Array<Number>} userMaxExtent MaxExtent proporcionado por el usuario, la medida en que
  * restringe la visualización a una región específica.
  * @property {string} legend Indica el nombre que queremos que aparezca en el árbol
  * de contenidos, si lo hay.
- * @property {Boolean} isbase Define si la capa es base.
+ * @property {Boolean} isBase Define si la capa es base.
  *
  * @api
  * @extends {IDEE.Base}
@@ -318,6 +319,7 @@ class LayerBase extends Base {
    * @public
    * @returns {IDEE.layer.impl.transparent} Valor de la propiedad "transparent".
    * @api
+   * @deprecated
    */
   get transparent() {
     return this.getImpl().transparent;
@@ -330,6 +332,7 @@ class LayerBase extends Base {
    * @public
    * @param {Boolean} newTransparent  Nuevo valor para la propiedad "transparent".
    * @api
+   * @deprecated
    */
   set transparent(newTransparent) {
     if (!isNullOrEmpty(newTransparent)) {

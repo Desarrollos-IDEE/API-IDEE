@@ -28,8 +28,6 @@ export const mbtile_01 = new MBTiles({
   visibility: true,
   // isBase: false,
   // isBase: true,
-  // transparent: true,
-  // transparent: false,
   // infoEventType: 'hover',
   // infoEventType: 'click',
   // attribution: {

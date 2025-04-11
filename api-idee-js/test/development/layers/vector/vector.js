@@ -6,7 +6,6 @@ export const vector_001 = new Vector({
   name: 'capaVectorial',
   legend: 'Capa Vector',
   // isBase: true,
-  // transparent: false,
   // maxExtent: [-1259872.4694101033, 4359275.566199489, -85799.71494979598, 4620384.454821652],
   // attribution: {
   //   name: 'Name Prueba Vector',

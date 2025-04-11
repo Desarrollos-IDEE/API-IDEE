@@ -114,7 +114,7 @@ export const showHideLayersEye = (evt, layer, self) => {
 
   if (evt.target.className.indexOf('m-layerswitcher-check') > -1 && selectLayer === 'eye') {
     if (evt.target.classList.contains(CLASS_CHECK)) {
-      if (layer.transparent === true || !layer.isVisible()) {
+      if (layer.isBase === false || !layer.isVisible()) {
         layer.setVisible(!layer.isVisible());
         self.render();
       }
@@ -301,7 +301,7 @@ export const showHideLayersRadio = (layer, map, target) => {
 
 const getRadioLayersFilter = (layers) => {
   return layers.filter((l) => l.displayInLayerSwitcher === true
-  && l.transparent === true
+  && l.isBase === false
   && l.isVisible()) || [];
 };
 
@@ -325,7 +325,7 @@ export const selectDefaultRange = (radioButtons, map) => {
   const layersMapVisible = map.getLayers()
     .filter((l) => l.displayInLayerSwitcher === true
     && l.isVisible()
-    && l.transparent === true);
+    && l.isBase === false);
 
   // Del mapa
   clickRadioLayers(layersMapVisible, radioButtons);

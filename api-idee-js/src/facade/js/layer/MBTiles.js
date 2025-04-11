@@ -4,7 +4,9 @@
 import MBTilesImpl from 'impl/layer/MBTiles';
 import LayerBase from './Layer';
 import * as LayerType from './Type';
-import { isUndefined, isObject, isNullOrEmpty } from '../util/Utils';
+import {
+  isUndefined, isObject, isNullOrEmpty, isString,
+} from '../util/Utils';
 import Exception from '../exception/exception';
 import { getValue } from '../i18n/language';
 import * as parameter from '../parameter/parameter';
@@ -20,7 +22,9 @@ import * as parameter from '../parameter/parameter';
  * @property {string} name Nombre de la capa, identificador.
  * @property {string} legend Leyenda de la capa.
  * @property {object} options Opciones MBTiles.
- * @property {Boolean} isbase Define si la capa es base.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
+ * @property {Boolean} isBase Define si la capa es base.
  *
  * @api
  * @extends {IDEE.Layer}
@@ -38,7 +42,7 @@ class MBTiles extends LayerBase {
    * - url: Url del fichero o servicio que genera el MBTiles.
    * - type: Tipo de la capa.
    * - maxZoomLevel: Zoom máximo aplicable a la capa.
-   * - transparent: Falso si es una capa base, verdadero en caso contrario.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
    * - legend: Indica el nombre que aparece en el árbol de contenidos, si lo hay.
    * - tileLoadFunction: Función de carga de la tesela proporcionada por el usuario.
@@ -73,6 +77,11 @@ class MBTiles extends LayerBase {
     if (isUndefined(MBTilesImpl) || (isObject(MBTilesImpl)
       && isNullOrEmpty(Object.keys(MBTilesImpl)))) {
       Exception(getValue('exception').mbtiles_method);
+    }
+
+    if (isString(userParameters) || !isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
     }
 
     const parameters = parameter.layer(userParameters, LayerType.MBTiles);

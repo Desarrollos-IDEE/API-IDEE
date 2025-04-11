@@ -29,7 +29,6 @@ class OSM extends Layer {
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
    * - name: Nombre de la capa en la leyenda.
    * - legend: Indica el nombre que queremos que aparezca en el árbol de contenidos, si lo hay.
-   * - transparent: Falso si es una capa base, verdadero en caso contrario.
    * - type: Tipo de la capa.
    * - url: Url genera la OSM.
    * - minZoom: Zoom mínimo aplicable a la capa.
@@ -92,7 +91,7 @@ class OSM extends Layer {
   setVisible(visibility) {
     this.visibility = visibility;
     // if this layer is base then it hides all base layers
-    if ((visibility === true) && (this.transparent === false)) {
+    if ((visibility === true) && (this.isBase === true)) {
       // hides all base layers
       this.map.getBaseLayers().forEach((layer) => {
         if (!layer.equals(this) && layer.isVisible()) {

@@ -15,8 +15,6 @@ export const wmts_001 = new WMTS({
   // useCapabilities: true,
   // isBase: false,
   // isBase: true,
-  // transparent: false,
-  // transparent: true,
   // attribution: {
   //     name: 'Name Prueba WMTS',
   //     description: 'Description Prueba',

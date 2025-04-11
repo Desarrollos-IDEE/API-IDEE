@@ -88,7 +88,7 @@
                 name: 'EL.GridCoverageDSM',
                 legend: 'LiDAR',
                 matrixSet: 'GoogleMapsCompatible',
-                transparent: false,
+                isBase: true,
                 displayInLayerSwitcher: false,
                 queryable: false,
                 visible: true,

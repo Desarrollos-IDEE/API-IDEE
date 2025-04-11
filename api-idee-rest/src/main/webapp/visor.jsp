@@ -100,7 +100,7 @@
           name:  'delegacionesIGN',
           extract: false,
           legend: 'Delegaciones IGN',
-          transparent: true,
+          isBase: false,
         });
 
         map.addLayers([ocupacionSuelo, layerinicial, layerUA, kml]);

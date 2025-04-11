@@ -51,7 +51,6 @@ export const layerGroup_001 = new LayerGroup({
     // wfs_001,
   ],
   // isBase: true,
-  // transparent: false,
   name: 'Grupo de capas',
   legend: 'Grupo de capas LEGEND',
   displayInLayerSwitcher: false,
