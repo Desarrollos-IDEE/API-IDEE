@@ -40,7 +40,6 @@ const ocupacionSuelo = new IDEE.layer.WMTS({
   visibility: false,
 });
 
-
 const kml = new IDEE.layer.KML('KML*Delegaciones IGN*https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml*false*false');
 
 mapjs.addLayers([ocupacionSuelo, layerinicial, layerUA, kml]);
@@ -48,7 +47,6 @@ mapjs.addLayers([ocupacionSuelo, layerinicial, layerUA, kml]);
 // mapjs.addLayers([layerinicial]);
 // mapjs.addLayers([layerUA]);
 // mapjs.addLayers([kml]);
-
 
 const mp = new IGNSearch({
   servicesToSearch: 'gn',
@@ -64,12 +62,12 @@ const mp2 = new Attributions({
   scale: 10000,
   // defaultAttribution: 'Instituto Geográfico Nacional',
   // defaultURL: 'https://www.ign.es/',
-  // url: 'https://componentes-desarrollo.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+  // url: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
   // type: 'kml',
 });
 
 const mp3 = new ShareMap({
-  baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",
+  baseUrl: `${window.location.href.substring(0, window.location.href.indexOf('api-idee'))}api-idee/`,
   position: 'BR',
 });
 
@@ -85,7 +83,6 @@ const mp7 = new MouseSRS({
   utmDecimalDigits: 2,
 });
 const mp8 = new TOC();
-
 
 mapjs.addPlugin(mp);
 mapjs.addPlugin(mp2);

@@ -177,7 +177,7 @@ const mp = new BackImgLayer({
             },
             {
               id: 'lidar',
-              preview: 'img/lidar.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/lidar.png',
               title: 'LiDAR',
               layers: [
                 new IDEE.layer.WMTS({
@@ -195,7 +195,7 @@ const mp = new BackImgLayer({
             },
             {
               id: 'ocupacion-suelo',
-              preview: 'img/ocupacion_suelo.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/ocupacion_suelo.png',
               title: 'Ocupación',
               layers: [
                 new IDEE.layer.WMTS({
@@ -213,7 +213,7 @@ const mp = new BackImgLayer({
             },
             {
               id: 'historicos',
-              preview: 'img/historicos.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/historicos.png',
               title: 'Históricos',
               layers: [
                 new IDEE.layer.WMTS({

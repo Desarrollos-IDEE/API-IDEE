@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="es.api_idee.plugins.PluginsManager"%>
-<%@ page import="es.api_idee.parameter.adapter.ParametersAdapterV3ToV4"%>
 <%@ page import="java.util.Map"%>
 <!DOCTYPE html>
 <html lang="en">
@@ -27,8 +26,7 @@
     <%
       Map<String, String[]> parameterMap = request.getParameterMap();
       PluginsManager.init (getServletContext());
-      Map<String, String[]> adaptedParams = ParametersAdapterV3ToV4.adapt(parameterMap);
-      String[] cssfiles = PluginsManager.getCSSFiles(adaptedParams);
+      String[] cssfiles = PluginsManager.getCSSFiles(parameterMap);
       for (int i = 0; i < cssfiles.length; i++) {
          String cssfile = cssfiles[i];
    %>
@@ -81,7 +79,7 @@
     <script type="text/javascript" src="plugins/sharemap/sharemap.ol.min.js"></script>
     <script type="text/javascript" src="plugins/backimglayer/backimglayer.ol.min.js"></script>
     <%
-      String[] jsfiles = PluginsManager.getJSFiles(adaptedParams);
+      String[] jsfiles = PluginsManager.getJSFiles(parameterMap);
       for (int i = 0; i < jsfiles.length; i++) {
          String jsfile = jsfiles[i];
    %>
@@ -156,7 +154,7 @@
           layerOpts: [
             {
               id: 'raster',
-              preview: 'img/raster.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/raster.png',
               title: 'Mapa',
               layers: [
                 new IDEE.layer.WMTS({
@@ -174,7 +172,7 @@
             },
             {
               id: 'imagen',
-              preview: 'img/image.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/image.png',
               title: 'Imagen',
               layers: [
                 new IDEE.layer.WMTS({
@@ -192,7 +190,7 @@
             },
             {
               id: 'mapa',
-              preview: 'img/mapa.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/mapa.png',
               title: 'Callejero',
               layers: [
                 new IDEE.layer.WMTS({
@@ -211,7 +209,7 @@
             {
               id: 'hibrido',
               title: 'Híbrido',
-              preview: 'img/hibrido.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/hibrido.png',
               layers: [
                 new IDEE.layer.WMTS({
                   url: 'https://www.ign.es/wmts/pnoa-ma?',
@@ -239,7 +237,7 @@
             },
             {
               id: 'lidar',
-              preview: 'img/lidar.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/lidar.png',
               title: 'LiDAR',
               layers: [
                 new IDEE.layer.WMTS({
@@ -257,7 +255,7 @@
             },
             {
               id: 'ocupacion-suelo',
-              preview: 'img/ocupacion_suelo.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/ocupacion_suelo.png',
               title: 'Ocupación',
               layers: [
                 new IDEE.layer.WMTS({
@@ -275,7 +273,7 @@
             },
             {
               id: 'historicos',
-              preview: 'img/historicos.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/historicos.png',
               title: 'Históricos',
               layers: [
                 new IDEE.layer.WMTS({

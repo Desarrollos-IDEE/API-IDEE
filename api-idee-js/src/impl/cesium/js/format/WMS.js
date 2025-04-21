@@ -137,7 +137,7 @@ const parseBoundingBox = (objLayer, parsedLayerNodes) => {
 
       objLayer.BoundingBox.forEach((objBbox, index) => {
         const objBboxParam = objBbox;
-        if (objBboxParam.crs === null) {
+        if (!objBboxParam.crs) {
           const bboxNode = bboxChilds[index];
           if (!isNullOrEmpty(bboxNode)) {
             const srs = bboxNode.getAttribute('SRS');

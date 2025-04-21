@@ -5,7 +5,7 @@
 import OLSourceImageWMS from 'ol/source/ImageWMS';
 import {
   isNull, isArray, isNullOrEmpty, addParameters, getWMSGetCapabilitiesUrl, fillResolutions,
-  getResolutionFromScale, generateResolutionsFromExtent, concatUrlPaths, extend,
+  getResolutionFromScale, generateResolutionsFromExtent, extend,
 } from 'IDEE/util/Utils';
 import FacadeLayerBase from 'IDEE/layer/Layer';
 import * as LayerType from 'IDEE/layer/Type';
@@ -288,9 +288,7 @@ class WMS extends LayerBase {
       this.addSingleLayer_(null);
     }
 
-    if (!this.isWMSfull
-      && this.legendUrl_ === concatUrlPaths([IDEE.config.THEME_URL,
-        FacadeLayerBase.LEGEND_DEFAULT])) {
+    if (!this.isWMSfull && this.legendUrl_ === FacadeLayerBase.LEGEND_DEFAULT) {
       this.legendUrl_ = addParameters(this.url, {
         SERVICE: 'WMS',
         VERSION: this.version,

@@ -4,7 +4,6 @@
 import {
   isNullOrEmpty,
   addParameters,
-  concatUrlPaths,
   getWMSGetCapabilitiesUrl,
   extend,
   isArray,
@@ -218,9 +217,7 @@ class WMS extends LayerBase {
       this.addSingleLayer_(null);
     }
 
-    if (!this.isWMSfull
-      && this.legendUrl_ === concatUrlPaths([IDEE.config.THEME_URL,
-        FacadeLayerBase.LEGEND_DEFAULT])) {
+    if (!this.isWMSfull && this.legendUrl_ === FacadeLayerBase.LEGEND_DEFAULT) {
       this.legendUrl_ = addParameters(this.url, {
         SERVICE: 'WMS',
         VERSION: this.version,

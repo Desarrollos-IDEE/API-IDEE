@@ -97,7 +97,7 @@ const capaVector = new IDEE.layer.Vector({
     url: 'https://www.google.es',
     nameLayer: 'Nombre capa',
     name: 'Otro nombre', // se puede llamar description?
-    contentAttributions: 'https://componentes-desarrollo.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+    contentAttributions: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
     contentType: 'kml',
   },
 });
@@ -137,7 +137,7 @@ const capaXYZ = new IDEE.layer.XYZ({
 map.addLayers(capaXYZ); window.capaXYZ = capaXYZ; // */
 
 /* / Capa MBTiles fetch
-window.fetch('./cabrera.mbtiles').then((response) => {
+window.fetch('https://componentes.idee.es/estaticos/Datos/mbtiles/cabrera.mbtiles').then((response) => {
   const mbtile = new IDEE.layer.MBTiles({
     name: 'mbtiles', legend: 'Capa MBTiles L',
     source: response,
@@ -146,7 +146,7 @@ window.fetch('./cabrera.mbtiles').then((response) => {
 }).catch((e) => { throw e; }); // */
 
 /* / Capa MBTilesVector fetch
-window.fetch('./countries.mbtiles').then((response) => {
+window.fetch('https://componentes.idee.es/estaticos/Datos/mbtiles/countries.mbtiles').then((response) => {
   const mbtilesvector = new IDEE.layer.MBTilesVector({
     name: 'mbtiles_vector', legend: 'Capa MBTilesVector L',
     source: response,

@@ -64,7 +64,7 @@ const CLASS_CHECK = 'm-layerswitcher-check';
 /* LEGEND LAYER */
 const I18N_LEGEND_ERROR = 'legend_error';
 
-const LEGEND_DEFAULT_IMG = 'assets/img/legend-default.png';
+const LEGEND_DEFAULT_IMG = 'https://componentes.idee.es/estaticos/imagenes/leyenda/legend-default.png';
 
 /* TARGET LAYER */
 const layersTypesTarget = ['WMTS', 'WFS', 'MBTilesVector', 'MBTiles', 'OSM', 'XYZ', 'TMS', 'GeoJSON', 'KML', 'OGCAPIFeatures', 'Vector', 'GenericRaster', 'GenericVector', 'MVT', 'GeoTIFF', 'MapLibre'];

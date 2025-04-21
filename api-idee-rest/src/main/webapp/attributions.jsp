@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="es.api_idee.plugins.PluginsManager"%>
-<%@ page import="es.api_idee.parameter.adapter.ParametersAdapterV3ToV4"%>
 <%@ page import="java.util.Map"%>
 
 <!DOCTYPE html>
@@ -35,8 +34,7 @@
     <%
       Map<String, String[]> parameterMap = request.getParameterMap();
       PluginsManager.init (getServletContext());
-      Map<String, String[]> adaptedParams = ParametersAdapterV3ToV4.adapt(parameterMap);
-      String[] cssfiles = PluginsManager.getCSSFiles(adaptedParams);
+      String[] cssfiles = PluginsManager.getCSSFiles(parameterMap);
       for (int i = 0; i < cssfiles.length; i++) {
          String cssfile = cssfiles[i];
    %>
@@ -91,9 +89,9 @@
         <input type="number" id="inputMaxWidth" value="200">
         <div id="divModo">
             <label for="inputUrl">Parámetro url</label>
-            <input type="text" name="url" id="inputUrl" list="urlSug" value="https://componentes-desarrollo.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml">
+            <input type="text" name="url" id="inputUrl" list="urlSug" value="https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml">
             <datalist id="urlSug">
-                <option value="https://componentes-desarrollo.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml"></option>
+                <option value="https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml"></option>
             </datalist>
             <label for="selectType">Selector de tipo</label>
             <select name="type" id="selectType">
@@ -125,7 +123,7 @@
     <script type="text/javascript" src="plugins/attributions/attributions.ol.min.js"></script>
     <script type="text/javascript" src="plugins/sharemap/sharemap.ol.min.js"></script>
     <%
-      String[] jsfiles = PluginsManager.getJSFiles(adaptedParams);
+      String[] jsfiles = PluginsManager.getJSFiles(parameterMap);
       for (int i = 0; i < jsfiles.length; i++) {
          String jsfile = jsfiles[i];
    %>

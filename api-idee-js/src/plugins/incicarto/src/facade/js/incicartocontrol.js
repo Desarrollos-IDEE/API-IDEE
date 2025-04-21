@@ -1228,7 +1228,7 @@ export default class IncicartoControl extends IDEE.Control {
     const selected = document.querySelector('#m-incicarto-wfs-select').value;
     let url = document.querySelector('div.m-dialog #m-incicarto-addwfs-search-input').value.trim();
     url += url.endsWith('?') ? '' : '?';
-    document.querySelector('div.m-api_idee-container div.m-dialog').remove();
+    document.querySelector('div.m-api-idee-container div.m-dialog').remove();
     let legend = selected;
     const filtered = services.filter((s) => {
       return s.name === selected;
@@ -2051,9 +2051,9 @@ export default class IncicartoControl extends IDEE.Control {
 
         IDEE.dialog.info(changeName, getValue('change_name'));
         setTimeout(() => {
-          const selector = 'div.m-api_idee-container div.m-dialog #m-layer-change-name button';
+          const selector = 'div.m-api-idee-container div.m-dialog #m-layer-change-name button';
           document.querySelector(selector).addEventListener('click', this.changeLayerLegend.bind(this, layer));
-          document.querySelector('div.m-api_idee-container div.m-dialog div.m-title').style.backgroundColor = '#71a7d3';
+          document.querySelector('div.m-api-idee-container div.m-dialog div.m-title').style.backgroundColor = '#71a7d3';
           const button = document.querySelector('div.m-dialog.info div.m-button > button');
           button.innerHTML = getValue('close');
           button.style.width = '75px';
@@ -2113,12 +2113,12 @@ export default class IncicartoControl extends IDEE.Control {
   }
 
   changeLayerLegend(layer) {
-    const selector = 'div.m-api_idee-container div.m-dialog #m-layer-change-name input';
+    const selector = 'div.m-api-idee-container div.m-dialog #m-layer-change-name input';
     const newValue = document.querySelector(selector).value.trim();
     if (newValue.length > 0) {
       layer.setLegend(newValue);
       this.renderLayers();
-      document.querySelector('div.m-api_idee-container div.m-dialog').remove();
+      document.querySelector('div.m-api-idee-container div.m-dialog').remove();
     }
   }
 
