@@ -362,33 +362,6 @@ class MapLibre extends LayerBase {
   }
 
   /**
-   * Devuelve el tipo de layer, MabLibre.
-   *
-   * @function
-   * @getter
-   * @returns {IDEE.LayerType.MapLibre} Tipo MabLibre.
-   * @api
-   */
-  get type() {
-    return MapLibreType;
-  }
-
-  /**
-     * Sobrescribe el tipo de capa.
-     *
-     * @function
-     * @setter
-     * @param {String} newType Nuevo tipo.
-     * @api
-     */
-  set type(newType) {
-    if (!isUndefined(newType)
-        && !isNullOrEmpty(newType) && (newType !== MapLibreType)) {
-      Exception('El tipo de capa debe ser \''.concat(MapLibreType).concat('\' pero se ha especificado \'').concat(newType).concat('\''));
-    }
-  }
-
-  /**
    * Este método comprueba si un objeto es igual
    * a esta capa.
    *
