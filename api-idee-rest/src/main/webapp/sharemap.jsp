@@ -139,7 +139,7 @@
           name: 'OI.OrthoimageCoverage',
           legend: 'Imagen',
           matrixSet: 'GoogleMapsCompatible',
-          transparent: false,
+          isBase: true,
           displayInLayerSwitcher: false,
           queryable: false,
           visible: true,

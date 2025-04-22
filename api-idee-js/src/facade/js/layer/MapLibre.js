@@ -28,6 +28,9 @@ import { getValue } from '../i18n/language';
  * @property {String} legend Leyenda de la capa.
  * @property {Object} attribution Atribución de la capa.
  * @property {Object} maplibrestyle Objeto del valor de url.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
+ * @property {Boolean} isBase Define si la capa es base.
  *
  * @api
  * @extends {IDEE.layer.Vector}
@@ -51,6 +54,8 @@ class MapLibre extends LayerBase {
    * - legend: Leyenda de la capa.
    * - attribution: Atribución de la capa.
    * - maplibrestyle: Url (.json) en formato objeto.
+   * - isBase: Indica si la capa es base.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a
    * la implementación de la capa.
    * - opacity: Opacidad de la capa (0-1), por defecto 1.
@@ -68,6 +73,11 @@ class MapLibre extends LayerBase {
    * @api
    */
   constructor(parameters = {}, options = {}, vendorOptions = {}) {
+    if (!isUndefined(parameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
+    }
+
     let opts = parameter.layer(parameters, MapLibreType);
     const optionsVar = options;
     opts = { ...opts, ...optionsVar };

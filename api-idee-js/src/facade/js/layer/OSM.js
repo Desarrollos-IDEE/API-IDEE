@@ -3,7 +3,9 @@
  */
 import OSMImpl from 'impl/layer/OSM';
 import LayerBase from './Layer';
-import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
+import {
+  isUndefined, isNullOrEmpty, isObject, isString,
+} from '../util/Utils';
 import Exception from '../exception/exception';
 import * as LayerType from './Type';
 import * as parameter from '../parameter/parameter';
@@ -16,9 +18,10 @@ import { getValue } from '../i18n/language';
  * @property {String} name Nombre de la capa, OSM.
  * @property {String} legend Indica el nombre que queremos que aparezca en
  * el árbol de contenidos, si lo hay.
- * @property {Boolean} transparent Falso si es una capa base, verdadero en caso contrario.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
  * @property {Object} options Opciones OSM.
- * @property {Boolean} isbase Define si la capa es base.
+ * @property {Boolean} isBase Define si la capa es base.
  * @api
  * @extends {IDEE.Layer}
  */
@@ -35,7 +38,6 @@ class OSM extends LayerBase {
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
    * - name: Nombre de la capa en la leyenda.
    * - legend: Indica el nombre que queremos que aparezca en el árbol de contenidos, si lo hay.
-   * - transparent: Falso si es una capa base, verdadero en caso contrario.
    * - type: Tipo de la capa.
    * - url: Url genera la OSM.
    * - minZoom: Zoom mínimo aplicable a la capa.
@@ -69,6 +71,11 @@ class OSM extends LayerBase {
     // Checks if the param is null or empty.
     if (isNullOrEmpty(userParameters)) {
       userParameters = 'OSM';
+    }
+
+    if (isString(userParameters) || !isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
     }
 
     // This layer is of parameters.

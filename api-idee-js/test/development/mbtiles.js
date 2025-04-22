@@ -17,7 +17,7 @@ fetch('https://componentes.idee.es/estaticos/Datos/mbtiles/cabrera.mbtiles').the
     name: 'mbtiles',
     legend: 'Cabrera',
     // source: response,
-    transparent: true,
+    isBase: false,
     visibility: true,
     opacity: 0.5,
     // tileSize: 256

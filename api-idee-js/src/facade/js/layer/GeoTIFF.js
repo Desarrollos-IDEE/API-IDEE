@@ -4,7 +4,7 @@
  */
 import GeoTIFFImpl from 'impl/layer/GeoTIFF';
 import {
-  isUndefined, isNullOrEmpty, isObject,
+  isUndefined, isNullOrEmpty, isObject, isString,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import LayerBase from './Layer';
@@ -21,7 +21,8 @@ import { getValue } from '../i18n/language';
  * el archivo contiene metadatos necesarios para su utilización.
  *
  * @property {String} legend Nombre asociado en el árbol de contenido, si usamos uno.
- * @property {Boolean} transparent 'Falso' si es una capa base, 'verdadero' en caso contrario.
+ * @property {Boolean} transparent (deprecated) 'Falso' si es una capa base,
+ * 'verdadero' en caso contrario.
  * @property {Number} minZoom Limitar el zoom mínimo.
  * @property {Number} maxZoom Limitar el zoom máximo.
  * @property {Object} options Capa de opciones GeoTIFF.
@@ -42,6 +43,7 @@ class GeoTIFF extends LayerBase {
    * - projection: SRS usado por la capa.
    * - legend: nombre asociado en el árbol de contenidos, si usamos uno.
    * - isBase: verdadero si es una capa base, falso en caso contrario.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
    * - visibility: Verdadero si la capa es visible, falso si queremos que no lo sea.
    * - normalize: Normalización de los datos.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a
@@ -82,6 +84,12 @@ class GeoTIFF extends LayerBase {
     if (isNullOrEmpty(userParameters)) {
       Exception(getValue('exception').no_param);
     }
+
+    if (isString(userParameters) || !isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
+    }
+
     // This Layer is of parameters.
     const parameters = parameter.layer(userParameters, LayerType.GeoTIFF);
     const optionsVar = {

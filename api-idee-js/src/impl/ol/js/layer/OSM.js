@@ -33,7 +33,6 @@ class OSM extends Layer {
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
    * - name: Nombre de la capa en la leyenda.
    * - legend: Indica el nombre que queremos que aparezca en el árbol de contenidos, si lo hay.
-   * - transparent: Falso si es una capa base, verdadero en caso contrario.
    * - type: Tipo de la capa.
    * - url: Url genera la OSM.
    * - minZoom: Zoom mínimo aplicable a la capa.
@@ -104,7 +103,7 @@ class OSM extends Layer {
     this.visibility = visibility;
     if (this.inRange() === true) {
       // if this layer is base then it hides all base layers
-      if ((visibility === true) && (this.transparent === false)) {
+      if ((visibility === true) && (this.isBase === true)) {
         // hides all base layers
         this.map.getBaseLayers().forEach((layer) => {
           if (!layer.equals(this) && layer.isVisible()) {
@@ -196,7 +195,7 @@ class OSM extends Layer {
     this.ol3Layer.setMinZoom(this.minZoom);
 
     // activates animation for base layers or animated parameters
-    const animated = ((this.transparent === false) || (this.options.animated === true));
+    const animated = ((this.isBase === true) || (this.options.animated === true));
     this.ol3Layer.set('animated', animated);
 
     // set the extent when the map changed

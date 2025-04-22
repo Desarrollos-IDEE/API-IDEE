@@ -540,7 +540,7 @@ export default class ShareMapControl extends IDEE.Control {
         res = res && false;
       }
 
-      if (layer.displayInLayerSwitcher === false && layer.transparent === true) {
+      if (layer.displayInLayerSwitcher === false && layer.isBase === false) {
         res = res && false;
       }
 
@@ -558,7 +558,7 @@ export default class ShareMapControl extends IDEE.Control {
    */
   getLayersInLayerswitcher() {
     const layers = this.map_.getLayers().filter((layer) => {
-      return layer.displayInLayerSwitcher === true && layer.transparent === true;
+      return layer.displayInLayerSwitcher === true && layer.isBase === false;
     });
 
     return layers.map((layer) => this.layerToParam(layer)).filter((param) => param != null);

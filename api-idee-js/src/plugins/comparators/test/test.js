@@ -70,7 +70,7 @@ const wmtsObject = wmtsString.map((layer) => {
     name,
     matrixSet,
     legend,
-    transparent: false,
+    isBase: true,
     displayInLayerSwitcher: false,
     queryable: false,
     visible: true,
@@ -82,27 +82,27 @@ map.addLayers(wmtsObject); // Falta este addLayers para usarlo igual que WMSObje
 /* // PRUEBA 
 // const objWMTSMapaSoloTextos = new IDEE.layer.WMTS({
 //  url: 'https://www.ign.es/wmts/mapa-raster', name: 'MTN_Fondo',
-//  matrixSet: 'GoogleMapsCompatible', legend: 'MTN Fondo', transparent: true,
+//  matrixSet: 'GoogleMapsCompatible', legend: 'MTN Fondo', isBase: false,
 //  displayInLayerSwitcher: false, queryable: false, visible: true, format: 'image/jpeg',
 // });
 const objWMTSMapa = new IDEE.layer.WMTS({
   url: 'https://www.ign.es/wmts/mapa-raster', name: 'MTN',
-  matrixSet: 'GoogleMapsCompatible', legend: 'Mapa MTN', transparent: false,
+  matrixSet: 'GoogleMapsCompatible', legend: 'Mapa MTN', isBase: true,
   displayInLayerSwitcher: false, queryable: false, visible: true, format: 'image/jpeg',
 });
 const objWMTSLidar = new IDEE.layer.WMTS({
   url: 'https://wmts-mapa-lidar.idee.es/lidar', name: 'EL.GridCoverageDSM',
-  matrixSet: 'GoogleMapsCompatible', legend: 'Modelo Digital de Superficies LiDAR', transparent: true,
+  matrixSet: 'GoogleMapsCompatible', legend: 'Modelo Digital de Superficies LiDAR', isBase: false,
   displayInLayerSwitcher: false, queryable: false, visible: false, format: 'image/png',
 });
 const objWMTSsiose = new IDEE.layer.WMTS({
   url: 'https://servicios.idee.es/wmts/ocupacion-suelo', name: 'LC.LandCoverSurfaces',
-  matrixSet: 'GoogleMapsCompatible', legend: 'CORINE / SIOSE', transparent: false,
+  matrixSet: 'GoogleMapsCompatible', legend: 'CORINE / SIOSE', isBase: true,
   displayInLayerSwitcher: false, queryable: false, visible: true, format: 'image/png',
 });
 const objWMTSMTN501Edi = new IDEE.layer.WMTS({
   url: 'https://www.ign.es/wmts/primera-edicion-mtn?', name: 'mtn50-edicion1',
-  matrixSet: 'GoogleMapsCompatible', legend: 'MTN50 1Edi', transparent: false,
+  matrixSet: 'GoogleMapsCompatible', legend: 'MTN50 1Edi', isBase: true,
   displayInLayerSwitcher: false, queryable: false, visible: true, format: 'image/jpeg',
 });
 const bkmp = new IDEE.plugin.BackImgLayer({
