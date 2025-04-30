@@ -125,29 +125,6 @@ class OSM extends LayerBase {
   }
 
   /**
-   * Devuelve el tipo de capa, OSM.
-   * @function
-   * @return {IDEE.LayerType.OSM} Devuelve OSM.
-   * @api
-   */
-  get type() {
-    return LayerType.OSM;
-  }
-
-  /**
-   * Sobrescribe el tipo de capa.
-   * @function
-   * @param {String} newType Nuevo tipo de capa.
-   * @api
-   */
-  set type(newType) {
-    if (!isUndefined(newType)
-      && !isNullOrEmpty(newType) && (newType !== LayerType.OSM)) {
-      Exception('El tipo de capa debe ser \''.concat(LayerType.OSM).concat('\' pero se ha especificado \'').concat(newType).concat('\''));
-    }
-  }
-
-  /**
    * Este método comprueba si un objeto es igual
    * a esta capa.
    *

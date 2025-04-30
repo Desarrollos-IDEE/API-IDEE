@@ -133,33 +133,6 @@ class GeoTIFF extends LayerBase {
   }
 
   /**
-   * Devuelve el tipo de layer, GeoTIFF.
-   *
-   * @function
-   * @getter
-   * @returns {String} Tipo GeoTIFF.
-   * @api
-   */
-  get type() {
-    return LayerType.GeoTIFF;
-  }
-
-  /**
-   * Sobrescribe el tipo de capa.
-   *
-   * @function
-   * @setter
-   * @param {String} newType Nuevo tipo.
-   * @api
-   */
-  set type(newType) {
-    if (!isUndefined(newType)
-      && !isNullOrEmpty(newType) && (newType !== LayerType.GeoTIFF)) {
-      Exception('El tipo de capa debe ser \''.concat(LayerType.GeoTIFF).concat('\' pero se ha especificado \'').concat(newType).concat('\''));
-    }
-  }
-
-  /**
    * Devuelve las opciones de la capa.
    *
    * @function
