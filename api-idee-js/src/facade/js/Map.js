@@ -4115,9 +4115,11 @@ class Map extends Base {
       const zIndex = (z1 - z2);
       if (zIndex === 0 && !isUndefined(thisClass)) {
         // eslint-disable-next-line no-underscore-dangle
-        const i1 = thisClass.getImpl().layers_.findIndex((element) => element.name === layer1.name);
+        const i1 = thisClass.getImpl().layers_
+          .findIndex((element) => element.idLayer === layer1.idLayer);
         // eslint-disable-next-line no-underscore-dangle
-        const i2 = thisClass.getImpl().layers_.findIndex((element) => element.name === layer2.name);
+        const i2 = thisClass.getImpl().layers_
+          .findIndex((element) => element.idLayer === layer2.idLayer);
         return i1 - i2;
       }
       return zIndex;

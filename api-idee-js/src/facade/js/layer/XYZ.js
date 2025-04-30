@@ -8,6 +8,7 @@ import Exception from '../exception/exception';
 import * as parameter from '../parameter/parameter';
 import * as LayerType from './Type';
 import { getValue } from '../i18n/language';
+
 /**
  * @classdesc
  * Las capas XYZ son servicios de información geográfica en forma de mosaicos.
@@ -18,6 +19,7 @@ import { getValue } from '../i18n/language';
  *
  * Donde {z} especifica el nivel de zoom, {x} el número de columna y {y} el número de fila.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} url Url del servicio XYZ.
  * @property {String} name Identificador de capa.
  * @property {String} legend Nombre asociado en el árbol de contenido, si usamos uno.
@@ -147,7 +149,7 @@ class XYZ extends LayerBase {
     if (obj instanceof XYZ) {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
-      equals = equals && (this.options === obj.options);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
     return equals;
   }

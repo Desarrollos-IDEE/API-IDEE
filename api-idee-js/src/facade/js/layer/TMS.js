@@ -19,6 +19,7 @@ import { getValue } from '../i18n/language';
  *
  * {z} especifica el nivel de zoom; {x} el número de columna; {y} el número de fila.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} name Identificador de capa.
  * @property {transparent} transparent Falso si es una capa base, verdadero en caso contrario.
  * @property {String} type Tipo de la capa.
@@ -164,7 +165,7 @@ class TMS extends LayerBase {
     if (obj instanceof TMS) {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
-      equals = equals && (this.options === obj.options);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
     return equals;
   }

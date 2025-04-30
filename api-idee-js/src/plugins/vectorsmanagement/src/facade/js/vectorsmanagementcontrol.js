@@ -49,7 +49,7 @@ export default class VectorsManagementControl extends IDEE.Control {
     this.style_ = style;
     this.layers_ = allLayers.filter((l) => (l instanceof IDEE.layer.Vector
       || l instanceof IDEE.layer.GenericVector) && l.displayInLayerSwitcher).map((l) => {
-      return { value: l.name, text: l.legend || l.name, zIndex: l.getZIndex() };
+      return { value: l.idLayer, text: l.legend || l.idLayer, zIndex: l.getZIndex() };
     }).sort((a, b) => b.zIndex - a.zIndex);
     this.selectedLayer = null;
 
@@ -145,7 +145,7 @@ export default class VectorsManagementControl extends IDEE.Control {
     const selectedLayerName = selector.selectedOptions[0].value;
 
     const allLayers = this.map.getLayers().concat(this.map.getImpl().getAllLayerInGroup());
-    this.selectedLayer = allLayers.filter((l) => l.name === selectedLayerName)[0];
+    this.selectedLayer = allLayers.filter((l) => l.idLayer === selectedLayerName)[0];
 
     if (this.selectedLayer.type === 'MVT' || this.selectedLayer.type === 'MBTilesVector') {
       IDEE.toast.warning(getValue('exception.typeLayer'), null, 6000);
@@ -525,7 +525,7 @@ export default class VectorsManagementControl extends IDEE.Control {
     const allLayers = this.map.getLayers().concat(this.map.getImpl().getAllLayerInGroup());
     this.layers_ = allLayers.filter((l) => (l instanceof IDEE.layer.Vector
       || l instanceof IDEE.layer.GenericVector) && l.displayInLayerSwitcher).map((l) => {
-      return { value: l.name, text: l.legend || l.name, zIndex: l.getZIndex() };
+      return { value: l.idLayer, text: l.legend || l.idLayer, zIndex: l.getZIndex() };
     });
     const selector = this.html.querySelector('#m-selectionlayer');
     const selectedLayerName = selector.selectedOptions[0].value;

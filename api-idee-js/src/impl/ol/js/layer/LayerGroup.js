@@ -42,6 +42,11 @@ class LayerGroup extends Layer {
   constructor(userParameters, options = {}, vendorOptions = {}) {
     super(options, vendorOptions);
 
+    /**
+     * LayerGroup facadeLayer_. Instancia de la fachada.
+     */
+    this.facadeLayer_ = null;
+
     this.options_ = options;
     this.layersParams_ = userParameters.layers || [];
 
@@ -338,6 +343,19 @@ class LayerGroup extends Layer {
   }
 
   /**
+   * Este método establece la clase de fachada LayerGroup.
+   * La fachada se refiere a
+   * un patrón estructural como una capa de abstracción con un patrón de diseño.
+   *
+   * @function
+   * @param {object} obj LayerGroup de la fachada.
+   * @api stable
+   */
+  setFacadeObj(obj) {
+    this.facadeLayer_ = obj;
+  }
+
+  /**
    * Este método elimina la capa del mapa.
    * @function
    * @public
@@ -350,7 +368,9 @@ class LayerGroup extends Layer {
       this.ol3Layer = null;
 
       // eslint-disable-next-line no-underscore-dangle
-      this.map.getImpl().layers_ = this.map.getImpl().layers_.filter((l) => this.name !== l.name);
+      this.map.getImpl().layers_ = this.map.getImpl().layers_
+      // eslint-disable-next-line no-underscore-dangle
+        .filter((l) => this.facadeLayer_.idLayer !== l.idLayer);
     }
     this.map = null;
   }

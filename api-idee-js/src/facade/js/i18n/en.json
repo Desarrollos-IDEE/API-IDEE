@@ -277,6 +277,7 @@
     "layergroup_method": "The implementation used can not create LayerGroup.",
     "chart_method": "The implementation used can not create Chart styles.",
     "heatmap_method": "The implementation used can not create Heatmap styles.",
-    "flowline_method": "The implementation used can not create Flowline styles."
+    "flowline_method": "The implementation used can not create Flowline styles.",
+    "id_exists": "ID already exists."
   }
 }

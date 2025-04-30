@@ -13,6 +13,7 @@ import { getValue } from '../i18n/language';
  * @classdesc
  * La API-IDEE permite visualizar la capa de Open Street Map.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} name Nombre de la capa, OSM.
  * @property {String} legend Indica el nombre que queremos que aparezca en
  * el árbol de contenidos, si lo hay.
@@ -155,7 +156,7 @@ class OSM extends LayerBase {
     if (obj instanceof OSM) {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
-      equals = equals && (this.options === obj.options);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
     return equals;
   }

@@ -14,6 +14,7 @@ import { getValue } from '../i18n/language';
  * Capa Terrain. Es un tipo de capa compuesta por datos que proporcionan información
  * sobre las elevaciones y características del terreno.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} url Url del servicio Terrain.
  * @property {String} name Identificador de capa.
  * @property {String} legend Indica el nombre que queremos que aparezca en
@@ -158,7 +159,7 @@ class Terrain extends LayerBase {
     if (obj instanceof Terrain) {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
-      equals = equals && (this.options === obj.options);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
     return equals;
   }

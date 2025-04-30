@@ -267,7 +267,7 @@ const showHideLayersInLayerGroup = (layer, map) => {
 
   if (group) {
     group.getLayers().forEach((subLayer) => {
-      if (subLayer.name === layer.name) {
+      if (subLayer.idLayer === layer.idLayer) {
         showLayers(subLayer);
       } else {
         hideLayers(subLayer);

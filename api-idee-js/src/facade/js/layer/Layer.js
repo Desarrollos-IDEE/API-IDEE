@@ -14,6 +14,8 @@ import * as EventType from '../event/eventtype';
 /**
  * @classdesc
  * De esta clase heredadan todas las capas base.
+ *
+ * @property {string} idLayer Identificador de la capa.
  * @property {string} type Tipo de la capa.
  * @property {string} url URL del servicio.
  * @property {string} name Nombre de la capa.
@@ -374,6 +376,38 @@ class LayerBase extends Base {
       }
     } else {
       this.getImpl().displayInLayerSwitcher = true;
+    }
+  }
+
+  /**
+   * Este método devuelve el identificador de la capa.
+   *
+   * @function
+   * @returns {String} Devuelve el identificador de la capa.
+   * @api
+   */
+  getId() {
+    return this.idLayer;
+  }
+
+  /**
+   * Este método establece el identificador de la capa.
+   *
+   * @function
+   * @param {String} newID Nuevo identificador para la capa.
+   * @api
+   */
+  setId(newID) {
+    if (!isNullOrEmpty(this.map_)) {
+      const findId = this.map_.getLayers().find((layer) => {
+        return layer.idLayer === newID;
+      });
+      if (isUndefined(findId)) {
+        this.map_.getFeatureHandler().changeNamePrevs(this.idLayer, newID);
+        this.idLayer = newID;
+      } else {
+        Exception(getValue('exception').id_exists);
+      }
     }
   }
 

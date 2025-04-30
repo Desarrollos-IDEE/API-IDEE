@@ -385,7 +385,7 @@ export default class LayerswitcherControl extends IDEE.Control {
               displayGroup: layer.display === undefined ? true : layer.display,
               show_group: getValue('show_group'),
               hide_group: getValue('hide_group'),
-              nameRadio: layer.getImpl().rootGroup === null ? 'm-layerswitcher-radioLayers' : layer.getImpl().rootGroup.name,
+              nameRadio: layer.getImpl().rootGroup === null ? 'm-layerswitcher-radioLayers' : layer.getImpl().rootGroup.idLayer,
               ...varsGroup,
               ...this.getTemplateVariablesValues(),
             },

@@ -13,6 +13,19 @@ import 'impl-assets/css/ol';
 import 'impl-assets/css/custom';
 import Control from 'IDEE/control/Control';
 import FacadeWMS from 'IDEE/layer/WMS';
+import FacadeWMTS from 'IDEE/layer/WMTS';
+import FacadeKML from 'IDEE/layer/KML';
+import FacadeWFS from 'IDEE/layer/WFS';
+import FacadeLayerGroup from 'IDEE/layer/LayerGroup';
+import FacadeOGCAPIFeatures from 'IDEE/layer/OGCAPIFeatures';
+import FacadeXYZ from 'IDEE/layer/XYZ';
+import FacadeTMS from 'IDEE/layer/TMS';
+import FacadeGeoJSON from 'IDEE/layer/GeoJSON';
+import FacadeMapLibre from 'IDEE/layer/MapLibre';
+import FacadeMBTiles from 'IDEE/layer/MBTiles';
+import FacadeMBTilesVector from 'IDEE/layer/MBTilesVector';
+import FacadeMVT from 'IDEE/layer/MVT';
+import FacadeGeoTIFF from 'IDEE/layer/GeoTIFF';
 import * as EventType from 'IDEE/event/eventtype';
 import FacadeMap from 'IDEE/Map';
 import LayerBase from 'IDEE/layer/Layer';
@@ -516,13 +529,18 @@ class Map extends MObject {
           let layerMatched = true;
           // checks if the layer is not in selected layers
           if (!foundLayers.includes(groupLayer)) {
-            // type
-            if (!isNullOrEmpty(filterLayer.type)) {
-              layerMatched = (layerMatched && (filterLayer.type === groupLayer.type));
-            }
-            // name
-            if (!isNullOrEmpty(filterLayer.name)) {
-              layerMatched = (layerMatched && (filterLayer.name === groupLayer.name));
+            // if instanceof FacadeLayerGroup check if it is the same
+            if (filterLayer instanceof FacadeLayerGroup) {
+              layerMatched = (filterLayer.equals(groupLayer));
+            } else {
+              // type
+              if (!isNullOrEmpty(filterLayer.type)) {
+                layerMatched = (layerMatched && (filterLayer.type === groupLayer.type));
+              }
+              // name
+              if (!isNullOrEmpty(filterLayer.name)) {
+                layerMatched = (layerMatched && (filterLayer.name === groupLayer.name));
+              }
             }
           } else {
             layerMatched = false;
@@ -652,21 +670,26 @@ class Map extends MObject {
           let layerMatched = true;
           // checks if the layer is not in selected layers
           if (!foundLayers.includes(kmlLayer)) {
-            // type
-            if (!isNullOrEmpty(filterLayer.type)) {
-              layerMatched = (layerMatched && (filterLayer.type === kmlLayer.type));
-            }
-            // URL
-            if (!isNullOrEmpty(filterLayer.url)) {
-              layerMatched = (layerMatched && (filterLayer.url === kmlLayer.url));
-            }
-            // name
-            if (!isNullOrEmpty(filterLayer.name)) {
-              layerMatched = (layerMatched && (filterLayer.name === kmlLayer.name));
-            }
-            // extract
-            if (!isNullOrEmpty(filterLayer.extract)) {
-              layerMatched = (layerMatched && (filterLayer.extract === kmlLayer.extract));
+            // if instanceof FacadeKML check if it is the same
+            if (filterLayer instanceof FacadeKML) {
+              layerMatched = (filterLayer === kmlLayer);
+            } else {
+              // type
+              if (!isNullOrEmpty(filterLayer.type)) {
+                layerMatched = (layerMatched && (filterLayer.type === kmlLayer.type));
+              }
+              // URL
+              if (!isNullOrEmpty(filterLayer.url)) {
+                layerMatched = (layerMatched && (filterLayer.url === kmlLayer.url));
+              }
+              // name
+              if (!isNullOrEmpty(filterLayer.name)) {
+                layerMatched = (layerMatched && (filterLayer.name === kmlLayer.name));
+              }
+              // extract
+              if (!isNullOrEmpty(filterLayer.extract)) {
+                layerMatched = (layerMatched && (filterLayer.extract === kmlLayer.extract));
+              }
             }
           } else {
             layerMatched = false;
@@ -749,7 +772,7 @@ class Map extends MObject {
           if (!foundLayers.includes(wmsLayer)) {
             // if instanceof FacadeWMS check if it is the same
             if (filterLayer instanceof FacadeWMS) {
-              layerMatched = (filterLayer === wmsLayer);
+              layerMatched = (filterLayer.equals(wmsLayer));
             } else {
               // type
               if (!isNullOrEmpty(filterLayer.type)) {
@@ -867,21 +890,26 @@ class Map extends MObject {
           let layerMatched = true;
           // checks if the layer is not in selected layers
           if (!foundLayers.includes(geojsonLayer)) {
-            // type
-            if (!isNullOrEmpty(filterLayer.type)) {
-              layerMatched = (layerMatched && (filterLayer.type === geojsonLayer.type));
-            }
-            // URL
-            if (!isNullOrEmpty(filterLayer.url)) {
-              layerMatched = (layerMatched && (filterLayer.url === geojsonLayer.url));
-            }
-            // name
-            if (!isNullOrEmpty(filterLayer.name)) {
-              layerMatched = (layerMatched && (filterLayer.name === geojsonLayer.name));
-            }
-            // legend
-            if (!isNullOrEmpty(filterLayer.legend)) {
-              layerMatched = (layerMatched && (filterLayer.legend === geojsonLayer.legend));
+            // if instanceof FacadeGeoJSON check if it is the same
+            if (filterLayer instanceof FacadeGeoJSON) {
+              layerMatched = (filterLayer === geojsonLayer);
+            } else {
+              // type
+              if (!isNullOrEmpty(filterLayer.type)) {
+                layerMatched = (layerMatched && (filterLayer.type === geojsonLayer.type));
+              }
+              // URL
+              if (!isNullOrEmpty(filterLayer.url)) {
+                layerMatched = (layerMatched && (filterLayer.url === geojsonLayer.url));
+              }
+              // name
+              if (!isNullOrEmpty(filterLayer.name)) {
+                layerMatched = (layerMatched && (filterLayer.name === geojsonLayer.name));
+              }
+              // legend
+              if (!isNullOrEmpty(filterLayer.legend)) {
+                layerMatched = (layerMatched && (filterLayer.legend === geojsonLayer.legend));
+              }
             }
           } else {
             layerMatched = false;
@@ -928,41 +956,46 @@ class Map extends MObject {
           let layerMatched = true;
           // checks if the layer is not in selected layers
           if (!foundLayers.includes(wfsLayer)) {
-            // type
-            if (!isNullOrEmpty(filterLayer.type)) {
-              layerMatched = (layerMatched && (filterLayer.type === wfsLayer.type));
-            }
-            // URL
-            if (!isNullOrEmpty(filterLayer.url)) {
-              layerMatched = (layerMatched && (filterLayer.url === wfsLayer.url));
-            }
-            // name
-            if (!isNullOrEmpty(filterLayer.name)) {
-              layerMatched = (layerMatched && (filterLayer.name === wfsLayer.name));
-            }
-            // namespace
-            if (!isNullOrEmpty(filterLayer.namespace)) {
-              layerMatched = (layerMatched && (filterLayer.namespace === wfsLayer.namespace));
-            }
-            // legend
-            if (!isNullOrEmpty(filterLayer.legend)) {
-              layerMatched = (layerMatched && (filterLayer.legend === wfsLayer.legend));
-            }
-            // cql
-            if (!isNullOrEmpty(filterLayer.cql)) {
-              layerMatched = (layerMatched && (filterLayer.cql === wfsLayer.cql));
-            }
-            // geometry
-            if (!isNullOrEmpty(filterLayer.geometry)) {
-              layerMatched = (layerMatched && (filterLayer.geometry === wfsLayer.geometry));
-            }
-            // ids
-            if (!isNullOrEmpty(filterLayer.ids)) {
-              layerMatched = (layerMatched && (filterLayer.ids === wfsLayer.ids));
-            }
-            // version
-            if (!isNullOrEmpty(filterLayer.version)) {
-              layerMatched = (layerMatched && (filterLayer.version === wfsLayer.version));
+            // if instanceof FacadeWFS check if it is the same
+            if (filterLayer instanceof FacadeWFS) {
+              layerMatched = (filterLayer === wfsLayer);
+            } else {
+              // type
+              if (!isNullOrEmpty(filterLayer.type)) {
+                layerMatched = (layerMatched && (filterLayer.type === wfsLayer.type));
+              }
+              // URL
+              if (!isNullOrEmpty(filterLayer.url)) {
+                layerMatched = (layerMatched && (filterLayer.url === wfsLayer.url));
+              }
+              // name
+              if (!isNullOrEmpty(filterLayer.name)) {
+                layerMatched = (layerMatched && (filterLayer.name === wfsLayer.name));
+              }
+              // namespace
+              if (!isNullOrEmpty(filterLayer.namespace)) {
+                layerMatched = (layerMatched && (filterLayer.namespace === wfsLayer.namespace));
+              }
+              // legend
+              if (!isNullOrEmpty(filterLayer.legend)) {
+                layerMatched = (layerMatched && (filterLayer.legend === wfsLayer.legend));
+              }
+              // cql
+              if (!isNullOrEmpty(filterLayer.cql)) {
+                layerMatched = (layerMatched && (filterLayer.cql === wfsLayer.cql));
+              }
+              // geometry
+              if (!isNullOrEmpty(filterLayer.geometry)) {
+                layerMatched = (layerMatched && (filterLayer.geometry === wfsLayer.geometry));
+              }
+              // ids
+              if (!isNullOrEmpty(filterLayer.ids)) {
+                layerMatched = (layerMatched && (filterLayer.ids === wfsLayer.ids));
+              }
+              // version
+              if (!isNullOrEmpty(filterLayer.version)) {
+                layerMatched = (layerMatched && (filterLayer.version === wfsLayer.version));
+              }
             }
           } else {
             layerMatched = false;
@@ -1043,41 +1076,46 @@ class Map extends MObject {
           let layerMatched = true;
           // checks if the layer is not in selected layers
           if (!foundLayers.includes(geotiffLayer)) {
-          // type
-            if (!isNullOrEmpty(filterLayer.type)) {
-              layerMatched = (layerMatched && (filterLayer.type === geotiffLayer.type));
-            }
-            // URL
-            if (!isNullOrEmpty(filterLayer.url)) {
-              layerMatched = (layerMatched && (filterLayer.url === geotiffLayer.url));
-            }
-            // name
-            if (!isNullOrEmpty(filterLayer.name)) {
-              layerMatched = (layerMatched && (filterLayer.name === geotiffLayer.name));
-            }
-            // namespace
-            if (!isNullOrEmpty(filterLayer.namespace)) {
-              layerMatched = (layerMatched && (filterLayer.namespace === geotiffLayer.namespace));
-            }
-            // legend
-            if (!isNullOrEmpty(filterLayer.legend)) {
-              layerMatched = (layerMatched && (filterLayer.legend === geotiffLayer.legend));
-            }
-            // cql
-            if (!isNullOrEmpty(filterLayer.cql)) {
-              layerMatched = (layerMatched && (filterLayer.cql === geotiffLayer.cql));
-            }
-            // geometry
-            if (!isNullOrEmpty(filterLayer.geometry)) {
-              layerMatched = (layerMatched && (filterLayer.geometry === geotiffLayer.geometry));
-            }
-            // ids
-            if (!isNullOrEmpty(filterLayer.ids)) {
-              layerMatched = (layerMatched && (filterLayer.ids === geotiffLayer.ids));
-            }
-            // version
-            if (!isNullOrEmpty(filterLayer.version)) {
-              layerMatched = (layerMatched && (filterLayer.version === geotiffLayer.version));
+            // if instanceof FacadeGeoTIFF check if it is the same
+            if (filterLayer instanceof FacadeGeoTIFF) {
+              layerMatched = (filterLayer === geotiffLayer);
+            } else {
+            // type
+              if (!isNullOrEmpty(filterLayer.type)) {
+                layerMatched = (layerMatched && (filterLayer.type === geotiffLayer.type));
+              }
+              // URL
+              if (!isNullOrEmpty(filterLayer.url)) {
+                layerMatched = (layerMatched && (filterLayer.url === geotiffLayer.url));
+              }
+              // name
+              if (!isNullOrEmpty(filterLayer.name)) {
+                layerMatched = (layerMatched && (filterLayer.name === geotiffLayer.name));
+              }
+              // namespace
+              if (!isNullOrEmpty(filterLayer.namespace)) {
+                layerMatched = (layerMatched && (filterLayer.namespace === geotiffLayer.namespace));
+              }
+              // legend
+              if (!isNullOrEmpty(filterLayer.legend)) {
+                layerMatched = (layerMatched && (filterLayer.legend === geotiffLayer.legend));
+              }
+              // cql
+              if (!isNullOrEmpty(filterLayer.cql)) {
+                layerMatched = (layerMatched && (filterLayer.cql === geotiffLayer.cql));
+              }
+              // geometry
+              if (!isNullOrEmpty(filterLayer.geometry)) {
+                layerMatched = (layerMatched && (filterLayer.geometry === geotiffLayer.geometry));
+              }
+              // ids
+              if (!isNullOrEmpty(filterLayer.ids)) {
+                layerMatched = (layerMatched && (filterLayer.ids === geotiffLayer.ids));
+              }
+              // version
+              if (!isNullOrEmpty(filterLayer.version)) {
+                layerMatched = (layerMatched && (filterLayer.version === geotiffLayer.version));
+              }
             }
           } else {
             layerMatched = false;
@@ -1158,34 +1196,39 @@ class Map extends MObject {
           let layerMatched = true;
           // checks if the layer is not in selected layers
           if (!foundLayers.includes(ogcapifLayer)) {
-            // type
-            if (!isNullOrEmpty(filterLayer.type)) {
-              layerMatched = (layerMatched && (filterLayer.type === ogcapifLayer.type));
-            }
-            // URL
-            if (!isNullOrEmpty(filterLayer.url)) {
-              layerMatched = (layerMatched && (filterLayer.url === ogcapifLayer.url));
-            }
-            // name
-            if (!isNullOrEmpty(filterLayer.name)) {
-              layerMatched = (layerMatched && (filterLayer.name === ogcapifLayer.name));
-            }
+            // if instanceof FacadeOGCAPIFeatures check if it is the same
+            if (filterLayer instanceof FacadeOGCAPIFeatures) {
+              layerMatched = (filterLayer === ogcapifLayer);
+            } else {
+              // type
+              if (!isNullOrEmpty(filterLayer.type)) {
+                layerMatched = (layerMatched && (filterLayer.type === ogcapifLayer.type));
+              }
+              // URL
+              if (!isNullOrEmpty(filterLayer.url)) {
+                layerMatched = (layerMatched && (filterLayer.url === ogcapifLayer.url));
+              }
+              // name
+              if (!isNullOrEmpty(filterLayer.name)) {
+                layerMatched = (layerMatched && (filterLayer.name === ogcapifLayer.name));
+              }
 
-            // legend
-            if (!isNullOrEmpty(filterLayer.legend)) {
-              layerMatched = (layerMatched && (filterLayer.legend === ogcapifLayer.legend));
-            }
-            // cql
-            if (!isNullOrEmpty(filterLayer.cql)) {
-              layerMatched = (layerMatched && (filterLayer.cql === ogcapifLayer.cql));
-            }
-            // geometry
-            if (!isNullOrEmpty(filterLayer.geometry)) {
-              layerMatched = (layerMatched && (filterLayer.geometry === ogcapifLayer.geometry));
-            }
-            // ids
-            if (!isNullOrEmpty(filterLayer.id)) {
-              layerMatched = (layerMatched && (filterLayer.id === ogcapifLayer.id));
+              // legend
+              if (!isNullOrEmpty(filterLayer.legend)) {
+                layerMatched = (layerMatched && (filterLayer.legend === ogcapifLayer.legend));
+              }
+              // cql
+              if (!isNullOrEmpty(filterLayer.cql)) {
+                layerMatched = (layerMatched && (filterLayer.cql === ogcapifLayer.cql));
+              }
+              // geometry
+              if (!isNullOrEmpty(filterLayer.geometry)) {
+                layerMatched = (layerMatched && (filterLayer.geometry === ogcapifLayer.geometry));
+              }
+              // ids
+              if (!isNullOrEmpty(filterLayer.id)) {
+                layerMatched = (layerMatched && (filterLayer.id === ogcapifLayer.id));
+              }
             }
           } else {
             layerMatched = false;
@@ -1267,25 +1310,30 @@ class Map extends MObject {
           let layerMatched = true;
           // checks if the layer is not in selected layers
           if (!foundLayers.includes(wmtsLayer)) {
-            // type
-            if (!isNullOrEmpty(filterLayer.type)) {
-              layerMatched = (layerMatched && (filterLayer.type === wmtsLayer.type));
-            }
-            // URL
-            if (!isNullOrEmpty(filterLayer.url)) {
-              layerMatched = (layerMatched && (filterLayer.url === wmtsLayer.url));
-            }
-            // name
-            if (!isNullOrEmpty(filterLayer.name)) {
-              layerMatched = (layerMatched && (filterLayer.name === wmtsLayer.name));
-            }
-            // matrixSet
-            if (!isNullOrEmpty(filterLayer.matrixSet)) {
-              layerMatched = (layerMatched && (filterLayer.matrixSet === wmtsLayer.matrixSet));
-            }
-            // legend
-            if (!isNullOrEmpty(filterLayer.legend)) {
-              layerMatched = (layerMatched && (filterLayer.legend === wmtsLayer.legend));
+            // if instanceof FacadeWMTS check if it is the same
+            if (filterLayer instanceof FacadeWMTS) {
+              layerMatched = (filterLayer.equals(wmtsLayer));
+            } else {
+              // type
+              if (!isNullOrEmpty(filterLayer.type)) {
+                layerMatched = (layerMatched && (filterLayer.type === wmtsLayer.type));
+              }
+              // URL
+              if (!isNullOrEmpty(filterLayer.url)) {
+                layerMatched = (layerMatched && (filterLayer.url === wmtsLayer.url));
+              }
+              // name
+              if (!isNullOrEmpty(filterLayer.name)) {
+                layerMatched = (layerMatched && (filterLayer.name === wmtsLayer.name));
+              }
+              // matrixSet
+              if (!isNullOrEmpty(filterLayer.matrixSet)) {
+                layerMatched = (layerMatched && (filterLayer.matrixSet === wmtsLayer.matrixSet));
+              }
+              // legend
+              if (!isNullOrEmpty(filterLayer.legend)) {
+                layerMatched = (layerMatched && (filterLayer.legend === wmtsLayer.legend));
+              }
             }
           } else {
             layerMatched = false;
@@ -1364,21 +1412,26 @@ class Map extends MObject {
         const filteredMBTilesLayers = mbtilesLayers.filter((mbtileLayer) => {
           let layerMatched = true;
           if (!foundLayers.includes(mbtileLayer)) {
-            // type
-            if (!isNullOrEmpty(filterLayer.type)) {
-              layerMatched = (layerMatched && (filterLayer.type === mbtileLayer.type));
-            }
-            // URL
-            if (!isNullOrEmpty(filterLayer.url)) {
-              layerMatched = (layerMatched && (filterLayer.url === mbtileLayer.url));
-            }
-            // name
-            if (!isNullOrEmpty(filterLayer.name)) {
-              layerMatched = (layerMatched && (filterLayer.name === mbtileLayer.name));
-            }
-            // legend
-            if (!isNullOrEmpty(filterLayer.legend)) {
-              layerMatched = (layerMatched && (filterLayer.legend === mbtileLayer.legend));
+            // if instanceof FacadeMBTiles check if it is the same
+            if (filterLayer instanceof FacadeMBTiles) {
+              layerMatched = (filterLayer === mbtileLayer);
+            } else {
+              // type
+              if (!isNullOrEmpty(filterLayer.type)) {
+                layerMatched = (layerMatched && (filterLayer.type === mbtileLayer.type));
+              }
+              // URL
+              if (!isNullOrEmpty(filterLayer.url)) {
+                layerMatched = (layerMatched && (filterLayer.url === mbtileLayer.url));
+              }
+              // name
+              if (!isNullOrEmpty(filterLayer.name)) {
+                layerMatched = (layerMatched && (filterLayer.name === mbtileLayer.name));
+              }
+              // legend
+              if (!isNullOrEmpty(filterLayer.legend)) {
+                layerMatched = (layerMatched && (filterLayer.legend === mbtileLayer.legend));
+              }
             }
           } else {
             layerMatched = false;
@@ -1454,21 +1507,26 @@ class Map extends MObject {
         const filteredMBTilesLayers = mbtilesLayers.filter((mbtileLayer) => {
           let layerMatched = true;
           if (!foundLayers.includes(mbtileLayer)) {
-            // type
-            if (!isNullOrEmpty(filterLayer.type)) {
-              layerMatched = (layerMatched && (filterLayer.type === mbtileLayer.type));
-            }
-            // URL
-            if (!isNullOrEmpty(filterLayer.url)) {
-              layerMatched = (layerMatched && (filterLayer.url === mbtileLayer.url));
-            }
-            // name
-            if (!isNullOrEmpty(filterLayer.name)) {
-              layerMatched = (layerMatched && (filterLayer.name === mbtileLayer.name));
-            }
-            // legend
-            if (!isNullOrEmpty(filterLayer.legend)) {
-              layerMatched = (layerMatched && (filterLayer.legend === mbtileLayer.legend));
+            // if instanceof FacadeMBTilesVector check if it is the same
+            if (filterLayer instanceof FacadeMBTilesVector) {
+              layerMatched = (filterLayer.equals(mbtileLayer));
+            } else {
+              // type
+              if (!isNullOrEmpty(filterLayer.type)) {
+                layerMatched = (layerMatched && (filterLayer.type === mbtileLayer.type));
+              }
+              // URL
+              if (!isNullOrEmpty(filterLayer.url)) {
+                layerMatched = (layerMatched && (filterLayer.url === mbtileLayer.url));
+              }
+              // name
+              if (!isNullOrEmpty(filterLayer.name)) {
+                layerMatched = (layerMatched && (filterLayer.name === mbtileLayer.name));
+              }
+              // legend
+              if (!isNullOrEmpty(filterLayer.legend)) {
+                layerMatched = (layerMatched && (filterLayer.legend === mbtileLayer.legend));
+              }
             }
           } else {
             layerMatched = false;
@@ -1643,14 +1701,19 @@ class Map extends MObject {
         const filteredMVTLayers = MVTLayers.filter((mvtLayer) => {
           let layerMatched = true;
           if (!foundLayers.includes(mvtLayer)) {
-            if (!isNullOrEmpty(filterLayer.type)) {
-              layerMatched = (layerMatched && (filterLayer.type === mvtLayer.type));
-            }
-            if (!isNullOrEmpty(filterLayer.url)) {
-              layerMatched = (layerMatched && (filterLayer.url === mvtLayer.url));
-            }
-            if (!isNullOrEmpty(filterLayer.name)) {
-              layerMatched = (layerMatched && (filterLayer.name === mvtLayer.name));
+            // if instanceof FacadeMVT check if it is the same
+            if (filterLayer instanceof FacadeMVT) {
+              layerMatched = (filterLayer.equals(mvtLayer));
+            } else {
+              if (!isNullOrEmpty(filterLayer.type)) {
+                layerMatched = (layerMatched && (filterLayer.type === mvtLayer.type));
+              }
+              if (!isNullOrEmpty(filterLayer.url)) {
+                layerMatched = (layerMatched && (filterLayer.url === mvtLayer.url));
+              }
+              if (!isNullOrEmpty(filterLayer.name)) {
+                layerMatched = (layerMatched && (filterLayer.name === mvtLayer.name));
+              }
             }
           } else {
             layerMatched = false;
@@ -1728,14 +1791,19 @@ class Map extends MObject {
         const filteredMapLibreLayers = MapLibreLayers.filter((mapLibreLayer) => {
           let layerMatched = true;
           if (!foundLayers.includes(mapLibreLayer)) {
-            if (!isNullOrEmpty(filterLayer.type)) {
-              layerMatched = (layerMatched && (filterLayer.type === mapLibreLayer.type));
-            }
-            if (!isNullOrEmpty(filterLayer.url)) {
-              layerMatched = (layerMatched && (filterLayer.url === mapLibreLayer.url));
-            }
-            if (!isNullOrEmpty(filterLayer.name)) {
-              layerMatched = (layerMatched && (filterLayer.name === mapLibreLayer.name));
+            // if instanceof FacadeMapLibre check if it is the same
+            if (filterLayer instanceof FacadeMapLibre) {
+              layerMatched = (filterLayer.equals(mapLibreLayer));
+            } else {
+              if (!isNullOrEmpty(filterLayer.type)) {
+                layerMatched = (layerMatched && (filterLayer.type === mapLibreLayer.type));
+              }
+              if (!isNullOrEmpty(filterLayer.url)) {
+                layerMatched = (layerMatched && (filterLayer.url === mapLibreLayer.url));
+              }
+              if (!isNullOrEmpty(filterLayer.name)) {
+                layerMatched = (layerMatched && (filterLayer.name === mapLibreLayer.name));
+              }
             }
           } else {
             layerMatched = false;
@@ -1812,17 +1880,22 @@ class Map extends MObject {
           let layerMatched = true;
           // checks if the layer is not in selected layers
           if (!foundLayers.includes(xyzLayer)) {
-            // type
-            if (!isNullOrEmpty(filterLayer.type)) {
-              layerMatched = (layerMatched && (filterLayer.type === xyzLayer.type));
-            }
-            // URL
-            if (!isNullOrEmpty(filterLayer.url)) {
-              layerMatched = (layerMatched && (filterLayer.url === xyzLayer.url));
-            }
-            // name
-            if (!isNullOrEmpty(filterLayer.name)) {
-              layerMatched = (layerMatched && (filterLayer.name === xyzLayer.name));
+            // if instanceof FacadeXYZ check if it is the same
+            if (filterLayer instanceof FacadeXYZ) {
+              layerMatched = (filterLayer.equals(xyzLayer));
+            } else {
+              // type
+              if (!isNullOrEmpty(filterLayer.type)) {
+                layerMatched = (layerMatched && (filterLayer.type === xyzLayer.type));
+              }
+              // URL
+              if (!isNullOrEmpty(filterLayer.url)) {
+                layerMatched = (layerMatched && (filterLayer.url === xyzLayer.url));
+              }
+              // name
+              if (!isNullOrEmpty(filterLayer.name)) {
+                layerMatched = (layerMatched && (filterLayer.name === xyzLayer.name));
+              }
             }
           } else {
             layerMatched = false;
@@ -1899,17 +1972,22 @@ class Map extends MObject {
           let layerMatched = true;
           // checks if the layer is not in selected layers
           if (!foundLayers.includes(tmsLayer)) {
-            // type
-            if (!isNullOrEmpty(filterLayer.type)) {
-              layerMatched = (layerMatched && (filterLayer.type === tmsLayer.type));
-            }
-            // URL
-            if (!isNullOrEmpty(filterLayer.url)) {
-              layerMatched = (layerMatched && (filterLayer.url === tmsLayer.url));
-            }
-            // name
-            if (!isNullOrEmpty(filterLayer.name)) {
-              layerMatched = (layerMatched && (filterLayer.name === tmsLayer.name));
+            // if instanceof FacadeTMS check if it is the same
+            if (filterLayer instanceof FacadeTMS) {
+              layerMatched = (filterLayer.equals(tmsLayer));
+            } else {
+              // type
+              if (!isNullOrEmpty(filterLayer.type)) {
+                layerMatched = (layerMatched && (filterLayer.type === tmsLayer.type));
+              }
+              // URL
+              if (!isNullOrEmpty(filterLayer.url)) {
+                layerMatched = (layerMatched && (filterLayer.url === tmsLayer.url));
+              }
+              // name
+              if (!isNullOrEmpty(filterLayer.name)) {
+                layerMatched = (layerMatched && (filterLayer.name === tmsLayer.name));
+              }
             }
           } else {
             layerMatched = false;

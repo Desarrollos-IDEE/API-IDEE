@@ -16,6 +16,7 @@ import { getValue } from '../i18n/language';
  * es un formato de intercambio de información geográfica muy extendido que, al igual que WFS,
  * permite que todos los elementos estén en el cliente.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} url Url del archivo o servicio que genera el GeoJSON.
  * @property {String} name Nombre de la capa, identificador.
  * @property {Object} source Fuente GeoJSON.
@@ -245,7 +246,7 @@ class GeoJSON extends LayerVector {
     if (obj instanceof GeoJSON) {
       equals = this.name === obj.name;
       equals = equals && (this.extract === obj.extract);
-      // equals = equals && (this.predefinedStyles === obj.predefinedStyles);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
 
     return equals;

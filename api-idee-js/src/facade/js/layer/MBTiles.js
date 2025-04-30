@@ -14,6 +14,7 @@ import * as parameter from '../parameter/parameter';
  * MBtiles es un formato que permite agrupar múltiples capas, tanto
  * vectoriales como raster, en un contenedor SQLite.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {string} url Url del archivo o servicio que genera el MBTiles.
  * @property {ArrayBuffer|Uint8Array|Response|File} source Respuesta de la petición a
  * un servicio que genera el MBTiles.
@@ -153,10 +154,9 @@ class MBTiles extends LayerBase {
     let equals = false;
     if (obj instanceof MBTiles) {
       equals = (this.url === obj.url);
-      equals = equals && (this.source === obj.source);
       equals = equals && (this.legend === obj.legend);
       equals = equals && (this.name === obj.name);
-      equals = equals && (this.options === obj.options);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
     return equals;
   }

@@ -19,6 +19,7 @@ import { getValue } from '../i18n/language';
  * @classdesc
  * Capa Tiles3D
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} url Url del servicio Tiles3D.
  * @property {String} name Identificador de capa.
  * @property {String} legend Indica el nombre que queremos que aparezca en
@@ -243,7 +244,7 @@ class Tiles3D extends LayerBase {
     if (obj instanceof Tiles3D) {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
-      equals = equals && (this.options === obj.options);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
     return equals;
   }

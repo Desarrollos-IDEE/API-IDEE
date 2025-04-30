@@ -16,6 +16,7 @@ import * as LayerType from './Type';
  * @classdesc
  *  GenericRaster permite añadir cualquier tipo de capa raster.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} name Nombre de la capa.
  * @property {String} legend Nombre asociado en el árbol de contenido, si usamos uno.
  * @property {String} version Versión.
@@ -243,6 +244,7 @@ class GenericRaster extends LayerBase {
       equals = (this.legend === obj.legend);
       equals = equals && (this.url === obj.url);
       equals = equals && (this.name === obj.name);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
 
     return equals;

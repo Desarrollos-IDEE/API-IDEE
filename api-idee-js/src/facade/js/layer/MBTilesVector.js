@@ -29,8 +29,9 @@ export const mode = {
  * MBTilesVector es un formato que permite agrupar múltiples capas
  * vectoriales en un contenedor SQLite.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {Boolean} extract Opcional. Activa la consulta haciendo
- * clic en el objeto geográfico,
+ * clic en el objeto geográfico.
  *
  * @api
  * @extends {IDEE.layer.Vector}
@@ -225,12 +226,10 @@ class MBTilesVector extends Vector {
     let equals = false;
     if (obj instanceof MBTilesVector) {
       equals = (this.url === obj.url);
-      equals = equals && (this.source === obj.source);
       equals = equals && (this.legend === obj.legend);
       equals = equals && (this.name === obj.name);
-      equals = equals && (this.options === obj.options);
       equals = equals && (this.extract === obj.extract);
-      equals = equals && (this.predefinedStyles === obj.predefinedStyles);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
     return equals;
   }
