@@ -413,16 +413,21 @@ export const generateResolutionsFromExtent = (extentParam, size, zoomLevels, uni
  * @function
  * @param {Number} resolution Resolución.
  * @param {String} unitsParam Unidades.
+ * @param {Number} decimals Numero de decimales a redondear.
  * @returns {Number} La escala para la resolución especificada.
  * @api
  */
-export const getScaleFromResolution = (resolution, unitsParam) => {
+export const getScaleFromResolution = (resolution, unitsParam, decimals = -1) => {
   let units = unitsParam;
   if (isNullOrEmpty(units)) {
     units = 'degrees';
   }
 
   const scale = resolution * INCHES_PER_UNIT[units] * DOTS_PER_INCH;
+
+  if (decimals > -1) {
+    return Number.parseFloat(scale.toFixed(decimals));
+  }
 
   return scale;
 };

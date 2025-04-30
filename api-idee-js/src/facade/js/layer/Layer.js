@@ -606,6 +606,50 @@ class LayerBase extends Base {
   }
 
   /**
+   * Esta función devuelve el valor de la escala mínima para esta capa.
+   *
+   * @function
+   * @returns {Number} Devuelve el valor de la escala mínima.
+   * @api
+   */
+  getMinScale() {
+    return this.getImpl().getMinScale();
+  }
+
+  /**
+   * Esta función establece el valor de la escala mínima para esta capa.
+   *
+   * @function
+   * @param {Number} minScale Nueva escala mínima.
+   * @api
+   */
+  setMinScale(minScale) {
+    this.getImpl().setMinScale(minScale);
+  }
+
+  /**
+   * Esta función devuelve el valor de la escala máxima para esta capa.
+   *
+   * @function
+   * @returns {Number} Devuelve el valor de la escala máxima.
+   * @api
+   */
+  getMaxScale() {
+    return this.getImpl().getMaxScale();
+  }
+
+  /**
+   * Esta función establece el valor de la escala máxima para esta capa.
+   *
+   * @function
+   * @param {Number} maxScale Nueva escala máxima.
+   * @api
+   */
+  setMaxScale(maxScale) {
+    this.getImpl().setMaxScale(maxScale);
+  }
+
+  /**
    * Este método devuelve el mínimo zoom aplicable a la capa.
    *
    * @function

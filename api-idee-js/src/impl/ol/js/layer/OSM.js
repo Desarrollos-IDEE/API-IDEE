@@ -42,6 +42,8 @@ class OSM extends Layer {
    * - opacity: Opacidad de capa, por defecto 1.
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
    * - animated: Activa la animación para capas base o parámetros animados.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
    * <pre><code>
    * import SourceOSM from 'ol/source/OSM';
@@ -194,6 +196,9 @@ class OSM extends Layer {
 
     this.ol3Layer.setMaxZoom(this.maxZoom);
     this.ol3Layer.setMinZoom(this.minZoom);
+
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
 
     // activates animation for base layers or animated parameters
     const animated = ((this.transparent === false) || (this.options.animated === true));

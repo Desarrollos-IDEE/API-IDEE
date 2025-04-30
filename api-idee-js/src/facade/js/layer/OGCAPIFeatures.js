@@ -75,6 +75,8 @@ class OGCAPIFeatures extends Vector {
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
    * - minZoom: Zoom mínimo aplicable a la capa.
    * - maxZoom: Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - opacity: Opacidad de capa, por defecto 1.
    * - height: Define la altura del objeto geográfico. Puede ser un número o una propiedad.
    *   Si se define la altura será constante para todos los puntos del objeto geográfico.

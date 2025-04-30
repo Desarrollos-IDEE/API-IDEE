@@ -83,6 +83,8 @@ class MBTiles extends Layer {
    * @param {Mx.parameters.LayerOptions} options Opciones personalizadas para esta capa.
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
    * -  CrossOrigin: Atributo crossOrigin para las imágenes cargadas.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
    * <pre><code>
    * import OLTileGrid from 'ol/tilegrid/TileGrid';
@@ -244,6 +246,10 @@ class MBTiles extends Layer {
       opacity: this.opacity_,
       zIndex: this.zIndex_,
     }, this.vendorOptions_, true));
+
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
+
     if (!this.tileLoadFunction && !this.vendorOptions_.source) {
       this.fetchSource().then((tileProvider) => {
         tileProvider.getMaxZoomLevel().then((maxZoomLevel) => {

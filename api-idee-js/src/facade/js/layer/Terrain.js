@@ -45,6 +45,8 @@ class Terrain extends LayerBase {
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a la implementación.
    * - requestWaterMask: Indica si se cargan las texturas de las áreas del mapa cubiertas por agua,
    * como el sombreado o las animaciones de las olas.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * @param  {Object} vendorOptions Opciones para la biblioteca base.
    * @api
    */

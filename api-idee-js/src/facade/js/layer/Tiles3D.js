@@ -54,6 +54,8 @@ class Tiles3D extends LayerBase {
    * - style: Define el estilo de la capa.
    * - maximumScreenSpaceError: Error máximo de espacio en pantalla.
    * - clippingPlanes: Planos de recorte.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * @param {Object} vendorOptions Opciones para la biblioteca base.
    * @api
    */

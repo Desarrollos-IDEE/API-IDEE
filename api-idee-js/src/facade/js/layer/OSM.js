@@ -45,6 +45,8 @@ class OSM extends LayerBase {
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán
    * a la implementación de la capa.
    * - animated: Activa la animación para capas base o parámetros animados.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
    * <pre><code>
    * import SourceOSM from 'ol/source/OSM';
@@ -75,6 +77,7 @@ class OSM extends LayerBase {
     const parameters = parameter.layer(userParameters, LayerType.OSM);
     const optionsVar = {
       ...parameters,
+      ...options,
     };
 
     /**

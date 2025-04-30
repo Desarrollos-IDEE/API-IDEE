@@ -64,6 +64,9 @@ class LayerGroup extends Layer {
     this.ol3Layer = new Group(this.getParamsGroup_());
     this.ol3Layer.setLayers(this.layersCollection);
 
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
+
     this.fire(EventType.ADDED_TO_MAP);
 
     if (addLayer) {
