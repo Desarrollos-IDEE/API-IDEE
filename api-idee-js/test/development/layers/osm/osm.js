@@ -7,11 +7,9 @@ export const osm = new OSM({
   legend: 'OSM',
   url: 'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
   matrixSet: 'EPSG:3857',
-  // isBase: false,
+  isBase: false,
   // isBase: true,
   // maxExtent: [-1259872.4694101033, 4359275.566199489, -85799.71494979598, 4620384.454821652],
-  // transparent: false,
-  transparent: true,
   // attribution: {
   //     name: 'Name Prueba OSM',
   //     description: 'Description Prueba',
