@@ -18,3 +18,5 @@
 - Añadido bgcolorcontainer a los parámetros de mapas para aplicar un color al fondo del html del mapa de OpenLayers.
 - Se elimina la clase ParametersAdapterV3ToV4 de api-idee-rest.
 - Se implementa min/max scale para todos los tipos de capas y se añade los métodos get/set en la clase Layer.
+- Se eliminan métodos get/set type de las capas OSM, MapLibre y GeoTIFF.
+- Se añade mensaje de aviso al usar transparent como parámetro en capas.

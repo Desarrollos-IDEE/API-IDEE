@@ -43,7 +43,7 @@ map.addLayers(capaWFS); window.capaWFS = capaWFS; // */
 const capaOSM = new IDEE.layer.OSM({
   url: 'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
   name: 'Capa OSM', legend: 'Capa OSM',
-  transparent: true,
+  isBase: false,
   matrixSet: 'EPSG:3857',
 });
 map.addLayers(capaOSM); window.capaOSM = capaOSM; // */
@@ -160,7 +160,7 @@ const geotiff = new IDEE.layer.GeoTIFF({
   url: 'http://ftpcdd.cnig.es/Vuelos_2021/Vuelos_2021/catalunya_2021/Costa/01.VF/01.08_PNOA_2021_CAT_COSTA_22cm_VF_img8c_rgb_hu31/h50_0219_fot_002-0001_cog.tif',
   name: 'Nombre geotiff',
   legend: 'Leyenda geotiff',
-  transparent: true,
+  isBase: false,
 }, {
   convertToRGB: 'auto',
   nodata: 0,

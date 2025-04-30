@@ -199,7 +199,7 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
   addLayers() {
     const olLayers = [];
     this.facadeMap_.getLayers().forEach((layer) => {
-      if (layer.transparent === false && layer.isVisible()) {
+      if (layer.isBase === true && layer.isVisible()) {
         const olLayer = layer.getImpl().getLayer();
         if (IDEE.utils.isNullOrEmpty(olLayer)) {
           // layer.getImpl().on(IDEE.evt.ADDED_TO_MAP, this.addLayer_.bind(this));

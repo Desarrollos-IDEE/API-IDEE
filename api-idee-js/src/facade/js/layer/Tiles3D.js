@@ -66,6 +66,11 @@ class Tiles3D extends LayerBase {
       Exception(getValue('exception').tiles3d_method);
     }
 
+    if (isString(userParameters) || !isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
+    }
+
     const parameters = parameter.layer(userParameters, LayerType.Tiles3D);
 
     const optionsVar = options;

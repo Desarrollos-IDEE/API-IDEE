@@ -1638,7 +1638,7 @@ export const findUrls = (text) => {
   if (!uniqueMatches) return [];
 
   // Extraemos las URLs de array2
-  const urlsArray2 = uniquematchesHTML.map((item) => item.split('=')[1].trim());
+  const urlsArray2 = uniquematchesHTML.map((item) => item.split('=').slice(1).join('=').trim());
 
   // Filtramos array1, eliminando las URLs que están en array2
   const filteredArray = uniqueMatches.filter((url) => !urlsArray2.includes(url));
@@ -1689,7 +1689,11 @@ export const transfomContent = (text, pSizes = {}) => {
     const regexVideo = /\.(mp4|mov|3gp)$/i;
     const regexAudio = /\.(mp3|ogg|ogv|wav)$/i;
     const regexHrefOrSrc = /(?:href|src)\s*=\s*['"]?(https?:\/\/[^\s"'<>]+)['"]?/i;
-    if (regexImg.test(url)) {
+    if (regexHrefOrSrc.test(url)) {
+      if (/href\s*=\s*/i.test(url)) {
+        content = content.replaceAll(`${url}${aux}`, ` target='_blank' ${url}${aux}`);
+      }
+    } else if (regexImg.test(url)) {
       content = content.replaceAll(`${url}${aux}`, `</br><img src='${url}' style='max-width: ${sizes.images[0]}; max-height: ${sizes.images[1]};'/></br>${aux}`);
     } else if (regexDocument.test(url)) {
       content = content.replaceAll(`${url}${aux}`, `</br><iframe src='${url}' width='${sizes.documents[0]}' height='${sizes.documents[1]}'></iframe></br>${aux}`);
@@ -1698,10 +1702,6 @@ export const transfomContent = (text, pSizes = {}) => {
         <p>${getValue('exception').browser_video}</p></video></br>${aux}`);
     } else if (regexAudio.test(url)) {
       content = content.replaceAll(`${url}${aux}`, `</br><audio style='max-width: ${sizes.audios[0]}; max-height: ${sizes.audios[1]}'controls><source src='${url}'>${getValue('exception').browser_audio}</audio></br>${aux}`);
-    } else if (regexHrefOrSrc.test(url)) {
-      if (/href\s*=\s*/i.test(url)) {
-        content = content.replaceAll(`${url}${aux}`, ` target='_blank' ${url}${aux}`);
-      }
     } else {
       content = content.replaceAll(`${url}${aux}`, `<a target='blank' href=${url}>${url}</a>${aux}`);
     }
@@ -1714,7 +1714,7 @@ export const transfomContent = (text, pSizes = {}) => {
  * @param {Object} bbox Bbox.
  * @param {String} epsg EPSG del bbox.
  * @function
- * @returns {Array} bbox.
+ * @returns {Array} bbox
  * @api
  */
 export const ObjectToArrayExtent = (bbox, epsg) => {

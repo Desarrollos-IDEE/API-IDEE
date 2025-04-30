@@ -30,7 +30,10 @@ export const mode = {
  * vectoriales en un contenedor SQLite.
  *
  * @property {Boolean} extract Opcional. Activa la consulta haciendo
- * clic en el objeto geográfico,
+ * clic en el objeto geográfico.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
+ * @property {Boolean} isBase Define si la capa es base.
  *
  * @api
  * @extends {IDEE.layer.Vector}
@@ -54,6 +57,8 @@ class MBTilesVector extends Vector {
    * - tileSize: Tamaño de la tesela vectorial, por defecto 256.
    * - visibility: Define si la capa es visible o no. Verdadero por defecto.
    * - extract: Opcional, activa la consulta por click en el objeto geográfico, por defecto falso.
+   * - isBase: Indica si la capa es base.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a la implementación.
    * - opacity: Opacidad de capa, por defecto 1.
    * - style: Define el estilo de la capa.
@@ -77,6 +82,11 @@ class MBTilesVector extends Vector {
    * @api
    */
   constructor(userParameters = {}, options = {}, vendorOptions = {}) {
+    if (!isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
+    }
+
     const parameters = parameter.layer(userParameters, LayerType.MBTilesVector);
 
     const optionsVar = options;

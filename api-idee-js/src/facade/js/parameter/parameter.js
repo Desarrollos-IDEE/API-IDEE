@@ -4843,6 +4843,7 @@ export const layer = (userParameters, forcedType) => {
 
       if (!isNullOrEmpty(userParam.isBase)) {
         layerObj.transparent = !userParam.isBase;
+        layerObj.isBase = userParam.isBase;
       }
 
       // wfs

@@ -19,6 +19,9 @@ import { getValue } from '../i18n/language';
  * por defecto falso.
  * @property {Object} options Parámetros de la capa.
  * @property {String} label Etiqueta de la capa.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
+ * @property {Boolean} isBase Define si la capa es base.
  *
  * @api
  * @extends {IDEE.layer.Vector}
@@ -40,6 +43,8 @@ class KML extends LayerVector {
    * - layers: Permite filtrar el fichero KML por nombre de carpetas.
    * - removeFolderChildren: Permite no mostrar las
    * carpetas descendientes de las carpetas filtradas. Por defecto: true.
+   * - isBase: Indica si la capa es base.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
    * @param {Mx.parameters.LayerOptions} options Parámetros que se pasarán a la implementación.
    * - visibility: Define si la capa es visible o no.
    * - style: Define el estilo de la capa.
@@ -81,6 +86,11 @@ class KML extends LayerVector {
     // checks if the param is null or empty
     if (isNullOrEmpty(userParameters)) {
       Exception(getValue('exception').no_param);
+    }
+
+    if (!isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
     }
 
     const parameters = parameter.layer(userParameters, LayerType.KML);

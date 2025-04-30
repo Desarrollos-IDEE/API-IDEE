@@ -27,8 +27,6 @@ export const mvt_001 = new MVT({
   // maxExtent: [-1259872.4694101033, 4359275.566199489, -85799.71494979598, 4620384.454821652],
   // isBase: true,
   // isBase: false,
-  // transparent: true,
-  // transparent: false,
   // attribution: {
   //   name: 'Name Prueba MVT',
   //   description: 'Description Prueba',

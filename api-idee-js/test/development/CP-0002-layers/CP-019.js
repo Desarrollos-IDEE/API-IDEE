@@ -341,7 +341,7 @@ const generateLayersTable = () => {
     name: 'TMSBaseIGN', legend: 'Capa TMS',
     url: 'https://tms-ign-base.ign.es/1.0.0/IGNBaseTodo/{z}/{x}/{-y}.jpeg',
     projection: 'EPSG:3857',
-    transparent: false,
+    isBase: true,
     crossOrigin: 'anonymous',
     // tileGridMaxZoom: 10, // Afecta minZoom y maxZoom.
     ...applyParam1, // minZoom, maxZoom // NEVER USED
@@ -409,7 +409,7 @@ const generateLayersTable = () => {
     name: 'OSM', legend: 'OSM',
     url: 'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
     matrixSet: 'EPSG:3857',
-    transparent: true,
+    isBase: false,
     visibility: true,
     ...applyParam1, // minZoom, maxZoom
     ...applyTileGrid1,

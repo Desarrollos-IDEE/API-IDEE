@@ -300,7 +300,7 @@ export const transformToLayers = (layers, index) => {
       name: urlLayer[2],
       legend: urlLayer[4],
       matrixSet: urlLayer[3],
-      transparent: true, // Es una capa Overlay -> zIndex > 0
+      isBase: false, // Es una capa Overlay -> zIndex > 0
       queryable: false, // No GetFeatureInfo
       visibility: false, // Visible a false por defecto
       format: urlLayer[5],
@@ -507,7 +507,7 @@ export function getLayers(map) {
       res = res && false;
     }
 
-    if (layer.transparent === false) {
+    if (layer.isBase === true) {
       res = res && false;
     }
 

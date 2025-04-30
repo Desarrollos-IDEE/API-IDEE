@@ -3,7 +3,9 @@
  */
 import XYZImpl from 'impl/layer/XYZ';
 import LayerBase from './Layer';
-import { isUndefined, isObject, isNullOrEmpty } from '../util/Utils';
+import {
+  isUndefined, isObject, isNullOrEmpty, isString,
+} from '../util/Utils';
 import Exception from '../exception/exception';
 import * as parameter from '../parameter/parameter';
 import * as LayerType from './Type';
@@ -25,7 +27,9 @@ import { getValue } from '../i18n/language';
  * @property {Number} maxZoom Limitar el zoom máximo.
  * @property {Number} tileGridMaxZoom Zoom máximo de la tesela en forma de rejilla.
  * @property {Object} options Opciones de capa XYZ.
- * @property {Boolean} isbase Define si la capa es base.
+ * @property {Boolean} isBase Define si la capa es base.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
  * @property {Array} maxExtent La medida en que restringe la visualización a una región específica.
  *
  * @api
@@ -74,6 +78,11 @@ class XYZ extends LayerBase {
     // checks if the implementation can create XYZ
     if (isUndefined(XYZImpl) || (isObject(XYZImpl) && isNullOrEmpty(Object.keys(XYZImpl)))) {
       Exception(getValue('exception').xyz_method);
+    }
+
+    if (isString(userParameters) || !isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
     }
 
     const parameters = parameter.layer(userParameters, LayerType.XYZ);
