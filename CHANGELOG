@@ -18,3 +18,4 @@
 - Añadido bgcolorcontainer a los parámetros de mapas para aplicar un color al fondo del html del mapa de OpenLayers.
 - Se añade mensaje de aviso al usar transparent como parámetro en capas.
 - Se elimina la clase ParametersAdapterV3ToV4 de api-idee-rest.
+- Se elimina filtro que impide usar el parámetro tiled si la capa WMS tiene la versión 1.3.0.
