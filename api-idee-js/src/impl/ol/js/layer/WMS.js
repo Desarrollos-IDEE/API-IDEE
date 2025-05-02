@@ -794,6 +794,44 @@ class WMS extends LayerBase {
   }
 
   /**
+   * Este método elimina y crea la capa de Openlayers.
+   *
+   * @function
+   * @public
+   * @api
+   */
+  recreateOlLayer() {
+    const olMap = this.map.getMapImpl();
+    if (!isNullOrEmpty(this.ol3Layer)) {
+      olMap.removeLayer(this.ol3Layer);
+      this.layers = [];
+    }
+
+    if (this.useCapabilities || this.isWMSfull) {
+      this.getCapabilities().then((capabilities) => {
+        this.addSingleLayer_(capabilities);
+      });
+    } else {
+      this.addSingleLayer_(null);
+    }
+  }
+
+  /**
+   * Sobreescribe el nombre de la capa.
+   *
+   * @function
+   * @param {String} newName Nuevo nombre para la capa.
+   * @param {Boolean} isWMSFull Verdadero, si la capa es WMS_FULL,
+   * falso si no.
+   * @public
+   * @api
+   */
+  setName(newName, isWMSFull) {
+    this.isWMSfull = isWMSFull;
+    this.recreateOlLayer();
+  }
+
+  /**
    * Este método comprueba si un objeto es igual
    * a esta capa.
    *

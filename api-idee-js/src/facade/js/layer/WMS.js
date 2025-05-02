@@ -416,6 +416,20 @@ class WMS extends LayerBase {
   }
 
   /**
+   * Sobreescribe el nombre de la capa.
+   *
+   * @function
+   * @param {String} newName Nuevo nombre para la capa.
+   * @public
+   * @api
+   */
+  setName(newName) {
+    this.name = !isNullOrEmpty(newName) ? newName : undefined;
+    const isWMSfull = isNullOrEmpty(newName);
+    this.getImpl().setName(this.name, isWMSfull);
+  }
+
+  /**
    * Este método comprueba si un objeto es igual
    * a esta capa.
    *
