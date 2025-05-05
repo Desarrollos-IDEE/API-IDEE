@@ -123,8 +123,8 @@ class KML extends Vector {
     this.visibility = visibility;
 
     // layer
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      this.ol3Layer.setVisible(visibility);
+    if (!isNullOrEmpty(this.olLayer)) {
+      this.olLayer.setVisible(visibility);
     }
 
     // screen overlay
@@ -154,7 +154,7 @@ class KML extends Vector {
       extractStyles: this.extractStyles_,
     });
     this.loader_ = new LoaderKML(this.map, this.url, this.formater_);
-    this.ol3Layer = new OLLayerVector(extend({
+    this.olLayer = new OLLayerVector(extend({
       extent: this.maxExtent_,
       opacity: this.opacity_,
     }, this.vendorOptions_, true));
@@ -168,11 +168,11 @@ class KML extends Vector {
       this.setZIndex(this.zIndex_);
     }
     const olMap = this.map.getMapImpl();
-    this.ol3Layer.setMaxZoom(this.maxZoom);
-    this.ol3Layer.setMinZoom(this.minZoom);
+    this.olLayer.setMaxZoom(this.maxZoom);
+    this.olLayer.setMinZoom(this.minZoom);
 
     if (addLayer) {
-      olMap.addLayer(this.ol3Layer);
+      olMap.addLayer(this.olLayer);
     }
   }
 
@@ -243,7 +243,7 @@ class KML extends Vector {
   updateSource_() {
     if (isNullOrEmpty(this.vendorOptions_.source)) {
       this.requestFeatures_().then((response) => {
-        this.ol3Layer.setSource(new OLSourceVector({
+        this.olLayer.setSource(new OLSourceVector({
           loader: () => {
             const screenOverlay = response.screenOverlay;
             // removes previous features
@@ -285,9 +285,9 @@ class KML extends Vector {
   destroy() {
     const olMap = this.map.getMapImpl();
 
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      olMap.removeLayer(this.ol3Layer);
-      this.ol3Layer = null;
+    if (!isNullOrEmpty(this.olLayer)) {
+      olMap.removeLayer(this.olLayer);
+      this.olLayer = null;
     }
 
     this.removePopup();

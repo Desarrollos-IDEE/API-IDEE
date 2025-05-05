@@ -77,7 +77,7 @@ class GenericVector extends Vector {
 
     this.fnAddFeatures_ = null;
 
-    this.ol3Layer = vendorOptions;
+    this.olLayer = vendorOptions;
     this.maxExtent = options.userMaxExtent || [];
     this.ids = options.ids;
     this.version = options.version;
@@ -98,51 +98,51 @@ class GenericVector extends Vector {
     this.facadeVector_ = this.facadeLayer_;
 
     if (!this.style) {
-      if (this.ol3Layer.getStyle) {
-        this.styleOl = typeof this.ol3Layer.getStyle() === 'function'
-          ? this.ol3Layer.getStyle()()
-          : this.ol3Layer.getStyle();
+      if (this.olLayer.getStyle) {
+        this.styleOl = typeof this.olLayer.getStyle() === 'function'
+          ? this.olLayer.getStyle()()
+          : this.olLayer.getStyle();
         // eslint-disable-next-line no-underscore-dangle
         this.facadeVector_.style_ = this.styleOl;
-        this.ol3Layer.setStyle(this.styleOl);
+        this.olLayer.setStyle(this.styleOl);
       }
     }
 
     if (!isNullOrEmpty(this.visibility)) {
-      this.ol3Layer.setVisible(this.visibility);
+      this.olLayer.setVisible(this.visibility);
     }
 
     if (!isNullOrEmpty(this.maxZoom)) {
-      this.ol3Layer.setMaxZoom(this.maxZoom);
+      this.olLayer.setMaxZoom(this.maxZoom);
     }
 
     if (!isNullOrEmpty(this.minZoom)) {
-      this.ol3Layer.setMinZoom(this.minZoom);
+      this.olLayer.setMinZoom(this.minZoom);
     }
 
     if (!isNullOrEmpty(this.zIndex_)) {
-      this.ol3Layer.setZIndex(this.zIndex_);
+      this.olLayer.setZIndex(this.zIndex_);
     }
 
     if (!isNullOrEmpty(this.maxExtent)) {
-      this.ol3Layer.setExtent(this.maxExtent);
+      this.olLayer.setExtent(this.maxExtent);
     }
 
-    if (!isUndefined(this.ol3Layer.getSource().getLegendUrl)) {
-      this.legendUrl_ = this.ol3Layer.getSource().getLegendUrl();
+    if (!isUndefined(this.olLayer.getSource().getLegendUrl)) {
+      this.legendUrl_ = this.olLayer.getSource().getLegendUrl();
     }
-    this.ol3Layer.setOpacity(this.opacity_);
-    this.ol3Layer.setVisible(this.visibility);
+    this.olLayer.setOpacity(this.opacity_);
+    this.olLayer.setVisible(this.visibility);
 
     if (!isNullOrEmpty(this.ids)) {
       const featureId = this.ids.split(',').map((id) => {
         return this.name.concat('.').concat(id);
       });
-      this.ol3Layer.getSource().setUrl(`${this.ol3Layer.getSource().getUrl()}&featureId=${featureId}`);
+      this.olLayer.getSource().setUrl(`${this.olLayer.getSource().getUrl()}&featureId=${featureId}`);
     }
 
     if (!isNullOrEmpty(this.cql)) {
-      this.ol3Layer.getSource().setUrl(`${this.ol3Layer.getSource().getUrl()}&CQL_FILTER=${window.encodeURIComponent(this.cql)}`);
+      this.olLayer.getSource().setUrl(`${this.olLayer.getSource().getUrl()}&CQL_FILTER=${window.encodeURIComponent(this.cql)}`);
     }
 
     // calculates the resolutions from scales
@@ -151,19 +151,19 @@ class GenericVector extends Vector {
       const units = this.map.getProjection().units;
       this.options.minResolution = getResolutionFromScale(this.options.minScale, units);
       this.options.maxResolution = getResolutionFromScale(this.options.maxScale, units);
-      this.ol3Layer.setMaxResolution(this.options.maxResolution);
-      this.ol3Layer.setMinResolution(this.options.minResolution);
+      this.olLayer.setMaxResolution(this.options.maxResolution);
+      this.olLayer.setMinResolution(this.options.minResolution);
     } else if (!isNull(this.options)
       && !isNull(this.options.minResolution) && !isNull(this.options.maxResolution)) {
-      this.ol3Layer.setMaxResolution(this.options.maxResolution);
-      this.ol3Layer.setMinResolution(this.options.minResolution);
+      this.olLayer.setMaxResolution(this.options.maxResolution);
+      this.olLayer.setMinResolution(this.options.minResolution);
     }
 
     if (addLayer) {
-      map.getMapImpl().addLayer(this.ol3Layer);
+      map.getMapImpl().addLayer(this.olLayer);
     }
 
-    const source = this.ol3Layer.getSource();
+    const source = this.olLayer.getSource();
 
     // ? Capas con features ya cargados
     if (source.getFeatures().length > 0 && source.getState() === 'ready') {
@@ -184,7 +184,7 @@ class GenericVector extends Vector {
   }
 
   addFeaturesToFacade() {
-    const source = this.ol3Layer.getSource();
+    const source = this.olLayer.getSource();
     if (source.getState() === 'ready' && !this.loaded_) {
       if (source.getFeatures) {
         const features = [];
@@ -234,7 +234,7 @@ class GenericVector extends Vector {
    * @api stable
    */
   deactivate() {
-    this.ol3Layer.getSource().un('change', this.fnAddFeatures_);
+    this.olLayer.getSource().un('change', this.fnAddFeatures_);
     this.fnAddFeatures_ = null;
   }
 
@@ -281,9 +281,9 @@ class GenericVector extends Vector {
    * @api
    */
   setURLService(url) {
-    if (!isNullOrEmpty(this.ol3Layer) && !isNullOrEmpty(this.ol3Layer.getSource)
-      && !isNullOrEmpty(this.ol3Layer.getSource()) && !isNullOrEmpty(url)) {
-      this.ol3Layer.getSource().setUrl(url);
+    if (!isNullOrEmpty(this.olLayer) && !isNullOrEmpty(this.olLayer.getSource)
+      && !isNullOrEmpty(this.olLayer.getSource()) && !isNullOrEmpty(url)) {
+      this.olLayer.getSource().setUrl(url);
     }
   }
 
@@ -296,13 +296,13 @@ class GenericVector extends Vector {
    */
   getURLService() {
     let url = '';
-    if (!isNullOrEmpty(this.ol3Layer) && !isNullOrEmpty(this.ol3Layer.getSource)
-      && !isNullOrEmpty(this.ol3Layer.getSource())) {
-      const source = this.ol3Layer.getSource();
+    if (!isNullOrEmpty(this.olLayer) && !isNullOrEmpty(this.olLayer.getSource)
+      && !isNullOrEmpty(this.olLayer.getSource())) {
+      const source = this.olLayer.getSource();
       if (!isNullOrEmpty(source.getUrl)) {
-        url = this.ol3Layer.getSource().getUrl();
+        url = this.olLayer.getSource().getUrl();
       } else if (!isNullOrEmpty(source.getUrls)) {
-        url = this.ol3Layer.getSource().getUrls();
+        url = this.olLayer.getSource().getUrls();
       }
     }
     return url;
@@ -332,7 +332,7 @@ class GenericVector extends Vector {
    * @api stable
    */
   getMaxResolution() {
-    return this.ol3Layer.getMaxResolution();
+    return this.olLayer.getMaxResolution();
   }
 
   /**
@@ -344,7 +344,7 @@ class GenericVector extends Vector {
    * @api stable
    */
   getMinResolution() {
-    return this.ol3Layer.getMinResolution();
+    return this.olLayer.getMinResolution();
   }
 
   /**
@@ -353,7 +353,7 @@ class GenericVector extends Vector {
    * @api stable
    */
   refresh() {
-    this.ol3Layer.getSource().refresh();
+    this.olLayer.getSource().refresh();
   }
 
   /**
@@ -390,7 +390,7 @@ class GenericVector extends Vector {
     if (this.maxExtent.length !== 0) {
       return this.maxExtent;
     }
-    return this.ol3Layer.getSource().getExtent();
+    return this.olLayer.getSource().getExtent();
   }
 
   /**
@@ -401,7 +401,7 @@ class GenericVector extends Vector {
    */
   setMaxExtent(extent) {
     this.maxExtent = extent;
-    return this.ol3Layer.setExtent(extent);
+    return this.olLayer.setExtent(extent);
   }
 
   /**
@@ -413,11 +413,11 @@ class GenericVector extends Vector {
   setVersion(newVersion) {
     this.version = newVersion;
     try {
-      this.ol3Layer.getSource().updateParams({ VERSION: newVersion });
+      this.olLayer.getSource().updateParams({ VERSION: newVersion });
     } catch (error) {
       const err = getValue('exception').versionError
         .replace('[replace1]', this.name)
-        .replace('[replace2]', this.ol3Layer.constructor.name);
+        .replace('[replace2]', this.olLayer.constructor.name);
 
       // eslint-disable-next-line no-console
       console.warn(err);
@@ -434,8 +434,8 @@ class GenericVector extends Vector {
    */
   destroy() {
     const olMap = this.map.getMapImpl();
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      olMap.removeLayer(this.ol3Layer);
+    if (!isNullOrEmpty(this.olLayer)) {
+      olMap.removeLayer(this.olLayer);
     }
     this.map = null;
   }

@@ -134,7 +134,7 @@ class WMTS extends LayerBase {
       this.options.maxResolution = getResolutionFromScale(this.options.maxScale, units);
     }
 
-    this.ol3Layer = new OLLayerTile(extend({
+    this.olLayer = new OLLayerTile(extend({
       visible: this.visibility,
       minResolution: this.options.minResolution,
       maxResolution: this.options.maxResolution,
@@ -219,7 +219,7 @@ class WMTS extends LayerBase {
           }),
           extent,
         });
-        this.ol3Layer.setSource(newSource);
+        this.olLayer.setSource(newSource);
       });
     }
   }
@@ -241,8 +241,8 @@ class WMTS extends LayerBase {
         .forEach((layer) => layer.setVisible(false));
 
       // set this layer visible
-      if (!isNullOrEmpty(this.ol3Layer)) {
-        this.ol3Layer.setVisible(visibility);
+      if (!isNullOrEmpty(this.olLayer)) {
+        this.olLayer.setVisible(visibility);
       }
 
       // updates resolutions and keep the zoom
@@ -251,8 +251,8 @@ class WMTS extends LayerBase {
       if (!isNullOrEmpty(oldZoom)) {
         this.map.setZoom(oldZoom);
       }
-    } else if (!isNullOrEmpty(this.ol3Layer)) {
-      this.ol3Layer.setVisible(visibility);
+    } else if (!isNullOrEmpty(this.olLayer)) {
+      this.olLayer.setVisible(visibility);
     }
   }
 
@@ -279,17 +279,17 @@ class WMTS extends LayerBase {
         wmtsSource = new OLSourceWMTS(options);
       }
       this.facadeLayer_.setFormat(capabilitiesOptionsVariable.format);
-      this.ol3Layer.setSource(wmtsSource);
+      this.olLayer.setSource(wmtsSource);
 
       // keeps z-index values before ol resets
       const zIndex = this.zIndex_;
 
       if (this.addLayerToMap_) {
-        this.map.getMapImpl().addLayer(this.ol3Layer);
+        this.map.getMapImpl().addLayer(this.olLayer);
       }
 
-      this.ol3Layer.setMaxZoom(this.maxZoom);
-      this.ol3Layer.setMinZoom(this.minZoom);
+      this.olLayer.setMaxZoom(this.maxZoom);
+      this.olLayer.setMinZoom(this.minZoom);
 
       // sets its z-index
       if (zIndex !== null) {
@@ -297,7 +297,7 @@ class WMTS extends LayerBase {
       }
 
       // activates animation always for WMTS layers
-      this.ol3Layer.set('animated', true);
+      this.olLayer.set('animated', true);
       this.fire(EventType.ADDED_TO_MAP, this);
     }
   }
@@ -341,14 +341,14 @@ class WMTS extends LayerBase {
         });
       }
       this.facadeLayer_.setFormat(format);
-      this.ol3Layer.setSource(wmtsSource);
+      this.olLayer.setSource(wmtsSource);
 
       // keeps z-index values before ol resets
       const zIndex = this.zIndex_;
-      this.map.getMapImpl().addLayer(this.ol3Layer);
+      this.map.getMapImpl().addLayer(this.olLayer);
       setTimeout(() => {
-        this.ol3Layer.setMaxZoom(this.maxZoom);
-        this.ol3Layer.setMinZoom(this.minZoom);
+        this.olLayer.setMaxZoom(this.maxZoom);
+        this.olLayer.setMinZoom(this.minZoom);
       }, 500);
 
       // sets its z-index
@@ -357,7 +357,7 @@ class WMTS extends LayerBase {
       }
 
       // activates animation always for WMTS layers
-      this.ol3Layer.set('animated', true);
+      this.olLayer.set('animated', true);
       this.fire(EventType.ADDED_TO_MAP, this);
     }
   }
@@ -557,9 +557,9 @@ class WMTS extends LayerBase {
    */
   destroy() {
     const olMap = this.map.getMapImpl();
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      olMap.removeLayer(this.ol3Layer);
-      this.ol3Layer = null;
+    if (!isNullOrEmpty(this.olLayer)) {
+      olMap.removeLayer(this.olLayer);
+      this.olLayer = null;
     }
     this.map = null;
   }
@@ -642,8 +642,8 @@ class WMTS extends LayerBase {
    */
   getTileColTileRow(coordinate, zoom) {
     let tcr = null;
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      const source = this.ol3Layer.getSource();
+    if (!isNullOrEmpty(this.olLayer)) {
+      const source = this.olLayer.getSource();
       if (!isNullOrEmpty(source)) {
         const { tileGrid } = source;
         tcr = tileGrid.getTileCoordForCoordAndZ(coordinate, zoom);
@@ -665,8 +665,8 @@ class WMTS extends LayerBase {
    */
   getRelativeTileCoordInPixel_(coordinate, zoom) {
     let coordPixel;
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      const source = this.ol3Layer.getSource();
+    if (!isNullOrEmpty(this.olLayer)) {
+      const source = this.olLayer.getSource();
       if (!isNullOrEmpty(source)) {
         const { tileGrid } = source;
         const tileCoord = tileGrid.getTileCoordForCoordAndZ(coordinate, zoom);

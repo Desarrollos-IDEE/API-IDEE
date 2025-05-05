@@ -196,8 +196,8 @@ class GeoJSON extends Vector {
   updateSource_() {
     if (isNullOrEmpty(this.vendorOptions_.source)) {
       this.requestFeatures_().then((features) => {
-        if (this.ol3Layer) {
-          this.ol3Layer.setSource(new OLSourceVector({
+        if (this.olLayer) {
+          this.olLayer.setSource(new OLSourceVector({
             loader: (extent, resolution, projection) => {
               this.loaded_ = true;
               // removes previous features
@@ -292,9 +292,9 @@ class GeoJSON extends Vector {
   // destroy () {
   //   let olMap = this.map.getMapImpl();
   //
-  //   if (!isNullOrEmpty(this.ol3Layer)) {
-  //     olMap.removeLayer(this.ol3Layer);
-  //     this.ol3Layer = null;
+  //   if (!isNullOrEmpty(this.olLayer)) {
+  //     olMap.removeLayer(this.olLayer);
+  //     this.olLayer = null;
   //   }
   //   this.options = null;
   //   this.map = null;

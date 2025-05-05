@@ -189,8 +189,8 @@ class GeoTIFF extends LayerBase {
         .forEach((layer) => layer.setVisible(false));
 
       // set this layer visible
-      if (!isNullOrEmpty(this.ol3Layer)) {
-        this.ol3Layer.setVisible(visibility);
+      if (!isNullOrEmpty(this.olLayer)) {
+        this.olLayer.setVisible(visibility);
       }
 
       // updates resolutions and keep the zoom
@@ -199,8 +199,8 @@ class GeoTIFF extends LayerBase {
       if (!isNullOrEmpty(oldZoom)) {
         this.map.setZoom(oldZoom);
       }
-    } else if (!isNullOrEmpty(this.ol3Layer)) {
-      this.ol3Layer.setVisible(visibility);
+    } else if (!isNullOrEmpty(this.olLayer)) {
+      this.olLayer.setVisible(visibility);
     }
   }
 
@@ -259,10 +259,10 @@ class GeoTIFF extends LayerBase {
       minResolution: this.options.minResolution,
       maxResolution: this.options.maxResolution,
     }, this.vendorOptions_, true);
-    this.ol3Layer = new TileLayer(properties);
+    this.olLayer = new TileLayer(properties);
 
     if (this.addLayerToMap_) {
-      this.map.getMapImpl().addLayer(this.ol3Layer);
+      this.map.getMapImpl().addLayer(this.olLayer);
     }
 
     this.fire(EventType.ADDED_TO_MAP);
@@ -274,8 +274,8 @@ class GeoTIFF extends LayerBase {
       this.setZIndex(zIndex);
     }
     // activates animation for base layers or animated parameters
-    this.ol3Layer.setMaxZoom(this.maxZoom);
-    this.ol3Layer.setMinZoom(this.minZoom);
+    this.olLayer.setMaxZoom(this.maxZoom);
+    this.olLayer.setMinZoom(this.minZoom);
   }
 
   /**
@@ -410,7 +410,7 @@ class GeoTIFF extends LayerBase {
       // gets the tileGrid
       if (!isNullOrEmpty(resolutions)) {
         const source = this.createOLSource_();
-        this.ol3Layer.setSource(source);
+        this.olLayer.setSource(source);
       }
     }
   }
@@ -478,9 +478,9 @@ class GeoTIFF extends LayerBase {
    */
   destroy() {
     const olMap = this.map.getMapImpl();
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      olMap.removeLayer(this.ol3Layer);
-      this.ol3Layer = null;
+    if (!isNullOrEmpty(this.olLayer)) {
+      olMap.removeLayer(this.olLayer);
+      this.olLayer = null;
     }
     this.map = null;
   }

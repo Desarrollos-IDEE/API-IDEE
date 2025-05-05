@@ -103,7 +103,7 @@ class Vector extends Layer {
     this.map = map;
     this.fire(EventType.ADDED_TO_MAP);
     map.on(EventType.CHANGE_PROJ, this.setProjection_.bind(this), this);
-    this.ol3Layer = new OLLayerVector(this.vendorOptions_);
+    this.olLayer = new OLLayerVector(this.vendorOptions_);
     this.updateSource_();
     if (this.opacity_) {
       this.setOpacity(this.opacity_);
@@ -111,12 +111,12 @@ class Vector extends Layer {
     this.setVisible(this.visibility);
     if (addLayer) {
       const olMap = this.map.getMapImpl();
-      olMap.addLayer(this.ol3Layer);
+      olMap.addLayer(this.olLayer);
     }
 
-    this.ol3Layer.setMaxZoom(this.maxZoom);
-    this.ol3Layer.setMinZoom(this.minZoom);
-    this.ol3Layer.setExtent(this.maxExtent_);
+    this.olLayer.setMaxZoom(this.maxZoom);
+    this.olLayer.setMinZoom(this.minZoom);
+    this.olLayer.setExtent(this.maxExtent_);
   }
 
   /**
@@ -128,8 +128,8 @@ class Vector extends Layer {
    */
   updateSource_() {
     if (isNullOrEmpty(this.vendorOptions_.source)) {
-      if (isNullOrEmpty(this.ol3Layer.getSource())) {
-        this.ol3Layer.setSource(new OLSourceVector());
+      if (isNullOrEmpty(this.olLayer.getSource())) {
+        this.olLayer.setSource(new OLSourceVector());
       }
       this.redraw();
       this.loaded_ = true;
@@ -486,9 +486,9 @@ class Vector extends Layer {
    */
   destroy() {
     const olMap = this.map.getMapImpl();
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      olMap.removeLayer(this.ol3Layer);
-      this.ol3Layer = null;
+    if (!isNullOrEmpty(this.olLayer)) {
+      olMap.removeLayer(this.olLayer);
+      this.olLayer = null;
     }
     this.map = null;
   }

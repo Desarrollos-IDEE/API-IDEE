@@ -143,8 +143,8 @@ class XYZ extends Layer {
     // if this layer is base then it hides all base layers
     if ((visibility === true) && (this.isBase !== false)) {
       // set this layer visible
-      if (!isNullOrEmpty(this.ol3Layer)) {
-        this.ol3Layer.setVisible(visibility);
+      if (!isNullOrEmpty(this.olLayer)) {
+        this.olLayer.setVisible(visibility);
       }
 
       // updates resolutions and keep the zoom
@@ -153,8 +153,8 @@ class XYZ extends Layer {
       if (!isNullOrEmpty(oldZoom)) {
         this.map.setZoom(oldZoom);
       }
-    } else if (!isNullOrEmpty(this.ol3Layer)) {
-      this.ol3Layer.setVisible(visibility);
+    } else if (!isNullOrEmpty(this.olLayer)) {
+      this.olLayer.setVisible(visibility);
     }
   }
 
@@ -170,7 +170,7 @@ class XYZ extends Layer {
     this.map = map;
     const projection = getProj('EPSG:3857');
     const extent = projection.getExtent();
-    this.ol3Layer = new OLTileLayer(extend({
+    this.olLayer = new OLTileLayer(extend({
       visible: this.visibility,
       opacity: this.opacity_,
       zIndex: this.zIndex_,
@@ -178,7 +178,7 @@ class XYZ extends Layer {
     }, this.vendorOptions_, true));
 
     if (addLayer) {
-      this.map.getMapImpl().addLayer(this.ol3Layer);
+      this.map.getMapImpl().addLayer(this.olLayer);
     }
     let source = this.vendorOptions_.source;
     if (isNullOrEmpty(source)) {
@@ -189,12 +189,12 @@ class XYZ extends Layer {
         crossOrigin: this.crossOrigin,
       });
     }
-    this.ol3Layer.setSource(source);
+    this.olLayer.setSource(source);
     if (this.tileGridMaxZoom !== undefined && this.tileGridMaxZoom > 0) {
-      this.ol3Layer.getSource().tileGrid.maxZoom = this.tileGridMaxZoom;
+      this.olLayer.getSource().tileGrid.maxZoom = this.tileGridMaxZoom;
     } else {
-      this.ol3Layer.setMaxZoom(this.maxZoom);
-      this.ol3Layer.setMinZoom(this.minZoom);
+      this.olLayer.setMaxZoom(this.maxZoom);
+      this.olLayer.setMinZoom(this.minZoom);
     }
   }
 
@@ -207,7 +207,7 @@ class XYZ extends Layer {
    * @api
    */
   setTileUrlFunction(tileUrlFunction) {
-    this.ol3Layer.getSource().setTileUrlFunction(tileUrlFunction);
+    this.olLayer.getSource().setTileUrlFunction(tileUrlFunction);
   }
 
   /**
@@ -219,7 +219,7 @@ class XYZ extends Layer {
    * @api
    */
   getTileUrlFunction() {
-    this.ol3Layer.getSource().getTileUrlFunction();
+    this.olLayer.getSource().getTileUrlFunction();
   }
 
   /**
@@ -244,9 +244,9 @@ class XYZ extends Layer {
    */
   destroy() {
     const olMap = this.map.getMapImpl();
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      olMap.removeLayer(this.ol3Layer);
-      this.ol3Layer = null;
+    if (!isNullOrEmpty(this.olLayer)) {
+      olMap.removeLayer(this.olLayer);
+      this.olLayer = null;
     }
     this.map = null;
   }

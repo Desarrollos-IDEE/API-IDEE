@@ -137,14 +137,14 @@ class MapLibre extends LayerBase {
         },
       };
 
-    this.ol3Layer = new MapLibreLayer(params);
+    this.olLayer = new MapLibreLayer(params);
 
     this.setZooms_();
     this.setResolutions_();
     this.setVisible(this.visibility_);
 
     if (addLayer) {
-      this.map.getMapImpl().addLayer(this.ol3Layer);
+      this.map.getMapImpl().addLayer(this.olLayer);
     }
 
     if (this.disableBackgroundColor !== undefined) {
@@ -163,20 +163,20 @@ class MapLibre extends LayerBase {
 
   handlerLoadMapLibre_() {
     return new Promise((resolve) => {
-      if (this.ol3Layer.mapLibreMap !== undefined && this.ol3Layer.mapLibreMap.loaded()) {
+      if (this.olLayer.mapLibreMap !== undefined && this.olLayer.mapLibreMap.loaded()) {
         resolve();
       } else {
         const handlerMapLibreMap = () => {
-          if (this.ol3Layer.mapLibreMap && this.ol3Layer.mapLibreMap.loaded()) {
-            this.ol3Layer.un('change:visible', handlerMapLibreMap);
-            this.ol3Layer.mapLibreMap.off('load', handlerMapLibreMap);
+          if (this.olLayer.mapLibreMap && this.olLayer.mapLibreMap.loaded()) {
+            this.olLayer.un('change:visible', handlerMapLibreMap);
+            this.olLayer.mapLibreMap.off('load', handlerMapLibreMap);
             resolve();
           }
         };
-        if (this.ol3Layer.mapLibreMap === undefined) {
-          this.ol3Layer.on('change:visible', handlerMapLibreMap);
+        if (this.olLayer.mapLibreMap === undefined) {
+          this.olLayer.on('change:visible', handlerMapLibreMap);
         } else {
-          this.ol3Layer.mapLibreMap.on('load', handlerMapLibreMap);
+          this.olLayer.mapLibreMap.on('load', handlerMapLibreMap);
         }
       }
     });
@@ -185,10 +185,10 @@ class MapLibre extends LayerBase {
   handlerStyleLoad_() {
     return new Promise((resolve) => {
       this.handlerLoadMapLibre_().then(() => {
-        if (this.ol3Layer.mapLibreMap.isStyleLoaded()) {
+        if (this.olLayer.mapLibreMap.isStyleLoaded()) {
           resolve();
         } else {
-          this.ol3Layer.mapLibreMap.once('style.load', () => {
+          this.olLayer.mapLibreMap.once('style.load', () => {
             resolve();
           });
         }
@@ -198,7 +198,7 @@ class MapLibre extends LayerBase {
 
   changeDisableBackgroundColor_() {
     this.handlerStyleLoad_().then(() => {
-      const mapLibreMap = this.ol3Layer.mapLibreMap;
+      const mapLibreMap = this.olLayer.mapLibreMap;
 
       const layers = mapLibreMap.getStyle().layers;
       const idBackground = layers.find(({ type }) => type === 'background').id;
@@ -220,11 +220,11 @@ class MapLibre extends LayerBase {
   }
 
   getMapLibreStyleFromId(ids = []) {
-    if (this.ol3Layer) {
+    if (this.olLayer) {
       if (ids.length === 0) {
-        return this.ol3Layer.mapLibreMap.getStyle().layers;
+        return this.olLayer.mapLibreMap.getStyle().layers;
       }
-      return this.ol3Layer.mapLibreMap.getStyle().layers.filter(({ id }) => ids.includes(id));
+      return this.olLayer.mapLibreMap.getStyle().layers.filter(({ id }) => ids.includes(id));
     }
   }
 
@@ -238,8 +238,8 @@ class MapLibre extends LayerBase {
   setStyleMap(style) {
     this.handlerStyleLoad_().then(() => {
       // eslint-disable-next-line no-underscore-dangle
-      this.ol3Layer.mapLibreMap.style._loaded = false;
-      this.ol3Layer.mapLibreMap.setStyle(style);
+      this.olLayer.mapLibreMap.style._loaded = false;
+      this.olLayer.mapLibreMap.setStyle(style);
     });
   }
 
@@ -250,20 +250,20 @@ class MapLibre extends LayerBase {
       this.options.minResolution = getResolutionFromScale(this.options.minScale, units);
       this.options.maxResolution = getResolutionFromScale(this.options.maxScale, units);
 
-      this.ol3Layer.setMinResolution(this.options.minResolution);
-      this.ol3Layer.setMaxResolution(this.options.maxResolution);
+      this.olLayer.setMinResolution(this.options.minResolution);
+      this.olLayer.setMaxResolution(this.options.maxResolution);
     }
 
     if (!isNull(this.options)
       && !isNull(this.options.minResolution) && !isNull(this.options.maxResolution)) {
-      this.ol3Layer.setMinResolution(this.options.minResolution);
-      this.ol3Layer.setMaxResolution(this.options.maxResolution);
+      this.olLayer.setMinResolution(this.options.minResolution);
+      this.olLayer.setMaxResolution(this.options.maxResolution);
     }
   }
 
   setZooms_() {
-    this.ol3Layer.setMaxZoom(this.maxZoom);
-    this.ol3Layer.setMinZoom(this.minZoom);
+    this.olLayer.setMaxZoom(this.maxZoom);
+    this.olLayer.setMinZoom(this.minZoom);
   }
 
   /**
@@ -277,11 +277,11 @@ class MapLibre extends LayerBase {
    */
   setPaintProperty(layer, property, value) {
     this.handlerStyleLoad_().then(() => {
-      if (this.ol3Layer.mapLibreMap.isStyleLoaded()) {
-        this.ol3Layer.mapLibreMap.setPaintProperty(layer, property, value);
+      if (this.olLayer.mapLibreMap.isStyleLoaded()) {
+        this.olLayer.mapLibreMap.setPaintProperty(layer, property, value);
       } else {
-        this.ol3Layer.mapLibreMap.once('style.load', () => {
-          this.ol3Layer.mapLibreMap.setPaintProperty(layer, property, value);
+        this.olLayer.mapLibreMap.once('style.load', () => {
+          this.olLayer.mapLibreMap.setPaintProperty(layer, property, value);
         });
       }
     });
@@ -298,11 +298,11 @@ class MapLibre extends LayerBase {
    */
   setLayoutProperty(layer, property, value) {
     this.handlerStyleLoad_().then(() => {
-      if (this.ol3Layer.mapLibreMap.isStyleLoaded()) {
-        this.ol3Layer.mapLibreMap.setLayoutProperty(layer, property, value);
+      if (this.olLayer.mapLibreMap.isStyleLoaded()) {
+        this.olLayer.mapLibreMap.setLayoutProperty(layer, property, value);
       } else {
-        this.ol3Layer.mapLibreMap.once('style.load', () => {
-          this.ol3Layer.mapLibreMap.setLayoutProperty(layer, property, value);
+        this.olLayer.mapLibreMap.once('style.load', () => {
+          this.olLayer.mapLibreMap.setLayoutProperty(layer, property, value);
         });
       }
     });
@@ -491,9 +491,9 @@ class MapLibre extends LayerBase {
    */
   destroy() {
     const olMap = this.map.getMapImpl();
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      olMap.removeLayer(this.ol3Layer);
-      this.ol3Layer = null;
+    if (!isNullOrEmpty(this.olLayer)) {
+      olMap.removeLayer(this.olLayer);
+      this.olLayer = null;
     }
     if (!isNullOrEmpty(this.layers)) {
       this.layers.map(this.map.removeLayers, this.map);
