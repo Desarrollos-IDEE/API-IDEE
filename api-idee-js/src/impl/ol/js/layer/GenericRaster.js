@@ -218,6 +218,10 @@ class GenericRaster extends LayerBase {
       this.olLayer.setMaxResolution(this.options.maxResolution);
       this.olLayer.setMinResolution(this.options.minResolution);
     }
+
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
+
     if (addLayer) {
       map.getMapImpl().addLayer(this.olLayer);
     }

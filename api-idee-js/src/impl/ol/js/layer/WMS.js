@@ -262,7 +262,6 @@ class WMS extends LayerBase {
   addTo(map, addLayer = true) {
     this.addLayerToMap_ = addLayer;
     this.map = map;
-    this.fire(EventType.ADDED_TO_MAP);
 
     // calculates the resolutions from scales
     if (!isNull(this.options)
@@ -277,6 +276,9 @@ class WMS extends LayerBase {
     } else {
       this.olLayer = new OLLayerImage(this.paramsOLLayers());
     }
+
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
 
     if (this.useCapabilities || this.isWMSfull) {
       // just one WMS layer and useCapabilities
@@ -298,6 +300,7 @@ class WMS extends LayerBase {
         // EXCEPTIONS: 'image/png',
       });
     }
+    this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
   }
 
   paramsOLLayers() {

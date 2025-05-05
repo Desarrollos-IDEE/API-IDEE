@@ -143,6 +143,9 @@ class MapLibre extends LayerBase {
     this.setResolutions_();
     this.setVisible(this.visibility_);
 
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
+
     if (addLayer) {
       this.map.getMapImpl().addLayer(this.olLayer);
     }

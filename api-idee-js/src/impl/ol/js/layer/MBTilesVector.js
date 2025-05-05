@@ -91,6 +91,8 @@ class MBTilesVector extends Vector {
    * - opacity: Opacidad de capa, por defecto 1.
    * - style: Define el estilo de la capa.
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
    * <pre><code>
    * import OLSourceVectorTile from 'ol/source/VectorTile';
@@ -193,6 +195,10 @@ class MBTilesVector extends Vector {
       opacity: this.opacity_,
       zIndex: this.zIndex_,
     }, this.vendorOptions_, true));
+
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
+
     if (!this.tileLoadFunction_ && isNullOrEmpty(this.vendorOptions_.source)) {
       this.fetchSource().then((tileProvider) => {
         tileProvider.getMaxZoomLevel().then((maxZoomLevel) => {

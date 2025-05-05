@@ -39,6 +39,8 @@ class OGCAPIFeatures extends Vector {
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
    * - minZoom: Zoom mínimo aplicable a la capa.
    * - maxZoom: Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - bbox: Filtro para mostrar los resultados en un bbox específico.
    * - opacity: Opacidad de capa, por defecto 1.
    * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:

@@ -5,6 +5,8 @@ import { isNullOrEmpty, isString } from 'IDEE/util/Utils';
 import MObject from 'IDEE/Object';
 import FacadeLayer from 'IDEE/layer/Layer';
 import { getValue } from '../../../../facade/js/i18n/language';
+import { getResolutionFromScale, getScaleFromResolution } from 'M/util/Utils';
+
 /**
  * @classdesc
  * De esta clase heredadan todas las capas base.
@@ -25,6 +27,8 @@ class LayerBase extends MObject {
    * - opacity: Opacidad de capa, por defecto 1.
    * - minZoom: Zoom mínimo aplicable a la capa.
    * - maxZoom: Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
    * @param {Object} vendorOptions Pasa los "vendorOptions" heredados a la clase
    * MObject (IDEE/Object).
@@ -251,6 +255,70 @@ class LayerBase extends MObject {
     }
     if (this.rootGroup) {
       this.rootGroup.reorderLayers();
+    }
+  }
+
+  /**
+   * Esta función devuelve el valor de la escala mínima para esta capa.
+   *
+   * @function
+   * @returns {Number} Devuelve el valor de la escala mínima.
+   * @api
+   */
+  getMinScale() {
+    let minScale;
+    const units = this.map.getProjection().units;
+    if (!isNullOrEmpty(this.getLayer()) && !isNullOrEmpty(units)) {
+      minScale = getScaleFromResolution(this.getLayer().getMinResolution(), units, 0);
+    }
+    return minScale;
+  }
+
+  /**
+   * Esta función establece el valor de la escala mínima para esta capa.
+   *
+   * @function
+   * @param {Number} minScale Nueva escala mínima.
+   * @api
+   */
+  setMinScale(minScale) {
+    const units = this.map.getProjection().units;
+    const minResolution = getResolutionFromScale(minScale, units);
+    if (!isNullOrEmpty(this.getLayer()) && !isNullOrEmpty(minResolution)
+      && !isNullOrEmpty(units)) {
+      this.getLayer().setMinResolution(minResolution);
+    }
+  }
+
+  /**
+   * Esta función devuelve el valor de la escala máxima para esta capa.
+   *
+   * @function
+   * @returns {Number} Devuelve el valor de la escala máxima.
+   * @api
+   */
+  getMaxScale() {
+    let maxScale;
+    const units = this.map.getProjection().units;
+    if (!isNullOrEmpty(this.getLayer()) && !isNullOrEmpty(units)) {
+      maxScale = getScaleFromResolution(this.getLayer().getMaxResolution(), units, 0);
+    }
+    return maxScale;
+  }
+
+  /**
+   * Esta función establece el valor de la escala máxima para esta capa.
+   *
+   * @function
+   * @param {Number} maxScale Nueva escala máxima.
+   * @api
+   */
+  setMaxScale(maxScale) {
+    const units = this.map.getProjection().units;
+    const maxResolution = getResolutionFromScale(maxScale, units);
+    if (!isNullOrEmpty(this.getLayer()) && !isNullOrEmpty(maxResolution)
+      && !isNullOrEmpty(units)) {
+      this.getLayer().setMaxResolution(maxResolution);
     }
   }
 

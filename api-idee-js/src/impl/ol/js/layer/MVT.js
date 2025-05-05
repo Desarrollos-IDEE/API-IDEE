@@ -43,6 +43,8 @@ class MVT extends Vector {
    * - style: Define el estilo de la capa.
    * - minZoom. Zoom mínimo aplicable a la capa.
    * - maxZoom. Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - visibility. Define si la capa es visible o no. Verdadero por defecto.
    * - displayInLayerSwitcher. Indica si la capa se muestra en el selector de capas.
    * - opacity. Opacidad de capa, por defecto 1.
@@ -160,6 +162,9 @@ class MVT extends Vector {
     }, this.vendorOptions_, true));
     this.olLayer.setMaxZoom(this.maxZoom);
     this.olLayer.setMinZoom(this.minZoom);
+
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
 
     this.setOpacity(this.opacity_);
     this.setVisible(this.visibility_);
