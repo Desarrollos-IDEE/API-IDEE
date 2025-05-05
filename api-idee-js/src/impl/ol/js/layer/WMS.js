@@ -278,6 +278,9 @@ class WMS extends LayerBase {
       this.ol3Layer = new OLLayerImage(this.paramsOLLayers());
     }
 
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
+
     if (this.useCapabilities || this.isWMSfull) {
       // just one WMS layer and useCapabilities
       this.getCapabilities().then((capabilities) => {

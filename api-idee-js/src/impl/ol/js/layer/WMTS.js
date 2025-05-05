@@ -142,6 +142,9 @@ class WMTS extends LayerBase {
       opacity: this.opacity_,
     }, this.vendorOptions_, true));
 
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
+
     if (this.useCapabilities) {
       this.capabilitiesOptionsPromise = this.getCapabilitiesOptions_();
 

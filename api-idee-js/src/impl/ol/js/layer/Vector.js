@@ -34,6 +34,8 @@ class Vector extends Layer {
    * - style. Define el estilo de la capa.
    * - minZoom. Zoom mínimo aplicable a la capa.
    * - maxZoom. Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - visibility. Define si la capa es visible o no. Verdadero por defecto.
    * - displayInLayerSwitcher. Indica si la capa se muestra en el selector de capas.
    * - opacity. Opacidad de capa, por defecto 1.
@@ -117,6 +119,9 @@ class Vector extends Layer {
     this.ol3Layer.setMaxZoom(this.maxZoom);
     this.ol3Layer.setMinZoom(this.minZoom);
     this.ol3Layer.setExtent(this.maxExtent_);
+
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
   }
 
   /**
