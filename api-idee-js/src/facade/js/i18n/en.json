@@ -279,5 +279,6 @@
     "heatmap_method": "The implementation used can not create Heatmap styles.",
     "flowline_method": "The implementation used can not create Flowline styles.",
     "id_exists": "ID already exists."
+    "transparent_deprecated": "'transparent' parameter has been deprecated, it is recommended to use 'isBase' instead."
   }
 }

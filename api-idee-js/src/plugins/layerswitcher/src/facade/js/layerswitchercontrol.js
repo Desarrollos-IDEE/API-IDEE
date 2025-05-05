@@ -2220,7 +2220,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       layer = new IDEE.layer.OSM({
         name,
         legend,
-        transparent: true,
+        isBase: false,
         url,
         matrixSet,
       });

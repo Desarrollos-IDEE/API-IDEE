@@ -22,13 +22,14 @@ import { getValue } from '../i18n/language';
  * @property {String} version Versión WMS.
  * @property {Boolean} tiled Verdadero si queremos dividir la capa en mosaicos,
  * falso en caso contrario.
- * @property {Boolean} transparent 'Falso' si es una capa base, 'verdadero' en caso contrario.
+ * @property {Boolean} transparent (deprecated) 'Falso' si es una capa base,
+ * 'verdadero' en caso contrario.
  * @property {Object} capabilitiesMetadata Capacidades de metadatos WMS.
  * @property {Number} minZoom Limitar el zoom mínimo.
  * @property {Number} maxZoom Limitar el zoom máximo.
  * @property {Object} options Capa de opciones WMS.
  * @property {Boolean} useCapabilities Define si se utilizará el capabilities para generar la capa.
- * @property {Boolean} isbase Define si la capa es base.
+ * @property {Boolean} isBase Define si la capa es base.
  * @api
  * @extends {IDEE.Layer}
  */
@@ -95,6 +96,12 @@ class WMS extends LayerBase {
     if (isNullOrEmpty(userParameters)) {
       Exception(getValue('exception').no_param);
     }
+
+    if (isString(userParameters) || !isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
+    }
+
     // This Layer is of parameters.
     const parameters = parameter.layer(userParameters, LayerType.WMS);
     const optionsVar = {
@@ -103,7 +110,6 @@ class WMS extends LayerBase {
       queryable: parameters.queryable,
       displayInLayerSwitcher: parameters.displayInLayerSwitcher,
       useCapabilities: parameters.useCapabilities,
-      transparent: parameters.transparent,
       isWMSfull: parameters.name === undefined,
     };
 

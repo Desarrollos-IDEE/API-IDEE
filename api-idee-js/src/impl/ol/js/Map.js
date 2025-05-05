@@ -290,7 +290,7 @@ class Map extends MObject {
    * @api
    */
   getBaseLayers() {
-    return this.layers_.filter((layer) => layer.transparent === false);
+    return this.layers_.filter((layer) => layer.isBase === true);
   }
 
   /**
@@ -387,7 +387,7 @@ class Map extends MObject {
     // calculate resolutions if layers were added and there is not any base layer
     // or if some base layer was added
     const calculateResolutions = (addedLayers.length > 0 && !existsBaseLayer)
-      || addedLayers.some((l) => l.transparent !== true && l.isVisible());
+      || addedLayers.some((l) => l.isBase === true && l.isVisible());
     if (calculateResolutions) {
       this.updateResolutionsFromBaseLayer();
     }
@@ -1659,7 +1659,7 @@ class Map extends MObject {
       if (includes(this.layers_, layer)) {
         this.layers_ = this.layers_.filter((layer2) => !layer2.equals(layer));
         layer.getImpl().destroy();
-        if (layer.transparent === false) {
+        if (layer.isBase === true) {
           // it was base layer so sets the visibility of the first one
           const baseLayers = this.facadeMap_.getBaseLayers();
           if (baseLayers.length > 0) {

@@ -35,8 +35,6 @@ export const ogcAPIFeatures_001 = new OGCAPIFeatures({
   // maxExtent: [-953031.9167337259, 5198473.475942763, -879652.3695799566, 5233405.1978690885],
   // isBase: true,
   // isBase: false,
-  // transparent: true,
-  // transparent: false,
   // attribution: {
   //   name: 'Name Prueba OGCAPIFeatures',
   //   description: 'Description Prueba',

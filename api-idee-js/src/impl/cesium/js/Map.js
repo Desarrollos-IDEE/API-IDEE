@@ -372,7 +372,7 @@ class Map extends MObject {
    * @api
    */
   getBaseLayers() {
-    return this.getLayers().filter((layer) => layer.transparent !== true);
+    return this.getLayers().filter((layer) => layer.isBase === true);
   }
 
   /**

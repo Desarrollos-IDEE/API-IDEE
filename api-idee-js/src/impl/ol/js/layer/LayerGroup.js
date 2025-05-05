@@ -69,6 +69,9 @@ class LayerGroup extends Layer {
     this.ol3Layer = new Group(this.getParamsGroup_());
     this.ol3Layer.setLayers(this.layersCollection);
 
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
+
     this.fire(EventType.ADDED_TO_MAP);
 
     if (addLayer) {
@@ -207,7 +210,7 @@ class LayerGroup extends Layer {
   setVisible(visibility) {
     this.visibility = visibility;
     // if this layer is base then it hides all base layers
-    if ((visibility === true) && (this.transparent !== true)) {
+    if ((visibility === true) && (this.isBase !== false)) {
       // hides all base layers
       this.map.getBaseLayers().forEach((layer) => {
         if (!layer.equals(this.facadeLayer_) && layer.isVisible()) {

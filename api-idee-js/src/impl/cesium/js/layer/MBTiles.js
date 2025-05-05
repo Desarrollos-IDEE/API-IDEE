@@ -117,7 +117,7 @@ class MBTiles extends Layer {
   setVisible(visibility) {
     this.visibility = visibility;
     // if this layer is base then it hides all base layers
-    if ((visibility === true) && (this.transparent !== true)) {
+    if ((visibility === true) && (this.isBase !== false)) {
       // set this layer visible
       if (!isNullOrEmpty(this.cesiumLayer)) {
         this.cesiumLayer.show = visibility;

@@ -11,7 +11,7 @@ const map = IDEE.map({
     name: 'OI.OrthoimageCoverage',
     legend: 'Imagen (PNOA)',
     matrixSet: 'GoogleMapsCompatible',
-    transparent: true,
+    isBase: false,
     displayInLayerSwitcher: false,
     queryable: false,
     visible: true,

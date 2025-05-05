@@ -42,6 +42,9 @@ import { getValue } from '../i18n/language';
  * @property {Object} opt Opciones de la capa.
  * @property {Boolean} extract Opcional. Activa la consulta haciendo
  * clic en el objeto geográfico.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
+ * @property {Boolean} isBase Define si la capa es base.
  *
  * @api
  * @extends {IDEE.layer.Vector}
@@ -69,6 +72,8 @@ class OGCAPIFeatures extends Vector {
    * LINE(línea), MLINE(Multiples línes), POLYGON(Polígono), or MPOLYGON(Multiples polígonos).
    * - extract: Opcional, activa la consulta por click en el objeto geográfico, por defecto falso.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
+   * - isBase: Indica si la capa es base.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a
    * la implementación de la capa.
    * - predefinedStyles: Estilos predefinidos para la capa.
@@ -76,6 +81,8 @@ class OGCAPIFeatures extends Vector {
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
    * - minZoom: Zoom mínimo aplicable a la capa.
    * - maxZoom: Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - opacity: Opacidad de capa, por defecto 1.
    * - height: Define la altura del objeto geográfico. Puede ser un número o una propiedad.
    *   Si se define la altura será constante para todos los puntos del objeto geográfico.
@@ -100,6 +107,11 @@ class OGCAPIFeatures extends Vector {
     // Comprueba si los parámetros son null or empty
     if (isNullOrEmpty(userParams)) {
       Exception(getValue('exception').no_param);
+    }
+
+    if (!isUndefined(userParams.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
     }
 
     // This layer is of parameters.

@@ -33,7 +33,6 @@ class OSM extends Layer {
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
    * - name: Nombre de la capa en la leyenda.
    * - legend: Indica el nombre que queremos que aparezca en el árbol de contenidos, si lo hay.
-   * - transparent: Falso si es una capa base, verdadero en caso contrario.
    * - type: Tipo de la capa.
    * - url: Url genera la OSM.
    * - minZoom: Zoom mínimo aplicable a la capa.
@@ -42,6 +41,8 @@ class OSM extends Layer {
    * - opacity: Opacidad de capa, por defecto 1.
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
    * - animated: Activa la animación para capas base o parámetros animados.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
    * <pre><code>
    * import SourceOSM from 'ol/source/OSM';
@@ -104,7 +105,7 @@ class OSM extends Layer {
     this.visibility = visibility;
     if (this.inRange() === true) {
       // if this layer is base then it hides all base layers
-      if ((visibility === true) && (this.transparent === false)) {
+      if ((visibility === true) && (this.isBase === true)) {
         // hides all base layers
         this.map.getBaseLayers().forEach((layer) => {
           if (!layer.equals(this) && layer.isVisible()) {
@@ -195,8 +196,11 @@ class OSM extends Layer {
     this.ol3Layer.setMaxZoom(this.maxZoom);
     this.ol3Layer.setMinZoom(this.minZoom);
 
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
+
     // activates animation for base layers or animated parameters
-    const animated = ((this.transparent === false) || (this.options.animated === true));
+    const animated = ((this.isBase === true) || (this.options.animated === true));
     this.ol3Layer.set('animated', animated);
 
     // set the extent when the map changed

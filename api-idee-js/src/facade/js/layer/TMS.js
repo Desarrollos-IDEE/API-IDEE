@@ -3,7 +3,9 @@
  */
 import TMSImpl from 'impl/layer/TMS';
 import LayerBase from './Layer';
-import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
+import {
+  isUndefined, isNullOrEmpty, isObject, isString,
+} from '../util/Utils';
 import Exception from '../exception/exception';
 import * as parameter from '../parameter/parameter';
 import * as LayerType from './Type';
@@ -21,7 +23,8 @@ import { getValue } from '../i18n/language';
  *
  * @property {String} idLayer Identificador de la capa.
  * @property {String} name Identificador de capa.
- * @property {transparent} transparent Falso si es una capa base, verdadero en caso contrario.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
  * @property {String} type Tipo de la capa.
  * @property {String} url Url del servicio TMS.
  * @property {Number} minZoom Zoom mínimo.
@@ -37,7 +40,7 @@ import { getValue } from '../i18n/language';
  * árbol de contenidos, si lo hay.
  * @property {Array<Number>} maxExtent_ Extensión máxima.
  * @property {Boolean} displayInLayerSwitcher Indica si la capa se muestra en el selector de capas.
- * @property {Boolean} isbase Define si la capa es base.
+ * @property {Boolean} isBase Define si la capa es base.
  * @api
  * @extends {IDEE.layer}
  */
@@ -65,6 +68,8 @@ class TMS extends LayerBase {
    * - opacity: Opacidad de capa, por defecto 1.
    * - minZoom: Zoom mínimo aplicable a la capa.
    * - maxZoom: Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - crossOrigin: Atributo crossOrigin para las imágenes cargadas.
    * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
    * <pre><code>
@@ -83,6 +88,11 @@ class TMS extends LayerBase {
     // checks if the implementation can create TMS
     if (isUndefined(TMSImpl) || (isObject(TMSImpl) && isNullOrEmpty(Object.keys(TMSImpl)))) {
       Exception(getValue('exception').tms_method);
+    }
+
+    if (isString(userParameters) || !isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
     }
 
     const parameters = parameter.layer(userParameters, LayerType.TMS);

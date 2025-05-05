@@ -30,6 +30,9 @@ import { getValue } from '../i18n/language';
  * @property {String} version Versión del estándar a utilizar. El valor predeterminado es 1.0.0.
  * @property {Boolean} extract Activa la consulta al hacer clic en la característica,
  * por defecto falso.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
+ * @property {Boolean} isBase Define si la capa es base.
  * @property {Object} options Opciones de WFS.
  *
  * @api
@@ -55,6 +58,8 @@ class WFS extends Vector {
    * - type: Tipo de la capa.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
    * - legend: Indica el nombre que queremos que aparezca en el árbol de contenidos, si lo hay.
+   * - isBase: Indica si la capa es base.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a
    * la implementación de la capa.
    * - style: Define el estilo de la capa.
@@ -63,6 +68,8 @@ class WFS extends Vector {
    * - vendor: Proveedor.
    * - minZoom: Zoom mínimo aplicable a la capa.
    * - maxZoom: Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - visibility: Define si la capa es visible o no. Verdadero por defecto.
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
    * - opacity: Opacidad de capa, por defecto 1.
@@ -91,6 +98,11 @@ class WFS extends Vector {
     // checks if the param is null or empty.
     if (isNullOrEmpty(userParams)) {
       Exception(getValue('exception').no_param);
+    }
+
+    if (!isUndefined(userParams.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
     }
 
     // This layer is of parameters.

@@ -3,7 +3,9 @@
  */
 import TerrainImpl from 'impl/layer/Terrain';
 import LayerBase from './Layer';
-import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
+import {
+  isUndefined, isNullOrEmpty, isObject, isString,
+} from '../util/Utils';
 import Exception from '../exception/exception';
 import * as LayerType from './Type';
 import * as parameter from '../parameter/parameter';
@@ -46,6 +48,8 @@ class Terrain extends LayerBase {
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a la implementación.
    * - requestWaterMask: Indica si se cargan las texturas de las áreas del mapa cubiertas por agua,
    * como el sombreado o las animaciones de las olas.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * @param  {Object} vendorOptions Opciones para la biblioteca base.
    * @api
    */
@@ -54,6 +58,11 @@ class Terrain extends LayerBase {
     if (isUndefined(TerrainImpl) || (isObject(TerrainImpl)
       && isNullOrEmpty(Object.keys(TerrainImpl)))) {
       Exception(getValue('exception').terrain_method);
+    }
+
+    if (isString(userParameters) || !isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
     }
 
     const parameters = parameter.layer(userParameters, LayerType.Terrain);

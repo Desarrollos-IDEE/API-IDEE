@@ -14,8 +14,6 @@ export const xyz_001 = new XYZ({
   // visibility: true,
   // isBase: false,
   // isBase: true,
-  // transparent: false,
-  // transparent: true,
   // tileGridMaxZoom: 5,
   // displayInLayerSwitcher: false,
   // displayInLayerSwitcher: true,
@@ -50,7 +48,7 @@ export const xyz_003 = new XYZ({
   tileSize: 512,
   crossOrigin: false,
   visibility: true,
-  transparent: true,
+  isBase: false,
 }, {
   minZoom: 5,
   maxZoom: 10,

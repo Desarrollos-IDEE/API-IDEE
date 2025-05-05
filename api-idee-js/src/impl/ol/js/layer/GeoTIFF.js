@@ -42,7 +42,7 @@ class GeoTIFF extends LayerBase {
    * - blob: url del blob.
    * - projection: SRS usado por la capa.
    * - legend: Nombre asociado en el árbol de contenidos, si usamos uno.
-   * - transparent: Falso si es una capa base, verdadero en caso contrario.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
    * - convertToRGB: Convierte la compresion de la imagen a RGB, puede ser 'auto', true o false,
    *   por defecto 'auto'.
    * - opacity: Opacidad de la capa de 0 a 1, por defecto 1.
@@ -182,7 +182,7 @@ class GeoTIFF extends LayerBase {
   setVisible(visibility) {
     this.visibility = visibility;
     // if this layer is base then it hides all base layers
-    if ((visibility === true) && (this.transparent !== true)) {
+    if ((visibility === true) && (this.isBase !== false)) {
       // hides all base layers
       this.map.getBaseLayers()
         .filter((layer) => !layer.equals(this.facadeLayer_) && layer.isVisible())
@@ -216,6 +216,10 @@ class GeoTIFF extends LayerBase {
     this.map = map;
     this.addLayerToMap_ = addLayer;
     this.createOLLayer_(null);
+
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
+
     this.fire(EventType.ADDED_TO_MAP);
   }
 

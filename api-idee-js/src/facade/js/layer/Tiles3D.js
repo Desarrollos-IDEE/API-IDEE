@@ -55,6 +55,8 @@ class Tiles3D extends LayerBase {
    * - style: Define el estilo de la capa.
    * - maximumScreenSpaceError: Error máximo de espacio en pantalla.
    * - clippingPlanes: Planos de recorte.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * @param {Object} vendorOptions Opciones para la biblioteca base.
    * @api
    */
@@ -63,6 +65,11 @@ class Tiles3D extends LayerBase {
     if (isUndefined(Tiles3DImpl) || (isObject(Tiles3DImpl)
       && isNullOrEmpty(Object.keys(Tiles3DImpl)))) {
       Exception(getValue('exception').tiles3d_method);
+    }
+
+    if (isString(userParameters) || !isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
     }
 
     const parameters = parameter.layer(userParameters, LayerType.Tiles3D);

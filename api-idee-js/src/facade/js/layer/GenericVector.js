@@ -25,6 +25,9 @@ import Generic from '../style/Generic';
  * @property {Array} ids Identificadores por los que queremos filtrar los objetos geográficos.
  * @property {String} cql Sentencia CQL para filtrar los objetos geográficos.
  * @property {Object} options Opciones GenericVector.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
+ * @property {Boolean} isBase Define si la capa es base.
  *
  * @api
  * @extends {IDEE.layer.Vector}
@@ -36,7 +39,7 @@ class GenericVector extends Vector {
    * @param {string|Mx.parameters.WMS} userParameters Parámetros para la construcción de la capa.
    * - name: nombre de la capa.
    * - legend: Nombre asociado en el árbol de contenidos, si usamos uno.
-   * - transparent: Falso si es una capa base, verdadero en caso contrario.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
    * - extract: Opcional, activa la consulta por click en el objeto geográfico, por defecto falso.
    * - infoEventType: Define si consultar la capa con un clic o con "hover".
    * - maxExtent: La medida en que restringe la visualización a una región específica.
@@ -76,6 +79,11 @@ class GenericVector extends Vector {
     delete params.maxZoom;
     const opts = options;
     let vOptions = vendorOptions;
+
+    if (isString(userParameters) || !isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
+    }
 
     if (typeof userParameters === 'string') {
       params = parameter.layer(userParameters, LayerType.GenericVector);

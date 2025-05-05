@@ -20,8 +20,6 @@ export const wfs_001 = new WFS({
   // version: '',
   // isBase: false,
   // isBase: true,
-  // transparent: false,
-  // transparent: true,
   // attribution: {
   //   name: 'Name Prueba WFS',
   //   description: 'Description Prueba',

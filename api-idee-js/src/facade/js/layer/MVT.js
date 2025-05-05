@@ -35,6 +35,9 @@ export const mode = {
  * @property {String} idLayer Identificador de la capa.
  * @property {Boolean} extract Activa la consulta al hacer clic sobre un objeto geográfico,
  * por defecto falso.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
+ * @property {Boolean} isBase Define si la capa es base.
  *
  * @api
  * @extends {IDEE.layer.Vector}
@@ -57,11 +60,15 @@ class MVT extends Vector {
    * - extract: Opcional Activa la consulta por click en el objeto geográfico, por defecto falso.
    * - type: Tipo de la capa.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
+   * - isBase: Indica si la capa es base.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a
    * la implementación de la capa.
    * - style: Define el estilo de la capa.
    * - minZoom. Zoom mínimo aplicable a la capa.
    * - maxZoom. Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - visibility. Define si la capa es visible o no. Verdadero por defecto.
    * - displayInLayerSwitcher. Indica si la capa se muestra en el selector de capas.
    * - predefinedStyles: Estilos predefinidos para la capa.
@@ -81,6 +88,11 @@ class MVT extends Vector {
    * @api
    */
   constructor(parameters = {}, options = {}, vendorOptions = {}, implParam = undefined) {
+    if (!isUndefined(parameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
+    }
+
     let opts = parameter.layer(parameters, MVTType);
     const optionsVar = options;
     if (typeof parameters !== 'string') {

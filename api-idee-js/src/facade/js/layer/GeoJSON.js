@@ -22,6 +22,9 @@ import { getValue } from '../i18n/language';
  * @property {Object} source Fuente GeoJSON.
  * @property {Boolean} extract Activa la consulta al hacer clic sobre un objeto geográfico,
  * por defecto falso.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
+ * @property {Boolean} isBase Define si la capa es base.
  * @property {Object} options Opciones GeoJSON.
  * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
  * <pre><code>
@@ -52,11 +55,15 @@ class GeoJSON extends LayerVector {
    * - type: Tipo de la capa.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
    * - legend: Indica el nombre que queremos que aparezca en el árbol de contenidos, si lo hay.
+   * - isBase: Indica si la capa es base.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a la implementación.
    * - hide: Atributos ocultos.
    * - show: Mostrar atributos.
    * - minZoom: Zoom mínimo aplicable a la capa.
    * - maxZoom: Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - visibility: Define si la capa es visible o no. Verdadero por defecto.
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
    * - opacity: Opacidad de capa, por defecto 1.
@@ -80,6 +87,11 @@ class GeoJSON extends LayerVector {
     // Comprueba si los parámetros son null or empty
     if (isNullOrEmpty(parameters)) {
       Exception(getValue('exception').no_param);
+    }
+
+    if (!isUndefined(parameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
     }
 
     const optionsVar = options;

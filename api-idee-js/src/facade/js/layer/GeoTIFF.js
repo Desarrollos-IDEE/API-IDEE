@@ -4,7 +4,7 @@
  */
 import GeoTIFFImpl from 'impl/layer/GeoTIFF';
 import {
-  isUndefined, isNullOrEmpty, isObject,
+  isUndefined, isNullOrEmpty, isObject, isString,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import LayerBase from './Layer';
@@ -22,7 +22,8 @@ import { getValue } from '../i18n/language';
  *
  * @property {String} idLayer Identificador de la capa.
  * @property {String} legend Nombre asociado en el árbol de contenido, si usamos uno.
- * @property {Boolean} transparent 'Falso' si es una capa base, 'verdadero' en caso contrario.
+ * @property {Boolean} transparent (deprecated) 'Falso' si es una capa base,
+ * 'verdadero' en caso contrario.
  * @property {Number} minZoom Limitar el zoom mínimo.
  * @property {Number} maxZoom Limitar el zoom máximo.
  * @property {Object} options Capa de opciones GeoTIFF.
@@ -43,6 +44,7 @@ class GeoTIFF extends LayerBase {
    * - projection: SRS usado por la capa.
    * - legend: nombre asociado en el árbol de contenidos, si usamos uno.
    * - isBase: verdadero si es una capa base, falso en caso contrario.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
    * - visibility: Verdadero si la capa es visible, falso si queremos que no lo sea.
    * - normalize: Normalización de los datos.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a
@@ -83,6 +85,12 @@ class GeoTIFF extends LayerBase {
     if (isNullOrEmpty(userParameters)) {
       Exception(getValue('exception').no_param);
     }
+
+    if (isString(userParameters) || !isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
+    }
+
     // This Layer is of parameters.
     const parameters = parameter.layer(userParameters, LayerType.GeoTIFF);
     const optionsVar = {
@@ -123,33 +131,6 @@ class GeoTIFF extends LayerBase {
      * GeoTIFF options: Opciones GeoTIFF.
      */
     this.options = optionsVar;
-  }
-
-  /**
-   * Devuelve el tipo de layer, GeoTIFF.
-   *
-   * @function
-   * @getter
-   * @returns {String} Tipo GeoTIFF.
-   * @api
-   */
-  get type() {
-    return LayerType.GeoTIFF;
-  }
-
-  /**
-   * Sobrescribe el tipo de capa.
-   *
-   * @function
-   * @setter
-   * @param {String} newType Nuevo tipo.
-   * @api
-   */
-  set type(newType) {
-    if (!isUndefined(newType)
-      && !isNullOrEmpty(newType) && (newType !== LayerType.GeoTIFF)) {
-      Exception('El tipo de capa debe ser \''.concat(LayerType.GeoTIFF).concat('\' pero se ha especificado \'').concat(newType).concat('\''));
-    }
   }
 
   /**
