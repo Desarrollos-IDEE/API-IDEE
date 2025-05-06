@@ -19,3 +19,4 @@
 - Se añade mensaje de aviso al usar transparent como parámetro en capas.
 - Se elimina la clase ParametersAdapterV3ToV4 de api-idee-rest.
 - Se añade método setName para sobreescribir el nombre de las capas WMS.
+- Se añade método setURL para sobreescribir la URL de las capas WMS.

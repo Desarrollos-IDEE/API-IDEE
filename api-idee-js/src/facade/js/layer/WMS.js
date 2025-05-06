@@ -416,10 +416,22 @@ class WMS extends LayerBase {
   }
 
   /**
+   * Sobreescribe la URL de la capa.
+   *
+   * @function
+   * @param {String} newURL Nueva URL de la capa.
+   * @public
+   * @api
+   */
+  setURL(newURL) {
+    this.getImpl().setURL(newURL);
+  }
+
+  /**
    * Sobreescribe el nombre de la capa.
    *
    * @function
-   * @param {String} newName Nuevo nombre para la capa.
+   * @param {String} newName Nuevo nombre de la capa.
    * @public
    * @api
    */
