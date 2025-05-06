@@ -224,8 +224,8 @@ class WMS extends LayerBase {
         .forEach((layer) => layer.setVisible(false));
 
       // set this layer visible
-      if (!isNullOrEmpty(this.ol3Layer)) {
-        this.ol3Layer.setVisible(visibility);
+      if (!isNullOrEmpty(this.olLayer)) {
+        this.olLayer.setVisible(visibility);
       }
 
       // updates resolutions and keep the zoom
@@ -234,8 +234,8 @@ class WMS extends LayerBase {
       if (!isNullOrEmpty(oldZoom)) {
         this.map.setZoom(oldZoom);
       }
-    } else if (!isNullOrEmpty(this.ol3Layer)) {
-      this.ol3Layer.setVisible(visibility);
+    } else if (!isNullOrEmpty(this.olLayer)) {
+      this.olLayer.setVisible(visibility);
     }
   }
 
@@ -272,9 +272,9 @@ class WMS extends LayerBase {
     }
 
     if (this.tiled === true) {
-      this.ol3Layer = new OLLayerTile(this.paramsOLLayers());
+      this.olLayer = new OLLayerTile(this.paramsOLLayers());
     } else {
-      this.ol3Layer = new OLLayerImage(this.paramsOLLayers());
+      this.olLayer = new OLLayerImage(this.paramsOLLayers());
     }
 
     if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
@@ -324,12 +324,12 @@ class WMS extends LayerBase {
   setResolutions(resolutions) {
     this.resolutions_ = resolutions;
     this.facadeLayer_.calculateMaxExtent().then((extent) => {
-      if (!isNullOrEmpty(this.ol3Layer)) {
+      if (!isNullOrEmpty(this.olLayer)) {
         const minResolution = this.options.minResolution;
         const maxResolution = this.options.maxResolution;
         const source = this.createOLSource_(resolutions, minResolution, maxResolution, extent);
-        this.ol3Layer.setSource(source);
-        this.ol3Layer.setExtent(extent);
+        this.olLayer.setSource(source);
+        this.olLayer.setExtent(extent);
       }
     });
   }
@@ -384,10 +384,10 @@ class WMS extends LayerBase {
     }
 
     const source = this.createOLSource_(resolutions, minResolution, maxResolution, extent);
-    this.ol3Layer.setSource(source);
+    this.olLayer.setSource(source);
 
     if (this.addLayerToMap_) {
-      this.map.getMapImpl().addLayer(this.ol3Layer);
+      this.map.getMapImpl().addLayer(this.olLayer);
     }
 
     this.setVisible(this.visibility);
@@ -402,9 +402,9 @@ class WMS extends LayerBase {
     }
     // activates animation for base layers or animated parameters
     const animated = ((this.isBase === true) || (this.options.animated === true));
-    this.ol3Layer.set('animated', animated);
-    this.ol3Layer.setMaxZoom(this.maxZoom);
-    this.ol3Layer.setMinZoom(this.minZoom);
+    this.olLayer.set('animated', animated);
+    this.olLayer.setMaxZoom(this.maxZoom);
+    this.olLayer.setMinZoom(this.minZoom);
   }
 
   // Devuelve un capabilities formateado en el caso
@@ -602,12 +602,12 @@ class WMS extends LayerBase {
   updateMinMaxResolution(projection) {
     if (!isNullOrEmpty(this.options.minResolution)) {
       this.options.minResolution = getResolutionFromScale(this.options.minScale, projection.units);
-      this.ol3Layer.setMinResolution(this.options.minResolution);
+      this.olLayer.setMinResolution(this.options.minResolution);
     }
 
     if (!isNullOrEmpty(this.options.maxResolution)) {
       this.options.maxResolution = getResolutionFromScale(this.options.maxScale, projection.units);
-      this.ol3Layer.setMaxResolution(this.options.maxResolution);
+      this.olLayer.setMaxResolution(this.options.maxResolution);
     }
   }
 
@@ -632,7 +632,7 @@ class WMS extends LayerBase {
       // gets the tileGrid
       if (!isNullOrEmpty(resolutions)) {
         const source = this.createOLSource_(resolutions, minResolution, maxResolution, maxExtent);
-        this.ol3Layer.setSource(source);
+        this.olLayer.setSource(source);
       }
     }
     // });
@@ -785,9 +785,9 @@ class WMS extends LayerBase {
    */
   destroy() {
     const olMap = this.map.getMapImpl();
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      olMap.removeLayer(this.ol3Layer);
-      this.ol3Layer = null;
+    if (!isNullOrEmpty(this.olLayer)) {
+      olMap.removeLayer(this.olLayer);
+      this.olLayer = null;
     }
     if (!isNullOrEmpty(this.layers)) {
       this.layers.map(this.map.removeLayers, this.map);
