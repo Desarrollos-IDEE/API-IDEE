@@ -279,7 +279,7 @@
     "chart_method": "La implementación usada no puede crear estilos Chart.",
     "heatmap_method": "La implementación usada no puede crear estilos Heatmap.",
     "flowline_method": "La implementación usada no puede crear estilos FlowLine.",
-    "id_exists": "El ID indicado ya existe."
+    "id_exists": "El ID indicado ya existe.",
     "transparent_deprecated": "El parámetro 'transparent' ha quedado obsoleto, se recomienda usar en su lugar 'isBase'.",
     "getOL3Layer_deprecated": "El método getOL3Layer ha quedado obsoleto, se recomienda usar en su lugar getLayer.",
     "setOL3Layer_deprecated": "El método setOL3Layer ha quedado obsoleto, se recomienda usar en su lugar setLayer."
