@@ -1,3 +1,5 @@
+import { getValue } from '../../../facade/js/i18n/language';
+
 /**
  * @module IDEE/impl/control/QueryAttributesControl
  */
@@ -198,7 +200,9 @@ export default class QueryAttributesControl extends IDEE.impl.Control {
    * @deprecated
    */
   getOL3Layer(layer) {
-    return layer.getImpl().getOL3Layer();
+    // eslint-disable-next-line no-console
+    console.warn(getValue('exception').getOL3Layer_deprecated);
+    return this.getLayer(layer);
   }
 
   /**
