@@ -172,8 +172,8 @@ class MBTilesVector extends Vector {
    */
   setVisible(visibility) {
     this.visibility = visibility;
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      this.ol3Layer.setVisible(visibility);
+    if (!isNullOrEmpty(this.olLayer)) {
+      this.olLayer.setVisible(visibility);
     }
   }
 
@@ -190,7 +190,7 @@ class MBTilesVector extends Vector {
     const { code } = this.map.getProjection();
     const projection = getProj(code);
     const extent = projection.getExtent();
-    this.ol3Layer = new OLLayerVectorTile(extend({
+    this.olLayer = new OLLayerVectorTile(extend({
       visible: this.visibility,
       opacity: this.opacity_,
       zIndex: this.zIndex_,
@@ -222,8 +222,8 @@ class MBTilesVector extends Vector {
                 format,
               });
 
-              this.ol3Layer.getSource().on('tileloaderror', (evt) => this.checkAllTilesLoaded_(evt));
-              this.ol3Layer.getSource().on('tileloadend', (evt) => this.checkAllTilesLoaded_(evt));
+              this.olLayer.getSource().on('tileloaderror', (evt) => this.checkAllTilesLoaded_(evt));
+              this.olLayer.getSource().on('tileloadend', (evt) => this.checkAllTilesLoaded_(evt));
 
               this.map.on(EventType.CHANGE_ZOOM, () => {
                 if (this.map) {
@@ -234,10 +234,10 @@ class MBTilesVector extends Vector {
                   }
                 }
               });
-              this.ol3Layer.setMaxZoom(this.maxZoom);
-              this.ol3Layer.setMinZoom(this.minZoom);
+              this.olLayer.setMaxZoom(this.maxZoom);
+              this.olLayer.setMinZoom(this.minZoom);
               if (addLayer) {
-                this.map.getMapImpl().addLayer(this.ol3Layer);
+                this.map.getMapImpl().addLayer(this.olLayer);
               }
             });
           });
@@ -253,9 +253,9 @@ class MBTilesVector extends Vector {
         projection,
       });
 
-      this.ol3Layer
+      this.olLayer
         .getSource().on('tileloaderror', (evt) => this.checkAllTilesLoaded_(evt));
-      this.ol3Layer
+      this.olLayer
         .getSource().on('tileloadend', (evt) => this.checkAllTilesLoaded_(evt));
 
       this.map.on(EventType.CHANGE_ZOOM, () => {
@@ -267,10 +267,10 @@ class MBTilesVector extends Vector {
           }
         }
       });
-      this.ol3Layer.setMaxZoom(this.maxZoom);
-      this.ol3Layer.setMinZoom(this.minZoom);
+      this.olLayer.setMaxZoom(this.maxZoom);
+      this.olLayer.setMinZoom(this.minZoom);
       if (addLayer) {
-        this.map.getMapImpl().addLayer(this.ol3Layer);
+        this.map.getMapImpl().addLayer(this.olLayer);
       }
     }
   }
@@ -290,7 +290,7 @@ class MBTilesVector extends Vector {
       tileLoadFn = this.loadVectorTile;
     }
     const mvtFormat = new MVT();
-    this.ol3Layer.setSource(new OLSourceVectorTile({
+    this.olLayer.setSource(new OLSourceVectorTile({
       projection: opts.projection,
       url: '{z},{x},{y}',
       tileLoadFunction: (tile) => tileLoadFn(tile, mvtFormat, opts, this),
@@ -301,8 +301,8 @@ class MBTilesVector extends Vector {
       }),
     }));
 
-    this.ol3Layer.setExtent(this.maxExtent_ || opts.sourceExtent);
-    return this.ol3Layer;
+    this.olLayer.setExtent(this.maxExtent_ || opts.sourceExtent);
+    return this.olLayer;
   }
 
   /**
@@ -488,9 +488,9 @@ class MBTilesVector extends Vector {
    */
   destroy() {
     const olMap = this.map.getMapImpl();
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      olMap.removeLayer(this.ol3Layer);
-      this.ol3Layer = null;
+    if (!isNullOrEmpty(this.olLayer)) {
+      olMap.removeLayer(this.olLayer);
+      this.olLayer = null;
     }
     this.map = null;
   }
@@ -524,8 +524,8 @@ class MBTilesVector extends Vector {
    */
   getFeatures() {
     let features = [];
-    if (this.ol3Layer) {
-      const olSource = this.ol3Layer.getSource();
+    if (this.olLayer) {
+      const olSource = this.olLayer.getSource();
       const tileCache = olSource.tileCache;
       if (tileCache.getCount() === 0) {
         return features;
@@ -563,7 +563,7 @@ class MBTilesVector extends Vector {
     const { code } = this.map.getProjection();
     const currTileCoord = evt.tile.getTileCoord();
     const olProjection = getProj(code);
-    const tileCache = this.ol3Layer.getSource().getTileCacheForProjection(olProjection);
+    const tileCache = this.olLayer.getSource().getTileCacheForProjection(olProjection);
     const tileImages = tileCache.getValues();
     const loaded = tileImages.some((tile) => {
       const tileCoord = tile.getTileCoord();
@@ -590,8 +590,8 @@ class MBTilesVector extends Vector {
    */
   cloneOLLayer() {
     let olLayer = null;
-    if (this.ol3Layer != null) {
-      const properties = this.ol3Layer.getProperties();
+    if (this.olLayer != null) {
+      const properties = this.olLayer.getProperties();
       olLayer = new OLLayerTile(properties);
     }
     return olLayer;

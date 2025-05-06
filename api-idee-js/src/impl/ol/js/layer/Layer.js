@@ -4,7 +4,9 @@
 import { isNullOrEmpty, isString } from 'IDEE/util/Utils';
 import MObject from 'IDEE/Object';
 import FacadeLayer from 'IDEE/layer/Layer';
+import { getValue } from '../../../../facade/js/i18n/language';
 import { getResolutionFromScale, getScaleFromResolution } from 'M/util/Utils';
+
 /**
  * @classdesc
  * De esta clase heredadan todas las capas base.
@@ -48,9 +50,9 @@ class LayerBase extends MObject {
     this.map = null;
 
     /**
-     * Layer ol3layer. La instancia de la capa ol3.
+     * Layer olLayer. La instancia de la capa ol3.
      */
-    this.ol3Layer = null;
+    this.olLayer = null;
 
     /**
      * Layer options. Opciones personalizadas para esta capa.
@@ -105,8 +107,8 @@ class LayerBase extends MObject {
    */
   isVisible() {
     let visible = false;
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      visible = this.ol3Layer.getVisible();
+    if (!isNullOrEmpty(this.olLayer)) {
+      visible = this.olLayer.getVisible();
     } else {
       visible = this.visibility;
     }
@@ -136,10 +138,10 @@ class LayerBase extends MObject {
    */
   inRange() {
     let inRange = false;
-    if (!isNullOrEmpty(this.ol3Layer)) {
+    if (!isNullOrEmpty(this.olLayer)) {
       const resolution = this.map.getMapImpl().getView().getResolution();
-      const maxResolution = this.ol3Layer.getMaxResolution();
-      const minResolution = this.ol3Layer.getMinResolution();
+      const maxResolution = this.olLayer.getMaxResolution();
+      const minResolution = this.olLayer.getMinResolution();
 
       inRange = ((resolution >= minResolution) && (resolution <= maxResolution));
     }
@@ -157,8 +159,8 @@ class LayerBase extends MObject {
   setVisible(visibility) {
     this.visibility = visibility;
 
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      this.ol3Layer.setVisible(visibility);
+    if (!isNullOrEmpty(this.olLayer)) {
+      this.olLayer.setVisible(visibility);
     }
   }
 
@@ -364,7 +366,9 @@ class LayerBase extends MObject {
    * @deprecated
    */
   getOL3Layer() {
-    return this.ol3Layer;
+    // eslint-disable-next-line no-console
+    console.warn(getValue('exception').getOL3Layer_deprecated);
+    return this.getLayer();
   }
 
   /**
@@ -376,7 +380,7 @@ class LayerBase extends MObject {
    * @expose
    */
   getLayer() {
-    return this.ol3Layer;
+    return this.olLayer;
   }
 
   /**
@@ -389,10 +393,9 @@ class LayerBase extends MObject {
    * @deprecated
    */
   setOL3Layer(layer) {
-    const olMap = this.map.getMapImpl();
-    olMap.removeLayer(this.ol3Layer);
-    this.ol3Layer = layer;
-    olMap.addLayer(layer);
+    // eslint-disable-next-line no-console
+    console.warn(getValue('exception').setOL3Layer_deprecated);
+    this.setLayer(layer);
     return this;
   }
 
@@ -406,8 +409,8 @@ class LayerBase extends MObject {
    */
   setLayer(layer) {
     const olMap = this.map.getMapImpl();
-    olMap.removeLayer(this.ol3Layer);
-    this.ol3Layer = layer;
+    olMap.removeLayer(this.olLayer);
+    this.olLayer = layer;
     olMap.addLayer(layer);
     return this;
   }
@@ -445,7 +448,7 @@ class LayerBase extends MObject {
    * @api
    */
   setMaxExtent(maxExtent) {
-    this.ol3Layer.setExtent(maxExtent);
+    this.olLayer.setExtent(maxExtent);
   }
 
   /**
@@ -457,7 +460,7 @@ class LayerBase extends MObject {
    * @api
    */
   getMaxExtent() {
-    this.ol3Layer.getExtent();
+    this.olLayer.getExtent();
   }
 
   /**

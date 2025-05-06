@@ -353,7 +353,7 @@ class MapLibre extends LayerBase {
   set maplibrestyle(maplibrestyle) {
     if (!isNullOrEmpty(maplibrestyle)) {
       this.getImpl().maplibrestyle = maplibrestyle;
-      if (this.getImpl().ol3Layer) {
+      if (this.getImpl().getLayer()) {
         this.getImpl().setStyleMap(maplibrestyle);
       }
     }
@@ -366,7 +366,7 @@ class MapLibre extends LayerBase {
   set url(url) {
     if (!isNullOrEmpty(url)) {
       this.getImpl().url = url;
-      if (this.getImpl().ol3Layer) {
+      if (this.getImpl().getLayer()) {
         this.getImpl().setStyleMap(url);
       }
     }

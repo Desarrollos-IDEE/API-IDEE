@@ -218,7 +218,7 @@ class Generic extends Simple {
         // través de la styleFuntion. Por lo que se intenta arreglar de esta manera.
         // this.updateFacadeOptions(options);
         // eslint-disable-next-line no-underscore-dangle
-        // this.layer_.getImpl().ol3Layer.styleFunction_ = this.olStyleFn_;
+        // this.layer_.getImpl().olLayer.styleFunction_ = this.olStyleFn_;
         if (isArray(vendorOptions)) {
           return vendorOptions;
         }
