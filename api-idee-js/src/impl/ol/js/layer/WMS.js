@@ -486,11 +486,8 @@ class WMS extends LayerBase {
         TRANSPARENT: !this.isBase,
         FORMAT: this.format,
         STYLES: this.styles,
+        TILED: this.tiled,
       };
-
-      if (this.version !== '1.3.0') {
-        layerParams.TILED = this.tiled;
-      }
 
       if (!isNullOrEmpty(this.sldBody)) {
         layerParams.SLD_BODY = this.sldBody;
