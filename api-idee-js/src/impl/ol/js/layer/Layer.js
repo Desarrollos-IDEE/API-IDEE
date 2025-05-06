@@ -4,7 +4,9 @@
 import { isNullOrEmpty, isString } from 'IDEE/util/Utils';
 import MObject from 'IDEE/Object';
 import FacadeLayer from 'IDEE/layer/Layer';
-import { getValue } from '../../../../facade/js/i18n/language';
+import {
+  getValue,
+} from 'IDEE/i18n/language';
 import { getResolutionFromScale, getScaleFromResolution } from 'M/util/Utils';
 
 /**
