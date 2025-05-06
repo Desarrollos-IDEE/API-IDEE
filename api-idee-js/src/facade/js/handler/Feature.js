@@ -95,6 +95,26 @@ class Features extends Base {
   }
 
   /**
+   * Este método modifica los objetos a y b después de cambiar el ID
+   * de la capa.
+   *
+   * @public
+   * @function
+   * @param {String} id Identificador de la capa.
+   * @param {String} newID Nuevo identificador para la capa.
+   * @api
+   * @export
+   */
+  changeNamePrevs(id, newID) {
+    const prevHF = this.prevHoverFeatures_[id];
+    const prevSF = this.prevSelectedFeatures_[id];
+    this.prevHoverFeatures_[newID] = prevHF;
+    this.prevSelectedFeatures_[newID] = prevSF;
+    delete this.prevHoverFeatures_[id];
+    delete this.prevSelectedFeatures_[id];
+  }
+
+  /**
    * Evento que se activa cuando se hace clic sobre el mapa.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
@@ -111,7 +131,7 @@ class Features extends Base {
       this.layers_.forEach((layer, i) => {
         if (layer.infoEventType === 'click') {
           const clickedFeatures = impl.getFeaturesByLayer(evt, layer);
-          const prevFeatures = [...(this.prevSelectedFeatures_[layer.name])];
+          const prevFeatures = [...(this.prevSelectedFeatures_[layer.idLayer])];
           // no features selected then unselect prev selected features
           if (i === 1 && prevFeatures[0] === clickedFeatures[0]) {
             this.selectFeatures(prevFeatures, layer, evt);
@@ -152,7 +172,7 @@ class Features extends Base {
       this.hookStopMoveEvent_(evt).then((e) => {
         this.layers_.forEach((layer) => {
           const hoveredFeatures = impl.getFeaturesByLayer(evt, layer);
-          const prevFeatures = [...this.prevHoverFeatures_[layer.name]];
+          const prevFeatures = [...this.prevHoverFeatures_[layer.idLayer]];
           // no features selected then unselect prev selected features
           if (hoveredFeatures.length === 0 && prevFeatures.length > 0) {
             if (layer.infoEventType === 'hover') {
@@ -215,7 +235,7 @@ class Features extends Base {
    * @api
    */
   selectFeatures(features, layer, evt) {
-    this.prevSelectedFeatures_[layer.name] = this.prevSelectedFeatures_[layer.name]
+    this.prevSelectedFeatures_[layer.idLayer] = this.prevSelectedFeatures_[layer.idLayer]
       .concat(features);
     const layerImpl = layer.getImpl();
     if (isFunction(layerImpl.selectFeatures)) {
@@ -237,7 +257,7 @@ class Features extends Base {
   unselectFeatures(features, layer, evt) {
     /* FIXME abelcruz Cambiado por problemas al usar selectFeatures() con features de OL.
     Ver ejemplo cluster-ext-interaction */
-    this.prevSelectedFeatures_[layer.name] = this.prevSelectedFeatures_[layer.name]
+    this.prevSelectedFeatures_[layer.idLayer] = this.prevSelectedFeatures_[layer.idLayer]
       .filter((pf) => !features.some((f) => f.equals(pf)));
     // this.prevSelectedFeatures_[layer.name] = this.prevSelectedFeatures_[layer.name]
     //   .filter((pf) => !features.some((f) => f.ol_uid === pf.ol_uid));
@@ -266,8 +286,9 @@ class Features extends Base {
    * @api
    */
   hoverFeatures_(features, layer, evt) {
-    if (layer.name) {
-      this.prevHoverFeatures_[layer.name] = this.prevHoverFeatures_[layer.name].concat(features);
+    if (layer.idLayer) {
+      this.prevHoverFeatures_[layer.idLayer] = this.prevHoverFeatures_[layer.idLayer]
+        .concat(features);
       layer.fire(EventType.HOVER_FEATURES, [features, evt]);
       this.getImpl().addCursorPointer(evt);
     }
@@ -285,7 +306,7 @@ class Features extends Base {
    * @api
    */
   leaveFeatures_(features, layer, evt) {
-    this.prevHoverFeatures_[layer.name] = this.prevHoverFeatures_[layer.name]
+    this.prevHoverFeatures_[layer.idLayer] = this.prevHoverFeatures_[layer.idLayer]
       .filter((pf) => !features.some((f) => f.equals(pf)));
     layer.fire(EventType.LEAVE_FEATURES, [features, evt.coord]);
     this.getImpl().removeCursorPointer(evt);
@@ -333,8 +354,8 @@ class Features extends Base {
   addLayer(layer) {
     if (!includes(this.layers_, layer)) {
       this.layers_.push(layer);
-      this.prevSelectedFeatures_[layer.name] = [];
-      this.prevHoverFeatures_[layer.name] = [];
+      this.prevSelectedFeatures_[layer.idLayer] = [];
+      this.prevHoverFeatures_[layer.idLayer] = [];
     }
   }
 
@@ -349,10 +370,10 @@ class Features extends Base {
    */
   removeLayer(layer) {
     this.layers_ = this.layers_.filter((layer2) => !layer2.equals(layer));
-    this.prevSelectedFeatures_[layer.name] = null;
-    this.prevHoverFeatures_[layer.name] = null;
-    delete this.prevSelectedFeatures_[layer.name];
-    delete this.prevHoverFeatures_[layer.name];
+    this.prevSelectedFeatures_[layer.idLayer] = null;
+    this.prevHoverFeatures_[layer.idLayer] = null;
+    delete this.prevSelectedFeatures_[layer.idLayer];
+    delete this.prevHoverFeatures_[layer.idLayer];
   }
 
   /**

@@ -18,6 +18,7 @@ import { getValue } from '../i18n/language';
  * espaciales en la Web y especifica requisitos y recomendaciones para las API que desean seguir una
  * forma estándar de compartir datos de entidades.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} legend Indica el nombre que queremos que aparezca en el
  * árbol de contenidos, si lo hay.
  * @property {String} url URL del servicio.
@@ -464,10 +465,9 @@ class OGCAPIFeatures extends Vector {
       equals = equals && (this.limit === obj.limit);
       equals = equals && (this.format === obj.format);
       equals = equals && (this.offset === obj.offset);
-      equals = equals && (this.bbox === obj.bbox);
       equals = equals && (this.id === obj.id);
       equals = equals && (this.extract === obj.extract);
-      equals = equals && (this.predefinedStyles === obj.predefinedStyles);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
     return equals;
   }

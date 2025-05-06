@@ -24,6 +24,7 @@ import Generic from '../style/Generic';
  * de esta clase heredan todas las capas vectoriales del API-IDEE.
  *
  * @extends {IDEE.Layer}
+ * @property {String} idLayer Identificador de la capa.
  * @property {Number} minZoom Zoom mínimo.
  * @property {Number} maxZoom Zoom máximo.
  * @property {Boolean} transparent (deprecated) Falso si es una capa base,
@@ -357,6 +358,7 @@ class Vector extends LayerBase {
     let equals = false;
     if (obj instanceof Vector) {
       equals = this.name === obj.name;
+      equals = equals && (this.idLayer === obj.idLayer);
     }
     return equals;
   }

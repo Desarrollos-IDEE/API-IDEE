@@ -17,6 +17,7 @@ import { getValue } from '../i18n/language';
  * WFS (Web Feature Service) es un estándar OGC para la transferencia de información geográfica,
  * donde los elementos o características geográficas se transmiten en su totalidad al cliente.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} namespace Espacio de trabajo asociado a la capa.
  * @property {String} legend Indica el nombre que queremos que aparezca en el
  * árbol de contenidos, si lo hay.
@@ -380,11 +381,10 @@ class WFS extends Vector {
       equals = (this.url === obj.url);
       equals = equals && (this.namespace === obj.namespace);
       equals = equals && (this.name === obj.name);
-      equals = equals && (this.ids === obj.ids);
       equals = equals && (this.cql === obj.cql);
       equals = equals && (this.version === obj.version);
       equals = equals && (this.extract === obj.extract);
-      equals = equals && (this.predefinedStyles === obj.predefinedStyles);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
 
     return equals;

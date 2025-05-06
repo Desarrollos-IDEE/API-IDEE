@@ -20,6 +20,7 @@ import { getValue } from '../i18n/language';
  * Estos metadatos sirven para georreferenciar el archivo ráster, por lo que a demás de los datos,
  * el archivo contiene metadatos necesarios para su utilización.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} legend Nombre asociado en el árbol de contenido, si usamos uno.
  * @property {Boolean} transparent (deprecated) 'Falso' si es una capa base,
  * 'verdadero' en caso contrario.
@@ -180,6 +181,7 @@ class GeoTIFF extends LayerBase {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
       equals = equals && (this.legend === obj.legend);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
 
     return equals;

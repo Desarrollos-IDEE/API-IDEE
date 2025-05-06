@@ -32,6 +32,7 @@ export const mode = {
  * ya que se sirven en forma de teselas que contienen la información vectorial
  * del área que delimitan.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {Boolean} extract Activa la consulta al hacer clic sobre un objeto geográfico,
  * por defecto falso.
  * @property {Boolean} transparent (deprecated) Falso si es una capa base,

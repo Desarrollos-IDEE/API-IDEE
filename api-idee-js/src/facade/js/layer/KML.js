@@ -15,6 +15,7 @@ import { getValue } from '../i18n/language';
  * @classdesc
  * KML (Keyhole Markup Language).
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {Boolean} extract Opcional. Activa la consulta haciendo clic en el objeto geográfico,
  * por defecto falso.
  * @property {Object} options Parámetros de la capa.
@@ -235,7 +236,7 @@ class KML extends LayerVector {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
       equals = equals && (this.extract === obj.extract);
-      equals = equals && (this.predefinedStyles === obj.predefinedStyles);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
 
     return equals;

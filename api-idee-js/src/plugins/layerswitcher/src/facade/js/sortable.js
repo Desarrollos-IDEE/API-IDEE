@@ -8,8 +8,8 @@ const setZIndex = (maxZIndex, parentElem, layers) => {
   let zindex = maxZIndex;
   const children = parentElem.children;
   if (parentElem.getAttribute('data-layer-type') === 'LayerGroup') {
-    const name = parentElem.getAttribute('data-layer-name');
-    const filtered = layers.filter((layer) => layer.name === name);
+    const id = parentElem.getAttribute('data-layer-id');
+    const filtered = layers.filter((layer) => layer.idLayer === id);
     if (filtered.length > 0) {
       filtered[0].setZIndex(zindex);
       zindex -= 1;
@@ -22,12 +22,13 @@ const setZIndex = (maxZIndex, parentElem, layers) => {
         || c.classList.contains('m-layerswitcher-ullayersGroup')) {
           zindex = setZIndex(zindex, c, layers);
         } else {
+          const id = c.getAttribute('data-layer-id');
           const name = c.getAttribute('data-layer-name');
           const url = c.getAttribute('data-layer-url') || undefined;
           const type = c.getAttribute('data-layer-type');
 
           const filtered = layers.filter((layer) => {
-            return layer.name === name && (layer.url === url
+            return layer.idLayer === id && layer.name === name && (layer.url === url
               || (layer.url === undefined && LAYER_NOT_URL.includes(layer.type)))
                 && layer.type === type;
           });
@@ -50,9 +51,9 @@ const handleOnAdd = (map) => (evt) => {
     return;
   }
 
-  const nameFrom = evt.from.getAttribute('data-layer-name');
-  const itemName = evt.item.getAttribute('data-layer-name');
-  const nameTo = evt.to.getAttribute('data-layer-name');
+  const idFrom = evt.from.getAttribute('data-layer-id');
+  const itemId = evt.item.getAttribute('data-layer-id');
+  const idTo = evt.to.getAttribute('data-layer-id');
 
   // De grupo a mapa
   const isToMap = (evt.to.classList.contains('m-layerswitcher-ullayers')
@@ -67,13 +68,13 @@ const handleOnAdd = (map) => (evt) => {
       && evt.to.classList.contains('m-layerswitcher-ullayersGroup'));
 
   const groupFrom = isToMap || isGroupToGroup
-    ? map.getLayerGroup().find((g) => g.name === nameFrom) : null;
+    ? map.getLayerGroup().find((g) => g.idLayer === idFrom) : null;
   const groupTo = isFromMap || isGroupToGroup
-    ? map.getLayerGroup().find((g) => g.name === nameTo) : null;
+    ? map.getLayerGroup().find((g) => g.idLayer === idTo) : null;
 
   const item = isToMap || isGroupToGroup
-    ? groupFrom.getLayers().find((l) => l.name === itemName)
-    : map.getLayers().find((l) => l.name === itemName);
+    ? groupFrom.getLayers().find((l) => l.idLayer === itemId)
+    : map.getLayers().find((l) => l.idLayer === itemId);
 
   // if (item instanceof IDEE.layer.MBTilesVector
   //     || item instanceof IDEE.layer.MBTiles) {

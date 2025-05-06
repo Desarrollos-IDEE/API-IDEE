@@ -16,6 +16,7 @@ import { getValue } from '../i18n/language';
  * @classdesc
  * Las capas de tipo MapLibre ofrecen la posibilidad de cargar styles (.json) de MapLibre.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {Boolean} extract Activa la consulta al hacer clic sobre un objeto geográfico,
  * por defecto falso.
  * @property {String} infoEventType Tipo de evento para mostrar la info de una feature.
@@ -385,6 +386,7 @@ class MapLibre extends LayerBase {
     if (obj instanceof MapLibre) {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
 
     return equals;
