@@ -805,9 +805,7 @@ class WMS extends LayerBase {
     if (!isNullOrEmpty(this.ol3Layer)) {
       olMap.removeLayer(this.ol3Layer);
       this.layers = [];
-      if (this.isWMSfull) {
-        this.getCapabilitiesPromise = null;
-      }
+      this.getCapabilitiesPromise = null;
     }
 
     if (this.useCapabilities || this.isWMSfull) {
