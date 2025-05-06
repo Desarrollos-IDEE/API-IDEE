@@ -5,23 +5,25 @@ function calculateDistance(latA, lonA, latB, lonB) {
     const b = 6356752.314245; // WGS84 semi-minor axis
 
     // Convert degrees to radians
-    const lata = parseFloat(latA) * pi / 180;
-    const lona = parseFloat(lonA) * pi / 180;
-    const latb = parseFloat(latB) * pi / 180;
-    const lonb = parseFloat(lonB) * pi / 180;
+    let lata = parseFloat(latA) * pi / 180;
+    let lona = parseFloat(lonA) * pi / 180;
+    let latb = parseFloat(latB) * pi / 180;
+    let lonb = parseFloat(lonB) * pi / 180;
+
+    const minValue = 1e-15;
 
     // Validate input values
     if (Math.abs(lata) > (pi / 2) || !latA) {
-        throw new Error("Valor incorrecto de latitud A");
+        lata = minValue;
     }
     if (Math.abs(lona) > (2 * pi) || !lonA) {
-        throw new Error("Valor incorrecto de longitud A");
+        lona = minValue;
     }
     if (Math.abs(latb) > (pi / 2) || !latB) {
-        throw new Error("Valor incorrecto de latitud B");
+        latb = minValue;
     }
     if (Math.abs(lonb) > (2 * pi) || !lonB) {
-        throw new Error("Valor incorrecto de longitud B");
+        lonb = minValue;
     }
 
     // Calculate distance
