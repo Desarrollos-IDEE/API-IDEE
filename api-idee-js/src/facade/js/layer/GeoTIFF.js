@@ -20,6 +20,7 @@ import { getValue } from '../i18n/language';
  * Estos metadatos sirven para georreferenciar el archivo ráster, por lo que a demás de los datos,
  * el archivo contiene metadatos necesarios para su utilización.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} legend Nombre asociado en el árbol de contenido, si usamos uno.
  * @property {Boolean} transparent (deprecated) 'Falso' si es una capa base,
  * 'verdadero' en caso contrario.
@@ -133,33 +134,6 @@ class GeoTIFF extends LayerBase {
   }
 
   /**
-   * Devuelve el tipo de layer, GeoTIFF.
-   *
-   * @function
-   * @getter
-   * @returns {String} Tipo GeoTIFF.
-   * @api
-   */
-  get type() {
-    return LayerType.GeoTIFF;
-  }
-
-  /**
-   * Sobrescribe el tipo de capa.
-   *
-   * @function
-   * @setter
-   * @param {String} newType Nuevo tipo.
-   * @api
-   */
-  set type(newType) {
-    if (!isUndefined(newType)
-      && !isNullOrEmpty(newType) && (newType !== LayerType.GeoTIFF)) {
-      Exception('El tipo de capa debe ser \''.concat(LayerType.GeoTIFF).concat('\' pero se ha especificado \'').concat(newType).concat('\''));
-    }
-  }
-
-  /**
    * Devuelve las opciones de la capa.
    *
    * @function
@@ -207,6 +181,7 @@ class GeoTIFF extends LayerBase {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
       equals = equals && (this.legend === obj.legend);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
 
     return equals;

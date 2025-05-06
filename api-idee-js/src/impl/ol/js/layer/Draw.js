@@ -65,7 +65,7 @@ class Draw extends Layer {
     this.map = map;
     this.fire(EventType.ADDED_TO_MAP);
 
-    this.ol3Layer = new OLLayerVector({
+    this.olLayer = new OLLayerVector({
       source: new OLSourceVector({}),
       style: new OLStyle({
         fill: new OLStyleFill({
@@ -93,7 +93,7 @@ class Draw extends Layer {
       this.setVisible(this.inRange());
     }
     const olMap = this.map.getMapImpl();
-    olMap.addLayer(this.ol3Layer);
+    olMap.addLayer(this.olLayer);
   }
 
   /**
@@ -178,7 +178,7 @@ class Draw extends Layer {
       features = features.concat(formattedFeatures);
     });
 
-    this.ol3Layer.getSource().addFeatures(features);
+    this.olLayer.getSource().addFeatures(features);
   }
 
   /**
@@ -196,7 +196,7 @@ class Draw extends Layer {
       if (!isArray(features)) {
         features = [features];
       }
-      this.ol3Layer.getSource().addFeatures(features);
+      this.olLayer.getSource().addFeatures(features);
     }
   }
 
@@ -215,7 +215,7 @@ class Draw extends Layer {
       if (!isArray(features)) {
         features = [features];
       }
-      const olSource = this.ol3Layer.getSource();
+      const olSource = this.olLayer.getSource();
 
       features.forEach((feature) => {
         // try { // Eslint no-useless-catch fix
@@ -236,7 +236,7 @@ class Draw extends Layer {
    */
   getPoints(coordinate) {
     let features = [];
-    const drawSource = this.ol3Layer.getSource();
+    const drawSource = this.olLayer.getSource();
 
     if (!isNullOrEmpty(coordinate)) {
       features = drawSource.getFeaturesAtCoordinate(coordinate);
@@ -258,9 +258,9 @@ class Draw extends Layer {
   destroy() {
     const olMap = this.map.getMapImpl();
 
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      olMap.removeLayer(this.ol3Layer);
-      this.ol3Layer = null;
+    if (!isNullOrEmpty(this.olLayer)) {
+      olMap.removeLayer(this.olLayer);
+      this.olLayer = null;
     }
     this.options = null;
     this.map = null;

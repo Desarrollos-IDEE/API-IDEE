@@ -16,6 +16,7 @@ import { getValue } from '../i18n/language';
  * @classdesc
  * Las capas de tipo MapLibre ofrecen la posibilidad de cargar styles (.json) de MapLibre.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {Boolean} extract Activa la consulta al hacer clic sobre un objeto geográfico,
  * por defecto falso.
  * @property {String} infoEventType Tipo de evento para mostrar la info de una feature.
@@ -352,7 +353,7 @@ class MapLibre extends LayerBase {
   set maplibrestyle(maplibrestyle) {
     if (!isNullOrEmpty(maplibrestyle)) {
       this.getImpl().maplibrestyle = maplibrestyle;
-      if (this.getImpl().ol3Layer) {
+      if (this.getImpl().getLayer()) {
         this.getImpl().setStyleMap(maplibrestyle);
       }
     }
@@ -365,36 +366,9 @@ class MapLibre extends LayerBase {
   set url(url) {
     if (!isNullOrEmpty(url)) {
       this.getImpl().url = url;
-      if (this.getImpl().ol3Layer) {
+      if (this.getImpl().getLayer()) {
         this.getImpl().setStyleMap(url);
       }
-    }
-  }
-
-  /**
-   * Devuelve el tipo de layer, MabLibre.
-   *
-   * @function
-   * @getter
-   * @returns {IDEE.LayerType.MapLibre} Tipo MabLibre.
-   * @api
-   */
-  get type() {
-    return MapLibreType;
-  }
-
-  /**
-     * Sobrescribe el tipo de capa.
-     *
-     * @function
-     * @setter
-     * @param {String} newType Nuevo tipo.
-     * @api
-     */
-  set type(newType) {
-    if (!isUndefined(newType)
-        && !isNullOrEmpty(newType) && (newType !== MapLibreType)) {
-      Exception('El tipo de capa debe ser \''.concat(MapLibreType).concat('\' pero se ha especificado \'').concat(newType).concat('\''));
     }
   }
 
@@ -412,6 +386,7 @@ class MapLibre extends LayerBase {
     if (obj instanceof MapLibre) {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
 
     return equals;

@@ -18,6 +18,7 @@ import { getValue } from '../i18n/language';
  * forma de mosaicos pregenerados en resoluciones específicas.
  * La API permite visualizar este tipo de capas.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {Number} minZoom Limitar el zoom mínimo.
  * @property {Number} maxZoom Limitar el zoom máximo.
  * @property {String} matrixSet La matriz seleccionada de las definidas en las Capacidades
@@ -260,6 +261,7 @@ class WMTS extends LayerBase {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
       equals = equals && (this.matrixSet === obj.matrixSet);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
 
     return equals;

@@ -155,7 +155,7 @@ if (listAllFunctions && listAllFunctions.length > 0) { // Confirmar que existen 
           } else if (auxName === 'setLayerGroup') {
             showResult(auxButton, 'SET_setLayerGroup', capaPrueba[auxName](['OSM', 'OSM']));
           } else if (auxName === 'setLayoutProperty') { // ONLY USED IN "maplibre_001"
-            // window.maplibre.impl_.ol3Layer.mapLibreMap.setLayoutProperty('cubierta_vegetal_bosque_pol', 'visibility', 'none');
+            // window.maplibre.impl_.olLayer.mapLibreMap.setLayoutProperty('cubierta_vegetal_bosque_pol', 'visibility', 'none');
             showResult(auxButton, 'SET_setLayoutProperty', capaPrueba[auxName]('cubierta_vegetal_bosque_pol', 'visibility', 'none'));
           } else if (auxName === 'setLegend') {
             showResult(auxButton, 'SET_setLegend', capaPrueba[auxName]('PRUEBA_TEXTO_LEYENDA'));
@@ -178,7 +178,7 @@ if (listAllFunctions && listAllFunctions.length > 0) { // Confirmar que existen 
               showResult(auxButton, 'SET_setOpacity_1', capaPrueba[auxName](1));
             }
           } else if (auxName === 'setPaintProperty') { // ONLY USED IN "maplibre_001"
-            // window.maplibre.impl_.ol3Layer.mapLibreMap.setPaintProperty('cubierta_vegetal_bosque_pol','fill-color','rgba( 0, 0, 0, 1.00 )');
+            // window.maplibre.impl_.olLayer.mapLibreMap.setPaintProperty('cubierta_vegetal_bosque_pol','fill-color','rgba( 0, 0, 0, 1.00 )');
             showResult(auxButton, 'SET_setPaintProperty', capaPrueba[auxName]('cubierta_vegetal_bosque_pol', 'fill-color', 'rgba( 0, 0, 0, 1.00 )'));
           } else if (auxName === 'setStyle') { // ONLY USED IN "maplibre_001"
             showResult(auxButton, 'SET_setStyle', capaPrueba[auxName]('https://demotiles.maplibre.org/style.json'));

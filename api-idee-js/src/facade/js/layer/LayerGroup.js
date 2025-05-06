@@ -17,6 +17,7 @@ import { getValue } from '../i18n/language';
  * @classdesc
  * Representa un grupo de capas.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {Array<IDEE.LayerBase|IDEE.LayerGroup>} layers Capas del grupo.
  * @property {boolean} display Indica si el grupo se muestra en el árbol de contenidos.
  * @property {Boolean} transparent (deprecated) Falso si es una capa base,
@@ -224,7 +225,8 @@ class LayerGroup extends LayerBase {
   equals(obj) {
     let equals = false;
     if (obj instanceof LayerGroup) {
-      equals = equals && (this.name === obj.name);
+      equals = (this.name === obj.name);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
 
     return equals;
