@@ -1383,7 +1383,7 @@ export const getExtractGeoJSON = (parameter) => {
       if (!isNullOrEmpty(hideParams)) {
         extract = [hideParams];
       } else {
-        extract = false;
+        extract = undefined;
       }
     }
   } else if (isObject(parameter)) {
@@ -2812,7 +2812,7 @@ export const maplibre = (userParameters) => {
     url: urlParams[2] || undefined,
     name: urlParams[3] || undefined,
     transparent: urlParams[4] === '' ? undefined : urlParams[4] === 'true',
-    extract: urlParams[5] === '' ? undefined : urlParams[5] === 'true',
+    extract: isUndefined(urlParams[5]) || urlParams[5] === '' ? undefined : urlParams[5] === 'true',
     visibility: urlParams[6] === '' ? undefined : urlParams[6] === 'true',
     displayInLayerSwitcher: urlParams[7] === '' ? true : urlParams[7] === 'true',
     disableBackgroundColor: urlParams[8] === '' ? undefined : urlParams[8] === 'true',

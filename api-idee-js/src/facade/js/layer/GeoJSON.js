@@ -21,7 +21,7 @@ import { getValue } from '../i18n/language';
  * @property {String} name Nombre de la capa, identificador.
  * @property {Object} source Fuente GeoJSON.
  * @property {Boolean} extract Activa la consulta al hacer clic sobre un objeto geográfico,
- * por defecto falso.
+ * por defecto verdadero.
  * @property {Boolean} transparent (deprecated) Falso si es una capa base,
  * verdadero en caso contrario.
  * @property {Boolean} isBase Define si la capa es base.
@@ -50,7 +50,8 @@ class GeoJSON extends LayerVector {
    * estos parámetros los proporciona el usuario.
    * - name: Nombre de la capa en la leyenda.
    * - url: Url del fichero o servicio que genera el GeoJSON.
-   * - extract: Opcional, activa la consulta por click en el objeto geográfico, por defecto falso.
+   * - extract: Opcional, activa la consulta por click en el objeto geográfico,
+   * por defecto verdadero.
    * - source: Fuente de la capa.
    * - type: Tipo de la capa.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
@@ -139,9 +140,9 @@ class GeoJSON extends LayerVector {
 
       /**
        * GeoJSON extract: Opcional, activa la consulta
-       * haciendo clic en el objeto geográfico, por defecto falso.
+       * haciendo clic en el objeto geográfico, por defecto verdadero.
        */
-      this.extract = parameters.extract === undefined ? false : parameters.extract;
+      this.extract = parameters.extract === undefined ? true : parameters.extract;
 
       /**
        * GeoJSON crs: Sistema de Referencia de Coordenadas.
@@ -211,7 +212,8 @@ class GeoJSON extends LayerVector {
 
   /**
    * Devuelve el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @getter
@@ -224,7 +226,8 @@ class GeoJSON extends LayerVector {
 
   /**
    * Sobrescribe el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @setter
@@ -239,7 +242,7 @@ class GeoJSON extends LayerVector {
         this.getImpl().extract = newExtract;
       }
     } else {
-      this.getImpl().extract = false;
+      this.getImpl().extract = true;
     }
   }
 

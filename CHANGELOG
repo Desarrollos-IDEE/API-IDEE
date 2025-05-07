@@ -23,4 +23,4 @@
 - Se implementa min/max scale para todos los tipos de capas y se añade los métodos get/set en la clase Layer.
 - Se eliminan métodos get/set type de las capas OSM, MapLibre y GeoTIFF.
 - Se añade mensaje de aviso al usar transparent como parámetro en capas.
-
+- Se activa el extract por defecto en las capas vectoriales.

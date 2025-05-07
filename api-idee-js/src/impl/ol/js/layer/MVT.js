@@ -117,7 +117,7 @@ class MVT extends Vector {
     /**
      * MVT extract_.
      * Activa la consulta cuando se hace clic en un objeto geográfico,
-     * por defecto falso.
+     * por defecto verdadero.
      */
     this.extract = parameters.extract;
   }

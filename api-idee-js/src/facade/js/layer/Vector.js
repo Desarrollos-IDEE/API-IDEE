@@ -31,6 +31,8 @@ import Generic from '../style/Generic';
  * verdadero en caso contrario.
  * @property {Boolean} isBase Define si la capa es base.
  * @property {Array} predefinedStyles Estilos prefefinidos.
+ * @property {Boolean} extract Opcional. Activa la consulta haciendo
+ * clic en el objeto geográfico. Por defecto, verdadero.
  * @api
  * @extends {IDEE.layer}
  */
@@ -47,6 +49,8 @@ class Vector extends LayerBase {
    * - legend: Indica el nombre que queremos que aparezca en el árbol de contenidos, si lo hay.
    * - isBase: Indica si la capa es base.
    * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
+   * - extract: Opcional, activa la consulta por clic en el objeto geográfico,
+   * por defecto verdadero.
    * @param {Mx.parameters.LayerOptions} options  Estas opciones se mandarán a
    * la implementación de la capa.
    * - style. Define el estilo de la capa.
@@ -136,9 +140,9 @@ class Vector extends LayerBase {
 
     /**
       * Vector extract: Opcional, activa la consulta
-      * haciendo clic en el objeto geográfico, por defecto falso.
+      * haciendo clic en el objeto geográfico, por defecto verdadero.
     */
-    this.extract = optns.extract === undefined ? false : optns.extract;
+    this.extract = optns.extract === undefined ? true : optns.extract;
 
     /**
      * predefinedStyles: Estilos predefinidos para la capa.
@@ -312,7 +316,8 @@ class Vector extends LayerBase {
 
   /**
    * Devuelve el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @getter
@@ -325,7 +330,8 @@ class Vector extends LayerBase {
 
   /**
      * Sobrescribe el valor de la propiedad "extract". La propiedad "extract" tiene la
-     * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+     * siguiente función: Activa la consulta al hacer clic en la característica,
+     * por defecto verdadero.
      *
      * @function
      * @setter
@@ -340,7 +346,7 @@ class Vector extends LayerBase {
         this.getImpl().extract = newExtract;
       }
     } else {
-      this.getImpl().extract = false;
+      this.getImpl().extract = true;
     }
   }
 
