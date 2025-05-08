@@ -28,8 +28,8 @@ test.describe('IDEE.layer.WMS', () => {
 
       await page.waitForTimeout(5000);
       await page.evaluate(() => wms_001.setName('RED_REGENTE'));
-      const urlWMS = await page.evaluate(() => wms_001.name);
-      expect(urlWMS).toEqual('RED_REGENTE');
+      const nameWMS = await page.evaluate(() => wms_001.name);
+      expect(nameWMS).toEqual('RED_REGENTE');
     });
 
     test('To WMS_FULL layer', async ({ page }) => {
@@ -49,8 +49,8 @@ test.describe('IDEE.layer.WMS', () => {
 
       await page.waitForTimeout(5000);
       await page.evaluate(() => wms_002.setName(''));
-      const urlWMS = await page.evaluate(() => wms_002.name);
-      expect(urlWMS).toEqual(expect.stringContaining('layer_'));
+      const nameWMS = await page.evaluate(() => wms_002.name);
+      expect(nameWMS).toEqual(expect.stringContaining('layer_'));
     });
 
     test('From WMS_FULL To a single layer', async ({ page }) => {
@@ -70,8 +70,8 @@ test.describe('IDEE.layer.WMS', () => {
 
       await page.waitForTimeout(5000);
       await page.evaluate(() => wms_003.setName('RED_REGENTE'));
-      const urlWMS = await page.evaluate(() => wms_003.name);
-      expect(urlWMS).toEqual('RED_REGENTE');
+      const nameWMS = await page.evaluate(() => wms_003.name);
+      expect(nameWMS).toEqual('RED_REGENTE');
     });
   });
 
