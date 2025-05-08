@@ -43,6 +43,8 @@ class MVT extends Vector {
    * - style: Define el estilo de la capa.
    * - minZoom. Zoom mínimo aplicable a la capa.
    * - maxZoom. Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - visibility. Define si la capa es visible o no. Verdadero por defecto.
    * - displayInLayerSwitcher. Indica si la capa se muestra en el selector de capas.
    * - opacity. Opacidad de capa, por defecto 1.
@@ -154,18 +156,21 @@ class MVT extends Vector {
     source.on(TileEventType.TILELOADERROR, (evt) => this.checkAllTilesLoaded_(evt));
     // source.on(TileEventType.TILELOADEND, (evt) => this.checkAllTilesLoaded_(evt));
 
-    this.ol3Layer = new OLLayerVectorTile(extend({
+    this.olLayer = new OLLayerVectorTile(extend({
       source,
       extent,
     }, this.vendorOptions_, true));
-    this.ol3Layer.setMaxZoom(this.maxZoom);
-    this.ol3Layer.setMinZoom(this.minZoom);
+    this.olLayer.setMaxZoom(this.maxZoom);
+    this.olLayer.setMinZoom(this.minZoom);
+
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
 
     this.setOpacity(this.opacity_);
     this.setVisible(this.visibility_);
 
     if (addLayer) {
-      this.map.getMapImpl().addLayer(this.ol3Layer);
+      this.map.getMapImpl().addLayer(this.olLayer);
     }
 
     // clear features when zoom changes
@@ -289,8 +294,8 @@ class MVT extends Vector {
    */
   getFeatures(skipFilter, filter) {
     let features = [];
-    if (this.ol3Layer) {
-      const olSource = this.ol3Layer.getSource();
+    if (this.olLayer) {
+      const olSource = this.olLayer.getSource();
       const tileCache = olSource.tileCache;
       if (tileCache.getCount() === 0) {
         return features;
@@ -325,8 +330,8 @@ class MVT extends Vector {
    */
   getFeatureById(id) {
     const features = [];
-    if (this.ol3Layer) {
-      const tileCache = this.ol3Layer.getSource().tileCache;
+    if (this.olLayer) {
+      const tileCache = this.olLayer.getSource().tileCache;
       const kk = tileCache.getCount();
       if (kk === 0) {
         return features;
@@ -362,7 +367,7 @@ class MVT extends Vector {
   checkAllTilesLoaded_(evt) {
     const currTileCoord = evt.tile.getTileCoord();
     const olProjection = getProj(this.projection_);
-    const tileCache = this.ol3Layer.getSource().getTileCacheForProjection(olProjection);
+    const tileCache = this.olLayer.getSource().getTileCacheForProjection(olProjection);
     const tileImages = tileCache.getValues();
     const loaded = tileImages.every((tile) => {
       const tileCoord = tile.getTileCoord();

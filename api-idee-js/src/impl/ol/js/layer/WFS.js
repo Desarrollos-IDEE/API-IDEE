@@ -38,6 +38,8 @@ class WFS extends Vector {
    * - vendor: Proveedor.
    * - minZoom: Zoom mínimo aplicable a la capa.
    * - maxZoom: Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - visibility: Define si la capa es visible o no. Verdadero por defecto.
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
    * - opacity: Opacidad de capa, por defecto 1.
@@ -210,7 +212,7 @@ class WFS extends Vector {
       this.loader_ = new LoaderWFS(this.map, this.service_, this.formater_);
 
       // const isCluster = (this.facadeVector_.getStyle() instanceof StyleCluster);
-      const ol3LayerSource = this.ol3Layer.getSource();
+      const ol3LayerSource = this.olLayer.getSource();
       this.requestFeatures_().then((features) => {
         if (forceNewSource === true || isNullOrEmpty(ol3LayerSource)) {
           const newSource = new OLSourceVector({
@@ -228,10 +230,10 @@ class WFS extends Vector {
           //     distance,
           //     source: newSource,
           //   });
-          //   this.ol3Layer.setStyle(this.facadeVector_.getStyle().getImpl().olStyleFn);
-          //   this.ol3Layer.setSource(clusterSource);
-          // } else if (this.ol3Layer) {
-          this.ol3Layer.setSource(newSource);
+          //   this.olLayer.setStyle(this.facadeVector_.getStyle().getImpl().olStyleFn);
+          //   this.olLayer.setSource(clusterSource);
+          // } else if (this.olLayer) {
+          this.olLayer.setSource(newSource);
           // }
         } else {
           // if (isCluster) {
@@ -355,9 +357,9 @@ class WFS extends Vector {
   //  */
   // destroy() {
   //   let olMap = this.map.getMapImpl();
-  //   if (!isNullOrEmpty(this.ol3Layer)) {
-  //     olMap.removeLayer(this.ol3Layer);
-  //     this.ol3Layer = null;
+  //   if (!isNullOrEmpty(this.olLayer)) {
+  //     olMap.removeLayer(this.olLayer);
+  //     this.olLayer = null;
   //   }
   //   this.map = null;
   // };

@@ -16,6 +16,7 @@ import { getValue } from '../i18n/language';
  * Capa Terrain. Es un tipo de capa compuesta por datos que proporcionan información
  * sobre las elevaciones y características del terreno.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} url Url del servicio Terrain.
  * @property {String} name Identificador de capa.
  * @property {String} legend Indica el nombre que queremos que aparezca en
@@ -47,6 +48,8 @@ class Terrain extends LayerBase {
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a la implementación.
    * - requestWaterMask: Indica si se cargan las texturas de las áreas del mapa cubiertas por agua,
    * como el sombreado o las animaciones de las olas.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * @param  {Object} vendorOptions Opciones para la biblioteca base.
    * @api
    */
@@ -165,7 +168,7 @@ class Terrain extends LayerBase {
     if (obj instanceof Terrain) {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
-      equals = equals && (this.options === obj.options);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
     return equals;
   }

@@ -18,6 +18,7 @@ import { getValue } from '../i18n/language';
  * espaciales en la Web y especifica requisitos y recomendaciones para las API que desean seguir una
  * forma estándar de compartir datos de entidades.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} legend Indica el nombre que queremos que aparezca en el
  * árbol de contenidos, si lo hay.
  * @property {String} url URL del servicio.
@@ -80,6 +81,8 @@ class OGCAPIFeatures extends Vector {
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
    * - minZoom: Zoom mínimo aplicable a la capa.
    * - maxZoom: Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - opacity: Opacidad de capa, por defecto 1.
    * - height: Define la altura del objeto geográfico. Puede ser un número o una propiedad.
    *   Si se define la altura será constante para todos los puntos del objeto geográfico.
@@ -462,10 +465,9 @@ class OGCAPIFeatures extends Vector {
       equals = equals && (this.limit === obj.limit);
       equals = equals && (this.format === obj.format);
       equals = equals && (this.offset === obj.offset);
-      equals = equals && (this.bbox === obj.bbox);
       equals = equals && (this.id === obj.id);
       equals = equals && (this.extract === obj.extract);
-      equals = equals && (this.predefinedStyles === obj.predefinedStyles);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
     return equals;
   }

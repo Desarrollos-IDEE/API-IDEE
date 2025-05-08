@@ -147,7 +147,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 .m-vectorsmanagement-analysis-featureInfo table td {
     border: 1px solid black;
     padding: 8px;
-    text-align: left;
+    text-align: center;
 }
 
 .m-vectorsmanagement-style-container,

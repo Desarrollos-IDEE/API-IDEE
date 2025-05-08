@@ -14,6 +14,8 @@ import * as EventType from '../event/eventtype';
 /**
  * @classdesc
  * De esta clase heredadan todas las capas base.
+ *
+ * @property {string} idLayer Identificador de la capa.
  * @property {string} type Tipo de la capa.
  * @property {string} url URL del servicio.
  * @property {string} name Nombre de la capa.
@@ -381,6 +383,38 @@ class LayerBase extends Base {
   }
 
   /**
+   * Este método devuelve el identificador de la capa.
+   *
+   * @function
+   * @returns {String} Devuelve el identificador de la capa.
+   * @api
+   */
+  getId() {
+    return this.idLayer;
+  }
+
+  /**
+   * Este método establece el identificador de la capa.
+   *
+   * @function
+   * @param {String} newID Nuevo identificador para la capa.
+   * @api
+   */
+  setId(newID) {
+    if (!isNullOrEmpty(this.map_)) {
+      const findId = this.map_.getLayers().find((layer) => {
+        return layer.idLayer === newID;
+      });
+      if (isUndefined(findId)) {
+        this.map_.getFeatureHandler().changeNamePrevs(this.idLayer, newID);
+        this.idLayer = newID;
+      } else {
+        Exception(getValue('exception').id_exists);
+      }
+    }
+  }
+
+  /**
    * Este método calcula la extensión máxima de esta capa.
    *
    * @function
@@ -606,6 +640,50 @@ class LayerBase extends Base {
     }
     this.zindex_ = newZIndex;
     this.getImpl().setZIndex(newZIndex);
+  }
+
+  /**
+   * Esta función devuelve el valor de la escala mínima para esta capa.
+   *
+   * @function
+   * @returns {Number} Devuelve el valor de la escala mínima.
+   * @api
+   */
+  getMinScale() {
+    return this.getImpl().getMinScale();
+  }
+
+  /**
+   * Esta función establece el valor de la escala mínima para esta capa.
+   *
+   * @function
+   * @param {Number} minScale Nueva escala mínima.
+   * @api
+   */
+  setMinScale(minScale) {
+    this.getImpl().setMinScale(minScale);
+  }
+
+  /**
+   * Esta función devuelve el valor de la escala máxima para esta capa.
+   *
+   * @function
+   * @returns {Number} Devuelve el valor de la escala máxima.
+   * @api
+   */
+  getMaxScale() {
+    return this.getImpl().getMaxScale();
+  }
+
+  /**
+   * Esta función establece el valor de la escala máxima para esta capa.
+   *
+   * @function
+   * @param {Number} maxScale Nueva escala máxima.
+   * @api
+   */
+  setMaxScale(maxScale) {
+    this.getImpl().setMaxScale(maxScale);
   }
 
   /**

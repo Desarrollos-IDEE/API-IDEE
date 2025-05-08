@@ -278,6 +278,9 @@
     "chart_method": "The implementation used can not create Chart styles.",
     "heatmap_method": "The implementation used can not create Heatmap styles.",
     "flowline_method": "The implementation used can not create Flowline styles.",
-    "transparent_deprecated": "'transparent' parameter has been deprecated, it is recommended to use 'isBase' instead."
+    "id_exists": "ID already exists.",
+    "transparent_deprecated": "'transparent' parameter has been deprecated, it is recommended to use 'isBase' instead.",
+    "getOL3Layer_deprecated": "The getOL3Layer method has been deprecated, it is recommended to use the getLayer method.",
+    "setOL3Layer_deprecated": "The setOL3Layer method has been deprecated, it is recommended to use the setLayer method."
   }
 }
