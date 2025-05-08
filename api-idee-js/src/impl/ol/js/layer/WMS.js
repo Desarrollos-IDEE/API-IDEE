@@ -800,7 +800,7 @@ class WMS extends LayerBase {
    * @public
    * @api
    */
-  recreateOlLayer() {
+  recreateLayer() {
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.ol3Layer)) {
       olMap.removeLayer(this.ol3Layer);
@@ -827,7 +827,7 @@ class WMS extends LayerBase {
    */
   setURL(newURL) {
     this.url = newURL;
-    this.recreateOlLayer();
+    this.recreateLayer();
   }
 
   /**
@@ -843,7 +843,7 @@ class WMS extends LayerBase {
   setName(newName, isWMSFull) {
     this.name = newName;
     this.isWMSfull = isWMSFull;
-    this.recreateOlLayer();
+    this.recreateLayer();
   }
 
   /**
