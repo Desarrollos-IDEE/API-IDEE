@@ -119,7 +119,7 @@ class ImplementationSwitcher extends ControlBase {
 
     const script = document.createElement('script');
     script.type = 'text/javascript';
-    script.src = implementation.js;
+    script.src = `${API_IDEE_URL}${implementation.js}`;
     script.onload = () => {
       if (configurations.length > 0) {
         fetch(`${API_IDEE_URL}js/configuration.js`)
@@ -138,7 +138,7 @@ class ImplementationSwitcher extends ControlBase {
 
     const style = document.createElement('link');
     style.type = 'text/css';
-    style.href = implementation.css;
+    style.href = `${API_IDEE_URL}${implementation.css}`;
     style.rel = 'stylesheet';
     document.head.appendChild(style);
   }
