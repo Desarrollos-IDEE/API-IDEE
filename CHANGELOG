@@ -17,6 +17,8 @@
 - Eliminación de plantillas de /files/templates y /templates dentro del war
 - Añadido bgcolorcontainer a los parámetros de mapas para aplicar un color al fondo del html del mapa de OpenLayers.
 - Se elimina la clase ParametersAdapterV3ToV4 de api-idee-rest.
+- Se añade método setName para sobreescribir el nombre de las capas WMS.
+- Se añade método setURL para sobreescribir la URL de las capas WMS.
 - Se elimina filtro que impide usar el parámetro tiled si la capa WMS tiene la versión 1.3.0.
 - Se marca set/getOL3Layer como obsoleto y se reemplazan referencias a this.ol3Layer por this.olLayer
 - Modificación del evento ADDED_TO_MAP para que se lance desde fachada en capas WMS. 
