@@ -91,18 +91,13 @@ class Vector extends LayerBase {
       optns.maxExtent = optionsVars.maxExtent;
     }
 
-    // calls the super constructor
-    let impl;
-    if (implParam) {
-      impl = implParam;
-    } else {
-      // checks if the implementation can create Vector
-      if (isUndefined(VectorImpl) || (isObject(VectorImpl)
-        && isNullOrEmpty(Object.keys(VectorImpl)))) {
-        Exception(getValue('exception').vectorlayer_method);
-      }
-      impl = new VectorImpl(optionsVars, vendorOptions);
+    // checks if the implementation can create Vector
+    if (isUndefined(VectorImpl) || (isObject(VectorImpl)
+      && isNullOrEmpty(Object.keys(VectorImpl)))) {
+      Exception(getValue('exception').vectorlayer_method);
     }
+    const impl = implParam || new VectorImpl(optionsVars, vendorOptions);
+    // calls the super constructor
     super(optns, impl);
 
     /**
