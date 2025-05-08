@@ -160,6 +160,7 @@ class ImplementationSwitcher extends ControlBase {
         : transform(center, sourceProjection, destProjection),
       controls: Array.from(this.map_.getControls()).map((control) => control.name),
       plugins: this.map_.getPlugins(),
+      layers: this.map_.getLayers(),
     });
   }
 
