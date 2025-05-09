@@ -18,6 +18,7 @@ import Generic from '../style/Generic';
  * @classdesc
  * GenericVector permite añadir cualquier tipo de capa vector.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} name Nombre de la capa, identificador.
  * @property {Boolean} extract Activa la consulta al hacer clic sobre un objeto geográfico,
  * por defecto falso.
@@ -384,6 +385,7 @@ class GenericVector extends Vector {
       equals = equals && (this.url === obj.url);
       equals = equals && (this.name === obj.name);
       equals = equals && (this.cql === obj.cql);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
 
     return equals;

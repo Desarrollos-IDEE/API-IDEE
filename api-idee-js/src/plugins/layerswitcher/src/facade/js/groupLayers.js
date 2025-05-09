@@ -32,7 +32,8 @@ export const getAllLayersGroup = (map) => {
 
 export const displayLayers = ({ target }, layer, map) => {
   if (target.classList.contains(CLASS_DISPLAY_GROUP)) {
-    const groupLayer = map.getLayerGroup().find((layerGroup) => layerGroup.name === layer.name);
+    const groupLayer = map.getLayerGroup()
+      .find((layerGroup) => layerGroup.idLayer === layer.idLayer);
 
     const group = target.parentElement.parentElement.parentElement.children[1];
     group.style.display = group.style.display === 'none' ? 'block' : 'none';
@@ -59,7 +60,7 @@ export const fiendLayerInGroup = (layer, map) => {
 
   const findRecursiveGroup = (layerGroup) => {
     layerGroup.getLayers().forEach((subLayer) => {
-      if (subLayer.name === layer.name) {
+      if (subLayer.idLayer === layer.idLayer) {
         group = layerGroup;
       } else if (subLayer.type === IDEE.layer.type.LayerGroup) {
         findRecursiveGroup(subLayer);

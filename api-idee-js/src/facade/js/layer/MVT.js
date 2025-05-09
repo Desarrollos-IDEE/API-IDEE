@@ -32,6 +32,7 @@ export const mode = {
  * ya que se sirven en forma de teselas que contienen la información vectorial
  * del área que delimitan.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {Boolean} extract Activa la consulta al hacer clic sobre un objeto geográfico,
  * por defecto falso.
  * @property {Boolean} transparent (deprecated) Falso si es una capa base,
@@ -66,6 +67,8 @@ class MVT extends Vector {
    * - style: Define el estilo de la capa.
    * - minZoom. Zoom mínimo aplicable a la capa.
    * - maxZoom. Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - visibility. Define si la capa es visible o no. Verdadero por defecto.
    * - displayInLayerSwitcher. Indica si la capa se muestra en el selector de capas.
    * - predefinedStyles: Estilos predefinidos para la capa.

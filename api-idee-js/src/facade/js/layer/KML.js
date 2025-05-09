@@ -15,6 +15,7 @@ import { getValue } from '../i18n/language';
  * @classdesc
  * KML (Keyhole Markup Language).
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {Boolean} extract Opcional. Activa la consulta haciendo clic en el objeto geográfico,
  * por defecto falso.
  * @property {Object} options Parámetros de la capa.
@@ -50,6 +51,8 @@ class KML extends LayerVector {
    * - style: Define el estilo de la capa.
    * - minZoom. Zoom mínimo aplicable a la capa.
    * - maxZoom. Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - displayInLayerSwitcher. Indica si la capa se muestra en el selector de capas.
    * - opacity. Opacidad de capa, por defecto 1.
    * - scaleLabel. Escala de la etiqueta.
@@ -233,7 +236,7 @@ class KML extends LayerVector {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
       equals = equals && (this.extract === obj.extract);
-      equals = equals && (this.predefinedStyles === obj.predefinedStyles);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
 
     return equals;

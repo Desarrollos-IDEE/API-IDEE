@@ -17,6 +17,7 @@ import { getValue } from '../i18n/language';
  * WMS devuelve un mapa en formato imagen de un conjunto capas ráster o vectoriales.
  * Permitiendo las personalización de las capas mediante estilos. Se trata de un mapa dínamico.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} legend Nombre asociado en el árbol de contenido, si usamos uno.
  * @property {String} version Versión WMS.
  * @property {Boolean} tiled Verdadero si queremos dividir la capa en mosaicos,
@@ -449,6 +450,32 @@ class WMS extends LayerBase {
   }
 
   /**
+   * Sobreescribe la URL de la capa.
+   *
+   * @function
+   * @param {String} newURL Nueva URL de la capa.
+   * @public
+   * @api
+   */
+  setURL(newURL) {
+    this.getImpl().setURL(newURL);
+  }
+
+  /**
+   * Sobreescribe el nombre de la capa.
+   *
+   * @function
+   * @param {String} newName Nuevo nombre de la capa.
+   * @public
+   * @api
+   */
+  setName(newName) {
+    this.name = !isNullOrEmpty(newName) ? newName : undefined;
+    const isWMSfull = isNullOrEmpty(newName);
+    this.getImpl().setName(this.name, isWMSfull);
+  }
+
+  /**
    * Este método comprueba si un objeto es igual
    * a esta capa.
    *
@@ -464,6 +491,7 @@ class WMS extends LayerBase {
       equals = equals && (this.name === obj.name);
       equals = equals && (this.version === obj.version);
       equals = equals && (this.cql === obj.cql);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
 
     return equals;

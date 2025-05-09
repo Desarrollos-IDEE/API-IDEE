@@ -15,6 +15,7 @@ import { getValue } from '../i18n/language';
  * @classdesc
  * La API-IDEE permite visualizar la capa de Open Street Map.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} name Nombre de la capa, OSM.
  * @property {String} legend Indica el nombre que queremos que aparezca en
  * el árbol de contenidos, si lo hay.
@@ -47,6 +48,8 @@ class OSM extends LayerBase {
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán
    * a la implementación de la capa.
    * - animated: Activa la animación para capas base o parámetros animados.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
    * <pre><code>
    * import SourceOSM from 'ol/source/OSM';
@@ -82,6 +85,7 @@ class OSM extends LayerBase {
     const parameters = parameter.layer(userParameters, LayerType.OSM);
     const optionsVar = {
       ...parameters,
+      ...options,
     };
 
     /**
@@ -125,29 +129,6 @@ class OSM extends LayerBase {
   }
 
   /**
-   * Devuelve el tipo de capa, OSM.
-   * @function
-   * @return {IDEE.LayerType.OSM} Devuelve OSM.
-   * @api
-   */
-  get type() {
-    return LayerType.OSM;
-  }
-
-  /**
-   * Sobrescribe el tipo de capa.
-   * @function
-   * @param {String} newType Nuevo tipo de capa.
-   * @api
-   */
-  set type(newType) {
-    if (!isUndefined(newType)
-      && !isNullOrEmpty(newType) && (newType !== LayerType.OSM)) {
-      Exception('El tipo de capa debe ser \''.concat(LayerType.OSM).concat('\' pero se ha especificado \'').concat(newType).concat('\''));
-    }
-  }
-
-  /**
    * Este método comprueba si un objeto es igual
    * a esta capa.
    *
@@ -162,7 +143,7 @@ class OSM extends LayerBase {
     if (obj instanceof OSM) {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
-      equals = equals && (this.options === obj.options);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
     return equals;
   }
