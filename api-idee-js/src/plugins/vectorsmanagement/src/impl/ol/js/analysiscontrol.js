@@ -10,19 +10,7 @@ const MERCATOR = 'EPSG:900913';
 const ELEVATION_PROCESS_URL = 'https://api-processes.idee.es/processes/getElevation/execution';
 const ELEVATION_PROFILE_PROCESS_URL = 'https://api-processes.idee.es/processes/elevationProfile/execution';
 const NO_DATA_VALUE = -9999;
-
-const formatNumber = (x, decimals) => {
-  const pow = 10 ** decimals;
-  let num = Math.round(x * pow) / pow;
-  num = num.toString().replace('.', ',');
-  if (decimals > 2) {
-    num = `${num.split(',')[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.')},${num.split(',')[1]}`;
-  } else {
-    num.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-  }
-
-  return num;
-};
+const { measurements } = require('../../../../../../geoprocesses');
 
 export default class Analysiscontrol extends IDEE.impl.Control {
   /**
@@ -53,7 +41,7 @@ export default class Analysiscontrol extends IDEE.impl.Control {
 
     this.distance_ = 30;
 
-    this.arrayXZY = null;
+    this.arrayXYZ = null;
   }
 
   /**
@@ -116,7 +104,7 @@ export default class Analysiscontrol extends IDEE.impl.Control {
    * @api
    * @param {IDEE.Feature} feature
    */
-  calculateProfile(feature, show = true) {
+  calculateProfile(id, feature, show = true) {
     const altitudes = [];
     let coordinates = [];
 
@@ -155,6 +143,8 @@ export default class Analysiscontrol extends IDEE.impl.Control {
         if (show) {
           this.showProfile(altitudes);
         }
+        this.arrayXYZ = altitudes;
+        this.calculate3DLength(id);
       }
     }).catch(() => IDEE.proxy(true));
   }
@@ -370,7 +360,7 @@ export default class Analysiscontrol extends IDEE.impl.Control {
       length = ol.sphere.getLength(geometry);
     } else if (unitsProj === 'd') {
       const coordinates = geometry.getCoordinates();
-      for (let i = 0, ii = coordinates.length - 1; i < ii; i += 1) {
+      for (let i = 0; i < coordinates.length - 1; i += 1) {
         length += ol.sphere.getDistance(ol.proj.transform(coordinates[i], codeProj, 'EPSG:4326'), ol.proj.transform(coordinates[i + 1], codeProj, 'EPSG:4326'));
       }
     } else {
@@ -380,40 +370,54 @@ export default class Analysiscontrol extends IDEE.impl.Control {
     return length;
   }
 
-  calculate3DLength(promiseArray, flatLength, elem) {
+  calculate3DLength(elem) {
     const $td = elem;
-    promiseArray
-      .then((points) => {
-        let length = 0;
-        for (let i = 0, ii = points.length - 1; i < ii; i += 1) {
-          const geom = new ol.geom.LineString([points[i], points[i + 1]]);
-          const distance = this.getGeometryLength(geom);
-          const elevDiff = Math.abs(points[i][2] - points[i + 1][2]);
-          length += Math.sqrt((distance * distance) + (elevDiff * elevDiff));
-        }
+    const points = this.arrayXYZ;
+    let length = 0;
+    for (let i = 0; i < points.length - 1; i += 1) {
+      const a = points[i];
+      const b = points[i + 1];
 
-        if (length < flatLength) {
-          length = flatLength + ((flatLength - length) / 2);
-        }
+      if (a.toString() !== b.toString()) {
+        const aWGS84 = ol.proj.transform(a, this.facadeMap_.getProjection().code, WGS84);
+        const bWGS84 = ol.proj.transform(b, this.facadeMap_.getProjection().code, WGS84);
 
-        let m = `${formatNumber(length / 1000, 2)}km`;
-        if (length < 1000) {
-          m = `${formatNumber(length, 0)}m`;
-        }
+        const distance = measurements.calculateDistance(aWGS84[1], aWGS84[0], bWGS84[1], bWGS84[0]);
+        const elevDiff = Math.abs(points[i][2] - points[i + 1][2]);
 
-        $td.innerHTML = `3D: ${m}`;
-      })
-      .catch((err) => {
-        $td.innerHTML = '-';
-        IDEE.dialog.error(getValue('try_again'));
-      });
+        length += Math.sqrt((distance * distance) + (elevDiff * elevDiff));
+      }
+    }
+
+    let m = `${((length / 1000).toFixed(2)).replace('.', ',')} km`;
+    if (length < 1000) {
+      m = `${((length).toFixed(2)).replace('.', ',')} m`;
+    }
+
+    $td.innerHTML = `${m}`;
+  }
+
+  calculateFeatureLengthEllipsoidal(feature) {
+    let length = 0;
+    const coordinates = feature.getImpl().getOLFeature().getGeometry().getCoordinates();
+
+    for (let i = 0; i < coordinates.length - 1; i += 1) {
+      const a = coordinates[i];
+      const b = coordinates[i + 1];
+
+      if (a.toString() !== b.toString()) {
+        const aWGS84 = ol.proj.transform(a, this.facadeMap_.getProjection().code, WGS84);
+        const bWGS84 = ol.proj.transform(b, this.facadeMap_.getProjection().code, WGS84);
+
+        length += measurements.calculateDistance(aWGS84[1], aWGS84[0], bWGS84[1], bWGS84[0]);
+      }
+    }
+
+    return length;
   }
 
   get3DLength(id, feature) {
-    const elem = document.querySelector(`${id}`);
-    const flatLength = this.getFeatureLength(feature);
-    this.calculateProfile(feature, false);
-    this.calculate3DLength(this.arrayXZY, flatLength, elem);
+    this.calculateProfile(id, feature, false);
   }
 
   getAreaGeoJSON(features) {

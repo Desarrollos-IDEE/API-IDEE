@@ -252,10 +252,10 @@ export default class AnalysisControl extends IDEE.Control {
         IDEE.dialog.info(getValue('exception.topographic_one_element'));
       } else {
         this.feature = selectedFeatures[0];
-        if (this.feature.getGeometry().type !== 'Point') {
-          this.getImpl().calculateProfile(this.feature);
-        } else {
+        if (this.feature.getGeometry().type === 'Point') {
           this.getImpl().calculatePoint(this.feature);
+        } else {
+          this.getImpl().calculateProfile(this.feature);
         }
       }
     } else {
@@ -506,12 +506,12 @@ export default class AnalysisControl extends IDEE.Control {
         break;
       case 'LineString':
       case 'MultiLineString':
-        let lineLength = this.getImpl().getFeatureLength(feature);
+        let lineLength = this.getImpl().calculateFeatureLengthEllipsoidal(feature);
         let units = 'km';
-        if (lineLength > 100) {
-          lineLength = Math.round((lineLength / 1000) * 100) / 100;
+        if (lineLength > 1000) {
+          lineLength = ((lineLength / 1000).toFixed(2)).replace('.', ',');
         } else {
-          lineLength = Math.round(lineLength * 100) / 100;
+          lineLength = (lineLength.toFixed(2)).replace('.', ',');
           units = 'm';
         }
         if (infoContainer !== null) {
@@ -554,11 +554,9 @@ export default class AnalysisControl extends IDEE.Control {
     this.template.querySelector('#analysisBtns #featureInfo').appendChild(this.infoanalysisTemplate);
     this.managementControl_.accessibilityTab(this.infoanalysisTemplate);
 
-    const infoLine3D = document.querySelector('#infoAnalisis3DLine');
+    const infoLine3D = document.querySelector('#ellipsoidal3DLength');
     if (infoLine3D) {
-      infoLine3D.addEventListener('click', () => {
-        this.getImpl().get3DLength('#infoAnalisis3DLine', feature);
-      });
+      this.getImpl().get3DLength(infoLine3D, feature);
     }
   }
 
