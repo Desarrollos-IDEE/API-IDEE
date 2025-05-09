@@ -196,7 +196,9 @@ class KML extends Vector {
         const featureName = feature.getAttribute('name');
         const featureDesc = feature.getAttribute('description');
         const featureCoord = feature.getImpl().getFeature().getGeometry().getFirstCoordinate();
-        const htmlAsText = compileTemplate(popupKMLTemplate, {
+        const popupTemplate = !isNullOrEmpty(this.template)
+          ? this.template : popupKMLTemplate;
+        const htmlAsText = compileTemplate(popupTemplate, {
           vars: {
             name: featureName,
             desc: featureDesc,
@@ -387,6 +389,7 @@ class KML extends Vector {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
       equals = equals && (this.extract === obj.extract);
+      equals = equals && (this.template === obj.template);
     }
     return equals;
   }

@@ -31,6 +31,8 @@ import Generic from '../style/Generic';
  * verdadero en caso contrario.
  * @property {Boolean} isBase Define si la capa es base.
  * @property {Array} predefinedStyles Estilos prefefinidos.
+ * @property {String} template Plantilla que se mostrará al consultar un objeto geográfico.
+ *
  * @api
  * @extends {IDEE.layer}
  */
@@ -47,6 +49,7 @@ class Vector extends LayerBase {
    * - legend: Indica el nombre que queremos que aparezca en el árbol de contenidos, si lo hay.
    * - isBase: Indica si la capa es base.
    * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
+   * - template: (opcional) Plantilla que se mostrará al consultar un objeto geográfico.
    * @param {Mx.parameters.LayerOptions} options  Estas opciones se mandarán a
    * la implementación de la capa.
    * - style. Define el estilo de la capa.
@@ -158,6 +161,11 @@ class Vector extends LayerBase {
     } else {
       this.predefinedStyles.unshift(options.style);
     }
+
+    /**
+      * Vector template: Para especificar una plantilla al consultar un objeto geográfico.
+      */
+    this.template = optns.template;
 
     this.setStyle(options.style);
 
@@ -345,6 +353,34 @@ class Vector extends LayerBase {
   }
 
   /**
+   * Devuelve el valor de la propiedad "template". La propiedad "template" tiene la
+   * siguiente función: Especifica una plantilla que se mostrará al consultar
+   * un objeto geográfico.
+   *
+   * @function
+   * @getter
+   * @return {String} Valor de la propiedad "template".
+   * @api
+   */
+  get template() {
+    return this.getImpl().template;
+  }
+
+  /**
+   * Sobrescribe el valor de la propiedad "template". La propiedad "template" tiene la
+   * siguiente función: Especifica una plantilla que se mostrará al consultar
+   * un objeto geográfico.
+   *
+   * @function
+   * @setter
+   * @param {String} newTemplate Nuevo valor para sobreescribir la propiedad "template".
+   * @api
+   */
+  set template(newTemplate) {
+    this.getImpl().template = newTemplate;
+  }
+
+  /**
    * Este método comprueba si un objeto es igual
    * a esta capa.
    *
@@ -359,6 +395,7 @@ class Vector extends LayerBase {
     if (obj instanceof Vector) {
       equals = this.name === obj.name;
       equals = equals && (this.idLayer === obj.idLayer);
+      equals = equals && (this.template === obj.template);
     }
     return equals;
   }

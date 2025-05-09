@@ -32,6 +32,7 @@ import { getValue } from '../i18n/language';
  * @property {Boolean} transparent (deprecated) Falso si es una capa base,
  * verdadero en caso contrario.
  * @property {Boolean} isBase Define si la capa es base.
+ * @property {String} template Plantilla que se mostrará al consultar un objeto geográfico.
  *
  * @api
  * @extends {IDEE.layer.Vector}
@@ -57,6 +58,7 @@ class MapLibre extends LayerBase {
    * - maplibrestyle: Url (.json) en formato objeto.
    * - isBase: Indica si la capa es base.
    * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
+   * - template: (opcional) Plantilla que se mostrará al consultar un objeto geográfico.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a
    * la implementación de la capa.
    * - opacity: Opacidad de la capa (0-1), por defecto 1.
@@ -138,6 +140,11 @@ class MapLibre extends LayerBase {
       ? optionsVar.disableBackgroundColor : undefined;
 
     this.maplibrestyle = opts.maplibrestyle;
+
+    /**
+      * MapLibre template: Para especificar una plantilla al consultar un objeto geográfico.
+      */
+    this.template = opts.template;
   }
 
   /**
@@ -149,6 +156,34 @@ class MapLibre extends LayerBase {
    */
   get extract() {
     return this.getImpl().extract;
+  }
+
+  /**
+   * Devuelve el valor de la propiedad "template". La propiedad "template" tiene la
+   * siguiente función: Especifica una plantilla que se mostrará al consultar
+   * un objeto geográfico.
+   *
+   * @function
+   * @getter
+   * @return {String} Valor de la propiedad "template".
+   * @api
+   */
+  get template() {
+    return this.getImpl().template;
+  }
+
+  /**
+   * Sobrescribe el valor de la propiedad "template". La propiedad "template" tiene la
+   * siguiente función: Especifica una plantilla que se mostrará al consultar
+   * un objeto geográfico.
+   *
+   * @function
+   * @setter
+   * @param {String} newTemplate Nuevo valor para sobreescribir la propiedad "template".
+   * @api
+   */
+  set template(newTemplate) {
+    this.getImpl().template = newTemplate;
   }
 
   // ! Style API-IDEE no soportado
@@ -387,6 +422,7 @@ class MapLibre extends LayerBase {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
       equals = equals && (this.idLayer === obj.idLayer);
+      equals = equals && (this.template === obj.template);
     }
 
     return equals;
