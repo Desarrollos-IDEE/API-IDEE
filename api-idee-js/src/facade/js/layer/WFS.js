@@ -29,7 +29,7 @@ import { getValue } from '../i18n/language';
  * @property {String} ids Identificadores por los que queremos filtrar los objeto geográfico.
  * @property {String} version Versión del estándar a utilizar. El valor predeterminado es 1.0.0.
  * @property {Boolean} extract Activa la consulta al hacer clic en la característica,
- * por defecto falso.
+ * por defecto verdadero.
  * @property {Boolean} transparent (deprecated) Falso si es una capa base,
  * verdadero en caso contrario.
  * @property {Boolean} isBase Define si la capa es base.
@@ -55,7 +55,7 @@ class WFS extends Vector {
    * - cql: Opcional - Sentencia CQL para filtrar los objetos geográficos.
    *  El método setCQL(cadena_cql) refresca la capa aplicando el nuevo predicado CQL que reciba.
    * - version: Opcional - Versión del estandar a usar. Por defecto es 1.0.0.
-   * - extract: Opcional Activa la consulta por clic en el objeto geográfico, por defecto falso.
+   * - extract: Opcional Activa la consulta por clic en el objeto geográfico, por defecto verdadero.
    * - type: Tipo de la capa.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
    * - legend: Indica el nombre que queremos que aparezca en el árbol de contenidos, si lo hay.
@@ -162,9 +162,9 @@ class WFS extends Vector {
 
     /**
      * WFS extract: Opcional, activa la consulta haciendo clic en un objeto geográfico,
-     * por defecto falso.
+     * por defecto verdadero.
      */
-    this.extract = parameters.extract === undefined ? false : parameters.extract;
+    this.extract = parameters.extract === undefined ? true : parameters.extract;
 
     /**
      * WFS minZoom: Límite del zoom mínimo.
@@ -188,7 +188,7 @@ class WFS extends Vector {
 
   /**
    * Devuelve el valor de la propiedad "extract".
-   * Activa la consulta haciendo clic en el objeto geográfico, por defecto falso.
+   * Activa la consulta haciendo clic en el objeto geográfico, por defecto verdadero.
    * @function
    * @return {IDEE.layer.WFS.impl.extract} Devuelve el valor de la propiedad "extract".
    * @api
@@ -199,7 +199,7 @@ class WFS extends Vector {
 
   /**
    * Sobrescribe el valor de la propiedad "extract".
-   * Activa la consulta haciendo clic en el objeto geográfico, por defecto falso.
+   * Activa la consulta haciendo clic en el objeto geográfico, por defecto verdadero.
    * @function
    * @param {Boolean} newExtract Nuevo valor de la propiedad""extract".
    * @api
@@ -212,7 +212,7 @@ class WFS extends Vector {
         this.getImpl().extract = newExtract;
       }
     } else {
-      this.getImpl().extract = false;
+      this.getImpl().extract = true;
     }
   }
 

@@ -117,7 +117,7 @@ class MVT extends Vector {
     /**
      * MVT extract_.
      * Activa la consulta cuando se hace clic en un objeto geográfico,
-     * por defecto falso.
+     * por defecto verdadero.
      */
     this.extract = parameters.extract;
   }
@@ -334,12 +334,15 @@ class MVT extends Vector {
     const features = [];
     if (this.olLayer) {
       const tileCache = this.olLayer.getSource().tileCache;
-      const kk = tileCache.getCount();
-      if (kk === 0) {
+      if (!tileCache) {
+        return features;
+      }
+      const count = tileCache.getCount();
+      if (count === 0) {
         return features;
       }
       const z = Number(tileCache.peekFirstKey().split('/')[0]);
-      for (let k = 0; k < kk; k += 1) {
+      for (let k = 0; k < count; k += 1) {
         const auxValue = tileCache.getValues()[k];
         if (auxValue.tileCoord[0] === z && auxValue.getState() === TileState.LOADED) {
           const sourceTiles = auxValue.getSourceTiles();

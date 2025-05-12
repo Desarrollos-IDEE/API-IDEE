@@ -21,7 +21,7 @@ import Generic from '../style/Generic';
  * @property {String} idLayer Identificador de la capa.
  * @property {String} name Nombre de la capa, identificador.
  * @property {Boolean} extract Activa la consulta al hacer clic sobre un objeto geográfico,
- * por defecto falso.
+ * por defecto verdadero.
  * @property {Array} ids Identificadores por los que queremos filtrar los objetos geográficos.
  * @property {String} cql Sentencia CQL para filtrar los objetos geográficos.
  * @property {Object} options Opciones GenericVector.
@@ -41,7 +41,8 @@ class GenericVector extends Vector {
    * - name: nombre de la capa.
    * - legend: Nombre asociado en el árbol de contenidos, si usamos uno.
    * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
-   * - extract: Opcional, activa la consulta por click en el objeto geográfico, por defecto falso.
+   * - extract: Opcional, activa la consulta por click en el objeto geográfico,
+   * por defecto verdadero.
    * - infoEventType: Define si consultar la capa con un clic o con "hover".
    * - maxExtent: La medida en que restringe la visualización a una región específica.
    * - isBase: Indica si la capa es base.
@@ -150,9 +151,9 @@ class GenericVector extends Vector {
 
     /**
      * extract: Opcional, activa la consulta
-     * haciendo clic en el objeto geográfico, por defecto falso.
+     * haciendo clic en el objeto geográfico, por defecto verdadero.
      */
-    this.extract = userParameters.extract === undefined ? false : userParameters.extract;
+    this.extract = userParameters.extract === undefined ? true : userParameters.extract;
 
     this.styleFacade = params.style;
   }
@@ -232,7 +233,8 @@ class GenericVector extends Vector {
 
   /**
    * Devuelve el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @getter
@@ -245,7 +247,8 @@ class GenericVector extends Vector {
 
   /**
    * Sobrescribe el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @setter
@@ -260,7 +263,7 @@ class GenericVector extends Vector {
         this.getImpl().extract = newExtract;
       }
     } else {
-      this.getImpl().extract = false;
+      this.getImpl().extract = true;
     }
   }
 

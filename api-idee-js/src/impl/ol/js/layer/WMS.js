@@ -141,7 +141,7 @@ class WMS extends LayerBase {
      * WMS numZoomLevels. Número de niveles de zoom.
      */
     if (isNullOrEmpty(this.options.numZoomLevels)) {
-      this.options.numZoomLevels = Number(IDEE.config.MAX_ZOOM); // by default
+      this.options.numZoomLevels = IDEE.config.MAX_ZOOM || 28; // by default
     }
 
     /**
@@ -791,6 +791,59 @@ class WMS extends LayerBase {
       this.layers.length = 0;
     }
     this.map = null;
+  }
+
+  /**
+   * Este método elimina y crea la capa de Openlayers.
+   *
+   * @function
+   * @public
+   * @api
+   */
+  recreateLayer() {
+    const olMap = this.map.getMapImpl();
+    if (!isNullOrEmpty(this.ol3Layer)) {
+      olMap.removeLayer(this.ol3Layer);
+      this.layers = [];
+      this.getCapabilitiesPromise = null;
+    }
+
+    if (this.useCapabilities || this.isWMSfull) {
+      this.getCapabilities().then((capabilities) => {
+        this.addSingleLayer_(capabilities);
+      });
+    } else {
+      this.addSingleLayer_(null);
+    }
+  }
+
+  /**
+   * Sobreescribe la URL de la capa.
+   *
+   * @function
+   * @param {String} newURL Nueva URL de la capa.
+   * @public
+   * @api
+   */
+  setURL(newURL) {
+    this.url = newURL;
+    this.recreateLayer();
+  }
+
+  /**
+   * Sobreescribe el nombre de la capa.
+   *
+   * @function
+   * @param {String} newName Nuevo nombre de la capa.
+   * @param {Boolean} isWMSFull Verdadero, si la capa es WMS_FULL,
+   * falso si no.
+   * @public
+   * @api
+   */
+  setName(newName, isWMSFull) {
+    this.name = newName;
+    this.isWMSfull = isWMSFull;
+    this.recreateLayer();
   }
 
   /**

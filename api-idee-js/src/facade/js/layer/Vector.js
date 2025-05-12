@@ -32,7 +32,8 @@ import Generic from '../style/Generic';
  * @property {Boolean} isBase Define si la capa es base.
  * @property {Array} predefinedStyles Estilos prefefinidos.
  * @property {String} template Plantilla que se mostrará al consultar un objeto geográfico.
- *
+ * @property {Boolean} extract Opcional. Activa la consulta haciendo
+ * clic en el objeto geográfico. Por defecto, verdadero.
  * @api
  * @extends {IDEE.layer}
  */
@@ -50,6 +51,8 @@ class Vector extends LayerBase {
    * - isBase: Indica si la capa es base.
    * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
    * - template: (opcional) Plantilla que se mostrará al consultar un objeto geográfico.
+   * - extract: Opcional, activa la consulta por clic en el objeto geográfico,
+   * por defecto verdadero.
    * @param {Mx.parameters.LayerOptions} options  Estas opciones se mandarán a
    * la implementación de la capa.
    * - style. Define el estilo de la capa.
@@ -94,18 +97,13 @@ class Vector extends LayerBase {
       optns.maxExtent = optionsVars.maxExtent;
     }
 
-    // calls the super constructor
-    let impl;
-    if (implParam) {
-      impl = implParam;
-    } else {
-      // checks if the implementation can create Vector
-      if (isUndefined(VectorImpl) || (isObject(VectorImpl)
-        && isNullOrEmpty(Object.keys(VectorImpl)))) {
-        Exception(getValue('exception').vectorlayer_method);
-      }
-      impl = new VectorImpl(optionsVars, vendorOptions);
+    // checks if the implementation can create Vector
+    if (isUndefined(VectorImpl) || (isObject(VectorImpl)
+      && isNullOrEmpty(Object.keys(VectorImpl)))) {
+      Exception(getValue('exception').vectorlayer_method);
     }
+    const impl = implParam || new VectorImpl(optionsVars, vendorOptions);
+    // calls the super constructor
     super(optns, impl);
 
     /**
@@ -139,9 +137,9 @@ class Vector extends LayerBase {
 
     /**
       * Vector extract: Opcional, activa la consulta
-      * haciendo clic en el objeto geográfico, por defecto falso.
+      * haciendo clic en el objeto geográfico, por defecto verdadero.
     */
-    this.extract = optns.extract === undefined ? false : optns.extract;
+    this.extract = optns.extract === undefined ? true : optns.extract;
 
     /**
      * predefinedStyles: Estilos predefinidos para la capa.
@@ -320,7 +318,8 @@ class Vector extends LayerBase {
 
   /**
    * Devuelve el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @getter
@@ -333,7 +332,8 @@ class Vector extends LayerBase {
 
   /**
      * Sobrescribe el valor de la propiedad "extract". La propiedad "extract" tiene la
-     * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+     * siguiente función: Activa la consulta al hacer clic en la característica,
+     * por defecto verdadero.
      *
      * @function
      * @setter
@@ -348,7 +348,7 @@ class Vector extends LayerBase {
         this.getImpl().extract = newExtract;
       }
     } else {
-      this.getImpl().extract = false;
+      this.getImpl().extract = true;
     }
   }
 

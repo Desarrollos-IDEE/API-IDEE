@@ -224,7 +224,7 @@ function fun(IDEE_) {
    * @private
    * @type {object}
    */
-  IDEE_.config('MOVE_MAP_EXTRACT', false);
+  IDEE_.config('MOVE_MAP_EXTRACT', true);
 
   /**
    * Zoom máximo.

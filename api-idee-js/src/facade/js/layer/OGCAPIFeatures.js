@@ -41,7 +41,7 @@ import { getValue } from '../i18n/language';
  * LINE(línea), MLINE(Multiples línes), POLYGON(Polígono), or MPOLYGON(Multiples polígonos).
  * @property {Object} opt Opciones de la capa.
  * @property {Boolean} extract Opcional. Activa la consulta haciendo
- * clic en el objeto geográfico.
+ * clic en el objeto geográfico. Por defecto, verdadero.
  * @property {Boolean} transparent (deprecated) Falso si es una capa base,
  * verdadero en caso contrario.
  * @property {Boolean} isBase Define si la capa es base.
@@ -71,7 +71,8 @@ class OGCAPIFeatures extends Vector {
    * - crs: Definición de la proyección de los datos.
    * - geometry: Tipo de geometría: POINT(Punto), MPOINT(Multiples puntos),
    * LINE(línea), MLINE(Multiples línes), POLYGON(Polígono), or MPOLYGON(Multiples polígonos).
-   * - extract: Opcional, activa la consulta por click en el objeto geográfico, por defecto falso.
+   * - extract: Opcional, activa la consulta por clic en el objeto geográfico,
+   * por defecto verdadero.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
    * - isBase: Indica si la capa es base.
    * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
@@ -185,9 +186,9 @@ class OGCAPIFeatures extends Vector {
 
     /**
      * OGCAPIFeatures extract: Activa la consulta al hacer clic sobre un objeto geográfico,
-     * por defecto falso.
+     * por defecto verdadero.
      */
-    this.extract = parameters.extract === undefined ? false : parameters.extract;
+    this.extract = parameters.extract === undefined ? true : parameters.extract;
 
     /**
      * OGCAPIFeatures cql: Declaración CQL para filtrar las características
@@ -417,7 +418,8 @@ class OGCAPIFeatures extends Vector {
 
   /**
    * Devuelve el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @getter
@@ -430,7 +432,8 @@ class OGCAPIFeatures extends Vector {
 
   /**
    * Sobrescribe el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @setter
@@ -445,7 +448,7 @@ class OGCAPIFeatures extends Vector {
         this.getImpl().extract = newExtract;
       }
     } else {
-      this.getImpl().extract = false;
+      this.getImpl().extract = true;
     }
   }
 

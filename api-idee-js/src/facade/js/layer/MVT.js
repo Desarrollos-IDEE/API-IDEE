@@ -34,7 +34,7 @@ export const mode = {
  *
  * @property {String} idLayer Identificador de la capa.
  * @property {Boolean} extract Activa la consulta al hacer clic sobre un objeto geográfico,
- * por defecto falso.
+ * por defecto verdadero.
  * @property {Boolean} transparent (deprecated) Falso si es una capa base,
  * verdadero en caso contrario.
  * @property {Boolean} isBase Define si la capa es base.
@@ -58,7 +58,8 @@ class MVT extends Vector {
    *   En este caso la capa sería detectado por los plugins de tablas de
    *   contenidos y aparecería como no visible.
    * - mode: Modo de renderizado de la capa. Valores posibles: 'renderizar' | 'característica'.
-   * - extract: Opcional Activa la consulta por click en el objeto geográfico, por defecto falso.
+   * - extract: Opcional Activa la consulta por click en el objeto geográfico,
+   * por defecto verdadero.
    * - type: Tipo de la capa.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
    * - isBase: Indica si la capa es base.
@@ -125,16 +126,16 @@ class MVT extends Vector {
 
     /**
      * extract: Optional Activa la consulta al hacer clic sobre un objeto geográfico,
-     * por defecto falso.
+     * por defecto verdadero.
      */
-    this.extract = opts.extract === undefined ? false : opts.extract;
+    this.extract = opts.extract === undefined ? true : opts.extract;
 
     this.mode = opts.mode || mode.RENDER;
   }
 
   /**
    * Devuelve el valor de la propiedad "extract". La propiedad "extract"
-   * activa la consulta al hacer clic sobre un objeto geográfico, por defecto falso.
+   * activa la consulta al hacer clic sobre un objeto geográfico, por defecto verdadero.
    * @function
    * @return {IDEE.layer.MVT.impl.extract} Devuelve valor del "extract".
    * @api
@@ -145,7 +146,7 @@ class MVT extends Vector {
 
   /**
    * Sobrescribe el valor de la propiedad "extract". La propiedad "extract"
-   * activa la consulta al hacer clic sobre un objeto geográfico, por defecto falso.
+   * activa la consulta al hacer clic sobre un objeto geográfico, por defecto verdadero.
    * @function
    * @param {Boolean} newExtract Nuevo valor para el "extract".
    * @api
@@ -158,7 +159,7 @@ class MVT extends Vector {
         this.getImpl().extract = newExtract;
       }
     } else {
-      this.getImpl().extract = false;
+      this.getImpl().extract = true;
     }
   }
 

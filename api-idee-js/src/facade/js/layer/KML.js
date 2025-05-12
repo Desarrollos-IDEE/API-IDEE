@@ -17,7 +17,7 @@ import { getValue } from '../i18n/language';
  *
  * @property {String} idLayer Identificador de la capa.
  * @property {Boolean} extract Opcional. Activa la consulta haciendo clic en el objeto geográfico,
- * por defecto falso.
+ * por defecto verdadero.
  * @property {Object} options Parámetros de la capa.
  * @property {String} label Etiqueta de la capa.
  * @property {Boolean} transparent (deprecated) Falso si es una capa base,
@@ -37,7 +37,8 @@ class KML extends LayerVector {
    * @param {string|Mx.parameters.KML} userParameters Parámetros especificados por el usuario.
    * - url: Url del fichero o servicio -> https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml
    * - name: Nombre de la capa que aparecerá en la leyenda -> Delegaciones IGN
-   * - extract: Opcional, activa la consulta por click en el objeto geográfico, por defecto falso.
+   * - extract: Opcional, activa la consulta por click en el objeto geográfico,
+   * por defecto verdadero.
    * - type: Tipo de la capa.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
    * - legend: Indica el nombre que queremos que aparezca en el árbol de contenidos, si lo hay.
@@ -123,9 +124,9 @@ class KML extends LayerVector {
 
     /**
      * KML extract: Activa la consulta al hacer clic sobre un objeto geográfico,
-     * por defecto falso.
+     * por defecto verdadero.
      */
-    this.extract = parameters.extract === undefined ? false : parameters.extract;
+    this.extract = parameters.extract === undefined ? true : parameters.extract;
 
     /**
      * KML options: Optiones que se mandan a la implementación.
@@ -167,7 +168,8 @@ class KML extends LayerVector {
 
   /**
    * Devuelve el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @getter
@@ -180,7 +182,8 @@ class KML extends LayerVector {
 
   /**
    * Sobrescribe el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @setter
@@ -195,7 +198,7 @@ class KML extends LayerVector {
         this.getImpl().extract = newExtract;
       }
     } else {
-      this.getImpl().extract = false;
+      this.getImpl().extract = true;
     }
   }
 

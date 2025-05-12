@@ -18,7 +18,7 @@ import { getValue } from '../i18n/language';
  *
  * @property {String} idLayer Identificador de la capa.
  * @property {Boolean} extract Activa la consulta al hacer clic sobre un objeto geográfico,
- * por defecto falso.
+ * por defecto verdadero.
  * @property {String} infoEventType Tipo de evento para mostrar la info de una feature.
  * @property {Boolean} disableBackgroundColor Desactiva el color de fondo de la capa.
  * @property {Object} url Estilos de la capa.
@@ -49,7 +49,8 @@ class MapLibre extends LayerBase {
    * - visibility: Verdadero si la capa es visible, falso si queremos que no lo sea.
    *   En este caso la capa sería detectado por los plugins de tablas de
    *   contenidos y aparecería como no visible.
-   * - extract: Opcional Activa la consulta por click en el objeto geográfico, por defecto falso.
+   * - extract: Opcional Activa la consulta por click en el objeto geográfico,
+   * por defecto verdadero.
    * - type: Tipo de la capa.
    * - infoEventType: Tipo de evento para mostrar la info de una feature.
    * - name: Nombre de la capa.
@@ -113,9 +114,9 @@ class MapLibre extends LayerBase {
 
     /**
      * extract: Optional Activa la consulta al hacer clic sobre un objeto geográfico,
-     * por defecto falso.
+     * por defecto verdadero.
      */
-    this.extract = opts.extract === undefined ? false : opts.extract;
+    this.extract = opts.extract === undefined ? true : opts.extract;
 
     /**
      * MapLibre minZoom: Límite del zoom mínimo.
@@ -149,7 +150,7 @@ class MapLibre extends LayerBase {
 
   /**
    * Devuelve el valor de la propiedad "extract". La propiedad "extract"
-   * activa la consulta al hacer clic sobre un objeto geográfico, por defecto falso.
+   * activa la consulta al hacer clic sobre un objeto geográfico, por defecto verdadero.
    * @function
    * @return {IDEE.layer.MapLibre.impl.extract} Devuelve valor del "extract".
    * @api
@@ -225,7 +226,7 @@ class MapLibre extends LayerBase {
 
   /**
    * Sobrescribe el valor de la propiedad "extract". La propiedad "extract"
-   * activa la consulta al hacer clic sobre un objeto geográfico, por defecto falso.
+   * activa la consulta al hacer clic sobre un objeto geográfico, por defecto verdadero.
    * @function
    * @param {Boolean} newExtract Nuevo valor para el "extract".
    * @api
@@ -238,7 +239,7 @@ class MapLibre extends LayerBase {
         this.getImpl().extract = newExtract;
       }
     } else {
-      this.getImpl().extract = false;
+      this.getImpl().extract = true;
     }
   }
 

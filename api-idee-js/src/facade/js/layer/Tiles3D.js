@@ -49,7 +49,8 @@ class Tiles3D extends LayerBase {
    * - attribution: Atribución de la capa.
    * - isBase: Este tipo de capa no podrá ser capa base.
    * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
-   * - extract: Opcional, activa la consulta por click en el objeto geográfico, por defecto falso.
+   * - extract: Opcional, activa la consulta por click en el objeto geográfico,
+   * por defecto verdadero.
    * - infoEventType: Parametriza el método de activación del popup para obtener la información
    *   de un feature ('click' / 'hover'), por defecto 'click'.
    * - template: (opcional) Plantilla que se mostrará al consultar un objeto geográfico.
@@ -106,9 +107,9 @@ class Tiles3D extends LayerBase {
     /**
      * Tiles3D extract.
      * Activa la consulta por click en el objeto geográfico.
-     * Por defecto, falso.
+     * Por defecto, verdadero.
      */
-    this.extract = !isNullOrEmpty(userParameters.extract) ? userParameters.extract : false;
+    this.extract = !isNullOrEmpty(userParameters.extract) ? userParameters.extract : true;
 
     /**
      * Tiles3D infoEventType.
@@ -158,7 +159,8 @@ class Tiles3D extends LayerBase {
 
   /**
    * Devuelve el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @getter
@@ -171,7 +173,8 @@ class Tiles3D extends LayerBase {
 
   /**
      * Sobrescribe el valor de la propiedad "extract". La propiedad "extract" tiene la
-     * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+     * siguiente función: Activa la consulta al hacer clic en la característica,
+     * por defecto verdadero.
      *
      * @function
      * @setter
@@ -186,7 +189,7 @@ class Tiles3D extends LayerBase {
         this.getImpl().extract = newExtract;
       }
     } else {
-      this.getImpl().extract = false;
+      this.getImpl().extract = true;
     }
   }
 

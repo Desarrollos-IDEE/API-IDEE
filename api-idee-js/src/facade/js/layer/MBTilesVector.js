@@ -31,7 +31,7 @@ export const mode = {
  *
  * @property {String} idLayer Identificador de la capa.
  * @property {Boolean} extract Opcional. Activa la consulta haciendo
- * clic en el objeto geográfico.
+ * clic en el objeto geográfico, por defecto verdadero.
  * @property {Boolean} transparent (deprecated) Falso si es una capa base,
  * verdadero en caso contrario.
  * @property {Boolean} isBase Define si la capa es base.
@@ -58,7 +58,8 @@ class MBTilesVector extends Vector {
    * - source: Fuente de la capa.
    * - tileSize: Tamaño de la tesela vectorial, por defecto 256.
    * - visibility: Define si la capa es visible o no. Verdadero por defecto.
-   * - extract: Opcional, activa la consulta por click en el objeto geográfico, por defecto falso.
+   * - extract: Opcional, activa la consulta por click en el objeto geográfico,
+   * por defecto verdadero.
    * - isBase: Indica si la capa es base.
    * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
    * - template: (opcional) Plantilla que se mostrará al consultar un objeto geográfico.
@@ -127,9 +128,9 @@ class MBTilesVector extends Vector {
 
     /**
      * MBTilesVector extract: Activa la consulta al hacer clic sobre un objeto geográfico,
-     * por defecto falso.
+     * por defecto verdadero.
      */
-    this.extract = parameters.extract === undefined ? false : parameters.extract;
+    this.extract = parameters.extract === undefined ? true : parameters.extract;
   }
 
   /**
@@ -194,7 +195,8 @@ class MBTilesVector extends Vector {
 
   /**
    * Devuelve el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @getter
@@ -207,7 +209,8 @@ class MBTilesVector extends Vector {
 
   /**
    * Sobrescribe el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @setter
@@ -222,7 +225,7 @@ class MBTilesVector extends Vector {
         this.getImpl().extract = newExtract;
       }
     } else {
-      this.getImpl().extract = false;
+      this.getImpl().extract = true;
     }
   }
 
