@@ -354,7 +354,9 @@ class Vector extends Layer {
         if (isFunction(clickFn)) {
           clickFn(evt, feature);
         } else {
-          const htmlAsText = compileTemplate(geojsonPopupTemplate, {
+          const popupTemplate = !isNullOrEmpty(this.template)
+            ? this.template : geojsonPopupTemplate;
+          const htmlAsText = compileTemplate(popupTemplate, {
             vars: this.parseFeaturesForTemplate_(features),
             parseToHtml: false,
           });

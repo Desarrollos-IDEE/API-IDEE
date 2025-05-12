@@ -227,7 +227,9 @@ class MVT extends Vector {
       const feature = features[0];
       this.unselectFeatures();
       if (!isNullOrEmpty(feature)) {
-        const htmlAsText = compileTemplate(geojsonPopupTemplate, {
+        const popupTemplate = !isNullOrEmpty(this.template)
+          ? this.template : geojsonPopupTemplate;
+        const htmlAsText = compileTemplate(popupTemplate, {
           vars: this.parseFeaturesForTemplate_(features),
           parseToHtml: false,
         });
@@ -452,6 +454,7 @@ class MVT extends Vector {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
       equals = equals && (this.extract === obj.extract);
+      equals = equals && (this.template === obj.template);
     }
 
     return equals;

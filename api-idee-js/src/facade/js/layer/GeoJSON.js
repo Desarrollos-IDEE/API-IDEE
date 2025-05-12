@@ -25,6 +25,7 @@ import { getValue } from '../i18n/language';
  * @property {Boolean} transparent (deprecated) Falso si es una capa base,
  * verdadero en caso contrario.
  * @property {Boolean} isBase Define si la capa es base.
+ * @property {String} template Plantilla que se mostrará al consultar un objeto geográfico.
  * @property {Object} options Opciones GeoJSON.
  * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
  * <pre><code>
@@ -58,6 +59,7 @@ class GeoJSON extends LayerVector {
    * - legend: Indica el nombre que queremos que aparezca en el árbol de contenidos, si lo hay.
    * - isBase: Indica si la capa es base.
    * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
+   * - template: (opcional) Plantilla que se mostrará al consultar un objeto geográfico.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a la implementación.
    * - hide: Atributos ocultos.
    * - show: Mostrar atributos.
@@ -262,6 +264,7 @@ class GeoJSON extends LayerVector {
       equals = this.name === obj.name;
       equals = equals && (this.extract === obj.extract);
       equals = equals && (this.idLayer === obj.idLayer);
+      equals = equals && (this.template === obj.template);
     }
 
     return equals;

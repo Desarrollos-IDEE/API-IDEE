@@ -28,6 +28,7 @@ import Generic from '../style/Generic';
  * @property {Boolean} transparent (deprecated) Falso si es una capa base,
  * verdadero en caso contrario.
  * @property {Boolean} isBase Define si la capa es base.
+ * @property {String} template Plantilla que se mostrará al consultar un objeto geográfico.
  *
  * @api
  * @extends {IDEE.layer.Vector}
@@ -48,6 +49,7 @@ class GenericVector extends Vector {
    * - ids: Opcional - identificadores por los que queremos filtrar los objetos geográficos.
    * - cql: Opcional - Sentencia CQL para filtrar los objetos geográficos.
    *  El método setCQL(cadena_cql) refresca la capa aplicando el nuevo predicado CQL que reciba.
+   * - template: (opcional) Plantilla que se mostrará al consultar un objeto geográfico.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a
    * la implementación de la capa.
    * - visibility: Indica la visibilidad de la capa.
@@ -389,6 +391,7 @@ class GenericVector extends Vector {
       equals = equals && (this.name === obj.name);
       equals = equals && (this.cql === obj.cql);
       equals = equals && (this.idLayer === obj.idLayer);
+      equals = equals && (this.template === obj.template);
     }
 
     return equals;

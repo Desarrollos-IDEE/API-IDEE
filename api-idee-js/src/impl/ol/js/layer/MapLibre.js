@@ -386,7 +386,9 @@ class MapLibre extends LayerBase {
       const feature = features[0];
       this.unselectFeatures();
       if (!isNullOrEmpty(feature)) {
-        const htmlAsText = compileTemplate(geojsonPopupTemplate, {
+        const popupTemplate = !isNullOrEmpty(this.template)
+          ? this.template : geojsonPopupTemplate;
+        const htmlAsText = compileTemplate(popupTemplate, {
           vars: this.parseFeaturesForTemplate_(features),
           parseToHtml: false,
         });
