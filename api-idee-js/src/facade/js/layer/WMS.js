@@ -30,6 +30,7 @@ import { getValue } from '../i18n/language';
  * @property {Object} options Capa de opciones WMS.
  * @property {Boolean} useCapabilities Define si se utilizará el capabilities para generar la capa.
  * @property {Boolean} isBase Define si la capa es base.
+ * @property {String} cql Parámetro de filtrado.
  * @api
  * @extends {IDEE.Layer}
  */
@@ -82,7 +83,8 @@ class WMS extends LayerBase {
    *  source: new OLSourceTileWMS({
    *    attributions: 'wms',
    *    ...
-   *  })
+   *  }),
+   *  cql: 'id IN (3,5)',
    * }
    * </code></pre>
    * @api
@@ -139,6 +141,13 @@ class WMS extends LayerBase {
      */
     if (!isNullOrEmpty(vendorOptions.capabilitiesMetadata)) {
       this.capabilitiesMetadata = vendorOptions.capabilitiesMetadata;
+    }
+
+    /**
+     * WMS cql. Parámetro de consulta.
+     */
+    if (!isNullOrEmpty(vendorOptions?.cql)) {
+      this.cql = vendorOptions.cql;
     }
 
     /**
@@ -201,6 +210,30 @@ class WMS extends LayerBase {
     } else {
       this.getImpl().tiled = true;
     }
+  }
+
+  /**
+   * Devuelve el valor de la propiedad "cql".
+   *
+   * @function
+   * @getter
+   * @return {IDEE.layer.WMS.impl.cql} Valor de la cql.
+   * @api
+   */
+  get cql() {
+    return this.getImpl().cql;
+  }
+
+  /**
+   * Sobrescribe el valor de la propiedad "cql".
+   *
+   * @function
+   * @setter
+   * @param {IDEE.WMS.cql} newCql Nueva cql.
+   * @api
+   */
+  set cql(newCql) {
+    this.getImpl().cql = newCql;
   }
 
   /**
@@ -469,6 +502,7 @@ class WMS extends LayerBase {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
       equals = equals && (this.version === obj.version);
+      equals = equals && (this.cql === obj.cql);
       equals = equals && (this.idLayer === obj.idLayer);
     }
 

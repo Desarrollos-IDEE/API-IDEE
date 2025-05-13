@@ -495,6 +495,7 @@ class WMS extends LayerBase {
         TRANSPARENT: !this.isBase,
         FORMAT: this.format,
         STYLES: this.styles,
+        CQL_FILTER: this.cql_,
         TILED: this.tiled,
       };
 
@@ -752,6 +753,34 @@ class WMS extends LayerBase {
   }
 
   /**
+   * Devuelve el valor de la propiedad "cql".
+   *
+   * @function
+   * @getter
+   * @return {IDEE.layer.WMS.impl.cql} Valor de la cql.
+   * @api
+   */
+  get cql() {
+    return this.cql_;
+  }
+
+  /**
+   * Sobrescribe el valor de la propiedad "cql".
+   *
+   * @function
+   * @setter
+   * @param {IDEE.WMS.cql} newCql Nueva cql.
+   * @api
+   */
+  set cql(newCql) {
+    this.cql_ = newCql;
+    const ol3Layer = this.getLayer();
+    if (!isNullOrEmpty(ol3Layer)) {
+      ol3Layer.getSource().updateParams({ CQL_FILTER: newCql });
+    }
+  }
+
+  /**
    * Este método actualiza el estado de este
    * capa.
    *
@@ -884,6 +913,7 @@ class WMS extends LayerBase {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
       equals = equals && (this.version === obj.version);
+      equals = equals && (this.cql_ === obj.cql_);
     }
 
     return equals;
