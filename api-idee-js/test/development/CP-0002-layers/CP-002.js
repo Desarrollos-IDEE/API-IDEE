@@ -190,6 +190,11 @@ if (listAllFunctions && listAllFunctions.length > 0) { // Confirmar que existen 
             }
           } else if (auxName === 'setZIndex') {
             showResult(auxButton, 'SET_setZIndex', capaPrueba[auxName](101));
+          } else if (auxName === 'setTileLoadFunction') {
+            showResult(auxButton, 'SET_setTileLoadFunction', capaPrueba[auxName]((imageTile, src) => {
+              imageTile.getImage().src = src;
+              console.log('loading tile wms');
+            }));
           } else {
             auxButton.className = 'errorButton';
             console.error('NOT_PREPARED_FUNCTION_TEST_FOR_SET:', auxName);
