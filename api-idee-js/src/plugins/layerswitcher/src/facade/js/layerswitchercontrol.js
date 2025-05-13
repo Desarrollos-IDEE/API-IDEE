@@ -1993,7 +1993,7 @@ export default class LayerswitcherControl extends IDEE.Control {
   }
 
   addLayersWFS(elmSelWFS) {
-    const url = document.querySelector(SEARCH_INPUT).value.trim().split('?')[0];
+    const url = document.querySelector(SEARCH_INPUT).value.trim();
     elmSelWFS.forEach((elm) => {
       const id = elm.id.split(':');
       const format = elm.getAttribute('format');
