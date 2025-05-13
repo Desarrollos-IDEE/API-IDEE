@@ -257,6 +257,18 @@ class WMS extends LayerBase {
   }
 
   /**
+   * Establece la función de carga de tiles.
+   *
+   * @function
+   * @public
+   * @param {Function} fn Nueva función de carga de tiles.
+   * @api
+   */
+  setTileLoadFunction(fn) {
+    this.getImpl().setTileLoadFunction(fn);
+  }
+
+  /**
    * Este método calcula la extensión máxima de esta capa.
    *
    * @function

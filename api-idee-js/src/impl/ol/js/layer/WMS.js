@@ -31,6 +31,7 @@ import ImageWMS from '../source/ImageWMS';
  *
  * @property {Object} options Opciones de la capa WMS.
  * @property {Array<IDEE.layer.WMS>} layers Intancia de WMS con metadatos.
+ * @property {Function} tileLoadFunction Función de carga de tiles.
  *
  * @api
  * @extends {IDEE.impl.layer.Layer}
@@ -70,6 +71,7 @@ class WMS extends LayerBase {
    *    attributions: 'wms',
    *    ...
    *  })
+   *  tileLoadFunction: <funcion>
    * }
    * </code></pre>
    * @api stable
@@ -102,6 +104,13 @@ class WMS extends LayerBase {
      * WMS getCapabilitiesPromise. Metadatos, promesa.
      */
     this.getCapabilitiesPromise = null;
+
+    /**
+     * WMS tileLoadFunction. Función de carga de tiles.
+     * @private
+     * @type {Function}
+     */
+    this.tileLoadFunction = vendorOptions?.tileLoadFunction;
 
     /**
      * WMS extentPromise. Extensión de la capa, promesa.
@@ -501,6 +510,7 @@ class WMS extends LayerBase {
 
       const opacity = this.opacity_;
       const zIndex = this.zIndex_;
+      const tileLoadFunction = this.tileLoadFunction;
       if (this.tiled === true) {
         const tileGrid = (this.useCapabilities)
           ? new OLTileGrid({ resolutions, extent, origin: getBottomLeft(extent) })
@@ -515,6 +525,7 @@ class WMS extends LayerBase {
           maxResolution,
           opacity,
           zIndex,
+          tileLoadFunction,
         });
       } else {
         olSource = new ImageWMS({
@@ -633,6 +644,18 @@ class WMS extends LayerBase {
       }
     }
     // });
+  }
+
+  /**
+   * Establece la función de carga de tiles.
+   *
+   * @function
+   * @public
+   * @param {Function} fn Nueva función de carga de tiles.
+   * @api
+   */
+  setTileLoadFunction(fn) {
+    this.getLayer().getSource().setTileLoadFunction(fn);
   }
 
   /**
