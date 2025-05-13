@@ -1,6 +1,5 @@
 /* eslint-disable camelcase */
 import WFS from 'IDEE/layer/WFS';
-import WMS from 'IDEE/layer/WMS';
 import Generic from 'IDEE/style/Generic';// eslint-disable-line no-unused-vars
 import OLSourceVector from 'ol/source/Vector';
 import OLFormatGeoJSON from 'ol/format/GeoJSON';
@@ -25,7 +24,7 @@ export const wfs_001 = new WFS({
   //   name: 'Name Prueba WFS',
   //   description: 'Description Prueba',
   //   url: 'https://www.ign.es',
-  //   contentAttributions: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+  //   contentAttributions: 'https://componentes.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
   //   contentType: 'kml',
   // }
 }, {
@@ -91,25 +90,22 @@ export const wfs_004 = new WFS({
   extract: true,
 });
 
-export const wfs_005 = new WMS(
+export const wfs_005 = new WFS(
   {
-    // namespace: 'gonce',
-    name: 'AU.AdministrativeBoundary',
-    url: 'https://www.ign.es/wms-inspire/unidades-administrativas',
-    legend: 'Colegios',
-    tiled: false,
-    // extract: true,
-    // cql: "nombre = 'Aljarafe'",
+    // url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/wfs',
+    namespace: 'sepim',
+    name: 'campamentos',
+    // geometry: 'POLYGON',
+    extract: true,
+    cql: "nombre = 'Aljarafe'",
   },
   {
+    minZoom: 5,
   },
   {
-    // cql: "name_boundary LIKE '%Galicia%'",
-    cql: "name_boundary LIKE '%Aragón%'",
+    source: new OLSourceVector({
+      url: 'https://geostematicos-sigc.juntadeandalucia.es/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typename=tematicos:comarcas&outputFormat=application%2Fjson&srsname=EPSG%3A3857',
+      format: new OLFormatGeoJSON(),
+    }),
   },
 );
-
-setTimeout(() => {
-  console.log(wfs_005.cql);
-  wfs_005.cql = "name_boundary LIKE '%Galicia%'";
-}, 5000);

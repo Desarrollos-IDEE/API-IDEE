@@ -1,6 +1,6 @@
 import { map as Mmap } from 'IDEE/api-idee';
 // import { vector_001 } from '../layers/vector/vector';
-import { wfs_005 } from '../layers/wfs/wfs';
+// import { wfs_001 } from '../layers/wfs/wfs';
 // import { geojson_001 } from '../layers/geojson/geojson';
 // import { kml_001 } from '../layers/kml/kml';
 import { mvt_001 } from '../layers/mvt/mvt';
@@ -22,11 +22,9 @@ import { generic_001 } from '../layers/generic/generic';
 
 const mapa = Mmap({
   container: 'map',
-  controls: ['getfeatureinfo'],
-
-  // projection: 'EPSG:3857*m',
-  // center: [-443273.10081370454, 4757481.749296248],
-  // zoom: 6,
+  projection: 'EPSG:3857*m',
+  center: [-443273.10081370454, 4757481.749296248],
+  zoom: 6,
 });
 
 
@@ -38,7 +36,7 @@ const mapa = Mmap({
 // }, 5000);
 
 // [-] MVT
-mapa.addLayers(wfs_005)
+mapa.addLayers(mvt_001)
 // console.log(mvt_001.getMaxExtent())
 // setTimeout(() => {
 //     mvt_001.setMaxExtent([-1259872.4694101033, 4359275.566199489, -85799.71494979598, 4620384.454821652])
