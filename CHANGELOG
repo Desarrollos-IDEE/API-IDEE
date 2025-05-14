@@ -29,4 +29,6 @@
 - Añadido template como parámetro junto a sus métodos get/set en capas vectoriales.
 - Se activa el extract por defecto en las capas vectoriales.
 - Mejoras en la comprobación de la implementación en capas Vector.
+- Se implementa el uso del ticket en capas WMS, incluyendo el control getFeatureInfo y el plugin information.
+- Se implementa el uso del ticket en el plugin comparators.
 - Se implementa el parámetro tileLoadFunction en el vendors, ademas de setTileLoadFunction.
