@@ -563,23 +563,23 @@ class MBTilesVector extends Vector {
    * @api
    */
   checkAllTilesLoaded_(evt) {
-    const { code } = this.map.getProjection();
     const currTileCoord = evt.tile.getTileCoord();
-    const olProjection = getProj(code);
-    const tileCache = this.olLayer.getSource().getTileCacheForProjection(olProjection);
-    const tileImages = tileCache.getValues();
-    const loaded = tileImages.some((tile) => {
-      const tileCoord = tile.getTileCoord();
-      const tileState = tile.getState();
-      const sameTile = (currTileCoord[0] === tileCoord[0]
-        && currTileCoord[1] === tileCoord[1]
-        && currTileCoord[2] === tileCoord[2]);
-      const tileLoaded = sameTile || (tileState !== 1);
-      return tileLoaded;
-    });
-    if (loaded && !this.loaded_) {
-      this.loaded_ = true;
-      this.facadeLayer_.fire(EventType.LOAD);
+    // eslint-disable-next-line no-underscore-dangle
+    const tileImages = this.olLayer.getSource().sourceTiles_;
+    if (Array.isArray(tileImages)) {
+      const loaded = tileImages.some((tile) => {
+        const tileCoord = tile.getTileCoord();
+        const tileState = tile.getState();
+        const sameTile = (currTileCoord[0] === tileCoord[0]
+          && currTileCoord[1] === tileCoord[1]
+          && currTileCoord[2] === tileCoord[2]);
+        const tileLoaded = sameTile || (tileState !== 1);
+        return tileLoaded;
+      });
+      if (loaded && !this.loaded_) {
+        this.loaded_ = true;
+        this.facadeLayer_.fire(EventType.LOAD);
+      }
     }
   }
 

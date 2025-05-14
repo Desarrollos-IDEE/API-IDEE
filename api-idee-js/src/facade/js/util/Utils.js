@@ -197,14 +197,15 @@ export const addParameters = (url, params) => {
   if (isObject(params)) {
     const keys = Object.keys(params);
     keys.forEach((key) => {
-      const value = params[key];
-      requestParams += key;
-      requestParams += '=';
-      requestParams += encodeURIComponent(value);
-      requestParams += '&';
+      if (requestUrl.toLowerCase().indexOf(`$${key.toLowerCase()}=`) === -1) {
+        const value = params[key];
+        requestParams += `${key}=${encodeURIComponent(value)}&`;
+      }
     });
     // removes the last '&'
-    requestParams = requestParams.substring(0, requestParams.length - 1);
+    if (requestParams.charAt(requestUrl.length - 1) === '&') {
+      requestParams = requestParams.substring(0, requestParams.length - 1);
+    }
   } else if (isString(params)) {
     requestParams = params;
   }

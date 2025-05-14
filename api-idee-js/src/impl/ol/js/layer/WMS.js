@@ -31,6 +31,7 @@ import ImageWMS from '../source/ImageWMS';
  *
  * @property {Object} options Opciones de la capa WMS.
  * @property {Array<IDEE.layer.WMS>} layers Intancia de WMS con metadatos.
+ * @property {Function} tileLoadFunction Función de carga de tiles.
  *
  * @api
  * @extends {IDEE.impl.layer.Layer}
@@ -70,6 +71,7 @@ class WMS extends LayerBase {
    *    attributions: 'wms',
    *    ...
    *  })
+   *  tileLoadFunction: <funcion>
    * }
    * </code></pre>
    * @api stable
@@ -102,6 +104,13 @@ class WMS extends LayerBase {
      * WMS getCapabilitiesPromise. Metadatos, promesa.
      */
     this.getCapabilitiesPromise = null;
+
+    /**
+     * WMS tileLoadFunction. Función de carga de tiles.
+     * @private
+     * @type {Function}
+     */
+    this.tileLoadFunction = vendorOptions?.tileLoadFunction;
 
     /**
      * WMS extentPromise. Extensión de la capa, promesa.
@@ -486,6 +495,7 @@ class WMS extends LayerBase {
         TRANSPARENT: !this.isBase,
         FORMAT: this.format,
         STYLES: this.styles,
+        CQL_FILTER: this.cql_,
         TILED: this.tiled,
       };
 
@@ -501,6 +511,7 @@ class WMS extends LayerBase {
 
       const opacity = this.opacity_;
       const zIndex = this.zIndex_;
+      const tileLoadFunction = this.tileLoadFunction;
       if (this.tiled === true) {
         const tileGrid = (this.useCapabilities)
           ? new OLTileGrid({ resolutions, extent, origin: getBottomLeft(extent) })
@@ -515,6 +526,7 @@ class WMS extends LayerBase {
           maxResolution,
           opacity,
           zIndex,
+          tileLoadFunction,
         });
       } else {
         olSource = new ImageWMS({
@@ -636,6 +648,18 @@ class WMS extends LayerBase {
   }
 
   /**
+   * Establece la función de carga de tiles.
+   *
+   * @function
+   * @public
+   * @param {Function} fn Nueva función de carga de tiles.
+   * @api
+   */
+  setTileLoadFunction(fn) {
+    this.getLayer().getSource().setTileLoadFunction(fn);
+  }
+
+  /**
    * Este método obtiene el número de niveles de zoom
    * disponibles para la capa WMS.
    *
@@ -739,6 +763,34 @@ class WMS extends LayerBase {
    */
   setLegendURL(legendUrl) {
     this.legendUrl_ = legendUrl;
+  }
+
+  /**
+   * Devuelve el valor de la propiedad "cql".
+   *
+   * @function
+   * @getter
+   * @return {IDEE.layer.WMS.impl.cql} Valor de la cql.
+   * @api
+   */
+  get cql() {
+    return this.cql_;
+  }
+
+  /**
+   * Sobrescribe el valor de la propiedad "cql".
+   *
+   * @function
+   * @setter
+   * @param {IDEE.WMS.cql} newCql Nueva cql.
+   * @api
+   */
+  set cql(newCql) {
+    this.cql_ = newCql;
+    const ol3Layer = this.getLayer();
+    if (!isNullOrEmpty(ol3Layer)) {
+      ol3Layer.getSource().updateParams({ CQL_FILTER: newCql });
+    }
   }
 
   /**
@@ -874,6 +926,7 @@ class WMS extends LayerBase {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
       equals = equals && (this.version === obj.version);
+      equals = equals && (this.cql_ === obj.cql_);
     }
 
     return equals;
