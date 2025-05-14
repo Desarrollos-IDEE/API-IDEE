@@ -12,7 +12,6 @@ import * as EventType from 'IDEE/event/eventtype';
 import TileEventType from 'ol/source/TileEventType';
 import TileState from 'ol/TileState';
 import MVTFormatter from 'ol/format/MVT';
-import { get as getProj } from 'ol/proj';
 import Feature from 'ol/Feature';
 import RenderFeature from 'ol/render/Feature';
 import { mode } from 'IDEE/layer/MVT';
@@ -371,21 +370,22 @@ class MVT extends Vector {
    */
   checkAllTilesLoaded_(evt) {
     const currTileCoord = evt.tile.getTileCoord();
-    const olProjection = getProj(this.projection_);
-    const tileCache = this.olLayer.getSource().getTileCacheForProjection(olProjection);
-    const tileImages = tileCache.getValues();
-    const loaded = tileImages.every((tile) => {
-      const tileCoord = tile.getTileCoord();
-      const tileState = tile.getState();
-      const sameTile = (currTileCoord[0] === tileCoord[0]
-        && currTileCoord[1] === tileCoord[1]
-        && currTileCoord[2] === tileCoord[2]);
-      const tileLoaded = sameTile || (tileState !== TileState.LOADING);
-      return tileLoaded;
-    });
-    if (loaded && !this.loaded_) {
-      this.loaded_ = true;
-      this.facadeVector_.fire(EventType.LOAD);
+    // eslint-disable-next-line no-underscore-dangle
+    const tileImages = this.olLayer.getSource().sourceTiles_;
+    if (Array.isArray(tileImages)) {
+      const loaded = tileImages.every((tile) => {
+        const tileCoord = tile.getTileCoord();
+        const tileState = tile.getState();
+        const sameTile = (currTileCoord[0] === tileCoord[0]
+          && currTileCoord[1] === tileCoord[1]
+          && currTileCoord[2] === tileCoord[2]);
+        const tileLoaded = sameTile || (tileState !== TileState.LOADING);
+        return tileLoaded;
+      });
+      if (loaded && !this.loaded_) {
+        this.loaded_ = true;
+        this.facadeVector_.fire(EventType.LOAD);
+      }
     }
   }
 
