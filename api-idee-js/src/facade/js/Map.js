@@ -6,7 +6,7 @@ import Base from './Base';
 import { getQuickLayers } from './api-idee';
 import {
   isUndefined, isNull, isArray, isNullOrEmpty, isFunction, isObject, isString, normalize,
-  addParameters, concatUrlPaths, escapeJSCode, getEnvolvedExtent,
+  concatUrlPaths, escapeJSCode, getEnvolvedExtent,
 } from './util/Utils';
 import { addFileToMap } from './util/LoadFiles';
 import { getValue } from './i18n/language';
@@ -3567,14 +3567,17 @@ class Map extends Base {
    * @api
    */
   setTicket(ticket) {
-    if (!isNullOrEmpty(ticket)) {
-      if (IDEE.config.PROXY_POST_URL.indexOf('ticket=') === -1) {
-        IDEE.config('PROXY_POST_URL', addParameters(IDEE.config.PROXY_POST_URL, { ticket }));
-      }
-      if (IDEE.config.PROXY_URL.indexOf('ticket=') === -1) {
-        IDEE.config('PROXY_URL', addParameters(IDEE.config.PROXY_URL, { ticket }));
-      }
-    }
+    this.ticket_ = ticket;
+    IDEE.config.TICKET = ticket;
+
+    // if (!isNullOrEmpty(ticket)) {
+    //   if (IDEE.config.PROXY_POST_URL.indexOf('ticket=') === -1) {
+    //     IDEE.config('PROXY_POST_URL', addParameters(IDEE.config.PROXY_POST_URL, { ticket }));
+    //   }
+    //   if (IDEE.config.PROXY_URL.indexOf('ticket=') === -1) {
+    //     IDEE.config('PROXY_URL', addParameters(IDEE.config.PROXY_URL, { ticket }));
+    //   }
+    // }
 
     return this;
   }
