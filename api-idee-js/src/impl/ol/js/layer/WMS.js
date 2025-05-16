@@ -787,9 +787,9 @@ class WMS extends LayerBase {
    */
   set cql(newCql) {
     this.cql_ = newCql;
-    const ol3Layer = this.getLayer();
-    if (!isNullOrEmpty(ol3Layer)) {
-      ol3Layer.getSource().updateParams({ CQL_FILTER: newCql });
+    const olLayer = this.getLayer();
+    if (!isNullOrEmpty(olLayer)) {
+      olLayer.getSource().updateParams({ CQL_FILTER: newCql });
     }
   }
 
@@ -803,9 +803,9 @@ class WMS extends LayerBase {
    * @export
    */
   refresh() {
-    const ol3Layer = this.getLayer();
-    if (!isNullOrEmpty(ol3Layer)) {
-      ol3Layer.getSource().changed();
+    const olLayer = this.getLayer();
+    if (!isNullOrEmpty(olLayer)) {
+      olLayer.getSource().changed();
     }
   }
 
@@ -867,8 +867,8 @@ class WMS extends LayerBase {
    */
   recreateLayer() {
     const olMap = this.map.getMapImpl();
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      olMap.removeLayer(this.ol3Layer);
+    if (!isNullOrEmpty(this.olLayer)) {
+      olMap.removeLayer(this.olLayer);
       this.layers = [];
       this.getCapabilitiesPromise = null;
     }
