@@ -188,7 +188,7 @@ map.addLayers(capaGeoJSON2); window.capaGeoJSON2 = capaGeoJSON2; // */
 const capaOSM = new IDEE.layer.OSM({
   name: 'Capa OSM',
   legend: 'Capa OSM',
-  transparent: true,
+  isBase: false,
   url: 'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
   matrixSet: 'EPSG:3857',
 });
@@ -291,7 +291,7 @@ map.addLayers(capaWMS); window.capaWMS = capaWMS; // */
 const capaWMS2 = new IDEE.layer.WMS({
   url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
   name: 'AU.AdministrativeUnit', legend: 'capaWMS2',
-  tiled: false, transparent: true,
+  tiled: false, isBase: false,
 }, {
   maxScale: 14000000, minScale: 3000000
 });
@@ -302,7 +302,7 @@ map.addWMS(capaWMS2); window.capaWMS2 = capaWMS2; // */
 const capaWMS3 = new IDEE.layer.WMS({
   url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/wms?',
   name: 'provincias_pob', legend: 'capaWMS3',
-  tiled: false, transparent: true,
+  tiled: false, isBase: false,
 });
 map.addWMS(capaWMS3); window.capaWMS3 = capaWMS3; // */
 
@@ -347,7 +347,7 @@ const generic_002 = new IDEE.layer.GenericVector({}, {}, new ol.layer.Vector({
 map.addLayers(generic_002); window.generic_002 = generic_002; // */
 
 /* / Capa MBTiles fetch
-window.fetch('./cabrera.mbtiles').then((response) => {
+window.fetch('https://componentes.idee.es/estaticos/Datos/mbtiles/cabrera.mbtiles').then((response) => {
   if (response.status != 404) {
     const mbtile1 = new IDEE.layer.MBTiles({
       name: 'mbtiles', legend: 'Capa MBTiles L',
@@ -374,7 +374,7 @@ const mbtile2 = new IDEE.layer.MBTiles({
 map.addLayers(mbtile2); window.mbtile2 = mbtile2; // */
 
 /* / Capa MBTilesVector fetch
-window.fetch('./countries.mbtiles').then((response) => {
+window.fetch('https://componentes.idee.es/estaticos/Datos/mbtiles/countries.mbtiles').then((response) => {
   if (response.status != 404) {
     const mbtilesvector = new IDEE.layer.MBTilesVector({
       name: 'mbtiles_vector',
@@ -405,7 +405,7 @@ const geotiff = new IDEE.layer.GeoTIFF({
   url: 'http://ftpcdd.cnig.es/Vuelos_2021/Vuelos_2021/catalunya_2021/Costa/01.VF/01.08_PNOA_2021_CAT_COSTA_22cm_VF_img8c_rgb_hu31/h50_0219_fot_002-0001_cog.tif',
   name: 'Nombre geotiff',
   legend: 'Leyenda geotiff',
-  transparent: true,
+  isBase: false,
 }, {
   convertToRGB: 'auto', nodata: 0, // Pone transparente el color negro del background
 });

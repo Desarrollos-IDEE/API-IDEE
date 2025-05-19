@@ -3,7 +3,9 @@
  */
 import OSMImpl from 'impl/layer/OSM';
 import LayerBase from './Layer';
-import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
+import {
+  isUndefined, isNullOrEmpty, isObject, isString,
+} from '../util/Utils';
 import Exception from '../exception/exception';
 import * as LayerType from './Type';
 import * as parameter from '../parameter/parameter';
@@ -13,12 +15,14 @@ import { getValue } from '../i18n/language';
  * @classdesc
  * La API-IDEE permite visualizar la capa de Open Street Map.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} name Nombre de la capa, OSM.
  * @property {String} legend Indica el nombre que queremos que aparezca en
  * el árbol de contenidos, si lo hay.
- * @property {Boolean} transparent Falso si es una capa base, verdadero en caso contrario.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
  * @property {Object} options Opciones OSM.
- * @property {Boolean} isbase Define si la capa es base.
+ * @property {Boolean} isBase Define si la capa es base.
  * @api
  * @extends {IDEE.Layer}
  */
@@ -35,7 +39,6 @@ class OSM extends LayerBase {
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
    * - name: Nombre de la capa en la leyenda.
    * - legend: Indica el nombre que queremos que aparezca en el árbol de contenidos, si lo hay.
-   * - transparent: Falso si es una capa base, verdadero en caso contrario.
    * - type: Tipo de la capa.
    * - url: Url genera la OSM.
    * - minZoom: Zoom mínimo aplicable a la capa.
@@ -45,6 +48,8 @@ class OSM extends LayerBase {
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán
    * a la implementación de la capa.
    * - animated: Activa la animación para capas base o parámetros animados.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
    * <pre><code>
    * import SourceOSM from 'ol/source/OSM';
@@ -71,10 +76,16 @@ class OSM extends LayerBase {
       userParameters = 'OSM';
     }
 
+    if (isString(userParameters) || !isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
+    }
+
     // This layer is of parameters.
     const parameters = parameter.layer(userParameters, LayerType.OSM);
     const optionsVar = {
       ...parameters,
+      ...options,
     };
 
     /**
@@ -118,29 +129,6 @@ class OSM extends LayerBase {
   }
 
   /**
-   * Devuelve el tipo de capa, OSM.
-   * @function
-   * @return {IDEE.LayerType.OSM} Devuelve OSM.
-   * @api
-   */
-  get type() {
-    return LayerType.OSM;
-  }
-
-  /**
-   * Sobrescribe el tipo de capa.
-   * @function
-   * @param {String} newType Nuevo tipo de capa.
-   * @api
-   */
-  set type(newType) {
-    if (!isUndefined(newType)
-      && !isNullOrEmpty(newType) && (newType !== LayerType.OSM)) {
-      Exception('El tipo de capa debe ser \''.concat(LayerType.OSM).concat('\' pero se ha especificado \'').concat(newType).concat('\''));
-    }
-  }
-
-  /**
    * Este método comprueba si un objeto es igual
    * a esta capa.
    *
@@ -155,7 +143,7 @@ class OSM extends LayerBase {
     if (obj instanceof OSM) {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
-      equals = equals && (this.options === obj.options);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
     return equals;
   }

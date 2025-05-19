@@ -20,7 +20,7 @@
     "ficherosel": "No se ha seleccionado formato de descarga.",
     "query_profile": "No se han podido consultar los datos de altitud para esta entidad.",
     "featuresel": "No se han seleccionado elementos",
-    "topographic_one_element": "El perfil topografico solo se puede realizar para un único elemento",
+    "topographic_one_element": "El perfil topográfico solo se puede realizar para un único elemento",
     "typeLayer": "Las capas de tipo MVT y MBTilesVector no son editables"
   },
   "help_template": {
@@ -130,10 +130,11 @@
   "extension": "Extensión",
   "draw": "Dibujar",
   "createdLayer": "Creada capa",
-  "zmin": "Alt. min",
-  "zmax": "Alt. max",
+  "zmin": "Altitud mínima",
+  "zmax": "Altitud máxima",
   "altitude": "Altitud",
-  "distance": "Dist. total",
+  "distanceT": "Distancia total",
+  "distanceP": "Distancia parcial",
   "ytitle": "Altitud (m)",
   "xtitle": "Distancia (km)",
   "title_popup_buffer": "ÁREA DE INFLUENCIA",
@@ -171,5 +172,6 @@
   "close": "Cerrar",
   "fill": "Relleno",
   "stroke": "Trazo",
-  "opts_point": "Opciones de puntos"
+  "opts_point": "Opciones de puntos",
+  "readingAltitude": "Consultando..."
 }

@@ -13,7 +13,7 @@ for folder in $(ls "$folderFather"); do
   # Itera sobre cada archivo en la lista
   for file in $files; do
     # Obtiene la ruta absoluta del archivo
-    file_path="https://componentes.cnig.es/api-idee/assets/svg/$folder/$file"
+    file_path="https://componentes.idee.es/api-idee/assets/svg/$folder/$file"
     # Agrega un nuevo elemento a la matriz del archivo JSON con el nombre y la ruta del archivo
     jq --arg folder "$folder" --arg file "$file" --arg file_path "$file_path" \
     '.collection += [ {"name": $folder, "resource":[{"file":$file, "url": $file_path}]} ]' \

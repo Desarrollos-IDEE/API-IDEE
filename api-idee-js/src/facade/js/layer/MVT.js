@@ -32,8 +32,13 @@ export const mode = {
  * ya que se sirven en forma de teselas que contienen la información vectorial
  * del área que delimitan.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {Boolean} extract Activa la consulta al hacer clic sobre un objeto geográfico,
- * por defecto falso.
+ * por defecto verdadero.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
+ * @property {Boolean} isBase Define si la capa es base.
+ * @property {String} template Plantilla que se mostrará al consultar un objeto geográfico.
  *
  * @api
  * @extends {IDEE.layer.Vector}
@@ -53,14 +58,20 @@ class MVT extends Vector {
    *   En este caso la capa sería detectado por los plugins de tablas de
    *   contenidos y aparecería como no visible.
    * - mode: Modo de renderizado de la capa. Valores posibles: 'renderizar' | 'característica'.
-   * - extract: Opcional Activa la consulta por click en el objeto geográfico, por defecto falso.
+   * - extract: Opcional Activa la consulta por click en el objeto geográfico,
+   * por defecto verdadero.
    * - type: Tipo de la capa.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
+   * - isBase: Indica si la capa es base.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
+   * - template: (opcional) Plantilla que se mostrará al consultar un objeto geográfico.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a
    * la implementación de la capa.
    * - style: Define el estilo de la capa.
    * - minZoom. Zoom mínimo aplicable a la capa.
    * - maxZoom. Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - visibility. Define si la capa es visible o no. Verdadero por defecto.
    * - displayInLayerSwitcher. Indica si la capa se muestra en el selector de capas.
    * - predefinedStyles: Estilos predefinidos para la capa.
@@ -80,6 +91,11 @@ class MVT extends Vector {
    * @api
    */
   constructor(parameters = {}, options = {}, vendorOptions = {}, implParam = undefined) {
+    if (!isUndefined(parameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
+    }
+
     let opts = parameter.layer(parameters, MVTType);
     const optionsVar = options;
     if (typeof parameters !== 'string') {
@@ -110,16 +126,16 @@ class MVT extends Vector {
 
     /**
      * extract: Optional Activa la consulta al hacer clic sobre un objeto geográfico,
-     * por defecto falso.
+     * por defecto verdadero.
      */
-    this.extract = opts.extract === undefined ? false : opts.extract;
+    this.extract = opts.extract === undefined ? true : opts.extract;
 
     this.mode = opts.mode || mode.RENDER;
   }
 
   /**
    * Devuelve el valor de la propiedad "extract". La propiedad "extract"
-   * activa la consulta al hacer clic sobre un objeto geográfico, por defecto falso.
+   * activa la consulta al hacer clic sobre un objeto geográfico, por defecto verdadero.
    * @function
    * @return {IDEE.layer.MVT.impl.extract} Devuelve valor del "extract".
    * @api
@@ -130,7 +146,7 @@ class MVT extends Vector {
 
   /**
    * Sobrescribe el valor de la propiedad "extract". La propiedad "extract"
-   * activa la consulta al hacer clic sobre un objeto geográfico, por defecto falso.
+   * activa la consulta al hacer clic sobre un objeto geográfico, por defecto verdadero.
    * @function
    * @param {Boolean} newExtract Nuevo valor para el "extract".
    * @api
@@ -143,7 +159,7 @@ class MVT extends Vector {
         this.getImpl().extract = newExtract;
       }
     } else {
-      this.getImpl().extract = false;
+      this.getImpl().extract = true;
     }
   }
 

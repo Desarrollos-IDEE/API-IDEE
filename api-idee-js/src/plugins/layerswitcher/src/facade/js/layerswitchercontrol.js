@@ -385,7 +385,7 @@ export default class LayerswitcherControl extends IDEE.Control {
               displayGroup: layer.display === undefined ? true : layer.display,
               show_group: getValue('show_group'),
               hide_group: getValue('hide_group'),
-              nameRadio: layer.getImpl().rootGroup === null ? 'm-layerswitcher-radioLayers' : layer.getImpl().rootGroup.name,
+              nameRadio: layer.getImpl().rootGroup === null ? 'm-layerswitcher-radioLayers' : layer.getImpl().rootGroup.idLayer,
               ...varsGroup,
               ...this.getTemplateVariablesValues(),
             },
@@ -1993,7 +1993,7 @@ export default class LayerswitcherControl extends IDEE.Control {
   }
 
   addLayersWFS(elmSelWFS) {
-    const url = document.querySelector(SEARCH_INPUT).value.trim().split('?')[0];
+    const url = document.querySelector(SEARCH_INPUT).value.trim();
     elmSelWFS.forEach((elm) => {
       const id = elm.id.split(':');
       const format = elm.getAttribute('format');
@@ -2042,7 +2042,7 @@ export default class LayerswitcherControl extends IDEE.Control {
             this.capabilities[j].options.origen = this.capabilities[j].type;
             const legendUrl = this.capabilities[j].getLegendURL();
             const meta = this.capabilities[j].capabilitiesMetadata;
-            if ((legendUrl.indexOf('GetLegendGraphic') > -1 || legendUrl.indexOf('assets/img/legend-default.png') > -1) && meta !== undefined && meta.style.length > 0) {
+            if ((legendUrl.indexOf('GetLegendGraphic') > -1 || legendUrl.indexOf('https://componentes.idee.es/estaticos/imagenes/leyenda/legend-default.png') > -1) && meta !== undefined && meta.style.length > 0) {
               if (meta.style[0].LegendURL !== undefined && meta.style[0].LegendURL.length > 0) {
                 const style = meta.style[0].LegendURL[0].OnlineResource;
                 if (style !== undefined && style !== null) {
@@ -2220,7 +2220,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       layer = new IDEE.layer.OSM({
         name,
         legend,
-        transparent: true,
+        isBase: false,
         url,
         matrixSet,
       });

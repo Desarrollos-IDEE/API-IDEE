@@ -17,17 +17,20 @@ import { getValue } from '../i18n/language';
  * WMS devuelve un mapa en formato imagen de un conjunto capas ráster o vectoriales.
  * Permitiendo las personalización de las capas mediante estilos. Se trata de un mapa dínamico.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} legend Nombre asociado en el árbol de contenido, si usamos uno.
  * @property {String} version Versión WMS.
  * @property {Boolean} tiled Verdadero si queremos dividir la capa en mosaicos,
  * falso en caso contrario.
- * @property {Boolean} transparent 'Falso' si es una capa base, 'verdadero' en caso contrario.
+ * @property {Boolean} transparent (deprecated) 'Falso' si es una capa base,
+ * 'verdadero' en caso contrario.
  * @property {Object} capabilitiesMetadata Capacidades de metadatos WMS.
  * @property {Number} minZoom Limitar el zoom mínimo.
  * @property {Number} maxZoom Limitar el zoom máximo.
  * @property {Object} options Capa de opciones WMS.
  * @property {Boolean} useCapabilities Define si se utilizará el capabilities para generar la capa.
- * @property {Boolean} isbase Define si la capa es base.
+ * @property {Boolean} isBase Define si la capa es base.
+ * @property {String} cql Parámetro de filtrado.
  * @api
  * @extends {IDEE.Layer}
  */
@@ -80,7 +83,8 @@ class WMS extends LayerBase {
    *  source: new OLSourceTileWMS({
    *    attributions: 'wms',
    *    ...
-   *  })
+   *  }),
+   *  cql: 'id IN (3,5)',
    * }
    * </code></pre>
    * @api
@@ -94,6 +98,12 @@ class WMS extends LayerBase {
     if (isNullOrEmpty(userParameters)) {
       Exception(getValue('exception').no_param);
     }
+
+    if (isString(userParameters) || !isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
+    }
+
     // This Layer is of parameters.
     const parameters = parameter.layer(userParameters, LayerType.WMS);
     const optionsVar = {
@@ -102,7 +112,6 @@ class WMS extends LayerBase {
       queryable: parameters.queryable,
       displayInLayerSwitcher: parameters.displayInLayerSwitcher,
       useCapabilities: parameters.useCapabilities,
-      transparent: parameters.transparent,
       isWMSfull: parameters.name === undefined,
     };
 
@@ -132,6 +141,13 @@ class WMS extends LayerBase {
      */
     if (!isNullOrEmpty(vendorOptions.capabilitiesMetadata)) {
       this.capabilitiesMetadata = vendorOptions.capabilitiesMetadata;
+    }
+
+    /**
+     * WMS cql. Parámetro de consulta.
+     */
+    if (!isNullOrEmpty(vendorOptions?.cql)) {
+      this.cql = vendorOptions.cql;
     }
 
     /**
@@ -197,6 +213,30 @@ class WMS extends LayerBase {
   }
 
   /**
+   * Devuelve el valor de la propiedad "cql".
+   *
+   * @function
+   * @getter
+   * @return {IDEE.layer.WMS.impl.cql} Valor de la cql.
+   * @api
+   */
+  get cql() {
+    return this.getImpl().cql;
+  }
+
+  /**
+   * Sobrescribe el valor de la propiedad "cql".
+   *
+   * @function
+   * @setter
+   * @param {IDEE.WMS.cql} newCql Nueva cql.
+   * @api
+   */
+  set cql(newCql) {
+    this.getImpl().cql = newCql;
+  }
+
+  /**
    * Devuelve la versión del servicio, por defecto es 1.3.0.
    *
    * @function
@@ -247,6 +287,18 @@ class WMS extends LayerBase {
    */
   set options(newOptions) {
     this.getImpl().options = newOptions;
+  }
+
+  /**
+   * Establece la función de carga de tiles.
+   *
+   * @function
+   * @public
+   * @param {Function} fn Nueva función de carga de tiles.
+   * @api
+   */
+  setTileLoadFunction(fn) {
+    this.getImpl().setTileLoadFunction(fn);
   }
 
   /**
@@ -410,6 +462,32 @@ class WMS extends LayerBase {
   }
 
   /**
+   * Sobreescribe la URL de la capa.
+   *
+   * @function
+   * @param {String} newURL Nueva URL de la capa.
+   * @public
+   * @api
+   */
+  setURL(newURL) {
+    this.getImpl().setURL(newURL);
+  }
+
+  /**
+   * Sobreescribe el nombre de la capa.
+   *
+   * @function
+   * @param {String} newName Nuevo nombre de la capa.
+   * @public
+   * @api
+   */
+  setName(newName) {
+    this.name = !isNullOrEmpty(newName) ? newName : undefined;
+    const isWMSfull = isNullOrEmpty(newName);
+    this.getImpl().setName(this.name, isWMSfull);
+  }
+
+  /**
    * Este método comprueba si un objeto es igual
    * a esta capa.
    *
@@ -424,6 +502,8 @@ class WMS extends LayerBase {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
       equals = equals && (this.version === obj.version);
+      equals = equals && (this.cql === obj.cql);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
 
     return equals;

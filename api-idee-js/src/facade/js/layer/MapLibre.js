@@ -16,8 +16,9 @@ import { getValue } from '../i18n/language';
  * @classdesc
  * Las capas de tipo MapLibre ofrecen la posibilidad de cargar styles (.json) de MapLibre.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {Boolean} extract Activa la consulta al hacer clic sobre un objeto geográfico,
- * por defecto falso.
+ * por defecto verdadero.
  * @property {String} infoEventType Tipo de evento para mostrar la info de una feature.
  * @property {Boolean} disableBackgroundColor Desactiva el color de fondo de la capa.
  * @property {Object} url Estilos de la capa.
@@ -28,6 +29,10 @@ import { getValue } from '../i18n/language';
  * @property {String} legend Leyenda de la capa.
  * @property {Object} attribution Atribución de la capa.
  * @property {Object} maplibrestyle Objeto del valor de url.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
+ * @property {Boolean} isBase Define si la capa es base.
+ * @property {String} template Plantilla que se mostrará al consultar un objeto geográfico.
  *
  * @api
  * @extends {IDEE.layer.Vector}
@@ -44,13 +49,17 @@ class MapLibre extends LayerBase {
    * - visibility: Verdadero si la capa es visible, falso si queremos que no lo sea.
    *   En este caso la capa sería detectado por los plugins de tablas de
    *   contenidos y aparecería como no visible.
-   * - extract: Opcional Activa la consulta por click en el objeto geográfico, por defecto falso.
+   * - extract: Opcional Activa la consulta por click en el objeto geográfico,
+   * por defecto verdadero.
    * - type: Tipo de la capa.
    * - infoEventType: Tipo de evento para mostrar la info de una feature.
    * - name: Nombre de la capa.
    * - legend: Leyenda de la capa.
    * - attribution: Atribución de la capa.
    * - maplibrestyle: Url (.json) en formato objeto.
+   * - isBase: Indica si la capa es base.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
+   * - template: (opcional) Plantilla que se mostrará al consultar un objeto geográfico.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a
    * la implementación de la capa.
    * - opacity: Opacidad de la capa (0-1), por defecto 1.
@@ -68,6 +77,11 @@ class MapLibre extends LayerBase {
    * @api
    */
   constructor(parameters = {}, options = {}, vendorOptions = {}) {
+    if (!isUndefined(parameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
+    }
+
     let opts = parameter.layer(parameters, MapLibreType);
     const optionsVar = options;
     opts = { ...opts, ...optionsVar };
@@ -100,9 +114,9 @@ class MapLibre extends LayerBase {
 
     /**
      * extract: Optional Activa la consulta al hacer clic sobre un objeto geográfico,
-     * por defecto falso.
+     * por defecto verdadero.
      */
-    this.extract = opts.extract === undefined ? false : opts.extract;
+    this.extract = opts.extract === undefined ? true : opts.extract;
 
     /**
      * MapLibre minZoom: Límite del zoom mínimo.
@@ -127,17 +141,50 @@ class MapLibre extends LayerBase {
       ? optionsVar.disableBackgroundColor : undefined;
 
     this.maplibrestyle = opts.maplibrestyle;
+
+    /**
+      * MapLibre template: Para especificar una plantilla al consultar un objeto geográfico.
+      */
+    this.template = opts.template;
   }
 
   /**
    * Devuelve el valor de la propiedad "extract". La propiedad "extract"
-   * activa la consulta al hacer clic sobre un objeto geográfico, por defecto falso.
+   * activa la consulta al hacer clic sobre un objeto geográfico, por defecto verdadero.
    * @function
    * @return {IDEE.layer.MapLibre.impl.extract} Devuelve valor del "extract".
    * @api
    */
   get extract() {
     return this.getImpl().extract;
+  }
+
+  /**
+   * Devuelve el valor de la propiedad "template". La propiedad "template" tiene la
+   * siguiente función: Especifica una plantilla que se mostrará al consultar
+   * un objeto geográfico.
+   *
+   * @function
+   * @getter
+   * @return {String} Valor de la propiedad "template".
+   * @api
+   */
+  get template() {
+    return this.getImpl().template;
+  }
+
+  /**
+   * Sobrescribe el valor de la propiedad "template". La propiedad "template" tiene la
+   * siguiente función: Especifica una plantilla que se mostrará al consultar
+   * un objeto geográfico.
+   *
+   * @function
+   * @setter
+   * @param {String} newTemplate Nuevo valor para sobreescribir la propiedad "template".
+   * @api
+   */
+  set template(newTemplate) {
+    this.getImpl().template = newTemplate;
   }
 
   // ! Style API-IDEE no soportado
@@ -179,7 +226,7 @@ class MapLibre extends LayerBase {
 
   /**
    * Sobrescribe el valor de la propiedad "extract". La propiedad "extract"
-   * activa la consulta al hacer clic sobre un objeto geográfico, por defecto falso.
+   * activa la consulta al hacer clic sobre un objeto geográfico, por defecto verdadero.
    * @function
    * @param {Boolean} newExtract Nuevo valor para el "extract".
    * @api
@@ -192,7 +239,7 @@ class MapLibre extends LayerBase {
         this.getImpl().extract = newExtract;
       }
     } else {
-      this.getImpl().extract = false;
+      this.getImpl().extract = true;
     }
   }
 
@@ -342,7 +389,7 @@ class MapLibre extends LayerBase {
   set maplibrestyle(maplibrestyle) {
     if (!isNullOrEmpty(maplibrestyle)) {
       this.getImpl().maplibrestyle = maplibrestyle;
-      if (this.getImpl().ol3Layer) {
+      if (this.getImpl().getLayer()) {
         this.getImpl().setStyleMap(maplibrestyle);
       }
     }
@@ -355,36 +402,9 @@ class MapLibre extends LayerBase {
   set url(url) {
     if (!isNullOrEmpty(url)) {
       this.getImpl().url = url;
-      if (this.getImpl().ol3Layer) {
+      if (this.getImpl().getLayer()) {
         this.getImpl().setStyleMap(url);
       }
-    }
-  }
-
-  /**
-   * Devuelve el tipo de layer, MabLibre.
-   *
-   * @function
-   * @getter
-   * @returns {IDEE.LayerType.MapLibre} Tipo MabLibre.
-   * @api
-   */
-  get type() {
-    return MapLibreType;
-  }
-
-  /**
-     * Sobrescribe el tipo de capa.
-     *
-     * @function
-     * @setter
-     * @param {String} newType Nuevo tipo.
-     * @api
-     */
-  set type(newType) {
-    if (!isUndefined(newType)
-        && !isNullOrEmpty(newType) && (newType !== MapLibreType)) {
-      Exception('El tipo de capa debe ser \''.concat(MapLibreType).concat('\' pero se ha especificado \'').concat(newType).concat('\''));
     }
   }
 
@@ -402,6 +422,8 @@ class MapLibre extends LayerBase {
     if (obj instanceof MapLibre) {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
+      equals = equals && (this.idLayer === obj.idLayer);
+      equals = equals && (this.template === obj.template);
     }
 
     return equals;

@@ -4,7 +4,7 @@ import MapLibre from 'IDEE/layer/MapLibre';
 export const maplibre_001 = new MapLibre({
   name: 'Mapa Libre',
   extract: true,
-  // transparent: false, isBase: true // NO APLICABLES, se ponen con default predefinidos.
+  // isBase: true // NO APLICABLES, se ponen con default predefinidos.
   // infoEventType: 'click',
   // visibility: true,
   // maxExtent: [-1259872.4694101033, 4359275.566199489, -85799.71494979598, 4620384.454821652],

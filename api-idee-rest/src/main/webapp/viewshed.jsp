@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="es.api_idee.plugins.PluginsManager"%>
-<%@ page import="es.api_idee.parameter.adapter.ParametersAdapterV3ToV4"%>
 <%@ page import="java.util.Map"%>
 
 <!DOCTYPE html>
@@ -27,8 +26,7 @@
     <%
       Map<String, String[]> parameterMap = request.getParameterMap();
       PluginsManager.init (getServletContext());
-      Map<String, String[]> adaptedParams = ParametersAdapterV3ToV4.adapt(parameterMap);
-      String[] cssfiles = PluginsManager.getCSSFiles(adaptedParams);
+      String[] cssfiles = PluginsManager.getCSSFiles(parameterMap);
       for (int i = 0; i < cssfiles.length; i++) {
          String cssfile = cssfiles[i];
    %>
@@ -66,7 +64,7 @@
     <script type="text/javascript" src="js/configuration.js"></script>
     <script type="text/javascript" src="plugins/viewshed/viewshed.ol.min.js"></script>
     <%
-      String[] jsfiles = PluginsManager.getJSFiles(adaptedParams);
+      String[] jsfiles = PluginsManager.getJSFiles(parameterMap);
       for (int i = 0; i < jsfiles.length; i++) {
          String jsfile = jsfiles[i];
    %>
@@ -88,7 +86,7 @@
                 name: 'EL.GridCoverageDSM',
                 legend: 'LiDAR',
                 matrixSet: 'GoogleMapsCompatible',
-                transparent: false,
+                isBase: true,
                 displayInLayerSwitcher: false,
                 queryable: false,
                 visible: true,
@@ -130,12 +128,12 @@
 </body>
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-CTLHMMB5YT"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-19NTRSBP21"></script>
 <script>
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', 'G-CTLHMMB5YT');
+gtag('config', 'G-19NTRSBP21');
 </script>
 
 </html>

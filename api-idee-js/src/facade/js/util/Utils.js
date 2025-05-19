@@ -6,7 +6,6 @@
 import { get as remoteGet } from 'IDEE/util/Remote';
 import chroma from 'chroma-js';
 import Draggabilly from 'draggabilly';
-import * as dynamicImage from 'assets/img/dynamic_legend';
 import { getValue } from '../i18n/language';
 import { DOTS_PER_INCH, INCHES_PER_UNIT } from '../units';
 import * as WKT from '../geom/WKT';
@@ -198,14 +197,15 @@ export const addParameters = (url, params) => {
   if (isObject(params)) {
     const keys = Object.keys(params);
     keys.forEach((key) => {
-      const value = params[key];
-      requestParams += key;
-      requestParams += '=';
-      requestParams += encodeURIComponent(value);
-      requestParams += '&';
+      if (requestUrl.toLowerCase().indexOf(`$${key.toLowerCase()}=`) === -1) {
+        const value = params[key];
+        requestParams += `${key}=${encodeURIComponent(value)}&`;
+      }
     });
     // removes the last '&'
-    requestParams = requestParams.substring(0, requestParams.length - 1);
+    if (requestParams.charAt(requestUrl.length - 1) === '&') {
+      requestParams = requestParams.substring(0, requestParams.length - 1);
+    }
   } else if (isString(params)) {
     requestParams = params;
   }
@@ -248,16 +248,22 @@ export const generateRandom = (prefix, sufix) => {
  * @function
  * @param {String} serverUrl URL.
  * @param {String} version Versión.
+ * @param {String} ticket Ticket.
  * @returns {String} Devuelve los metadatos.
  * @api
  */
-export const getWMSGetCapabilitiesUrl = (serverUrl, version) => {
+export const getWMSGetCapabilitiesUrl = (serverUrl, version, ticket = false) => {
   let wmsGetCapabilitiesUrl = serverUrl;
 
   // request
   wmsGetCapabilitiesUrl = addParameters(wmsGetCapabilitiesUrl, 'request=GetCapabilities');
   // service
   wmsGetCapabilitiesUrl = addParameters(wmsGetCapabilitiesUrl, 'service=WMS');
+
+  // ticket
+  if (isString(ticket)) {
+    wmsGetCapabilitiesUrl = addParameters(wmsGetCapabilitiesUrl, { ticket });
+  }
 
   // PATCH: En api-idee 3 no se manda luego aquí tampoco. Hay servicios que dan error....
   //       version
@@ -414,16 +420,21 @@ export const generateResolutionsFromExtent = (extentParam, size, zoomLevels, uni
  * @function
  * @param {Number} resolution Resolución.
  * @param {String} unitsParam Unidades.
+ * @param {Number} decimals Numero de decimales a redondear.
  * @returns {Number} La escala para la resolución especificada.
  * @api
  */
-export const getScaleFromResolution = (resolution, unitsParam) => {
+export const getScaleFromResolution = (resolution, unitsParam, decimals = -1) => {
   let units = unitsParam;
   if (isNullOrEmpty(units)) {
     units = 'degrees';
   }
 
   const scale = resolution * INCHES_PER_UNIT[units] * DOTS_PER_INCH;
+
+  if (decimals > -1) {
+    return Number.parseFloat(scale.toFixed(decimals));
+  }
 
   return scale;
 };
@@ -563,13 +574,15 @@ export const concatUrlPaths = (paths) => {
   let finalUrl = null;
   if (!isNullOrEmpty(paths)) {
     finalUrl = paths[0];
-    finalUrl = finalUrl.replace(/\/+\s*$/, '');
-    for (let i = 1, ilen = paths.length; i < ilen; i += 1) {
-      const path = paths[i];
-      if (path.indexOf('/') !== 0) {
-        finalUrl = finalUrl.concat('/');
+    if (finalUrl) {
+      finalUrl = finalUrl.replace(/\/+\s*$/, '');
+      for (let i = 1, ilen = paths.length; i < ilen; i += 1) {
+        const path = paths[i];
+        if (path.indexOf('/') !== 0) {
+          finalUrl = finalUrl.concat('/');
+        }
+        finalUrl = finalUrl.concat(path);
       }
-      finalUrl = finalUrl.concat(path);
     }
   }
   return finalUrl;
@@ -1048,7 +1061,7 @@ export const isDynamic = (obj) => {
  * @const
  * @type {string}
  */
-let dynamicLegend = dynamicImage;
+let dynamicLegend = 'https://componentes.idee.es/estaticos/imagenes/leyenda/dynamic_legend.jpg';
 
 /**
  * Esta función establece la leyenda dinámica constante.
@@ -1117,7 +1130,7 @@ export const getEnvolvedExtent = (extents) => {
  */
 export const bytesToBase64 = (bytes, format = 'image/png') => {
   const base64abc = [
-    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'IDEE',
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
     'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
     'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
@@ -1632,7 +1645,7 @@ export const findUrls = (text) => {
   if (!uniqueMatches) return [];
 
   // Extraemos las URLs de array2
-  const urlsArray2 = uniquematchesHTML.map((item) => item.split('=')[1].trim());
+  const urlsArray2 = uniquematchesHTML.map((item) => item.split('=').slice(1).join('=').trim());
 
   // Filtramos array1, eliminando las URLs que están en array2
   const filteredArray = uniqueMatches.filter((url) => !urlsArray2.includes(url));
@@ -1683,7 +1696,11 @@ export const transfomContent = (text, pSizes = {}) => {
     const regexVideo = /\.(mp4|mov|3gp)$/i;
     const regexAudio = /\.(mp3|ogg|ogv|wav)$/i;
     const regexHrefOrSrc = /(?:href|src)\s*=\s*['"]?(https?:\/\/[^\s"'<>]+)['"]?/i;
-    if (regexImg.test(url)) {
+    if (regexHrefOrSrc.test(url)) {
+      if (/href\s*=\s*/i.test(url)) {
+        content = content.replaceAll(`${url}${aux}`, ` target='_blank' ${url}${aux}`);
+      }
+    } else if (regexImg.test(url)) {
       content = content.replaceAll(`${url}${aux}`, `</br><img src='${url}' style='max-width: ${sizes.images[0]}; max-height: ${sizes.images[1]};'/></br>${aux}`);
     } else if (regexDocument.test(url)) {
       content = content.replaceAll(`${url}${aux}`, `</br><iframe src='${url}' width='${sizes.documents[0]}' height='${sizes.documents[1]}'></iframe></br>${aux}`);
@@ -1692,10 +1709,6 @@ export const transfomContent = (text, pSizes = {}) => {
         <p>${getValue('exception').browser_video}</p></video></br>${aux}`);
     } else if (regexAudio.test(url)) {
       content = content.replaceAll(`${url}${aux}`, `</br><audio style='max-width: ${sizes.audios[0]}; max-height: ${sizes.audios[1]}'controls><source src='${url}'>${getValue('exception').browser_audio}</audio></br>${aux}`);
-    } else if (regexHrefOrSrc.test(url)) {
-      if (/href\s*=\s*/i.test(url)) {
-        content = content.replaceAll(`${url}${aux}`, ` target='_blank' ${url}${aux}`);
-      }
     } else {
       content = content.replaceAll(`${url}${aux}`, `<a target='blank' href=${url}>${url}</a>${aux}`);
     }
@@ -1708,7 +1721,7 @@ export const transfomContent = (text, pSizes = {}) => {
  * @param {Object} bbox Bbox.
  * @param {String} epsg EPSG del bbox.
  * @function
- * @returns {Array} bbox.
+ * @returns {Array} bbox
  * @api
  */
 export const ObjectToArrayExtent = (bbox, epsg) => {

@@ -12,7 +12,6 @@ import * as EventType from 'IDEE/event/eventtype';
 import TileEventType from 'ol/source/TileEventType';
 import TileState from 'ol/TileState';
 import MVTFormatter from 'ol/format/MVT';
-import { get as getProj } from 'ol/proj';
 import Feature from 'ol/Feature';
 import RenderFeature from 'ol/render/Feature';
 import { mode } from 'IDEE/layer/MVT';
@@ -43,6 +42,8 @@ class MVT extends Vector {
    * - style: Define el estilo de la capa.
    * - minZoom. Zoom mínimo aplicable a la capa.
    * - maxZoom. Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - visibility. Define si la capa es visible o no. Verdadero por defecto.
    * - displayInLayerSwitcher. Indica si la capa se muestra en el selector de capas.
    * - opacity. Opacidad de capa, por defecto 1.
@@ -115,7 +116,7 @@ class MVT extends Vector {
     /**
      * MVT extract_.
      * Activa la consulta cuando se hace clic en un objeto geográfico,
-     * por defecto falso.
+     * por defecto verdadero.
      */
     this.extract = parameters.extract;
   }
@@ -154,18 +155,21 @@ class MVT extends Vector {
     source.on(TileEventType.TILELOADERROR, (evt) => this.checkAllTilesLoaded_(evt));
     // source.on(TileEventType.TILELOADEND, (evt) => this.checkAllTilesLoaded_(evt));
 
-    this.ol3Layer = new OLLayerVectorTile(extend({
+    this.olLayer = new OLLayerVectorTile(extend({
       source,
       extent,
     }, this.vendorOptions_, true));
-    this.ol3Layer.setMaxZoom(this.maxZoom);
-    this.ol3Layer.setMinZoom(this.minZoom);
+    this.olLayer.setMaxZoom(this.maxZoom);
+    this.olLayer.setMinZoom(this.minZoom);
+
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
 
     this.setOpacity(this.opacity_);
     this.setVisible(this.visibility_);
 
     if (addLayer) {
-      this.map.getMapImpl().addLayer(this.ol3Layer);
+      this.map.getMapImpl().addLayer(this.olLayer);
     }
 
     // clear features when zoom changes
@@ -222,7 +226,9 @@ class MVT extends Vector {
       const feature = features[0];
       this.unselectFeatures();
       if (!isNullOrEmpty(feature)) {
-        const htmlAsText = compileTemplate(geojsonPopupTemplate, {
+        const popupTemplate = !isNullOrEmpty(this.template)
+          ? this.template : geojsonPopupTemplate;
+        const htmlAsText = compileTemplate(popupTemplate, {
           vars: this.parseFeaturesForTemplate_(features),
           parseToHtml: false,
         });
@@ -289,8 +295,8 @@ class MVT extends Vector {
    */
   getFeatures(skipFilter, filter) {
     let features = [];
-    if (this.ol3Layer) {
-      const olSource = this.ol3Layer.getSource();
+    if (this.olLayer) {
+      const olSource = this.olLayer.getSource();
       const tileCache = olSource.tileCache;
       if (tileCache.getCount() === 0) {
         return features;
@@ -325,14 +331,17 @@ class MVT extends Vector {
    */
   getFeatureById(id) {
     const features = [];
-    if (this.ol3Layer) {
-      const tileCache = this.ol3Layer.getSource().tileCache;
-      const kk = tileCache.getCount();
-      if (kk === 0) {
+    if (this.olLayer) {
+      const tileCache = this.olLayer.getSource().tileCache;
+      if (!tileCache) {
+        return features;
+      }
+      const count = tileCache.getCount();
+      if (count === 0) {
         return features;
       }
       const z = Number(tileCache.peekFirstKey().split('/')[0]);
-      for (let k = 0; k < kk; k += 1) {
+      for (let k = 0; k < count; k += 1) {
         const auxValue = tileCache.getValues()[k];
         if (auxValue.tileCoord[0] === z && auxValue.getState() === TileState.LOADED) {
           const sourceTiles = auxValue.getSourceTiles();
@@ -361,21 +370,22 @@ class MVT extends Vector {
    */
   checkAllTilesLoaded_(evt) {
     const currTileCoord = evt.tile.getTileCoord();
-    const olProjection = getProj(this.projection_);
-    const tileCache = this.ol3Layer.getSource().getTileCacheForProjection(olProjection);
-    const tileImages = tileCache.getValues();
-    const loaded = tileImages.every((tile) => {
-      const tileCoord = tile.getTileCoord();
-      const tileState = tile.getState();
-      const sameTile = (currTileCoord[0] === tileCoord[0]
-        && currTileCoord[1] === tileCoord[1]
-        && currTileCoord[2] === tileCoord[2]);
-      const tileLoaded = sameTile || (tileState !== TileState.LOADING);
-      return tileLoaded;
-    });
-    if (loaded && !this.loaded_) {
-      this.loaded_ = true;
-      this.facadeVector_.fire(EventType.LOAD);
+    // eslint-disable-next-line no-underscore-dangle
+    const tileImages = this.olLayer.getSource().sourceTiles_;
+    if (Array.isArray(tileImages)) {
+      const loaded = tileImages.every((tile) => {
+        const tileCoord = tile.getTileCoord();
+        const tileState = tile.getState();
+        const sameTile = (currTileCoord[0] === tileCoord[0]
+          && currTileCoord[1] === tileCoord[1]
+          && currTileCoord[2] === tileCoord[2]);
+        const tileLoaded = sameTile || (tileState !== TileState.LOADING);
+        return tileLoaded;
+      });
+      if (loaded && !this.loaded_) {
+        this.loaded_ = true;
+        this.facadeVector_.fire(EventType.LOAD);
+      }
     }
   }
 
@@ -444,6 +454,7 @@ class MVT extends Vector {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
       equals = equals && (this.extract === obj.extract);
+      equals = equals && (this.template === obj.template);
     }
 
     return equals;

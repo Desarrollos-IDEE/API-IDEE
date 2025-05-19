@@ -16,11 +16,16 @@ import { getValue } from '../i18n/language';
  * es un formato de intercambio de información geográfica muy extendido que, al igual que WFS,
  * permite que todos los elementos estén en el cliente.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} url Url del archivo o servicio que genera el GeoJSON.
  * @property {String} name Nombre de la capa, identificador.
  * @property {Object} source Fuente GeoJSON.
  * @property {Boolean} extract Activa la consulta al hacer clic sobre un objeto geográfico,
- * por defecto falso.
+ * por defecto verdadero.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
+ * @property {Boolean} isBase Define si la capa es base.
+ * @property {String} template Plantilla que se mostrará al consultar un objeto geográfico.
  * @property {Object} options Opciones GeoJSON.
  * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
  * <pre><code>
@@ -46,16 +51,22 @@ class GeoJSON extends LayerVector {
    * estos parámetros los proporciona el usuario.
    * - name: Nombre de la capa en la leyenda.
    * - url: Url del fichero o servicio que genera el GeoJSON.
-   * - extract: Opcional, activa la consulta por click en el objeto geográfico, por defecto falso.
+   * - extract: Opcional, activa la consulta por click en el objeto geográfico,
+   * por defecto verdadero.
    * - source: Fuente de la capa.
    * - type: Tipo de la capa.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
    * - legend: Indica el nombre que queremos que aparezca en el árbol de contenidos, si lo hay.
+   * - isBase: Indica si la capa es base.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
+   * - template: (opcional) Plantilla que se mostrará al consultar un objeto geográfico.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a la implementación.
    * - hide: Atributos ocultos.
    * - show: Mostrar atributos.
    * - minZoom: Zoom mínimo aplicable a la capa.
    * - maxZoom: Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - visibility: Define si la capa es visible o no. Verdadero por defecto.
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
    * - opacity: Opacidad de capa, por defecto 1.
@@ -79,6 +90,11 @@ class GeoJSON extends LayerVector {
     // Comprueba si los parámetros son null or empty
     if (isNullOrEmpty(parameters)) {
       Exception(getValue('exception').no_param);
+    }
+
+    if (!isUndefined(parameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
     }
 
     const optionsVar = options;
@@ -126,9 +142,9 @@ class GeoJSON extends LayerVector {
 
       /**
        * GeoJSON extract: Opcional, activa la consulta
-       * haciendo clic en el objeto geográfico, por defecto falso.
+       * haciendo clic en el objeto geográfico, por defecto verdadero.
        */
-      this.extract = parameters.extract === undefined ? false : parameters.extract;
+      this.extract = parameters.extract === undefined ? true : parameters.extract;
 
       /**
        * GeoJSON crs: Sistema de Referencia de Coordenadas.
@@ -198,7 +214,8 @@ class GeoJSON extends LayerVector {
 
   /**
    * Devuelve el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @getter
@@ -211,7 +228,8 @@ class GeoJSON extends LayerVector {
 
   /**
    * Sobrescribe el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @setter
@@ -226,7 +244,7 @@ class GeoJSON extends LayerVector {
         this.getImpl().extract = newExtract;
       }
     } else {
-      this.getImpl().extract = false;
+      this.getImpl().extract = true;
     }
   }
 
@@ -245,7 +263,8 @@ class GeoJSON extends LayerVector {
     if (obj instanceof GeoJSON) {
       equals = this.name === obj.name;
       equals = equals && (this.extract === obj.extract);
-      // equals = equals && (this.predefinedStyles === obj.predefinedStyles);
+      equals = equals && (this.idLayer === obj.idLayer);
+      equals = equals && (this.template === obj.template);
     }
 
     return equals;

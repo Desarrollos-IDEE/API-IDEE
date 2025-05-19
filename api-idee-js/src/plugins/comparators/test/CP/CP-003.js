@@ -52,7 +52,7 @@ const capaTMS = new IDEE.layer.TMS({
   legend: 'PNOA_MA',
   name: 'PNOA_MA',
   visible: true,
-  transparent: false,
+  isBase: true,
   tileGridMaxZoom: 19,
 });
 
@@ -61,7 +61,7 @@ const capaTMS = new IDEE.layer.TMS({
 const capaOSM = new IDEE.layer.OSM({
   name: 'Capa OSM',
   legend: 'Capa OSM',
-  transparent: true,
+  isBase: false,
   url: 'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
   matrixSet: 'EPSG:3857',
 });

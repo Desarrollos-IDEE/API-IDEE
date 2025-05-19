@@ -25,13 +25,11 @@ import es.api_idee.builder.JSBuilder;
 import es.api_idee.exception.InvalidAPIException;
 import es.api_idee.parameter.PluginAPI;
 import es.api_idee.parameter.PluginAPIParam;
-import es.api_idee.parameter.adapter.ParametersAdapterV3ToV4;
+import es.api_idee.parameter.parser.ParametersParser;
 
 public abstract class PluginsManager {
 
 	private static Path pluginsDir;
-
-	private static final String DEFAULT_IMPL = "ol";
 
 	private static Map<String, PluginAPI> availablePlugins;
 
@@ -96,7 +94,7 @@ public abstract class PluginsManager {
 
 	public static String[] getJSFiles(Map<String, String[]> queryParams) {
 		List<String> jsfiles = new LinkedList<String>();
-		String impl = ParametersAdapterV3ToV4.getImplementation(queryParams);
+		String impl = ParametersParser.getImplementation(queryParams);
 		// searchs plugins by name
 		for (String paramName : queryParams.keySet()) {
 			PluginAPI plugin = availablePlugins.get(paramName);
@@ -121,7 +119,7 @@ public abstract class PluginsManager {
 
 	public static String[] getCSSFiles(Map<String, String[]> queryParams) {
 		List<String> cssfiles = new LinkedList<String>();
-		String impl = ParametersAdapterV3ToV4.getImplementation(queryParams);
+		String impl = ParametersParser.getImplementation(queryParams);
 		// searchs plugins by name
 		for (String paramName : queryParams.keySet()) {
 			PluginAPI plugin = availablePlugins.get(paramName);

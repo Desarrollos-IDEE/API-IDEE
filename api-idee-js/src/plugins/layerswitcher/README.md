@@ -18,8 +18,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 - **layerswitcher.ol.min.css**
 
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/layerswitcher/layerswitcher.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -27,8 +27,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/layerswitcher/layerswitcher-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/layerswitcher/layerswitcher-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/layerswitcher/layerswitcher-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/layerswitcher/layerswitcher-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros
@@ -69,7 +69,7 @@ El listado de capas aparece al pulsar sobre el botón añadir (Listado de alguna
 # API-REST
 
 ```javascript
-https://componentes.cnig.es/api-idee/?layerswitcher=position*collapsed*collapsible*tooltip*isDraggable*isMoveLayers*modeSelectLayers*tools*http*https*showCatalog`;
+https://componentes.idee.es/api-idee/?layerswitcher=position*collapsed*collapsible*tooltip*isDraggable*isMoveLayers*modeSelectLayers*tools*http*https*showCatalog`;
 ```
 
 <table>
@@ -186,7 +186,7 @@ Ejemplo de constructor del plugin:
        }
 ```
 ```
-https://componentes.cnig.es/api-idee?layerswitcher=base64=eyJjb2xsYXBzZWQiOmZhbHNlLCJwb3NpdGlvbiI6IlRMIiwidG9vbHRpcCI6IkNhcGFzIiwiY29sbGFwc2libGUiOnRydWUsImlzRHJhZ2dhYmxlIjp0cnVlLCJtb2RlU2VsZWN0TGF5ZXJzIjoiZXllcyIsInRvb2xzIjpbInRyYW5zcGFyZW5jeSIsImxlZ2VuZCIsInpvb20iLCJpbmZvcm1hdGlvbiIsInN0eWxlIiwiZGVsZXRlIl0sImlzTW92ZUxheWVycyI6dHJ1ZSwiaHR0cHMiOnRydWUsImh0dHAiOnRydWUsImNvZHNpIjpmYWxzZX0=
+https://componentes.idee.es/api-idee?layerswitcher=base64=eyJjb2xsYXBzZWQiOmZhbHNlLCJwb3NpdGlvbiI6IlRMIiwidG9vbHRpcCI6IkNhcGFzIiwiY29sbGFwc2libGUiOnRydWUsImlzRHJhZ2dhYmxlIjp0cnVlLCJtb2RlU2VsZWN0TGF5ZXJzIjoiZXllcyIsInRvb2xzIjpbInRyYW5zcGFyZW5jeSIsImxlZ2VuZCIsInpvb20iLCJpbmZvcm1hdGlvbiIsInN0eWxlIiwiZGVsZXRlIl0sImlzTW92ZUxheWVycyI6dHJ1ZSwiaHR0cHMiOnRydWUsImh0dHAiOnRydWUsImNvZHNpIjpmYWxzZX0=
 ```
 
 
@@ -275,3 +275,6 @@ Para la revisión y actualización de las dependencias de los paquetes npm es ne
 $npm i -g npm-check-updates
 $ncu
 ```
+
+## Tabla de compatibilidad de versiones   
+[Consulta el api resourcePlugin](https://componentes.idee.es/api-idee/api/actions/resourcesPlugins?name=layerswitcher)

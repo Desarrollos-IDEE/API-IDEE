@@ -4,7 +4,7 @@
  * @module IDEE/impl/Layer
  */
 import MObject from 'IDEE/Object';
-import { isNullOrEmpty, isString, concatUrlPaths } from 'IDEE/util/Utils';
+import { isNullOrEmpty, isString } from 'IDEE/util/Utils';
 import FacadeLayer from 'IDEE/layer/Layer';
 import { getValue } from 'IDEE/i18n/language';
 import { ImageryLayer } from 'cesium';
@@ -83,7 +83,7 @@ class LayerBase extends MObject {
     /**
       * Layer legendUrl_. Leyenda URL de esta capa.
       */
-    this.legendUrl_ = concatUrlPaths([IDEE.config.THEME_URL, FacadeLayer.LEGEND_DEFAULT]);
+    this.legendUrl_ = FacadeLayer.LEGEND_DEFAULT;
 
     /**
       * Layer minZoom. Zoom mínimo aplicable a la capa.

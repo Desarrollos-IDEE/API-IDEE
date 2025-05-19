@@ -36,6 +36,8 @@ class GeoJSON extends Vector {
    * - show. Mostrar atributos.
    * - minZoom. Zoom mínimo aplicable a la capa.
    * - maxZoom. Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - visibility. Define si la capa es visible o no. Verdadero por defecto.
    * - displayInLayerSwitcher. Indica si la capa se muestra en el selector de capas.
    * - opacity. Opacidad de capa, por defecto 1.
@@ -196,8 +198,8 @@ class GeoJSON extends Vector {
   updateSource_() {
     if (isNullOrEmpty(this.vendorOptions_.source)) {
       this.requestFeatures_().then((features) => {
-        if (this.ol3Layer) {
-          this.ol3Layer.setSource(new OLSourceVector({
+        if (this.olLayer) {
+          this.olLayer.setSource(new OLSourceVector({
             loader: (extent, resolution, projection) => {
               this.loaded_ = true;
               // removes previous features
@@ -259,7 +261,9 @@ class GeoJSON extends Vector {
         if (isFunction(clickFn)) {
           clickFn(evt, feature);
         } else {
-          const htmlAsText = compileTemplate(geojsonPopupTemplate, {
+          const popupTemplate = !isNullOrEmpty(this.template)
+            ? this.template : geojsonPopupTemplate;
+          const htmlAsText = compileTemplate(popupTemplate, {
             vars: this.parseFeaturesForTemplate_(features),
             parseToHtml: false,
           });
@@ -292,9 +296,9 @@ class GeoJSON extends Vector {
   // destroy () {
   //   let olMap = this.map.getMapImpl();
   //
-  //   if (!isNullOrEmpty(this.ol3Layer)) {
-  //     olMap.removeLayer(this.ol3Layer);
-  //     this.ol3Layer = null;
+  //   if (!isNullOrEmpty(this.olLayer)) {
+  //     olMap.removeLayer(this.olLayer);
+  //     this.olLayer = null;
   //   }
   //   this.options = null;
   //   this.map = null;
@@ -326,6 +330,7 @@ class GeoJSON extends Vector {
     if (obj instanceof GeoJSON) {
       equals = equals && (this.name === obj.name);
       equals = equals && (this.extract === obj.extract);
+      equals = equals && (this.template === obj.template);
     }
     return equals;
   }

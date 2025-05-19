@@ -83,6 +83,8 @@ class MBTiles extends Layer {
    * @param {Mx.parameters.LayerOptions} options Opciones personalizadas para esta capa.
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
    * -  CrossOrigin: Atributo crossOrigin para las imágenes cargadas.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
    * <pre><code>
    * import OLTileGrid from 'ol/tilegrid/TileGrid';
@@ -159,7 +161,7 @@ class MBTiles extends Layer {
   setVisible(visibility) {
     this.visibility = visibility;
     // if this layer is base then it hides all base layers
-    if ((visibility === true) && (this.transparent !== true)) {
+    if ((visibility === true) && (this.isBase !== false)) {
       // hides all base layers
       this.map.getBaseLayers().forEach((layer) => {
         if (!layer.equals(this.facadeLayer_) && layer.isVisible()) {
@@ -168,14 +170,14 @@ class MBTiles extends Layer {
       });
 
       // set this layer visible
-      if (!isNullOrEmpty(this.ol3Layer)) {
-        this.ol3Layer.setVisible(visibility);
+      if (!isNullOrEmpty(this.olLayer)) {
+        this.olLayer.setVisible(visibility);
       }
 
       // updates resolutions and keep the bbox
       this.map.getImpl().updateResolutionsFromBaseLayer();
-    } else if (!isNullOrEmpty(this.ol3Layer)) {
-      this.ol3Layer.setVisible(visibility);
+    } else if (!isNullOrEmpty(this.olLayer)) {
+      this.olLayer.setVisible(visibility);
     }
   }
 
@@ -239,11 +241,15 @@ class MBTiles extends Layer {
     const { code } = this.map.getProjection();
     const projection = getProj(code);
     const extent = projection.getExtent();
-    this.ol3Layer = new OLLayerTile(extend({
+    this.olLayer = new OLLayerTile(extend({
       visible: this.visibility,
       opacity: this.opacity_,
       zIndex: this.zIndex_,
     }, this.vendorOptions_, true));
+
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
+
     if (!this.tileLoadFunction && !this.vendorOptions_.source) {
       this.fetchSource().then((tileProvider) => {
         tileProvider.getMaxZoomLevel().then((maxZoomLevel) => {
@@ -260,16 +266,17 @@ class MBTiles extends Layer {
               sourceExtent: extent,
               projection,
             });
-            this.ol3Layer.setMaxZoom(this.maxZoom);
-            this.ol3Layer.setMinZoom(this.minZoom);
+            this.olLayer.setMaxZoom(this.maxZoom);
+            this.olLayer.setMinZoom(this.minZoom);
             if (addLayer) {
-              this.map.getMapImpl().addLayer(this.ol3Layer);
+              this.map.getMapImpl().addLayer(this.olLayer);
             }
           });
         });
       });
     } else {
-      const resolutions = generateResolutions(extent, DEFAULT_TILE_SIZE, this.maxZoomLevel_ || 28);
+      const resolutions = generateResolutions(extent, DEFAULT_TILE_SIZE, this.maxZoomLevel_
+        || Number(IDEE.config.MAX_ZOOM));
       this.maxExtent_ = this.maxExtent_ || extent;
       this.createLayer({
         resolutions,
@@ -277,10 +284,10 @@ class MBTiles extends Layer {
         sourceExtent: extent,
         projection,
       });
-      this.ol3Layer.setMaxZoom(this.maxZoom);
-      this.ol3Layer.setMinZoom(this.minZoom);
+      this.olLayer.setMaxZoom(this.maxZoom);
+      this.olLayer.setMinZoom(this.minZoom);
       if (addLayer) {
-        this.map.getMapImpl().addLayer(this.ol3Layer);
+        this.map.getMapImpl().addLayer(this.olLayer);
       }
     }
   }
@@ -313,9 +320,9 @@ class MBTiles extends Layer {
         }),
       });
     }
-    this.ol3Layer.setSource(source);
-    this.ol3Layer.setExtent(this.maxExtent_ || opts.sourceExtent);
-    return this.ol3Layer;
+    this.olLayer.setSource(source);
+    this.olLayer.setExtent(this.maxExtent_ || opts.sourceExtent);
+    return this.olLayer;
   }
 
   /**
@@ -409,7 +416,7 @@ class MBTiles extends Layer {
    * @api
    */
   setMaxExtent(maxExtent) {
-    this.ol3Layer.setExtent(maxExtent);
+    this.olLayer.setExtent(maxExtent);
   }
 
   /**
@@ -442,9 +449,9 @@ class MBTiles extends Layer {
    */
   destroy() {
     const olMap = this.map.getMapImpl();
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      olMap.removeLayer(this.ol3Layer);
-      this.ol3Layer = null;
+    if (!isNullOrEmpty(this.olLayer)) {
+      olMap.removeLayer(this.olLayer);
+      this.olLayer = null;
     }
     this.map = null;
   }
@@ -477,8 +484,8 @@ class MBTiles extends Layer {
    */
   cloneOLLayer() {
     let olLayer = null;
-    if (this.ol3Layer != null) {
-      const properties = this.ol3Layer.getProperties();
+    if (this.olLayer != null) {
+      const properties = this.olLayer.getProperties();
       olLayer = new OLLayerTile(properties);
     }
     return olLayer;

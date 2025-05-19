@@ -16,8 +16,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 
 
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/basic/basic.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/basic/basic.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/basic/basic.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/basic/basic.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -25,8 +25,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/basic/basic-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/basic/basic-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/basic/basic-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/basic/basic-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros
@@ -81,11 +81,11 @@ URL_API?basic=position*collapsed*collapsible*tooltip*draggable
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.cnig.es/api-idee/?basic=TR*true*true*PluginBase
+https://componentes.idee.es/api-idee/?basic=TR*true*true*PluginBase
 ```
 
 ```
-https://componentes.cnig.es/api-idee/?basic=TR*true*true
+https://componentes.idee.es/api-idee/?basic=TR*true*true
 ```
 
 ### Ejemplos de uso API-REST en base64
@@ -98,7 +98,7 @@ Ejemplo del constructor:
 }
 ```
 ```
-https://componentes.cnig.es/api-idee/?basic=base64=eyJwb3NpdGlvbiI6IlRMIiwiZGVzY2FyZ2FzY25pZyI6Imh0dHA6Ly9jZW50cm9kZWRlc2Nhcmdhcy5jbmlnLmVzL0NlbnRyb0Rlc2Nhcmdhcy9pbmRleC5qc3AiLCJwbm9hIjoiaHR0cHM6Ly93d3cuaWduLmVzL3dlYi9jb21wYXJhZG9yX3Bub2EvaW5kZXguaHRtbCIsInZpc3VhbGl6YWRvcjNkIjoiaHR0cHM6Ly93d3cuaWduLmVzLzNELVN0ZXJlby8iLCJmb3RvdGVjYSI6Imh0dHBzOi8vZm90b3RlY2EuY25pZy5lcy8iLCJ0d2l0dGVyIjoiaHR0cHM6Ly90d2l0dGVyLmNvbS9JR05TcGFpbiIsImluc3RhZ3JhbSI6Imh0dHBzOi8vd3d3Lmluc3RhZ3JhbS5jb20vaWduc3BhaW4vIiwiZmFjZWJvb2siOiJodHRwczovL3d3dy5mYWNlYm9vay5jb20vSUdOU3BhaW4vIiwicGludGVyZXN0IjoiaHR0cHM6Ly93d3cucGludGVyZXN0LmVzL0lHTlNwYWluLyIsInlvdXR1YmUiOiJodHRwczovL3d3dy55b3V0dWJlLmNvbS91c2VyL0lHTlNwYWluIiwibWFpbCI6Im1haWx0bzppZ25AZm9tZW50by5lcyIsInRvb2x0aXAiOiJDb250YWN0YSBjb24gbm9zb3Ryb3MifQ==
+https://componentes.idee.es/api-idee/?basic=base64=eyJwb3NpdGlvbiI6IlRMIiwiZGVzY2FyZ2FzY25pZyI6Imh0dHA6Ly9jZW50cm9kZWRlc2Nhcmdhcy5jbmlnLmVzL0NlbnRyb0Rlc2Nhcmdhcy9pbmRleC5qc3AiLCJwbm9hIjoiaHR0cHM6Ly93d3cuaWduLmVzL3dlYi9jb21wYXJhZG9yX3Bub2EvaW5kZXguaHRtbCIsInZpc3VhbGl6YWRvcjNkIjoiaHR0cHM6Ly93d3cuaWduLmVzLzNELVN0ZXJlby8iLCJmb3RvdGVjYSI6Imh0dHBzOi8vZm90b3RlY2EuY25pZy5lcy8iLCJ0d2l0dGVyIjoiaHR0cHM6Ly90d2l0dGVyLmNvbS9JR05TcGFpbiIsImluc3RhZ3JhbSI6Imh0dHBzOi8vd3d3Lmluc3RhZ3JhbS5jb20vaWduc3BhaW4vIiwiZmFjZWJvb2siOiJodHRwczovL3d3dy5mYWNlYm9vay5jb20vSUdOU3BhaW4vIiwicGludGVyZXN0IjoiaHR0cHM6Ly93d3cucGludGVyZXN0LmVzL0lHTlNwYWluLyIsInlvdXR1YmUiOiJodHRwczovL3d3dy55b3V0dWJlLmNvbS91c2VyL0lHTlNwYWluIiwibWFpbCI6Im1haWx0bzppZ25AZm9tZW50by5lcyIsInRvb2x0aXAiOiJDb250YWN0YSBjb24gbm9zb3Ryb3MifQ==
 ```
 
 
@@ -171,3 +171,6 @@ Para la revisión y actualización de las dependencias de los paquetes npm es ne
 $npm i -g npm-check-updates
 $ncu
 ```
+
+## Tabla de compatibilidad de versiones   
+[Consulta el api resourcePlugin](https://componentes.idee.es/api-idee/api/actions/resourcesPlugins?name=basic)

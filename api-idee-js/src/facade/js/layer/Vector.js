@@ -24,10 +24,16 @@ import Generic from '../style/Generic';
  * de esta clase heredan todas las capas vectoriales del API-IDEE.
  *
  * @extends {IDEE.Layer}
+ * @property {String} idLayer Identificador de la capa.
  * @property {Number} minZoom Zoom mínimo.
  * @property {Number} maxZoom Zoom máximo.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
+ * @property {Boolean} isBase Define si la capa es base.
  * @property {Array} predefinedStyles Estilos prefefinidos.
- *
+ * @property {String} template Plantilla que se mostrará al consultar un objeto geográfico.
+ * @property {Boolean} extract Opcional. Activa la consulta haciendo
+ * clic en el objeto geográfico. Por defecto, verdadero.
  * @api
  * @extends {IDEE.layer}
  */
@@ -42,11 +48,18 @@ class Vector extends LayerBase {
    * - type: Tipo de la capa.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
    * - legend: Indica el nombre que queremos que aparezca en el árbol de contenidos, si lo hay.
+   * - isBase: Indica si la capa es base.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
+   * - template: (opcional) Plantilla que se mostrará al consultar un objeto geográfico.
+   * - extract: Opcional, activa la consulta por clic en el objeto geográfico,
+   * por defecto verdadero.
    * @param {Mx.parameters.LayerOptions} options  Estas opciones se mandarán a
    * la implementación de la capa.
    * - style. Define el estilo de la capa.
    * - minZoom. Zoom mínimo aplicable a la capa.
    * - maxZoom. Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - visibility. Define si la capa es visible o no. Verdadero por defecto.
    * - displayInLayerSwitcher. Indica si la capa se muestra en el selector de capas.
    * - opacity. Opacidad de capa, por defecto 1.
@@ -72,6 +85,11 @@ class Vector extends LayerBase {
     const optns = parameters;
     optns.type = !parameters.type ? LayerType.Vector : parameters.type;
 
+    if (!isUndefined(parameters.transparent) && optns.type === LayerType.Vector) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
+    }
+
     const optionsVars = options;
 
     if (typeof parameters !== 'string') {
@@ -79,18 +97,13 @@ class Vector extends LayerBase {
       optns.maxExtent = optionsVars.maxExtent;
     }
 
-    // calls the super constructor
-    let impl;
-    if (implParam) {
-      impl = implParam;
-    } else {
-      // checks if the implementation can create Vector
-      if (isUndefined(VectorImpl) || (isObject(VectorImpl)
-        && isNullOrEmpty(Object.keys(VectorImpl)))) {
-        Exception(getValue('exception').vectorlayer_method);
-      }
-      impl = new VectorImpl(optionsVars, vendorOptions);
+    // checks if the implementation can create Vector
+    if (isUndefined(VectorImpl) || (isObject(VectorImpl)
+      && isNullOrEmpty(Object.keys(VectorImpl)))) {
+      Exception(getValue('exception').vectorlayer_method);
     }
+    const impl = implParam || new VectorImpl(optionsVars, vendorOptions);
+    // calls the super constructor
     super(optns, impl);
 
     /**
@@ -124,9 +137,9 @@ class Vector extends LayerBase {
 
     /**
       * Vector extract: Opcional, activa la consulta
-      * haciendo clic en el objeto geográfico, por defecto falso.
+      * haciendo clic en el objeto geográfico, por defecto verdadero.
     */
-    this.extract = optns.extract === undefined ? false : optns.extract;
+    this.extract = optns.extract === undefined ? true : optns.extract;
 
     /**
      * predefinedStyles: Estilos predefinidos para la capa.
@@ -146,6 +159,11 @@ class Vector extends LayerBase {
     } else {
       this.predefinedStyles.unshift(options.style);
     }
+
+    /**
+      * Vector template: Para especificar una plantilla al consultar un objeto geográfico.
+      */
+    this.template = optns.template;
 
     this.setStyle(options.style);
 
@@ -300,7 +318,8 @@ class Vector extends LayerBase {
 
   /**
    * Devuelve el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @getter
@@ -313,7 +332,8 @@ class Vector extends LayerBase {
 
   /**
      * Sobrescribe el valor de la propiedad "extract". La propiedad "extract" tiene la
-     * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+     * siguiente función: Activa la consulta al hacer clic en la característica,
+     * por defecto verdadero.
      *
      * @function
      * @setter
@@ -328,8 +348,36 @@ class Vector extends LayerBase {
         this.getImpl().extract = newExtract;
       }
     } else {
-      this.getImpl().extract = false;
+      this.getImpl().extract = true;
     }
+  }
+
+  /**
+   * Devuelve el valor de la propiedad "template". La propiedad "template" tiene la
+   * siguiente función: Especifica una plantilla que se mostrará al consultar
+   * un objeto geográfico.
+   *
+   * @function
+   * @getter
+   * @return {String} Valor de la propiedad "template".
+   * @api
+   */
+  get template() {
+    return this.getImpl().template;
+  }
+
+  /**
+   * Sobrescribe el valor de la propiedad "template". La propiedad "template" tiene la
+   * siguiente función: Especifica una plantilla que se mostrará al consultar
+   * un objeto geográfico.
+   *
+   * @function
+   * @setter
+   * @param {String} newTemplate Nuevo valor para sobreescribir la propiedad "template".
+   * @api
+   */
+  set template(newTemplate) {
+    this.getImpl().template = newTemplate;
   }
 
   /**
@@ -346,6 +394,8 @@ class Vector extends LayerBase {
     let equals = false;
     if (obj instanceof Vector) {
       equals = this.name === obj.name;
+      equals = equals && (this.idLayer === obj.idLayer);
+      equals = equals && (this.template === obj.template);
     }
     return equals;
   }
@@ -572,12 +622,13 @@ class Vector extends LayerBase {
  */
 Vector.DEFAULT_PARAMS = {
   fill: {
-    color: 'rgba(255, 255, 255, 0.4)',
-    opacity: 0.4,
+    color: '#f78c4d',
+    opacity: 0.5,
+    width: 5,
   },
   stroke: {
-    color: '#3399CC',
-    width: 1.5,
+    color: '#ff5e00',
+    width: 2,
   },
 };
 

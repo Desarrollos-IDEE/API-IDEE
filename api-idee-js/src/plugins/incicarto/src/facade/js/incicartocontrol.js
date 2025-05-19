@@ -29,7 +29,7 @@ const POINTS = [1, 15];
 const LINES = [10, 15];
 const LINE_POINTS = [1, 15, 20, 15];
 
-const HOSTNAME = ['componentes-desarrollo.idee.es', 'componentes.cnig.es'];
+const HOSTNAME = ['componentes-desarrollo.idee.es', 'componentes.idee.es'];
 const PATH_NAME = 'api-idee';
 const CONTROLS = [
   'scale',
@@ -767,6 +767,8 @@ export default class IncicartoControl extends IDEE.Control {
     const center = `center=${x},${y}`;
     const zoom = `&zoom=${this.map_.getZoom()}`;
     const srs = `&srs=${this.map_.getProjection().code}`;
+    const bgColorContainer = this.map_.getBGColorContainer();
+    const stringBgColor = bgColorContainer !== '' ? `&bgcolorcontainer=${encodeURIComponent(bgColorContainer)}` : '';
     const layers = `&layers=${this.getLayersInLayerswitcher().toString()}`;
     const controls = (this.getControlsFormat()) ? `&controls=${this.getControlsFormat()}` : '';
     const plugin = (this.getPlugins()) ? `&${this.getPlugins()}` : '';
@@ -786,14 +788,14 @@ export default class IncicartoControl extends IDEE.Control {
       .includes(PATH_NAME)) {
       onlyURL = true;
       url = url.split('?')[0];
-      apiUrl += `?${center}${zoom}${srs}${layers}${controls}${plugin}`;
+      apiUrl += `?${center}${zoom}${stringBgColor}${srs}${layers}${controls}${plugin}`;
     } else {
       // Visor
       // URL del visor - centro, zoom, srs, todas las capas.
       // URL de la API - centro, zoom, srs, todas las capas.
       url = url.split('?')[0];
-      url += `?${center}${zoom}${srs}${layers}`;
-      apiUrl += `?${center}${zoom}${srs}${layers}`;
+      url += `?${center}${zoom}${stringBgColor}${srs}${layers}`;
+      apiUrl += `?${center}${zoom}${stringBgColor}${srs}${layers}`;
     }
 
     if (url.indexOf('.jsp') > -1) {
@@ -821,8 +823,8 @@ export default class IncicartoControl extends IDEE.Control {
    */
   getLayersInLayerswitcher() {
     const layers = this.map_.getLayers().filter((layer) => {
-      return (layer.displayInLayerSwitcher === true && layer.transparent === true)
-        || layer.transparent === false;
+      return (layer.displayInLayerSwitcher === true && layer.isBase === false)
+        || layer.isBase === true;
     });
 
     return layers.map((layer) => this.layerToParam(layer)).filter((param) => param != null);
@@ -1226,7 +1228,7 @@ export default class IncicartoControl extends IDEE.Control {
     const selected = document.querySelector('#m-incicarto-wfs-select').value;
     let url = document.querySelector('div.m-dialog #m-incicarto-addwfs-search-input').value.trim();
     url += url.endsWith('?') ? '' : '?';
-    document.querySelector('div.m-api_idee-container div.m-dialog').remove();
+    document.querySelector('div.m-api-idee-container div.m-dialog').remove();
     let legend = selected;
     const filtered = services.filter((s) => {
       return s.name === selected;
@@ -2049,9 +2051,9 @@ export default class IncicartoControl extends IDEE.Control {
 
         IDEE.dialog.info(changeName, getValue('change_name'));
         setTimeout(() => {
-          const selector = 'div.m-api_idee-container div.m-dialog #m-layer-change-name button';
+          const selector = 'div.m-api-idee-container div.m-dialog #m-layer-change-name button';
           document.querySelector(selector).addEventListener('click', this.changeLayerLegend.bind(this, layer));
-          document.querySelector('div.m-api_idee-container div.m-dialog div.m-title').style.backgroundColor = '#71a7d3';
+          document.querySelector('div.m-api-idee-container div.m-dialog div.m-title').style.backgroundColor = '#71a7d3';
           const button = document.querySelector('div.m-dialog.info div.m-button > button');
           button.innerHTML = getValue('close');
           button.style.width = '75px';
@@ -2111,12 +2113,12 @@ export default class IncicartoControl extends IDEE.Control {
   }
 
   changeLayerLegend(layer) {
-    const selector = 'div.m-api_idee-container div.m-dialog #m-layer-change-name input';
+    const selector = 'div.m-api-idee-container div.m-dialog #m-layer-change-name input';
     const newValue = document.querySelector(selector).value.trim();
     if (newValue.length > 0) {
       layer.setLegend(newValue);
       this.renderLayers();
-      document.querySelector('div.m-api_idee-container div.m-dialog').remove();
+      document.querySelector('div.m-api-idee-container div.m-dialog').remove();
     }
   }
 

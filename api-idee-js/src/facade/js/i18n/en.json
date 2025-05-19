@@ -93,6 +93,14 @@
     "features": "The layer does not have any <br/> features with the specified attribute in set symbology. <br/>A default weighting is set",
     "name": "Heatmap"
   },
+  "implementationswitcher": {
+    "title": "Implementations",
+    "description": "Select implementation:",
+    "textHelp": {
+      "text1": "This tool allows you to change the implementation of the map.",
+      "text2": "In the dropdown you can see all the available implementations (OpenLayers, Cesium, etc)."
+    }
+  },
   "exception": {
     "addto_method": "The used implementation does not have the addTo method",
     "getelement_method": "The used implementation does not have the getElement method",
@@ -163,6 +171,7 @@
     "incorrect_bbox_format": "The format of the bbox parameter is not correct.",
     "getzoom_method": "The used implementation does not have the getZoom method.",
     "no_zoom": "You have not specified any zoom.",
+    "invalid_zoom": "The specified zoom is invalid.",
     "setzoom_method": "The implementation used does not have the setZoom method.",
     "getcenter_method": "The used implementation does not have the getCenter method.",
     "setcenter_method": "The used implementation does not have the setCenter method.",
@@ -208,6 +217,7 @@
     "invalid_maxextent_param": "The format of the maxExtent parameter is not correct",
     "invalid_resolutions_param": "The format of the resolutions parameter is not correct",
     "invalid_zoom_param": "The format of the zoom parameter is not correct",
+    "invalid_zoomconstrains_param": "The format of the zoomConstraints parameter is not correct",
     "min_gt_max": "A minimum radius greater than the maximum can not be established.",
     "max_lt_min": "A maximum radius of less than the minimum can not be established.",
     "no_geojson": "No GeoJSON has been specified",
@@ -230,6 +240,8 @@
     "file_extension": "A not allowed file extension has been inserted. The allowed ones are: KML, SHP(.zip), GPX, GML and GeoJSON.",
     "no_setprojection": "The implementation used cannot change the map projection.",
     "no_zoomconstrains": "The implementation used cannot use the zoomConstrains parameter.",
+    "setZoomConstrains_method": "The implementation used does not have the setIntermediateZooms method.",
+    "getZoomConstrains_method": "The implementation used does not have the getIntermediateZooms method.",
     "no_opacity": "The implementation used cannot change the opacity.",
     "no_scale": "The implementation used cannot get the map scale.",
     "index_error": "Index must be less than or equal to the number of layers",
@@ -265,6 +277,10 @@
     "layergroup_method": "The implementation used can not create LayerGroup.",
     "chart_method": "The implementation used can not create Chart styles.",
     "heatmap_method": "The implementation used can not create Heatmap styles.",
-    "flowline_method": "The implementation used can not create Flowline styles."
+    "flowline_method": "The implementation used can not create Flowline styles.",
+    "id_exists": "ID already exists.",
+    "transparent_deprecated": "'transparent' parameter has been deprecated, it is recommended to use 'isBase' instead.",
+    "getOL3Layer_deprecated": "The getOL3Layer method has been deprecated, it is recommended to use the getLayer method.",
+    "setOL3Layer_deprecated": "The setOL3Layer method has been deprecated, it is recommended to use the setLayer method."
   }
 }

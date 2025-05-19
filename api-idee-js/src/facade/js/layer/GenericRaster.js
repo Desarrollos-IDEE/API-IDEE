@@ -4,7 +4,7 @@
 import GenericRasterImpl from 'impl/layer/GenericRaster';
 import Utils from 'impl/util/Utils';
 import {
-  isUndefined, isArray, isNullOrEmpty, isFunction, isObject,
+  isUndefined, isArray, isNullOrEmpty, isFunction, isObject, isString,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import LayerBase from './Layer';
@@ -16,10 +16,12 @@ import * as LayerType from './Type';
  * @classdesc
  *  GenericRaster permite añadir cualquier tipo de capa raster.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} name Nombre de la capa.
  * @property {String} legend Nombre asociado en el árbol de contenido, si usamos uno.
  * @property {String} version Versión.
- * @property {Boolean} transparent 'Falso' si es una capa base, 'verdadero' en caso contrario.
+ * @property {Boolean} transparent (deprecated) 'Falso' si es una capa base,
+ * 'verdadero' en caso contrario.
  * @property {Object} options Capa de opciones.
  * @property {Boolean} isbase Define si la capa es base.
  *
@@ -35,7 +37,7 @@ class GenericRaster extends LayerBase {
    * - attribution: Atribución de la capa.
    * - name: nombre de la capa.
    * - legend: Nombre asociado en el árbol de contenidos, si usamos uno.
-   * - transparent: Falso si es una capa base, verdadero en caso contrario.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
    * - isBase: Indica si la capa es base.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a
@@ -72,6 +74,11 @@ class GenericRaster extends LayerBase {
     delete params.maxZoom;
     const opts = options;
     let vOptions = vendorOptions;
+
+    if (isString(userParameters) || !isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
+    }
 
     if (typeof userParameters === 'string') {
       params = parameter.layer(userParameters, LayerType.GenericRaster);
@@ -243,6 +250,7 @@ class GenericRaster extends LayerBase {
       equals = (this.legend === obj.legend);
       equals = equals && (this.url === obj.url);
       equals = equals && (this.name === obj.name);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
 
     return equals;

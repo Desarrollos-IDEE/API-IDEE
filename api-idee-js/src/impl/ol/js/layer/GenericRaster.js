@@ -94,7 +94,7 @@ class GenericRaster extends LayerBase {
      */
     this.format = this.options.format;
 
-    this.ol3Layer = vendorOptions;
+    this.olLayer = vendorOptions;
     this.maxExtent = options.userMaxExtent || [];
     this.ids = options.ids;
     this.version = options.version;
@@ -113,32 +113,32 @@ class GenericRaster extends LayerBase {
     this.map = map;
 
     if (!isNullOrEmpty(this.visibility)) {
-      this.ol3Layer.setVisible(this.visibility);
+      this.olLayer.setVisible(this.visibility);
     }
 
     if (!isNullOrEmpty(this.maxZoom)) {
-      this.ol3Layer.setMaxZoom(this.maxZoom);
+      this.olLayer.setMaxZoom(this.maxZoom);
     }
 
     if (!isNullOrEmpty(this.minZoom)) {
-      this.ol3Layer.setMinZoom(this.minZoom);
+      this.olLayer.setMinZoom(this.minZoom);
     }
 
     if (!isNullOrEmpty(this.zIndex_)) {
-      this.ol3Layer.setZIndex(this.zIndex_);
+      this.olLayer.setZIndex(this.zIndex_);
     }
 
     if (!isNullOrEmpty(this.visibility)) {
-      this.ol3Layer.setVisible(this.visibility);
+      this.olLayer.setVisible(this.visibility);
     }
 
     if (!isNullOrEmpty(this.sldBody)) {
       try {
-        this.ol3Layer.getSource().updateParams({ SLD_BODY: this.sldBody });
+        this.olLayer.getSource().updateParams({ SLD_BODY: this.sldBody });
       } catch (error) {
         const err = getValue('exception').sldBODYError
           .replace('[replace1]', this.name)
-          .replace('[replace2]', this.ol3Layer.constructor.name);
+          .replace('[replace2]', this.olLayer.constructor.name);
 
         // eslint-disable-next-line no-console
         console.warn(err);
@@ -147,11 +147,11 @@ class GenericRaster extends LayerBase {
 
     if (!isNullOrEmpty(this.styles)) {
       try {
-        this.ol3Layer.getSource().updateParams({ STYLES: this.styles });
+        this.olLayer.getSource().updateParams({ STYLES: this.styles });
       } catch (error) {
         const err = getValue('exception').styleError
           .replace('[replace1]', this.name)
-          .replace('[replace2]', this.ol3Layer.constructor.name);
+          .replace('[replace2]', this.olLayer.constructor.name);
 
         // eslint-disable-next-line no-console
         console.warn(err);
@@ -160,50 +160,50 @@ class GenericRaster extends LayerBase {
 
     if (!isNullOrEmpty(this.format)) {
       try {
-        this.ol3Layer.getSource().updateParams({ FORMAT: this.format });
+        this.olLayer.getSource().updateParams({ FORMAT: this.format });
       } catch (error) {
         const err = getValue('exception').formatError
           .replace('[replace1]', this.name)
-          .replace('[replace2]', this.ol3Layer.constructor.name);
+          .replace('[replace2]', this.olLayer.constructor.name);
 
         // eslint-disable-next-line no-console
         console.warn(err);
       }
     }
 
-    this.capabilities = this.getCapabilities(this.ol3Layer, map.getProjection());
+    this.capabilities = this.getCapabilities(this.olLayer, map.getProjection());
 
     if (!isNullOrEmpty(this.maxExtent)) {
-      this.ol3Layer.setExtent(this.maxExtent);
+      this.olLayer.setExtent(this.maxExtent);
     } else if (
-      this.ol3Layer.getSource() instanceof TileWMS
-        || this.ol3Layer.getSource() instanceof ImageWMS) {
-      if (this.ol3Layer.getExtent()) {
-        this.maxExtent = this.ol3Layer.getExtent();
-        this.ol3Layer.setExtent(this.maxExtent);
+      this.olLayer.getSource() instanceof TileWMS
+        || this.olLayer.getSource() instanceof ImageWMS) {
+      if (this.olLayer.getExtent()) {
+        this.maxExtent = this.olLayer.getExtent();
+        this.olLayer.setExtent(this.maxExtent);
       } else {
         this.capabilities.then((capabilities) => {
           this.maxExtent = capabilities.getLayerExtent();
-          this.ol3Layer.setExtent(this.maxExtent);
+          this.olLayer.setExtent(this.maxExtent);
           // eslint-disable-next-line no-underscore-dangle
           this.facadeLayer_.maxExtent_ = this.maxExtent;
         });
       }
-    } else if ((this.ol3Layer.getSource() instanceof OLSourceWMTS)) {
-      const capabilities = this.getCapabilitiesWMTS_(this.ol3Layer);
+    } else if ((this.olLayer.getSource() instanceof OLSourceWMTS)) {
+      const capabilities = this.getCapabilitiesWMTS_(this.olLayer);
       capabilities.then((c) => {
         this.maxExtent = this.getMaxExtentCapabilitiesWMTS_(c);
-        this.ol3Layer.setExtent(this.maxExtent);
+        this.olLayer.setExtent(this.maxExtent);
         // eslint-disable-next-line no-underscore-dangle
         this.facadeLayer_.maxExtent_ = this.maxExtent;
       });
     }
 
-    if (!isUndefined(this.ol3Layer.getSource().getLegendUrl)) {
-      this.legendUrl_ = this.ol3Layer.getSource().getLegendUrl();
+    if (!isUndefined(this.olLayer.getSource().getLegendUrl)) {
+      this.legendUrl_ = this.olLayer.getSource().getLegendUrl();
     }
-    this.ol3Layer.setOpacity(this.opacity_);
-    this.ol3Layer.setVisible(this.visibility);
+    this.olLayer.setOpacity(this.opacity_);
+    this.olLayer.setVisible(this.visibility);
 
     // calculates the resolutions from scales
     if (!isNull(this.options)
@@ -211,15 +211,19 @@ class GenericRaster extends LayerBase {
       const units = this.map.getProjection().units;
       this.options.minResolution = getResolutionFromScale(this.options.minScale, units);
       this.options.maxResolution = getResolutionFromScale(this.options.maxScale, units);
-      this.ol3Layer.setMaxResolution(this.options.maxResolution);
-      this.ol3Layer.setMinResolution(this.options.minResolution);
+      this.olLayer.setMaxResolution(this.options.maxResolution);
+      this.olLayer.setMinResolution(this.options.minResolution);
     } else if (!isNull(this.options)
       && !isNull(this.options.minResolution) && !isNull(this.options.maxResolution)) {
-      this.ol3Layer.setMaxResolution(this.options.maxResolution);
-      this.ol3Layer.setMinResolution(this.options.minResolution);
+      this.olLayer.setMaxResolution(this.options.maxResolution);
+      this.olLayer.setMinResolution(this.options.minResolution);
     }
+
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
+
     if (addLayer) {
-      map.getMapImpl().addLayer(this.ol3Layer);
+      map.getMapImpl().addLayer(this.olLayer);
     }
   }
 
@@ -335,9 +339,9 @@ class GenericRaster extends LayerBase {
    * @api
    */
   setURLService(url) {
-    if (!isNullOrEmpty(this.ol3Layer) && !isNullOrEmpty(this.ol3Layer.getSource)
-      && !isNullOrEmpty(this.ol3Layer.getSource()) && !isNullOrEmpty(url)) {
-      this.ol3Layer.getSource().setUrl(url);
+    if (!isNullOrEmpty(this.olLayer) && !isNullOrEmpty(this.olLayer.getSource)
+      && !isNullOrEmpty(this.olLayer.getSource()) && !isNullOrEmpty(url)) {
+      this.olLayer.getSource().setUrl(url);
     }
   }
 
@@ -350,13 +354,13 @@ class GenericRaster extends LayerBase {
    */
   getURLService() {
     let url = '';
-    if (!isNullOrEmpty(this.ol3Layer) && !isNullOrEmpty(this.ol3Layer.getSource)
-      && !isNullOrEmpty(this.ol3Layer.getSource())) {
-      const source = this.ol3Layer.getSource();
+    if (!isNullOrEmpty(this.olLayer) && !isNullOrEmpty(this.olLayer.getSource)
+      && !isNullOrEmpty(this.olLayer.getSource())) {
+      const source = this.olLayer.getSource();
       if (!isNullOrEmpty(source.getUrl)) {
-        url = this.ol3Layer.getSource().getUrl();
+        url = this.olLayer.getSource().getUrl();
       } else if (!isNullOrEmpty(source.getUrls)) {
-        url = this.ol3Layer.getSource().getUrls();
+        url = this.olLayer.getSource().getUrls();
       }
     }
     return url;
@@ -386,7 +390,7 @@ class GenericRaster extends LayerBase {
    * @api stable
    */
   getMaxResolution() {
-    return this.ol3Layer.getMaxResolution();
+    return this.olLayer.getMaxResolution();
   }
 
   /**
@@ -398,7 +402,7 @@ class GenericRaster extends LayerBase {
    * @api stable
    */
   getMinResolution() {
-    return this.ol3Layer.getMinResolution();
+    return this.olLayer.getMinResolution();
   }
 
   /**
@@ -407,7 +411,7 @@ class GenericRaster extends LayerBase {
    * @api stable
    */
   refresh() {
-    this.ol3Layer.getSource().refresh();
+    this.olLayer.getSource().refresh();
   }
 
   /**
@@ -441,16 +445,16 @@ class GenericRaster extends LayerBase {
    * @api stable
    */
   getMaxExtent() {
-    let extent = this.ol3Layer.getExtent();
+    let extent = this.olLayer.getExtent();
     if (isUndefined(extent)) {
-      const tilegrid = this.ol3Layer.getSource().getTileGrid;
+      const tilegrid = this.olLayer.getSource().getTileGrid;
       if (!isUndefined(tilegrid)) {
-        extent = this.ol3Layer.getSource().getTileGrid().getExtent();
-        const extentProj = this.ol3Layer.getSource().getProjection().getCode();
+        extent = this.olLayer.getSource().getTileGrid().getExtent();
+        const extentProj = this.olLayer.getSource().getProjection().getCode();
         extent = ImplUtils
           .transformExtent(extent, extentProj, getProj(this.map.getProjection().code));
       } else {
-        extent = this.ol3Layer.getSource().getImageExtent();
+        extent = this.olLayer.getSource().getImageExtent();
       }
     }
     return extent;
@@ -463,7 +467,7 @@ class GenericRaster extends LayerBase {
    * @api stable
    */
   setMaxExtent(extent) {
-    return this.ol3Layer.setExtent(extent);
+    return this.olLayer.setExtent(extent);
   }
 
   /**
@@ -487,11 +491,11 @@ class GenericRaster extends LayerBase {
   setVersion(newVersion) {
     this.version = newVersion;
     try {
-      this.ol3Layer.getSource().updateParams({ VERSION: newVersion });
+      this.olLayer.getSource().updateParams({ VERSION: newVersion });
     } catch (error) {
       const err = getValue('exception').versionError
         .replace('[replace1]', this.name)
-        .replace('[replace2]', this.ol3Layer.constructor.name);
+        .replace('[replace2]', this.olLayer.constructor.name);
 
       // eslint-disable-next-line no-console
       console.warn(err);
@@ -508,8 +512,8 @@ class GenericRaster extends LayerBase {
    */
   destroy() {
     const olMap = this.map.getMapImpl();
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      olMap.removeLayer(this.ol3Layer);
+    if (!isNullOrEmpty(this.olLayer)) {
+      olMap.removeLayer(this.olLayer);
     }
     this.map = null;
   }

@@ -42,7 +42,7 @@ class GeoTIFF extends LayerBase {
    * - blob: url del blob.
    * - projection: SRS usado por la capa.
    * - legend: Nombre asociado en el árbol de contenidos, si usamos uno.
-   * - transparent: Falso si es una capa base, verdadero en caso contrario.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
    * - convertToRGB: Convierte la compresion de la imagen a RGB, puede ser 'auto', true o false,
    *   por defecto 'auto'.
    * - opacity: Opacidad de la capa de 0 a 1, por defecto 1.
@@ -182,15 +182,15 @@ class GeoTIFF extends LayerBase {
   setVisible(visibility) {
     this.visibility = visibility;
     // if this layer is base then it hides all base layers
-    if ((visibility === true) && (this.transparent !== true)) {
+    if ((visibility === true) && (this.isBase !== false)) {
       // hides all base layers
       this.map.getBaseLayers()
         .filter((layer) => !layer.equals(this.facadeLayer_) && layer.isVisible())
         .forEach((layer) => layer.setVisible(false));
 
       // set this layer visible
-      if (!isNullOrEmpty(this.ol3Layer)) {
-        this.ol3Layer.setVisible(visibility);
+      if (!isNullOrEmpty(this.olLayer)) {
+        this.olLayer.setVisible(visibility);
       }
 
       // updates resolutions and keep the zoom
@@ -199,8 +199,8 @@ class GeoTIFF extends LayerBase {
       if (!isNullOrEmpty(oldZoom)) {
         this.map.setZoom(oldZoom);
       }
-    } else if (!isNullOrEmpty(this.ol3Layer)) {
-      this.ol3Layer.setVisible(visibility);
+    } else if (!isNullOrEmpty(this.olLayer)) {
+      this.olLayer.setVisible(visibility);
     }
   }
 
@@ -216,6 +216,10 @@ class GeoTIFF extends LayerBase {
     this.map = map;
     this.addLayerToMap_ = addLayer;
     this.createOLLayer_(null);
+
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
+
     this.fire(EventType.ADDED_TO_MAP);
   }
 
@@ -259,10 +263,10 @@ class GeoTIFF extends LayerBase {
       minResolution: this.options.minResolution,
       maxResolution: this.options.maxResolution,
     }, this.vendorOptions_, true);
-    this.ol3Layer = new TileLayer(properties);
+    this.olLayer = new TileLayer(properties);
 
     if (this.addLayerToMap_) {
-      this.map.getMapImpl().addLayer(this.ol3Layer);
+      this.map.getMapImpl().addLayer(this.olLayer);
     }
 
     this.fire(EventType.ADDED_TO_MAP);
@@ -274,8 +278,8 @@ class GeoTIFF extends LayerBase {
       this.setZIndex(zIndex);
     }
     // activates animation for base layers or animated parameters
-    this.ol3Layer.setMaxZoom(this.maxZoom);
-    this.ol3Layer.setMinZoom(this.minZoom);
+    this.olLayer.setMaxZoom(this.maxZoom);
+    this.olLayer.setMinZoom(this.minZoom);
   }
 
   /**
@@ -410,7 +414,7 @@ class GeoTIFF extends LayerBase {
       // gets the tileGrid
       if (!isNullOrEmpty(resolutions)) {
         const source = this.createOLSource_();
-        this.ol3Layer.setSource(source);
+        this.olLayer.setSource(source);
       }
     }
   }
@@ -478,9 +482,9 @@ class GeoTIFF extends LayerBase {
    */
   destroy() {
     const olMap = this.map.getMapImpl();
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      olMap.removeLayer(this.ol3Layer);
-      this.ol3Layer = null;
+    if (!isNullOrEmpty(this.olLayer)) {
+      olMap.removeLayer(this.olLayer);
+      this.olLayer = null;
     }
     this.map = null;
   }

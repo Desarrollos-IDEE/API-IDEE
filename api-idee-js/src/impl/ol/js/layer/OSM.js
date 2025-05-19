@@ -33,7 +33,6 @@ class OSM extends Layer {
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
    * - name: Nombre de la capa en la leyenda.
    * - legend: Indica el nombre que queremos que aparezca en el árbol de contenidos, si lo hay.
-   * - transparent: Falso si es una capa base, verdadero en caso contrario.
    * - type: Tipo de la capa.
    * - url: Url genera la OSM.
    * - minZoom: Zoom mínimo aplicable a la capa.
@@ -42,6 +41,8 @@ class OSM extends Layer {
    * - opacity: Opacidad de capa, por defecto 1.
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
    * - animated: Activa la animación para capas base o parámetros animados.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
    * <pre><code>
    * import SourceOSM from 'ol/source/OSM';
@@ -104,7 +105,7 @@ class OSM extends Layer {
     this.visibility = visibility;
     if (this.inRange() === true) {
       // if this layer is base then it hides all base layers
-      if ((visibility === true) && (this.transparent === false)) {
+      if ((visibility === true) && (this.isBase === true)) {
         // hides all base layers
         this.map.getBaseLayers().forEach((layer) => {
           if (!layer.equals(this) && layer.isVisible()) {
@@ -113,8 +114,8 @@ class OSM extends Layer {
         });
 
         // set this layer visible
-        if (!isNullOrEmpty(this.ol3Layer)) {
-          this.ol3Layer.setVisible(visibility);
+        if (!isNullOrEmpty(this.olLayer)) {
+          this.olLayer.setVisible(visibility);
         }
 
         // updates resolutions and keep the bbox
@@ -123,8 +124,8 @@ class OSM extends Layer {
         if (!isNullOrEmpty(oldBbox)) {
           this.map.setBbox(oldBbox);
         }
-      } else if (!isNullOrEmpty(this.ol3Layer)) {
-        this.ol3Layer.setVisible(visibility);
+      } else if (!isNullOrEmpty(this.olLayer)) {
+        this.olLayer.setVisible(visibility);
       }
     }
   }
@@ -141,7 +142,7 @@ class OSM extends Layer {
     this.map = map;
     this.fire(EventType.ADDED_TO_MAP);
 
-    this.ol3Layer = new OLLayerTile(extend(
+    this.olLayer = new OLLayerTile(extend(
       { visible: this.visibility },
       this.vendorOptions_,
       true,
@@ -152,7 +153,7 @@ class OSM extends Layer {
     }
 
     if (addLayer) {
-      this.map.getMapImpl().addLayer(this.ol3Layer);
+      this.map.getMapImpl().addLayer(this.olLayer);
     }
 
     this.map.getImpl().getMapImpl().getControls().getArray()
@@ -176,7 +177,7 @@ class OSM extends Layer {
     this.resolutions_ = generateResolutionsFromExtent(
       this.facadeLayer_.getMaxExtent(),
       size,
-      16,
+      Number(IDEE.config.MAX_ZOOM),
       units,
     );
 
@@ -192,12 +193,15 @@ class OSM extends Layer {
       this.setResolutions(this.resolutions_);
     }
 
-    this.ol3Layer.setMaxZoom(this.maxZoom);
-    this.ol3Layer.setMinZoom(this.minZoom);
+    this.olLayer.setMaxZoom(this.maxZoom);
+    this.olLayer.setMinZoom(this.minZoom);
+
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
 
     // activates animation for base layers or animated parameters
-    const animated = ((this.transparent === false) || (this.options.animated === true));
-    this.ol3Layer.set('animated', animated);
+    const animated = ((this.isBase === true) || (this.options.animated === true));
+    this.olLayer.set('animated', animated);
 
     // set the extent when the map changed
     this.map.on(EventType.CHANGE_PROJ, () => this.updateSource_());
@@ -229,7 +233,7 @@ class OSM extends Layer {
       this.map.getMapImpl().updateSize();
       const size = this.map.getMapImpl().getSize();
       const units = this.map.getProjection().units;
-      const zoomLevels = 16;
+      const zoomLevels = Number(IDEE.config.MAX_ZOOM);
       this.resolutions_ = generateResolutionsFromExtent(
         this.facadeLayer_.getMaxExtent(),
         size,
@@ -237,13 +241,13 @@ class OSM extends Layer {
         units,
       );
     }
-    if (!isNullOrEmpty(this.ol3Layer) && isNullOrEmpty(this.vendorOptions_.source)) {
+    if (!isNullOrEmpty(this.olLayer) && isNullOrEmpty(this.vendorOptions_.source)) {
       const extent = this.facadeLayer_.getMaxExtent();
       const newSource = new SourceOSM({
         url: this.url,
       });
-      this.ol3Layer.setSource(newSource);
-      this.ol3Layer.setExtent(extent);
+      this.olLayer.setSource(newSource);
+      this.olLayer.setExtent(extent);
     }
   }
 
@@ -269,7 +273,7 @@ class OSM extends Layer {
    * @api stable
    */
   setMaxExtent(maxExtent) {
-    this.ol3Layer.setExtent(maxExtent);
+    this.olLayer.setExtent(maxExtent);
   }
 
   /**
@@ -306,9 +310,9 @@ class OSM extends Layer {
    */
   destroy() {
     const olMap = this.map.getMapImpl();
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      olMap.removeLayer(this.ol3Layer);
-      this.ol3Layer = null;
+    if (!isNullOrEmpty(this.olLayer)) {
+      olMap.removeLayer(this.olLayer);
+      this.olLayer = null;
     }
 
     this.map.getLayers().forEach((layer) => {
@@ -358,8 +362,8 @@ class OSM extends Layer {
    */
   cloneOLLayer() {
     let olLayer = null;
-    if (this.ol3Layer != null) {
-      const properties = this.ol3Layer.getProperties();
+    if (this.olLayer != null) {
+      const properties = this.olLayer.getProperties();
       olLayer = new OLLayerTile(properties);
     }
     return olLayer;
@@ -375,8 +379,8 @@ class OSM extends Layer {
    */
   cloneLayer() {
     let olLayer = null;
-    if (this.ol3Layer != null) {
-      const properties = this.ol3Layer.getProperties();
+    if (this.olLayer != null) {
+      const properties = this.olLayer.getProperties();
       olLayer = new OLLayerTile(properties);
     }
     return olLayer;

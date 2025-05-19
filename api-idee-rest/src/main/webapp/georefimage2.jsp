@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="es.api_idee.plugins.PluginsManager"%>
-<%@ page import="es.api_idee.parameter.adapter.ParametersAdapterV3ToV4"%>
 <%@ page import="java.util.Map"%>
 
 <!DOCTYPE html>
@@ -29,8 +28,7 @@
     <%
       Map<String, String[]> parameterMap = request.getParameterMap();
       PluginsManager.init (getServletContext());
-      Map<String, String[]> adaptedParams = ParametersAdapterV3ToV4.adapt(parameterMap);
-      String[] cssfiles = PluginsManager.getCSSFiles(adaptedParams);
+      String[] cssfiles = PluginsManager.getCSSFiles(parameterMap);
       for (int i = 0; i < cssfiles.length; i++) {
          String cssfile = cssfiles[i];
    %>
@@ -64,17 +62,17 @@
         <label for="inputServerUrl">Parámetro inputServerUrl</label>
         <input type="text" value="" name="serverUrl" id="inputServerUrl" list="serverUrlSug">
         <datalist id="serverUrlSug">
-            <option value="https://geoprint.desarrollo.guadaltel.es"></option>
+            <option value="https://componentes.cnig.es/geoprint"></option>
         </datalist>
         <label for="inputPrintTemplateUrl">Parámetro inputPrintTemplateUrl</label>
         <input type="text" value="" name="printTemplateUrl" id="inputPrintTemplateUrl" list="printTemplateUrlSug">
         <datalist id="printTemplateUrlSug">
-            <option value="https://geoprint.desarrollo.guadaltel.es/print/mapexport"></option>
+            <option value="https://componentes.cnig.es/geoprint/print/mapexport"></option>
         </datalist>
         <label for="inputPrintStatusUrl">Parámetro inputPrintStatusUrl</label>
         <input type="text" value="" name="printStatusUrl" id="inputPrintStatusUrl" list="printStatusUrlSug">
         <datalist id="printStatusUrlSug">
-            <option value="https://geoprint.desarrollo.guadaltel.es/print/status"></option>
+            <option value=" https://componentes.cnig.es/geoprint/print/status"></option>
         </datalist>
         <input type="button" value="Eliminar Plugin" name="eliminar" id="botonEliminar">
     </div>
@@ -87,7 +85,7 @@
     <script type="text/javascript" src="plugins/backimglayer/backimglayer.ol.min.js"></script>
 
     <%
-      String[] jsfiles = PluginsManager.getJSFiles(adaptedParams);
+      String[] jsfiles = PluginsManager.getJSFiles(parameterMap);
       for (int i = 0; i < jsfiles.length; i++) {
          String jsfile = jsfiles[i];
    %>
@@ -169,7 +167,7 @@
           layerOpts: [
             {
               id: 'raster',
-              preview: 'img/raster.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/raster.png',
               title: 'Mapa',
               layers: [
                 new IDEE.layer.WMTS({
@@ -177,7 +175,7 @@
                   name: 'MTN',
                   legend: 'Mapa',
                   matrixSet: 'GoogleMapsCompatible',
-                  transparent: false,
+                  isBase: true,
                   displayInLayerSwitcher: false,
                   queryable: false,
                   visible: true,
@@ -187,15 +185,15 @@
             },
             {
               id: 'imagen',
-              preview: 'img/image.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/image.png',
               title: 'Imagen',
               layers: [
                 new IDEE.layer.XYZ({
-                  url: 'https://tms-pnoa-ma.ign.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
+                  url: 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
                   name: 'PNOA-MA',
                   legend: 'Imagen',
                   projection: 'EPSG:3857',
-                  transparent: false,
+                  isBase: true,
                   displayInLayerSwitcher: false,
                   queryable: false,
                   visible: true,
@@ -206,7 +204,7 @@
                   name: 'OI.OrthoimageCoverage',
                   matrixSet: 'GoogleMapsCompatible',
                   legend: 'Imagen',
-                  transparent: true,
+                  isBase: false,
                   displayInLayerSwitcher: false,
                   queryable: false,
                   visible: true,
@@ -217,7 +215,7 @@
             },
             {
               id: 'mapa',
-              preview: 'img/mapa.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/mapa.png',
               title: 'Callejero',
               layers: [
                 new IDEE.layer.WMTS({
@@ -225,7 +223,7 @@
                   name: 'IGNBaseTodo',
                   legend: 'Callejero',
                   matrixSet: 'GoogleMapsCompatible',
-                  transparent: false,
+                  isBase: true,
                   displayInLayerSwitcher: false,
                   queryable: false,
                   visible: true,
@@ -236,14 +234,14 @@
             {
               id: 'hibrido',
               title: 'Híbrido',
-              preview: 'img/hibrido.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/hibrido.png',
               layers: [
                 new IDEE.layer.XYZ({
-                  url: 'https://tms-pnoa-ma.ign.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
+                  url: 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
                   name: 'PNOA-MA',
                   legend: 'Imagen',
                   projection: 'EPSG:3857',
-                  transparent: false,
+                  isBase: true,
                   displayInLayerSwitcher: false,
                   queryable: false,
                   visible: true,
@@ -254,7 +252,7 @@
                   name: 'OI.OrthoimageCoverage',
                   matrixSet: 'GoogleMapsCompatible',
                   legend: 'Imagen',
-                  transparent: true,
+                  isBase: false,
                   displayInLayerSwitcher: false,
                   queryable: false,
                   visible: true,
@@ -266,7 +264,7 @@
                   name: 'IGNBaseOrto',
                   matrixSet: 'GoogleMapsCompatible',
                   legend: 'Topónimos',
-                  transparent: true,
+                  isBase: false,
                   displayInLayerSwitcher: false,
                   queryable: false,
                   visible: true,
@@ -276,7 +274,7 @@
             },
             {
               id: 'lidar',
-              preview: 'img/lidar.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/lidar.png',
               title: 'LiDAR',
               layers: [
                 new IDEE.layer.WMTS({
@@ -284,7 +282,7 @@
                   name: 'EL.GridCoverageDSM',
                   legend: 'LiDAR',
                   matrixSet: 'GoogleMapsCompatible',
-                  transparent: false,
+                  isBase: true,
                   displayInLayerSwitcher: false,
                   queryable: false,
                   visible: true,
@@ -294,7 +292,7 @@
             },
             {
               id: 'ocupacion-suelo',
-              preview: 'img/ocupacion_suelo.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/ocupacion_suelo.png',
               title: 'Ocupación',
               layers: [
                 new IDEE.layer.WMTS({
@@ -302,7 +300,7 @@
                   name: 'LC.LandCoverSurfaces',
                   legend: 'Ocupación',
                   matrixSet: 'GoogleMapsCompatible',
-                  transparent: false,
+                  isBase: true,
                   displayInLayerSwitcher: false,
                   queryable: false,
                   visible: true,
@@ -312,7 +310,7 @@
             },
             {
               id: 'historicos',
-              preview: 'img/historicos.png',
+              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/historicos.png',
               title: 'Históricos',
               layers: [
                 new IDEE.layer.WMTS({
@@ -320,7 +318,7 @@
                   name: 'mtn50-edicion1',
                   legend: 'Históricos',
                   matrixSet: 'GoogleMapsCompatible',
-                  transparent: false,
+                  isBase: true,
                   displayInLayerSwitcher: false,
                   queryable: false,
                   visible: true,
@@ -334,12 +332,12 @@
 </body>
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-CTLHMMB5YT"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-19NTRSBP21"></script>
 <script>
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', 'G-CTLHMMB5YT');
+gtag('config', 'G-19NTRSBP21');
 </script>
 
 </html>

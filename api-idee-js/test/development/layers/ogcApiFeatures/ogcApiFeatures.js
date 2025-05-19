@@ -35,13 +35,11 @@ export const ogcAPIFeatures_001 = new OGCAPIFeatures({
   // maxExtent: [-953031.9167337259, 5198473.475942763, -879652.3695799566, 5233405.1978690885],
   // isBase: true,
   // isBase: false,
-  // transparent: true,
-  // transparent: false,
   // attribution: {
   //   name: 'Name Prueba OGCAPIFeatures',
   //   description: 'Description Prueba',
   //   url: 'https://www.ign.es',
-  //   contentAttributions: 'https://componentes.cnig.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+  //   contentAttributions: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
   //   contentType: 'kml',
   // }
 }, {

@@ -103,7 +103,7 @@ export default class ShareMap extends IDEE.Plugin {
      * @private
      * @type {URLLike}
      */
-    this.baseUrl_ = options.baseUrl || 'https://componentes.cnig.es//';
+    this.baseUrl_ = options.baseUrl || 'https://componentes.idee.es/api-idee/';
 
     if (!IDEE.utils.isString(this.baseUrl_)) {
       throw new Error('options.baseUrl is not string type.');

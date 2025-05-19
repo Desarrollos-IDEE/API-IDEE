@@ -7,23 +7,10 @@ import { getValue } from '../../../facade/js/i18n/language';
 
 const WGS84 = 'EPSG:4326';
 const MERCATOR = 'EPSG:900913';
-const PROFILE_URL = 'https://servicios.idee.es/wcs-inspire/mdt?request=GetCoverage&bbox=';
-const PROFILE_URL_SUFFIX = '&service=WCS&version=1.0.0&coverage=Elevacion4258_5&'
-  + 'interpolationMethod=bilinear&crs=EPSG%3A4258&format=ArcGrid&width=2&height=2';
-const NO_DATA_VALUE = 'NODATA_value -9999.000';
-
-const formatNumber = (x, decimals) => {
-  const pow = 10 ** decimals;
-  let num = Math.round(x * pow) / pow;
-  num = num.toString().replace('.', ',');
-  if (decimals > 2) {
-    num = `${num.split(',')[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.')},${num.split(',')[1]}`;
-  } else {
-    num.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-  }
-
-  return num;
-};
+const ELEVATION_PROCESS_URL = 'https://api-processes.idee.es/processes/getElevation/execution';
+const ELEVATION_PROFILE_PROCESS_URL = 'https://api-processes.idee.es/processes/elevationProfile/execution';
+const NO_DATA_VALUE = -9999;
+const { measurements } = require('../../../../../../geoprocesses');
 
 export default class Analysiscontrol extends IDEE.impl.Control {
   /**
@@ -54,7 +41,7 @@ export default class Analysiscontrol extends IDEE.impl.Control {
 
     this.distance_ = 30;
 
-    this.arrayXZY = null;
+    this.arrayXYZ = null;
   }
 
   /**
@@ -117,8 +104,10 @@ export default class Analysiscontrol extends IDEE.impl.Control {
    * @api
    * @param {IDEE.Feature} feature
    */
-  calculateProfile(feature, show = true) {
+  calculateProfile(id, feature, show = true) {
+    const altitudes = [];
     let coordinates = [];
+
     if (feature.getGeometry().type === 'MultiLineString') {
       feature.getGeometry().coordinates.forEach((path) => {
         coordinates = coordinates.concat(path);
@@ -133,77 +122,31 @@ export default class Analysiscontrol extends IDEE.impl.Control {
       coordinates = [].concat(feature.getGeometry().coordinates);
     }
 
-    let pointsCoord = '';
-    for (let i = 1; i < coordinates.length; i += 1) {
-      pointsCoord = pointsCoord.concat(this.findNewPoints(coordinates[i - 1], coordinates[i]));
-    }
-
-    let pointsBbox = pointsCoord.split('|');
-    while (pointsBbox.length > 150) {
-      pointsBbox = pointsBbox.filter((elem, i) => {
-        return i % 2 === 0;
-      });
-    }
-
-    const altitudes = [];
-    const promises = [];
-    pointsBbox = pointsBbox.filter((elem) => {
-      return elem !== '' && elem.trim().length > 3;
+    let altitudeFromElevationProfileProcess;
+    const promesa = new Promise((success) => {
+      altitudeFromElevationProfileProcess = this
+        .readAltitudeFromElevationProfileProcess(coordinates, this.facadeMap_.getProjection().code.split(':')[1]);
+      success(altitudeFromElevationProfileProcess);
     });
 
     IDEE.proxy(false);
-    pointsBbox.forEach((bbox) => {
-      const url = `${PROFILE_URL}${bbox}${PROFILE_URL_SUFFIX}`;
-      promises.push(IDEE.remote.get(url));
-    });
-
-    const codeProj = this.facadeMap_.getProjection().code;
-
-    this.arrayXZY = Promise.all(promises).then((responses) => {
+    promesa.then((response) => {
       IDEE.proxy(true);
-      responses.forEach((response) => {
-        let alt = 0;
-        const responseText = response.text.split(NO_DATA_VALUE).join('');
-        if (responseText.indexOf('dy') > -1) {
-          alt = responseText.split('dy')[1].split(' ').filter((item) => {
-            return item !== '';
-          })[1];
-        } else if (responseText.indexOf('cellsize') > -1) {
-          alt = responseText.split('cellsize')[1].split(' ').filter((item) => {
-            return item !== '';
-          })[1];
+      document.querySelector('#vectorsmanagement-analysis-btn').style.display = 'block';
+      document.querySelector('#vectorsmanagement-analysis-div').innerHTML = '';
+      document.querySelector('#vectorsmanagement-analysis-div').style.height = '0';
+
+      if (response && response !== NO_DATA_VALUE) {
+        response.forEach((resp) => {
+          altitudes.push([resp[0], resp[1], Number(parseFloat(resp[2]).toFixed(2))]);
+        });
+        if (show) {
+          this.showProfile(altitudes);
         }
-
-        altitudes.push(parseFloat(alt));
-      });
-
-      const arrayXZY = [];
-      altitudes.forEach((data, index) => {
-        const points = pointsBbox[index].split(',');
-        const center = ol.extent.getCenter([parseFloat(points[0]), parseFloat(points[1]),
-          parseFloat(points[2]), parseFloat(points[3]),
-        ]);
-        arrayXZY.push([center[0], center[1], data]);
-      });
-
-      let arrayXZY2 = arrayXZY.map((coord) => {
-        return ol.proj.transform(coord, 'EPSG:4326', codeProj);
-      });
-
-      arrayXZY2 = arrayXZY2.filter((item) => {
-        return item[2] > 0;
-      });
-
-      if (show) {
-        this.showProfile(arrayXZY2);
+        this.arrayXYZ = altitudes;
+        this.calculate3DLength(id);
       }
-
-      return arrayXZY2;
-    }).catch((err) => {
-      IDEE.proxy(true);
-      // document.querySelector('.m-vectors .m-vectors-loading-container').innerHTML = '';
-      IDEE.dialog.error(getValue('exception.query_profile'), 'Error');
-    });
+    }).catch(() => IDEE.proxy(true));
   }
 
   /**
@@ -214,45 +157,42 @@ export default class Analysiscontrol extends IDEE.impl.Control {
    * @param {IDEE.Feature} feature
    */
   calculatePoint(feature) {
+    const coordinates = feature.getGeometry().coordinates;
+
     const pointXYZ = {
       map: {
-        coordinates: feature.getGeometry().coordinates,
+        coordinates,
         projection: this.facadeMap_.getProjection().code,
       },
       geographic: {
         coordinates: ol.proj.transform(
-          feature.getGeometry().coordinates,
+          coordinates,
           this.facadeMap_.getProjection().code,
           WGS84,
         ),
         projection: WGS84,
       },
     };
-    // Se aumenta un poco las coordenadas para que el servicio calcule bien la altura
-    const bbox = `${pointXYZ.geographic.coordinates[0]},${pointXYZ.geographic.coordinates[1]},${pointXYZ.geographic.coordinates[0] + 0.00001},${pointXYZ.geographic.coordinates[1] + 0.000001}`;
+
+    let altitudeFromElevationProcess;
+    const promesa = new Promise((success) => {
+      altitudeFromElevationProcess = this
+        .readAltitudeFromElevationProcess(coordinates, this.facadeMap_.getProjection().code.split(':')[1]);
+      success(altitudeFromElevationProcess);
+    });
 
     IDEE.proxy(false);
-    const url = `${PROFILE_URL}${bbox}${PROFILE_URL_SUFFIX}`;
-
-    IDEE.remote.get(url).then((response) => {
+    promesa.then((response) => {
       IDEE.proxy(true);
-      let alt = 0;
-      const responseText = response.text.split(NO_DATA_VALUE).join('');
-      if (responseText.indexOf('dy') > -1) {
-        alt = responseText.split('dy')[1].split(' ').filter((item) => {
-          return item !== '';
-        })[1];
-      } else if (responseText.indexOf('cellsize') > -1) {
-        alt = responseText.split('cellsize')[1].split(' ').filter((item) => {
-          return item !== '';
-        })[1];
+      document.querySelector('#vectorsmanagement-analysis-btn').style.display = 'block';
+      document.querySelector('#vectorsmanagement-analysis-div').innerHTML = '';
+      document.querySelector('#vectorsmanagement-analysis-div').style.height = '0';
+      if (response && response !== NO_DATA_VALUE) {
+        altitudeFromElevationProcess = parseFloat(response).toFixed(2).replace('.', ',');
+        pointXYZ.altitude = altitudeFromElevationProcess;
+        this.facadeControl.showPointProfile(pointXYZ);
       }
-      pointXYZ.altitude = alt;
-      this.facadeControl.showPointProfile(pointXYZ);
-    }).catch((err) => {
-      IDEE.proxy(true);
-      IDEE.dialog.error(getValue('exception.query_profile'), 'Error');
-    });
+    }).catch(() => IDEE.proxy(true));
   }
 
   /**
@@ -275,7 +215,7 @@ export default class Analysiscontrol extends IDEE.impl.Control {
         zmin: getValue('zmin'),
         zmax: getValue('zmax'),
         altitude: getValue('altitude'),
-        distance: getValue('distance'),
+        distance: getValue('distanceT'),
         ytitle: getValue('ytitle'),
         xtitle: getValue('xtitle'),
         altitudeUnits: 'm',
@@ -318,77 +258,6 @@ export default class Analysiscontrol extends IDEE.impl.Control {
 
     profil.show();
     // document.querySelector('.m-vectors .m-vectors-loading-container').innerHTML = '';
-  }
-
-  /**
-   * Calculate middle points
-   * @public
-   * @function
-   * @api
-   * @param {Array} originPoint point coordinates
-   * @param {Array} destPoint point coordinates
-   */
-  findNewPoints(originPoint, destPoint) {
-    const srs = this.facadeMap_.getProjection().code;
-    const oriMete = ol.proj.transform(originPoint, srs, MERCATOR);
-    const destMete = ol.proj.transform(destPoint, srs, MERCATOR);
-    const angle = this.getAngleBetweenPoints(oriMete, destMete);
-    const distance = this.getDistBetweenPoints(originPoint, destPoint);
-    let addX;
-    let addY;
-    let res;
-    let points = '';
-    if (distance >= 50) {
-      const distPoint = (distance / this.distance_ > this.distance_)
-        ? distance / this.distance_ : this.distance_;
-      for (let i = 0; i <= distance / distPoint; i += 1) {
-        if (angle >= 0 && angle <= 90) {
-          [addX, addY] = [1, 1];
-        } else if (angle >= 90) {
-          [addX, addY] = [-1, 1];
-        } else if (angle <= 0 && angle >= -90) {
-          [addX, addY] = [1, -1];
-        } else {
-          [addX, addY] = [-1, -1];
-        }
-
-        const nPA = [(Math.cos((angle * Math.PI) / 180) * (distPoint * i)) + oriMete[0],
-          (Math.sin((angle * Math.PI) / 180) * (distPoint * i)) + oriMete[1],
-        ];
-        const nPB = [(Math.cos((angle * Math.PI) / 180) * ((distPoint * i) + addX)) + oriMete[0],
-          (Math.sin((angle * Math.PI) / 180) * ((distPoint * i) + addY)) + oriMete[1],
-        ];
-        const coord1 = (ol.proj.transform(nPA, MERCATOR, WGS84));
-        const coord2 = (ol.proj.transform(nPB, MERCATOR, WGS84));
-        points += `${coord1},${coord2}|`;
-      }
-
-      res = points;
-    } else {
-      const distPoint = (distance / this.distance_ > this.distance_)
-        ? distance / this.distance_ : this.distance_;
-      if (angle >= 0 && angle <= 90) {
-        [addX, addY] = [1, 1];
-      } else if (angle >= 90) {
-        [addX, addY] = [-1, 1];
-      } else if (angle <= 0 && angle >= -90) {
-        [addX, addY] = [1, -1];
-      } else {
-        [addX, addY] = [-1, -1];
-      }
-
-      const nPA = [(Math.cos((angle * Math.PI) / 180) * distPoint) + oriMete[0],
-        (Math.sin((angle * Math.PI) / 180) * distPoint) + oriMete[1],
-      ];
-      const nPB = [(Math.cos((angle * Math.PI) / 180) * (distPoint + addX)) + oriMete[0],
-        (Math.sin((angle * Math.PI) / 180) * (distPoint + addY)) + oriMete[1],
-      ];
-      const coord1 = (ol.proj.transform(nPA, MERCATOR, WGS84));
-      const coord2 = (ol.proj.transform(nPB, MERCATOR, WGS84));
-      res = `${coord1},${coord2}|`;
-    }
-
-    return res;
   }
 
   /**
@@ -491,7 +360,7 @@ export default class Analysiscontrol extends IDEE.impl.Control {
       length = ol.sphere.getLength(geometry);
     } else if (unitsProj === 'd') {
       const coordinates = geometry.getCoordinates();
-      for (let i = 0, ii = coordinates.length - 1; i < ii; i += 1) {
+      for (let i = 0; i < coordinates.length - 1; i += 1) {
         length += ol.sphere.getDistance(ol.proj.transform(coordinates[i], codeProj, 'EPSG:4326'), ol.proj.transform(coordinates[i + 1], codeProj, 'EPSG:4326'));
       }
     } else {
@@ -501,40 +370,54 @@ export default class Analysiscontrol extends IDEE.impl.Control {
     return length;
   }
 
-  calculate3DLength(promiseArray, flatLength, elem) {
+  calculate3DLength(elem) {
     const $td = elem;
-    promiseArray
-      .then((points) => {
-        let length = 0;
-        for (let i = 0, ii = points.length - 1; i < ii; i += 1) {
-          const geom = new ol.geom.LineString([points[i], points[i + 1]]);
-          const distance = this.getGeometryLength(geom);
-          const elevDiff = Math.abs(points[i][2] - points[i + 1][2]);
-          length += Math.sqrt((distance * distance) + (elevDiff * elevDiff));
-        }
+    const points = this.arrayXYZ;
+    let length = 0;
+    for (let i = 0; i < points.length - 1; i += 1) {
+      const a = points[i];
+      const b = points[i + 1];
 
-        if (length < flatLength) {
-          length = flatLength + ((flatLength - length) / 2);
-        }
+      if (a.toString() !== b.toString()) {
+        const aWGS84 = ol.proj.transform(a, this.facadeMap_.getProjection().code, WGS84);
+        const bWGS84 = ol.proj.transform(b, this.facadeMap_.getProjection().code, WGS84);
 
-        let m = `${formatNumber(length / 1000, 2)}km`;
-        if (length < 1000) {
-          m = `${formatNumber(length, 0)}m`;
-        }
+        const distance = measurements.calculateDistance(aWGS84[1], aWGS84[0], bWGS84[1], bWGS84[0]);
+        const elevDiff = Math.abs(points[i][2] - points[i + 1][2]);
 
-        $td.innerHTML = `3D: ${m}`;
-      })
-      .catch((err) => {
-        $td.innerHTML = '-';
-        IDEE.dialog.error(getValue('try_again'));
-      });
+        length += Math.sqrt((distance * distance) + (elevDiff * elevDiff));
+      }
+    }
+
+    let m = `${((length / 1000).toFixed(2)).replace('.', ',')} km`;
+    if (length < 1000) {
+      m = `${((length).toFixed(2)).replace('.', ',')} m`;
+    }
+
+    $td.innerHTML = `${m}`;
+  }
+
+  calculateFeatureLengthEllipsoidal(feature) {
+    let length = 0;
+    const coordinates = feature.getImpl().getOLFeature().getGeometry().getCoordinates();
+
+    for (let i = 0; i < coordinates.length - 1; i += 1) {
+      const a = coordinates[i];
+      const b = coordinates[i + 1];
+
+      if (a.toString() !== b.toString()) {
+        const aWGS84 = ol.proj.transform(a, this.facadeMap_.getProjection().code, WGS84);
+        const bWGS84 = ol.proj.transform(b, this.facadeMap_.getProjection().code, WGS84);
+
+        length += measurements.calculateDistance(aWGS84[1], aWGS84[0], bWGS84[1], bWGS84[0]);
+      }
+    }
+
+    return length;
   }
 
   get3DLength(id, feature) {
-    const elem = document.querySelector(`${id}`);
-    const flatLength = this.getFeatureLength(feature);
-    this.calculateProfile(feature, false);
-    this.calculate3DLength(this.arrayXZY, flatLength, elem);
+    this.calculateProfile(id, feature, false);
   }
 
   getAreaGeoJSON(features) {
@@ -554,6 +437,85 @@ export default class Analysiscontrol extends IDEE.impl.Control {
       };
 
       return featureJSON;
+    });
+  }
+
+  readAltitudeFromElevationProfileProcess(coordinates, srcMapa) {
+    let features = '';
+    coordinates.forEach((element) => {
+      features += `,{"geometry": { "type": "Point", "coordinates": [${element[0]},${element[1]}] } }`;
+    });
+    features = features.substring(1);
+    return new Promise((resolve) => {
+      fetch(ELEVATION_PROFILE_PROCESS_URL, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'inputs': {
+            'crs': parseInt(srcMapa, 10),
+            'distance': 1000,
+            'geom': `{ "type": "FeatureCollection", "features": [${features}] }`,
+            'withCoord': true,
+          },
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            IDEE.toast.error(getValue('exception.query_profile'), 6000);
+            return undefined;
+          }
+          return response.json();
+        })
+        .then((response) => {
+          if (!response) {
+            resolve(undefined);
+          } else {
+            resolve(response.values);
+          }
+        })
+        .catch(() => {
+          IDEE.toast.error(getValue('exception.query_profile'), 6000);
+          resolve(undefined);
+        });
+    });
+  }
+
+  readAltitudeFromElevationProcess(coordinates, srcMapa) {
+    return new Promise((resolve) => {
+      fetch(ELEVATION_PROCESS_URL, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'inputs': {
+            'crs': parseInt(srcMapa, 10),
+            'geom': `{ "type": "Feature", "geometry": { "type": "Point", "coordinates": [${coordinates[0]}, ${coordinates[1]}] } }`,
+          },
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            IDEE.toast.error(getValue('exception.query_profile'), 6000);
+            return undefined;
+          }
+          return response.json();
+        })
+        .then((response) => {
+          if (!response) {
+            resolve(undefined);
+          } else {
+            resolve(response.values[0]);
+          }
+        })
+        .catch(() => {
+          IDEE.toast.error(getValue('exception.query_profile'), 6000);
+          resolve(undefined);
+        });
     });
   }
 }

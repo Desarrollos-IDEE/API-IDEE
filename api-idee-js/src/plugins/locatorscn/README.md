@@ -20,8 +20,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 - **locatorscn.ol.min.css**
 
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/locatorscn/locatorscn.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/locatorscn/locatorscn.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/locatorscn/locatorscn.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/locatorscn/locatorscn.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -29,8 +29,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/locatorscn/locatorscn-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/locatorscn/locatorscn-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/locatorscn/locatorscn-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/locatorscn/locatorscn-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros
@@ -136,11 +136,11 @@ URL_API?locatorscn=position*collapsed*collapsible*tooltip*zoom*pointStyle*isDrag
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.cnig.es/api-idee?locatorscn=TL*true*true*tooltip*16
+https://componentes.idee.es/api-idee?locatorscn=TL*true*true*tooltip*16
 ```
 
 ```
-https://componentes.cnig.es/api-idee?locatorscn=TL*true*true*tooltip*16*pinAzul*true
+https://componentes.idee.es/api-idee?locatorscn=TL*true*true*tooltip*16*pinAzul*true
 ```
 
 ### Ejemplo de uso
@@ -154,7 +154,7 @@ IDEE.utils.encodeBase64(obj_params);
 ```
 Ejemplo de constructor del plugin: {position:'TL', collapsible: true, collapsed: true, tooltip: 'Localización', searchOptions: {addendum: 'iderioja', size: 15, layers: 'address,street,venue', radius: 200}}
 
-https://componentes.cnig.es/api-idee?locatorscn=base64=eyJwb3NpdGlvbiI6IlRMIiwiY29sbGFwc2libGUiOnRydWUsImNvbGxhcHNlZCI6dHJ1ZSwidG9vbHRpcCI6IkxvY2FsaXphY2nDs24iLCJzZWFyY2hPcHRpb25zIjp7ImFkZGVuZHVtIjoiaWRlcmlvamEiLCJzaXplIjoxNSwibGF5ZXJzIjoiYWRkcmVzcyxzdHJlZXQsdmVudWUiLCJyYWRpdXMiOjIwMH19
+https://componentes.idee.es/api-idee?locatorscn=base64=eyJwb3NpdGlvbiI6IlRMIiwiY29sbGFwc2libGUiOnRydWUsImNvbGxhcHNlZCI6dHJ1ZSwidG9vbHRpcCI6IkxvY2FsaXphY2nDs24iLCJzZWFyY2hPcHRpb25zIjp7ImFkZGVuZHVtIjoiaWRlcmlvamEiLCJzaXplIjoxNSwibGF5ZXJzIjoiYWRkcmVzcyxzdHJlZXQsdmVudWUiLCJyYWRpdXMiOjIwMH19
 ```
 
 # Eventos
@@ -258,3 +258,6 @@ Para la revisión y actualización de las dependencias de los paquetes npm es ne
 $npm i -g npm-check-updates
 $ncu
 ```
+
+## Tabla de compatibilidad de versiones   
+[Consulta el api resourcePlugin](https://componentes.idee.es/api-idee/api/actions/resourcesPlugins?name=locatorscn)

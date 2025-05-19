@@ -295,7 +295,7 @@ if (listAllFunctions && listAllFunctions.length > 0) { // Confirmar que existen 
               url: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/36/Q/WD/2020/7/S2A_36QWD_20200701_0_L2A/TCI.tif', // REQUEST FAILED IN 'http://ftpcdd.cnig.es/Vuelos_2022/Vuelos_2022/murcia_2022/01.VF/01.08_PNOA_2022_MUR_35cm_VF_img8c_rgb_hu30/h50_0932_fot_011-0034_cog.tif'
               name: 'Nombre GeoTIFF',
               legend: 'Leyenda GeoTIFF',
-              transparent: true,
+              isBase: false,
             }, {
               minZoom: 5, maxZoom: 15, convertToRGB: 'auto', nodata: 1000,
             }))); // window.mapa.setCenter({ x: 554880, y: 1845120});window.mapa.setZoom(13);
@@ -316,7 +316,7 @@ if (listAllFunctions && listAllFunctions.length > 0) { // Confirmar que existen 
             showResult(auxButton, 'ADD_MVT', mapa[auxName]('MVT*https://ahocevar.com/geoserver/gwc/service/tms/1.0.0/ne:ne_10m_admin_0_countries@EPSG%3A900913@pbf/{z}/{x}/{-y}.pbf*vectortile'));
           } else if (auxName === 'addMapLibre') {
             showResult(auxButton, 'ADD_MapLibre', mapa[auxName](new MapLibre({
-              type: 'MapLibre', name: 'Mapa Libre Name', legend: 'Mapa Libre Legend', url: 'https://vt-mapabase.idee.es/files/styles/mapaBase_scn_color1_CNIG.json', extract: true, disableBackgroundColor: false, visibility: true, transparent: false, displayInLayerSwitcher: false,
+              type: 'MapLibre', name: 'Mapa Libre Name', legend: 'Mapa Libre Legend', url: 'https://vt-mapabase.idee.es/files/styles/mapaBase_scn_color1_CNIG.json', extract: true, disableBackgroundColor: false, visibility: true, isBase: true, displayInLayerSwitcher: false,
             })));
           } else if (auxName === 'addOGCAPIFeatures') {
             showResult(auxButton, 'ADD_OGCAPIFeatures', mapa[auxName](new OGCAPIFeatures({
@@ -434,6 +434,8 @@ if (listAllFunctions && listAllFunctions.length > 0) { // Confirmar que existen 
         parameterTest = () => { // setParameterTest
           if (auxName === 'setBbox') {
             showResult(auxButton, 'SET_BBOX', mapa[auxName]({ x: { min: -1054179, max: 1191234 }, y: { min: 4246770, max: 6514198 } }));
+          } else if (auxName === 'setBGColorContainer') {
+            showResult(auxButton, 'SET_BGCOLOR', mapa[auxName]('red'));
           } else if (auxName === 'setCenter') {
             showResult(auxButton, 'SET_CENTER', mapa[auxName]({ x: -690278.9143510933, y: 4477348.883930369 }));
           } else if (auxName === 'setImpl') {

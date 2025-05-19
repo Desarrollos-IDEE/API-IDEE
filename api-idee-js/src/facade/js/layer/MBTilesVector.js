@@ -29,8 +29,13 @@ export const mode = {
  * MBTilesVector es un formato que permite agrupar múltiples capas
  * vectoriales en un contenedor SQLite.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {Boolean} extract Opcional. Activa la consulta haciendo
- * clic en el objeto geográfico,
+ * clic en el objeto geográfico, por defecto verdadero.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
+ * @property {Boolean} isBase Define si la capa es base.
+ * @property {String} template Plantilla que se mostrará al consultar un objeto geográfico.
  *
  * @api
  * @extends {IDEE.layer.Vector}
@@ -53,7 +58,11 @@ class MBTilesVector extends Vector {
    * - source: Fuente de la capa.
    * - tileSize: Tamaño de la tesela vectorial, por defecto 256.
    * - visibility: Define si la capa es visible o no. Verdadero por defecto.
-   * - extract: Opcional, activa la consulta por click en el objeto geográfico, por defecto falso.
+   * - extract: Opcional, activa la consulta por click en el objeto geográfico,
+   * por defecto verdadero.
+   * - isBase: Indica si la capa es base.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
+   * - template: (opcional) Plantilla que se mostrará al consultar un objeto geográfico.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a la implementación.
    * - opacity: Opacidad de capa, por defecto 1.
    * - style: Define el estilo de la capa.
@@ -61,6 +70,8 @@ class MBTilesVector extends Vector {
    * - predefinedStyles: Estilos predefinidos para la capa.
    * - minZoom. Zoom mínimo aplicable a la capa.
    * - maxZoom. Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
    * <pre><code>
    * import OLSourceVectorTile from 'ol/source/VectorTile';
@@ -75,6 +86,11 @@ class MBTilesVector extends Vector {
    * @api
    */
   constructor(userParameters = {}, options = {}, vendorOptions = {}) {
+    if (!isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
+    }
+
     const parameters = parameter.layer(userParameters, LayerType.MBTilesVector);
 
     const optionsVar = options;
@@ -112,9 +128,9 @@ class MBTilesVector extends Vector {
 
     /**
      * MBTilesVector extract: Activa la consulta al hacer clic sobre un objeto geográfico,
-     * por defecto falso.
+     * por defecto verdadero.
      */
-    this.extract = parameters.extract === undefined ? false : parameters.extract;
+    this.extract = parameters.extract === undefined ? true : parameters.extract;
   }
 
   /**
@@ -179,7 +195,8 @@ class MBTilesVector extends Vector {
 
   /**
    * Devuelve el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @getter
@@ -192,7 +209,8 @@ class MBTilesVector extends Vector {
 
   /**
    * Sobrescribe el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @setter
@@ -207,7 +225,7 @@ class MBTilesVector extends Vector {
         this.getImpl().extract = newExtract;
       }
     } else {
-      this.getImpl().extract = false;
+      this.getImpl().extract = true;
     }
   }
 
@@ -225,12 +243,11 @@ class MBTilesVector extends Vector {
     let equals = false;
     if (obj instanceof MBTilesVector) {
       equals = (this.url === obj.url);
-      equals = equals && (this.source === obj.source);
       equals = equals && (this.legend === obj.legend);
       equals = equals && (this.name === obj.name);
-      equals = equals && (this.options === obj.options);
       equals = equals && (this.extract === obj.extract);
-      equals = equals && (this.predefinedStyles === obj.predefinedStyles);
+      equals = equals && (this.idLayer === obj.idLayer);
+      equals = equals && (this.template === obj.template);
     }
     return equals;
   }

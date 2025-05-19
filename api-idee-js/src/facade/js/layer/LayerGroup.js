@@ -7,7 +7,9 @@ import LayerBase from './Layer';
 import * as parameter from '../parameter/parameter';
 import * as EventType from '../event/eventtype';
 import * as LayerType from './Type';
-import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
+import {
+  isUndefined, isNullOrEmpty, isObject, isString,
+} from '../util/Utils';
 import Exception from '../exception/exception';
 import { getValue } from '../i18n/language';
 
@@ -15,8 +17,12 @@ import { getValue } from '../i18n/language';
  * @classdesc
  * Representa un grupo de capas.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {Array<IDEE.LayerBase|IDEE.LayerGroup>} layers Capas del grupo.
  * @property {boolean} display Indica si el grupo se muestra en el árbol de contenidos.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
+ * @property {Boolean} isBase Define si la capa es base.
  *
  * @extends {IDEE.facade.Base}
  * @api
@@ -55,6 +61,11 @@ class LayerGroup extends LayerBase {
    * @api
    */
   constructor(userParameters, options = {}, vendorOptions = {}) {
+    if (isString(userParameters) || !isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
+    }
+
     const parameters = parameter.layer(userParameters, LayerType.LayerGroup);
 
     // ! Parámetros definifos en super en impl
@@ -214,7 +225,8 @@ class LayerGroup extends LayerBase {
   equals(obj) {
     let equals = false;
     if (obj instanceof LayerGroup) {
-      equals = equals && (this.name === obj.name);
+      equals = (this.name === obj.name);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
 
     return equals;

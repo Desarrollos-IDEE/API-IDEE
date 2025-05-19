@@ -19,8 +19,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 - **printviewmanagement.ol.min.css**
 
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/printviewmanagement/printviewmanagement.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/printviewmanagement/printviewmanagement.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/printviewmanagement/printviewmanagement.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/printviewmanagement/printviewmanagement.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -28,8 +28,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/printviewmanagement/printviewmanagement-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/printviewmanagement/printviewmanagement-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/printviewmanagement/printviewmanagement-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/printviewmanagement/printviewmanagement-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros
@@ -190,11 +190,11 @@ URL_API?printviewmanagement=position*collapsed*collapsible*tooltip*isDraggable*s
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.cnig.es/api-idee?printviewmanagement=TL*true*true*Imprimir*true***false*false*true
+https://componentes.idee.es/api-idee?printviewmanagement=TL*true*true*Imprimir*true***false*false*true
 ```
 
 ```
-https://componentes.cnig.es/api-idee?printviewmanagement=TL*true*true*Imprimir*true***false*true*true*0
+https://componentes.idee.es/api-idee?printviewmanagement=TL*true*true*Imprimir*true***false*true*true*0
 
 ### Ejemplos de uso API-REST en base64
 
@@ -241,7 +241,7 @@ IDEE.utils.encodeBase64(obj_params);
 }
 ```
 ```
-https://componentes.cnig.es/api-idee?printviewmanagement=base64=eyJpc0RyYWdnYWJsZSI6dHJ1ZSwicG9zaXRpb24iOiJUTCIsImNvbGxhcHNpYmxlIjp0cnVlLCJjb2xsYXBzZWQiOnRydWUsInRvb2x0aXAiOiJJbXByaW1pciIsImdlb3JlZkltYWdlRXBzZyI6eyJ0b29sdGlwIjoiR2VvcmVmZXJlbmNpYXIgaW1hZ2VuIiwibGF5ZXJzIjpbeyJ1cmwiOiJodHRwOi8vd3d3Lmlnbi5lcy93bXMtaW5zcGlyZS9tYXBhLXJhc3Rlcj8iLCJuYW1lIjoibXRuX3Jhc3Rlcml6YWRvIiwiZm9ybWF0IjoiaW1hZ2UvanBlZyIsImxlZ2VuZCI6Ik1hcGEgRVRSUzg5IFVUTSIsIkVQU0ciOiJFUFNHOjQzMjYifSx7InVybCI6Imh0dHA6Ly93d3cuaWduLmVzL3dtcy1pbnNwaXJlL3Bub2EtbWE/IiwibmFtZSI6Ik9JLk9ydGhvaW1hZ2VDb3ZlcmFnZSIsImZvcm1hdCI6ImltYWdlL2pwZWciLCJsZWdlbmQiOiJJbWFnZW4gKFBOT0EpIEVUUlM4OSBVVE0ifV19LCJnZW9yZWZJbWFnZSI6eyJ0b29sdGlwIjoiR2VvcmVmZXJlbmNpYXIgaW1hZ2VuIiwicHJpbnRUZW1wbGF0ZVVybCI6Imh0dHBzOi8vY29tcG9uZW50ZXMuY25pZy5lcy9nZW9wcmludC9wcmludC9tYXBleHBvcnQiLCJwcmludFNlbGVjdG9yIjp0cnVlfSwicHJpbnRlcm1hcCI6dHJ1ZSwiZGVmYXVsdE9wZW5Db250cm9sIjozfQ==
+https://componentes.idee.es/api-idee?printviewmanagement=base64=eyJpc0RyYWdnYWJsZSI6dHJ1ZSwicG9zaXRpb24iOiJUTCIsImNvbGxhcHNpYmxlIjp0cnVlLCJjb2xsYXBzZWQiOnRydWUsInRvb2x0aXAiOiJJbXByaW1pciIsImdlb3JlZkltYWdlRXBzZyI6eyJ0b29sdGlwIjoiR2VvcmVmZXJlbmNpYXIgaW1hZ2VuIiwibGF5ZXJzIjpbeyJ1cmwiOiJodHRwOi8vd3d3Lmlnbi5lcy93bXMtaW5zcGlyZS9tYXBhLXJhc3Rlcj8iLCJuYW1lIjoibXRuX3Jhc3Rlcml6YWRvIiwiZm9ybWF0IjoiaW1hZ2UvanBlZyIsImxlZ2VuZCI6Ik1hcGEgRVRSUzg5IFVUTSIsIkVQU0ciOiJFUFNHOjQzMjYifSx7InVybCI6Imh0dHA6Ly93d3cuaWduLmVzL3dtcy1pbnNwaXJlL3Bub2EtbWE/IiwibmFtZSI6Ik9JLk9ydGhvaW1hZ2VDb3ZlcmFnZSIsImZvcm1hdCI6ImltYWdlL2pwZWciLCJsZWdlbmQiOiJJbWFnZW4gKFBOT0EpIEVUUlM4OSBVVE0ifV19LCJnZW9yZWZJbWFnZSI6eyJ0b29sdGlwIjoiR2VvcmVmZXJlbmNpYXIgaW1hZ2VuIiwicHJpbnRUZW1wbGF0ZVVybCI6Imh0dHBzOi8vY29tcG9uZW50ZXMuY25pZy5lcy9nZW9wcmludC9wcmludC9tYXBleHBvcnQiLCJwcmludFNlbGVjdG9yIjp0cnVlfSwicHJpbnRlcm1hcCI6dHJ1ZSwiZGVmYXVsdE9wZW5Db250cm9sIjozfQ==
 ```
 
 
@@ -259,7 +259,7 @@ https://componentes.cnig.es/api-idee?printviewmanagement=base64=eyJpc0RyYWdnYWJs
 }
 ```
 ```
-https://componentes.cnig.es/api-idee?printviewmanagement=base64=eyJpc0RyYWdnYWJsZSI6dHJ1ZSwicG9zaXRpb24iOiJUTCIsImNvbGxhcHNpYmxlIjp0cnVlLCJjb2xsYXBzZWQiOnRydWUsInRvb2x0aXAiOiJJbXByaW1pciIsImdlb3JlZkltYWdlRXBzZyI6ZmFsc2UsImdlb3JlZkltYWdlIjpmYWxzZSwicHJpbnRlcm1hcCI6dHJ1ZX0=
+https://componentes.idee.es/api-idee?printviewmanagement=base64=eyJpc0RyYWdnYWJsZSI6dHJ1ZSwicG9zaXRpb24iOiJUTCIsImNvbGxhcHNpYmxlIjp0cnVlLCJjb2xsYXBzZWQiOnRydWUsInRvb2x0aXAiOiJJbXByaW1pciIsImdlb3JlZkltYWdlRXBzZyI6ZmFsc2UsImdlb3JlZkltYWdlIjpmYWxzZSwicHJpbnRlcm1hcCI6dHJ1ZX0=
 ```
 
 # Ejemplo de uso
@@ -376,3 +376,6 @@ Para la revisión y actualización de las dependencias de los paquetes npm es ne
 $npm i -g npm-check-updates
 $ncu
 ```
+
+## Tabla de compatibilidad de versiones   
+[Consulta el api resourcePlugin](https://componentes.idee.es/api-idee/api/actions/resourcesPlugins?name=printviewmanagement)

@@ -42,6 +42,11 @@ class LayerGroup extends Layer {
   constructor(userParameters, options = {}, vendorOptions = {}) {
     super(options, vendorOptions);
 
+    /**
+     * LayerGroup facadeLayer_. Instancia de la fachada.
+     */
+    this.facadeLayer_ = null;
+
     this.options_ = options;
     this.layersParams_ = userParameters.layers || [];
 
@@ -61,13 +66,16 @@ class LayerGroup extends Layer {
   addTo(map, addLayer = true) {
     this.map = map;
 
-    this.ol3Layer = new Group(this.getParamsGroup_());
-    this.ol3Layer.setLayers(this.layersCollection);
+    this.olLayer = new Group(this.getParamsGroup_());
+    this.olLayer.setLayers(this.layersCollection);
+
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
 
     this.fire(EventType.ADDED_TO_MAP);
 
     if (addLayer) {
-      this.map.getMapImpl().addLayer(this.ol3Layer);
+      this.map.getMapImpl().addLayer(this.olLayer);
     }
 
     this.setOpacity(this.opacity_);
@@ -81,7 +89,7 @@ class LayerGroup extends Layer {
       }
     });
 
-    this.ol3Layer.on('change:zIndex', () => {
+    this.olLayer.on('change:zIndex', () => {
       this.setZIndexChildren();
     });
   }
@@ -94,7 +102,7 @@ class LayerGroup extends Layer {
    * @api stable
    */
   setZIndexChildren() {
-    const olZIndex = this.ol3Layer.getZIndex();
+    const olZIndex = this.olLayer.getZIndex();
     let nexZIndex = olZIndex - 1;
     // Se clona el array de layers para que el reverse no modifique el array original
     const layers = this.layers.concat().reverse();
@@ -202,7 +210,7 @@ class LayerGroup extends Layer {
   setVisible(visibility) {
     this.visibility = visibility;
     // if this layer is base then it hides all base layers
-    if ((visibility === true) && (this.transparent !== true)) {
+    if ((visibility === true) && (this.isBase !== false)) {
       // hides all base layers
       this.map.getBaseLayers().forEach((layer) => {
         if (!layer.equals(this.facadeLayer_) && layer.isVisible()) {
@@ -211,14 +219,14 @@ class LayerGroup extends Layer {
       });
 
       // set this layer visible
-      if (!isNullOrEmpty(this.ol3Layer)) {
-        this.ol3Layer.setVisible(visibility);
+      if (!isNullOrEmpty(this.olLayer)) {
+        this.olLayer.setVisible(visibility);
       }
 
       // updates resolutions and keep the bbox
       this.map.getImpl().updateResolutionsFromBaseLayer();
-    } else if (!isNullOrEmpty(this.ol3Layer)) {
-      this.ol3Layer.setVisible(visibility);
+    } else if (!isNullOrEmpty(this.olLayer)) {
+      this.olLayer.setVisible(visibility);
     }
   }
 
@@ -276,8 +284,8 @@ class LayerGroup extends Layer {
   removeLayers_(layer) {
     // ? Elimina las capas de this.layers para poder devolverlas
     // ? en el getLayers
-    const id = layer.getImpl().ol3Layer.ol_uid;
-    this.layers = this.layers.filter((l) => l.getImpl().ol3Layer.ol_uid !== id);
+    const id = layer.getImpl().getLayer().ol_uid;
+    this.layers = this.layers.filter((l) => l.getImpl().getLayer().ol_uid !== id);
     this.layersParams_.remove(layer);
   }
 
@@ -296,7 +304,7 @@ class LayerGroup extends Layer {
       return;
     }
 
-    const layerOl = layer.getImpl().ol3Layer;
+    const layerOl = layer.getImpl().getLayer();
     const remove = this.layersCollection.remove(layerOl);
     if (upToMap === false && this.rootGroup !== null) {
       this.setRootGroup_(layer, this.rootGroup);
@@ -338,6 +346,19 @@ class LayerGroup extends Layer {
   }
 
   /**
+   * Este método establece la clase de fachada LayerGroup.
+   * La fachada se refiere a
+   * un patrón estructural como una capa de abstracción con un patrón de diseño.
+   *
+   * @function
+   * @param {object} obj LayerGroup de la fachada.
+   * @api stable
+   */
+  setFacadeObj(obj) {
+    this.facadeLayer_ = obj;
+  }
+
+  /**
    * Este método elimina la capa del mapa.
    * @function
    * @public
@@ -345,12 +366,14 @@ class LayerGroup extends Layer {
    */
   destroy() {
     const olMap = this.map.getMapImpl();
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      olMap.removeLayer(this.ol3Layer);
-      this.ol3Layer = null;
+    if (!isNullOrEmpty(this.olLayer)) {
+      olMap.removeLayer(this.olLayer);
+      this.olLayer = null;
 
       // eslint-disable-next-line no-underscore-dangle
-      this.map.getImpl().layers_ = this.map.getImpl().layers_.filter((l) => this.name !== l.name);
+      this.map.getImpl().layers_ = this.map.getImpl().layers_
+      // eslint-disable-next-line no-underscore-dangle
+        .filter((l) => this.facadeLayer_.idLayer !== l.idLayer);
     }
     this.map = null;
   }

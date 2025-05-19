@@ -3,7 +3,9 @@
  * @module IDEE/layer/WMTS
  */
 import WMTSImpl from 'impl/layer/WMTS';
-import { isUndefined, isNullOrEmpty, isObject } from '../util/Utils';
+import {
+  isUndefined, isNullOrEmpty, isObject, isString,
+} from '../util/Utils';
 import Exception from '../exception/exception';
 import LayerBase from './Layer';
 import * as parameter from '../parameter/parameter';
@@ -16,16 +18,18 @@ import { getValue } from '../i18n/language';
  * forma de mosaicos pregenerados en resoluciones específicas.
  * La API permite visualizar este tipo de capas.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {Number} minZoom Limitar el zoom mínimo.
  * @property {Number} maxZoom Limitar el zoom máximo.
  * @property {String} matrixSet La matriz seleccionada de las definidas en las Capacidades
  * del servicio.
  * @property {String} legend El nombre que la capa mostrará en el árbol de contenido, si existe.
- * @property {Boolean} transparent Falso si es una capa base, verdadero en caso contrario.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
  * @property {Object} options Opciones de capas de WMTS.
  * @property {Object} capabilitiesMetadata Capacidades de metadatos WMTS.
  * @property {Boolean} useCapabilities Define si se utilizará el capabilities para generar la capa.
- * @property {Boolean} isbase Define si la capa es base.
+ * @property {Boolean} isBase Define si la capa es base.
  *
  * @api
  * @extends {IDEE.Layer}
@@ -41,7 +45,7 @@ class WMTS extends LayerBase {
    * - matrixSet: La matriz seleccionada de las definidas en el Capabilities del servicio.
    * - legend: Nombre que mostrará la capa en el árbol de contenido, si existe.
    * - format: Opcionalmente, el formato en el que solicitar la imagen.
-   * - transparent: Falso si es una capa base, verdadero en caso contrario.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
    * - type: Tipo de la capa.
    * - isBase: Define si la capa es base o no.
    * - useCapabilities: Define si se utilizará el capabilities para generar la capa.
@@ -78,6 +82,11 @@ class WMTS extends LayerBase {
     // checks if the param is null or empty.
     if (isNullOrEmpty(userParameters)) {
       Exception(getValue('exception').no_param);
+    }
+
+    if (isString(userParameters) || !isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
     }
 
     const parameters = parameter.layer(userParameters, LayerType.WMTS);
@@ -252,6 +261,7 @@ class WMTS extends LayerBase {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
       equals = equals && (this.matrixSet === obj.matrixSet);
+      equals = equals && (this.idLayer === obj.idLayer);
     }
 
     return equals;

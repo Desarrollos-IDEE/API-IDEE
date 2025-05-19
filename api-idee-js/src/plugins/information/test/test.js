@@ -87,7 +87,7 @@ map.addLayers([wmtsLayer, generic_001, hidrografia]); // */
 const testLayer = new IDEE.layer.WMTS({
   url: 'https://www.ign.es/wmts/primera-edicion-mtn?',
   name: 'catastrones', legend: 'catastrones',
-  matrixSet: 'GoogleMapsCompatible', transparent: true,
+  matrixSet: 'GoogleMapsCompatible', isBase: false,
   displayInLayerSwitcher: false, queryable: true,
   visible: true, format: 'image/jpeg',
 });

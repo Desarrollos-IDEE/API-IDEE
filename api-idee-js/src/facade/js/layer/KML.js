@@ -15,10 +15,15 @@ import { getValue } from '../i18n/language';
  * @classdesc
  * KML (Keyhole Markup Language).
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {Boolean} extract Opcional. Activa la consulta haciendo clic en el objeto geográfico,
- * por defecto falso.
+ * por defecto verdadero.
  * @property {Object} options Parámetros de la capa.
  * @property {String} label Etiqueta de la capa.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
+ * @property {Boolean} isBase Define si la capa es base.
+ * @property {String} template Plantilla que se mostrará al consultar un objeto geográfico.
  *
  * @api
  * @extends {IDEE.layer.Vector}
@@ -32,7 +37,8 @@ class KML extends LayerVector {
    * @param {string|Mx.parameters.KML} userParameters Parámetros especificados por el usuario.
    * - url: Url del fichero o servicio -> https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml
    * - name: Nombre de la capa que aparecerá en la leyenda -> Delegaciones IGN
-   * - extract: Opcional, activa la consulta por click en el objeto geográfico, por defecto falso.
+   * - extract: Opcional, activa la consulta por click en el objeto geográfico,
+   * por defecto verdadero.
    * - type: Tipo de la capa.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
    * - legend: Indica el nombre que queremos que aparezca en el árbol de contenidos, si lo hay.
@@ -40,11 +46,16 @@ class KML extends LayerVector {
    * - layers: Permite filtrar el fichero KML por nombre de carpetas.
    * - removeFolderChildren: Permite no mostrar las
    * carpetas descendientes de las carpetas filtradas. Por defecto: true.
+   * - isBase: Indica si la capa es base.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
+   * - template: (opcional) Plantilla que se mostrará al consultar un objeto geográfico.
    * @param {Mx.parameters.LayerOptions} options Parámetros que se pasarán a la implementación.
    * - visibility: Define si la capa es visible o no.
    * - style: Define el estilo de la capa.
    * - minZoom. Zoom mínimo aplicable a la capa.
    * - maxZoom. Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - displayInLayerSwitcher. Indica si la capa se muestra en el selector de capas.
    * - opacity. Opacidad de capa, por defecto 1.
    * - scaleLabel. Escala de la etiqueta.
@@ -81,6 +92,11 @@ class KML extends LayerVector {
       Exception(getValue('exception').no_param);
     }
 
+    if (!isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
+    }
+
     const parameters = parameter.layer(userParameters, LayerType.KML);
     const optionsVar = options;
 
@@ -108,9 +124,9 @@ class KML extends LayerVector {
 
     /**
      * KML extract: Activa la consulta al hacer clic sobre un objeto geográfico,
-     * por defecto falso.
+     * por defecto verdadero.
      */
-    this.extract = parameters.extract === undefined ? false : parameters.extract;
+    this.extract = parameters.extract === undefined ? true : parameters.extract;
 
     /**
      * KML options: Optiones que se mandan a la implementación.
@@ -152,7 +168,8 @@ class KML extends LayerVector {
 
   /**
    * Devuelve el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @getter
@@ -165,7 +182,8 @@ class KML extends LayerVector {
 
   /**
    * Sobrescribe el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @setter
@@ -180,7 +198,7 @@ class KML extends LayerVector {
         this.getImpl().extract = newExtract;
       }
     } else {
-      this.getImpl().extract = false;
+      this.getImpl().extract = true;
     }
   }
 
@@ -223,7 +241,8 @@ class KML extends LayerVector {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
       equals = equals && (this.extract === obj.extract);
-      equals = equals && (this.predefinedStyles === obj.predefinedStyles);
+      equals = equals && (this.idLayer === obj.idLayer);
+      equals = equals && (this.template === obj.template);
     }
 
     return equals;

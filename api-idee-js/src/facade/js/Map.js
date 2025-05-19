@@ -6,7 +6,7 @@ import Base from './Base';
 import { getQuickLayers } from './api-idee';
 import {
   isUndefined, isNull, isArray, isNullOrEmpty, isFunction, isObject, isString, normalize,
-  addParameters, concatUrlPaths, escapeJSCode, getEnvolvedExtent,
+  concatUrlPaths, escapeJSCode, getEnvolvedExtent,
 } from './util/Utils';
 import { addFileToMap } from './util/LoadFiles';
 import { getValue } from './i18n/language';
@@ -54,6 +54,7 @@ import LayerGroup from './layer/LayerGroup';
 import Tiles3D from './layer/Tiles3D';
 import Terrain from './layer/Terrain';
 import Attributions from './control/Attributions';
+import ImplementationSwitcher from './control/ImplementationSwitcher';
 
 /**
  * @classdesc
@@ -352,17 +353,23 @@ class Map extends Base {
     if (!isNullOrEmpty(params.zoomConstrains)) {
       this.setZoomConstrains(params.zoomConstrains);
     } else {
-      this.setZoomConstrains(true);
+      this.setZoomConstrains(false);
     }
 
     // minZoom
     if (!isNullOrEmpty(params.minZoom)) {
       this.setMinZoom(params.minZoom);
+    } else if (IDEE.config.MIN_ZOOM !== '') {
+      const minZoom = Number(IDEE.config.MIN_ZOOM);
+      this.setMinZoom(minZoom);
     }
 
     // maxZoom
     if (!isNullOrEmpty(params.maxZoom)) {
       this.setMaxZoom(params.maxZoom);
+    } else if (IDEE.config.MAX_ZOOM !== '') {
+      const maxZoom = Number(IDEE.config.MAX_ZOOM);
+      this.setMaxZoom(maxZoom);
     }
 
     // label
@@ -373,6 +380,11 @@ class Map extends Base {
     // ticket
     if (!isNullOrEmpty(params.ticket)) {
       this.setTicket(params.ticket);
+    }
+
+    // bgColorContainer
+    if (!isNullOrEmpty(params.bgColorContainer)) {
+      this.setBGColorContainer(params.bgColorContainer);
     }
 
     // initial zoom
@@ -405,7 +417,7 @@ class Map extends Base {
    * @function
    */
   addDropFileEvent() {
-    const container = this.getContainer().parentNode.parentNode;
+    const container = this.getContainer().closest('.m-api-idee-container');
     container.addEventListener('dragover', (e) => {
       e.preventDefault();
     }, false);
@@ -460,7 +472,7 @@ class Map extends Base {
         position: Position[position] || Position.BR,
         className: 'm-attributions',
         collapsedButtonClass: 'g-cartografia-comentarios',
-        tooltip: tooltip || getValue('attributions').tooltip,
+        tooltip: tooltip || getValue('attributionsControl').tooltip,
         order,
       });
       this.addPanels(panel);
@@ -2640,6 +2652,16 @@ class Map extends Base {
                   className: 'm-plugin-baselayer',
                 });
                 break;
+              case ImplementationSwitcher.NAME:
+                control = new ImplementationSwitcher();
+                panel = new Panel(ImplementationSwitcher.NAME, {
+                  collapsible: true,
+                  position: Position.TR,
+                  className: 'm-implementationswitcher',
+                  collapsedButtonClass: 'g-cartografia-implementacion',
+                  tooltip: getValue('implementationswitcher').title,
+                });
+                break;
               default:
                 if (/backgroundlayers\*([0-9])+\*(true|false)/.test(controlParam)) {
                   const idLayer = controlParam.match(/backgroundlayers\*([0-9])+\*(true|false)/)[1];
@@ -2888,13 +2910,13 @@ class Map extends Base {
      * @public
      * @function
      * @param {Boolean} exact Permite devolver el zoom exacto del mapa en caso de que se permita
-     * niveles de zoom intermedios, Por defecto es false.
+     * niveles de zoom intermedios, Por defecto es true.
      * @param {Boolean} inmeters Si es verdadero el zoom obtenido está en metros, en caso contrario
      * como nivel de zoom. Por defecto, es falso.
      * @returns {Number} Devuelve el zoom actual.
      * @api
      */
-  getZoom(exact = false, inmeters = false) {
+  getZoom(exact = true, inmeters = false) {
     // checks if the implementation can get the zoom
     if (isUndefined(MapImpl.prototype.getZoom)) {
       Exception(getValue('exception').getzoom_method);
@@ -2902,7 +2924,7 @@ class Map extends Base {
 
     let zoom = this.getImpl().getZoom(inmeters);
     if (!exact) {
-      zoom = Math.floor(zoom);
+      zoom = Math.round(zoom);
     }
 
     return zoom;
@@ -3085,7 +3107,14 @@ class Map extends Base {
       Exception(getValue('exception').setZoomConstrains_method);
     }
 
-    this.getImpl().setZoomConstrains(zoomConstrains);
+    try {
+      const zoomCons = parameter.zoomConstrains(zoomConstrains);
+      this.getImpl().setZoomConstrains(zoomCons);
+    } catch (err) {
+      Dialog.error(err.toString());
+      throw err;
+    }
+
     return this;
   }
 
@@ -3099,8 +3128,8 @@ class Map extends Base {
    * @api
    */
   getZoomConstrains() {
-    if (isUndefined(MapImpl.prototype.setZoomConstrains)) {
-      Exception(getValue('exception').setZoomConstrains_method);
+    if (isUndefined(MapImpl.prototype.getZoomConstrains)) {
+      Exception(getValue('exception').getZoomConstrains_method);
     }
 
     const zoomConstrains = this.getImpl().getZoomConstrains();
@@ -3538,14 +3567,17 @@ class Map extends Base {
    * @api
    */
   setTicket(ticket) {
-    if (!isNullOrEmpty(ticket)) {
-      if (IDEE.config.PROXY_POST_URL.indexOf('ticket=') === -1) {
-        IDEE.config('PROXY_POST_URL', addParameters(IDEE.config.PROXY_POST_URL, { ticket }));
-      }
-      if (IDEE.config.PROXY_URL.indexOf('ticket=') === -1) {
-        IDEE.config('PROXY_URL', addParameters(IDEE.config.PROXY_URL, { ticket }));
-      }
-    }
+    this.ticket_ = ticket;
+    IDEE.config.TICKET = ticket;
+
+    // if (!isNullOrEmpty(ticket)) {
+    //   if (IDEE.config.PROXY_POST_URL.indexOf('ticket=') === -1) {
+    //     IDEE.config('PROXY_POST_URL', addParameters(IDEE.config.PROXY_POST_URL, { ticket }));
+    //   }
+    //   if (IDEE.config.PROXY_URL.indexOf('ticket=') === -1) {
+    //     IDEE.config('PROXY_URL', addParameters(IDEE.config.PROXY_URL, { ticket }));
+    //   }
+    // }
 
     return this;
   }
@@ -4086,9 +4118,11 @@ class Map extends Base {
       const zIndex = (z1 - z2);
       if (zIndex === 0 && !isUndefined(thisClass)) {
         // eslint-disable-next-line no-underscore-dangle
-        const i1 = thisClass.getImpl().layers_.findIndex((element) => element.name === layer1.name);
+        const i1 = thisClass.getImpl().layers_
+          .findIndex((element) => element.idLayer === layer1.idLayer);
         // eslint-disable-next-line no-underscore-dangle
-        const i2 = thisClass.getImpl().layers_.findIndex((element) => element.name === layer2.name);
+        const i2 = thisClass.getImpl().layers_
+          .findIndex((element) => element.idLayer === layer2.idLayer);
         return i1 - i2;
       }
       return zIndex;
@@ -4105,6 +4139,31 @@ class Map extends Base {
    */
   isFinished() {
     return this._finishedMap;
+  }
+
+  /**
+   * Este método aplica un color al fondo del mapa
+   *
+   * @function
+   * @public
+   * @param {String} color Color para aplicar en el fondo del mapa
+   */
+  setBGColorContainer(color) {
+    if (!isNullOrEmpty(color)) {
+      const containerStyle = this.getContainer().closest('.m-api-idee-container').style;
+      containerStyle.backgroundColor = color;
+      containerStyle.backgroundImage = 'unset';
+    }
+  }
+
+  /**
+   * Este método devuelve el color del fondo del mapa
+   *
+   * @public
+   * @returns {String} Devuelve el color del fondo del mapa
+   */
+  getBGColorContainer() {
+    return this.getContainer().closest('.m-api-idee-container').style.backgroundColor;
   }
 
   /**

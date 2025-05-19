@@ -19,10 +19,12 @@ import { getValue } from '../i18n/language';
  * @classdesc
  * Capa Tiles3D
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} url Url del servicio Tiles3D.
  * @property {String} name Identificador de capa.
  * @property {String} legend Indica el nombre que queremos que aparezca en
  * el árbol de contenidos, si lo hay.
+ * @property {String} template Plantilla que se mostrará al consultar un objeto geográfico.
  * @property {Object} options Opciones de la capa.
  *
  * @api
@@ -47,13 +49,17 @@ class Tiles3D extends LayerBase {
    * - attribution: Atribución de la capa.
    * - isBase: Este tipo de capa no podrá ser capa base.
    * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
-   * - extract: Opcional, activa la consulta por click en el objeto geográfico, por defecto falso.
+   * - extract: Opcional, activa la consulta por click en el objeto geográfico,
+   * por defecto verdadero.
    * - infoEventType: Parametriza el método de activación del popup para obtener la información
    *   de un feature ('click' / 'hover'), por defecto 'click'.
+   * - template: (opcional) Plantilla que se mostrará al consultar un objeto geográfico.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a la implementación.
    * - style: Define el estilo de la capa.
    * - maximumScreenSpaceError: Error máximo de espacio en pantalla.
    * - clippingPlanes: Planos de recorte.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * @param {Object} vendorOptions Opciones para la biblioteca base.
    * @api
    */
@@ -62,6 +68,11 @@ class Tiles3D extends LayerBase {
     if (isUndefined(Tiles3DImpl) || (isObject(Tiles3DImpl)
       && isNullOrEmpty(Object.keys(Tiles3DImpl)))) {
       Exception(getValue('exception').tiles3d_method);
+    }
+
+    if (isString(userParameters) || !isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
     }
 
     const parameters = parameter.layer(userParameters, LayerType.Tiles3D);
@@ -96,9 +107,9 @@ class Tiles3D extends LayerBase {
     /**
      * Tiles3D extract.
      * Activa la consulta por click en el objeto geográfico.
-     * Por defecto, falso.
+     * Por defecto, verdadero.
      */
-    this.extract = !isNullOrEmpty(userParameters.extract) ? userParameters.extract : false;
+    this.extract = !isNullOrEmpty(userParameters.extract) ? userParameters.extract : true;
 
     /**
      * Tiles3D infoEventType.
@@ -124,6 +135,11 @@ class Tiles3D extends LayerBase {
     this.maxZoom = Number.POSITIVE_INFINITY;
 
     /**
+      * Tiles3D template: Para especificar una plantilla al consultar un objeto geográfico.
+      */
+    this.template = userParameters.template;
+
+    /**
      * Tiles3D options. Opciones de capa.
      */
     this.options = options;
@@ -143,7 +159,8 @@ class Tiles3D extends LayerBase {
 
   /**
    * Devuelve el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @getter
@@ -156,7 +173,8 @@ class Tiles3D extends LayerBase {
 
   /**
      * Sobrescribe el valor de la propiedad "extract". La propiedad "extract" tiene la
-     * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+     * siguiente función: Activa la consulta al hacer clic en la característica,
+     * por defecto verdadero.
      *
      * @function
      * @setter
@@ -171,8 +189,36 @@ class Tiles3D extends LayerBase {
         this.getImpl().extract = newExtract;
       }
     } else {
-      this.getImpl().extract = false;
+      this.getImpl().extract = true;
     }
+  }
+
+  /**
+   * Devuelve el valor de la propiedad "template". La propiedad "template" tiene la
+   * siguiente función: Especifica una plantilla que se mostrará al consultar
+   * un objeto geográfico.
+   *
+   * @function
+   * @getter
+   * @return {String} Valor de la propiedad "template".
+   * @api
+   */
+  get template() {
+    return this.getImpl().template;
+  }
+
+  /**
+   * Sobrescribe el valor de la propiedad "template". La propiedad "template" tiene la
+   * siguiente función: Especifica una plantilla que se mostrará al consultar
+   * un objeto geográfico.
+   *
+   * @function
+   * @setter
+   * @param {String} newTemplate Nuevo valor para sobreescribir la propiedad "template".
+   * @api
+   */
+  set template(newTemplate) {
+    this.getImpl().template = newTemplate;
   }
 
   /**
@@ -243,7 +289,8 @@ class Tiles3D extends LayerBase {
     if (obj instanceof Tiles3D) {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
-      equals = equals && (this.options === obj.options);
+      equals = equals && (this.idLayer === obj.idLayer);
+      equals = equals && (this.template === obj.template);
     }
     return equals;
   }

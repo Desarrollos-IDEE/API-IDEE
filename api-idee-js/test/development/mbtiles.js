@@ -7,17 +7,17 @@ const mapjs = map({
   projection: 'EPSG:3857*m',
   // layers: ['OSM', 'MBTilesVector*Countries*http://localhost:8080/test/development/countries.mbtiles*countries*true*eyJwYXJhbWV0ZXJzIjpbeyJyYWRpdXMiOjUsImZpbGwiOnsiY29sb3IiOiJvcmFuZ2UiLCJvcGFjaXR5IjoiMC44In0sInN0cm9rZSI6eyJjb2xvciI6InJlZCIsIndpZHRoIjoxfX1dLCJkZXNlcmlhbGl6ZWRNZXRob2QiOiIoKHNlcmlhbGl6ZWRQYXJhbWV0ZXJzKSA9PiBNLnN0eWxlLlNpbXBsZS5kZXNlcmlhbGl6ZShzZXJpYWxpemVkUGFyYW1ldGVycywgJ00uc3R5bGUuUG9pbnQnKSkifQ=='],
   layers: ['OSM'],
-  bbox: [260000.55171202554, 4717655.167246935, 401638.36512445717, 4762982.325020044]
+  bbox: [260000.55171202554, 4717655.167246935, 401638.36512445717, 4762982.325020044],
 });
 
 window.mapjs = mapjs;
 
-fetch('./cabrera.mbtiles').then((response) => {
+fetch('https://componentes.idee.es/estaticos/Datos/mbtiles/cabrera.mbtiles').then((response) => {
   const mbtile = new MBTiles({
     name: 'mbtiles',
     legend: 'Cabrera',
     // source: response,
-    transparent: true,
+    isBase: false,
     visibility: true,
     opacity: 0.5,
     // tileSize: 256
@@ -37,16 +37,14 @@ fetch('./cabrera.mbtiles').then((response) => {
     displayInLayerSwitcher: false,
   });
   mapjs.addLayers(mbtile);
-}).catch(e => {
-  throw e
+}).catch((e) => {
+  throw e;
 });
-
-
 
 // // mapjs.addLayers('WFST*CapaWFS*http://geostematicos-sigc.juntadeandalucia.es/geoserver/sepim/ows*sepim:campamentos*POINT***eyJwYXJhbWV0ZXJzIjpbeyJpY29uIjp7ImZvcm0iOiJDSVJDTEUiLCJjbGFzcyI6ImctY2FydG9ncmFmaWEtYmFuZGVyYSIsImZvbnRzaXplIjowLjUsInJhZGl1cyI6MTUsImZpbGwiOiJ3aGl0ZSJ9LCJyYWRpdXMiOjV9XSwiZGVzZXJpYWxpemVkTWV0aG9kIjoiKChzZXJpYWxpemVkUGFyYW1ldGVycykgPT4gTS5zdHlsZS5TaW1wbGUuZGVzZXJpYWxpemUoc2VyaWFsaXplZFBhcmFtZXRlcnMsICdNLnN0eWxlLlBvaW50JykpIn0');
 // window.mapjs = mapjs;
 
-// fetch('./countries.mbtiles').then((response) => {
+// fetch('https://componentes.idee.es/estaticos/Datos/mbtiles/countries.mbtiles').then((response) => {
 //   const mbtile = new MBTilesVector({
 //     name: 'mbtiles_vector',
 //     legend: 'Countries',
@@ -58,7 +56,7 @@ fetch('./cabrera.mbtiles').then((response) => {
 //   throw e
 // });
 
-// // fetch('./cabrera.mbtiles').then((response) => {
+// // fetch('https://componentes.idee.es/estaticos/Datos/mbtiles/cabrera.mbtiles').then((response) => {
 // //   const mbtile = new MBTiles({
 // //     name: 'mbtiles',
 // //     legend: 'Cabrera',

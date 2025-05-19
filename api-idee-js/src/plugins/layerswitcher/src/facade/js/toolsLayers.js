@@ -64,7 +64,7 @@ const CLASS_CHECK = 'm-layerswitcher-check';
 /* LEGEND LAYER */
 const I18N_LEGEND_ERROR = 'legend_error';
 
-const LEGEND_DEFAULT_IMG = 'assets/img/legend-default.png';
+const LEGEND_DEFAULT_IMG = 'https://componentes.idee.es/estaticos/imagenes/leyenda/legend-default.png';
 
 /* TARGET LAYER */
 const layersTypesTarget = ['WMTS', 'WFS', 'MBTilesVector', 'MBTiles', 'OSM', 'XYZ', 'TMS', 'GeoJSON', 'KML', 'OGCAPIFeatures', 'Vector', 'GenericRaster', 'GenericVector', 'MVT', 'GeoTIFF', 'MapLibre'];
@@ -114,7 +114,7 @@ export const showHideLayersEye = (evt, layer, self) => {
 
   if (evt.target.className.indexOf('m-layerswitcher-check') > -1 && selectLayer === 'eye') {
     if (evt.target.classList.contains(CLASS_CHECK)) {
-      if (layer.transparent === true || !layer.isVisible()) {
+      if (layer.isBase === false || !layer.isVisible()) {
         layer.setVisible(!layer.isVisible());
         self.render();
       }
@@ -267,7 +267,7 @@ const showHideLayersInLayerGroup = (layer, map) => {
 
   if (group) {
     group.getLayers().forEach((subLayer) => {
-      if (subLayer.name === layer.name) {
+      if (subLayer.idLayer === layer.idLayer) {
         showLayers(subLayer);
       } else {
         hideLayers(subLayer);
@@ -301,7 +301,7 @@ export const showHideLayersRadio = (layer, map, target) => {
 
 const getRadioLayersFilter = (layers) => {
   return layers.filter((l) => l.displayInLayerSwitcher === true
-  && l.transparent === true
+  && l.isBase === false
   && l.isVisible()) || [];
 };
 
@@ -325,7 +325,7 @@ export const selectDefaultRange = (radioButtons, map) => {
   const layersMapVisible = map.getLayers()
     .filter((l) => l.displayInLayerSwitcher === true
     && l.isVisible()
-    && l.transparent === true);
+    && l.isBase === false);
 
   // Del mapa
   clickRadioLayers(layersMapVisible, radioButtons);

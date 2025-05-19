@@ -73,6 +73,9 @@ class TileWMS extends OLSourceTileWMS {
   static tileLoadFunction(imageTileParam, src) {
     const imageTile = imageTileParam;
     imageTile.getImage().src = `${src}&_= ${this.revision_}`;
+    if (IDEE.config.TICKET != null) {
+      imageTile.getImage().src += `&ticket=${IDEE.config.TICKET}`;
+    }
   }
 }
 

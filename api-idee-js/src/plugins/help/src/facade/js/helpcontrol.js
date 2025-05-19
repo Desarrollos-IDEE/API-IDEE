@@ -65,7 +65,7 @@ export default class HelpControl extends IDEE.Control {
     }
 
     this.defaultInitialContents = [
-      { title: 'API-IDEE', content: `<div><h2 style="text-align: center; color: #fff; background-color: #364b5f; padding: 8px 10px;">API-IDEE</h2><div><p style='text-align: center'>${getValue('welcome0')}: <a tabindex="0" href='https://plataforma.idee.es/cnig-api' target='_blank'>https://plataforma.idee.es/cnig-api</a></p><p>${getValue('welcome1')}</p><h4>${getValue('welcome2')}</h4><p>${getValue('welcome3')}: <a tabindex="0" href="https://github.com/Desarrollos-IDEE/API-IDEE" target="_blank">https://github.com/Desarrollos-IDEE/API-IDEE</a></p><h4>${getValue('welcome4')}</h4><p>${getValue('welcome5')}: <a tabindex="0" href="http://componentes.cnig.es/api-idee/test.html" target="_blank">http://componentes.cnig.es/api-idee/test.html</a></p><h4>Wiki API-IDEE</h4><p>${getValue('welcome6')}: <a tabindex="0" href="https://github.com/Desarrollos-IDEE/API-IDEE/wiki" target="_blank">https://github.com/Desarrollos-IDEE/API-IDEE/wiki</a></p><h4>${getValue('welcome7')}</h4><p>${getValue('welcome8')}: <a tabindex="0" href="https://plataforma.idee.es/resources/GaleriaEjemplos_APICNIG/" target="_blank">https://plataforma.idee.es/resources/GaleriaEjemplos_APICNIG/</a></p><h4>${getValue('welcome9')}</h4><p>${getValue('welcome10')}: <a tabindex="0" href="https://plataforma.idee.es/cnig-api" target="_blank">https://plataforma.idee.es/cnig-api</a></p></div>` },
+      { title: 'API-IDEE', content: `<div><h2 style="text-align: center; color: #fff; background-color: #364b5f; padding: 8px 10px;">API-IDEE</h2><div><p style='text-align: center'>${getValue('welcome0')}: <a tabindex="0" href='https://plataforma.idee.es/cnig-api' target='_blank'>https://plataforma.idee.es/cnig-api</a></p><p>${getValue('welcome1')}</p><h4>${getValue('welcome2')}</h4><p>${getValue('welcome3')}: <a tabindex="0" href="https://github.com/Desarrollos-IDEE/API-IDEE" target="_blank">https://github.com/Desarrollos-IDEE/API-IDEE</a></p><h4>${getValue('welcome4')}</h4><p>${getValue('welcome5')}: <a tabindex="0" href="http://componentes.idee.es/api-idee/test.html" target="_blank">http://componentes.idee.es/api-idee/test.html</a></p><h4>Wiki API-IDEE</h4><p>${getValue('welcome6')}: <a tabindex="0" href="https://github.com/Desarrollos-IDEE/API-IDEE/wiki" target="_blank">https://github.com/Desarrollos-IDEE/API-IDEE/wiki</a></p><h4>${getValue('welcome7')}</h4><p>${getValue('welcome8')}: <a tabindex="0" href="https://plataforma.idee.es/resources/GaleriaEjemplos_APICNIG/" target="_blank">https://plataforma.idee.es/resources/GaleriaEjemplos_APICNIG/</a></p><h4>${getValue('welcome9')}</h4><p>${getValue('welcome10')}: <a tabindex="0" href="https://plataforma.idee.es/cnig-api" target="_blank">https://plataforma.idee.es/cnig-api</a></p></div>` },
     ];
 
     if (this.extendInitialExtraContents) {
@@ -139,9 +139,9 @@ export default class HelpControl extends IDEE.Control {
         vars: {
           library: `${IDEE.config.API_IDEE_URL}js/print.min.js`,
           headerImages: this.headerImages,
-          downloadPDFimg: `${IDEE.config.API_IDEE_URL}img/file-pdf.svg`,
-          zoom1: `${IDEE.config.API_IDEE_URL}img/magnify_on.svg`,
-          zoom2: `${IDEE.config.API_IDEE_URL}img/magnify_off.svg`,
+          downloadPDFimg: 'https://componentes.idee.es/estaticos/imagenes/logos/file-pdf.svg',
+          zoom1: 'https://componentes.idee.es/estaticos/Simbologia/svg/controles_complementos/help/magnify_on.svg',
+          zoom2: 'https://componentes.idee.es/estaticos/Simbologia/svg/controles_complementos/help/magnify_off.svg',
           translations: {
             header: getValue('short_title'),
             pdf: getValue('pdf'),

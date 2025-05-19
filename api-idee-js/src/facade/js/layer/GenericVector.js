@@ -18,12 +18,17 @@ import Generic from '../style/Generic';
  * @classdesc
  * GenericVector permite añadir cualquier tipo de capa vector.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} name Nombre de la capa, identificador.
  * @property {Boolean} extract Activa la consulta al hacer clic sobre un objeto geográfico,
- * por defecto falso.
+ * por defecto verdadero.
  * @property {Array} ids Identificadores por los que queremos filtrar los objetos geográficos.
  * @property {String} cql Sentencia CQL para filtrar los objetos geográficos.
  * @property {Object} options Opciones GenericVector.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
+ * @property {Boolean} isBase Define si la capa es base.
+ * @property {String} template Plantilla que se mostrará al consultar un objeto geográfico.
  *
  * @api
  * @extends {IDEE.layer.Vector}
@@ -35,14 +40,16 @@ class GenericVector extends Vector {
    * @param {string|Mx.parameters.WMS} userParameters Parámetros para la construcción de la capa.
    * - name: nombre de la capa.
    * - legend: Nombre asociado en el árbol de contenidos, si usamos uno.
-   * - transparent: Falso si es una capa base, verdadero en caso contrario.
-   * - extract: Opcional, activa la consulta por click en el objeto geográfico, por defecto falso.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
+   * - extract: Opcional, activa la consulta por click en el objeto geográfico,
+   * por defecto verdadero.
    * - infoEventType: Define si consultar la capa con un clic o con "hover".
    * - maxExtent: La medida en que restringe la visualización a una región específica.
    * - isBase: Indica si la capa es base.
    * - ids: Opcional - identificadores por los que queremos filtrar los objetos geográficos.
    * - cql: Opcional - Sentencia CQL para filtrar los objetos geográficos.
    *  El método setCQL(cadena_cql) refresca la capa aplicando el nuevo predicado CQL que reciba.
+   * - template: (opcional) Plantilla que se mostrará al consultar un objeto geográfico.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a
    * la implementación de la capa.
    * - visibility: Indica la visibilidad de la capa.
@@ -75,6 +82,11 @@ class GenericVector extends Vector {
     delete params.maxZoom;
     const opts = options;
     let vOptions = vendorOptions;
+
+    if (isString(userParameters) || !isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
+    }
 
     if (typeof userParameters === 'string') {
       params = parameter.layer(userParameters, LayerType.GenericVector);
@@ -139,9 +151,9 @@ class GenericVector extends Vector {
 
     /**
      * extract: Opcional, activa la consulta
-     * haciendo clic en el objeto geográfico, por defecto falso.
+     * haciendo clic en el objeto geográfico, por defecto verdadero.
      */
-    this.extract = userParameters.extract === undefined ? false : userParameters.extract;
+    this.extract = userParameters.extract === undefined ? true : userParameters.extract;
 
     this.styleFacade = params.style;
   }
@@ -221,7 +233,8 @@ class GenericVector extends Vector {
 
   /**
    * Devuelve el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @getter
@@ -234,7 +247,8 @@ class GenericVector extends Vector {
 
   /**
    * Sobrescribe el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @setter
@@ -249,7 +263,7 @@ class GenericVector extends Vector {
         this.getImpl().extract = newExtract;
       }
     } else {
-      this.getImpl().extract = false;
+      this.getImpl().extract = true;
     }
   }
 
@@ -376,6 +390,8 @@ class GenericVector extends Vector {
       equals = equals && (this.url === obj.url);
       equals = equals && (this.name === obj.name);
       equals = equals && (this.cql === obj.cql);
+      equals = equals && (this.idLayer === obj.idLayer);
+      equals = equals && (this.template === obj.template);
     }
 
     return equals;

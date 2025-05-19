@@ -1,3 +1,4 @@
+import arc from 'arc';
 import tooltipPointerHTML from '../../../templates/measure_pointer_tooltip';
 import tooltipHTML from '../../../templates/measure_tooltip';
 import { getValue } from '../../../facade/js/i18n/language';
@@ -172,9 +173,13 @@ export default class Measure extends IDEE.impl.Control {
    * @return {ol.layer.Vector} layer - Vector layer
    */
   createLayer_() {
+    const self = this;
     const layer = new ol.layer.Vector({
       source: new ol.source.Vector({}),
       style: new ol.style.Style({
+        geometry: (feature) => {
+          return this.getGeodesicFeature(self, feature);
+        },
         fill: new ol.style.Fill({
           color: 'rgba(51, 124, 235, 0.2)',
         }),
@@ -202,10 +207,14 @@ export default class Measure extends IDEE.impl.Control {
    * @return {ol.interaction.Draw} draw - Interaction draw
    */
   createIteractionDraw_() {
+    const self = this;
     const draw = new ol.interaction.Draw({
       source: this.layer_.getSource(),
       type: this.type_,
       style: new ol.style.Style({
+        geometry: (feature) => {
+          return this.getGeodesicFeature(self, feature);
+        },
         fill: new ol.style.Fill({
           color: 'rgba(255, 255, 255, 0.5)',
         }),
@@ -377,5 +386,44 @@ export default class Measure extends IDEE.impl.Control {
     this.facadeMap_.removeControls(this);
     this.facadeMap_ = null;
     this.overlays_.length = 0;
+  }
+
+  getGeodesicFeature(self, feature) {
+    // eslint-disable-next-line no-underscore-dangle
+    const projection = self.facadeMap_.getProjection().code;
+    const coordinates = feature.getGeometry().clone().transform(projection, 'EPSG:4326').getCoordinates();
+
+    let coords = [];
+    if (feature.getGeometry().getType() === 'LineString') {
+      coords = this.calculateGeodesicCoordinates(coordinates);
+    } else if (feature.getGeometry().getType() === 'Polygon') {
+      coords = this.calculateGeodesicCoordinates(coordinates[0]);
+    }
+
+    let feat;
+    if (feature.getGeometry().getType() === 'LineString') {
+      feat = new ol.geom.LineString(coords);
+    } else if (feature.getGeometry().getType() === 'Polygon') {
+      feat = new ol.geom.Polygon([coords]);
+    }
+    if (feat) {
+      feat.transform('EPSG:4326', projection);
+      return feat;
+    }
+  }
+
+  calculateGeodesicCoordinates(coordinates) {
+    const coords = [];
+    for (let i = 0; i < coordinates.length - 1; i += 1) {
+      const from = coordinates[i];
+      const to = coordinates[i + 1];
+      const arcGenerator = new arc.GreatCircle(
+        { x: from[0], y: from[1] },
+        { x: to[0], y: to[1] },
+      );
+      const arcLine = arcGenerator.Arc(100, { offset: 10 });
+      arcLine.geometries.forEach((geom) => { coords.push(...geom.coords); });
+    }
+    return coords;
   }
 }

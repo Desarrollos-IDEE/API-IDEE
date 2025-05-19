@@ -114,3 +114,7 @@
 .g-cartografia-zoom-extension:before {
     content: "\e90e";
 }
+
+.g-cartografia-implementacion:before {
+    content: "\e913";
+}

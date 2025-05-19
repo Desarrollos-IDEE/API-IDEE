@@ -15,8 +15,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 - **storymap.ol.min.css**
 
 ```html
- <link href="https://componentes.cnig.es//plugins/storymap/storymap.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es//plugins/storymap/storymap.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/storymap/storymap.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/storymap/storymap.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -24,8 +24,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es//plugins/storymap/storymap-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es//plugins/storymap/storymap-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/storymap/storymap-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/storymap/storymap-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros
@@ -153,7 +153,7 @@ URL_API?storymap=position*collapsed*collapsible*tooltip*delay*isDraggable
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.cnig.es/?storymap=TL*true*true*tooltip*delay*isDraggable
+https://componentes.idee.es/api-idee/?storymap=TL*true*true*tooltip*delay*isDraggable
 ```
 
 ### Ejemplos de uso API-REST en base64
@@ -184,7 +184,7 @@ Ejemplo de constructor del plugin:
 }
 ```
 ```
-https://componentes.cnig.es/?storymap=base64=eyJjb2xsYXBzZWQiOmZhbHNlLCJjb2xsYXBzaWJsZSI6dHJ1ZSwicG9zaXRpb24iOiJUUiIsImNvbnRlbnQiOnsiZXMiOnsiaGVhZCI6eyJ0aXRsZSI6IlN0b3J5TWFwIn0sImNhcCI6W119LCJlbiI6eyJoZWFkIjp7InRpdGxlIjoiU3RvcnlNYXAifSwiY2FwIjpbXX19LCJpbmRleEluQ29udGVudCI6eyJ0aXRsZSI6IkluZGljZSBTdG9yeU1hcCIsInN1YnRpdGxlIjoiVmlzdWFsaXphZG9yIGRlIENlcnZhbnRlcyB5IGVsIE1hZHJpZCBkZWwgc2lnbG8gWFZJSSIsImpzIjoiY29uc29sZS5sb2coJ0hvbGFNdW5kbycpIn0sImRlbGF5IjoyMDAwfQ==
+https://componentes.idee.es/api-idee/?storymap=base64=eyJjb2xsYXBzZWQiOmZhbHNlLCJjb2xsYXBzaWJsZSI6dHJ1ZSwicG9zaXRpb24iOiJUUiIsImNvbnRlbnQiOnsiZXMiOnsiaGVhZCI6eyJ0aXRsZSI6IlN0b3J5TWFwIn0sImNhcCI6W119LCJlbiI6eyJoZWFkIjp7InRpdGxlIjoiU3RvcnlNYXAifSwiY2FwIjpbXX19LCJpbmRleEluQ29udGVudCI6eyJ0aXRsZSI6IkluZGljZSBTdG9yeU1hcCIsInN1YnRpdGxlIjoiVmlzdWFsaXphZG9yIGRlIENlcnZhbnRlcyB5IGVsIE1hZHJpZCBkZWwgc2lnbG8gWFZJSSIsImpzIjoiY29uc29sZS5sb2coJ0hvbGFNdW5kbycpIn0sImRlbGF5IjoyMDAwfQ==
 ```
 
 # Ejemplo de uso
@@ -278,3 +278,6 @@ Para la revisión y actualización de las dependencias de los paquetes npm es ne
 $npm i -g npm-check-updates
 $ncu
 ```
+
+## Tabla de compatibilidad de versiones   
+[Consulta el api resourcePlugin](https://componentes.idee.es/api-idee/api/actions/resourcesPlugins?name=storymap)

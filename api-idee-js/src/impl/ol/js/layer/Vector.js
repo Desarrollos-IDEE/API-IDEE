@@ -34,6 +34,8 @@ class Vector extends Layer {
    * - style. Define el estilo de la capa.
    * - minZoom. Zoom mínimo aplicable a la capa.
    * - maxZoom. Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - visibility. Define si la capa es visible o no. Verdadero por defecto.
    * - displayInLayerSwitcher. Indica si la capa se muestra en el selector de capas.
    * - opacity. Opacidad de capa, por defecto 1.
@@ -103,7 +105,7 @@ class Vector extends Layer {
     this.map = map;
     this.fire(EventType.ADDED_TO_MAP);
     map.on(EventType.CHANGE_PROJ, this.setProjection_.bind(this), this);
-    this.ol3Layer = new OLLayerVector(this.vendorOptions_);
+    this.olLayer = new OLLayerVector(this.vendorOptions_);
     this.updateSource_();
     if (this.opacity_) {
       this.setOpacity(this.opacity_);
@@ -111,12 +113,15 @@ class Vector extends Layer {
     this.setVisible(this.visibility);
     if (addLayer) {
       const olMap = this.map.getMapImpl();
-      olMap.addLayer(this.ol3Layer);
+      olMap.addLayer(this.olLayer);
     }
 
-    this.ol3Layer.setMaxZoom(this.maxZoom);
-    this.ol3Layer.setMinZoom(this.minZoom);
-    this.ol3Layer.setExtent(this.maxExtent_);
+    this.olLayer.setMaxZoom(this.maxZoom);
+    this.olLayer.setMinZoom(this.minZoom);
+    this.olLayer.setExtent(this.maxExtent_);
+
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
   }
 
   /**
@@ -128,8 +133,8 @@ class Vector extends Layer {
    */
   updateSource_() {
     if (isNullOrEmpty(this.vendorOptions_.source)) {
-      if (isNullOrEmpty(this.ol3Layer.getSource())) {
-        this.ol3Layer.setSource(new OLSourceVector());
+      if (isNullOrEmpty(this.olLayer.getSource())) {
+        this.olLayer.setSource(new OLSourceVector());
       }
       this.redraw();
       this.loaded_ = true;
@@ -349,7 +354,9 @@ class Vector extends Layer {
         if (isFunction(clickFn)) {
           clickFn(evt, feature);
         } else {
-          const htmlAsText = compileTemplate(geojsonPopupTemplate, {
+          const popupTemplate = !isNullOrEmpty(this.template)
+            ? this.template : geojsonPopupTemplate;
+          const htmlAsText = compileTemplate(popupTemplate, {
             vars: this.parseFeaturesForTemplate_(features),
             parseToHtml: false,
           });
@@ -486,9 +493,9 @@ class Vector extends Layer {
    */
   destroy() {
     const olMap = this.map.getMapImpl();
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      olMap.removeLayer(this.ol3Layer);
-      this.ol3Layer = null;
+    if (!isNullOrEmpty(this.olLayer)) {
+      olMap.removeLayer(this.olLayer);
+      this.olLayer = null;
     }
     this.map = null;
   }

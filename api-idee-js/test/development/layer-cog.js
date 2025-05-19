@@ -21,7 +21,7 @@ const layerGeoTIFF = new GeoTIFF({
   // url: 'http://ftpcdd.cnig.es/PUBLICACION_CNIG_DATOS_VARIOS/MDT05/MDT05_ETRS89_HU30_ENTPNOA50/PNOA_MDT05_ETRS89_HU30_0685_LID.tif',
   name: 'Nombre geotiff',
   legend: 'Leyenda geotiff',
-  transparent: true,
+  isBase: false,
 }, {
   minZoom: 5,
   maxZoom: 15,

@@ -130,10 +130,11 @@
   "extension": "Extension",
   "draw": "Draw",
   "createdLayer": "Created layer",
-  "zmin": "Min alt.",
-  "zmax": "Max. alt.",
+  "zmin": "Min altitude",
+  "zmax": "Max altitude",
   "altitude": "Altitude",
-  "distance": "Total dist.",
+  "distanceT": "Total distance",
+  "distanceP": "Partial distance",
   "ytitle": "Altitud (m)",
   "xtitle": "Distance (km)",
   "title_popup_buffer": "INFLUENCE AREA",
@@ -171,5 +172,6 @@
   "close": "Close",
   "fill": "Fill",
   "stroke": "Stroke",
-  "opts_point": "Point Options"
+  "opts_point": "Point Options",
+  "readingAltitude": "Consultando..."
 }

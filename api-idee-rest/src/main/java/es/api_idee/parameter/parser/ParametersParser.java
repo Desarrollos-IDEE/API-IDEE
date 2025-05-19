@@ -3,6 +3,7 @@ package es.api_idee.parameter.parser;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -31,8 +32,9 @@ public abstract class ParametersParser {
       String maxextent = queryParams.getFirst("maxextent");
       String callbackFn = queryParams.getFirst("callback");
       String ticket = queryParams.getFirst("ticket");
-      String zoomconstrains = queryParams.getFirst("zoomconstrains");
+      String zoomconstrains = queryParams.getFirst("zoomConstrains");
       String viewextent = queryParams.getFirst("viewextent");
+      String bgcolorcontainer = queryParams.getFirst("bgcolorcontainer");
       
       Parameters parameters = new Parameters();
       parameters.addContainer(container);
@@ -50,6 +52,7 @@ public abstract class ParametersParser {
       parameters.addTicket(ticket);
       parameters.addZoomConstrains(zoomconstrains);
       parameters.addViewExtent(viewextent);
+      parameters.addBGColorContainer(bgcolorcontainer);
       
       return parameters;
    }
@@ -98,5 +101,14 @@ public abstract class ParametersParser {
          layers = Arrays.asList(layersValues); */
       }
       return layers;
+   }
+
+   public static String getImplementation (Map<String, String[]> query) {
+	   String[] implParam = query.get("implementation");
+	   String library = "ol";
+      if (implParam != null) {
+         library = implParam[0].trim().replace("\"", "").replace("'", "");
+      }
+      return library;
    }
 }

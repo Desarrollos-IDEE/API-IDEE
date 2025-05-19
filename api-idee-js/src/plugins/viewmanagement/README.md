@@ -19,8 +19,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 - **viewmanagement.ol.min.css**
 
 ```html
- <link href="https://componentes.cnig.es//plugins/viewmanagement/viewmanagement.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es//plugins/viewmanagement/viewmanagement.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/viewmanagement/viewmanagement.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/viewmanagement/viewmanagement.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -28,8 +28,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es//plugins/viewmanagement/viewmanagement-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es//plugins/viewmanagement/viewmanagement-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/viewmanagement/viewmanagement-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/viewmanagement/viewmanagement-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros
@@ -125,11 +125,11 @@ URL_API?viewmanagement=position*collapsed*collapsible*tooltip*isDraggable*predef
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.cnig.es/?viewmanagement=TL*true*true*tooltip
+https://componentes.idee.es/api-idee/?viewmanagement=TL*true*true*tooltip
 ```
 
 ```
-https://componentes.cnig.es/?viewmanagement=TL*true*true*tooltip*true*false*true*true*false
+https://componentes.idee.es/api-idee/?viewmanagement=TL*true*true*tooltip*true*false*true*true*false
 ```
 
 ### Ejemplos de uso API-REST en base64
@@ -155,7 +155,7 @@ IDEE.utils.encodeBase64(obj_params);
 }
 ```
 ```
-https://componentes.cnig.es/?viewmanagement=base64=eyJwb3NpdGlvbiI6IlRMIiwiY29sbGFwc2libGUiOnRydWUsImNvbGxhcHNlZCI6dHJ1ZSwidG9vbHRpcCI6Ikdlc3Rpw7NuIGRlIGxhIHZpc3RhIiwicHJlZGVmaW5lZFpvb20iOnRydWUsInpvb21FeHRlbnQiOmZhbHNlLCJ2aWV3aGlzdG9yeSI6dHJ1ZSwiem9vbXBhbmVsIjp0cnVlfQ==
+https://componentes.idee.es/api-idee/?viewmanagement=base64=eyJwb3NpdGlvbiI6IlRMIiwiY29sbGFwc2libGUiOnRydWUsImNvbGxhcHNlZCI6dHJ1ZSwidG9vbHRpcCI6Ikdlc3Rpw7NuIGRlIGxhIHZpc3RhIiwicHJlZGVmaW5lZFpvb20iOnRydWUsInpvb21FeHRlbnQiOmZhbHNlLCJ2aWV3aGlzdG9yeSI6dHJ1ZSwiem9vbXBhbmVsIjp0cnVlfQ==
 ```
 
 
@@ -170,7 +170,7 @@ https://componentes.cnig.es/?viewmanagement=base64=eyJwb3NpdGlvbiI6IlRMIiwiY29sb
 }
 ```
 ```
-https://componentes.cnig.es/?viewmanagement=base64=eyJwb3NpdGlvbiI6IlRMIiwidG9vbHRpcCI6Ikdlc3Rpw7NuIGRlIGxhIHZpc3RhIiwicHJlZGVmaW5lZFpvb20iOlt7Im5hbWUiOiJ6b29tIDEiLCJjZW50ZXIiOlstNDI4MTA2Ljg2NjExNTIwMDU3LDQzMzQ0NzIuMjUzOTM4MTddLCJ6b29tIjo0fSx7Im5hbWUiOiJ6b29tIDIiLCJiYm94IjpbLTIzOTIxNzMuMjM3MiwzMDMzMDIxLjI4MjQsMTk2NjU3MS44NjM3LDY4MDY3NjguMTY0OF19XX0=
+https://componentes.idee.es/api-idee/?viewmanagement=base64=eyJwb3NpdGlvbiI6IlRMIiwidG9vbHRpcCI6Ikdlc3Rpw7NuIGRlIGxhIHZpc3RhIiwicHJlZGVmaW5lZFpvb20iOlt7Im5hbWUiOiJ6b29tIDEiLCJjZW50ZXIiOlstNDI4MTA2Ljg2NjExNTIwMDU3LDQzMzQ0NzIuMjUzOTM4MTddLCJ6b29tIjo0fSx7Im5hbWUiOiJ6b29tIDIiLCJiYm94IjpbLTIzOTIxNzMuMjM3MiwzMDMzMDIxLjI4MjQsMTk2NjU3MS44NjM3LDY4MDY3NjguMTY0OF19XX0=
 ```
 
 # Ejemplo de uso
@@ -262,3 +262,6 @@ Para la revisión y actualización de las dependencias de los paquetes npm es ne
 $npm i -g npm-check-updates
 $ncu
 ```
+
+## Tabla de compatibilidad de versiones   
+[Consulta el api resourcePlugin](https://componentes.idee.es/api-idee/api/actions/resourcesPlugins?name=viewmanagement)

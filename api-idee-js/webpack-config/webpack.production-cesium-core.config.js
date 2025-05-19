@@ -30,6 +30,7 @@ module.exports = {
       handlebars: 'handlebars/dist/handlebars.min.js',
       proj4: 'proj4/dist/proj4.js',
       cesium: path.resolve('node_modules/cesium/Source/Cesium'),
+      jsts: path.resolve(__dirname, '../tasks/jsts/jsts-index.js'),
       templates: path.resolve(__dirname, '..', 'src', 'templates'),
       assets: path.resolve(__dirname, '..', 'src', 'facade', 'assets'),
       M: path.resolve(__dirname, '../src/facade/js'),
@@ -124,30 +125,6 @@ module.exports = {
         {
           from: 'src/configuration.js',
           to: 'filter/configuration.js',
-        },
-      ],
-    }),
-    new CopywebpackPlugin({
-      patterns: [
-        {
-          from: 'src/facade/assets/images',
-          to: 'assets/images',
-        },
-      ],
-    }),
-    new CopywebpackPlugin({
-      patterns: [
-        {
-          from: 'src/facade/assets/img',
-          to: 'assets/img',
-        },
-      ],
-    }),
-    new CopywebpackPlugin({
-      patterns: [
-        {
-          from: 'src/facade/assets/svg',
-          to: 'assets/svg',
         },
       ],
     }),

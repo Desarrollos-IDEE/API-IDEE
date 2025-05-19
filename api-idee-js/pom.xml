@@ -40,8 +40,8 @@
                   </goals>
                   <phase>generate-resources</phase>
                   <configuration>
-                     <nodeVersion>v16.20.2</nodeVersion>
-                     <npmVersion>8.19.4</npmVersion>
+                     <nodeVersion>v18.20.4</nodeVersion>
+                     <npmVersion>10.7.0</npmVersion>
                      <!--<nodeDownloadRoot>http://nodejs.org/dist/</nodeDownloadRoot>
                         <npmDownloadRoot>http://nodejs.org/dist/</npmDownloadRoot> -->
                   </configuration>
@@ -84,7 +84,6 @@
                      <descriptors>
                         <descriptor>assembly/dist-resources.xml</descriptor>
                         <descriptor>assembly/doc-resources.xml</descriptor>
-                        <descriptor>assembly/templates-resources.xml</descriptor>
                      </descriptors>
                   </configuration>
                </execution>

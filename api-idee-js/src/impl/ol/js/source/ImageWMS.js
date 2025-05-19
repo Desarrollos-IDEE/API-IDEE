@@ -62,6 +62,9 @@ class ImageWMS extends OLSourceImageWMS {
   imageLoadFunction(image, src) {
     const imageVariable = image;
     imageVariable.getImage().src = `${src}&_=${this.revision_}`;
+    if (IDEE.config.TICKET != null) {
+      imageVariable.getImage().src += `&ticket=${IDEE.config.TICKET}`;
+    }
   }
 }
 

@@ -15,8 +15,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 - **infocoordinates.ol.min.css**
 
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/infocoordinates/infocoordinates.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/infocoordinates/infocoordinates.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/infocoordinates/infocoordinates.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/infocoordinates/infocoordinates.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -24,8 +24,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/infocoordinates/infocoordinates-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/infocoordinates/infocoordinates-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/infocoordinates/infocoordinates-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/infocoordinates/infocoordinates-1.0.0.ol.min.js"></script>
 ```
 
 
@@ -104,7 +104,7 @@ URL_API?infocoordinates=position*collapsed*collapsible*tooltip*decimalGEOcoord*d
 ### Ejemplo de uso API-REST
 
 ```
-https://componentes.cnig.es/api-idee?infocoordinates=TL*true*true*Coordenadas*4*2*https%3A%2F%2Fvisores-cnig-gestion-publico.desarrollo.guadaltel.es%2Fiberpix%2Fhelp%3Fnode%3Dnode107*txt
+https://componentes.idee.es/api-idee?infocoordinates=TL*true*true*Coordenadas*4*2*https%3A%2F%2Fvisores-cnig-gestion-publico.desarrollo.guadaltel.es%2Fiberpix%2Fhelp%3Fnode%3Dnode107*txt
 ```
 
 ### Ejemplo de uso API-REST en base64
@@ -130,7 +130,7 @@ Ejemplo del constructor:
 ```
 
 ```
-https://componentes.cnig.es/api-idee?infocoordinates=base64=eyJwb3NpdGlvbiI6IlRSIiwiY29sbGFwc2libGUiOnRydWUsImNvbGxhcHNlZCI6dHJ1ZSwidG9vbHRpcCI6IkNvb3JkZW5hZGFzIiwib3V0cHV0RG93bmxvYWRGb3JtYXQiOiJ0eHQiLCJkZWNpbWFsR0VPY29vcmQiOjQsImRlY2ltYWxVVE1jb29yZCI6NCwiaGVscFVybCI6Imh0dHBzOi8vd3d3Lmlnbi5lcy8ifQ==
+https://componentes.idee.es/api-idee?infocoordinates=base64=eyJwb3NpdGlvbiI6IlRSIiwiY29sbGFwc2libGUiOnRydWUsImNvbGxhcHNlZCI6dHJ1ZSwidG9vbHRpcCI6IkNvb3JkZW5hZGFzIiwib3V0cHV0RG93bmxvYWRGb3JtYXQiOiJ0eHQiLCJkZWNpbWFsR0VPY29vcmQiOjQsImRlY2ltYWxVVE1jb29yZCI6NCwiaGVscFVybCI6Imh0dHBzOi8vd3d3Lmlnbi5lcy8ifQ==
 ```
 
 # Ejemplo de uso
@@ -208,3 +208,6 @@ Para la revisión y actualización de las dependencias de los paquetes npm es ne
 $npm i -g npm-check-updates
 $ncu
 ```
+
+## Tabla de compatibilidad de versiones   
+[Consulta el api resourcePlugin](https://componentes.idee.es/api-idee/api/actions/resourcesPlugins?name=infocoordinates)

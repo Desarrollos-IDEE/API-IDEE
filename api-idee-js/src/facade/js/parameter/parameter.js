@@ -441,6 +441,45 @@ export const zoom = (zoomParam) => {
 };
 
 /**
+ * Analiza el parámetro de zoom intermedio del usuario especificado
+ * en un booleano o cadena de texto.
+ *
+ * @param {Boolean|String} enableIntermediateZooms Parámetro de zoom intermedio especificado.
+ * Por defecto los niveles de zoom intermedios están activados.
+ * @returns {Boolean} niveles de zoom intermedios activos o inactivos
+ * si devuelve true o false, respectivamente.
+ * @public
+ * @function
+ * @api
+ * @throws {IDEE.exception} Si el parámetro no es especificado o de tipo no soportado.
+ */
+export const zoomConstrains = (enableIntermediateZooms) => {
+  let intermediateZoomVar;
+
+  // checks if the param is null or empty
+  if (isNullOrEmpty(enableIntermediateZooms)) {
+    Exception(getValue('exception').no_intermediate_zooms);
+  }
+
+  // boolean
+  if (typeof enableIntermediateZooms === 'boolean') {
+    intermediateZoomVar = enableIntermediateZooms ? 1 : 0;
+  // object
+  } else {
+    const lowerCaseParameter = enableIntermediateZooms.toLowerCase();
+
+    if (lowerCaseParameter === 'true' || lowerCaseParameter === 'false') {
+      intermediateZoomVar = lowerCaseParameter === 'true' ? 1 : 0;
+    } else {
+      // unknown
+      Exception(getValue('exception').invalid_zoomconstrains_param);
+    }
+  }
+
+  return intermediateZoomVar === 1;
+};
+
+/**
  * Analiza el parámetro de zoom mínimo del usuario especificado en un número.
  *
  * @param {String|Number} minZoomParam Parámetro de zoom mínimo especificado.
@@ -702,6 +741,24 @@ export const getURLKML = (parameter) => {
 };
 
 /**
+ * Analiza el parámetro para obtener la propiedad "template".
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {String} parameter Parámetro para obtener la propiedad "template".
+ * @returns {String} Plantilla que se mostrará al consultar un objeto geográfico.
+ * @api
+ */
+export const getTemplateKML = (parameter) => {
+  let template;
+  if (isObject(parameter)) {
+    template = parameter.template;
+  }
+  return template;
+};
+
+/**
  * Transforma los parámetros KML de la capa de usuario especificada en un objeto.
  *
  * @param {string|Mx.parameters.Layer} userParamer Parámetros para la capa KML especificados
@@ -751,6 +808,9 @@ export const kml = (userParamer) => {
 
     // get the legend option
     layerObj.legend = getLegendKML(userParam);
+
+    // get the template
+    layerObj.template = getTemplateKML(userParam);
 
     return layerObj;
   });
@@ -1145,6 +1205,24 @@ export const getOptionsWFS = (parameter) => {
 };
 
 /**
+ * Analiza el parámetro para obtener la propiedad "template".
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {String} parameter Parámetro para obtener la propiedad "template".
+ * @returns {String} Plantilla que se mostrará al consultar un objeto geográfico.
+ * @api
+ */
+export const getTemplateWFS = (parameter) => {
+  let template;
+  if (isObject(parameter)) {
+    template = parameter.template;
+  }
+  return template;
+};
+
+/**
  * Analiza los parámetros WFS de la capa de usuario especificada en un objeto.
  *
  * @param {string|Mx.parameters.WFS} userParameters Parámetros para la capa WFS
@@ -1207,6 +1285,9 @@ export const wfs = (userParameters) => {
 
     // gets the options
     layerObj.options = getOptionsWFS(userParam);
+
+    // gets the template
+    layerObj.template = getTemplateWFS(userParam);
 
     // format specified by the user when create object WFS
     layerObj.outputFormat = userParameters.outputFormat;
@@ -1344,7 +1425,7 @@ export const getExtractGeoJSON = (parameter) => {
       if (!isNullOrEmpty(hideParams)) {
         extract = [hideParams];
       } else {
-        extract = false;
+        extract = undefined;
       }
     }
   } else if (isObject(parameter)) {
@@ -1530,6 +1611,24 @@ export const getLegendMVT = (parameter) => {
 };
 
 /**
+ * Analiza el parámetro para obtener la propiedad "template".
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {String} parameter Parámetro para obtener la propiedad "template".
+ * @returns {String} Plantilla que se mostrará al consultar un objeto geográfico.
+ * @api
+ */
+export const getTemplateMVT = (parameter) => {
+  let template;
+  if (isObject(parameter)) {
+    template = parameter.template;
+  }
+  return template;
+};
+
+/**
  * Analiza los parámetros especificados por el usuario para la capa MVT.
  *
  * @public
@@ -1563,6 +1662,8 @@ export const mvt = (userParameters) => {
     layerObj.legend = getLegendMVT(userParam);
 
     layerObj.url = getURLMVT(userParam);
+
+    layerObj.template = getTemplateMVT(userParam);
 
     return layerObj;
   });
@@ -2773,7 +2874,7 @@ export const maplibre = (userParameters) => {
     url: urlParams[2] || undefined,
     name: urlParams[3] || undefined,
     transparent: urlParams[4] === '' ? undefined : urlParams[4] === 'true',
-    extract: urlParams[5] === '' ? undefined : urlParams[5] === 'true',
+    extract: isUndefined(urlParams[5]) || urlParams[5] === '' ? undefined : urlParams[5] === 'true',
     visibility: urlParams[6] === '' ? undefined : urlParams[6] === 'true',
     displayInLayerSwitcher: urlParams[7] === '' ? true : urlParams[7] === 'true',
     disableBackgroundColor: urlParams[8] === '' ? undefined : urlParams[8] === 'true',
@@ -3851,6 +3952,24 @@ export const getExtractMBTilesVector = (parameter) => {
 };
 
 /**
+ * Analiza el parámetro para obtener la propiedad "template".
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {string} parameter Parámetro para obtener la propiedad "template".
+ * @returns {string} Plantilla que se mostrará al consultar un objeto geográfico.
+ * @api
+ */
+export const getTemplateMBTilesVector = (parameter) => {
+  let template;
+  if (isObject(parameter)) {
+    template = parameter.template;
+  }
+  return template;
+};
+
+/**
  * Analiza los parámetros especificados por el usuario para la capa MBTilesVector.
  *
  * @param {string|Mx.parameters.MBTilesVector} userParameters Parámetros para la capa
@@ -3900,6 +4019,8 @@ export const mbtilesvector = (userParameters) => {
     layerObj.style = getStyleMBTilesVector(userParam);
 
     layerObj.extract = getExtractMBTilesVector(userParam);
+
+    layerObj.template = getTemplateMBTilesVector(userParam);
 
     return layerObj;
   });
@@ -4234,6 +4355,24 @@ export const getExtractOGC = (parameter) => {
 };
 
 /**
+ * Analiza el parámetro para obtener la propiedad "template".
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {string} parameter Parámetro para obtener la propiedad "template".
+ * @returns {string} Plantilla que se mostrará al consultar un objeto geográfico.
+ * @api
+ */
+export const getTemplateOGC = (parameter) => {
+  let template;
+  if (isObject(parameter)) {
+    template = parameter.template;
+  }
+  return template;
+};
+
+/**
  * Analiza los parámetros especificados por el usuario para la capa OGCAPIFeatures.
  *
  * @param {string|Mx.parameters.WMS} userParameters Parámetros para la capa OGCAPIFeatures.
@@ -4271,6 +4410,7 @@ export const ogcapifeatures = (userParameters) => {
     const style = getStyleOGC(userParam);
     const conditional = getConditionalOGC(userParam);
     const extract = getExtractOGC(userParam);
+    const template = getTemplateOGC(userParam);
 
     return {
       type,
@@ -4285,6 +4425,7 @@ export const ogcapifeatures = (userParameters) => {
       style,
       conditional,
       extract,
+      template,
     };
   });
 
@@ -4804,6 +4945,7 @@ export const layer = (userParameters, forcedType) => {
 
       if (!isNullOrEmpty(userParam.isBase)) {
         layerObj.transparent = !userParam.isBase;
+        layerObj.isBase = userParam.isBase;
       }
 
       // wfs

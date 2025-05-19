@@ -28,15 +28,13 @@ export const mbtile_01 = new MBTiles({
   visibility: true,
   // isBase: false,
   // isBase: true,
-  // transparent: true,
-  // transparent: false,
   // infoEventType: 'hover',
   // infoEventType: 'click',
   // attribution: {
   //     name: 'Name Prueba KML',
   //     description: 'Description Prueba',
   //     url: 'https://www.ign.es',
-  //     contentAttributions: 'https://componentes.cnig.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+  //     contentAttributions: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
   //     contentType: 'kml',
   //   },
 }, {

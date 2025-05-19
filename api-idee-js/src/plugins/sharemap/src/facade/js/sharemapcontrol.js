@@ -344,7 +344,9 @@ export default class ShareMapControl extends IDEE.Control {
       if (this.urlAPI_) {
         const { x, y } = this.map_.getCenter();
         const { code, units } = this.map_.getProjection();
-        shareURL = `${this.baseUrl_}?center=${x},${y}&zoom=${this.map_.getZoom()}`;
+        const bgColorContainer = this.map_.getBGColorContainer();
+        const stringBgColor = bgColorContainer !== '' ? `&bgcolorcontainer=${encodeURIComponent(bgColorContainer)}` : '';
+        shareURL = `${this.baseUrl_}?center=${x},${y}&zoom=${this.map_.getZoom()}${stringBgColor}`;
         if (!this.minimize_) {
           shareURL = shareURL.concat(`&controls=${controls}`).concat(`&${this.getPlugins()}`);
         } else {
@@ -367,8 +369,10 @@ export default class ShareMapControl extends IDEE.Control {
         input.value = shareURL;
       } else {
         const { x, y } = this.map_.getCenter();
+        const bgColorContainer = this.map_.getBGColorContainer();
+        const stringBgColor = bgColorContainer !== '' ? `&bgcolorcontainer=${encodeURIComponent(bgColorContainer)}` : '';
         const urlBaseVisor = (window.location.search) ? window.location.href.replace(window.location.search, '') : window.location.href;
-        shareURL = `${urlBaseVisor}?center=${x},${y}&zoom=${this.map_.getZoom()}&srs=${this.map_.getProjection().code}`;
+        shareURL = `${urlBaseVisor}?center=${x},${y}&zoom=${this.map_.getZoom()}&srs=${this.map_.getProjection().code}${stringBgColor}`;
         let layers = [];
 
         if (this.shareLayer === true) {
@@ -418,7 +422,9 @@ export default class ShareMapControl extends IDEE.Control {
       if (this.urlAPI_) {
         const { x, y } = this.map_.getCenter();
         const { code, units } = this.map_.getProjection();
-        shareURL = `${this.baseUrl_}?center=${x},${y}&zoom=${this.map_.getZoom()}`;
+        const bgColorContainer = this.map_.getBGColorContainer();
+        const stringBgColor = bgColorContainer !== '' ? `&bgcolorcontainer=${encodeURIComponent(bgColorContainer)}` : '';
+        shareURL = `${this.baseUrl_}?center=${x},${y}&zoom=${this.map_.getZoom()}${stringBgColor}`;
         if (!this.minimize_) {
           shareURL = shareURL.concat(`&controls=${controls}`).concat(`&${this.getPlugins()}`);
         } else {
@@ -441,8 +447,10 @@ export default class ShareMapControl extends IDEE.Control {
         shareURL = shareURL.concat(`&projection=${code}*${units}`);
       } else {
         const { x, y } = this.map_.getCenter();
+        const bgColorContainer = this.map_.getBGColorContainer();
+        const stringBgColor = bgColorContainer !== '' ? `&bgcolorcontainer=${encodeURIComponent(bgColorContainer)}` : '';
         const urlBaseVisor = (window.location.search) ? window.location.href.replace(window.location.search, '') : window.location.href;
-        shareURL = `${urlBaseVisor}?center=${x},${y}&zoom=${this.map_.getZoom()}`;
+        shareURL = `${urlBaseVisor}?center=${x},${y}&zoom=${this.map_.getZoom()}${stringBgColor}`;
         let layers = [];
 
         if (this.shareLayer === true) {
@@ -532,7 +540,7 @@ export default class ShareMapControl extends IDEE.Control {
         res = res && false;
       }
 
-      if (layer.displayInLayerSwitcher === false && layer.transparent === true) {
+      if (layer.displayInLayerSwitcher === false && layer.isBase === false) {
         res = res && false;
       }
 
@@ -550,7 +558,7 @@ export default class ShareMapControl extends IDEE.Control {
    */
   getLayersInLayerswitcher() {
     const layers = this.map_.getLayers().filter((layer) => {
-      return layer.displayInLayerSwitcher === true && layer.transparent === true;
+      return layer.displayInLayerSwitcher === true && layer.isBase === false;
     });
 
     return layers.map((layer) => this.layerToParam(layer)).filter((param) => param != null);

@@ -17,8 +17,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 
 
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/overviewmap/overviewmap.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/overviewmap/overviewmap.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/overviewmap/overviewmap.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/overviewmap/overviewmap.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -26,8 +26,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/overviewmap/overviewmap-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/overviewmap/overviewmap-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/overviewmap/overviewmap-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/overviewmap/overviewmap-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros
@@ -99,11 +99,11 @@ URL_API?overviewmap=position*!collapsed*!collapsible*!tooltip*!fixed*!zoom*!base
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.cnig.es/api-idee?overviewmap=TR*!true*!true*!Mapa*!true*!5*!WMS*PNOA%202017*https://www.ign.es/wms/pnoa-historico?*PNOA2017*true*true
+https://componentes.idee.es/api-idee?overviewmap=TR*!true*!true*!Mapa*!true*!5*!WMS*PNOA%202017*https://www.ign.es/wms/pnoa-historico?*PNOA2017*true*true
 ```
 
 ```
-https://componentes.cnig.es/api-idee?overviewmap=TR*!true*!true*!Mapa
+https://componentes.idee.es/api-idee?overviewmap=TR*!true*!true*!Mapa
 ```
 
 ### Ejemplo de uso API-REST en base64
@@ -127,7 +127,7 @@ Ejemplo de constructor:
 }
 ```
 ```
-https://componentes.cnig.es/api-idee?overviewmap=base64=eyJwb3NpdGlvbiI6IkJSIiwiZml4ZWQiOnRydWUsInpvb20iOjQsImJhc2VMYXllciI6IldNVFMqaHR0cDovL3d3dy5pZ24uZXMvd210cy9pZ24tYmFzZT8qSUdOQmFzZVRvZG8qR29vZ2xlTWFwc0NvbXBhdGlibGUqTWFwYSBJR04qZmFsc2UqaW1hZ2UvanBlZypmYWxzZSpmYWxzZSp0cnVlIiwiY29sbGFwc2VkIjpmYWxzZSwiY29sbGFwc2libGUiOmZhbHNlLCJ0b29sdGlwIjoiTWFwYSJ9
+https://componentes.idee.es/api-idee?overviewmap=base64=eyJwb3NpdGlvbiI6IkJSIiwiZml4ZWQiOnRydWUsInpvb20iOjQsImJhc2VMYXllciI6IldNVFMqaHR0cDovL3d3dy5pZ24uZXMvd210cy9pZ24tYmFzZT8qSUdOQmFzZVRvZG8qR29vZ2xlTWFwc0NvbXBhdGlibGUqTWFwYSBJR04qZmFsc2UqaW1hZ2UvanBlZypmYWxzZSpmYWxzZSp0cnVlIiwiY29sbGFwc2VkIjpmYWxzZSwiY29sbGFwc2libGUiOmZhbHNlLCJ0b29sdGlwIjoiTWFwYSJ9
 
 ```
 
@@ -211,3 +211,6 @@ Para la revisión y actualización de las dependencias de los paquetes npm es ne
 $npm i -g npm-check-updates
 $ncu
 ```
+
+## Tabla de compatibilidad de versiones   
+[Consulta el api resourcePlugin](https://componentes.idee.es/api-idee/api/actions/resourcesPlugins?name=overviewmap)

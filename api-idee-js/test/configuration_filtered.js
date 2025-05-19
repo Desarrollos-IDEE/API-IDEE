@@ -9,6 +9,21 @@ const backgroundlayersOpts = backgroundlayersIds.map((id, index) => {
   };
 });
 
+const implementationSwitcherOpts = [{
+  id: 'OL',
+  type: 'ol',
+  title: 'Open Layers',
+  js: '../../../dist/js/apiidee.ol.min.js',
+  css: '../../../dist/assets/css/apiidee.ol.min.css',
+},
+{
+  id: 'CS',
+  type: 'cesium',
+  title: 'Cesium',
+  js: '../../../dist/js/apiidee.cesium.min.js',
+  css: '../../../dist/assets/css/apiidee.cesium.min.css',
+}];
+
 const config = (configKey, configValue) => {
   config[configKey] = configValue;
 };
@@ -57,15 +72,6 @@ function fun(IDEE_) {
    * @api stable
    */
   IDEE_.config('PROXY_POST_URL', `${location.protocol}//componentes-desarrollo.idee.es/api-idee/proxyPost`);
-
-  /**
-   * The path to the API IDEE templates
-   * @const
-   * @type {string}
-   * @public
-   * @api stable
-   */
-  IDEE_.config('TEMPLATES_PATH', '/files/templates/');
 
   /**
    * The path to the API IDEE theme
@@ -174,6 +180,14 @@ function fun(IDEE_) {
   IDEE_.config('backgroundlayers', backgroundlayersOpts);
 
   /**
+   * ImplementationSwitcher Control
+   *
+   * @private
+   * @type {object}
+   */
+  IDEE_.config('implementationswitcher', implementationSwitcherOpts);
+
+  /**
    * Attributions configuration
    *
    * @private
@@ -182,7 +196,7 @@ function fun(IDEE_) {
   IDEE_.config('attributions', {
     defaultAttribution: 'Instituto Geográfico Nacional',
     defaultURL: 'https://www.ign.es/',
-    url: 'https://componentes-desarrollo.idee.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+    url: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
     type: 'kml',
   });
 
@@ -210,7 +224,23 @@ function fun(IDEE_) {
    * @private
    * @type {object}
    */
-  IDEE_.config('MOVE_MAP_EXTRACT', false);
+  IDEE_.config('MOVE_MAP_EXTRACT', true);
+
+  /**
+   * Zoom máximo.
+   *
+   * @private
+   * @type {Number | String}
+   */
+  IDEE_.config('MIN_ZOOM', '');
+
+  /**
+   * Zoom mínimo.
+   *
+   * @private
+   * @type {Number | String}
+   */
+  IDEE_.config('MAX_ZOOM', '');
 
   /**
    * Hace el popup inteligente

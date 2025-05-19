@@ -38,6 +38,7 @@
             <includes>
                <include>**/*.properties</include>
                <include>**/*.json</include>
+               <include>**/resourcesPlugins.json</include>
             </includes>
          </resource>
          <resource>
@@ -57,8 +58,8 @@
             <artifactId>maven-compiler-plugin</artifactId>
             <inherited>true</inherited>
             <configuration>
-               <source>1.7</source>
-               <target>1.7</target>
+               <source>1.8</source>
+               <target>1.8</target>
                <encoding>${project.build.sourceEncoding}</encoding>
             </configuration>
          </plugin>
@@ -100,7 +101,7 @@
                   <configuration>
                      <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
                      <includeGroupIds>${project.groupId}</includeGroupIds>
-                     <includeArtifacIds>api-idee-js</includeArtifacIds>
+                     <includeArtifactIds>api-idee-js</includeArtifactIds>
                      <excludeArtifactIds>api-idee-proxy</excludeArtifactIds>
                      <excludeArtifactIds>api-idee-database</excludeArtifactIds>
                      <excludeTransitive>true</excludeTransitive>
@@ -196,14 +197,6 @@
          <artifactId>api-idee-js</artifactId>
          <version>${project.version}</version>
          <classifier>doc-resources</classifier>
-         <type>zip</type>
-         <scope>provided</scope>
-      </dependency>
-      <dependency>
-         <groupId>${project.groupId}</groupId>
-         <artifactId>api-idee-js</artifactId>
-         <version>${project.version}</version>
-         <classifier>templates-resources</classifier>
          <type>zip</type>
          <scope>provided</scope>
       </dependency>

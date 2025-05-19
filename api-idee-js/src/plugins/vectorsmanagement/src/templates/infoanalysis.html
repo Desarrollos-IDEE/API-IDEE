@@ -11,9 +11,14 @@
     {{#if line}}
     <table>
         <tr tabindex="0">
-            <td>Longitud</td>
-            <td>2D: {{line.length}} {{line.units}}</td>
-            <td id="infoAnalisis3DLine">3D: Calcular</td>
+            <th>Distancia</th>
+            <td>2D</td>
+            <td>3D</td>
+        </tr>
+        <tr>
+            <td>Elipsoidal</td>
+            <td>{{line.length}} {{line.units}}</td>
+            <td id="ellipsoidal3DLength">Calculando...</td>
         </tr>
     </table>
     {{/if}}

@@ -17,8 +17,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 
 
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/rescale/rescale.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/rescale/rescale.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/rescale/rescale.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/rescale/rescale.ol.min.js"></script>
 ```
 
 # Uso del histórico de versiones
@@ -26,8 +26,8 @@ Para que el plugin funcione correctamente es necesario importar las siguientes d
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.cnig.es/api-idee/plugins/rescale/rescale-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.cnig.es/api-idee/plugins/rescale/rescale-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/rescale/rescale-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/rescale/rescale-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros
@@ -81,11 +81,11 @@ URL_API?rescale=position*collapsed*collapsible*tooltip
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.cnig.es/api-idee?rescale=TR*true*true*rescale
+https://componentes.idee.es/api-idee?rescale=TR*true*true*rescale
 ```
 
 ```
-https://componentes.cnig.es/api-idee?rescale=TL
+https://componentes.idee.es/api-idee?rescale=TL
 ```
 ### Ejemplos de uso API-REST en base64
 
@@ -106,7 +106,7 @@ Ejemplo de constructor del plugin:
 ```
 
 ```
-https://componentes.cnig.es/api-idee/?rescale=base64=eyJjb2xsYXBzaWJsZSI6dHJ1ZSwiY29sbGFwc2VkIjp0cnVlLCJwb3NpdGlvbiI6IlRMIiwidG9vbHRpcCI6IlJlc2NhbGUifQ==
+https://componentes.idee.es/api-idee/?rescale=base64=eyJjb2xsYXBzaWJsZSI6dHJ1ZSwiY29sbGFwc2VkIjp0cnVlLCJwb3NpdGlvbiI6IlRMIiwidG9vbHRpcCI6IlJlc2NhbGUifQ==
 ```
 
 # Ejemplo de uso
@@ -182,3 +182,6 @@ Para la revisión y actualización de las dependencias de los paquetes npm es ne
 $npm i -g npm-check-updates
 $ncu
 ```
+
+## Tabla de compatibilidad de versiones   
+[Consulta el api resourcePlugin](https://componentes.idee.es/api-idee/api/actions/resourcesPlugins?name=rescale)

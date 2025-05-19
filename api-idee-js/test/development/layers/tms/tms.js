@@ -3,7 +3,7 @@ import TMS from 'IDEE/layer/TMS';
 import XYZSource from 'ol/source/XYZ';
 
 export const tms_001 = new TMS({
-  url: 'https://tms-ign-base.ign.es/1.0.0/IGNBaseTodo/{z}/{x}/{-y}.jpeg',
+  url: 'https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/{z}/{x}/{-y}.jpeg',
   name: 'TMSBaseIGN',
   projection: 'EPSG:3857',
   legend: 'Capa TMS',
@@ -12,15 +12,13 @@ export const tms_001 = new TMS({
   // maxExtent: [-1259872.4694101033, 4359275.566199489, -85799.71494979598, 4620384.454821652],
   // visibility: false,
   // visibility: true,
-  transparent: false,
-  // transparent: true,
   // isBase: false,
-  // isBase: true,
+  isBase: true,
   // attribution: {
   //   name: 'Name Prueba TMS',
   //   description: 'Description Prueba',
   //   url: 'https://www.ign.es',
-  //   contentAttributions: 'https://componentes.cnig.es/api-idee/files/attributions/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+  //   contentAttributions: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
   //   contentType: 'kml',
   // }
   // crossOrigin: true,

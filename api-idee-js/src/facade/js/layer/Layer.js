@@ -6,7 +6,7 @@ import * as parserParameter from '../parameter/parameter';
 import Base from '../Base';
 import {
   isUndefined, isBoolean, isArray, isNullOrEmpty, isFunction, isObject, isString,
-  normalize, generateRandom, concatUrlPaths,
+  normalize, generateRandom,
 } from '../util/Utils';
 import { getValue } from '../i18n/language';
 import * as EventType from '../event/eventtype';
@@ -14,15 +14,18 @@ import * as EventType from '../event/eventtype';
 /**
  * @classdesc
  * De esta clase heredadan todas las capas base.
+ *
+ * @property {string} idLayer Identificador de la capa.
  * @property {string} type Tipo de la capa.
  * @property {string} url URL del servicio.
  * @property {string} name Nombre de la capa.
- * @property {Boolean} transparent Falso si es una capa base, verdadero en caso contrario.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
  * @property {Array<Number>} userMaxExtent MaxExtent proporcionado por el usuario, la medida en que
  * restringe la visualización a una región específica.
  * @property {string} legend Indica el nombre que queremos que aparezca en el árbol
  * de contenidos, si lo hay.
- * @property {Boolean} isbase Define si la capa es base.
+ * @property {Boolean} isBase Define si la capa es base.
  *
  * @api
  * @extends {IDEE.Base}
@@ -318,6 +321,7 @@ class LayerBase extends Base {
    * @public
    * @returns {IDEE.layer.impl.transparent} Valor de la propiedad "transparent".
    * @api
+   * @deprecated
    */
   get transparent() {
     return this.getImpl().transparent;
@@ -330,6 +334,7 @@ class LayerBase extends Base {
    * @public
    * @param {Boolean} newTransparent  Nuevo valor para la propiedad "transparent".
    * @api
+   * @deprecated
    */
   set transparent(newTransparent) {
     if (!isNullOrEmpty(newTransparent)) {
@@ -374,6 +379,38 @@ class LayerBase extends Base {
       }
     } else {
       this.getImpl().displayInLayerSwitcher = true;
+    }
+  }
+
+  /**
+   * Este método devuelve el identificador de la capa.
+   *
+   * @function
+   * @returns {String} Devuelve el identificador de la capa.
+   * @api
+   */
+  getId() {
+    return this.idLayer;
+  }
+
+  /**
+   * Este método establece el identificador de la capa.
+   *
+   * @function
+   * @param {String} newID Nuevo identificador para la capa.
+   * @api
+   */
+  setId(newID) {
+    if (!isNullOrEmpty(this.map_)) {
+      const findId = this.map_.getLayers().find((layer) => {
+        return layer.idLayer === newID;
+      });
+      if (isUndefined(findId)) {
+        this.map_.getFeatureHandler().changeNamePrevs(this.idLayer, newID);
+        this.idLayer = newID;
+      } else {
+        Exception(getValue('exception').id_exists);
+      }
     }
   }
 
@@ -566,7 +603,7 @@ class LayerBase extends Base {
   setLegendURL(legendUrlParam) {
     let legendUrl = legendUrlParam;
     if (isNullOrEmpty(legendUrl)) {
-      legendUrl = concatUrlPaths([IDEE.config.THEME_URL, LayerBase.LEGEND_DEFAULT]);
+      legendUrl = LayerBase.LEGEND_DEFAULT;
     }
     this.getImpl().setLegendURL(legendUrl);
   }
@@ -603,6 +640,50 @@ class LayerBase extends Base {
     }
     this.zindex_ = newZIndex;
     this.getImpl().setZIndex(newZIndex);
+  }
+
+  /**
+   * Esta función devuelve el valor de la escala mínima para esta capa.
+   *
+   * @function
+   * @returns {Number} Devuelve el valor de la escala mínima.
+   * @api
+   */
+  getMinScale() {
+    return this.getImpl().getMinScale();
+  }
+
+  /**
+   * Esta función establece el valor de la escala mínima para esta capa.
+   *
+   * @function
+   * @param {Number} minScale Nueva escala mínima.
+   * @api
+   */
+  setMinScale(minScale) {
+    this.getImpl().setMinScale(minScale);
+  }
+
+  /**
+   * Esta función devuelve el valor de la escala máxima para esta capa.
+   *
+   * @function
+   * @returns {Number} Devuelve el valor de la escala máxima.
+   * @api
+   */
+  getMaxScale() {
+    return this.getImpl().getMaxScale();
+  }
+
+  /**
+   * Esta función establece el valor de la escala máxima para esta capa.
+   *
+   * @function
+   * @param {Number} maxScale Nueva escala máxima.
+   * @api
+   */
+  setMaxScale(maxScale) {
+    this.getImpl().setMaxScale(maxScale);
   }
 
   /**
@@ -711,7 +792,7 @@ class LayerBase extends Base {
  * @public
  * @api
  */
-LayerBase.LEGEND_DEFAULT = '/img/legend-default.png';
+LayerBase.LEGEND_DEFAULT = 'https://componentes.idee.es/estaticos/imagenes/leyenda/legend-default.png';
 
 /**
  * Imagen de error PNG para la leyenda predeterminada.
@@ -720,6 +801,6 @@ LayerBase.LEGEND_DEFAULT = '/img/legend-default.png';
  * @public
  * @api
  */
-LayerBase.LEGEND_ERROR = '/img/legend-error.png';
+LayerBase.LEGEND_ERROR = 'https://componentes.idee.es/estaticos/imagenes/leyenda/legend-error.png';
 
 export default LayerBase;

@@ -18,6 +18,7 @@ import { getValue } from '../i18n/language';
  * espaciales en la Web y especifica requisitos y recomendaciones para las API que desean seguir una
  * forma estándar de compartir datos de entidades.
  *
+ * @property {String} idLayer Identificador de la capa.
  * @property {String} legend Indica el nombre que queremos que aparezca en el
  * árbol de contenidos, si lo hay.
  * @property {String} url URL del servicio.
@@ -40,7 +41,11 @@ import { getValue } from '../i18n/language';
  * LINE(línea), MLINE(Multiples línes), POLYGON(Polígono), or MPOLYGON(Multiples polígonos).
  * @property {Object} opt Opciones de la capa.
  * @property {Boolean} extract Opcional. Activa la consulta haciendo
- * clic en el objeto geográfico.
+ * clic en el objeto geográfico. Por defecto, verdadero.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
+ * @property {Boolean} isBase Define si la capa es base.
+ * @property {String} template Plantilla que se mostrará al consultar un objeto geográfico.
  *
  * @api
  * @extends {IDEE.layer.Vector}
@@ -66,8 +71,12 @@ class OGCAPIFeatures extends Vector {
    * - crs: Definición de la proyección de los datos.
    * - geometry: Tipo de geometría: POINT(Punto), MPOINT(Multiples puntos),
    * LINE(línea), MLINE(Multiples línes), POLYGON(Polígono), or MPOLYGON(Multiples polígonos).
-   * - extract: Opcional, activa la consulta por click en el objeto geográfico, por defecto falso.
+   * - extract: Opcional, activa la consulta por clic en el objeto geográfico,
+   * por defecto verdadero.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
+   * - isBase: Indica si la capa es base.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
+   * - template: (opcional) Plantilla que se mostrará al consultar un objeto geográfico.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a
    * la implementación de la capa.
    * - predefinedStyles: Estilos predefinidos para la capa.
@@ -75,6 +84,8 @@ class OGCAPIFeatures extends Vector {
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
    * - minZoom: Zoom mínimo aplicable a la capa.
    * - maxZoom: Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
    * - opacity: Opacidad de capa, por defecto 1.
    * - height: Define la altura del objeto geográfico. Puede ser un número o una propiedad.
    *   Si se define la altura será constante para todos los puntos del objeto geográfico.
@@ -99,6 +110,11 @@ class OGCAPIFeatures extends Vector {
     // Comprueba si los parámetros son null or empty
     if (isNullOrEmpty(userParams)) {
       Exception(getValue('exception').no_param);
+    }
+
+    if (!isUndefined(userParams.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
     }
 
     // This layer is of parameters.
@@ -170,9 +186,9 @@ class OGCAPIFeatures extends Vector {
 
     /**
      * OGCAPIFeatures extract: Activa la consulta al hacer clic sobre un objeto geográfico,
-     * por defecto falso.
+     * por defecto verdadero.
      */
-    this.extract = parameters.extract === undefined ? false : parameters.extract;
+    this.extract = parameters.extract === undefined ? true : parameters.extract;
 
     /**
      * OGCAPIFeatures cql: Declaración CQL para filtrar las características
@@ -402,7 +418,8 @@ class OGCAPIFeatures extends Vector {
 
   /**
    * Devuelve el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @getter
@@ -415,7 +432,8 @@ class OGCAPIFeatures extends Vector {
 
   /**
    * Sobrescribe el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica, por defecto falso.
+   * siguiente función: Activa la consulta al hacer clic en la característica,
+   * por defecto verdadero.
    *
    * @function
    * @setter
@@ -430,7 +448,7 @@ class OGCAPIFeatures extends Vector {
         this.getImpl().extract = newExtract;
       }
     } else {
-      this.getImpl().extract = false;
+      this.getImpl().extract = true;
     }
   }
 
@@ -452,10 +470,10 @@ class OGCAPIFeatures extends Vector {
       equals = equals && (this.limit === obj.limit);
       equals = equals && (this.format === obj.format);
       equals = equals && (this.offset === obj.offset);
-      equals = equals && (this.bbox === obj.bbox);
       equals = equals && (this.id === obj.id);
       equals = equals && (this.extract === obj.extract);
-      equals = equals && (this.predefinedStyles === obj.predefinedStyles);
+      equals = equals && (this.idLayer === obj.idLayer);
+      equals = equals && (this.template === obj.template);
     }
     return equals;
   }
