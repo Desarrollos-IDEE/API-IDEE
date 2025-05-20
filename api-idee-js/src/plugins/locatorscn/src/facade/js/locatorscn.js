@@ -117,7 +117,7 @@ export default class Locatorscn extends IDEE.Plugin {
      * @private
      * @type {Boolean}
      */
-    this.useProxy = IDEE.utils.isUndefined(options.useProxy) ? true : options.useProxy;
+    this.useProxy = IDEE.utils.isUndefined(options.useProxy) ? false : options.useProxy;
 
     /**
      * Stores the proxy state at plugin load time
