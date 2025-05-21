@@ -161,6 +161,22 @@ export const ADDED_TILES3D = 'added:tiles3d';
 export const ADDED_TERRAIN = 'added:terrain';
 
 /**
+ * Evento que se produce al añadir GeoPackage.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const ADDED_GEOPACKAGE = 'added:geopackage';
+
+/**
+ * Evento que se produce al añadir GeoPackageTile.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const ADDED_GEOPACKAGE_TILE = 'added:geopackagetile';
+
+/**
  * Evento que se produce al eliminar layer.
  * @public
  * @type {string}
@@ -263,6 +279,14 @@ export const LEAVE_FEATURES = 'leave:features';
  * @api
  */
 export const LOAD = 'load';
+
+/**
+ * Evento que se produce al cargarse las capas.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const LOAD_LAYERS = 'load:layers';
 
 /**
  * Evento que se produce al pasar un estado completado.

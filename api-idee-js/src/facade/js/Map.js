@@ -239,6 +239,11 @@ class Map extends Base {
      */
     this.collectionCapabilities = [];
 
+    /**
+     * Map: Capas "GeoPackage"
+     */
+    this.geopackages = [];
+
     // Attribution Map
     // + El evento se añade aquí antes de llamar a addLayers
     this.evtSetAttributions_();
@@ -2458,6 +2463,143 @@ class Map extends Base {
         this.fire(EventType.REMOVED_LAYER, [terrainLayers]);
         this.getImpl().removeTerrain(terrainLayers);
       }
+    }
+    return this;
+  }
+
+  /**
+   * Este método devuelve las capas GeoPackageTile del mapa.
+   *
+   * @function
+   * @param {Object} filters Opcional.
+   * @returns {Array<IDEE.layer.GeoPackageTile>} Capas del mapa.
+   * @api
+   */
+  getGeoPackageTile(filters) {
+    const layers = this.getImpl().getGeoPackageTile(filters).sort(Map.LAYER_SORT);
+
+    return layers;
+  }
+
+  /**
+   * Este método agrega las capas GeoPackageTile al mapa.
+   *
+   * @function
+   * @param {Array<string>|Array<Mx.parameters.GeoPackageTile>} layersParam Colección u objeto
+   * de capa.
+   * @returns {Map} Devuelve el estado del mapa.
+   * @api
+   */
+  addGeoPackageTile(layersParamVar) {
+    let layersParam = layersParamVar;
+    if (!isNullOrEmpty(layersParam)) {
+      // checks if the implementation can manage layers
+      if (isUndefined(MapImpl.prototype.addGeoPackageTile)) {
+        Exception(getValue('exception').addgeopackagetile_method);
+      }
+
+      // parses parameters to Array
+      if (!isArray(layersParam)) {
+        layersParam = [layersParam];
+      }
+
+      const geopackagetileLayers = [];
+      layersParam.forEach((layerParam) => {
+        let geoPackageTile;
+        if (isObject(layerParam) && layerParam.type === LayerType.GeoPackageTile) {
+          geoPackageTile = layerParam;
+        }
+        geopackagetileLayers.push(geoPackageTile);
+      });
+
+      // adds the layers
+      this.getImpl().addGeoPackageTile(geopackagetileLayers);
+      this.fire(EventType.ADDED_LAYER, [geopackagetileLayers]);
+      this.fire(EventType.ADDED_GEOPACKAGE_TILE, [geopackagetileLayers]);
+    }
+    return this;
+  }
+
+  /**
+   * Este método elimina las capas GeoPackageTile del mapa.
+   *
+   * @function
+   * @param {Array<string>|Array<Mx.parameters.Layer>} layersParam Matriz de capas de nombres que
+   * desea eliminar.
+   * @returns {Map} Devuelve el estado del mapa.
+   * @api
+   */
+  removeGeoPackageTile(layersParam) {
+    if (!isNullOrEmpty(layersParam)) {
+      if (isUndefined(MapImpl.prototype.removeGeoPackageTile)) {
+        Exception(getValue('exception').removegeopackagetile_method);
+      }
+
+      const geopackagetileLayers = this.getGeoPackageTile(layersParam);
+      if (geopackagetileLayers.length > 0) {
+        geopackagetileLayers.forEach((layer) => {
+          this.getFeatureHandler().removeLayer(layer);
+        });
+        this.getImpl().removeGeoPackageTile(geopackagetileLayers);
+      }
+    }
+    return this;
+  }
+
+  /**
+   * Este método agrega las capas GeoPackage al mapa.
+   *
+   * @function
+   * @param {Array<string>|Array<Mx.parameters.GeoPackage>} layersParam Colección u objeto
+   * de capa.
+   * @returns {Map} Devuelve el estado del mapa.
+   * @api
+   */
+  addGeoPackage(layersParamVar) {
+    let layersParam = layersParamVar;
+    if (!isNullOrEmpty(layersParam)) {
+      // parses parameters to Array
+      if (!isArray(layersParam)) {
+        layersParam = [layersParam];
+      }
+
+      layersParam.forEach((layerParam) => {
+        if (layerParam && layerParam.type === LayerType.GeoPackage) {
+          layerParam.addTo(this);
+          this.geopackages.push(layerParam);
+        }
+      });
+
+      this.fire(EventType.ADDED_LAYER, [this.geopackages]);
+      this.fire(EventType.ADDED_GEOPACKAGE, [this.geopackages]);
+    }
+    return this;
+  }
+
+  /**
+   * Este método elimina las capas GeoPackage del mapa.
+   *
+   * @function
+   * @param {Array<string>|Array<Mx.parameters.Layer>} layersParamVar Matriz de capas de nombres que
+   * desea eliminar.
+   * @returns {Map} Devuelve el estado del mapa.
+   * @api
+   */
+  removeGeoPackage(layersParamVar) {
+    let layersParam = layersParamVar;
+    if (!isNullOrEmpty(layersParam)) {
+      if (!isArray(layersParam)) {
+        layersParam = [layersParam];
+      }
+
+      const geopackageLayers = layersParam.filter((layerParam) => layerParam
+        && layerParam.type === LayerType.GeoPackage);
+      geopackageLayers.forEach((layer) => {
+        layer.removeLayers();
+        this.geopackages = this.geopackages
+          .filter((geopackage) => !geopackage.equals(layer));
+      });
+      this.fire(EventType.REMOVED_LAYER, [geopackageLayers]);
     }
     return this;
   }

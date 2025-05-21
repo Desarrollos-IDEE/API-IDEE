@@ -32,3 +32,4 @@
 - Se implementa el uso del ticket en capas WMS, incluyendo el control getFeatureInfo y el plugin information.
 - Se implementa el uso del ticket en el plugin comparators.
 - Se implementa el parámetro tileLoadFunction en el vendors, ademas de setTileLoadFunction.
+- Se implementa capa GeoPackage.

@@ -281,6 +281,10 @@
     "id_exists": "ID already exists.",
     "transparent_deprecated": "'transparent' parameter has been deprecated, it is recommended to use 'isBase' instead.",
     "getOL3Layer_deprecated": "The getOL3Layer method has been deprecated, it is recommended to use the getLayer method.",
-    "setOL3Layer_deprecated": "The setOL3Layer method has been deprecated, it is recommended to use the setLayer method."
+    "setOL3Layer_deprecated": "The setOL3Layer method has been deprecated, it is recommended to use the setLayer method.",
+    "geopackagetile_method": "The implementation used can not create GeoPackageTile layers.",
+    "addgeopackagetile_method": "The implementation used does not have addGeoPackageTile method.",
+    "getgeopackagetile_method": "The implementation used does not have getGeoPackageTile method.",
+    "removegeopackagetile_method": "The implementation used does not have removeGeoPackageTile method."
   }
 }
