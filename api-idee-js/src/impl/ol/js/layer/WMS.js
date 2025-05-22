@@ -10,6 +10,7 @@ import {
 import FacadeLayerBase from 'IDEE/layer/Layer';
 import * as LayerType from 'IDEE/layer/Type';
 import { get as getRemote } from 'IDEE/util/Remote';
+import FacadeWMS from 'IDEE/layer/WMS';
 import * as EventType from 'IDEE/event/eventtype';
 import OLLayerTile from 'ol/layer/Tile';
 import OLLayerImage from 'ol/layer/Image';
@@ -32,6 +33,8 @@ import ImageWMS from '../source/ImageWMS';
  * @property {Object} options Opciones de la capa WMS.
  * @property {Array<IDEE.layer.WMS>} layers Intancia de WMS con metadatos.
  * @property {Function} tileLoadFunction Función de carga de tiles.
+ * @property {Boolean} mergeLayers Verdadero si se añaden todas las capas del servicio
+ * en una, falso en caso contrario. Por defecto, verdadero.
  *
  * @api
  * @extends {IDEE.impl.layer.Layer}
@@ -62,6 +65,8 @@ class WMS extends LayerBase {
    * y así sucesivamente. Debe ser 1 o superior. Por defecto es 1.
    * crossOrigin: Atributo crossOrigin para las imágenes cargadas.
    * - isWMSfull: establece si la capa es WMS_FULL.
+   * - mergeLayers: Verdadero si se añaden todas las capas del servicio
+   * en una, falso en caso contrario. Por defecto, verdadero.
    * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
    * <pre><code>
    * import OLSourceTileWMS from 'ol/source/TileWMS';
@@ -214,6 +219,12 @@ class WMS extends LayerBase {
      * isWMSfull. Determina si es WMS_FULL.
      */
     this.isWMSfull = options.isWMSfull;
+
+    /**
+     * mergeLayers. Indica si todas las capas de un servicio se añaden por separado o no.
+     * Por defecto, verdadero.
+     */
+    this.mergeLayers = options.mergeLayers;
   }
 
   /**
@@ -289,7 +300,9 @@ class WMS extends LayerBase {
     if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
     if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
 
-    if (this.useCapabilities || this.isWMSfull) {
+    if (!this.mergeLayers) {
+      this.addAllLayers_();
+    } else if (this.useCapabilities || this.isWMSfull) {
       // just one WMS layer and useCapabilities
       this.getCapabilities().then((capabilities) => {
         this.addSingleLayer_(capabilities);
@@ -340,6 +353,45 @@ class WMS extends LayerBase {
         this.olLayer.setSource(source);
         this.olLayer.setExtent(extent);
       }
+    });
+  }
+
+  /**
+   * Este método agrega todas las capas por separado definidas en el servidor.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   * @api stable
+   */
+  addAllLayers_() {
+    this.getCapabilities().then((getCapabilities) => {
+      if (this.useCapabilities) {
+        const capabilitiesInfo = this.map.collectionCapabilities.find((cap) => {
+          return cap.url === this.url;
+        }) || { capabilities: false };
+
+        capabilitiesInfo.capabilites = getCapabilities;
+      }
+
+      getCapabilities.getLayers().forEach((layer) => {
+        const wmsLayer = new FacadeWMS({
+          url: this.url,
+          name: layer.name,
+          version: layer.version,
+          tiled: this.tiled,
+          useCapabilities: this.useCapabilities,
+        }, this.vendorOptions_);
+        this.layers.push(wmsLayer);
+      });
+
+      this.map.addWMS(this.layers);
+
+      this.layers.forEach((layer) => {
+        layer.setZIndex(layer.getZIndex() - 1);
+      });
+
+      this.layers = [];
+      this.map.removeLayers(this.facadeLayer_);
     });
   }
 

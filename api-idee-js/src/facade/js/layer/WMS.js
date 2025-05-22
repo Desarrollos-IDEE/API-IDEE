@@ -56,6 +56,8 @@ class WMS extends LayerBase {
    * - tiled: Verdadero si queremos dividir la capa en tiles, falso en caso contrario.
    * - type: Tipo de la capa.
    * - useCapabilities: Define si se utilizará el capabilities para generar la capa.
+   * - mergeLayers: Verdadero si se añaden todas las capas del servicio
+   * en una, falso en caso contrario. Por defecto, verdadero.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a
    * la implementación de la capa.
    * - opacity: Opacidad de capa, por defecto 1.
@@ -113,6 +115,7 @@ class WMS extends LayerBase {
       displayInLayerSwitcher: parameters.displayInLayerSwitcher,
       useCapabilities: parameters.useCapabilities,
       isWMSfull: parameters.name === undefined,
+      mergeLayers: parameters.mergeLayers,
     };
 
     const impl = new WMSImpl(optionsVar, vendorOptions);
