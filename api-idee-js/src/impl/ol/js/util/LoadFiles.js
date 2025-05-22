@@ -366,6 +366,14 @@ class LoadFiles {
       newSource = newSource.replace(/certificacion:the_geom/gi, 'ogr:geometryProperty');
     }
 
+    if (newSource.indexOf('srsName="http://www.opengis.net/def/crs/EPSG/0/') > -1) {
+      newSource = newSource.replace(/srsName="http:\/\/www\.opengis\.net\/def\/crs\/EPSG\/0\//gi, 'srsName="EPSG:');
+    }
+
+    if (newSource.indexOf('srsName="urn:ogc:def:crs:EPSG::') > -1) {
+      newSource = newSource.replace(/srsName="urn:ogc:def:crs:EPSG::/gi, 'srsName="EPSG:');
+    }
+
     if (newSource.split('srsName="')[1].split('"')[0].indexOf('http') > -1) {
       try {
         srs = `EPSG:${newSource.split('srsName="')[1].split('#')[1].split('"')[0]}`;
