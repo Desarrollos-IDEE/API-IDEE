@@ -183,9 +183,8 @@ class GeoPackageTile extends Layer {
 
     if (addLayer) {
       this.map.getMapImpl().addLayer(this.olLayer);
+      this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
     }
-
-    this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
   }
 
   /**
