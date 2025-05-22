@@ -10,6 +10,7 @@ import Point from 'ol/geom/Point';
 import WFS from 'ol/format/WFS';
 import GML2 from 'ol/format/GML2';
 import GML3 from 'ol/format/GML3';
+import GML32 from 'ol/format/GML32';
 import View from 'ol/View';
 import { transform } from 'ol/proj';
 import OLFeature from 'ol/Feature';
@@ -401,6 +402,21 @@ class LoadFiles {
 
     if (features.length === 0 || features[0].getGeometry() === undefined) {
       features = new WFS({ gmlFormat: new GML3() }).readFeatures(newSource, {
+        dataProjection: srs,
+        featureProjection: projection,
+      });
+
+      features = features.map((f, index) => {
+        const newF = f;
+        if (!f.getGeometry()) {
+          newF.setGeometry(f.get('geometry'));
+        }
+        return newF;
+      });
+    }
+
+    if (features.length === 0 || features[0].getGeometry() === undefined) {
+      features = new WFS({ gmlFormat: new GML32() }).readFeatures(newSource, {
         dataProjection: srs,
         featureProjection: projection,
       });
