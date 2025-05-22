@@ -309,7 +309,6 @@ class WMS extends LayerBase {
         // EXCEPTIONS: 'image/png',
       });
     }
-    this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
   }
 
   paramsOLLayers() {
@@ -397,6 +396,7 @@ class WMS extends LayerBase {
 
     if (this.addLayerToMap_) {
       this.map.getMapImpl().addLayer(this.olLayer);
+      this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
     }
 
     this.setVisible(this.visibility);
