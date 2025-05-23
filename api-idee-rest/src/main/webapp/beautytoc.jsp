@@ -124,7 +124,7 @@
 
             layersPlugin = [
                 new IDEE.layer.WMS({
-                    url: 'http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?',
+                    url: 'https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?',
                     name: 'Catastro',
                     legend: 'Catastro',
                     tiled: false,
