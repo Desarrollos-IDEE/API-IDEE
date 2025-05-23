@@ -88,7 +88,7 @@ const PRECHARGED = {
     services: [{
       name: 'Catastro ',
       type: 'WMS',
-      url: 'http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?',
+      url: 'https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?',
     },
     {
       name: 'Unidades administrativas',
