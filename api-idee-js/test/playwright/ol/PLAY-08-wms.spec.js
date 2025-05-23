@@ -118,9 +118,7 @@ test.describe('IDEE.layer.WMS', () => {
       expect(urlWMS).toEqual('https://www.ign.es/wms-inspire/redes-geodesicas?');
     });
 
-
-
-  test('WMSFULL with mergeLayers true', async ({ page }) => {
+    test('WMSFULL with mergeLayers true', async ({ page }) => {
       await page.evaluate(() => {
         const wms_006 = new IDEE.layer.WMS({
           url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
@@ -154,6 +152,6 @@ test.describe('IDEE.layer.WMS', () => {
       await page.waitForTimeout(5000);
       const numLayers = await page.evaluate(() => map.getLayers().length);
       expect(numLayers).toEqual(5);
-    });  
+    });
   });
 });
