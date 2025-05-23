@@ -33,3 +33,7 @@
 - Se implementa el uso del ticket en el plugin comparators.
 - Se implementa el parámetro tileLoadFunction en el vendors, ademas de setTileLoadFunction.
 - Se añade el parámetro "mergeLayers" en las capas WMS.
+- Se añade /doc a api/actions.
+- Se permite añadir al mapa el mismo servicio con igual nombre más de una vez (idLayer).
+- Se añaden métodos getId y setId para sobreescribir el identificador de la capa.
+
