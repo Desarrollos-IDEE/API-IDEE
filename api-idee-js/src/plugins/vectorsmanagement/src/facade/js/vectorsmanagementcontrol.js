@@ -140,6 +140,11 @@ export default class VectorsManagementControl extends IDEE.Control {
       this.selectionControl.deactivate();
     }
 
+    if (this.editionControl.isActivated()) {
+      document.querySelector('#m-vectorsmanagement-edition').classList.remove('activated');
+      this.editionControl.deactivate();
+    }
+
     this.html.querySelector('#m-vectorsmanagement-previews').classList.remove('closed');
     const selector = this.html.querySelector('#m-selectionlayer');
     const selectedLayerName = selector.selectedOptions[0].value;
