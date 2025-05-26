@@ -28,3 +28,4 @@
 - Añadido template como parámetro junto a sus métodos get/set en capas vectoriales.
 - Se activa el extract por defecto en las capas vectoriales.
 - Mejoras en la comprobación de la implementación en capas Vector.
+- Se soluciona error con la edición de geometrías en plugin VectorsManagement.
