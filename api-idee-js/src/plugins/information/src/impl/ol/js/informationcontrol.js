@@ -215,7 +215,10 @@ export default class InformationControl extends IDEE.impl.Control {
         if (!regexBuffer.test(layer.url)) {
           informationParams.BUFFER = this.buffer_;
         }
-        const url = source.getFeatureInfoUrl(coord, viewResolution, srs, informationParams);
+        let url = source.getFeatureInfoUrl(coord, viewResolution, srs, informationParams);
+        if (IDEE.utils.isString(IDEE.config.TICKET)) {
+          url = IDEE.utils.addParameters(url, { ticket: IDEE.config.TICKET });
+        }
         param = { layer: layer.legend || layer.name, url };
       }
       return param;

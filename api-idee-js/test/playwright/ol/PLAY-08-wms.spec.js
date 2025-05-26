@@ -117,5 +117,43 @@ test.describe('IDEE.layer.WMS', () => {
       const urlWMS = await page.evaluate(() => wms_005.url);
       expect(urlWMS).toEqual('https://www.ign.es/wms-inspire/redes-geodesicas?');
     });
+
+
+
+  test('WMSFULL with mergeLayers true', async ({ page }) => {
+      await page.evaluate(() => {
+        const wms_006 = new IDEE.layer.WMS({
+          url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
+          name: '',
+          legend: 'WMS',
+          mergeLayers: true,
+        });
+
+        map.addLayers(wms_006);
+        window.wms_006 = wms_006;
+      });
+
+      await page.waitForTimeout(5000);
+      const numLayers = await page.evaluate(() => map.getLayers().length);
+      expect(numLayers).toEqual(3);
+    });
+
+    test('WMSFULL with mergeLayers false', async ({ page }) => {
+      await page.evaluate(() => {
+        const wms_007 = new IDEE.layer.WMS({
+          url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
+          name: '',
+          legend: 'WMS',
+          mergeLayers: false,
+        });
+
+        map.addLayers(wms_007);
+        window.wms_007 = wms_007;
+      });
+
+      await page.waitForTimeout(5000);
+      const numLayers = await page.evaluate(() => map.getLayers().length);
+      expect(numLayers).toEqual(5);
+    });  
   });
 });

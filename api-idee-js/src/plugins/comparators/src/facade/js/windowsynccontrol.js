@@ -430,6 +430,7 @@ export default class WindowSyncControl extends IDEE.Control {
     const plugins = this.generatePlugins() || '';
     const layers = JSON.stringify([...this.layers, ...getLayers(this.map_)]);
     const baseLayers = JSON.stringify(getBaseLayers(this.map_));
+    const ticket = IDEE.config.TICKET;
 
     const contenidoHTML = `
        <!DOCTYPE html>
@@ -463,7 +464,8 @@ export default class WindowSyncControl extends IDEE.Control {
              zoom: ${zoom},
              layers: ${baseLayers},
              projection: '${projection}',
-             ${controls ? `controls:${controls}` : ''}
+             ${controls ? `controls:${controls},` : ''}
+             ${ticket ? `ticket: '${ticket}'` : ''}
            });
            ${plugins}
            newMap.addLayers(${layers})

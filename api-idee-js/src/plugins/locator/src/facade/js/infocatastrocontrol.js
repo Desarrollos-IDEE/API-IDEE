@@ -28,7 +28,7 @@ export default class InfoCatastroControl extends IDEE.Control {
      * @private
      * @type {String}
      */
-    const defectCMC = 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejeroCodigos.asmx/ConsultaMunicipioCodigos';
+    const defectCMC = 'https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejeroCodigos.asmx/ConsultaMunicipioCodigos';
     this.CMC_url = options.CMC_url || defectCMC;
 
     /**
@@ -36,7 +36,7 @@ export default class InfoCatastroControl extends IDEE.Control {
      * @private
      * @type {String}
      */
-    const defectDNPP = 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejeroCodigos.asmx/Consulta_DNPPP_Codigos';
+    const defectDNPP = 'https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejeroCodigos.asmx/Consulta_DNPPP_Codigos';
     this.DNPPP_url = options.DNPPP_url || defectDNPP;
 
     /**
@@ -44,7 +44,7 @@ export default class InfoCatastroControl extends IDEE.Control {
      * @private
      * @type {String}
      */
-    const defectCPMRC = 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCoordenadas.asmx/Consulta_CPMRC';
+    const defectCPMRC = 'https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCoordenadas.asmx/Consulta_CPMRC';
     this.CPMRC_url = options.CPMRC_url || defectCPMRC;
 
     /**
@@ -52,7 +52,7 @@ export default class InfoCatastroControl extends IDEE.Control {
      * @private
      * @type {string}
      */
-    this.cadastreWMS = options.cadastreWMS || 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCoordenadas.asmx/Consulta_RCCOOR';
+    this.cadastreWMS = options.cadastreWMS || 'https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCoordenadas.asmx/Consulta_RCCOOR';
 
     /**
      * zoom

@@ -2100,6 +2100,34 @@ export const getUseCapabilitiesWMS = (parameter) => {
 };
 
 /**
+ * Analiza el parámetro que indica si las capas de un servicio se añaden en una sola
+ * capa o por separado.
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {string|object} parameter Parámetro de la capa.
+ * @returns {boolean} Devuelve el valor de mergeLayers.
+ * @throws {Exception} Si el parámetro no es de un tipo soportado.
+ * @api
+ */
+export const getMergeLayersWMS = (parameter) => {
+  let mergeLayers;
+  if (isObject(parameter)) {
+    const name = parameter.name;
+    mergeLayers = isUndefined(name) || name === '' ? parameter.mergeLayers : true;
+  } else {
+    Exception(`El parámetro no es de un tipo soportado: ${typeof parameter}`);
+  }
+
+  if (isUndefined(mergeLayers)) {
+    mergeLayers = true;
+  }
+
+  return mergeLayers;
+};
+
+/**
  * Analiza los parámetros WMS de la capa de usuario especificada en un objeto.
  *
  * @param {string|Mx.parameters.WMS} userParameters Parámetros para la capa WMS.
@@ -2137,6 +2165,7 @@ export const wms = (userParameters) => {
     const queryable = getQueryableWMS(userParam);
     const visibility = getVisibilityWMS(userParam);
     const useCapabilities = getUseCapabilitiesWMS(userParam);
+    const mergeLayers = getMergeLayersWMS(userParam);
 
     return {
       type,
@@ -2152,6 +2181,7 @@ export const wms = (userParameters) => {
       visibility,
       options,
       useCapabilities,
+      mergeLayers,
     };
   });
 

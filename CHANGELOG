@@ -17,6 +17,7 @@
 - Eliminación de plantillas de /files/templates y /templates dentro del war
 - Añadido bgcolorcontainer a los parámetros de mapas para aplicar un color al fondo del html del mapa de OpenLayers.
 - Se elimina la clase ParametersAdapterV3ToV4 de api-idee-rest.
+- Se implementa el parámetro cql para WMS, junto a get/set.
 - Se añade método setName para sobreescribir el nombre de las capas WMS.
 - Se añade método setURL para sobreescribir la URL de las capas WMS.
 - Se elimina filtro que impide usar el parámetro tiled si la capa WMS tiene la versión 1.3.0.
@@ -29,3 +30,10 @@
 - Se activa el extract por defecto en las capas vectoriales.
 - Mejoras en la comprobación de la implementación en capas Vector.
 - Se activa el extract por defecto en los grupos de capas.
+- Se implementa el uso del ticket en capas WMS, incluyendo el control getFeatureInfo y el plugin information.
+- Se implementa el uso del ticket en el plugin comparators.
+- Se implementa el parámetro tileLoadFunction en el vendors, ademas de setTileLoadFunction.
+- Se añade el parámetro "mergeLayers" en las capas WMS.
+- Se añade /doc a api/actions.
+- Se permite añadir al mapa el mismo servicio con igual nombre más de una vez (idLayer).
+- Se añaden métodos getId y setId para sobreescribir el identificador de la capa.
