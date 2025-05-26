@@ -30,6 +30,7 @@
 - Se activa el extract por defecto en las capas vectoriales.
 - Mejoras en la comprobación de la implementación en capas Vector.
 - Se activa el extract por defecto en los grupos de capas.
+- Mejoras relacionadas con los grupos de capas del plugin LayerSwitcher.
 - Se soluciona error con la edición de geometrías en plugin VectorsManagement.
 - Se implementa el uso del ticket en capas WMS, incluyendo el control getFeatureInfo y el plugin information.
 - Se implementa el uso del ticket en el plugin comparators.
@@ -38,3 +39,4 @@
 - Se añade /doc a api/actions.
 - Se permite añadir al mapa el mismo servicio con igual nombre más de una vez (idLayer).
 - Se añaden métodos getId y setId para sobreescribir el identificador de la capa.
+- Se añade evento ADDED_TO_MAP para capas WMS_FULL.
