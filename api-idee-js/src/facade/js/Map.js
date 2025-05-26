@@ -922,20 +922,31 @@ class Map extends Base {
 
       // Add this.featuresHandler_.addLayer(layer);
       collectionLayerGroups.forEach((group) => {
-        group.getLayers().forEach((layer) => {
-          if ((layer instanceof Vector)
-              /* && !(layer instanceof KML) */
-              && !(layer instanceof WFS)
-              && !(layer instanceof OGCAPIFeatures)) {
-            this.featuresHandler_.addLayer(layer);
-          }
-        });
+        this.featureHandlerLayerGroup(group);
       });
 
       this.fire(EventType.ADDED_LAYER, [collectionLayerGroups]);
       this.fire(EventType.ADDED_LAYERGROUP, [collectionLayerGroups]);
     }
     return this;
+  }
+
+  /**
+   * Manejador de objetos geográficos para los grupos de capas.
+   *
+   * @function
+   * @param {IDEE.layer.Group} layerGroup Grupo de capas.
+   * @api
+   */
+  featureHandlerLayerGroup(layerGroup) {
+    const layers = layerGroup.getLayers();
+    layers.forEach((l) => {
+      if ((l instanceof Vector) || (l instanceof MapLibre) || (l instanceof Tiles3D)) {
+        this.featuresHandler_.addLayer(l);
+      } else if (l instanceof LayerGroup) {
+        this.featureHandlerLayerGroup(l);
+      }
+    });
   }
 
   /**
