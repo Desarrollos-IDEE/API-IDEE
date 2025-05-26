@@ -30,6 +30,7 @@ import { getValue } from '../i18n/language';
  * @property {Object} options Capa de opciones WMS.
  * @property {Boolean} useCapabilities Define si se utilizará el capabilities para generar la capa.
  * @property {Boolean} isBase Define si la capa es base.
+ * @property {String} cql Parámetro de filtrado.
  * @api
  * @extends {IDEE.Layer}
  */
@@ -55,6 +56,8 @@ class WMS extends LayerBase {
    * - tiled: Verdadero si queremos dividir la capa en tiles, falso en caso contrario.
    * - type: Tipo de la capa.
    * - useCapabilities: Define si se utilizará el capabilities para generar la capa.
+   * - mergeLayers: Verdadero si se añaden todas las capas del servicio
+   * en una, falso en caso contrario. Por defecto, verdadero.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a
    * la implementación de la capa.
    * - opacity: Opacidad de capa, por defecto 1.
@@ -82,7 +85,8 @@ class WMS extends LayerBase {
    *  source: new OLSourceTileWMS({
    *    attributions: 'wms',
    *    ...
-   *  })
+   *  }),
+   *  cql: 'id IN (3,5)',
    * }
    * </code></pre>
    * @api
@@ -111,6 +115,7 @@ class WMS extends LayerBase {
       displayInLayerSwitcher: parameters.displayInLayerSwitcher,
       useCapabilities: parameters.useCapabilities,
       isWMSfull: parameters.name === undefined,
+      mergeLayers: parameters.mergeLayers,
     };
 
     const impl = new WMSImpl(optionsVar, vendorOptions);
@@ -139,6 +144,13 @@ class WMS extends LayerBase {
      */
     if (!isNullOrEmpty(vendorOptions.capabilitiesMetadata)) {
       this.capabilitiesMetadata = vendorOptions.capabilitiesMetadata;
+    }
+
+    /**
+     * WMS cql. Parámetro de consulta.
+     */
+    if (!isNullOrEmpty(vendorOptions?.cql)) {
+      this.cql = vendorOptions.cql;
     }
 
     /**
@@ -204,6 +216,30 @@ class WMS extends LayerBase {
   }
 
   /**
+   * Devuelve el valor de la propiedad "cql".
+   *
+   * @function
+   * @getter
+   * @return {IDEE.layer.WMS.impl.cql} Valor de la cql.
+   * @api
+   */
+  get cql() {
+    return this.getImpl().cql;
+  }
+
+  /**
+   * Sobrescribe el valor de la propiedad "cql".
+   *
+   * @function
+   * @setter
+   * @param {IDEE.WMS.cql} newCql Nueva cql.
+   * @api
+   */
+  set cql(newCql) {
+    this.getImpl().cql = newCql;
+  }
+
+  /**
    * Devuelve la versión del servicio, por defecto es 1.3.0.
    *
    * @function
@@ -254,6 +290,18 @@ class WMS extends LayerBase {
    */
   set options(newOptions) {
     this.getImpl().options = newOptions;
+  }
+
+  /**
+   * Establece la función de carga de tiles.
+   *
+   * @function
+   * @public
+   * @param {Function} fn Nueva función de carga de tiles.
+   * @api
+   */
+  setTileLoadFunction(fn) {
+    this.getImpl().setTileLoadFunction(fn);
   }
 
   /**
@@ -457,6 +505,7 @@ class WMS extends LayerBase {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
       equals = equals && (this.version === obj.version);
+      equals = equals && (this.cql === obj.cql);
       equals = equals && (this.idLayer === obj.idLayer);
     }
 

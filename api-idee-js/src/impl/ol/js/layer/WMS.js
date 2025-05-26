@@ -10,6 +10,7 @@ import {
 import FacadeLayerBase from 'IDEE/layer/Layer';
 import * as LayerType from 'IDEE/layer/Type';
 import { get as getRemote } from 'IDEE/util/Remote';
+import FacadeWMS from 'IDEE/layer/WMS';
 import * as EventType from 'IDEE/event/eventtype';
 import OLLayerTile from 'ol/layer/Tile';
 import OLLayerImage from 'ol/layer/Image';
@@ -31,6 +32,9 @@ import ImageWMS from '../source/ImageWMS';
  *
  * @property {Object} options Opciones de la capa WMS.
  * @property {Array<IDEE.layer.WMS>} layers Intancia de WMS con metadatos.
+ * @property {Function} tileLoadFunction Función de carga de tiles.
+ * @property {Boolean} mergeLayers Verdadero si se añaden todas las capas del servicio
+ * en una, falso en caso contrario. Por defecto, verdadero.
  *
  * @api
  * @extends {IDEE.impl.layer.Layer}
@@ -61,6 +65,8 @@ class WMS extends LayerBase {
    * y así sucesivamente. Debe ser 1 o superior. Por defecto es 1.
    * crossOrigin: Atributo crossOrigin para las imágenes cargadas.
    * - isWMSfull: establece si la capa es WMS_FULL.
+   * - mergeLayers: Verdadero si se añaden todas las capas del servicio
+   * en una, falso en caso contrario. Por defecto, verdadero.
    * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
    * <pre><code>
    * import OLSourceTileWMS from 'ol/source/TileWMS';
@@ -70,6 +76,7 @@ class WMS extends LayerBase {
    *    attributions: 'wms',
    *    ...
    *  })
+   *  tileLoadFunction: <funcion>
    * }
    * </code></pre>
    * @api stable
@@ -102,6 +109,13 @@ class WMS extends LayerBase {
      * WMS getCapabilitiesPromise. Metadatos, promesa.
      */
     this.getCapabilitiesPromise = null;
+
+    /**
+     * WMS tileLoadFunction. Función de carga de tiles.
+     * @private
+     * @type {Function}
+     */
+    this.tileLoadFunction = vendorOptions?.tileLoadFunction;
 
     /**
      * WMS extentPromise. Extensión de la capa, promesa.
@@ -205,6 +219,12 @@ class WMS extends LayerBase {
      * isWMSfull. Determina si es WMS_FULL.
      */
     this.isWMSfull = options.isWMSfull;
+
+    /**
+     * mergeLayers. Indica si todas las capas de un servicio se añaden por separado o no.
+     * Por defecto, verdadero.
+     */
+    this.mergeLayers = options.mergeLayers;
   }
 
   /**
@@ -280,7 +300,9 @@ class WMS extends LayerBase {
     if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
     if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
 
-    if (this.useCapabilities || this.isWMSfull) {
+    if (!this.mergeLayers) {
+      this.addAllLayers_();
+    } else if (this.useCapabilities || this.isWMSfull) {
       // just one WMS layer and useCapabilities
       this.getCapabilities().then((capabilities) => {
         this.addSingleLayer_(capabilities);
@@ -300,7 +322,6 @@ class WMS extends LayerBase {
         // EXCEPTIONS: 'image/png',
       });
     }
-    this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
   }
 
   paramsOLLayers() {
@@ -331,6 +352,45 @@ class WMS extends LayerBase {
         this.olLayer.setSource(source);
         this.olLayer.setExtent(extent);
       }
+    });
+  }
+
+  /**
+   * Este método agrega todas las capas por separado definidas en el servidor.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   * @api stable
+   */
+  addAllLayers_() {
+    this.getCapabilities().then((getCapabilities) => {
+      if (this.useCapabilities) {
+        const capabilitiesInfo = this.map.collectionCapabilities.find((cap) => {
+          return cap.url === this.url;
+        }) || { capabilities: false };
+
+        capabilitiesInfo.capabilites = getCapabilities;
+      }
+
+      getCapabilities.getLayers().forEach((layer) => {
+        const wmsLayer = new FacadeWMS({
+          url: this.url,
+          name: layer.name,
+          version: layer.version,
+          tiled: this.tiled,
+          useCapabilities: this.useCapabilities,
+        }, this.vendorOptions_);
+        this.layers.push(wmsLayer);
+      });
+
+      this.map.addWMS(this.layers);
+
+      this.layers.forEach((layer) => {
+        layer.setZIndex(layer.getZIndex() - 1);
+      });
+
+      this.layers = [];
+      this.map.removeLayers(this.facadeLayer_);
     });
   }
 
@@ -388,6 +448,7 @@ class WMS extends LayerBase {
 
     if (this.addLayerToMap_) {
       this.map.getMapImpl().addLayer(this.olLayer);
+      this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
     }
 
     this.setVisible(this.visibility);
@@ -486,6 +547,7 @@ class WMS extends LayerBase {
         TRANSPARENT: !this.isBase,
         FORMAT: this.format,
         STYLES: this.styles,
+        CQL_FILTER: this.cql_,
         TILED: this.tiled,
       };
 
@@ -501,6 +563,7 @@ class WMS extends LayerBase {
 
       const opacity = this.opacity_;
       const zIndex = this.zIndex_;
+      const tileLoadFunction = this.tileLoadFunction;
       if (this.tiled === true) {
         const tileGrid = (this.useCapabilities)
           ? new OLTileGrid({ resolutions, extent, origin: getBottomLeft(extent) })
@@ -515,6 +578,7 @@ class WMS extends LayerBase {
           maxResolution,
           opacity,
           zIndex,
+          tileLoadFunction,
         });
       } else {
         olSource = new ImageWMS({
@@ -636,6 +700,18 @@ class WMS extends LayerBase {
   }
 
   /**
+   * Establece la función de carga de tiles.
+   *
+   * @function
+   * @public
+   * @param {Function} fn Nueva función de carga de tiles.
+   * @api
+   */
+  setTileLoadFunction(fn) {
+    this.getLayer().getSource().setTileLoadFunction(fn);
+  }
+
+  /**
    * Este método obtiene el número de niveles de zoom
    * disponibles para la capa WMS.
    *
@@ -687,15 +763,28 @@ class WMS extends LayerBase {
       const projection = this.map.getProjection();
       this.getCapabilitiesPromise = new Promise((success, fail) => {
         // gest the capabilities URL
-        const wmsGetCapabilitiesUrl = getWMSGetCapabilitiesUrl(layerUrl, layerVersion);
+        const wmsGetCapabilitiesUrl = getWMSGetCapabilitiesUrl(
+          layerUrl,
+          layerVersion,
+          IDEE.config.TICKET,
+        );
         // gets the getCapabilities response
         getRemote(wmsGetCapabilitiesUrl).then((response) => {
-          const getCapabilitiesDocument = response.xml;
-          const getCapabilitiesParser = new FormatWMS();
-          const getCapabilities = getCapabilitiesParser.customRead(getCapabilitiesDocument);
-
-          const getCapabilitiesUtils = new GetCapabilities(getCapabilities, layerUrl, projection);
-          success(getCapabilitiesUtils);
+          if ('xml' in response && !isNullOrEmpty(response.xml)) {
+            const getCapabilitiesDocument = response.xml;
+            const getCapabilitiesParser = new FormatWMS();
+            const getCapabilities = getCapabilitiesParser.customRead(getCapabilitiesDocument);
+            const getCapabilitiesUtils = new GetCapabilities(getCapabilities, layerUrl, projection);
+            success(getCapabilitiesUtils);
+          } else {
+            getRemote(wmsGetCapabilitiesUrl, '', { ticket: false }).then((response2) => {
+              const getCapabilitiesDocument = response2.xml;
+              const getCapabilitiesParser = new FormatWMS();
+              const getCapabilities = getCapabilitiesParser.customRead(getCapabilitiesDocument);
+              const capabilities = new GetCapabilities(getCapabilities, layerUrl, projection);
+              success(capabilities);
+            });
+          }
         });
       });
       capabilitiesInfo.capabilities = this.getCapabilitiesPromise;
@@ -729,6 +818,34 @@ class WMS extends LayerBase {
   }
 
   /**
+   * Devuelve el valor de la propiedad "cql".
+   *
+   * @function
+   * @getter
+   * @return {IDEE.layer.WMS.impl.cql} Valor de la cql.
+   * @api
+   */
+  get cql() {
+    return this.cql_;
+  }
+
+  /**
+   * Sobrescribe el valor de la propiedad "cql".
+   *
+   * @function
+   * @setter
+   * @param {IDEE.WMS.cql} newCql Nueva cql.
+   * @api
+   */
+  set cql(newCql) {
+    this.cql_ = newCql;
+    const olLayer = this.getLayer();
+    if (!isNullOrEmpty(olLayer)) {
+      olLayer.getSource().updateParams({ CQL_FILTER: newCql });
+    }
+  }
+
+  /**
    * Este método actualiza el estado de este
    * capa.
    *
@@ -738,9 +855,9 @@ class WMS extends LayerBase {
    * @export
    */
   refresh() {
-    const ol3Layer = this.getLayer();
-    if (!isNullOrEmpty(ol3Layer)) {
-      ol3Layer.getSource().changed();
+    const olLayer = this.getLayer();
+    if (!isNullOrEmpty(olLayer)) {
+      olLayer.getSource().changed();
     }
   }
 
@@ -802,8 +919,8 @@ class WMS extends LayerBase {
    */
   recreateLayer() {
     const olMap = this.map.getMapImpl();
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      olMap.removeLayer(this.ol3Layer);
+    if (!isNullOrEmpty(this.olLayer)) {
+      olMap.removeLayer(this.olLayer);
       this.layers = [];
       this.getCapabilitiesPromise = null;
     }
@@ -861,6 +978,7 @@ class WMS extends LayerBase {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
       equals = equals && (this.version === obj.version);
+      equals = equals && (this.cql_ === obj.cql_);
     }
 
     return equals;

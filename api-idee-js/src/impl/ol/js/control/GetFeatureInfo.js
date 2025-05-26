@@ -12,7 +12,9 @@ import getfeatureinfoLayers from 'templates/getfeatureinfo_layers';
 import Popup from 'IDEE/Popup';
 import { get as getRemote } from 'IDEE/util/Remote';
 import { compileSync as compileTemplate } from 'IDEE/util/Template';
-import { isNullOrEmpty, beautifyAttribute } from 'IDEE/util/Utils';
+import {
+  isNullOrEmpty, beautifyAttribute, addParameters, isString,
+} from 'IDEE/util/Utils';
 import { getValue } from 'IDEE/i18n/language';
 import Control from './Control';
 
@@ -182,7 +184,10 @@ class GetFeatureInfo extends Control {
           getFeatureInfoParams.BUFFER = this.buffer;
         }
 
-        const url = source.getFeatureInfoUrl(coord, viewResolution, srs, getFeatureInfoParams);
+        let url = source.getFeatureInfoUrl(coord, viewResolution, srs, getFeatureInfoParams);
+        if (isString(IDEE.config.TICKET)) {
+          url = addParameters(url, { ticket: IDEE.config.TICKET });
+        }
         param = { layer: layer.legend || layer.name, url };
       }
       return param;

@@ -197,14 +197,15 @@ export const addParameters = (url, params) => {
   if (isObject(params)) {
     const keys = Object.keys(params);
     keys.forEach((key) => {
-      const value = params[key];
-      requestParams += key;
-      requestParams += '=';
-      requestParams += encodeURIComponent(value);
-      requestParams += '&';
+      if (requestUrl.toLowerCase().indexOf(`$${key.toLowerCase()}=`) === -1) {
+        const value = params[key];
+        requestParams += `${key}=${encodeURIComponent(value)}&`;
+      }
     });
     // removes the last '&'
-    requestParams = requestParams.substring(0, requestParams.length - 1);
+    if (requestParams.charAt(requestUrl.length - 1) === '&') {
+      requestParams = requestParams.substring(0, requestParams.length - 1);
+    }
   } else if (isString(params)) {
     requestParams = params;
   }
@@ -247,16 +248,22 @@ export const generateRandom = (prefix, sufix) => {
  * @function
  * @param {String} serverUrl URL.
  * @param {String} version Versión.
+ * @param {String} ticket Ticket.
  * @returns {String} Devuelve los metadatos.
  * @api
  */
-export const getWMSGetCapabilitiesUrl = (serverUrl, version) => {
+export const getWMSGetCapabilitiesUrl = (serverUrl, version, ticket = false) => {
   let wmsGetCapabilitiesUrl = serverUrl;
 
   // request
   wmsGetCapabilitiesUrl = addParameters(wmsGetCapabilitiesUrl, 'request=GetCapabilities');
   // service
   wmsGetCapabilitiesUrl = addParameters(wmsGetCapabilitiesUrl, 'service=WMS');
+
+  // ticket
+  if (isString(ticket)) {
+    wmsGetCapabilitiesUrl = addParameters(wmsGetCapabilitiesUrl, { ticket });
+  }
 
   // PATCH: En api-idee 3 no se manda luego aquí tampoco. Hay servicios que dan error....
   //       version
