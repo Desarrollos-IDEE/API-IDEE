@@ -59,17 +59,17 @@ El constructor se inicializa con un JSON con los siguientes atributos:
   - 'pinMorado'
 - **isDraggable**: Permite mover el plugin por el mapa. Por defecto: false.
 - **byParcelCadastre**: Indica si el control InfoCatastro se añade al plugin (true/false/Object). Por defecto: true. Para modificar los valores por defecto de este control se seguirá el siguiente formato:
-  - **cadastreWMS**: Url del servicio para la consulta por referencia catastral. Por defecto: 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCoordenadas.asmx/Consulta_RCCOOR'.
-  - **CMC_url**: Url del servicio para la consulta de municipios de una provincia. Por defecto: 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejeroCodigos.asmx/ConsultaMunicipioCodigos'.
-  - **DNPPP_url**: Url del servicio para la consulta de datos no protegidos para un inmueble por su polígono parcela. Por defecto: 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejeroCodigos.asmx/Consulta_DNPPP_Codigos'.
-  - **CPMRC_url**: Url del servicio para consulta de coordenadas por Provincia, Municipio y Referencia Catastral. Por defecto: 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCoordenadas.asmx/Consulta_CPMRC'.
+  - **cadastreWMS**: Url del servicio para la consulta por referencia catastral. Por defecto: 'https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCoordenadas.asmx/Consulta_RCCOOR'.
+  - **CMC_url**: Url del servicio para la consulta de municipios de una provincia. Por defecto: 'https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejeroCodigos.asmx/ConsultaMunicipioCodigos'.
+  - **DNPPP_url**: Url del servicio para la consulta de datos no protegidos para un inmueble por su polígono parcela. Por defecto: 'https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejeroCodigos.asmx/Consulta_DNPPP_Codigos'.
+  - **CPMRC_url**: Url del servicio para consulta de coordenadas por Provincia, Municipio y Referencia Catastral. Por defecto: 'https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCoordenadas.asmx/Consulta_CPMRC'.
 
   ```javascript
   byParcelCadastre: {
-    cadastreWMS: 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCoordenadas.asmx/Consulta_RCCOOR',
-    CMC_url: 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejeroCodigos.asmx/ConsultaMunicipioCodigos',
-    DNPPP_url: 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejeroCodigos.asmx/Consulta_DNPPP_Codigos',
-    CPMRC_url: 'http://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCoordenadas.asmx/Consulta_CPMRC'
+    cadastreWMS: 'https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCoordenadas.asmx/Consulta_RCCOOR',
+    CMC_url: 'https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejeroCodigos.asmx/ConsultaMunicipioCodigos',
+    DNPPP_url: 'https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejeroCodigos.asmx/Consulta_DNPPP_Codigos',
+    CPMRC_url: 'https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCoordenadas.asmx/Consulta_CPMRC'
   }
   ```
   (Válido sólo para la creación del plugin por JS y API-REST en base64).
