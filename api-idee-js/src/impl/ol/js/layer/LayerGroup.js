@@ -329,9 +329,7 @@ class LayerGroup extends Layer {
    */
   setRootGroup_(layer, rootGroup) {
     const facadeLayer = layer;
-    if (facadeLayer.getImpl() instanceof LayerGroup) {
-      facadeLayer.getImpl().rootGroup = rootGroup;
-    }
+    facadeLayer.getImpl().rootGroup = rootGroup;
   }
 
   /**
