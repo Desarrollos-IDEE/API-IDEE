@@ -164,7 +164,11 @@ const ajax = (urlVar, dataVar, methodType, useProxy) => {
 
   // parses parameters to string
   if (isObject(data)) {
-    data = JSON.stringify(data);
+    if (methodType === method.GET) {
+      url = addParameters(url, data);
+    } else {
+      data = JSON.stringify(data);
+    }
   }
 
   return new Promise((success, fail) => {
@@ -192,7 +196,7 @@ const ajax = (urlVar, dataVar, methodType, useProxy) => {
  * está basado en AJAX o JSONP.
  *
  * @function
- * @param {string} url URL.
+ * @param {string} newUrl URL.
  * @param {string} data Parámetros.
  * @param {Object} options Opciones.
  * @returns {Promise}
@@ -200,14 +204,21 @@ const ajax = (urlVar, dataVar, methodType, useProxy) => {
  */
 export const get = (url, data, options) => {
   let req;
+  let newUrl = url;
+
+  if (!isNullOrEmpty(options) && 'ticket' in options && (options.ticket === false)) {
+    const indexTicket = newUrl.indexOf('ticket=');
+    const endTicket = newUrl.indexOf('&', indexTicket);
+    newUrl = newUrl.substring(newUrl, indexTicket) + newUrl.substring(endTicket, newUrl.length);
+  }
 
   const useProxy = ((isNullOrEmpty(options) || (options.jsonp !== false))
     && useproxy !== false);
 
   if (useProxy === true) {
-    req = jsonp(url, data, options);
+    req = jsonp(newUrl, data, options);
   } else {
-    req = ajax(url, data, method.GET, false);
+    req = ajax(newUrl, data, method.GET, false);
   }
 
   return req;

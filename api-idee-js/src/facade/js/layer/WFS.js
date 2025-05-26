@@ -326,7 +326,7 @@ class WFS extends Vector {
     if (!isNullOrEmpty(newVersion)) {
       this.getImpl().version = newVersion;
     } else {
-      this.getImpl().version = '1.0.0'; // default value
+      this.getImpl().version = '2.0.0'; // default value
     }
   }
 

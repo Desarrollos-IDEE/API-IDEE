@@ -73,7 +73,7 @@ const PRECHARGED = {
     name: 'Información geográfica de referencia y temática',
     services: [{
       type: 'WMS', name: 'Catastro ',
-      url: 'http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?',
+      url: 'https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?',
     }, {
       type: 'WMS', name: 'Unidades administrativas',
       url: ' https://www.ign.es/wms-inspire/unidades-administrativas?',

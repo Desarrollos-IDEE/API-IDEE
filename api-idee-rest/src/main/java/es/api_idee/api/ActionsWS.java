@@ -65,6 +65,7 @@ public class ActionsWS {
 		actions.put("/resourcesPlugins");
 		actions.put("/versions");
 
+		actions.put("/../../doc");
 		actions.put("/../../doc/ol");
 		actions.put("/../../doc/cesium");
 

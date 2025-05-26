@@ -88,7 +88,7 @@ const PRECHARGED = {
     services: [{
       name: 'Catastro ',
       type: 'WMS',
-      url: 'http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?',
+      url: 'https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?',
     },
     {
       name: 'Unidades administrativas',
@@ -242,7 +242,7 @@ export default class Layerswitcher extends IDEE.Plugin {
     this.showCatalog = options.showCatalog || false;
 
     // use proxy
-    this.useProxy = IDEE.utils.isUndefined(options.useProxy) ? true : options.useProxy;
+    this.useProxy = IDEE.utils.isUndefined(options.useProxy) ? false : options.useProxy;
 
     // Estado inicial del proxy
     this.statusProxy = IDEE.useproxy;

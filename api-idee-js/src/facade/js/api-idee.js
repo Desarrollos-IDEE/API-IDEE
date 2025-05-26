@@ -59,7 +59,7 @@ export const map = (parameters, options, viewOptions) => {
  * @public
  * @api
  */
-export let useproxy = true;
+export let useproxy = false;
 
 /**
  * Esta función habilita/deshabilita el proxy
