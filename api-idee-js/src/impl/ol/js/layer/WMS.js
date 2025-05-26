@@ -383,14 +383,23 @@ class WMS extends LayerBase {
         this.layers.push(wmsLayer);
       });
 
+      this.layers.forEach((layer, i) => {
+        const layers = this.layers;
+        layer.on(EventType.ADDED_TO_MAP, () => {
+          if (i === this.layers.length - 1) {
+            this.layers = [];
+            this.map.removeLayers(this.facadeLayer_);
+            this.facadeLayer_.getImpl().layers = layers;
+            this.facadeLayer_?.fire(EventType.ADDED_TO_MAP, [this.facadeLayer_, layers]);
+          }
+        });
+      });
+
       this.map.addWMS(this.layers);
 
       this.layers.forEach((layer) => {
         layer.setZIndex(layer.getZIndex() - 1);
       });
-
-      this.layers = [];
-      this.map.removeLayers(this.facadeLayer_);
     });
   }
 
