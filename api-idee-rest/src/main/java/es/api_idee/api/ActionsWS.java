@@ -64,6 +64,7 @@ public class ActionsWS {
 		actions.put("/plugins");
 		actions.put("/resourcesPlugins");
 		actions.put("/versions");
+		actions.put("/resources/geodata");
 
 		actions.put("/../../doc");
 		actions.put("/../../doc/ol");
@@ -177,6 +178,55 @@ public class ActionsWS {
 		version.put("date", versionProperties.getString("date"));
 
 		return JSBuilder.wrapCallback(version, callbackFn);
+	}
+
+	/**
+	 * Provides GeoData collections
+	 * 
+	 * @param callbackFn the name of the javascript function to execute as callback
+	 * @param name name of the collection
+	 * 
+	 * @return the javascript code
+	 */
+	@GET
+	@Path("/resources/geodata")
+	public String resourceGeoData(@QueryParam("callback") String callbackFn, @QueryParam("name") String name) {
+		JSONObject result = new JSONObject();
+		try {
+			String file = new String(Files.readAllBytes(Paths.get(context.getRealPath("/WEB-INF/classes/resources_geodata.json"))));
+
+			JSONArray allCollectionsGeoData = (JSONArray) new JSONObject(file).get("collections");
+			JSONObject collectionGeoData = null;
+
+			Boolean showAllCollections = false;
+			if (name == null) {
+				showAllCollections = true;
+			}
+			JSONArray arrayCollections = new JSONArray();
+			for (int i = 0; i < allCollectionsGeoData.length(); i++) {
+				collectionGeoData = (JSONObject) allCollectionsGeoData.get(i);
+				String nameCollection = (String) collectionGeoData.get("name");
+				boolean findCollection = !showAllCollections && name.equals(nameCollection);
+				if (showAllCollections || findCollection) {
+					JSONObject aux = new JSONObject();
+					aux.put("name", nameCollection);
+					JSONArray data = new JSONArray();
+					JSONArray resources = (JSONArray) collectionGeoData.get("resources");
+					data.put(resources);
+					aux.put("resources", data);
+					arrayCollections.put(aux);
+					if (findCollection) {
+						break;
+					}
+				}
+			}
+			result.put("collections", arrayCollections);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return JSBuilder.wrapCallback(result, callbackFn);
+
 	}
 
 	/**
