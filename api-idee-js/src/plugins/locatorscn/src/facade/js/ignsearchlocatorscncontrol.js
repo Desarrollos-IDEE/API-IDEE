@@ -184,13 +184,13 @@ export default class IGNSearchLocatorscnControl extends IDEE.Control {
       this.drawNomenclatorResult(this.locationID, false);
     }
     if (this.requestStreet && this.requestStreet.length > 0) {
-      IDEE.proxy(this.useProxy);
+      // IDEE.proxy(this.useProxy);
       IDEE.remote.get(this.requestStreet).then((res) => {
         const geoJsonData = res.text.substring(9, res.text.length - 1);
         this.createGeometryStyles();
         this.drawGeocoderResult(geoJsonData);
       }).catch();
-      IDEE.proxy(this.statusProxy);
+      // IDEE.proxy(this.statusProxy);
     }
     if (this.geocoderCoords && this.geocoderCoords.length === 2) {
       const reprojCoords = this.getImpl().reproject('EPSG:4326', this.geocoderCoords);
@@ -357,7 +357,7 @@ export default class IGNSearchLocatorscnControl extends IDEE.Control {
       const dataCoordinates = [etrs89pointCoordinates[1], etrs89pointCoordinates[0]];
       // let fullAddress = '';
       let addressData = {};
-      IDEE.proxy(this.useProxy);
+      // IDEE.proxy(this.useProxy);
       IDEE.remote.get(urlToGet).then((res) => {
         if (res.text) {
           const returnData = JSON.parse(res.text);
@@ -370,7 +370,7 @@ export default class IGNSearchLocatorscnControl extends IDEE.Control {
         }
         this.showPopUp(addressData, mapCoordinates, dataCoordinates, null, e, false);
       });
-      IDEE.proxy(this.statusProxy);
+      // IDEE.proxy(this.statusProxy);
     }
   }
 
@@ -511,7 +511,7 @@ export default class IGNSearchLocatorscnControl extends IDEE.Control {
       const boundaryParams = this.generateBoundaryParams();
       const params = `text=${newInputVal}&size=${this.autocompleteSize}&layers=${this.autocompleteLayers.replace(',', '%2C')}&${boundaryParams}`;
       const urlToGet = `${this.urlAutocomplete}?${params}`;
-      IDEE.proxy(this.useProxy);
+      // IDEE.proxy(this.useProxy);
 
       IDEE.remote.get(urlToGet).then((res) => {
         if (res.code === 404 || res.code === 500) {
@@ -526,7 +526,7 @@ export default class IGNSearchLocatorscnControl extends IDEE.Control {
         }
         resolve();
       });
-      IDEE.proxy(this.statusProxy);
+      // IDEE.proxy(this.statusProxy);
     });
   }
 

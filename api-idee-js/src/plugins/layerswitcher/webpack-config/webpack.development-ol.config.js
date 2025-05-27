@@ -71,7 +71,7 @@ module.exports = {
     // https: true,
     hot: true,
     // open: true,
-    port: 6123,
+    port: 3000,
     open: 'test/dev.html',
     static: {
       directory: path.join(__dirname, '/../'),
