@@ -2908,7 +2908,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     }).catch((err) => {
       IDEE.dialog.error(getValue('exception.codsi'), undefined, this.order);
     });
-    //  IDEE.proxy(this.statusProxy);
+    // IDEE.proxy(this.statusProxy);
   }
 
   getResultCODSI(data) {
