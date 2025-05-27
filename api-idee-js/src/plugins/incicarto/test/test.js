@@ -129,7 +129,7 @@ const mpBIL = new IDEE.plugin.BackImgLayer({
 map.addPlugin(mpBIL); // */
 
 // addWMSLayer('AU.AdministrativeUnit', 'Líneas límite', 'https://www.ign.es/wms-inspire/unidades-administrativas?', '1.3.0', true, { visibility: false, displayInLayerSwitcher: true, queryable: false, zIndex: 501 });
-// addWMSLayer('Catastro', 'Catastro', 'http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?', '1.1.1', false, { visibility: false, displayInLayerSwitcher: true, queryable: false, zIndex: 502 });
+// addWMSLayer('Catastro', 'Catastro', 'https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?', '1.1.1', false, { visibility: false, displayInLayerSwitcher: true, queryable: false, zIndex: 502 });
 // addWMSLayer('Grid-ETRS89-lonlat-50k', 'Distribuidor MTN50', 'https://www.ign.es/wms-inspire/cuadriculas?', '1.3.0', false, { visibility: false, displayInLayerSwitcher: true, queryable: false, zIndex: 503 });
 // addWMSLayer('Grid-ETRS89-lonlat-25k', 'Distribuidor MTN25', 'https://www.ign.es/wms-inspire/cuadriculas?', '1.3.0', false, { visibility: false, displayInLayerSwitcher: true, queryable: false, zIndex: 504 });
 // addWMSLayer('GN.GeographicalNames', 'Topónimos', 'https://www.ign.es/wms-inspire/ign-base?', '1.3.0', true, { visibility: false, displayInLayerSwitcher: true, queryable: false, zIndex: 505 });

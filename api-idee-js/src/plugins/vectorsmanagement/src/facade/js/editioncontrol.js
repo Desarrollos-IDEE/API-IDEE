@@ -146,6 +146,7 @@ export default class EditionControl extends IDEE.Control {
     const layers = this.map_.getLayers().filter((l) => l.name === 'selectLayer');
     if (layers.length > 0) {
       this.selectionLayer = layers[0];
+      this.layer_.getImpl().extract = false;
     } else {
       this.selectionLayer = new IDEE.layer.Vector({
         extract: false,
@@ -480,6 +481,17 @@ export default class EditionControl extends IDEE.Control {
       : { snapToPointer: true, pixelTolerance: 30 };
 
     this.getImpl().activateSelection(snap);
+  }
+
+  /**
+   * Indicates whether the control is activated.
+   * @public
+   * @function
+   * @return {Boolean} True if the control is activated, false otherwise.
+   * @api
+   */
+  isActivated() {
+    return document.querySelector('#m-vectorsmanagement-edition').classList.contains('activated');
   }
 
   /**
