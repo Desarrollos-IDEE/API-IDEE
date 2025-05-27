@@ -401,7 +401,7 @@ export default class LayerswitcherControl extends IDEE.Control {
               return this.parseLayerForTemplate_(sublayer).then((varsSubLayer) => {
                 const li = IDEE.template.compileSync(layerGroupChildTemplate, {
                   vars: {
-                    nameRadio: layer.name,
+                    nameRadio: layer.idLayer,
                     ...varsSubLayer,
                     ...this.getTemplateVariablesValues(),
                   },

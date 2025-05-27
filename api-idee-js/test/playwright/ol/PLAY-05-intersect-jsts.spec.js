@@ -13,22 +13,22 @@ test('Comprobamos intersect geometría con WFS', async ({ page }) => {
     });
   });
   await page.waitForFunction(() => mapjs.isFinished());
-  let lyProvincias;
+  let lyMunicipios;
   await page.evaluate(() => {
-    lyProvincias = new IDEE.layer.WFS({
-      url: 'https://hcsigc.juntadeandalucia.es/geoserver/wfs?',
-      namespace: 'IECA',
-      name: 'sigc_provincias_pob_centroides_1724756847583',
-      legend: 'Provincias',
-      geometry: 'POINT',
+    lyMunicipios = new IDEE.layer.OGCAPIFeatures({
+      url: 'https://api-features.ign.es/collections/',
+      name: 'administrativeunit',
+      legend: 'AU Unidades administrativas',
       extract: true,
+      conditional: { nameunit: 'Lepe' },
+      limit: 30,
     });
-    mapjs.addLayers(lyProvincias);
+    mapjs.addLayers(lyMunicipios);
   });
 
   const featuresCount = await page.evaluate(() => {
     return new Promise((resolve) => {
-      lyProvincias.on(IDEE.evt.LOAD, () => {
+      lyMunicipios.on(IDEE.evt.LOAD, () => {
         const miGeometria = {
           'type': 'Polygon',
           'coordinates': [
@@ -42,10 +42,10 @@ test('Comprobamos intersect geometría con WFS', async ({ page }) => {
           ],
         };
         const filter = IDEE.filter.spatial.INTERSECT(miGeometria);
-        lyProvincias.setFilter(filter);
-        resolve(lyProvincias.getFeatures().length);
+        lyMunicipios.setFilter(filter);
+        resolve(lyMunicipios.getFeatures().length);
       });
     });
   });
-  expect(featuresCount).toEqual(3);
+  expect(featuresCount).toEqual(1);
 });
