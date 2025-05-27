@@ -230,7 +230,7 @@ export default class PrinterMapControl extends IDEE.Control {
     * @param {Function} callback - function that removes loading icon class.
     */
   getStatus(url, callback, queueEl) {
-    IDEE.proxy(this.useProxy);
+    // IDEE.proxy(this.useProxy);
     const param = new Date().getTime();
     IDEE.remote.get(`${url}?timestamp=${param}`).then((response) => {
       if (response.code === 404) {
@@ -240,10 +240,10 @@ export default class PrinterMapControl extends IDEE.Control {
       const statusJson = JSON.parse(response.text);
       const { status } = statusJson;
       if (status === 'finished') {
-        IDEE.proxy(this.statusProxy);
+        // IDEE.proxy(this.statusProxy);
         callback();
       } else if (status === 'error' || status === 'cancelled') {
-        IDEE.proxy(this.statusProxy);
+        // IDEE.proxy(this.statusProxy);
         callback();
         if (statusJson.error.toLowerCase().indexOf('network is unreachable') > -1 || statusJson.error.toLowerCase().indexOf('illegalargument') > -1) {
           IDEE.dialog.error(getValue('exception.tile'));
@@ -253,7 +253,7 @@ export default class PrinterMapControl extends IDEE.Control {
 
         // this.queueContainer_.lastChild.remove();
       } else {
-        IDEE.proxy(this.statusProxy);
+        // IDEE.proxy(this.statusProxy);
         setTimeout(() => this.getStatus(url, callback), 1000);
       }
     }).catch((err) => {
@@ -476,7 +476,7 @@ export default class PrinterMapControl extends IDEE.Control {
       }
 
       // FIXME: delete proxy deactivation and uncomment if/else when proxy is fixed on api-idee
-      IDEE.proxy(this.useProxy);
+      // IDEE.proxy(this.useProxy);
       IDEE.remote.post(url, printData).then((responseParam) => {
         let response = responseParam;
         if (/* response.error !== true && */response.text.indexOf('</error>') === -1) { // withoud proxy, response.error === true
@@ -515,7 +515,7 @@ export default class PrinterMapControl extends IDEE.Control {
           IDEE.dialog.error(getValue('exception').printError);
         }
       });
-      IDEE.proxy(this.statusProxy);
+      // IDEE.proxy(this.statusProxy);
     });
     if (!IDEE.utils.isNullOrEmpty(this.getImpl().errors)) {
       IDEE.toast.warning(getValue('exception.error_layers') + this.getImpl().errors.join(', '), null, 6000);
@@ -535,7 +535,7 @@ export default class PrinterMapControl extends IDEE.Control {
     if (IDEE.utils.isNullOrEmpty(this.capabilitiesPromise_)) {
       this.capabilitiesPromise_ = new Promise((success, fail) => {
         const capabilitiesUrl = IDEE.utils.concatUrlPaths([this.printTemplateUrl_, 'capabilities.json']);
-        IDEE.proxy(this.useProxy);
+        // IDEE.proxy(this.useProxy);
         IDEE.remote.get(capabilitiesUrl).then((response) => {
           let capabilities = {};
           try {
@@ -546,7 +546,7 @@ export default class PrinterMapControl extends IDEE.Control {
           success(capabilities);
         });
 
-        IDEE.proxy(this.statusProxy);
+        // IDEE.proxy(this.statusProxy);
       });
     }
     return this.capabilitiesPromise_;

@@ -138,14 +138,14 @@ const errorLegendLayer = (layer, useProxy, statusProxy) => {
       legend = url.replace('{z}/{x}/{y}', '0/0/0');
     }
     if (legend !== '') {
-      IDEE.proxy(useProxy);
+      // IDEE.proxy(useProxy);
       IDEE.remote.get(legend).then((response) => {
         if (response.code !== 200) {
           legend = '';
         }
         success(legend);
       });
-      IDEE.proxy(statusProxy);
+      // IDEE.proxy(statusProxy);
     } else {
       success('error legend');
     }
