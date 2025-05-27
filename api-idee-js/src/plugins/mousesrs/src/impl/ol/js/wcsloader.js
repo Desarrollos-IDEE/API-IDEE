@@ -24,9 +24,9 @@ export default class WCSLoader {
     };
 
     const url = this.addParameters(this.url, params);
-    IDEE.proxy(false);
+    // IDEE.proxy(false);
     IDEE.remote.get(url).then((response) => {
-      IDEE.proxy(true);
+      // IDEE.proxy(true);
       const text = response.text;
       const dp = new DOMParser();
       const data = dp.parseFromString(text, 'text/xml');
@@ -50,7 +50,7 @@ export default class WCSLoader {
         innerThis.cellsizeY = Math.abs(parseFloat(offsetVector[1].childNodes[0].nodeValue.split(' ')[1]));
       }
     }).catch((error) => {
-      IDEE.proxy(true);
+      // IDEE.proxy(true);
       // eslint-disable-next-line no-console
       console.error(`Error received in request: ${error.message}`);
     });
@@ -103,9 +103,9 @@ export default class WCSLoader {
     params.height = nRows;
     const url = this.addParameters(this.url, params);
     this.fetchIndex += 1;
-    IDEE.proxy(false);
+    // IDEE.proxy(false);
     IDEE.remote.get(url).then((response) => {
-      IDEE.proxy(true);
+      // IDEE.proxy(true);
       const text = response.text.split(NO_DATA_VALUE).join('');
       const parser = new ArcGridParser();
       mdtData = parser.parseData(text);
@@ -114,7 +114,7 @@ export default class WCSLoader {
       innerThis.noDataValue = parser.getNoDataValue();
       innerThis.mdtData = mdtData;
     }).catch((error) => {
-      IDEE.proxy(true);
+      // IDEE.proxy(true);
       // eslint-disable-next-line no-console
       console.error(`Error received in request: ${error.message}`);
     });

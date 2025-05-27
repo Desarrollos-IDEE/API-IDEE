@@ -184,7 +184,7 @@ export default class GeorefimageControl extends IDEE.Control {
    * @param {Function} callback - function that removes loading icon class.
    */
   getStatus(url, callback, queueEl) {
-    IDEE.proxy(this.useProxy);
+    // IDEE.proxy(this.useProxy);
     const newUrl = `${url}?timestamp=${new Date().getTime()}`;
     IDEE.remote.get(newUrl).then((response) => {
       if (response.code === 404) {
@@ -210,7 +210,7 @@ export default class GeorefimageControl extends IDEE.Control {
       queueEl.remove();
       IDEE.dialog.error(getValue('exception.error_download_image'));
     });
-    IDEE.proxy(this.statusProxy);
+    // IDEE.proxy(this.statusProxy);
   }
 
   active(html) {
@@ -435,7 +435,7 @@ export default class GeorefimageControl extends IDEE.Control {
 
       printUrl = IDEE.utils.addParameters(printUrl, 'apiIdeeop=geoprint');
       // FIXME: delete proxy deactivation and uncomment if/else when proxy is fixed on api-idee
-      IDEE.proxy(this.useProxy);
+      // IDEE.proxy(this.useProxy);
       IDEE.remote.post(printUrl, printData).then((responseParam) => {
         let response = responseParam;
         if (/* response.error !== true && */ response.text.indexOf('</error>') === -1) { // withoud proxy, response.error === true
@@ -471,7 +471,7 @@ export default class GeorefimageControl extends IDEE.Control {
         }
       });
 
-      IDEE.proxy(this.statusProxy);
+      // IDEE.proxy(this.statusProxy);
     });
   }
 
@@ -517,7 +517,7 @@ export default class GeorefimageControl extends IDEE.Control {
     if (IDEE.utils.isNullOrEmpty(this.capabilitiesPromise_)) {
       this.capabilitiesPromise_ = new Promise((success, fail) => {
         const capabilitiesUrl = IDEE.utils.concatUrlPaths([this.printTemplateUrl_, 'capabilities.json']);
-        IDEE.proxy(this.useProxy);
+        // IDEE.proxy(this.useProxy);
         IDEE.remote.get(capabilitiesUrl).then((response) => {
           let capabilities = {};
           try {
@@ -528,7 +528,7 @@ export default class GeorefimageControl extends IDEE.Control {
           success(capabilities);
         });
 
-        IDEE.proxy(this.statusProxy);
+        // IDEE.proxy(this.statusProxy);
       });
     }
 

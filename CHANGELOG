@@ -39,5 +39,6 @@
 - Se añade /doc a api/actions.
 - Se permite añadir al mapa el mismo servicio con igual nombre más de una vez (idLayer).
 - Se añaden métodos getId y setId para sobreescribir el identificador de la capa.
+- Reincorpora /resources/svg en /api/actions
 - Se incorpora /resources/geodata a /api/actions
 - Se añade evento ADDED_TO_MAP para capas WMS_FULL.
