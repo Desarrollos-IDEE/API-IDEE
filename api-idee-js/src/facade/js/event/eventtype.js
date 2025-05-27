@@ -281,6 +281,14 @@ export const COMPLETED = 'completed';
 export const CHANGE = 'change';
 
 /**
+ * Evento que se produce cuando ha cambiado una capa WMC.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const CHANGE_WMC = 'change:wmc';
+
+/**
  * Evento que se produce cuando se ha cambiado una proyección.
  * @public
  * @type {string}
