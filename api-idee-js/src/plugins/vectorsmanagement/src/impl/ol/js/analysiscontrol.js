@@ -146,10 +146,10 @@ export default class Analysiscontrol extends IDEE.impl.Control {
         this.arrayXYZ = altitudes;
         this.calculate3DLength(id);
       }
-    }).catch(() => 
-      console.warning('Error reading elevation profile') // eslint-disable-line no-console
+    }).catch(() => {
+      console.warning('Error reading elevation profile'); // eslint-disable-line no-console
       // IDEE.proxy(true)
-    );
+    });
   }
 
   /**
@@ -196,7 +196,7 @@ export default class Analysiscontrol extends IDEE.impl.Control {
         this.facadeControl.showPointProfile(pointXYZ);
       }
     }).catch(() => {
-      console.warning('Error reading elevation profile') // eslint-disable-line no-console
+      console.warning('Error reading elevation profile'); // eslint-disable-line no-console
       // IDEE.proxy(true)
     });
   }
