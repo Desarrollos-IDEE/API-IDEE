@@ -297,22 +297,18 @@ class MVT extends Vector {
     let features = [];
     if (this.olLayer) {
       const olSource = this.olLayer.getSource();
-      const tileCache = olSource.tileCache;
-      if (tileCache.getCount() === 0) {
+      const tileCache = Object.values(olSource.sourceTiles_);
+      if (tileCache.length === 0) {
         return features;
       }
-      const z = Number(tileCache.peekFirstKey().split('/')[0]);
+      const z = Number(tileCache[0].getTileCoord()[0]);
       tileCache.forEach((tile) => {
         if (tile.tileCoord[0] !== z || tile.getState() !== TileState.LOADED) {
           return;
         }
-        const sourceTiles = tile.getSourceTiles();
-        for (let i = 0, ii = sourceTiles.length; i < ii; i += 1) {
-          const sourceTile = sourceTiles[i];
-          const olFeatures = sourceTile.getFeatures();
-          if (olFeatures) {
-            features = features.concat(olFeatures);
-          }
+        const olFeatures = tile.getFeatures();
+        if (olFeatures) {
+          features = features.concat(olFeatures);
         }
       });
     }
