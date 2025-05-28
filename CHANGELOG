@@ -42,3 +42,6 @@
 - Reincorpora /resources/svg en /api/actions
 - Se incorpora /resources/geodata a /api/actions
 - Se añade evento ADDED_TO_MAP para capas WMS_FULL.
+- Se mueve el parámetro styles de WMS al primer objeto.
+- Se implementa el parámetro styles de WMS en API REST.
+- Se implementa el parámetro sldVersion en WMS tanto por constructor como por API REST.
