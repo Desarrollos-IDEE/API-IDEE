@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /**
  * @module IDEE/impl/layer/MBTilesVector
  */
@@ -535,7 +536,7 @@ class MBTilesVector extends Vector {
       }
       const z = Number(tileCache[0].getTileCoord()[0]);
       tileCache.forEach((tile) => {
-        if (tile.tileCoord[0] !== z || tile.getState() !== TileState.LOADED) {
+        if (tile.tileCoord[0] !== z || tile.getState() !== 2) {
           return;
         }
         const olFeatures = tile.getFeatures();
