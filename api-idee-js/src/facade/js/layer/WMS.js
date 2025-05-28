@@ -4,7 +4,7 @@
  */
 import WMSImpl from 'impl/layer/WMS';
 import {
-  isUndefined, isNullOrEmpty, isFunction, isString, normalize, sameUrl, isObject,
+  isUndefined, isNullOrEmpty, isArray, isFunction, isString, normalize, sameUrl, isObject,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import LayerBase from './Layer';
@@ -116,6 +116,8 @@ class WMS extends LayerBase {
       useCapabilities: parameters.useCapabilities,
       isWMSfull: parameters.name === undefined,
       mergeLayers: parameters.mergeLayers,
+      styles: parameters.styles,
+      sldVersion: parameters.sldVersion ? parameters.sldVersion : '1.1.0',
     };
 
     const impl = new WMSImpl(optionsVar, vendorOptions);
@@ -305,6 +307,54 @@ class WMS extends LayerBase {
   }
 
   /**
+   * Devuelve el estilo de la capa.
+   *
+   * @public
+   * @function
+   * @returns {string | Array} Estilo de la capa.
+   * @api stable
+   */
+  getStyles() {
+    return this.getImpl().getStyles();
+  }
+
+  /**
+   * Esta función aplica estilos a la capa
+   *
+   * @public
+   * @function
+   * @param { string | Array } newStyles Nuevo estilo a aplicar.
+   * @api stable
+   */
+  setStyles(newStyles) {
+    this.getImpl().setStyles(newStyles);
+  }
+
+  /**
+   * Devuelve la versión del SLD.
+   *
+   * @public
+   * @function
+   * @returns {string | Array} Versión del SLD.
+   * @api stable
+   */
+  getSldVersion() {
+    return this.getImpl().getSldVersion();
+  }
+
+  /**
+   * Esta función aplica la versión del SLD a la capa
+   *
+   * @public
+   * @function
+   * @param { string | Array } newSldVersion Nueva versión del SLD a aplicar.
+   * @api stable
+   */
+  setSldVersion(newSldVersion) {
+    this.getImpl().setSldVersion(newSldVersion);
+  }
+
+  /**
    * Este método calcula la extensión máxima de esta capa.
    *
    * @function
@@ -485,7 +535,14 @@ class WMS extends LayerBase {
    * @api
    */
   setName(newName) {
-    this.name = !isNullOrEmpty(newName) ? newName : undefined;
+    if (isArray(newName)) {
+      this.name = newName.join(',');
+    } else if (newName) {
+      this.name = newName;
+    } else {
+      this.name = undefined;
+    }
+
     const isWMSfull = isNullOrEmpty(newName);
     this.getImpl().setName(this.name, isWMSfull);
   }
