@@ -149,7 +149,6 @@ class KML extends Vector {
    */
   addTo(map, addLayer = true) {
     this.map = map;
-    this.fire(EventType.ADDED_TO_MAP);
     map.on(EventType.CHANGE_PROJ, this.setProjection_.bind(this), this);
     this.formater_ = new FormatKML({
       label: this.label_,
@@ -178,6 +177,7 @@ class KML extends Vector {
 
     if (addLayer) {
       olMap.addLayer(this.olLayer);
+      this.facadeVector_?.fire(EventType.ADDED_TO_MAP);
     }
   }
 
