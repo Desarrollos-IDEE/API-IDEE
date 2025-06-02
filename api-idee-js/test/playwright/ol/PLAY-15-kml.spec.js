@@ -17,9 +17,9 @@ test.describe('IDEE.layer.KML', () => {
     test('Change URL', async ({ page }) => {
       await page.evaluate(() => {
         const kml_001 = new IDEE.layer.KML({
-          url: 'https://componentes.idee.es/estaticos/Datos/KML/arbda_sing_se.kml',
-          name: 'arbda_sing_se',
-          legend: 'arbda_sing Sevilla',
+          url: 'https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml',
+          name: 'Delegaciones-IGN',
+          legend: 'Delegaciones IGN',
         });
         window.kml_001 = kml_001;
         window.map.addLayers(kml_001);
