@@ -45,6 +45,7 @@
 - Se mueve el parámetro styles de WMS al primer objeto.
 - Se implementa el parámetro styles de WMS en API REST.
 - Se implementa el parámetro sldVersion en WMS tanto por constructor como por API REST.
+- Se añaden métodos setURL y setName para capas WMTS.
 - Se implementa métodos setURL y recreateLayer en capas KML.
 - Eliminado el metodo getMaxExtent de la implementación de Layer.
 - Se modifica el evento ADDED_TO_MAP de las capas KML.

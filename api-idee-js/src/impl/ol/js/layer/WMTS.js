@@ -456,6 +456,63 @@ class WMTS extends LayerBase {
   }
 
   /**
+   * Este método elimina y crea la capa de Openlayers.
+   *
+   * @function
+   * @public
+   * @api
+   */
+  recreateLayer() {
+    const olMap = this.map.getMapImpl();
+    if (!isNullOrEmpty(this.olLayer)) {
+      olMap.removeLayer(this.olLayer);
+      this.capabilitiesOptionsPromise = null;
+      this.getCapabilitiesPromise_ = null;
+    }
+
+    if (this.useCapabilities) {
+      this.capabilitiesOptionsPromise = this.getCapabilitiesOptions_();
+
+      this.capabilitiesOptionsPromise
+        .then((capabilities) => {
+          this.getWGS84BoundingBoxCapabilities_(capabilities);
+          // filter current layer capabilities
+          const capabilitiesOptions = this.getFilterCapabilities_(capabilities);
+          // adds layer from capabilities
+          this.addLayer_(capabilitiesOptions);
+        });
+    } else {
+      this.addLayerNotCapabilities_();
+    }
+  }
+
+  /**
+   * Sobreescribe la URL de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newURL Nueva URL de la capa.
+   * @api
+   */
+  setURL(newURL) {
+    this.url = newURL;
+    this.recreateLayer();
+  }
+
+  /**
+   * Sobreescribe el nombre de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newName Nuevo nombre de la capa.
+   * @api
+   */
+  setName(newName) {
+    this.name = newName;
+    this.recreateLayer();
+  }
+
+  /**
    * Este método devuelve los metadatos
    * de un servicio WMTS.
    *
