@@ -120,7 +120,6 @@ class WMTS extends LayerBase {
   addTo(map, addLayer = true) {
     this.addLayerToMap_ = addLayer;
     this.map = map;
-    this.fire(EventType.ADDED_TO_MAP);
 
     if (!isNullOrEmpty(this.vendorOptions_.source)) {
       this.name = this.vendorOptions_.source.getLayer();
@@ -289,6 +288,7 @@ class WMTS extends LayerBase {
 
       if (this.addLayerToMap_) {
         this.map.getMapImpl().addLayer(this.olLayer);
+        this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
       }
 
       this.olLayer.setMaxZoom(this.maxZoom);
@@ -349,6 +349,8 @@ class WMTS extends LayerBase {
       // keeps z-index values before ol resets
       const zIndex = this.zIndex_;
       this.map.getMapImpl().addLayer(this.olLayer);
+      this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
+
       setTimeout(() => {
         this.olLayer.setMaxZoom(this.maxZoom);
         this.olLayer.setMinZoom(this.minZoom);
