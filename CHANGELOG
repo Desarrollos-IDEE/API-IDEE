@@ -45,3 +45,4 @@
 - Se mueve el parámetro styles de WMS al primer objeto.
 - Se implementa el parámetro styles de WMS en API REST.
 - Se implementa el parámetro sldVersion en WMS tanto por constructor como por API REST.
+- Se elimina el filtrado de objetos geográficos con mismo identificador en el método addFeatures en la capa Vector.
