@@ -454,18 +454,6 @@ class LayerBase extends MObject {
   }
 
   /**
-   * Este método devuelve la máxima extensión de la capa.
-   *
-   * @function
-   * @param {Mx.Extent} maxExtent Máxima extensión.
-   * @public
-   * @api
-   */
-  getMaxExtent() {
-    this.olLayer.getExtent();
-  }
-
-  /**
    * Este método establece la url de la leyenda.
    *
    * @function
