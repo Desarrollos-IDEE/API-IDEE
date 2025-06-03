@@ -220,6 +220,30 @@ class WMTS extends LayerBase {
   }
 
   /**
+   * Sobreescribe la URL de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newURL Nueva URL de la capa.
+   * @api
+   */
+  setURL(newURL) {
+    this.getImpl().setURL(newURL);
+  }
+
+  /**
+   * Sobreescribe el nombre de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newName Nuevo nombre de la capa.
+   * @api
+   */
+  setName(newName) {
+    this.getImpl().setName(newName);
+  }
+
+  /**
    * Este método recupera una promesa que será
    * resuelto cuando se recupera la solicitud GetCapabilities
    * por el servicio y analizado. Las capacidades se almacenan en caché
