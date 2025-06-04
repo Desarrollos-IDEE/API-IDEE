@@ -45,3 +45,4 @@
 - Se mueve el parámetro styles de WMS al primer objeto.
 - Se implementa el parámetro styles de WMS en API REST.
 - Se implementa el parámetro sldVersion en WMS tanto por constructor como por API REST.
+- Se modifica selectFeatures en Vector y en todas las capas que sustituyan dicho método para que muestre el nombre de la capa en el popup.

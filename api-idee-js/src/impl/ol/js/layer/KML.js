@@ -198,13 +198,17 @@ class KML extends Vector {
         const featureCoord = feature.getImpl().getFeature().getGeometry().getFirstCoordinate();
         const popupTemplate = !isNullOrEmpty(this.template)
           ? this.template : popupKMLTemplate;
-        const htmlAsText = compileTemplate(popupTemplate, {
+        let htmlAsText = compileTemplate(popupTemplate, {
           vars: {
             name: featureName,
             desc: featureDesc,
           },
           parseToHtml: false,
         });
+        if (this.name) {
+          const layerNameHTML = `<div>${this.name}</div>`;
+          htmlAsText = layerNameHTML + htmlAsText;
+        }
         this.tabPopup_ = {
           icon: 'g-cartografia-comentarios',
           title: featureName,
