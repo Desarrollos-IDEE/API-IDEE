@@ -34,7 +34,7 @@
 - Se soluciona error con la edición de geometrías en plugin VectorsManagement.
 - Se implementa el uso del ticket en capas WMS, incluyendo el control getFeatureInfo y el plugin information.
 - Se implementa el uso del ticket en el plugin comparators.
-- Se implementa el parámetro tileLoadFunction en el vendors, ademas de setTileLoadFunction.
+- Se implementa en WMS el parámetro tileLoadFunction en el vendors, ademas de setTileLoadFunction.
 - Se añade el parámetro "mergeLayers" en las capas WMS.
 - Se añade /doc a api/actions.
 - Se permite añadir al mapa el mismo servicio con igual nombre más de una vez (idLayer).
@@ -45,3 +45,4 @@
 - Se mueve el parámetro styles de WMS al primer objeto.
 - Se implementa el parámetro styles de WMS en API REST.
 - Se implementa el parámetro sldVersion en WMS tanto por constructor como por API REST.
+- Se implementa en WMTS el parámetro tileLoadFunction en el vendors, ademas de setTileLoadFunction.
