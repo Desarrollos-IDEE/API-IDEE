@@ -184,6 +184,18 @@ class KML extends LayerVector {
   }
 
   /**
+   * Sobreescribe la URL de la capa.
+   *
+   * @function
+   * @param {String} newURL Nueva URL de la capa.
+   * @public
+   * @api
+   */
+  setURL(newURL) {
+    this.getImpl().setURL(newURL);
+  }
+
+  /**
    * Este método comprueba si un objeto es igual
    * a esta capa.
    *
