@@ -45,3 +45,4 @@
 - Se mueve el parámetro styles de WMS al primer objeto.
 - Se implementa el parámetro styles de WMS en API REST.
 - Se implementa el parámetro sldVersion en WMS tanto por constructor como por API REST.
+- En KML eliminado extract, junto con su getter y setter, ya que los hereda de Vector y la funcionalidad es la misma.
