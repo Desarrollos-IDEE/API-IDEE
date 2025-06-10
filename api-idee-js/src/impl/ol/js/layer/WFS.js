@@ -161,10 +161,14 @@ class WFS extends Vector {
         } else {
           const popupTemplate = !isNullOrEmpty(this.template)
             ? this.template : geojsonPopupTemplate;
-          const htmlAsText = compileTemplate(popupTemplate, {
+          let htmlAsText = compileTemplate(popupTemplate, {
             vars: this.parseFeaturesForTemplate_(features),
             parseToHtml: false,
           });
+          if (this.name) {
+            const layerNameHTML = `<div>${this.name}</div>`;
+            htmlAsText = layerNameHTML + htmlAsText;
+          }
           const featureTabOpts = {
             icon: 'g-cartografia-pin',
             title: this.name,
