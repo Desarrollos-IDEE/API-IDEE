@@ -34,7 +34,7 @@
 - Se soluciona error con la edición de geometrías en plugin VectorsManagement.
 - Se implementa el uso del ticket en capas WMS, incluyendo el control getFeatureInfo y el plugin information.
 - Se implementa el uso del ticket en el plugin comparators.
-- Se implementa el parámetro tileLoadFunction en el vendors, ademas de setTileLoadFunction.
+- Se implementa en WMS el parámetro tileLoadFunction en el vendors, ademas de setTileLoadFunction.
 - Se añade el parámetro "mergeLayers" en las capas WMS.
 - Se añade /doc a api/actions.
 - Se permite añadir al mapa el mismo servicio con igual nombre más de una vez (idLayer).
@@ -46,6 +46,7 @@
 - Se implementa el parámetro styles de WMS en API REST.
 - Se implementa el parámetro sldVersion en WMS tanto por constructor como por API REST.
 - Se elimina el filtrado de objetos geográficos con mismo identificador en el método addFeatures en la capa Vector.
+- Se implementa en WMTS el parámetro tileLoadFunction en el vendors, ademas de setTileLoadFunction.
 - En KML eliminado extract, junto con su getter y setter, ya que los hereda de Vector y la funcionalidad es la misma.
 - Se modifica selectFeatures en Vector y en todas las capas que sustituyan dicho método para que muestre el nombre de la capa en el popup.
 - Se añaden métodos setURL y setName para capas WMTS.
@@ -53,4 +54,5 @@
 - Eliminado el metodo getMaxExtent de la implementación de Layer.
 - Se modifica el evento ADDED_TO_MAP de las capas KML.
 - Se tienen en cuenta los filros aplicados en las capas Vector en el metodo getFeaturesExtent.
+- Se evita que se muestre el popup en features cluster en kml
 - Se eliminan los métodos getLegendURL/setLegendURL de WMTS para que hereden de Layer.
