@@ -13,6 +13,8 @@ import { compileSync as compileTemplate } from './util/Template';
 import * as EventType from './event/eventtype';
 import MWindow from './util/Window';
 
+let id = 0;
+
 /**
  * @classdesc
  * Crea una ventana
@@ -112,6 +114,25 @@ class Popup extends Base {
      * @type {string}
      */
     this.status_ = Popup.status.COLLAPSED;
+
+    id += 1;
+
+    /**
+     * Identificador de la ventana.
+     * @private
+     * @type {string}
+     */
+    this.id_ = 'm-popup-'.concat(id);
+  }
+
+  /**
+   * Devuelve el identificador de la ventana.
+   * @public
+   * @function
+   * @api
+   */
+  getId() {
+    return this.id_;
   }
 
   /**
@@ -162,6 +183,7 @@ class Popup extends Base {
       const html = compileTemplate(popupTemplate, {
         jsonp: true,
         vars: {
+          id: this.id_,
           tabs: this.tabs_,
         },
       });
@@ -197,6 +219,7 @@ class Popup extends Base {
         jsonp: true,
         vars: {
           tabs: this.tabs_,
+          id: this.id_,
         },
       });
       if (this.tabs_.length > 0) {
