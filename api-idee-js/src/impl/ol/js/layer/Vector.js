@@ -221,12 +221,8 @@ class Vector extends Layer {
    * @api stable
    */
   addFeatures(features, update) {
-    features.forEach((newFeature) => {
-      const feature = this.features_.find((feature2) => feature2.equals(newFeature));
-      if (isNullOrEmpty(feature)) {
-        this.features_.push(newFeature);
-      }
-    });
+    this.features_.push(...features);
+
     if (update) {
       this.updateLayer_();
     }
