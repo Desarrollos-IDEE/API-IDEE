@@ -313,7 +313,9 @@ class Vector extends LayerBase {
    * @api
    */
   getFeaturesExtent(skipFilterParam) {
-    return this.getImpl().getFeaturesExtent(true, this.filter_);
+    let skipFilter = skipFilterParam;
+    if (isNullOrEmpty(this.getFilter())) skipFilter = true;
+    return this.getImpl().getFeaturesExtent(skipFilter, this.filter_);
   }
 
   /**
