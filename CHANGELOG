@@ -46,6 +46,7 @@
 - Se implementa el parámetro styles de WMS en API REST.
 - Se implementa el parámetro sldVersion en WMS tanto por constructor como por API REST.
 - Se modifica el evento ADDED_TO_MAP de las capas WMTS para que se dispare desde fachada.
+- Se elimina el filtrado de objetos geográficos con mismo identificador en el método addFeatures en la capa Vector.
 - Se implementa en WMTS el parámetro tileLoadFunction en el vendors, ademas de setTileLoadFunction.
 - En KML eliminado extract, junto con su getter y setter, ya que los hereda de Vector y la funcionalidad es la misma.
 - Se modifica selectFeatures en Vector y en todas las capas que sustituyan dicho método para que muestre el nombre de la capa en el popup.
