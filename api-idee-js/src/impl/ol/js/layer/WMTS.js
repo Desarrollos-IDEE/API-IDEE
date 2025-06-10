@@ -739,30 +739,6 @@ class WMTS extends LayerBase {
     }
     return coordPixel;
   }
-
-  /**
-   * Devuelve la URL de la leyenda.
-   *
-   * @public
-   * @function
-   * @returns {String} URL de la leyenda.
-   * @api stable
-   */
-  getLegendURL() {
-    return this.legendUrl_;
-  }
-
-  /**
-   * Sobrescribir la url de la leyenda.
-   *
-   * @public
-   * @function
-   * @param {String} legendUrl Nueva URL.
-   * @api stable
-   */
-  setLegendURL(legendUrl) {
-    this.legendUrl_ = legendUrl;
-  }
 }
 
 export default WMTS;
