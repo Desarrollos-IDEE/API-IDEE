@@ -24,6 +24,7 @@ import getLayerExtent from '../util/wmtscapabilities';
  *
  * @property {Number} minZoom Zoom mínimo aplicable a la capa.
  * @property {Number} maxZoom Zoom máximo aplicable a la capa.
+ * @property {Function} tileLoadFunction Función de carga de tiles.
  * @property {Object} options Opciones personalizadas para esta capa.
  *
  * @api
@@ -58,6 +59,7 @@ class WMTS extends LayerBase {
    *    attributions: 'wmts',
    *    ...
    *  })
+   *  tileLoadFunction: <funcion>
    * }
    * </code></pre>
    * @api stable
@@ -80,6 +82,13 @@ class WMTS extends LayerBase {
      * WMTS getCapabilitiesPromise_. Options from the GetCapabilities.
      */
     this.getCapabilitiesPromise_ = null;
+
+    /**
+     * WMS tileLoadFunction. Función de carga de tiles.
+     * @private
+     * @type {Function}
+     */
+    this.tileLoadFunction = vendorOptions?.tileLoadFunction;
 
     /**
      * WMTS minZoom. Minimum zoom applicable to the layer.
@@ -221,6 +230,7 @@ class WMTS extends LayerBase {
             matrixIds,
           }),
           extent,
+          tileLoadFunction: this.tileLoadFunction,
         });
         this.olLayer.setSource(newSource);
       });
@@ -278,6 +288,7 @@ class WMTS extends LayerBase {
         const options = extend(capabilitiesOptionsVariable, {
           extent,
           crossOrigin: this.crossOrigin,
+          tileLoadFunction: this.tileLoadFunction,
         }, true);
         wmtsSource = new OLSourceWMTS(options);
       }
@@ -341,6 +352,7 @@ class WMTS extends LayerBase {
           format,
           projection: getProj(this.map.getProjection().code),
           tileGrid,
+          tileLoadFunction: this.tileLoadFunction,
         });
       }
       this.facadeLayer_.setFormat(format);
@@ -456,6 +468,18 @@ class WMTS extends LayerBase {
   }
 
   /**
+   * Este método establece la función de carga de teselas.
+   *
+   * @public
+   * @function
+   * @param {Function} func Función de carga de teselas.
+   * @api stable
+   */
+  setTileLoadFunction(func) {
+    this.olLayer.getSource().setTileLoadFunction(func);
+  }
+  
+  /*    
    * Este método elimina y crea la capa de Openlayers.
    *
    * @function
