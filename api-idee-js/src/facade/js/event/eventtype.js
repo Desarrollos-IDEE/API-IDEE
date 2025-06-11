@@ -351,3 +351,35 @@ export const LOAD_TERRAIN = 'LOAD_TERRAIN';
  * @api
  */
 export const LOAD_GENERIC_VECTOR = 'LOAD_GENERIC_VECTOR';
+
+/**
+ * Evento que se produce cuando se añade un popup.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const POPUP_ADDED = 'popup:added';
+
+/**
+ * Evento que se produce cuando se elimina un popup.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const POPUP_REMOVED = 'popup:removed';
+
+/**
+ * Evento que se produce cuando se añade una ventana a un popup.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const POPUP_ADDED_TAB = 'popup:addtabed';
+
+/**
+ * Evento que se produce cuando se elimina una ventana de un popup.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const POPUP_REMOVED_TAB = 'popup:removedtab';
