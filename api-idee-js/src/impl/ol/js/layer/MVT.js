@@ -346,10 +346,10 @@ class MVT extends Vector {
         if (auxValue.tileCoord[0] === z && auxValue.getState() === TileState.LOADED) {
           const sourceTiles = auxValue.getSourceTiles();
           for (let i = 0, ii = sourceTiles.length; i < ii; i += 1) {
-            const olFeature = sourceTiles[i].getFeatures()
+            const implFeature = sourceTiles[i].getFeatures()
               .find((feature2) => feature2.getProperties().id === id); // feature2.getId()
-            if (olFeature) {
-              features.push(olFeature);
+            if (implFeature) {
+              features.push(implFeature);
             }
           }
         }
