@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title></title>
+	<style type="text/css">
+		#leyenda {
+			position: relative;
+			top: 10px;
+			left: 10px;
+		}
+		#titulo {
+			background-color: blueviolet;
+		}
+		#flecha {
+			position: absolute;
+			bottom: 10px;
+			right: 10px;
+			width: 200px;
+			height: 200px;
+		}
+        .borde {
+            border: 10px solid black;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+		.imagen2 {
+			background-color: green;
+			width: 100px;
+			height: 100px;
+			border-radius: 50%;
+		}
+	</style>
+</head>
+<body>
+	<div id="leyenda" data-type="api-idee-template-leyenda"></div>
+	<div id="titulo" data-type="api-idee-template-titulo">
+		<img src="">
+		<img class="imagen2">
+	</div>
+	<img src="" id="flecha" data-type="api-idee-template-flecha-norte"></img>
+    <div class="borde" data-type="api-idee-template-borde"></div>
+</body>
+</html>
