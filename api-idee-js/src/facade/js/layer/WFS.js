@@ -3,7 +3,7 @@
  */
 import WFSImpl from 'impl/layer/WFS';
 import {
-  isUndefined, isNullOrEmpty, isString, normalize, isObject,
+  isUndefined, isNullOrEmpty, isObject,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import Vector from './Vector';
@@ -161,12 +161,6 @@ class WFS extends Vector {
     this.version = parameters.version;
 
     /**
-     * WFS extract: Opcional, activa la consulta haciendo clic en un objeto geográfico,
-     * por defecto verdadero.
-     */
-    this.extract = parameters.extract === undefined ? true : parameters.extract;
-
-    /**
      * WFS minZoom: Límite del zoom mínimo.
      * @public
      * @type {Number}
@@ -184,36 +178,6 @@ class WFS extends Vector {
      * options: Opciones WFS.
      */
     this.options = options;
-  }
-
-  /**
-   * Devuelve el valor de la propiedad "extract".
-   * Activa la consulta haciendo clic en el objeto geográfico, por defecto verdadero.
-   * @function
-   * @return {IDEE.layer.WFS.impl.extract} Devuelve el valor de la propiedad "extract".
-   * @api
-   */
-  get extract() {
-    return this.getImpl().extract;
-  }
-
-  /**
-   * Sobrescribe el valor de la propiedad "extract".
-   * Activa la consulta haciendo clic en el objeto geográfico, por defecto verdadero.
-   * @function
-   * @param {Boolean} newExtract Nuevo valor de la propiedad""extract".
-   * @api
-   */
-  set extract(newExtract) {
-    if (!isNullOrEmpty(newExtract)) {
-      if (isString(newExtract)) {
-        this.getImpl().extract = (normalize(newExtract) === 'true');
-      } else {
-        this.getImpl().extract = newExtract;
-      }
-    } else {
-      this.getImpl().extract = true;
-    }
   }
 
   /**

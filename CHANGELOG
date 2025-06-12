@@ -53,4 +53,5 @@
 - Se modifica el evento ADDED_TO_MAP de las capas KML.
 - Se tienen en cuenta los filros aplicados en las capas Vector en el metodo getFeaturesExtent.
 - Se eliminan los métodos getLegendURL/setLegendURL de WMTS para que hereden de Layer.
+- En WFS eliminado extract, junto con su getter y setter, ya que los hereda de Vector y la funcionalidad es la misma.
 
