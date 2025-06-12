@@ -42,18 +42,16 @@ test.describe('IDEE.layer.WFS', () => {
     });
 
     await page.waitForTimeout(3000);
-    await page.evaluate(() => window.wfs_002.setName('superadmin_provincias_1748514745131'));
+    await page.evaluate(() => window.wfs_002.setName('reservas_biosfera'));
     const nameWFS = await page.evaluate(() => window.wfs_002.name);
-    expect(nameWFS).toEqual('superadmin_provincias_1748514745131');
-    // await page.waitForTimeout(3000);
-    await page.evaluate(() => window.wfs_002.setNamespace('Public'));
+    expect(nameWFS).toEqual('reservas_biosfera');
+    await page.evaluate(() => window.wfs_002.setNamespace('reservas_biosfera'));
     const namespaceWFS = await page.evaluate(() => window.wfs_002.namespace);
-    expect(namespaceWFS).toEqual('Public');
-    // await page.waitForTimeout(3000);
-    await page.evaluate(() => window.wfs_002.setURL('https://hcsigc-geoserver-sigc.desarrollo.guadaltel.es/geoserver/Public/ows?'));
+    expect(namespaceWFS).toEqual('reservas_biosfera');
+    await page.evaluate(() => window.wfs_002.setURL('https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_WFS_Patrimonio_Natural?'));
     const urlWFS = await page.evaluate(() => window.wfs_002.url);
-    expect(urlWFS).toEqual('https://hcsigc-geoserver-sigc.desarrollo.guadaltel.es/geoserver/Public/ows?');
-    await page.waitForTimeout(3000);
+    expect(urlWFS).toEqual('https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_WFS_Patrimonio_Natural?');
+    await page.waitForTimeout(4000);
     await expect(page).toHaveScreenshot('snapshot.png');
   });
 });
