@@ -2,7 +2,6 @@
 import JsZip from 'jszip';
 // eslint-disable-next-line import/first
 import { saveAs } from 'file-saver';
-import { pixelToCoordinateTransform } from '../../impl/ol/js/utils';
 import { getValue } from './i18n/language';
 
 // ID and CLASS
@@ -74,7 +73,7 @@ export function removeQueueElements(html) {
 }
 
 // Generate wld file
-export function createWLD(bbox, dpi, size, epsgUser = false, map = {}, type = undefined) {
+export function createWLD(bbox, dpi, size, epsgUser = false) {
   let px;
 
   if (epsgUser) {
@@ -87,16 +86,14 @@ export function createWLD(bbox, dpi, size, epsgUser = false, map = {}, type = un
     const upperLeftY = bbox[3] + (sizePixelY / 2);
 
     px = sizePixelX.toString().concat('\n', rotateX.toString(), '\n', rotateY.toString(), '\n', sizePixelY.toString(), '\n', upperLeftX.toString(), '\n', upperLeftY.toString());
-  } else if (type === 'client') {
-    const result = pixelToCoordinateTransform(map);
-    px = result.join('\n');
-  } else if (type === 'server') {
+  } else {
     const Px = (((bbox[2] - bbox[0]) / size[0]) * (72 / dpi)).toString();
     const GiroA = (0).toString();
     const GiroB = (0).toString();
     const Py = (-((bbox[3] - bbox[1]) / size[1]) * (72 / dpi)).toString();
     const Cx = (bbox[0] + (Px / 2)).toString();
     const Cy = (bbox[3] + (Py / 2)).toString();
+
     px = Px.concat('\n', GiroA, '\n', GiroB, '\n', Py, '\n', Cx, '\n', Cy);
   }
 

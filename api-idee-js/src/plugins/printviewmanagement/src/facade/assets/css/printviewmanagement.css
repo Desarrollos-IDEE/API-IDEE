@@ -307,61 +307,75 @@ div.m-area.m-bottom.m-left>div.m-plugin-printviewmanagement.m-panel.opened>butto
       padding: 20px 0;
   }
 
+  .m-printermap-container fieldset {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 0 auto;
+    width: 90%;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+
   .m-georefimage-container {
+    display: flex;
     justify-content: space-between;
     padding: 0;
     gap: 0;
+  }
+
+  .m-georefimage-container .georefimage-jgwKeppview div:first-child {
+    flex: 3.5;
+  }
+
+  .m-georefimage-container .georefimage-jgwKeppview select {
+    flex: 0.5;
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    font-size: 15px;
+    line-height: 25px;
+    cursor: pointer;
+    color: #404040;
+    background-color: #e9e9e9;
+    opacity: 1;
+    font-family: 'Muli', 'sans-serif' !important;
   }
 
 /*********************
     georefimageepsg
   *********************/
   .m-georefimageepsg-container select {
-        width: 90%;
-        padding: 5px;
-        border-radius: 4px;
-        border: 1px solid rgba(0, 0, 0, 0.4);
-        font-size: 15px;
-        line-height: 25px;
-        cursor: pointer;
-        color: #404040;
-        background-color: #e9e9e9;
-        opacity: 1;
-        font-family: 'Muli', 'sans-serif' !important;
+    width: 90%;
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    font-size: 15px;
+    line-height: 25px;
+    cursor: pointer;
+    color: #404040;
+    background-color: #e9e9e9;
+    opacity: 1;
+    font-family: 'Muli', 'sans-serif' !important;
   }
-  
-  .m-georefimageepsg-container button {
-      margin: 0 auto;
-      text-align: center;
-      display: table;
 
-      border-radius: 4px;
-      border: 1px solid rgba(0, 0, 0, 0.4);
-      font-size: 15px;
-      line-height: 25px;
-      cursor: pointer;
-      color: #404040;
-      background-color: #e9e9e9;
-      opacity: 1;
-      font-family: 'Muli', 'sans-serif' !important;
-      cursor: pointer;
-      width: 60%;
-      padding: 5px;
+  .m-georefimageepsg-select-container {
+    display: flex;
+    gap: 60px;
+    width: 90%;
+    justify-content: center;
+    align-items: center;
   }
-  
 
-  .m-georefimageepsg-container button:focus {
-      outline: none;
+  .m-georefimageepsg-select-container select:first-child {
+    flex: 4;
   }
-  
-  .m-georefimageepsg-container button:before {
-      font-size: 21px;
-      margin-right: 10px;
-  }
-  
-  .m-georefimageepsg-container button i {
-      font-size: 20px;
-      vertical-align: text-bottom;
+  .m-georefimageepsg-select-container select:last-child {
+    flex: 1;
   }
 
 
@@ -411,15 +425,6 @@ div.m-area.m-bottom.m-left>div.m-plugin-printviewmanagement.m-panel.opened>butto
     margin-block-end: 30px;
   }
 
-  .m-georefimage-fieldsetInput div{
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px;
-    margin: 10px 0;
-  }
-
   .m-georefimage-titleFormat, .m-printermap-titleFormat{
         width: 100%;
         display: flex;
@@ -442,10 +447,7 @@ div.m-area.m-bottom.m-left>div.m-plugin-printviewmanagement.m-panel.opened>butto
 
   .m-georefimage-projection {
     text-align: center;
-  }
-
-  #m-georefimage-dpi{
-    width: 40px;
+    padding-top: 10px;
   }
 
   .georefimage-jgwKeppview {
@@ -453,17 +455,9 @@ div.m-area.m-bottom.m-left>div.m-plugin-printviewmanagement.m-panel.opened>butto
     justify-content: center;
     align-items: center;
     gap: 20px;
-
     font-size: 1rem;
-    margin: 25px 0;
+    margin: 25px 0 0 0;
   }
-
-  .georefimage-jgwKeppview input[type="number"] {
-    width: 50px;
-    height: 21px;
-    margin-left: 5px;
-  }
-
 
   .m-georefimage-titleFormat input, .m-printermap-titleFormat input{
     width: 65%;
@@ -487,8 +481,9 @@ div.m-area.m-bottom.m-left>div.m-plugin-printviewmanagement.m-panel.opened>butto
   .georefimage-projection select,
   .m-georefimage-titleFormat select,
   .m-printermap-titleFormat select,
-  .m-printermap-params select{
-    
+  .m-printermap-params select,
+  .m-customize-template select,
+  .m-printermap-params .customTemplate{
     padding: 5px;
     border-radius: 4px;
     border: 1px solid rgba(0, 0, 0, 0.4);
@@ -498,6 +493,22 @@ div.m-area.m-bottom.m-left>div.m-plugin-printviewmanagement.m-panel.opened>butto
     color: #404040;
     background-color: #e9e9e9;
     opacity: 1;
+    font-family: 'Muli', 'sans-serif' !important;
+  }
+
+  .m-printermap-custom-templates > * {
+    margin: 10px 0;
+    cursor: pointer;
+  }
+
+  .m-printermap-custom-templates select {
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    font-size: 15px;
+    line-height: 25px;
+    color: #404040;
+    background-color: #e9e9e9;
     font-family: 'Muli', 'sans-serif' !important;
   }
 
@@ -574,8 +585,172 @@ div.m-area.m-bottom.m-left>div.m-plugin-printviewmanagement.m-panel.opened>butto
     cursor: pointer;
 }
 
+/*********************
+    templateCustomizer
+*********************/
+.m-customize-template {
+    border-radius: 5px;
+    max-height: 59vh;
+    height: 59vh;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.m-customize-template-left {
+    flex: 1 1 5rem;
+    padding: 10px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    min-width: 200px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.m-customize-template-right-wrapper {
+    flex: 1 30rem;
+    position: relative;
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 300px;
+    box-sizing: border-box;
+}
+
+.m-customize-template-right {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1191px;
+    height: 842px;
+    transform: translate(-50%, -50%) scale(0.72196);
+    box-sizing: border-box;
+}
+
+#hola {
+      background: white;
+      border: 1px solid black;
+      padding: 10px;
+      border-radius: 5px;
+      min-width: 100px;
+    }
 
 
+.m-customize-template-option {
+    margin-bottom: 15px;
+}
+
+.m-custom-checkbox,
+.m-custom-radio {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding-left: 30px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.m-custom-checkbox input,
+.m-custom-radio input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.m-custom-radio .m-radiomark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #eee;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.m-customize-template .m-checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #eee;
+    transition: all 0.3s;
+}
+
+.m-custom-checkbox:hover input ~ .m-checkmark,
+.m-custom-radio:hover input ~ .m-radiomark {
+    background-color: #ccc;
+}
+
+.m-custom-checkbox input:checked ~ .m-checkmark,
+.m-custom-radio input:checked ~ .m-radiomark {
+    background-color: #2c3e50;
+}
+
+.m-checkmark:after,
+.m-radiomark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.m-custom-checkbox input:checked ~ .m-checkmark:after,
+.m-custom-radio input:checked ~ .m-radiomark:after {
+    display: block;
+}
+
+.m-custom-checkbox .m-checkmark:after {
+    content: "✔";
+    font-size: 14px;
+    color: white;
+    left: 4px;
+    top: 1px;
+}
+
+.m-custom-radio .m-radiomark:after {
+    left: 7px;
+    top: 7px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: white;
+}
+
+.m-label-text {
+    margin-left: 10px;
+}
+
+.m-customize-template-option select, input[type="string"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+.m-customize-template fieldset {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.m-customize-template input[type="text"] {
+    padding: 5px;
+    width: 90%;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    font-size: 15px;
+    line-height: 25px;
+    color: #404040;
+    background-color: #e9e9e9;
+    opacity: 1;
+    font-family: 'Muli', 'sans-serif' !important;
+}
 
 /*********************
      QUEUE PANEL

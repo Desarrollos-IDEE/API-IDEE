@@ -102,11 +102,13 @@ class Map extends Base {
     // parses parameters to build the new map
     const params = new Parameters(userParameters);
 
+    const dpi = IDEE.config.DPI;
+
     const opts = { viewExtent: params.viewExtent, ...options };
 
     // calls the super constructor
     super();
-    const impl = new MapImpl(params.container, this, opts, viewVendorOptions);
+    const impl = new MapImpl(params.container, this, dpi, opts, viewVendorOptions);
     // impl.setFacadeMap(this);
     this.setImpl(impl);
 
