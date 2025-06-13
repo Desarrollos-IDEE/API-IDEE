@@ -60,3 +60,4 @@
 - Se evita que se muestre el popup en features cluster en kml
 - Se eliminan los métodos getLegendURL/setLegendURL de WMTS para que hereden de Layer.
 - En WFS eliminado extract, junto con su getter y setter, ya que los hereda de Vector y la funcionalidad es la misma.
+- En MBTilesVector elimidado el metodo cloneOLLayer.
