@@ -6,7 +6,7 @@ import RenderFeatureImpl from 'impl/feature/RenderFeature';
 import FeatureImpl from 'impl/feature/Feature';
 import Vector from './Vector';
 import {
-  isUndefined, isNullOrEmpty, isString, normalize, isObject,
+  isUndefined, isNullOrEmpty, isObject,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import * as dialog from '../dialog';
@@ -124,43 +124,7 @@ class MVT extends Vector {
      */
     this.maxZoom = optionsVar.maxZoom || Number.POSITIVE_INFINITY;
 
-    /**
-     * extract: Optional Activa la consulta al hacer clic sobre un objeto geográfico,
-     * por defecto verdadero.
-     */
-    this.extract = opts.extract === undefined ? true : opts.extract;
-
     this.mode = opts.mode || mode.RENDER;
-  }
-
-  /**
-   * Devuelve el valor de la propiedad "extract". La propiedad "extract"
-   * activa la consulta al hacer clic sobre un objeto geográfico, por defecto verdadero.
-   * @function
-   * @return {IDEE.layer.MVT.impl.extract} Devuelve valor del "extract".
-   * @api
-   */
-  get extract() {
-    return this.getImpl().extract;
-  }
-
-  /**
-   * Sobrescribe el valor de la propiedad "extract". La propiedad "extract"
-   * activa la consulta al hacer clic sobre un objeto geográfico, por defecto verdadero.
-   * @function
-   * @param {Boolean} newExtract Nuevo valor para el "extract".
-   * @api
-   */
-  set extract(newExtract) {
-    if (!isNullOrEmpty(newExtract)) {
-      if (isString(newExtract)) {
-        this.getImpl().extract = (normalize(newExtract) === 'true');
-      } else {
-        this.getImpl().extract = newExtract;
-      }
-    } else {
-      this.getImpl().extract = true;
-    }
   }
 
   /**
