@@ -6,12 +6,31 @@ import PopupImpl from 'impl/Popup';
 import 'assets/css/popup';
 import popupTemplate from 'templates/popup';
 import {
-  isUndefined, isNullOrEmpty, transfomContent,
+  isUndefined, isNullOrEmpty, transfomContent, reproject, getSystem,
 } from './util/Utils';
 import Base from './Base';
 import { compileSync as compileTemplate } from './util/Template';
 import * as EventType from './event/eventtype';
 import MWindow from './util/Window';
+import { getValue } from './i18n/language';
+
+/**
+ * Obtiene la URL de Google Maps con las coordenadas dadas.
+ *
+ * @public
+ * @param {string} platform Plataforma del dispositivo ('android', 'ios', 'unknown').
+ * @param {Array<number>} coords Coordenadas.
+ * @function
+ * @api
+ */
+const getUrlFromPlatform = (platform, coords) => {
+  const platformURL = {
+    android: (coord) => `geo:${coord[1]}},${coord[0]}?q=${coord[1]},${coord[0]}`,
+    ios: (coord) => `maps://?ll=${coord[1]},${coord[0]}`,
+    unknown: (coord) => `http://maps.google.com?q=${coord[1]},${coord[0]}`,
+  };
+  return platformURL[platform](coords);
+};
 
 /**
  * @classdesc
@@ -170,10 +189,15 @@ class Popup extends Base {
   addTo(map, coordinate) {
     this.map_ = map;
     if (isNullOrEmpty(this.element_)) {
+      const coords = reproject(coordinate, this.map_.getProjection().code, 'EPSG:4326');
+      const platform = getSystem();
+
       const html = compileTemplate(popupTemplate, {
         jsonp: true,
         vars: {
           tabs: this.tabs_,
+          options: Popup.options,
+          url: getUrlFromPlatform(platform, coords),
         },
       });
       if (this.tabs_.length > 0) {
@@ -206,10 +230,15 @@ class Popup extends Base {
    */
   update() {
     if (!isNullOrEmpty(this.map_)) {
+      const coords = reproject(this.coord_, this.map_.getProjection().code, 'EPSG:4326');
+      const platform = getSystem();
+
       const html = compileTemplate(popupTemplate, {
         jsonp: true,
         vars: {
           tabs: this.tabs_,
+          options: Popup.options,
+          url: getUrlFromPlatform(platform, coords),
         },
       });
       if (this.tabs_.length > 0) {
@@ -600,5 +629,18 @@ Popup.status.DEFAULT = 'm-default';
  * @api
  */
 Popup.status.FULL = 'm-full';
+
+/**
+ * Opciones para el parámetro "takeMeThere".
+ * @const
+ * @type {object}
+ * @public
+ * @api
+ */
+Popup.options = {
+  takeMeThere: false,
+  textMode: true,
+  msg: getValue('popup').msg,
+};
 
 export default Popup;
