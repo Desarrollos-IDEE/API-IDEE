@@ -13,6 +13,7 @@ import LayerGroup from 'IDEE/layer/LayerGroup';
 import WMTS from 'IDEE/layer/WMTS';
 import MapLibre from 'IDEE/layer/MapLibre';
 import Point from 'IDEE/style/Point';
+import pkg from '../../../package';
 import 'assets/css/idee';
 import { isUndefined, isNullOrEmpty } from './util/Utils';
 import Exception from './exception/exception';
@@ -335,6 +336,14 @@ export const getQuickLayers = (layer) => {
   }
   return layers;
 };
+
+/**
+ * Debuelve la versión de api-idee
+ * @public
+ * @const {String}
+ * @api
+ */
+export const version = pkg.version;
 
 /**
  * Este comentario no se verá, es necesario incluir
