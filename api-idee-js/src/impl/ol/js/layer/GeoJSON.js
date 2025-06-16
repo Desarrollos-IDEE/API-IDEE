@@ -267,9 +267,9 @@ class GeoJSON extends Vector {
             vars: this.parseFeaturesForTemplate_(features),
             parseToHtml: false,
           });
-          if (this.name) {
-            const layerNameHTML = `<div>${this.name}</div>`;
-            htmlAsText = layerNameHTML + htmlAsText;
+          if (this.legend) {
+            const layerLegendHTML = `<div class="m-legend">${this.legend}</div>`;
+            htmlAsText = layerLegendHTML + htmlAsText;
           }
           const featureTabOpts = {
             icon: 'g-cartografia-pin',

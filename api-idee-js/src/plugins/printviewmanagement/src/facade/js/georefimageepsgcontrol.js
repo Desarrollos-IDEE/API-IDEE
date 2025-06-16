@@ -6,19 +6,20 @@ import { adjustExtentForSquarePixels, reproject } from 'impl/utils';
 import georefimage2HTML from '../../templates/georefimageepsg';
 import { getValue } from './i18n/language';
 import {
-  getQueueContainer, innerQueueElement, removeLoadQueueElement, createWLD, createZipFile,
-  generateTitle, getBase64Image,
+  innerQueueElement, removeLoadQueueElement, createWLD, createZipFile,
+  generateTitle,
 } from './utils';
+import { DPI_OPTIONS, GEOREFIMAGEEPSG_FORMAT } from '../../constants';
 
 // DEFAULTS PARAMS
 const FILE_EXTENSION_GEO = '.wld'; // .jgw
-const FILE_EXTENSION_IMG = '.jpg';
+const FILE_EXTENSION_IMG = '.'.concat(GEOREFIMAGEEPSG_FORMAT);
 const TYPE_SAVE = '.zip';
 
 export default class GeorefImageEpsgControl extends IDEE.Control {
   /**
     * @classdesc
-    * Main constructor of the class.
+    * Constructor de la clase de tercer control de impresión
     *
     * @constructor
     * @extends {IDEE.Control}
@@ -32,8 +33,19 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
     }
     const impl = new Georefimage2ControlImpl(map);
     super(impl, 'georefimage2control');
+
+    /**
+     * Instancia del mapa
+     * @private
+     * @type {IDEE.Map}
+     */
     this.map_ = map;
 
+    /**
+     * Capas a elegir para imprimir
+     * @private
+     * @type {Array.<Object>}
+     */
     this.layers_ = layers || [
       {
         url: 'http://www.ign.es/wms-inspire/mapa-raster?',
@@ -50,49 +62,38 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
     ];
 
     /**
-      * Layout
+      * Formato de la imagen a descargar
       * @private
       * @type {HTMLElement}
       */
-    this.layout_ = 'A4 horizontal jpg';
+    this.format_ = GEOREFIMAGEEPSG_FORMAT;
 
     /**
-      * Map format to print
+      * Opciones de DPI a elegir
       * @private
       * @type {HTMLElement}
       */
-    this.format_ = 'jpg';
+    this.dpisOptions_ = DPI_OPTIONS;
 
     /**
-      * Map dpi to print
-      * @private
-      * @type {HTMLElement}
-      */
-    this.dpi_ = 72;
-
-    /**
-      * Mapfish params
-      * @private
-      * @type {String}
-      */
-    this.params_ = {
-      layout: {
-        outputFilename: 'mapa_${yyyy-MM-dd_hhmmss}',
-      },
-      pages: {
-        clientLogo: '',
-        creditos: getValue('printInfo'),
-      },
-      parameters: {},
-    };
-
+     * Imagen por defecto a descargar si no hay ninguna capa seleccionada
+     * @private
+     * @type {HTMLElement}
+     */
     this.documentRead_ = document.createElement('img');
-    this.canvas_ = document.createElement('canvas');
-    this.canceled = false;
 
+    /**
+     * Orden para mostrar los elementos
+     * @private
+     * @type {number}
+     */
     this.order = order >= -1 ? order : null;
   }
 
+  /**
+   * Función que activa el control
+   * @param {*} html
+   */
   active(html) {
     this.html_ = html;
     const button = this.html_.querySelector('#m-printviewmanagement-georefImageEpsg');
@@ -101,8 +102,10 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
       this.template_ = IDEE.template.compileSync(georefimage2HTML, {
         jsonp: true,
         vars: {
+          dpis: this.dpisOptions_,
           translations: {
             selectLayer: getValue('selectLayer'),
+            selectDpi: getValue('selectDPI'),
             nameTitle: getValue('title_list'),
           },
           layers: this.layers_,
@@ -124,7 +127,7 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
   }
 
   /**
-    * This function prints on click
+    * Imprimer la imagen georreferenciada con EPSG seleccionado.
     *
     * @private
     * @function
@@ -152,11 +155,9 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
 
     this.queueEl = innerQueueElement(
       this.html_,
-      false,
       title,
+      this.elementQueueContainer_,
     );
-
-    this.canceled = false;
 
     // Bbox Mapa
     const mapBbox = this.map_.getBbox();
@@ -210,6 +211,12 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
     }
   }
 
+  /**
+   * Transforma la extensión de coordenadas de OpenLayers
+   * @param {*} extent Extensión de coordenadas a transformar
+   * @param {*} projection Proyección a la que se quiere transformar
+   * @returns Extensión transformada
+   */
   transformExtentOL(extent, projection) {
     const { def } = IDEE.impl.ol.js.projections.getSupportedProjs()
       .find((proj) => proj.codes.includes(projection));
@@ -222,6 +229,17 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
     return extent;
   }
 
+  /**
+   * Genera la URL de la capa WMS para descargar la imagen georreferenciada.
+   * @param {*} url URL del servicio WMS
+   * @param {*} projection Proyección a utilizar
+   * @param {*} size Alto y ancho de la imagen
+   * @param {*} bbox Extensión de la imagen en coordenadas
+   * @param {*} format Formato de la imagen
+   * @param {*} name Nombre de la capa
+   * @param {*} version versión del servicio WMS
+   * @returns
+   */
   generateURLLayer_(url, projection, size, bbox, format, name, version = '1.3.0') {
     let urlLayer = url;
     const coord = (version === '1.1.1' || version === '1.1.0') ? 'SRS' : 'CRS';
@@ -231,6 +249,10 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
     return urlLayer;
   }
 
+  /**
+   * Determina la proyección UTM en función de la ubicación del centro del mapa.
+   * @returns {string} Código de la proyección UTM correspondiente.
+   */
   getUTMZoneProjection() {
     let res = this.map_.getProjection().code;
     const mapCenter = [this.map_.getCenter().x, this.map_.getCenter().y];
@@ -249,62 +271,80 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
   }
 
   /**
-    * This function downloads printed map.
+    * Descarga la imagen georreferenciada con DPI seleccionado.
     *
+    * @param {string} url URL de la imagen a descargar.
+    * @param {Array} bbox Extensión de la imagen en coordenadas.
+    * @param {boolean} epsgUser Indica si se utiliza EPSG del usuario.
+    * @param {string} title Título de la imagen a descargar.
     * @public
     * @function
     * @api stable
     */
   downloadPrint(url, bbox, epsgUser, title = '') {
     const imageUrl = url !== null ? url : this.documentRead_.src;
-    const dpi = this.dpi_;
+    const dpi = Number(this.template_.querySelector('#m-georefimageepsg-dpi').value);
+    const format = this.format_;
+    const map = this.map_.getMapImpl();
+    const originalSize = map.getSize();
+    const originalResolution = map.getView().getResolution();
+    const scaleFactor = dpi / 72;
+    const newWidth = Math.round(originalSize[0] * scaleFactor);
+    const newHeight = Math.round(originalSize[1] * scaleFactor);
 
-    const base64image = getBase64Image(imageUrl);
-    if (!this.canceled) {
-      base64image.then((resolve) => {
-        if (!this.canceled) {
-          // GET TITLE
+    map.once('rendercomplete', () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+      const context = canvas.getContext('2d');
+      map.setSize(originalSize);
+      map.getView().setResolution(originalResolution);
+
+      let zipEvent;
+      const layerImage = new Image();
+      layerImage.crossOrigin = 'anonymous';
+      layerImage.onload = () => {
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.globalAlpha = 1;
+        context.drawImage(layerImage, 0, 0, newWidth, newHeight);
+
+        canvas.toBlob((blob) => {
           const titulo = generateTitle(title);
+          const reader = new window.FileReader();
 
-          // CONTENT ZIP
-          const files = [{
-            name: titulo.concat(FILE_EXTENSION_GEO),
-            // EPSG:3857 -> bbox
-            data: createWLD(bbox, dpi, this.map_.getMapImpl().getSize(), epsgUser, this.map_, 'server'),
-            base64: false,
-          },
-          {
-            name: titulo.concat(FILE_EXTENSION_IMG),
-            data: resolve,
-            base64: true,
-          },
-          ];
+          reader.onloadend = () => {
+            const files = [{
+              name: titulo.concat(FILE_EXTENSION_GEO),
+              data: createWLD(bbox, dpi, [newWidth, newHeight], epsgUser),
+              base64: false,
+            }, {
+              name: titulo.concat(FILE_EXTENSION_IMG),
+              data: reader.result,
+              base64: false,
+              binary: true,
+            }];
 
-          // CREATE ZIP
-          const zipEvent = (evt) => {
-            if (evt.key === undefined || evt.key === 'Enter' || evt.key === ' ') {
-              createZipFile(files, TYPE_SAVE, titulo);
-            }
+            zipEvent = (evt) => {
+              if (!evt.key || evt.key === 'Enter' || evt.key === ' ') {
+                createZipFile(files, TYPE_SAVE, titulo);
+              }
+            };
+            this.queueEl.addEventListener('click', zipEvent);
+            this.queueEl.addEventListener('keydown', zipEvent);
           };
-
-          // Enter event create zip
-          this.queueEl.addEventListener('click', zipEvent);
-          this.queueEl.addEventListener('keydown', zipEvent);
-
-          // REMOVE QUEUE ELEMENT
-          removeLoadQueueElement(this.queueEl);
-        }
-      }).catch((err) => {
-        getQueueContainer(this.html_).lastChild.remove();
-        IDEE.dialog.error(getValue('exception.imageError'));
-      });
-    } else {
-      getQueueContainer(this.html_).lastChild.remove();
-    }
+          reader.readAsArrayBuffer(blob);
+        }, `image/${format}`);
+      };
+      layerImage.src = imageUrl;
+      removeLoadQueueElement(this.queueEl);
+    });
+    map.setSize([newWidth, newHeight]);
+    const scaling = Math.min(newWidth / originalSize[0], newHeight / originalSize[1]);
+    map.getView().setResolution(originalResolution / scaling);
   }
 
   /**
-    * This function checks if an object is equal to this control.
+    * Comprueba si el objeto es igual a este control.
     *
     * @function
     * @api stable
@@ -318,21 +358,28 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
     return equals;
   }
 
+  /**
+   * Inicializa la accesibilidad del control.
+   * @param {*} html
+   */
   accessibilityTab(html) {
     html.querySelectorAll('[tabindex="0"]').forEach((el) => el.setAttribute('tabindex', this.order));
   }
 
+  /**
+   * Desactiva el control y elimina su plantilla.
+   */
   deactive() {
     this.template_.remove();
     // TO-DO ADD BUTTON REMOVE AND ALL EVENTS
   }
 
   /**
- * This function destroys this control
- *
- * @public
- * @function
- * @api
- */
+   * Destruye el control
+   *
+   * @public
+   * @function
+   * @api
+   */
   destroy() {}
 }

@@ -98,7 +98,7 @@ class Map extends MObject {
    * @param {object} viewVendorOptions Parámetros para la vista del mapa de la librería base.
    * @api
    */
-  constructor(div, facadeMap, options = {}, viewVendorOptions = {}) {
+  constructor(div, facadeMap, dpi, options = {}, viewVendorOptions = {}) {
     super();
     /**
      * Fachada del mapa a implementar.
@@ -206,6 +206,12 @@ class Map extends MObject {
     }
 
     /**
+     * Calcula la resolción del mapa a partir del dpi
+     * definido en el fichero de configuración.
+     */
+    const pixelRatio = Number.parseFloat(dpi) / 72;
+
+    /**
      * Implementación del mapa.
      * @private
      * @type {ol.Map}
@@ -217,6 +223,7 @@ class Map extends MObject {
       target: div.id,
       // renderer,
       view,
+      pixelRatio,
     });
 
     this.registerEvents_();
@@ -2789,6 +2796,8 @@ class Map extends MObject {
       const olPopup = popup.getImpl();
       const olMap = this.getMapImpl();
       olMap.removeOverlay(olPopup);
+      popup.fire(EventType.POPUP_REMOVED, [popup]);
+      this.facadeMap_.fire(EventType.POPUP_REMOVED, [popup]);
     }
     return this;
   }
