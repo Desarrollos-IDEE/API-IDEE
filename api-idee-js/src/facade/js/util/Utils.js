@@ -1396,14 +1396,16 @@ export const draggabillyPlugin = (panel, handleEl) => {
  * @function
  * @param {string} element Selector del elemento a mover
  * @param {string} handleEl Selemento del elemento iniciador del movimiento
+ * @param {string} containmentEl Selector del elemento contenedor
  * @api
  */
-export const draggabillyElement = (elem, handleEl) => {
+export const draggabillyElement = (elem, handleEl, containmentEl = 'body') => {
   setTimeout(() => {
     const element = document.querySelector(elem);
+    const containerElement = document.querySelector(containmentEl);
     if (element !== null) {
       const draggable = new Draggabilly(element, {
-        containment: 'body',
+        containment: containerElement,
         handle: handleEl,
       });
 
@@ -1444,21 +1446,21 @@ export const returnPositionHtmlElement = (className, map) => {
  * @param {String} imageType formato de imagen resultante
  * @returns {HTMLCanvasElement} canvas resultante
  */
-const joinCanvas = (map, imageType = 'image/jpeg') => {
+export const joinCanvas = (map, imageType = 'image/jpeg') => {
   const canvasList = map.getMapImpl().getViewport().querySelectorAll('.ol-layer canvas, canvas.ol-layer');
-  if (canvasList.length === 1) {
-    return canvasList[0];
-  }
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   const mapImpl = map.getMapImpl();
   const size = mapImpl.getSize();
+
   canvas.width = size[0];
   canvas.height = size[1];
+
   if (/jp.*g$/.test(imageType)) {
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
+
   canvasList.forEach((c) => {
     if (c.width) {
       ctx.save();

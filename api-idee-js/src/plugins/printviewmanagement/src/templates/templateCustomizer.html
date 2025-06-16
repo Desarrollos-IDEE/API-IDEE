@@ -1,0 +1,79 @@
+<div class="m-customize-template" id="m-customize-template">
+  <div class="m-customize-template-left">
+    <form class="m-customize-template-form">
+      <fieldset>
+      <legend>{{translations.mapElements}}</legend>
+      {{#each templateElements}}
+        <div class="m-customize-template-option">
+          <label class="m-custom-checkbox">
+            <input type="checkbox" id="m-show-{{this}}">
+            <span class="m-checkmark"></span>
+            <span class="m-label-text">{{this}}</span>
+          </label>
+        </div>
+      {{/each}}
+    </fieldset>
+
+      <fieldset>
+        <legend>{{translations.mapOrientation}}</legend>
+        <div class="m-customize-template-option">
+          <label class="m-custom-radio">
+            <input type="radio" name="map-orientation" value="vertical">
+            <span class="m-radiomark"></span>
+            <span class="m-label-text">{{translations.vertical}}</span>
+          </label>
+        </div>
+        <div class="m-customize-template-option">
+          <label class="m-custom-radio">
+            <input type="radio" name="map-orientation" value="horizontal" checked>
+            <span class="m-radiomark"></span>
+            <span class="m-label-text">{{translations.horizontal}}</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>{{translations.layout}}</legend>
+        <div class="m-customize-template-option">
+          <select id="template-layout">
+            {{#each layoutOptions}}
+              <option value="{{this.value}}" {{#if default}} selected{{/if}}>{{this.label}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </fieldset>
+      
+      <fieldset>
+        <legend>{{translations.scale}}</legend>
+        <div class="m-customize-template-option">
+          <input type="text" id="template-scale" value="1:{{defaultScale}}">
+        </div>
+      </fieldset>
+      
+      <fieldset>
+        <legend>{{translations.epsg}}</legend>
+        <div class="m-customize-template-option">
+          <select id="template-projection">
+            {{#each projectionsOptions}}
+              <option value="{{this.value}}" {{#if this.default}} selected{{/if}}>{{this.value}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </fieldset>
+      
+      <fieldset>
+        <legend>{{translations.dpi}}</legend>
+        <div class="m-customize-template-option">
+          <select id="template-dpi">
+            {{#each dpiOptions}}
+              <option value="{{this}}" {{#if default}} selected{{/if}}>{{this}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div class="m-customize-template-right-wrapper">
+    <div class="m-customize-template-right" id="m-customize-template-right"></div>
+  </div>
+</div>

@@ -222,12 +222,8 @@ class Vector extends Layer {
    * @api stable
    */
   addFeatures(features, update) {
-    features.forEach((newFeature) => {
-      const feature = this.features_.find((feature2) => feature2.equals(newFeature));
-      if (isNullOrEmpty(feature)) {
-        this.features_.push(newFeature);
-      }
-    });
+    this.features_.push(...features);
+
     if (update) {
       this.updateLayer_();
     }
@@ -365,9 +361,9 @@ class Vector extends Layer {
             vars: this.parseFeaturesForTemplate_(features),
             parseToHtml: false,
           });
-          if (this.name) {
-            const layerNameHTML = `<div>${this.name}</div>`;
-            htmlAsText = layerNameHTML + htmlAsText;
+          if (this.legend) {
+            const layerLegendHTML = `<div class="m-legend">${this.legend}</div>`;
+            htmlAsText = layerLegendHTML + htmlAsText;
           }
           const featureTabOpts = {
             icon: 'g-cartografia-pin',
