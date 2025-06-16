@@ -131,7 +131,17 @@ class Popup extends Base {
    * @api
    */
   removeTab(tabToRemove) {
+    const tabs = [];
+    let tabRemove = null;
+    this.tabs_.forEach((tab) => {
+      if (tab.content !== tabToRemove.content) {
+        tabs.push(tab);
+      } else {
+        tabRemove = tab;
+      }
+    });
     this.tabs_ = this.tabs_.filter((tab) => tab.content !== tabToRemove.content);
+    this.fire(EventType.POPUP_REMOVED_TAB, [tabRemove]);
     this.update();
   }
 
@@ -145,6 +155,7 @@ class Popup extends Base {
     let tab = tabOptions;
     if (!(tab instanceof Tab)) {
       tab = new Tab(tabOptions);
+      this.fire(EventType.POPUP_ADDED_TAB, [tab]);
     }
     this.tabs_.push(tab);
     this.update();
@@ -183,6 +194,8 @@ class Popup extends Base {
     if (IDEE.config.MOVE_MAP_EXTRACT) {
       this.getImpl().setAnimationView();
     }
+    this.fire(EventType.POPUP_ADDED, [this]);
+    map.fire(EventType.POPUP_ADDED, [this]);
   }
 
   /**

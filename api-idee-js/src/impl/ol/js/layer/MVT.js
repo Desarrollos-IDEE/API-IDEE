@@ -216,9 +216,9 @@ class MVT extends Vector {
           vars: this.parseFeaturesForTemplate_(features),
           parseToHtml: false,
         });
-        if (this.name) {
-          const layerNameHTML = `<div>${this.name}</div>`;
-          htmlAsText = layerNameHTML + htmlAsText;
+        if (this.legend) {
+          const layerLegendHTML = `<div class="m-legend">${this.legend}</div>`;
+          htmlAsText = layerLegendHTML + htmlAsText;
         }
 
         const featureTabOpts = {
@@ -330,10 +330,10 @@ class MVT extends Vector {
         if (auxValue.tileCoord[0] === z && auxValue.getState() === TileState.LOADED) {
           const sourceTiles = auxValue.getSourceTiles();
           for (let i = 0, ii = sourceTiles.length; i < ii; i += 1) {
-            const olFeature = sourceTiles[i].getFeatures()
+            const implFeature = sourceTiles[i].getFeatures()
               .find((feature2) => feature2.getProperties().id === id); // feature2.getId()
-            if (olFeature) {
-              features.push(olFeature);
+            if (implFeature) {
+              features.push(implFeature);
             }
           }
         }

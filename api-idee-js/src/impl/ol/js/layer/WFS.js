@@ -165,9 +165,9 @@ class WFS extends Vector {
             vars: this.parseFeaturesForTemplate_(features),
             parseToHtml: false,
           });
-          if (this.name) {
-            const layerNameHTML = `<div>${this.name}</div>`;
-            htmlAsText = layerNameHTML + htmlAsText;
+          if (this.legend) {
+            const layerLegendHTML = `<div class="m-legend">${this.legend}</div>`;
+            htmlAsText = layerLegendHTML + htmlAsText;
           }
           const featureTabOpts = {
             icon: 'g-cartografia-pin',
@@ -351,6 +351,45 @@ class WFS extends Vector {
       defaultValue = '-';
     }
     return defaultValue;
+  }
+
+  /**
+   * Este método sobreescribe la URL de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newURL Nueva URL de la capa.
+   * @api
+   */
+  setURL(newURL) {
+    this.url = newURL;
+    this.refresh(true);
+  }
+
+  /**
+   * Este método sobreescribe el nombre de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newName Nuevo nombre de la capa.
+   * @api
+   */
+  setName(newName) {
+    this.name = newName;
+    this.refresh(true);
+  }
+
+  /**
+   * Este método sobreescribe el espacio de nombres de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newNamespace Nuevo espacio de nombres de la capa.
+   * @api
+   */
+  setNamespace(newNamespace) {
+    this.namespace = newNamespace;
+    this.refresh(true);
   }
 
   // /**
