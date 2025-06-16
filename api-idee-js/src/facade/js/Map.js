@@ -598,7 +598,7 @@ class Map extends Base {
   }
 
   /**
-   * Este método obtiene las capas que no están en ningún grupo de capas.
+   * Este método obtiene las capas que no están en ningún grupo de capas o sección.
    *
    * @function
    * @param {Array<string>|Array<Mx.parameters.Layer>} layersParam Matriz de nombres de capas.
@@ -606,7 +606,8 @@ class Map extends Base {
    * @api
    */
   getRootLayers(layersParamVar) {
-    const layers = this.getLayers(layersParamVar).filter((l) => isNullOrEmpty(l.group));
+    const layers = this.getLayers(layersParamVar)
+      .filter((l) => isNullOrEmpty(l.group) && isNullOrEmpty(l.getSection()));
 
     return layers;
   }
@@ -870,6 +871,73 @@ class Map extends Base {
       this.getImpl().removeLayers(layers);
     }
 
+    return this;
+  }
+
+  /**
+   * Este método devuelve las secciones que tenga el mapa.
+   *
+   * @function
+   * @public
+   * @returns {Array<IDEE.layer.Sections>} Secciones del mapa.
+   * @api
+   */
+  getSections() {
+    // checks if the implementation can manage layers
+    if (isUndefined(MapImpl.prototype.getSections)) {
+      Exception(getValue('exception').getsections_method);
+    }
+    return this.getImpl().getSections().sort(Map.LAYER_SORT);
+  }
+
+  /**
+   * Añade una sección al mapa.
+   *
+   * @public
+   * @function
+   * @param {Array<IDEE.layer.Sections>} sections Secciones a añadir.
+   * @returns {IDEE.Map}
+   * @api
+   */
+  addSections(sections) {
+    let sect = sections;
+    // checks if the parameter is null or empty
+    if (isNull(sect)) {
+      Exception('No ha especificado ninguna sección');
+    }
+    // checks if the implementation can manage groups
+    if (isUndefined(MapImpl.prototype.addSections)) {
+      Exception(getValue('exception').addsections_method);
+    }
+    // parses parameters to Array
+    if (!isArray(sect)) {
+      sect = [sect];
+    }
+    // adds the groups
+    this.getImpl().addSections(sect);
+    return this;
+  }
+
+  /**
+   * Elimina una sección del mapa.
+   *
+   * @function
+   * @public
+   * @param {Array<IDEE.layer.Sections>} sections Secciones a eliminar.
+   * @returns {IDEE.Map}
+   * @api
+   */
+  removeSections(sections) {
+    // checks if the parameter is null or empty
+    if (isNull(sections)) {
+      Exception('No ha especificado ninguna sección a eliminar');
+    }
+    // checks if the implementation can manage groups
+    if (isUndefined(this.getImpl().removeSections)) {
+      Exception(getValue('exception').removesections_method);
+    }
+    // removes the layers
+    this.getImpl().removeSections(sections);
     return this;
   }
 

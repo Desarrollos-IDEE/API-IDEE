@@ -282,6 +282,10 @@
     "id_exists": "El ID indicado ya existe.",
     "transparent_deprecated": "El parámetro 'transparent' ha quedado obsoleto, se recomienda usar en su lugar 'isBase'.",
     "getOL3Layer_deprecated": "El método getOL3Layer ha quedado obsoleto, se recomienda usar en su lugar getLayer.",
-    "setOL3Layer_deprecated": "El método setOL3Layer ha quedado obsoleto, se recomienda usar en su lugar setLayer."
+    "setOL3Layer_deprecated": "El método setOL3Layer ha quedado obsoleto, se recomienda usar en su lugar setLayer.",
+    "sectionslayer_method": "La implementación usada no puede crear capas Sections.",
+    "getsections_method": "La implementación usada no posee el método getSections.",
+    "addsections_method": "La implementación usada no posee el método addSections.",
+    "removesections_method": "La implementación usada no posee el método removeSections."
   }
 }

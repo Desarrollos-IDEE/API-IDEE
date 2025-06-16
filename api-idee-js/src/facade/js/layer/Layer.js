@@ -139,6 +139,15 @@ class LayerBase extends Base {
      * @private
      */
     this.isReset_ = false;
+
+    /**
+     * Sección de la capa.
+     *
+     * @private
+     * @type {IDEE.layer.Sections}
+     * @api
+     */
+    this.section_ = null;
   }
 
   /**
@@ -497,6 +506,31 @@ class LayerBase extends Base {
    */
   setMap(map) {
     this.map_ = map;
+  }
+
+  /**
+   * Este método devuelve la sección de esta capa, si la tiene.
+   *
+   * @public
+   * @function
+   * @returns {IDEE.layer.Sections} Sección de la capa.
+   * @api
+   */
+  getSection() {
+    return this.section_;
+  }
+
+  /**
+   * Este método añade la capa dentro de una sección. Una capa solo puede
+   * estar dentro de una sección a la vez.
+   *
+   * @public
+   * @function
+   * @param {IDEE.layer.Sections} section Sección a la que se añadirá la capa.
+   * @api
+   */
+  setSection(section) {
+    this.section_ = section;
   }
 
   /**
