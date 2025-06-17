@@ -3047,6 +3047,38 @@ class Map extends MObject {
   }
 
   /**
+   * This function gets the rotation of the view map
+   *
+   * @function
+   * @public
+   * @api
+   * @return {number}
+   */
+  getRotation() {
+    let rotation;
+    const view = this.map_.getView();
+    if (!isNullOrEmpty(view)) {
+      rotation = view.getRotation();
+    }
+    return rotation;
+  }
+
+  /**
+   * This function sets the rotation of the view map
+   *
+   * @function
+   * @public
+   * @api
+   * @param {number}
+   */
+  setRotation(rotation) {
+    const view = this.map_.getView();
+    if (!isNullOrEmpty(view)) {
+      view.setRotation(rotation);
+    }
+  }
+
+  /**
    * Este método se ejecuta cuando el usuario mueve el ratón.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function

@@ -4187,6 +4187,37 @@ class Map extends Base {
   get areasContainer() {
     return this._areasContainer;
   }
+
+  /**
+   * This function gets the rotation of the view map
+   *
+   * @function
+   * @public
+   * @api
+   * @return {number}
+   */
+  getRotation() {
+    if (isUndefined(MapImpl.prototype.getRotation)) {
+      Exception(getValue('exception').no_get_rotation_method);
+    }
+    return (this.getImpl().getRotation()) * (180 / Math.PI);
+  }
+
+  /**
+   * This function sets the rotation of the view map
+   *
+   * @function
+   * @public
+   * @api
+   * @param {number}
+   */
+  setRotation(rotation) {
+    if (isUndefined(MapImpl.prototype.setRotation)) {
+      Exception(getValue('exception').no_set_rotation_method);
+    }
+    this.getImpl().setRotation(rotation * (Math.PI / 180));
+    this.fire(EventType.CHANGE_ROTATION, [rotation]);
+  }
 }
 
 /**
