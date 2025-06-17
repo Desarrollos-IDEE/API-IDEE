@@ -86,11 +86,6 @@ class WFS extends Vector {
     this.loaded_ = false;
 
     /**
-     * WFS popup_. Mostrar popup.
-     */
-    this.popup_ = null;
-
-    /**
      * WFS options.getFeatureOutputFormat. Formato de retorno de los features, por defecto
      * default application/json.
      */
@@ -161,14 +156,10 @@ class WFS extends Vector {
         } else {
           const popupTemplate = !isNullOrEmpty(this.template)
             ? this.template : geojsonPopupTemplate;
-          let htmlAsText = compileTemplate(popupTemplate, {
+          const htmlAsText = compileTemplate(popupTemplate, {
             vars: this.parseFeaturesForTemplate_(features),
             parseToHtml: false,
           });
-          if (this.name) {
-            const layerNameHTML = `<div>${this.name}</div>`;
-            htmlAsText = layerNameHTML + htmlAsText;
-          }
           const featureTabOpts = {
             icon: 'g-cartografia-pin',
             title: this.name,
