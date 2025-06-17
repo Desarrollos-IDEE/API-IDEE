@@ -58,6 +58,7 @@
 - Se tienen en cuenta los filros aplicados en las capas Vector en el metodo getFeaturesExtent.
 - Se añaden los eventos POPUP_ADDED, POPUP_REMOVED, POPUP_ADDED_TAB, POPUP_REMOVED_TAB.
 - Se eliminan los métodos getLegendURL/setLegendURL de WMTS para que hereden de Layer.
+- Se elimina this.popup = null innecesaio del constructor de WFS.
 - Mejoras en la gestión de eventos de carga en capas MVT.
 - Se elimina el setTimeout en el método addTo para aplicar el estilo en las capas MVT.
 - Se limitan la cantidad de eventos disparados durante la eliminacion de features en estilos cluster.

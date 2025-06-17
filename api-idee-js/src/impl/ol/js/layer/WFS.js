@@ -86,11 +86,6 @@ class WFS extends Vector {
     this.loaded_ = false;
 
     /**
-     * WFS popup_. Mostrar popup.
-     */
-    this.popup_ = null;
-
-    /**
      * WFS options.getFeatureOutputFormat. Formato de retorno de los features, por defecto
      * default application/json.
      */
