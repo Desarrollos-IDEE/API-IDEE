@@ -206,13 +206,23 @@ class Vector extends LayerBase {
    * falso no la vuelve a cargar.
    * @api
    */
-  addFeatures(featuresParam, update = false) {
-    let features = featuresParam;
-    if (!isNullOrEmpty(features)) {
-      if (!isArray(features)) {
-        features = [features];
+  addFeatures(featuresParam, update = false, force = false) {
+    if (force || (
+      (!isNullOrEmpty(this.url)
+      || !isNullOrEmpty(this.getImpl()))
+        && (this.getImpl().isValidSource()
+        && this.getImpl().isLoaded()))) {
+      let features = featuresParam;
+      if (!isNullOrEmpty(features)) {
+        if (!isArray(features)) {
+          features = [features];
+        }
+        this.getImpl().addFeatures(features, update);
       }
-      this.getImpl().addFeatures(features, update);
+    } else {
+      this.on(EventType.LOAD, () => {
+        this.addFeatures(featuresParam, update, true);
+      });
     }
   }
 

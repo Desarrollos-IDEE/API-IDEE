@@ -46,3 +46,4 @@
 - Se implementa el parámetro styles de WMS en API REST.
 - Se implementa el parámetro sldVersion en WMS tanto por constructor como por API REST.
 - Se implementa en WMTS el parámetro tileLoadFunction en el vendors, ademas de setTileLoadFunction.
+- En las capas vector, en el addFeatures se espera a que la capa esté cargada en caso de no estarlo aún.
