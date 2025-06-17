@@ -2,10 +2,10 @@
  * @module IDEE/impl/layer/WFS
  */
 import FormatGeoJSON from 'IDEE/format/GeoJSON';
-import { isNullOrEmpty, isFunction } from 'IDEE/util/Utils';
-import Popup from 'IDEE/Popup';
-import { compileSync as compileTemplate } from 'IDEE/util/Template';
-import geojsonPopupTemplate from 'templates/geojson_popup';
+import { isNullOrEmpty /* , isFunction */ } from 'IDEE/util/Utils';
+// import Popup from 'IDEE/Popup';
+// import { compileSync as compileTemplate } from 'IDEE/util/Template';
+// import geojsonPopupTemplate from 'templates/geojson_popup';
 import * as EventType from 'IDEE/event/eventtype';
 import OLSourceVector from 'ol/source/Vector';
 import { get as getProj } from 'ol/proj';
@@ -136,55 +136,6 @@ class WFS extends Vector {
       this.facadeVector_.removeFeatures(this.facadeVector_.getFeatures(true));
     }
     this.updateSource_(forceNewSource);
-  }
-
-  /**
-   * Este método ejecuta un objeto geográfico seleccionado.
-   *
-   * @function
-   * @param {ol.features} features Objetos geográficos de Openlayers.
-   * @param {Array} coord Coordenadas.
-   * @param {Object} evt Eventos.
-   * @api stable
-   * @expose
-   */
-  selectFeatures(features, coord, evt) {
-    if (this.extract === true) {
-      const feature = features[0];
-      // unselects previous features
-      this.unselectFeatures();
-
-      if (!isNullOrEmpty(feature)) {
-        const clickFn = feature.getAttribute('vendor.api_idee.click');
-        if (isFunction(clickFn)) {
-          clickFn(evt, feature);
-        } else {
-          const popupTemplate = !isNullOrEmpty(this.template)
-            ? this.template : geojsonPopupTemplate;
-          let htmlAsText = compileTemplate(popupTemplate, {
-            vars: this.parseFeaturesForTemplate_(features),
-            parseToHtml: false,
-          });
-          if (this.name) {
-            const layerNameHTML = `<div>${this.name}</div>`;
-            htmlAsText = layerNameHTML + htmlAsText;
-          }
-          const featureTabOpts = {
-            icon: 'g-cartografia-pin',
-            title: this.name,
-            content: htmlAsText,
-          };
-          let popup = this.map.getPopup();
-          if (isNullOrEmpty(popup)) {
-            popup = new Popup();
-            popup.addTab(featureTabOpts);
-            this.map.addPopup(popup, coord);
-          } else {
-            popup.addTab(featureTabOpts);
-          }
-        }
-      }
-    }
   }
 
   /**
