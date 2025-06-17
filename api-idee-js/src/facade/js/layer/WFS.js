@@ -295,6 +295,42 @@ class WFS extends Vector {
   }
 
   /**
+   * Este método sobreescribe la URL de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newURL Nueva URL de la capa.
+   * @api
+   */
+  setURL(newURL) {
+    this.getImpl().setURL(newURL);
+  }
+
+  /**
+   * Este método sobreescribe el nombre de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newName Nuevo nombre de la capa.
+   * @api
+   */
+  setName(newName) {
+    this.getImpl().setName(newName);
+  }
+
+  /**
+   * Este método sobreescribe el espacio de nombres de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newNamespace Nuevo espacio de nombres de la capa.
+   * @api
+   */
+  setNamespace(newNamespace) {
+    this.getImpl().setNamespace(newNamespace);
+  }
+
+  /**
    * Este método Sobrescribe el filtro CQL.
    * @function
    * @param {String} newCQLparam Nuevo filtro CQL.

@@ -480,8 +480,8 @@ class WMTS extends LayerBase {
   setTileLoadFunction(func) {
     this.olLayer.getSource().setTileLoadFunction(func);
   }
-  
-  /*    
+
+  /*
    * Este método elimina y crea la capa de Openlayers.
    *
    * @function

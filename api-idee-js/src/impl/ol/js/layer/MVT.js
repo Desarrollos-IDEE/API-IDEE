@@ -7,7 +7,7 @@ import OLLayerVectorTile from 'ol/layer/VectorTile';
 import { compileSync as compileTemplate } from 'IDEE/util/Template';
 import geojsonPopupTemplate from 'templates/geojson_popup';
 import Popup from 'IDEE/Popup';
-import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
+import { isNullOrEmpty, extend, isObject } from 'IDEE/util/Utils';
 import * as EventType from 'IDEE/event/eventtype';
 import TileEventType from 'ol/source/TileEventType';
 import TileState from 'ol/TileState';
@@ -155,7 +155,7 @@ class MVT extends Vector {
 
     // register events in order to fire the LOAD event
     source.on(TileEventType.TILELOADERROR, (evt) => this.checkAllTilesLoaded_(evt));
-    // source.on(TileEventType.TILELOADEND, (evt) => this.checkAllTilesLoaded_(evt));
+    source.on(TileEventType.TILELOADEND, (evt) => this.checkAllTilesLoaded_(evt));
 
     this.olLayer = new OLLayerVectorTile(extend({
       source,
@@ -196,22 +196,6 @@ class MVT extends Vector {
         });
       }
     });
-
-    setTimeout(() => {
-      const allLayers = [...this.map.getImpl().getAllLayerInGroup(), ...this.map.getLayers()];
-      const filtered = allLayers.filter((l) => {
-        const checkLayers = l.getImpl().layers_ !== undefined
-          ? l.getImpl().layers_ === this.layers_
-          : true;
-        return l.url === this.url && checkLayers && l.idLayer === this.facadeVector_.idLayer;
-      });
-
-      if (filtered.length > 0) {
-        if (filtered[0].getStyle() !== null) {
-          filtered[0].setStyle(filtered[0].getStyle());
-        }
-      }
-    }, 10);
   }
 
   /**
@@ -234,9 +218,9 @@ class MVT extends Vector {
           vars: this.parseFeaturesForTemplate_(features),
           parseToHtml: false,
         });
-        if (this.name) {
-          const layerNameHTML = `<div>${this.name}</div>`;
-          htmlAsText = layerNameHTML + htmlAsText;
+        if (this.legend) {
+          const layerLegendHTML = `<div class="m-legend">${this.legend}</div>`;
+          htmlAsText = layerLegendHTML + htmlAsText;
         }
 
         const featureTabOpts = {
@@ -348,10 +332,10 @@ class MVT extends Vector {
         if (auxValue.tileCoord[0] === z && auxValue.getState() === TileState.LOADED) {
           const sourceTiles = auxValue.getSourceTiles();
           for (let i = 0, ii = sourceTiles.length; i < ii; i += 1) {
-            const olFeature = sourceTiles[i].getFeatures()
+            const implFeature = sourceTiles[i].getFeatures()
               .find((feature2) => feature2.getProperties().id === id); // feature2.getId()
-            if (olFeature) {
-              features.push(olFeature);
+            if (implFeature) {
+              features.push(implFeature);
             }
           }
         }
@@ -373,7 +357,10 @@ class MVT extends Vector {
   checkAllTilesLoaded_(evt) {
     const currTileCoord = evt.tile.getTileCoord();
     // eslint-disable-next-line no-underscore-dangle
-    const tileImages = this.olLayer.getSource().sourceTiles_;
+    let tileImages = this.olLayer.getSource().sourceTiles_;
+    if (isObject(tileImages)) {
+      tileImages = Object.values(tileImages);
+    }
     if (Array.isArray(tileImages)) {
       const loaded = tileImages.every((tile) => {
         const tileCoord = tile.getTileCoord();
@@ -427,17 +414,6 @@ class MVT extends Vector {
    */
   getProjection() {
     return this.projection_;
-  }
-
-  /**
-   * Devuelve verdadero si la capa esta cargada.
-   *
-   * @function
-   * @returns {Boolean} Verdadero.
-   * @api stable
-   */
-  isLoaded() {
-    return true;
   }
 
   /**

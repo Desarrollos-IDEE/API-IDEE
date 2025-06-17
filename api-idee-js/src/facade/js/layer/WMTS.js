@@ -231,7 +231,7 @@ class WMTS extends LayerBase {
   setTileLoadFunction(func) {
     this.getImpl().setTileLoadFunction(func);
   }
-  
+
   /**
    * Sobreescribe la URL de la capa.
    *
