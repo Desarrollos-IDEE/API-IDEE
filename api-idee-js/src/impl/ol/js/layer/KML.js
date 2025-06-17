@@ -206,9 +206,9 @@ class KML extends Vector {
           },
           parseToHtml: false,
         });
-        if (this.name) {
-          const layerNameHTML = `<div>${this.name}</div>`;
-          htmlAsText = layerNameHTML + htmlAsText;
+        if (this.legend) {
+          const layerLegendHTML = `<div class="m-legend">${this.legend}</div>`;
+          htmlAsText = layerLegendHTML + htmlAsText;
         }
         this.tabPopup_ = {
           icon: 'g-cartografia-comentarios',
