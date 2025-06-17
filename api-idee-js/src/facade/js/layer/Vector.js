@@ -204,6 +204,8 @@ class Vector extends LayerBase {
    * se incluirán a la capa.
    * @param {Boolean} update Verdadero se vuelve a cargar la capa,
    * falso no la vuelve a cargar.
+   * @param {Boolean} force Si es verdadero, fuerza no esperar al
+   * evento LOAD de la capa aunque no esté cargada o no sea válida.
    * @api
    */
   addFeatures(featuresParam, update = false, force = false) {
