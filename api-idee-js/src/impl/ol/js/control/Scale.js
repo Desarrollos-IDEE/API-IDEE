@@ -50,7 +50,7 @@ const updateElement = (viewState, container, map, exact) => {
   }
   const elem = document.querySelector('#m-level-number');
   if (elem !== null) {
-    elem.innerHTML = map.getZoom();
+    elem.innerHTML = map.getZoom().toFixed(2);
   }
 };
 

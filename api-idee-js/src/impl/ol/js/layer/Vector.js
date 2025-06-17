@@ -7,6 +7,7 @@ import Popup from 'IDEE/Popup';
 import geojsonPopupTemplate from 'templates/geojson_popup';
 import * as EventType from 'IDEE/event/eventtype';
 import Style from 'IDEE/style/Style';
+import StyleCluster from 'IDEE/style/Cluster';
 import { get as getProj } from 'ol/proj';
 import OLLayerVector from 'ol/layer/Vector';
 import OLSourceVector from 'ol/source/Vector';
@@ -288,6 +289,10 @@ class Vector extends Layer {
   removeFeatures(features) {
     this.features_ = this.features_.filter((f) => !(features.includes(f)));
     this.redraw();
+    const style = this.facadeVector_.getStyle();
+    if (style instanceof StyleCluster) {
+      style.refresh();
+    }
   }
 
   /**
@@ -301,9 +306,9 @@ class Vector extends Layer {
     const olLayer = this.getLayer();
     if (!isNullOrEmpty(olLayer)) {
       const olSource = olLayer.getSource();
-      /**  if (olSource instanceof OLSourceCluster) {
-        olSource = olSource.getSource();
-      } */
+      // if (olSource instanceof OLSourceCluster) {
+      //   olSource = olSource.getSource();
+      // }
       // remove all features from ol vector
       const olFeatures = [...olSource.getFeatures()];
       olFeatures.forEach(olSource.removeFeature, olSource);
