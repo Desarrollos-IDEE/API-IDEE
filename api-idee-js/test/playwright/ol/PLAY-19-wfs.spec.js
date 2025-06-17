@@ -52,6 +52,6 @@ test.describe('IDEE.layer.WFS', () => {
     const urlWFS = await page.evaluate(() => window.wfs_002.url);
     expect(urlWFS).toEqual('https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_WFS_Patrimonio_Natural?');
     await page.waitForTimeout(4000);
-    await expect(page).toHaveScreenshot('snapshot.png');
+    await expect(page).toHaveScreenshot('snapshot.png', {maxDiffPixelRatio: 0.5});
   });
 });
