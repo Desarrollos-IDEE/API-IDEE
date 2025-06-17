@@ -138,7 +138,6 @@ class WFS extends Vector {
     this.updateSource_(forceNewSource);
   }
 
-  /**
    * Este método actualiza la capa de origen.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
@@ -302,6 +301,45 @@ class WFS extends Vector {
       defaultValue = '-';
     }
     return defaultValue;
+  }
+
+  /**
+   * Este método sobreescribe la URL de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newURL Nueva URL de la capa.
+   * @api
+   */
+  setURL(newURL) {
+    this.url = newURL;
+    this.refresh(true);
+  }
+
+  /**
+   * Este método sobreescribe el nombre de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newName Nuevo nombre de la capa.
+   * @api
+   */
+  setName(newName) {
+    this.name = newName;
+    this.refresh(true);
+  }
+
+  /**
+   * Este método sobreescribe el espacio de nombres de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newNamespace Nuevo espacio de nombres de la capa.
+   * @api
+   */
+  setNamespace(newNamespace) {
+    this.namespace = newNamespace;
+    this.refresh(true);
   }
 
   // /**

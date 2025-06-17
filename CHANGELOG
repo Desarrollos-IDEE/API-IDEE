@@ -45,11 +45,12 @@
 - Se mueve el parámetro styles de WMS al primer objeto.
 - Se implementa el parámetro styles de WMS en API REST.
 - Se implementa el parámetro sldVersion en WMS tanto por constructor como por API REST.
+- Se añaden los métodos setName, setURL y setNamespace en la capa WFS.
 - Se modifica el evento ADDED_TO_MAP de las capas WMTS para que se dispare desde fachada.
 - Se elimina el filtrado de objetos geográficos con mismo identificador en el método addFeatures en la capa Vector.
 - Se implementa en WMTS el parámetro tileLoadFunction en el vendors, ademas de setTileLoadFunction.
 - En KML eliminado extract, junto con su getter y setter, ya que los hereda de Vector y la funcionalidad es la misma.
-- Se modifica selectFeatures en Vector y en todas las capas que sustituyan dicho método para que muestre el nombre de la capa en el popup.
+- Se modifica selectFeatures en Vector y en todas las capas que sustituyan dicho método para que muestre la leyenda de la capa en el popup. Aparte, se le añade un estilo personalizado a dicha leyenda.
 - Se añaden métodos setURL y setName para capas WMTS.
 - Se implementa métodos setURL y recreateLayer en capas KML.
 - Eliminado el metodo getMaxExtent de la implementación de Layer.
@@ -57,7 +58,13 @@
 - Se tienen en cuenta los filros aplicados en las capas Vector en el metodo getFeaturesExtent.
 - Se añaden los eventos POPUP_ADDED, POPUP_REMOVED, POPUP_ADDED_TAB, POPUP_REMOVED_TAB.
 - Se eliminan los métodos getLegendURL/setLegendURL de WMTS para que hereden de Layer.
+- Mejoras en la gestión de eventos de carga en capas MVT.
+- Se elimina el setTimeout en el método addTo para aplicar el estilo en las capas MVT.
+- Se limitan la cantidad de eventos disparados durante la eliminacion de features en estilos cluster.
 - Se evita que se muestre el popup en features cluster en kml
 - Se eliminan los métodos getLegendURL/setLegendURL de WMTS para que hereden de Layer.
 - En WFS eliminado extract, junto con su getter y setter, ya que los hereda de Vector y la funcionalidad es la misma.
 - En WFS eliminada logica de selectFeatures para usar la heredada de Vector.
+- En response añadida comprobación extra de que la respuesta es correcta.
+- Se implementa funcionalidad "takeMeThere" en popups.
+
