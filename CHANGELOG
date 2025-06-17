@@ -56,6 +56,7 @@
 - Eliminado el metodo getMaxExtent de la implementación de Layer.
 - Se modifica el evento ADDED_TO_MAP de las capas KML.
 - Se tienen en cuenta los filros aplicados en las capas Vector en el metodo getFeaturesExtent.
+- Se añade identificador al Popup.
 - Se añaden los eventos POPUP_ADDED, POPUP_REMOVED, POPUP_ADDED_TAB, POPUP_REMOVED_TAB.
 - Se eliminan los métodos getLegendURL/setLegendURL de WMTS para que hereden de Layer.
 - Se elimina this.popup = null innecesaio del constructor de WFS.
