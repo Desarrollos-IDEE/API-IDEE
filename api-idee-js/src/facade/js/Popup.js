@@ -6,12 +6,31 @@ import PopupImpl from 'impl/Popup';
 import 'assets/css/popup';
 import popupTemplate from 'templates/popup';
 import {
-  isUndefined, isNullOrEmpty, transfomContent,
+  isUndefined, isNullOrEmpty, transfomContent, reproject, getSystem,
 } from './util/Utils';
 import Base from './Base';
 import { compileSync as compileTemplate } from './util/Template';
 import * as EventType from './event/eventtype';
 import MWindow from './util/Window';
+import { getValue } from './i18n/language';
+
+/**
+ * Obtiene la URL de Google Maps con las coordenadas dadas.
+ *
+ * @public
+ * @param {string} platform Plataforma del dispositivo ('android', 'ios', 'unknown').
+ * @param {Array<number>} coords Coordenadas.
+ * @function
+ * @api
+ */
+const getUrlFromPlatform = (platform, coords) => {
+  const platformURL = {
+    android: (coord) => `geo:${coord[1]}},${coord[0]}?q=${coord[1]},${coord[0]}`,
+    ios: (coord) => `maps://?ll=${coord[1]},${coord[0]}`,
+    unknown: (coord) => `http://maps.google.com?q=${coord[1]},${coord[0]}`,
+  };
+  return platformURL[platform](coords);
+};
 
 /**
  * @classdesc
@@ -131,7 +150,17 @@ class Popup extends Base {
    * @api
    */
   removeTab(tabToRemove) {
+    const tabs = [];
+    let tabRemove = null;
+    this.tabs_.forEach((tab) => {
+      if (tab.content !== tabToRemove.content) {
+        tabs.push(tab);
+      } else {
+        tabRemove = tab;
+      }
+    });
     this.tabs_ = this.tabs_.filter((tab) => tab.content !== tabToRemove.content);
+    this.fire(EventType.POPUP_REMOVED_TAB, [tabRemove]);
     this.update();
   }
 
@@ -145,6 +174,7 @@ class Popup extends Base {
     let tab = tabOptions;
     if (!(tab instanceof Tab)) {
       tab = new Tab(tabOptions);
+      this.fire(EventType.POPUP_ADDED_TAB, [tab]);
     }
     this.tabs_.push(tab);
     this.update();
@@ -159,10 +189,15 @@ class Popup extends Base {
   addTo(map, coordinate) {
     this.map_ = map;
     if (isNullOrEmpty(this.element_)) {
+      const coords = reproject(coordinate, this.map_.getProjection().code, 'EPSG:4326');
+      const platform = getSystem();
+
       const html = compileTemplate(popupTemplate, {
         jsonp: true,
         vars: {
           tabs: this.tabs_,
+          options: Popup.options,
+          url: getUrlFromPlatform(platform, coords),
         },
       });
       if (this.tabs_.length > 0) {
@@ -183,6 +218,8 @@ class Popup extends Base {
     if (IDEE.config.MOVE_MAP_EXTRACT) {
       this.getImpl().setAnimationView();
     }
+    this.fire(EventType.POPUP_ADDED, [this]);
+    map.fire(EventType.POPUP_ADDED, [this]);
   }
 
   /**
@@ -193,10 +230,15 @@ class Popup extends Base {
    */
   update() {
     if (!isNullOrEmpty(this.map_)) {
+      const coords = reproject(this.coord_, this.map_.getProjection().code, 'EPSG:4326');
+      const platform = getSystem();
+
       const html = compileTemplate(popupTemplate, {
         jsonp: true,
         vars: {
           tabs: this.tabs_,
+          options: Popup.options,
+          url: getUrlFromPlatform(platform, coords),
         },
       });
       if (this.tabs_.length > 0) {
@@ -587,5 +629,18 @@ Popup.status.DEFAULT = 'm-default';
  * @api
  */
 Popup.status.FULL = 'm-full';
+
+/**
+ * Opciones para el parámetro "takeMeThere".
+ * @const
+ * @type {object}
+ * @public
+ * @api
+ */
+Popup.options = {
+  takeMeThere: false,
+  textMode: true,
+  msg: getValue('popup').msg,
+};
 
 export default Popup;

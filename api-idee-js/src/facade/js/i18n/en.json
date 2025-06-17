@@ -101,6 +101,9 @@
       "text2": "In the dropdown you can see all the available implementations (OpenLayers, Cesium, etc)."
     }
   },
+  "popup": {
+    "msg": "Take me there"
+  },
   "exception": {
     "addto_method": "The used implementation does not have the addTo method",
     "getelement_method": "The used implementation does not have the getElement method",

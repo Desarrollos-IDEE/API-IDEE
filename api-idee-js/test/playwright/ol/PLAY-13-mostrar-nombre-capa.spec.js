@@ -14,7 +14,7 @@ test.describe('popup muentra nombre de capa', () => {
     await page.evaluate(() => {   
       const capaPrueba = new IDEE.layer.Vector({
         name: "capa de prueba",
-        legend: 'vector',
+        legend: 'feature que cubre Andalucía',
         maxExtent: [-837505.6678977766,4299847.100283837,-181529.7548292378,4682782.337478167],
       });
       const feature = new IDEE.Feature("feature",{
@@ -61,6 +61,6 @@ test.describe('popup muentra nombre de capa', () => {
     await page.mouse.click(640, 360);
     const popup = await page.locator('.m-popup.m-collapsed .m-body');
     const text = await popup.innerText({ timeout: 2000 });
-    expect(text).toContain("capa de prueba");
+    expect(text).toContain("feature que cubre Andalucía");
   });
 });
