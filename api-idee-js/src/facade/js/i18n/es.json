@@ -102,6 +102,9 @@
       "text2": "En el desplegable se muestran todas las implementaciones disponibles (OpenLayers, Cesium, etc)."
     }
   },
+  "popup": {
+    "msg": "Llévame allí"
+  },
   "exception": {
     "addto_method": "La implementación usada no posee el método addTo",
     "getelement_method": "La implementación usada no posee el método getElement",
