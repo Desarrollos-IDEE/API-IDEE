@@ -299,7 +299,7 @@
   {
     "name": "printviewmanagement",
     "plugin": "[printviewmanagement]",
-    "version": "v1.0",
+    "version": "v2.0",
     "url_es": "printviewmanagement.jsp?language=es",
     "url_en": "printviewmanagement.jsp?language=en",
     "url_git": "https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/printviewmanagement",

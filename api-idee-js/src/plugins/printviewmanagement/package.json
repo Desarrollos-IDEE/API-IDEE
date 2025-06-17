@@ -55,6 +55,8 @@
   },
   "dependencies": {
     "file-saver": "2.0.2",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.1",
     "jszip": "^3.5.0"
   },
   "overrides": {
