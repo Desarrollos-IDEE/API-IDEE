@@ -131,7 +131,7 @@ class MVT extends Vector {
    */
   addTo(map, addLayer = true) {
     this.map = map;
-    this.fire(EventType.ADDED_TO_MAP);
+
     if (this.layers_ !== undefined) {
       this.formater_ = new MVTFormatter({
         layers: this.layers_,
@@ -172,6 +172,7 @@ class MVT extends Vector {
 
     if (addLayer) {
       this.map.getMapImpl().addLayer(this.olLayer);
+      this.facadeVector_?.fire(EventType.ADDED_TO_MAP);
     }
 
     // clear features when zoom changes
