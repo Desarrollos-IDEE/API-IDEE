@@ -2,10 +2,10 @@
  * @module IDEE/impl/layer/WFS
  */
 import FormatGeoJSON from 'IDEE/format/GeoJSON';
-import { isNullOrEmpty, isFunction } from 'IDEE/util/Utils';
-import Popup from 'IDEE/Popup';
-import { compileSync as compileTemplate } from 'IDEE/util/Template';
-import geojsonPopupTemplate from 'templates/geojson_popup';
+import { isNullOrEmpty /* , isFunction */ } from 'IDEE/util/Utils';
+// import Popup from 'IDEE/Popup';
+// import { compileSync as compileTemplate } from 'IDEE/util/Template';
+// import geojsonPopupTemplate from 'templates/geojson_popup';
 import * as EventType from 'IDEE/event/eventtype';
 import OLSourceVector from 'ol/source/Vector';
 import { get as getProj } from 'ol/proj';
@@ -86,11 +86,6 @@ class WFS extends Vector {
     this.loaded_ = false;
 
     /**
-     * WFS popup_. Mostrar popup.
-     */
-    this.popup_ = null;
-
-    /**
      * WFS options.getFeatureOutputFormat. Formato de retorno de los features, por defecto
      * default application/json.
      */
@@ -138,56 +133,6 @@ class WFS extends Vector {
     this.updateSource_(forceNewSource);
   }
 
-  /**
-   * Este método ejecuta un objeto geográfico seleccionado.
-   *
-   * @function
-   * @param {ol.features} features Objetos geográficos de Openlayers.
-   * @param {Array} coord Coordenadas.
-   * @param {Object} evt Eventos.
-   * @api stable
-   * @expose
-   */
-  selectFeatures(features, coord, evt) {
-    if (this.extract === true) {
-      const feature = features[0];
-      // unselects previous features
-      this.unselectFeatures();
-
-      if (!isNullOrEmpty(feature)) {
-        const clickFn = feature.getAttribute('vendor.api_idee.click');
-        if (isFunction(clickFn)) {
-          clickFn(evt, feature);
-        } else {
-          const popupTemplate = !isNullOrEmpty(this.template)
-            ? this.template : geojsonPopupTemplate;
-          let htmlAsText = compileTemplate(popupTemplate, {
-            vars: this.parseFeaturesForTemplate_(features),
-            parseToHtml: false,
-          });
-          if (this.name) {
-            const layerNameHTML = `<div>${this.name}</div>`;
-            htmlAsText = layerNameHTML + htmlAsText;
-          }
-          const featureTabOpts = {
-            icon: 'g-cartografia-pin',
-            title: this.name,
-            content: htmlAsText,
-          };
-          let popup = this.map.getPopup();
-          if (isNullOrEmpty(popup)) {
-            popup = new Popup();
-            popup.addTab(featureTabOpts);
-            this.map.addPopup(popup, coord);
-          } else {
-            popup.addTab(featureTabOpts);
-          }
-        }
-      }
-    }
-  }
-
-  /**
    * Este método actualiza la capa de origen.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
@@ -351,6 +296,45 @@ class WFS extends Vector {
       defaultValue = '-';
     }
     return defaultValue;
+  }
+
+  /**
+   * Este método sobreescribe la URL de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newURL Nueva URL de la capa.
+   * @api
+   */
+  setURL(newURL) {
+    this.url = newURL;
+    this.refresh(true);
+  }
+
+  /**
+   * Este método sobreescribe el nombre de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newName Nuevo nombre de la capa.
+   * @api
+   */
+  setName(newName) {
+    this.name = newName;
+    this.refresh(true);
+  }
+
+  /**
+   * Este método sobreescribe el espacio de nombres de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newNamespace Nuevo espacio de nombres de la capa.
+   * @api
+   */
+  setNamespace(newNamespace) {
+    this.namespace = newNamespace;
+    this.refresh(true);
   }
 
   // /**
