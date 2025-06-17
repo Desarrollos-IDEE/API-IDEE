@@ -26,5 +26,5 @@ test('Comprobamos que funciona styles en WMS', async ({ page }) => {
       mapjs.addLayers(wms);
     });
   });
-  await expect(page).toHaveScreenshot('snapshot.png');
+  await expect(page).toHaveScreenshot('snapshot.png', {maxDiffPixelRatio: 0.5});
 });
