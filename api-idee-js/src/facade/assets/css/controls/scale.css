@@ -37,7 +37,8 @@
     margin-right: 2px;
 }
 
-#m-level-number {
+#m-level-number,
+#m-scale-span {
     outline: 0px solid transparent;
     padding: 1px 2px;
 }
