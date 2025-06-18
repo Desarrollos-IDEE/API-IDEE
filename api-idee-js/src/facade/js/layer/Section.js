@@ -238,7 +238,8 @@ class Section extends MObject {
       if (child instanceof Section) {
         child.parent = this;
       } else if (child instanceof LayerBase) {
-        child.setSection(this);
+        // eslint-disable-next-line no-underscore-dangle
+        child.setSection_(this);
         child.setZIndex(zIndex);
         if (!isNullOrEmpty(this.map)
           && !this.map.getRootLayers().some((rootLayer) => rootLayer.equals(child))) {
@@ -294,7 +295,8 @@ class Section extends MObject {
    * @api
    */
   ungroup(child) {
-    child.setSection(null);
+    // eslint-disable-next-line no-underscore-dangle
+    child.setSection_(null);
     this.children_.remove(child);
   }
 

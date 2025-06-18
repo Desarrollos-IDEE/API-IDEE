@@ -526,7 +526,6 @@ class LayerBase extends Base {
    * estar dentro de una sección a la vez.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    *
-   * @private
    * @function
    * @param {IDEE.layer.Section} section Sección a la que se añadirá la capa.
    * @api
