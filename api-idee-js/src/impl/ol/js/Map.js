@@ -71,6 +71,7 @@ import LayerGroup from './layer/LayerGroup';
  * @property {Object} Z_INDEX_BASELAYER Objeto con los valores de los z-index.
  * @property {Number} currentZoom Almacena el zoom del mapa.
  * @property {Object} objectView Almacena las propiedades indicadas por el usuario para la vista.
+ * @property {Array<IDEE.layer.Section>} sections_ Secciones añadidas al mapa.
  *
  * @api
  * @extends {IDEE.Object}
@@ -117,7 +118,7 @@ class Map extends MObject {
     /**
      * Secciones de capas añadidas al mapa.
      * @private
-     * @type {Array<IDEE.layer.Sections>}
+     * @type {Array<IDEE.layer.Section>}
      */
     this.sections_ = [];
 
@@ -526,7 +527,7 @@ class Map extends MObject {
    *
    * @public
    * @function
-   * @returns {Array<IDEE.layer.Sections>} Secciones del mapa.
+   * @returns {Array<IDEE.layer.Section>} Secciones del mapa.
    * @api
    */
   getSections() {
@@ -563,7 +564,7 @@ class Map extends MObject {
    *
    * @public
    * @function
-   * @param {Array<IDEE.layer.Sections>} sections Secciones a añadir.
+   * @param {Array<IDEE.layer.Section>} sections Secciones a añadir.
    * @returns {IDEE.impl.Map}
    * @api
    */
@@ -585,7 +586,7 @@ class Map extends MObject {
    *
    * @public
    * @function
-   * @param {Array<IDEE.layer.Sections>} sections Secciones a eliminar.
+   * @param {Array<IDEE.layer.Section>} sections Secciones a eliminar.
    * @returns {IDEE.impl.Map}
    * @api
    */
@@ -2893,6 +2894,8 @@ class Map extends MObject {
       const olPopup = popup.getImpl();
       const olMap = this.getMapImpl();
       olMap.removeOverlay(olPopup);
+      popup.fire(EventType.POPUP_REMOVED, [popup]);
+      this.facadeMap_.fire(EventType.POPUP_REMOVED, [popup]);
     }
     return this;
   }

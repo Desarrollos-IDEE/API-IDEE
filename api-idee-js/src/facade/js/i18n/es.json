@@ -102,6 +102,9 @@
       "text2": "En el desplegable se muestran todas las implementaciones disponibles (OpenLayers, Cesium, etc)."
     }
   },
+  "section": {
+    "title": "Sección"
+  },
   "exception": {
     "addto_method": "La implementación usada no posee el método addTo",
     "getelement_method": "La implementación usada no posee el método getElement",
@@ -283,9 +286,11 @@
     "transparent_deprecated": "El parámetro 'transparent' ha quedado obsoleto, se recomienda usar en su lugar 'isBase'.",
     "getOL3Layer_deprecated": "El método getOL3Layer ha quedado obsoleto, se recomienda usar en su lugar getLayer.",
     "setOL3Layer_deprecated": "El método setOL3Layer ha quedado obsoleto, se recomienda usar en su lugar setLayer.",
-    "sectionslayer_method": "La implementación usada no puede crear capas Sections.",
+    "sectionlayer_method": "La implementación usada no puede crear capas Section.",
     "getsections_method": "La implementación usada no posee el método getSections.",
     "addsections_method": "La implementación usada no posee el método addSections.",
-    "removesections_method": "La implementación usada no posee el método removeSections."
+    "removesections_method": "La implementación usada no posee el método removeSections.",
+    "not_layergroup_in_section": "No es posible añadir un grupo de capas dentro de una sección.",
+    "not_sections_in_layergroup": "No es posible añadir una sección dentro de un grupo de capas."
   }
 }

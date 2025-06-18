@@ -879,7 +879,7 @@ class Map extends Base {
    *
    * @function
    * @public
-   * @returns {Array<IDEE.layer.Sections>} Secciones del mapa.
+   * @returns {Array<IDEE.layer.Section>} Secciones del mapa.
    * @api
    */
   getSections() {
@@ -895,7 +895,7 @@ class Map extends Base {
    *
    * @public
    * @function
-   * @param {Array<IDEE.layer.Sections>} sections Secciones a añadir.
+   * @param {Array<IDEE.layer.Section>} sections Secciones a añadir.
    * @returns {IDEE.Map}
    * @api
    */
@@ -923,7 +923,7 @@ class Map extends Base {
    *
    * @function
    * @public
-   * @param {Array<IDEE.layer.Sections>} sections Secciones a eliminar.
+   * @param {Array<IDEE.layer.Section>} sections Secciones a eliminar.
    * @returns {IDEE.Map}
    * @api
    */

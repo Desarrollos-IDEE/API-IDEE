@@ -3,9 +3,10 @@
  */
 import * as EventType from 'IDEE/event/eventtype';
 import { isNullOrEmpty } from 'IDEE/util/Utils';
+import { getValue } from 'IDEE/i18n/language';
+import Section from 'IDEE/layer/Section';
 import { Group } from 'ol/layer';
 import { Collection } from 'ol';
-
 import Layer from './Layer';
 
 /**
@@ -239,23 +240,29 @@ class LayerGroup extends Layer {
    */
   addLayer(userLayer) {
     let layer = userLayer;
-    if (typeof layer === 'string') {
-      layer = this.map.getLayerByString(layer);
-    }
+    if (!(layer instanceof Section)) {
+      if (typeof layer === 'string') {
+        layer = this.map.getLayerByString(layer);
+      }
 
-    if (!this.layers.includes(layer)) {
-      const impl = layer.getImpl();
-      this.setOLLayerToLayer_(layer);
+      if (!this.layers.includes(layer)) {
+        const impl = layer.getImpl();
+        this.setOLLayerToLayer_(layer);
 
-      impl.rootGroup = this;
-      this.layers.push(layer);
+        impl.rootGroup = this;
+        this.layers.push(layer);
 
-      /* if (this.zIndex_ !== null) {
-        // ? Por si existe subgrupos siga todo un orden
-        this.setZIndexChildren();
-      } */
+        /* if (this.zIndex_ !== null) {
+          // ? Por si existe subgrupos siga todo un orden
+          this.setZIndexChildren();
+        } */
 
-      this.layersCollection.push(impl.getLayer());
+        this.layersCollection.push(impl.getLayer());
+      }
+    } else {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').not_sections_in_layergroup);
+      return null;
     }
 
     return layer;

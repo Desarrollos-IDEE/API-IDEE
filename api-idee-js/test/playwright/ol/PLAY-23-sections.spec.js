@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('IDEE.layer.Sections', () => {
+test.describe('IDEE.layer.Section', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/test/playwright/ol/basic-ol.html');
     await page.evaluate(() => {
@@ -33,7 +33,7 @@ test.describe('IDEE.layer.Sections', () => {
         tiled: false,
       });
 
-      const section_001 = new IDEE.layer.Sections({
+      const section_001 = new IDEE.layer.Section({
         idLayer: 'id_section_1',
         title: 'Sección 1',
         zIndex: 1000,
@@ -50,6 +50,7 @@ test.describe('IDEE.layer.Sections', () => {
         window.map.addSections(section_001);
       });
     });
+    await page.waitForTimeout(3000);
     const numLayers = await page.evaluate(() => { return window.map.getLayers().length; });
     await expect(numLayers).toEqual(5);
     await expect(page).toHaveScreenshot('snapshot.png');

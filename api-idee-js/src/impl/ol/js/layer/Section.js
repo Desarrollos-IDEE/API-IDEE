@@ -1,5 +1,5 @@
 /**
- * @module IDEE/impl/layer/Sections
+ * @module IDEE/impl/layer/Section
  */
 import MObject from 'IDEE/Object';
 
@@ -18,10 +18,10 @@ import MObject from 'IDEE/Object';
  * @api
  * @extends {IDEE.Object}
  */
-class Sections extends MObject {
+class Section extends MObject {
   /**
    * Constructor principal de la clase. Crea una nueva instancia de la
-   * clase Sections con parametros específicados por el usuario.
+   * clase Section con parametros específicados por el usuario.
    *
    * @constructor
    * @implements {IDEE.Object}
@@ -67,4 +67,4 @@ class Sections extends MObject {
   }
 }
 
-export default Sections;
+export default Section;

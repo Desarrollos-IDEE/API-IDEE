@@ -1,5 +1,5 @@
 import { map as Mmap } from 'IDEE/api-idee';
-import Sections from 'IDEE/layer/Sections';
+import Section from 'IDEE/layer/Section';
 import GeoJSON from 'IDEE/layer/GeoJSON';
 import WMS from 'IDEE/layer/WMS';
 import LayerGroup from 'IDEE/layer/LayerGroup';
@@ -41,16 +41,22 @@ window.layer = layer;
 
 // mapa.addLayers(layer);
 
-// const section_002 = new Sections({
+// const section_002 = new Section({
 //   title: 'Sección 2',
 //   zIndex: 1003,
 //   children: [layer],
-//   // order: 0,
+//   order: 0,
 // });
 // window.section_002 = section_002;
 
-const section_001 = new Sections({
-  idLayer: 'id_section_1',
+// const lg = new LayerGroup({
+//   name: 'Grupo 1',
+//   layers: [provincias, section_002, campamentos],
+// });
+// window.lg = lg;
+
+const section_001 = new Section({
+  // idLayer: 'id_section_1',
   title: 'Sección 1',
   // collapsed: true,
   collapsed: false,
@@ -58,12 +64,12 @@ const section_001 = new Sections({
   children: [provincias, campamentos, wms_001],
   // children: [provincias, campamentos, wms_001, layer],
   // children: [provincias, campamentos, section_002],
-  // order: 1,
+  // children: [provincias, lg],
+  order: 1,
 });
 window.section_001 = section_001;
 
+// mapa.addLayers(wms_001);
 mapa.addSections([section_001]);
-
-console.log('La agrupación ' + section_001.title + ' tiene ' + section_001.getChildren().length + ' capas hijas');
-
 // mapa.addSections([section_001, section_002]);
+// mapa.addLayerGroups(lg);

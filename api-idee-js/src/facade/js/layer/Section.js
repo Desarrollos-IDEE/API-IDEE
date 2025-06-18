@@ -1,7 +1,7 @@
 /**
- * @module IDEE/layer/Sections
+ * @module IDEE/layer/Section
  */
-import SectionsImpl from 'impl/layer/Sections';
+import SectionImpl from 'impl/layer/Section';
 import MObject from '../Object';
 import {
   isUndefined, isNullOrEmpty, isObject, generateRandom, isArray,
@@ -24,16 +24,16 @@ import LayerGroup from './LayerGroup';
  * @property {boolean} collapsed Verdadero o falso para mostrar la sección colapsada
  * o expandida en el árbol de contenidos, si lo hay.
  * @property {number} order Posición de la sección.
- * @property {IDEE.layer.Sections} parent Sección padre de esta sección, si la hay.
+ * @property {IDEE.layer.Section} parent Sección padre de esta sección, si la hay.
  * @property {Array<IDEE.layer.Section|IDEE.Layer>} children Capas hijas de esta sección.
- * @property {IDEE.impl.layer.Sections} impl Implementación de la capa.
+ * @property {IDEE.impl.layer.Section} impl Implementación de la capa.
  * @property {number} zIndex Z-index de la sección para el orden de visualización.
  * @api
  * @extends {IDEE.Object}
  */
-class Sections extends MObject {
+class Section extends MObject {
   /**
-   * Constructor principal de la clase. Crea una nueva instancia de la clase Sections con
+   * Constructor principal de la clase. Crea una nueva instancia de la clase Section con
    * parametros especificados por el usuario.
    *
    * @constructor
@@ -49,24 +49,24 @@ class Sections extends MObject {
    * @api
    */
   constructor(userParameters) {
-    // checks if the implementation can create Sections
-    if (isUndefined(SectionsImpl) || (isObject(SectionsImpl)
-      && isNullOrEmpty(Object.keys(SectionsImpl)))) {
-      Exception(getValue('exception').sectionslayer_method);
+    // checks if the implementation can create Section
+    if (isUndefined(SectionImpl) || (isObject(SectionImpl)
+      && isNullOrEmpty(Object.keys(SectionImpl)))) {
+      Exception(getValue('exception').sectionlayer_method);
     }
 
     const parameters = { ...userParameters };
 
     if (isNullOrEmpty(parameters.idLayer)) {
-      parameters.idLayer = generateRandom('api_idee_section_');
+      parameters.idLayer = generateRandom('Section').replace(/[^a-zA-Z0-9\-_]/g, '');
     }
 
     if (isNullOrEmpty(parameters.title)) {
-      parameters.title = 'Sección';
+      parameters.title = getValue('section').title;
     }
 
     if (isNullOrEmpty(parameters.zIndex)) {
-      parameters.zIndex = 10000;
+      parameters.zIndex = 41;
     }
 
     if (isNullOrEmpty(parameters.order)) {
@@ -76,10 +76,10 @@ class Sections extends MObject {
     /**
      * Implementación de la capa.
      * @public
-     * @implements {IDEE.layer.Sections}
-     * @type {IDEE.layer.Sections}
+     * @implements {IDEE.layer.Section}
+     * @type {IDEE.layer.Section}
      */
-    const impl = new SectionsImpl(parameters);
+    const impl = new SectionImpl(parameters);
     super(impl);
 
     /**
@@ -117,7 +117,7 @@ class Sections extends MObject {
     /**
      * Sección padre de esta sección, si la hay.
      * @public
-     * @type {IDEE.layer.Sections}
+     * @type {IDEE.layer.Section}
      * @api
      */
     this.parent = null;
@@ -133,7 +133,7 @@ class Sections extends MObject {
     /**
      * Implementación de la capa.
      * @private
-     * @type {Array<IDEE.impl.layer.Sections>}
+     * @type {Array<IDEE.impl.layer.Section>}
      * @api
      */
     this.impl_ = impl;
@@ -162,7 +162,7 @@ class Sections extends MObject {
   addTo(map) {
     this.map = map;
     this.children_.forEach((child) => {
-      if (child instanceof Sections) {
+      if (child instanceof Section) {
         child.addTo(map);
       }
     });
@@ -220,7 +220,7 @@ class Sections extends MObject {
    *
    * @public
    * @function
-   * @param {IDEE.Layer|IDEE.layer.Sections} layer Capa o sección a añadir.
+   * @param {IDEE.Layer|IDEE.layer.Section} layer Capa o sección a añadir.
    * @param {number} index Posición a añadir la capa.
    * @api
    */
@@ -235,7 +235,7 @@ class Sections extends MObject {
         this.children_.splice(index, 0, child);
         zIndex = this.getZIndex() + index;
       }
-      if (child instanceof Sections) {
+      if (child instanceof Section) {
         child.parent = this;
       } else if (child instanceof LayerBase) {
         child.setSection(this);
@@ -243,14 +243,14 @@ class Sections extends MObject {
         if (!isNullOrEmpty(this.map)
           && !this.map.getRootLayers().some((rootLayer) => rootLayer.equals(child))) {
           this.map.addLayers(child);
-          if (child instanceof Sections) {
+          if (child instanceof Section) {
             this.map.addSections(child);
           }
         }
       }
     } else {
       // eslint-disable-next-line no-console
-      console.warn('No es posible añadir un grupo de capas dentro de una sección');
+      console.warn(getValue('exception').not_layergroup_in_section);
     }
   }
 
@@ -259,12 +259,12 @@ class Sections extends MObject {
    *
    * @public
    * @function
-   * @param {IDEE.Layer|IDEE.layer.Sections} child Capa o sección a eliminar.
+   * @param {IDEE.Layer|IDEE.layer.Section} child Capa o sección a eliminar.
    * @api
    */
   deleteChild(child) {
     const childI = child;
-    if (childI instanceof Sections) {
+    if (childI instanceof Section) {
       childI.parent = null;
       this.map.removeSections(childI);
     } else if (childI instanceof LayerBase) {
@@ -278,7 +278,7 @@ class Sections extends MObject {
    *
    * @public
    * @function
-   * @param {Array<IDEE.Layer|IDEE.layer.Sections>} children Capas o secciones a eliminar.
+   * @param {Array<IDEE.Layer|IDEE.layer.Section>} children Capas o secciones a eliminar.
    * @api
    */
   deleteChildren(children) {
@@ -290,7 +290,7 @@ class Sections extends MObject {
    *
    * @public
    * @function
-   * @param {IDEE.Layer|IDEE.layer.Sections} child Capa o sección a sacar.
+   * @param {IDEE.Layer|IDEE.layer.Section} child Capa o sección a sacar.
    * @api
    */
   ungroup(child) {
@@ -303,7 +303,7 @@ class Sections extends MObject {
    *
    * @public
    * @function
-   * @param {Array<IDEE.Layer|IDEE.layer.Sections>} children Capas o secciones a añadir.
+   * @param {Array<IDEE.Layer|IDEE.layer.Section>} children Capas o secciones a añadir.
    * @api
    */
   addChildren(children = []) {
@@ -320,7 +320,7 @@ class Sections extends MObject {
    *
    * @public
    * @function
-   * @returns {Array<IDEE.Layer|IDEE.layer.Sections>} Capas de la sección.
+   * @returns {Array<IDEE.Layer|IDEE.layer.Section>} Capas de la sección.
    * @api
    */
   getChildren() {
@@ -341,7 +341,7 @@ class Sections extends MObject {
     this.getChildren().forEach((child) => {
       if (child instanceof LayerBase) {
         layers.push(child);
-      } else if (child instanceof Sections) {
+      } else if (child instanceof Section) {
         layers = layers.concat(child.getAllLayers());
       }
     });
@@ -365,22 +365,22 @@ class Sections extends MObject {
    * @public
    * @function
    * @param {number} groupId Identificador de la sección a buscar.
-   * @param {Array<IDEE.layer.Sections>} sections Conjunto de secciones donde buscar.
+   * @param {Array<IDEE.layer.Section>} sections Conjunto de secciones donde buscar.
    * @api
    */
   static findGroupById(groupId, sections) {
     let group = null;
     if (isArray(sections) && sections.length > 0) {
-      group = sections.find((g) => g instanceof Sections && g.idLayer === groupId);
+      group = sections.find((g) => g instanceof Section && g.idLayer === groupId);
       if (group == null) {
         const childGroups = sections.map((g) => g.getChildren())
           .reduce((current, next) => current.concat(next), [])
-          .filter((g) => g instanceof Sections);
-        group = Sections.findGroupById(groupId, childGroups);
+          .filter((g) => g instanceof Section);
+        group = Section.findGroupById(groupId, childGroups);
       }
     }
     return group;
   }
 }
 
-export default Sections;
+export default Section;
