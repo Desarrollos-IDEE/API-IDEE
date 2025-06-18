@@ -69,6 +69,7 @@
 - Se incorpora el uso de ticket en MVT.
 - En WFS eliminada logica de selectFeatures para usar la heredada de Vector.
 - En response añadida comprobación extra de que la respuesta es correcta.
+- En GeoJSON eliminado extract, junto con su getter y setter, ya que los hereda de Vector y la funcionalidad es la misma.
 - Se modifica el evento ADDED_TO_MAP de las capas MVT para que se dispare desde fachada.
 - Se implementa funcionalidad "takeMeThere" en popups.
 
