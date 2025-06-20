@@ -46,7 +46,7 @@ const xyz = new XYZ({
 
 // mapa.addLayers(mvt);
 // mapa.addLayers(mvt2);
-mapa.addLayers(mvt3);
+// mapa.addLayers(mvt3);
 // mapa.addXYZ(xyz);
 // mapa.addLayers(mvt4);
 // IDEE.Popup.options.takeMeThere = true;
