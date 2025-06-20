@@ -101,6 +101,9 @@
       "text2": "In the dropdown you can see all the available implementations (OpenLayers, Cesium, etc)."
     }
   },
+  "popup": {
+    "msg": "Take me there"
+  },
   "exception": {
     "addto_method": "The used implementation does not have the addTo method",
     "getelement_method": "The used implementation does not have the getElement method",
@@ -172,6 +175,7 @@
     "getzoom_method": "The used implementation does not have the getZoom method.",
     "no_zoom": "You have not specified any zoom.",
     "invalid_zoom": "The specified zoom is invalid.",
+    "invalid_scale": "The specified scale is invalid.",
     "setzoom_method": "The implementation used does not have the setZoom method.",
     "getcenter_method": "The used implementation does not have the getCenter method.",
     "setcenter_method": "The used implementation does not have the setCenter method.",

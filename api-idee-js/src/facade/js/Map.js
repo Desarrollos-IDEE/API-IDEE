@@ -102,11 +102,13 @@ class Map extends Base {
     // parses parameters to build the new map
     const params = new Parameters(userParameters);
 
+    const dpi = IDEE.config.DPI;
+
     const opts = { viewExtent: params.viewExtent, ...options };
 
     // calls the super constructor
     super();
-    const impl = new MapImpl(params.container, this, opts, viewVendorOptions);
+    const impl = new MapImpl(params.container, this, dpi, opts, viewVendorOptions);
     // impl.setFacadeMap(this);
     this.setImpl(impl);
 
@@ -352,6 +354,8 @@ class Map extends Base {
     // zoomConstrains
     if (!isNullOrEmpty(params.zoomConstrains)) {
       this.setZoomConstrains(params.zoomConstrains);
+    } else if (IDEE.config.MAP_VIEWER_ZOOM_CONSTRAINS !== '') {
+      this.setZoomConstrains(IDEE.config.MAP_VIEWER_ZOOM_CONSTRAINS);
     } else {
       this.setZoomConstrains(false);
     }

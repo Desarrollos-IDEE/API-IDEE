@@ -32,13 +32,13 @@ test.describe('Vector layers', () => {
     await page.waitForTimeout(5000);
     await page.mouse.click(599, 132);
     const popup = await page.locator('.m-popup.m-collapsed .m-body');
-    try {
+    //try {
       const text = await popup.innerText({ timeout: 2000 });
-      expect(text).toEqual(textPopup);
+      expect(text).toContain(textPopup);
       const template = await page.evaluate(() => ogc_001.template);
       expect(template).toEqual(customTemplate);
-    } catch (e) {
+    /*} catch (e) {
       console.warn('⚠️ Popup no apareció. El servicio podría no haber cargado los features.');
-    }
+    }*/
   });
 });

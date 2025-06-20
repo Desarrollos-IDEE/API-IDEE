@@ -129,7 +129,6 @@ class WMTS extends LayerBase {
   addTo(map, addLayer = true) {
     this.addLayerToMap_ = addLayer;
     this.map = map;
-    this.fire(EventType.ADDED_TO_MAP);
 
     if (!isNullOrEmpty(this.vendorOptions_.source)) {
       this.name = this.vendorOptions_.source.getLayer();
@@ -300,6 +299,7 @@ class WMTS extends LayerBase {
 
       if (this.addLayerToMap_) {
         this.map.getMapImpl().addLayer(this.olLayer);
+        this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
       }
 
       this.olLayer.setMaxZoom(this.maxZoom);
@@ -361,6 +361,8 @@ class WMTS extends LayerBase {
       // keeps z-index values before ol resets
       const zIndex = this.zIndex_;
       this.map.getMapImpl().addLayer(this.olLayer);
+      this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
+
       setTimeout(() => {
         this.olLayer.setMaxZoom(this.maxZoom);
         this.olLayer.setMinZoom(this.minZoom);
@@ -477,6 +479,63 @@ class WMTS extends LayerBase {
    */
   setTileLoadFunction(func) {
     this.olLayer.getSource().setTileLoadFunction(func);
+  }
+
+  /*
+   * Este método elimina y crea la capa de Openlayers.
+   *
+   * @function
+   * @public
+   * @api
+   */
+  recreateLayer() {
+    const olMap = this.map.getMapImpl();
+    if (!isNullOrEmpty(this.olLayer)) {
+      olMap.removeLayer(this.olLayer);
+      this.capabilitiesOptionsPromise = null;
+      this.getCapabilitiesPromise_ = null;
+    }
+
+    if (this.useCapabilities) {
+      this.capabilitiesOptionsPromise = this.getCapabilitiesOptions_();
+
+      this.capabilitiesOptionsPromise
+        .then((capabilities) => {
+          this.getWGS84BoundingBoxCapabilities_(capabilities);
+          // filter current layer capabilities
+          const capabilitiesOptions = this.getFilterCapabilities_(capabilities);
+          // adds layer from capabilities
+          this.addLayer_(capabilitiesOptions);
+        });
+    } else {
+      this.addLayerNotCapabilities_();
+    }
+  }
+
+  /**
+   * Sobreescribe la URL de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newURL Nueva URL de la capa.
+   * @api
+   */
+  setURL(newURL) {
+    this.url = newURL;
+    this.recreateLayer();
+  }
+
+  /**
+   * Sobreescribe el nombre de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newName Nuevo nombre de la capa.
+   * @api
+   */
+  setName(newName) {
+    this.name = newName;
+    this.recreateLayer();
   }
 
   /**
@@ -705,30 +764,6 @@ class WMTS extends LayerBase {
       }
     }
     return coordPixel;
-  }
-
-  /**
-   * Devuelve la URL de la leyenda.
-   *
-   * @public
-   * @function
-   * @returns {String} URL de la leyenda.
-   * @api stable
-   */
-  getLegendURL() {
-    return this.legendUrl_;
-  }
-
-  /**
-   * Sobrescribir la url de la leyenda.
-   *
-   * @public
-   * @function
-   * @param {String} legendUrl Nueva URL.
-   * @api stable
-   */
-  setLegendURL(legendUrl) {
-    this.legendUrl_ = legendUrl;
   }
 }
 

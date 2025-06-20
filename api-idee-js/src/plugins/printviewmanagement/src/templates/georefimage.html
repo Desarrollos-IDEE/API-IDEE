@@ -6,9 +6,10 @@
         <input tabindex="0" type="text" id="m-georefimage-title" aria-label="{{translations.title}}" title="{{translations.title}}" name="title-georefimage" placeholder="{{translations.title}}">
 
         <label style="display: none;" tabindex="0" for="format-georefimage" title="{{translations.format}}" aria-label="{{translations.format}}">Formato de Descarga</label>
-        <select tabindex="0" id="m-georefimage-format" name="format-georefimage" title="{{translations.format}}" aria-label="{{translations.format}}">
-            <option value="jpeg">JPG</option>
-            <option value="png">PNG</option>
+        <select tabindex="0" role="select" id="m-georefimage-format" title="{{translations.format}}">
+            {{#each formats}}
+                <option value="{{this}}" {{#if default}} selected{{/if}}>{{this}}</option>
+            {{/each}}
         </select>
 
     </div>
@@ -18,26 +19,11 @@
             <input tabindex="0" value="wld" type="checkbox" title="{{translations.georefimageWld}}" id="m-georefimage-wld" aria-label="{{translations.georefimageWld}}">
         </div>
 
-        <div class="keepview">
-            <labe tabindex="0" for="m-georefimage-dpi" aria-label="DPI" title="DPI">DPI</labe>
-            <input type="number" aria-label="DPI" title="DPI" id="m-georefimage-dpi" min="120" max="300" value="120" placeholder="120">
-        </div>
+        <select tabindex="0" role="select" id="m-georefimage-dpi" title="{{translations.selectDpi}}">
+            {{#each dpis}}
+                <option value="{{this}}" {{#if default}} selected{{/if}}>{{this}}</option>
+            {{/each}}
+        </select>
     </div>
-
-    <fieldset id="m-georefimage-fieldset" class="typeImagen" title="{{translations.typeDownload}}">
-        <legend tabindex="0">{{translations.typeDownload}}</legend>
-        <div class="m-georefimage-fieldsetInput">
-            <div>
-                <label tabindex="0" for="client">{{translations.typeClient}} <button id="m-georefimage-clipboard" class="printviewmanagement-icon-clipboard" title="{{translations.clipBoard}}"></button></label>
-                <input tabindex="0" name="typeDownload" value="client" type="radio" id="client" title="{{translations.typeClient}}">
-            </div>
-
-            <div>
-                <label tabindex="0" for="server">{{translations.typeServer}} <a aria-activedescendant="modal" aria-label="Servicios geoprint" title="Servicios geoprint" id="m-georefimage-listServices" href="#">(&#x2139;)</a></label>
-                <input tabindex="0" title="{{translations.typeServer}}" name="typeDownload" value="server" type="radio" id="server" checked>
-            </div>
-        </div>
-
-        <h3 tabindex="0" id="m-georefimage-projection" class="m-georefimage-projection" title="EPSG"></h3>
-    </fieldset>
+    <h3 tabindex="0" id="m-georefimage-projection" class="m-georefimage-projection" title="EPSG"></h3>
 </section>

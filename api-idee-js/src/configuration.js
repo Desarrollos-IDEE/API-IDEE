@@ -275,6 +275,14 @@ params.forEach((param) => {
   IDEE.config('MAP_VIEWER_LAYERS', layers);
 
   /**
+   * MAP Viewer - DPI (Dots per inch)
+   * 
+   * @private
+   * @type {Number}
+   */
+  IDEE.config('DPI', 72);
+
+  /**
    * Mueve el mapa cuando se hace clic sobre un objeto
    * geográfico, (extract = true) o no (extract = false)
    *
