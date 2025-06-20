@@ -6,6 +6,7 @@ import Utils from 'impl/util/Utils';
 import { getValue } from 'IDEE/i18n/language';
 import * as Dialog from 'IDEE/dialog';
 import Exception from 'IDEE/exception/exception';
+import { METERS_PER_UNIT } from 'ol/proj';
 import Control from './Control';
 
 /**
@@ -26,24 +27,18 @@ export const formatLongNumber = (num) => {
  * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
  * @public
  * @function
- * @param {Boolean} viewState Estado de la vista.
  * @param {HTMLElement} container HTML contenedor del control.
  * @param {Number} map Mapa.
- * @param {Boolean} exact Devuelve la escala del WMTS o genérica.
  * @api stable
  */
-const updateElement = (viewState, container, map, exact) => {
+const updateElement = (container, map) => {
   const containerVariable = container;
-  let num;
-  if (map.getWMTS().length > 0) {
-    num = Utils.getWMTSScale(map, exact);
-    // num = map.getExactScale();
-  } else if (map.getWMTS().length <= 0 && exact === true) {
-    num = Utils.getWMTSScale(map, exact);
-    // num = map.getExactScale();
-  } else if (map.getWMTS().length <= 0 && !exact === true) {
-    num = map.getScale();
-  }
+  const view = map.getMapImpl().getView();
+  const unidades = view.getProjection().getUnits();
+  const unidadesMapa = METERS_PER_UNIT[unidades];
+  const resolution = view.getResolution();
+  const dpi = IDEE.config.DPI || 72;
+  const num = Utils.getScaleForResolution(resolution, unidadesMapa, dpi);
 
   if (!isNullOrEmpty(num)) {
     containerVariable.innerHTML = formatLongNumber(num);
@@ -74,7 +69,6 @@ class Scale extends Control {
   constructor(options = {}) {
     super();
     this.facadeMap_ = null;
-    this.exactScale = options.exactScale || false;
   }
 
   /**
@@ -83,7 +77,7 @@ class Scale extends Control {
    * @public
    * @function
    * @param {IDEE.Map} map Mapa.
-   * @param {function} template Plantilla del control.
+   * @param {function} element Plantilla del control.
    * @api stable
    */
   addTo(map, element) {
@@ -96,11 +90,24 @@ class Scale extends Control {
     this.element = element;
     this.render = this.renderCB;
     this.target_ = null;
+    this.previousScale_ = null;
     map.getMapImpl().addControl(this);
+    this.addZoomLevelListeners();
+    this.addScaleListeners();
+  }
 
-    if (this.scaleContainer_ !== null) {
-      element.addEventListener('mouseenter', () => { this.zoomLevelContainer_.classList.add('blinking-background'); });
-      element.addEventListener('mouseleave', () => { this.zoomLevelContainer_.classList.remove('blinking-background'); });
+  /**
+   * Agrega los listeners al nivel de zoom.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   * @this {IDEE.impl.ol.control.Scale}
+   * @api stable
+   */
+  addZoomLevelListeners() {
+    if (this.zoomLevelContainer_ !== null) {
+      this.zoomLevelContainer_.addEventListener('mouseenter', () => { this.zoomLevelContainer_.classList.add('blinking-background'); });
+      this.zoomLevelContainer_.addEventListener('mouseleave', () => { this.zoomLevelContainer_.classList.remove('blinking-background'); });
       this.zoomLevelContainer_.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
           event.preventDefault();
@@ -108,7 +115,7 @@ class Scale extends Control {
 
           try {
             if (!/^-?\d+(\.\d+)?$/.test(zoomText)) {
-              this.zoomLevelContainer_.textContent = map.getZoom();
+              this.zoomLevelContainer_.textContent = this.facadeMap_.getZoom();
               Exception(getValue('exception').invalid_zoom);
             }
           } catch (err) {
@@ -116,13 +123,59 @@ class Scale extends Control {
             return;
           }
           const zoomValue = parseFloat(zoomText);
-          const zoomConstrains = map.getZoomConstrains();
+          const zoomConstrains = this.facadeMap_.getZoomConstrains();
 
           if (zoomConstrains && !Number.isInteger(zoomValue)) {
             this.zoomLevelContainer_.textContent = Math.floor(zoomValue);
           }
-          map.setZoom(zoomConstrains ? Math.round(zoomValue) : zoomValue);
+          this.facadeMap_.getMapImpl().getView().animate({
+            center: this.facadeMap_.getMapImpl().getView().getCenter(),
+            zoom: zoomConstrains ? Math.floor(zoomValue) : zoomValue,
+            duration: 500,
+          });
           this.zoomLevelContainer_.blur();
+        }
+      });
+    }
+  }
+
+  /**
+   * Agrega los listeners a la escala.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   * @this {IDEE.impl.ol.control.Scale}
+   * @api stable
+   */
+  addScaleListeners() {
+    if (this.scaleContainer_ !== null) {
+      this.scaleContainer_.addEventListener('mouseenter', () => { this.scaleContainer_.classList.add('blinking-background'); });
+      this.scaleContainer_.addEventListener('mouseleave', () => { this.scaleContainer_.classList.remove('blinking-background'); });
+      this.scaleContainer_.addEventListener('focus', () => { this.previousScale_ = this.scaleContainer_.textContent; });
+      this.scaleContainer_.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          const scaleText = this.scaleContainer_.textContent.trim();
+          try {
+            if (!/^\d+$/.test(scaleText)) {
+              Exception(getValue('exception').invalid_scale);
+            }
+            this.scaleContainer_.textContent = scaleText;
+            const view = this.facadeMap_.getMapImpl().getView();
+            const resolution = Utils.getCurrentScale(
+              this.facadeMap_,
+              scaleText,
+            );
+            view.animate({
+              center: view.getCenter(),
+              resolution,
+              duration: 500,
+            });
+            this.scaleContainer_.blur();
+          } catch (err) {
+            this.scaleContainer_.textContent = this.previousScale_;
+            Dialog.error(err.toString());
+          }
         }
       });
     }
@@ -139,7 +192,7 @@ class Scale extends Control {
   renderCB(mapEvent) {
     const frameState = mapEvent.frameState;
     if (!isNullOrEmpty(frameState)) {
-      updateElement(frameState.viewState, this.scaleContainer_, this.facadeMap_, this.exactScale);
+      updateElement(this.scaleContainer_, this.facadeMap_);
     }
   }
 
