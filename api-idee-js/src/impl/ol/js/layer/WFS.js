@@ -133,6 +133,7 @@ class WFS extends Vector {
     this.updateSource_(forceNewSource);
   }
 
+  /*
    * Este método actualiza la capa de origen.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public

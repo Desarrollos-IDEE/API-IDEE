@@ -5,7 +5,7 @@ import GeoJSONImpl from 'impl/layer/GeoJSON';
 import LayerVector from './Vector';
 import { GeoJSON as GeoJSONType } from './Type';
 import {
-  isUndefined, isArray, isNullOrEmpty, isString, normalize, isObject,
+  isUndefined, isArray, isNullOrEmpty, isString, isObject,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import { getValue } from '../i18n/language';
@@ -141,12 +141,6 @@ class GeoJSON extends LayerVector {
       }
 
       /**
-       * GeoJSON extract: Opcional, activa la consulta
-       * haciendo clic en el objeto geográfico, por defecto verdadero.
-       */
-      this.extract = parameters.extract === undefined ? true : parameters.extract;
-
-      /**
        * GeoJSON crs: Sistema de Referencia de Coordenadas.
        * @public
        * @type {Object}
@@ -210,42 +204,6 @@ class GeoJSON extends LayerVector {
    */
   set source(newSource) {
     this.getImpl().source = newSource;
-  }
-
-  /**
-   * Devuelve el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica,
-   * por defecto verdadero.
-   *
-   * @function
-   * @getter
-   * @return {Boolean} Valor de la propiedad "extract".
-   * @api
-   */
-  get extract() {
-    return this.getImpl().extract;
-  }
-
-  /**
-   * Sobrescribe el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica,
-   * por defecto verdadero.
-   *
-   * @function
-   * @setter
-   * @param {Boolean|String} newExtract Nuevo valor para sobreescribir la propiedad "extract".
-   * @api
-   */
-  set extract(newExtract) {
-    if (!isNullOrEmpty(newExtract)) {
-      if (isString(newExtract)) {
-        this.getImpl().extract = (normalize(newExtract) === 'true');
-      } else {
-        this.getImpl().extract = newExtract;
-      }
-    } else {
-      this.getImpl().extract = true;
-    }
   }
 
   /**

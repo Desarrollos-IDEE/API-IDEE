@@ -185,12 +185,12 @@ class MVT extends Vector {
    */
   getFeatures() {
     const features = this.getImpl().getFeatures();
-    return features.map((olFeature) => {
+    return features.map((implFeature) => {
       if (this.mode === mode.RENDER) {
-        return RenderFeatureImpl.feature2Facade(olFeature);
+        return RenderFeatureImpl.feature2Facade(implFeature);
       }
       if (this.mode === mode.FEATURE) {
-        return FeatureImpl.feature2Facade(olFeature, undefined, this.getProjection());
+        return FeatureImpl.feature2Facade(implFeature, undefined, this.getProjection());
       }
       return null;
     });
@@ -227,15 +227,6 @@ class MVT extends Vector {
   }
 
   /**
-   * Devuelve el valor de la propiedad filter.
-   *
-   * @function
-   * @public
-   * @api
-   */
-  getFilter() {}
-
-  /**
    * Modifica el filtro.
    *
    * @function
@@ -243,15 +234,6 @@ class MVT extends Vector {
    * @api
    */
   setFilter() {}
-
-  /**
-   * Elimina valor de la propiedad "filter".
-   *
-   * @function
-   * @public
-   * @api
-   */
-  removeFilter() {}
 
   /**
    * Añade objeto geográficos.
