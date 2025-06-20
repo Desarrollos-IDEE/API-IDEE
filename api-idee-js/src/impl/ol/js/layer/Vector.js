@@ -144,6 +144,24 @@ class Vector extends Layer {
   }
 
   /**
+   * Este método devuelve si la capa es válida.
+   *
+   * @public
+   * @function
+   * @returns {Boolean} Verdadero si es válida, falso si no.
+   * @api stable
+   */
+  isValidSource() {
+    if (isNullOrEmpty(this.olLayer)) {
+      return false;
+    }
+    if (isNullOrEmpty(this.olLayer.getSource())) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
    * Este método indica si la capa tiene rango.
    *
    * @function
