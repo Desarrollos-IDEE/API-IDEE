@@ -73,6 +73,7 @@
 - Se incorpora el uso de ticket en MVT.
 - En WFS eliminada logica de selectFeatures para usar la heredada de Vector.
 - En response añadida comprobación extra de que la respuesta es correcta.
+- Se modifica la clase exception para que devuelva un mensaje de tipo error
 - Se renombra oldOL3Layer, ahora es oldLayer en cluster.
 - En GeoJSON eliminado extract, junto con su getter y setter, ya que los hereda de Vector y la funcionalidad es la misma.
 - Se modifica el evento ADDED_TO_MAP de las capas MVT para que se dispare desde fachada.
