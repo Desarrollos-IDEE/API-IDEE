@@ -263,15 +263,6 @@ class MVT extends Vector {
   }
 
   /**
-   * Devuelve el valor de la propiedad filter.
-   *
-   * @function
-   * @public
-   * @api
-   */
-  getFilter() {}
-
-  /**
    * Modifica el filtro.
    *
    * @function
@@ -279,15 +270,6 @@ class MVT extends Vector {
    * @api
    */
   setFilter() {}
-
-  /**
-   * Elimina valor de la propiedad "filter".
-   *
-   * @function
-   * @public
-   * @api
-   */
-  removeFilter() {}
 
   /**
    * Añade objeto geográficos.
