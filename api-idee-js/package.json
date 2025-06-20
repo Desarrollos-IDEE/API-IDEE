@@ -67,7 +67,7 @@
     "eslint": "8.51.0"
   },
   "scripts": {
-    "build": "cross-env NODE_OPTIONS=--max_old_space_size=2048 ./node/npm run build:core && ./node/npm run build:plugins",
+    "build": "cross-env NODE_OPTIONS=--max_old_space_size=2048 npm run build:core && npm run build:plugins",
     "build:sourcemap": "npm run prebuild && npm run build:core -- --source-map && npm run build:plugins",
     "build:core": "npm run build:ol-core && npm run build:cesium-core",
     "build:ol-core": "webpack --config=webpack-config/webpack.production-ol-core.config.js",
