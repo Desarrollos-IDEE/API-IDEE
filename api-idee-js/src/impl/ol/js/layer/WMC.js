@@ -179,7 +179,7 @@ class WMC extends Layer {
       if (!isNullOrEmpty(this.groups)) {
         const aux = [...this.groups];
         this.groups = [];
-        this.map.removeLayerGroup(aux);
+        this.map.removeSections(aux);
       }
     }
   }
@@ -203,7 +203,7 @@ class WMC extends Layer {
     }
     this.layers.forEach((wms) => wms.setWMCParent(this.facadeLayer_));
     this.map.addWMS(this.layers, true);
-    this.map.addLayerGroup(this.groups);
+    this.map.addSections(this.groups);
 
     // updates the z-index of the layers and groups
     this.layers.forEach((layer, i) => layer.setZIndex(this.getZIndex() + i));
