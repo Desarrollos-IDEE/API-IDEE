@@ -237,7 +237,8 @@ export default class InformationControl extends IDEE.impl.Control {
         param = {};
         const infoFormat = this.format_;
         const coord = this.evt.coordinate;
-        const url = layer.getFeatureInfoUrl(coord, this.facadeMap_.getZoom(), infoFormat).replace('row=-', 'row=');
+        const roundedZoom = Math.round(this.facadeMap_.getZoom());
+        const url = layer.getFeatureInfoUrl(coord, roundedZoom, infoFormat).replace('row=-', 'row=');
         param = { layer: layer.legend || layer.name, url };
       }
       return param;
