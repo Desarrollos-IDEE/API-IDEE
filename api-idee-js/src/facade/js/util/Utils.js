@@ -6,6 +6,7 @@
 import { get as remoteGet } from 'IDEE/util/Remote';
 import chroma from 'chroma-js';
 import Draggabilly from 'draggabilly';
+import reproj from 'impl/util/reprojection';
 import { getValue } from '../i18n/language';
 import { DOTS_PER_INCH, INCHES_PER_UNIT } from '../units';
 import * as WKT from '../geom/WKT';
@@ -1736,6 +1737,44 @@ export const ObjectToArrayExtent = (bbox, epsg) => {
     return [bbox.y.min, bbox.x.min, bbox.y.max, bbox.x.max];
   }
   return [bbox.x.min, bbox.y.min, bbox.x.max, bbox.y.max];
+};
+
+/**
+ * Este método determina el sistema operativo móvil.
+ *
+ * @function
+ * @public
+ * @returns {string} El sistema operativo móvil detectado ('iOS', 'Android',
+ * 'Windows Phone', or 'unknown').
+ * @api
+ */
+export const getSystem = () => {
+  const userAgent = window.navigator.userAgent || window.navigator.vendor || window.opera;
+  let env = 'unknown';
+  if (/android/i.test(userAgent)) {
+    env = 'android';
+  }
+
+  if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+    env = 'ios';
+  }
+
+  return env;
+};
+
+/**
+ * Este método reproyecta unas coordenadas de un sistema de referencia a otro.
+ *
+ * @ublic
+ * @function
+ * @param {Array<number>} coordinates Coordenadas a reproyectar.
+ * @param {string} sourceProj EPSG del sistema de referencia de origen.
+ * @param {string} destProj EPSG del sistema de referencia de destino.
+ * @returns {Array<number>} Coordenadas reproyectadas.
+ * @api
+ */
+export const reproject = (coordinates, sourceProj, destProj) => {
+  return reproj(coordinates, sourceProj, destProj);
 };
 
 /**
