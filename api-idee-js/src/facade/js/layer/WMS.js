@@ -31,6 +31,7 @@ import { getValue } from '../i18n/language';
  * @property {Boolean} useCapabilities Define si se utilizará el capabilities para generar la capa.
  * @property {Boolean} isBase Define si la capa es base.
  * @property {String} cql Parámetro de filtrado.
+ * @property {IDEE.layer.WMC} wmcParent_ Capa WMC padre.
  * @api
  * @extends {IDEE.Layer}
  */
@@ -167,6 +168,11 @@ class WMS extends LayerBase {
      * WMS options: Opciones WMS.
      */
     this.options = optionsVar;
+
+    /**
+     * Capa WMC padre.
+     */
+    this.wmcParent_ = null;
 
     /**
      * Obtener metadatos en forma de promesa.
@@ -317,25 +323,35 @@ class WMS extends LayerBase {
     if (isNullOrEmpty(this.userMaxExtent)) {
       if (isNullOrEmpty(this.options.wmcMaxExtent)) {
         if (isNullOrEmpty(this.map_.userMaxExtent)) {
-          if (this.useCapabilities && !this.isReset_) {
-            // maxExtent provided by the service
-            this.getCapabilities().then((capabilities) => {
-              const capabilitiesMaxExtent = this.getImpl()
-                .getExtentFromCapabilities(capabilities);
-              if (isNullOrEmpty(capabilitiesMaxExtent)) {
-                const projMaxExtent = this.map_.getProjection().getExtent();
-                this.maxExtent_ = projMaxExtent;
-              } else {
-                this.maxExtent_ = capabilitiesMaxExtent;
-              }
-              // this allows get the async extent by the capabilites
+          const selectedWMC = this.map_.getWMC().find((wmc) => wmc.selected);
+          if (isNullOrEmpty(selectedWMC)) {
+            if (this.useCapabilities && !this.isReset_) {
+              // maxExtent provided by the service
+              this.getCapabilities().then((capabilities) => {
+                const capabilitiesMaxExtent = this.getImpl()
+                  .getExtentFromCapabilities(capabilities);
+                if (isNullOrEmpty(capabilitiesMaxExtent)) {
+                  const projMaxExtent = this.map_.getProjection().getExtent();
+                  this.maxExtent_ = projMaxExtent;
+                } else {
+                  this.maxExtent_ = capabilitiesMaxExtent;
+                }
+                // this allows get the async extent by the capabilites
+                if (isFunction(callbackFn)) {
+                  callbackFn(this.maxExtent_);
+                }
+              });
+            } else {
+              const projMaxExtent = this.map_.getProjection().getExtent();
+              this.maxExtent_ = projMaxExtent;
+            }
+          } else {
+            selectedWMC.calculateMaxExtent().then((wmcMaxExtent) => {
+              this.maxExtent_ = wmcMaxExtent;
               if (isFunction(callbackFn)) {
                 callbackFn(this.maxExtent_);
               }
             });
-          } else {
-            const projMaxExtent = this.map_.getProjection().getExtent();
-            this.maxExtent_ = projMaxExtent;
           }
         } else {
           this.maxExtent_ = this.map_.userMaxExtent;
@@ -433,6 +449,33 @@ class WMS extends LayerBase {
    */
   getNoCacheName() {
     return this._noCacheName;
+  }
+
+  /**
+   * Este método establece su capa WMC padre.
+   *
+   * @function
+   * @public
+   * @param {IDEE.layer.WMC} wmcParent Capa WMC que incluye
+   * a esta capa.
+   * @api
+   */
+  setWMCParent(wmc) {
+    this.wmcParent_ = wmc;
+    this.getImpl().useCapabilities = false;
+  }
+
+  /**
+   * Este método obtiene su capa WMC padre.
+   *
+   * @function
+   * @public
+   * @returns {IDEE.layer.WMC} Capa WMC que contiene a
+   * esta capa.
+   * @api
+   */
+  getWMCParent() {
+    return this.wmcParent_;
   }
 
   /**

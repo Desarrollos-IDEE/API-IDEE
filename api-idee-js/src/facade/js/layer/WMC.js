@@ -34,6 +34,7 @@ import * as EventType from '../event/eventtype';
  * maxZoom
  * @property {string} idLayer Identificador de la capa.
  * @property {Mx.parameters.LayerOptions} options Opciones de la capa.
+ * @property {boolean} loaded_ Indica si la capa WMC y sus capas están cargadas.
  *
  * @api
  * @extends {IDEE.Layer}
@@ -89,19 +90,10 @@ class WMC extends LayerBase {
     // checks if the name is auto-generated
     if (!isNullOrEmpty(this.url) && isNullOrEmpty(this.name)) {
       this.generateName_();
-    } else if (isNullOrEmpty(this.url) && !isNullOrEmpty(this.name)) {
-      // checks if it is predefined context
-      const predefinedIdx = IDEE.config.predefinedWMC.predefinedNames.indexOf(this.name);
-      if (predefinedIdx === -1) {
-        Exception(`El contexto predefinido '${this.name}' no existe`);
-      } else {
-        this.url = IDEE.config.predefinedWMC.urls[predefinedIdx];
-        this.name = IDEE.config.predefinedWMC.names[predefinedIdx];
-      }
     }
 
     /**
-     * Indica si la capa y sus subcapas están cargadas.
+     * Indica si la capa WMC y sus capas están cargadas.
      */
     this.loaded_ = false;
 
@@ -111,12 +103,14 @@ class WMC extends LayerBase {
   }
 
   /**
-   * Devuelve el valor de la propiedad "selected".
+   * Devuelve la propiedad 'selected'. Indica si la
+   * capa WMC está seleccionada.
    *
    * @function
    * @getter
-   * @return {IDEE.layer.WMC.impl.selected} Devuelve si la capa fue
-   * seleccionada o no.
+   * @return {IDEE.layer.WMC.impl.selected} Verdadero si la capa está
+   * seleccionada, falso en caso contrario.
+   * @public
    * @api
    */
   get selected() {
@@ -124,12 +118,14 @@ class WMC extends LayerBase {
   }
 
   /**
-   * Sobreescribe el valor de la propiedad "selected".
+   * Sobreescribe la propiedad 'selected'. Indica si la capa WMC
+   * está seleccionada.
    *
    * @function
    * @setter
-   * @param {IDEE.WMC.selected} newSelectedValue Nuevo valor para la
-   * propiedad "selected".
+   * @param {IDEE.WMC.selected} newSelectedValue Nuevo valor para indicar si
+   * la capa está seleccionada o no.
+   * @public
    * @api
    */
   set selected(newSelectedValue) {
@@ -253,7 +249,8 @@ class WMC extends LayerBase {
   }
 
   /**
-   * Esta función selecciona esta capa WMC y lanza el evento para dibujarla.
+   * Este método selecciona la capa WMC y lanza
+   * el evento para dibujarla.
    *
    * @function
    * @public
@@ -269,7 +266,8 @@ class WMC extends LayerBase {
   }
 
   /**
-   * Esta función deselecciona esta capa WMC y elimina todas sus capas.
+   * Este método deselecciona la capa WMC y borra
+   * todas sus capas.
    *
    * @function
    * @public

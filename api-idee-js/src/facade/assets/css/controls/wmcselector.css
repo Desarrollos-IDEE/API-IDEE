@@ -12,6 +12,8 @@
 }
 
 .m-wmcselector-select {
+   padding-left: 5px;
+   padding-right: 5px;
    border: none;
    background-color: #FEFEFE;
    color: #6C6C6C;
@@ -20,4 +22,8 @@
    outline: none;
    margin: 0px;
    -webkit-appearance: none;
+}
+
+.m-wmcselector-select > option {
+   color: #6C6C6C;
 }

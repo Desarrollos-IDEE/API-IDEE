@@ -129,6 +129,14 @@ export const ADDED_XYZ = 'added:xyz';
 export const ADDED_TMS = 'added:tms';
 
 /**
+ * Evento que se produce al añadir wmc.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const ADDED_WMC = 'added:wmc';
+
+/**
  * Evento que se produce al añadir QuickLayers.
  * @public
  * @type {string}

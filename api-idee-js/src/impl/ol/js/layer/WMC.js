@@ -20,6 +20,7 @@ import Layer from './Layer';
  * @property {Array<IDEE.layer.LayerGroup>} groups Grupos definidos en WMC.
  * @property {Promise} loadContextPromise Promesa para la carga del WMC.
  * @property {Mx.Extent} maxExtent Máxima extensión de la capa.
+ * @property {ol.Projection} extentProj_ Proyección actual.
  *
  * @api
  * @extends {IDEE.impl.layer.Layer}
@@ -91,7 +92,7 @@ class WMC extends Layer {
     this.maxExtent = null;
 
     /**
-     * WMC extentProj_. Actual proyección.
+     * WMC extentProj_. Proyección actual.
      *
      * @private
      * @type {ol.Projection}

@@ -23,6 +23,7 @@ class WMC extends XML {
    *
    * @constructor
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para este formateador.
+   * - projection: Proyección del WMC.
    * @api
    */
   constructor(options = {}) {
