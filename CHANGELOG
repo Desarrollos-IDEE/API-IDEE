@@ -75,6 +75,7 @@
 - Se incorpora el uso de ticket en MVT.
 - En WFS eliminada logica de selectFeatures para usar la heredada de Vector.
 - En response añadida comprobación extra de que la respuesta es correcta.
+- Se añade un nuevo tipo de capa denominada Section.
 - Se eliminan los métodos cloneOLLayer y cloneLayer de la capa OSM.
 - Se modifica la clase exception para que devuelva un mensaje de tipo error
 - Se renombra oldOL3Layer, ahora es oldLayer en cluster.
