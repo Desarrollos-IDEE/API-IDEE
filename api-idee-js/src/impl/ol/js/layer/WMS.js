@@ -177,6 +177,11 @@ class WMS extends LayerBase {
     this.styles = this.options.styles || '';
 
     /**
+     * WMS sldVersion. Versión del SLD.
+     */
+    this.sldVersion = this.options.sldVersion || '1.0.0';
+
+    /**
      * WMS sldBody. Parámetros "ol.source.ImageWMS"
      */
     this.sldBody = options.sldBody;
@@ -319,6 +324,8 @@ class WMS extends LayerBase {
         REQUEST: 'GetLegendGraphic',
         LAYER: this.name,
         FORMAT: 'image/png',
+        STYLE: this.styles,
+        SLD_VERSION: this.sldVersion,
         // EXCEPTIONS: 'image/png',
       });
     }
@@ -383,14 +390,23 @@ class WMS extends LayerBase {
         this.layers.push(wmsLayer);
       });
 
+      this.layers.forEach((layer, i) => {
+        const layers = this.layers;
+        layer.on(EventType.ADDED_TO_MAP, () => {
+          if (i === this.layers.length - 1) {
+            this.layers = [];
+            this.map.removeLayers(this.facadeLayer_);
+            this.facadeLayer_.getImpl().layers = layers;
+            this.facadeLayer_?.fire(EventType.ADDED_TO_MAP, [this.facadeLayer_, layers]);
+          }
+        });
+      });
+
       this.map.addWMS(this.layers);
 
       this.layers.forEach((layer) => {
         layer.setZIndex(layer.getZIndex() - 1);
       });
-
-      this.layers = [];
-      this.map.removeLayers(this.facadeLayer_);
     });
   }
 
@@ -468,30 +484,51 @@ class WMS extends LayerBase {
     this.olLayer.setMinZoom(this.minZoom);
   }
 
+  /**
+   * Refresca la leyenda de la capa.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @public
+   * @function
+   * @param {Array<Number>} capabilites Capabilities a usar
+   * @api stable
+   */
+  refreshLegendUrlByCapabilities_(capabilites) {
+    const styles = isArray(this.styles) ? this.styles : [this.styles];
+    let style;
+    if (isNullOrEmpty(this.styles)) {
+      style = (capabilites.Style || capabilites.style || [])[0];
+    } else {
+      style = (capabilites.Style || capabilites.style || [])
+        .find((s) => s.Name === styles[0]);
+    }
+    if (style && style.LegendURL && style.LegendURL[0]
+      && style.LegendURL[0].OnlineResource) {
+      this.legendUrl_ = style.LegendURL[0].OnlineResource;
+    }
+  }
+
   // Devuelve un capabilities formateado en el caso
   // de que sea un array
   formatCapabilities_(capabilites, selff) {
     let capabilitiesLayer = capabilites;
+    const selffName = selff.facadeLayer_.name.split(',')[0];
     for (let i = 0, ilen = capabilitiesLayer.length; i < ilen; i += 1) {
       if (capabilitiesLayer[i] !== undefined && capabilitiesLayer[i].Name !== undefined
-        && (capabilitiesLayer[i].Name.toUpperCase() === selff.facadeLayer_.name.toUpperCase()
+        && (capabilitiesLayer[i].Name.toUpperCase() === selffName.toUpperCase()
           || (capabilitiesLayer[i].Identifier !== undefined
-            && capabilitiesLayer[i].Identifier.includes(selff.facadeLayer_.name)))) {
+            && capabilitiesLayer[i].Identifier.includes(selffName)))) {
         capabilitiesLayer = capabilitiesLayer[i];
 
         try {
-          this.legendUrl_ = capabilitiesLayer.Style[0].LegendURL[0].OnlineResource;
-          // this.legendUrl_ = capabilitiesLayer.Style
-          // .find((s) => s.Name === this.styles).LegendURL[0].OnlineResource;
+          this.refreshLegendUrlByCapabilities_(capabilitiesLayer);
         } catch (err) { /* Continue */ }
       } else if (capabilitiesLayer[i] !== undefined && capabilitiesLayer[i].Layer !== undefined) {
-        if (capabilitiesLayer[i].Layer.some((l) => l.Name === selff.facadeLayer_.name)) {
+        if (capabilitiesLayer[i].Layer.some((l) => l.Name === selffName)) {
           capabilitiesLayer = capabilitiesLayer[i].Layer
-            .find((l) => l.Name === selff.facadeLayer_.name);
+            .find((l) => l.Name === selffName);
           try {
-            this.legendUrl_ = capabilitiesLayer.Style[0].LegendURL[0].OnlineResource;
-            // this.legendUrl_ = capabilitiesLayer.Style
-            // .find((s) => s.Name === this.styles).LegendURL[0].OnlineResource;
+            this.refreshLegendUrlByCapabilities_(capabilitiesLayer);
           } catch (err) { /* Continue */ }
         }
       }
@@ -846,6 +883,63 @@ class WMS extends LayerBase {
   }
 
   /**
+   * Devuelve el estilo de la capa.
+   *
+   * @public
+   * @function
+   * @returns {string | Array} Estilo de la capa.
+   * @api stable
+   */
+  getStyles() {
+    return this.styles;
+  }
+
+  /**
+   * Esta función aplica estilos a la capa
+   *
+   * @public
+   * @function
+   * @param { string | Array } newStyles Nuevo estilo a aplicar.
+   * @api stable
+   */
+  setStyles(newStyles) {
+    this.styles = newStyles;
+    const ol3Layer = this.getLayer();
+    if (!isNullOrEmpty(ol3Layer)) {
+      ol3Layer.getSource().updateParams({ STYLES: newStyles });
+      this.refreshLegendUrlByCapabilities_(this.facadeLayer_.capabilitiesMetadata);
+    }
+  }
+
+  /**
+   * Devuelve la versión del SLD.
+   *
+   * @public
+   * @function
+   * @returns {string | Array} Versión del SLD.
+   * @api stable
+   */
+  getSldVersion() {
+    return this.sldVersion;
+  }
+
+  /**
+   * Esta función aplica la versión del SLD a la capa
+   *
+   * @public
+   * @function
+   * @param { string | Array } newSldVersion Nueva versión del SLD a aplicar.
+   * @api stable
+   */
+  setSldVersion(newSldVersion) {
+    this.sldVersion = newSldVersion;
+    const ol3Layer = this.getLayer();
+    if (!isNullOrEmpty(ol3Layer)) {
+      ol3Layer.getSource().updateParams({ SLD_VERSION: newSldVersion });
+    }
+  }
+
+  /**
    * Este método actualiza el estado de este
    * capa.
    *
@@ -958,7 +1052,9 @@ class WMS extends LayerBase {
    * @api
    */
   setName(newName, isWMSFull) {
-    this.name = newName;
+    this.name = isArray(newName)
+      ? newName.join(',')
+      : newName;
     this.isWMSfull = isWMSFull;
     this.recreateLayer();
   }

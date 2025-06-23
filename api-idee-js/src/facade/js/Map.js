@@ -104,11 +104,13 @@ class Map extends Base {
     // parses parameters to build the new map
     const params = new Parameters(userParameters);
 
+    const dpi = IDEE.config.DPI;
+
     const opts = { viewExtent: params.viewExtent, ...options };
 
     // calls the super constructor
     super();
-    const impl = new MapImpl(params.container, this, opts, viewVendorOptions);
+    const impl = new MapImpl(params.container, this, dpi, opts, viewVendorOptions);
     // impl.setFacadeMap(this);
     this.setImpl(impl);
 
@@ -359,6 +361,8 @@ class Map extends Base {
     // zoomConstrains
     if (!isNullOrEmpty(params.zoomConstrains)) {
       this.setZoomConstrains(params.zoomConstrains);
+    } else if (IDEE.config.MAP_VIEWER_ZOOM_CONSTRAINS !== '') {
+      this.setZoomConstrains(IDEE.config.MAP_VIEWER_ZOOM_CONSTRAINS);
     } else {
       this.setZoomConstrains(false);
     }
@@ -603,7 +607,7 @@ class Map extends Base {
   }
 
   /**
-   * Este método obtiene las capas que no están en ningún grupo de capas.
+   * Este método obtiene las capas que no están en ningún grupo de capas o sección.
    *
    * @function
    * @param {Array<string>|Array<Mx.parameters.Layer>} layersParam Matriz de nombres de capas.
@@ -611,7 +615,8 @@ class Map extends Base {
    * @api
    */
   getRootLayers(layersParamVar) {
-    const layers = this.getLayers(layersParamVar).filter((l) => isNullOrEmpty(l.group));
+    const layers = this.getLayers(layersParamVar)
+      .filter((l) => isNullOrEmpty(l.group) && isNullOrEmpty(l.getSection()));
 
     return layers;
   }
@@ -882,6 +887,73 @@ class Map extends Base {
   }
 
   /**
+   * Este método devuelve las secciones que tenga el mapa.
+   *
+   * @function
+   * @public
+   * @returns {Array<IDEE.layer.Section>} Secciones del mapa.
+   * @api
+   */
+  getSections() {
+    // checks if the implementation can manage layers
+    if (isUndefined(MapImpl.prototype.getSections)) {
+      Exception(getValue('exception').getsections_method);
+    }
+    return this.getImpl().getSections().sort(Map.LAYER_SORT);
+  }
+
+  /**
+   * Añade una sección al mapa.
+   *
+   * @public
+   * @function
+   * @param {Array<IDEE.layer.Section>} sections Secciones a añadir.
+   * @returns {IDEE.Map}
+   * @api
+   */
+  addSections(sections) {
+    let sect = sections;
+    // checks if the parameter is null or empty
+    if (isNull(sect)) {
+      Exception('No ha especificado ninguna sección');
+    }
+    // checks if the implementation can manage groups
+    if (isUndefined(MapImpl.prototype.addSections)) {
+      Exception(getValue('exception').addsections_method);
+    }
+    // parses parameters to Array
+    if (!isArray(sect)) {
+      sect = [sect];
+    }
+    // adds the groups
+    this.getImpl().addSections(sect);
+    return this;
+  }
+
+  /**
+   * Elimina una sección del mapa.
+   *
+   * @function
+   * @public
+   * @param {Array<IDEE.layer.Section>} sections Secciones a eliminar.
+   * @returns {IDEE.Map}
+   * @api
+   */
+  removeSections(sections) {
+    // checks if the parameter is null or empty
+    if (isNull(sections)) {
+      Exception('No ha especificado ninguna sección a eliminar');
+    }
+    // checks if the implementation can manage groups
+    if (isUndefined(this.getImpl().removeSections)) {
+      Exception(getValue('exception').removesections_method);
+    }
+    // removes the layers
+    this.getImpl().removeSections(sections);
+    return this;
+  }
+
+  /**
    * Este método devuelve los grupos que tenga el mapa.
    *
    * @function
@@ -932,20 +1004,31 @@ class Map extends Base {
 
       // Add this.featuresHandler_.addLayer(layer);
       collectionLayerGroups.forEach((group) => {
-        group.getLayers().forEach((layer) => {
-          if ((layer instanceof Vector)
-              /* && !(layer instanceof KML) */
-              && !(layer instanceof WFS)
-              && !(layer instanceof OGCAPIFeatures)) {
-            this.featuresHandler_.addLayer(layer);
-          }
-        });
+        this.featureHandlerLayerGroup(group);
       });
 
       this.fire(EventType.ADDED_LAYER, [collectionLayerGroups]);
       this.fire(EventType.ADDED_LAYERGROUP, [collectionLayerGroups]);
     }
     return this;
+  }
+
+  /**
+   * Manejador de objetos geográficos para los grupos de capas.
+   *
+   * @function
+   * @param {IDEE.layer.Group} layerGroup Grupo de capas.
+   * @api
+   */
+  featureHandlerLayerGroup(layerGroup) {
+    const layers = layerGroup.getLayers();
+    layers.forEach((l) => {
+      if ((l instanceof Vector) || (l instanceof MapLibre) || (l instanceof Tiles3D)) {
+        this.featuresHandler_.addLayer(l);
+      } else if (l instanceof LayerGroup) {
+        this.featureHandlerLayerGroup(l);
+      }
+    });
   }
 
   /**

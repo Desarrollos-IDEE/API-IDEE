@@ -1177,9 +1177,9 @@ export default class IncicartoControl extends IDEE.impl.Control {
       success(altitudeFromElevationProfileProcess);
     });
 
-    IDEE.proxy(false);
+    // IDEE.proxy(false);
     promesa.then((response) => {
-      IDEE.proxy(true);
+      // IDEE.proxy(true);
 
       if (response && response !== NO_DATA_VALUE) {
         if (calculateProfile) {
@@ -1203,7 +1203,7 @@ export default class IncicartoControl extends IDEE.impl.Control {
         }
       }
     }).catch(() => {
-      IDEE.proxy(true);
+      // IDEE.proxy(true);
 
       if (calculateProfile) {
         document.querySelector('.m-incicarto .m-incicarto-loading-container').innerHTML = '';

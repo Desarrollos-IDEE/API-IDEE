@@ -1,0 +1,170 @@
+{
+  "collections": [
+    {
+      "name": "KML",
+      "resources": [
+        {
+          "file": "CarrilbiciSevillaactualizado.kml",
+          "url": "https://componentes.idee.es/estaticos/Datos/KML/CarrilbiciSevillaactualizado.kml"
+        },
+        {
+          "file": "arbda_sing_se.kml",
+          "url": "https://componentes.idee.es/estaticos/Datos/KML/arbda_sing_se.kml"
+        },
+        {
+          "file": "las_huertas.kml",
+          "url": "https://componentes.idee.es/estaticos/Datos/KML/las_huertas.kml"
+        },
+        {
+          "file": "las_huertas_n1.kml",
+          "url": "https://componentes.idee.es/estaticos/Datos/KML/las_huertas_n1.kml"
+        },
+        {
+          "file": "monumentos_utf.kml",
+          "url": "https://componentes.idee.es/estaticos/Datos/KML/monumentos_utf.kml"
+        },
+        {
+          "file": "museos_utf.kml",
+          "url": "https://componentes.idee.es/estaticos/Datos/KML/museos_utf.kml"
+        }
+      ]
+    },
+    {
+      "name": "WMC",
+      "resources": [
+        {
+          "file": "callejero2011cache.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/callejero2011cache.xml"
+        },
+        {
+          "file": "cdau.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/cdau.xml"
+        },
+        {
+          "file": "cdau_https.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/cdau_https.xml"
+        },
+        {
+          "file": "contextCallejero.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/contextCallejero.xml"
+        },
+        {
+          "file": "contextCallejeroCache.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/contextCallejeroCache.xml"
+        },
+        {
+          "file": "contextCallejeroCacheLite.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/contextCallejeroCacheLite.xml"
+        },
+        {
+          "file": "contextOrtofoto.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/contextOrtofoto.xml"
+        },
+        {
+          "file": "contextOrtofotoCacheada.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/contextOrtofotoCacheada.xml"
+        },
+        {
+          "file": "contextOrtofotoCacheadaMunicipiosLite.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/contextOrtofotoCacheadaMunicipiosLite.xml"
+        },
+        {
+          "file": "context_cdau_callejero.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/context_cdau_callejero.xml"
+        },
+        {
+          "file": "context_cdau_callejero_25830_no_cache.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/context_cdau_callejero_25830_no_cache.xml"
+        },
+        {
+          "file": "context_cdau_hibrido.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/context_cdau_hibrido.xml"
+        },
+        {
+          "file": "context_cdau_hibrido_25830_no_cache.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/context_cdau_hibrido_25830_no_cache.xml"
+        },
+        {
+          "file": "context_cdau_hibrido_versions.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/context_cdau_hibrido_versions.xml"
+        },
+        {
+          "file": "context_cdau_satelite.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/context_cdau_satelite.xml"
+        },
+        {
+          "file": "context_cdau_satelite_25830_no_cache.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/context_cdau_satelite_25830_no_cache.xml"
+        },
+        {
+          "file": "hibrido.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/hibrido.xml"
+        },
+        {
+          "file": "hibrido2011cache.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/hibrido2011cache.xml"
+        },
+        {
+          "file": "mapa.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/mapa.xml"
+        },
+        {
+          "file": "ortofoto2011cache.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/ortofoto2011cache.xml"
+        },
+        {
+          "file": "satelite.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/satelite.xml"
+        },
+        {
+          "file": "wmc_grupos.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/wmc_grupos.xml"
+        },
+        {
+          "file": "wmc_grupos_capas.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/wmc_grupos_capas.xml"
+        },
+        {
+          "file": "wmc_grupos_capas2.xml",
+          "url": "https://componentes.idee.es/estaticos/Datos/WMC/wmc_grupos_capas2.xml"
+        }
+      ]
+    },
+    {
+      "name": "geojson",
+      "resources": [
+        {
+          "file": "vertices.geojson",
+          "url": "https://componentes.idee.es/estaticos/Datos/geojson/vertices.geojson"
+        }
+      ]
+    },
+    {
+      "name": "mbtiles",
+      "resources": [
+        {
+          "file": "cabrera.mbtiles",
+          "url": "https://componentes.idee.es/estaticos/Datos/mbtiles/cabrera.mbtiles"
+        },
+        {
+          "file": "countries.mbtiles",
+          "url": "https://componentes.idee.es/estaticos/Datos/mbtiles/countries.mbtiles"
+        }
+      ]
+    },
+    {
+      "name": "geopackage",
+      "resources": [
+        {
+          "file": "IGRPO_v2023_39_ETRS89_20250204.gpkg",
+          "url": "https://componentes.idee.es/estaticos/Datos/gpkg/IGRPO_v2023_39_ETRS89_20250204.gpkg"
+        },
+        {
+          "file": "rivers.gpkg",
+          "url": "https://componentes.idee.es/estaticos/Datos/gpkg/rivers.gpkg"
+        }
+      ]
+    }
+
+  ]
+}

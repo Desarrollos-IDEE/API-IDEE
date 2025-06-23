@@ -1707,7 +1707,9 @@ export const getNameWMS = (parameter) => {
       name = params[0].trim();
     }
   } else if (isObject(parameter) && !isNullOrEmpty(parameter.name)) {
-    name = parameter.name.trim();
+    name = isArray(parameter.name)
+      ? parameter.name.map((n) => n.trim()).join(',')
+      : parameter.name.trim();
   } else if (!isObject(parameter)) {
     Exception(`El parámetro no es de un tipo soportado: ${typeof parameter}`);
   }
@@ -2116,8 +2118,6 @@ export const getMergeLayersWMS = (parameter) => {
   if (isObject(parameter)) {
     const name = parameter.name;
     mergeLayers = isUndefined(name) || name === '' ? parameter.mergeLayers : true;
-  } else {
-    Exception(`El parámetro no es de un tipo soportado: ${typeof parameter}`);
   }
 
   if (isUndefined(mergeLayers)) {
@@ -2125,6 +2125,66 @@ export const getMergeLayersWMS = (parameter) => {
   }
 
   return mergeLayers;
+};
+
+/**
+ * Analiza el parámetro para obtener el estilo de la capa WMS.
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {string|object} parameter Parámetro de la capa.
+ * @returns {string} Estilo de la capa.
+ * @throws {Exception} Si el parámetro no es de un tipo soportado.
+ * @api
+ */
+export const getStylesWMS = (parameter) => {
+  let styles;
+  let params;
+  if (isString(parameter)) {
+    if (/^WMS\*[^*]+\*[^*]+\*[^*]+\*(true|false)\*(true|false)\*.*\*(\d\.\d\.\d)\*(true|false)\*(true|false)\*(true|false)\*(true|false)\*[^*]+/i.test(parameter)) {
+      params = parameter.split(/\*/);
+      styles = params[12].trim();
+    }
+  } else if (isObject(parameter)) {
+    styles = parameter.styles;
+  } else {
+    Exception(`El parámetro no es de un tipo soportado: ${typeof parameter}`);
+  }
+  if (isNullOrEmpty(styles)) {
+    styles = undefined;
+  }
+  return styles;
+};
+
+/**
+ * Analiza el parámetro para obtener el estilo de la capa WMS.
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {string|object} parameter Parámetro de la capa.
+ * @returns {string} Estilo de la capa.
+ * @throws {Exception} Si el parámetro no es de un tipo soportado.
+ * @api
+ */
+export const getSldVersion = (parameter) => {
+  let sldVersion;
+  let params;
+  if (isString(parameter)) {
+    if (/^WMS\*[^*]+\*[^*]+\*[^*]+\*(true|false)\*(true|false)\*.*\*(\d\.\d\.\d)\*(true|false)\*(true|false)\*(true|false)\*(true|false)\*[^*]+.*\*(\d\.\d\.\d)/i.test(parameter)) {
+      params = parameter.split(/\*/);
+      sldVersion = params[13].trim();
+    }
+  } else if (isObject(parameter)) {
+    sldVersion = parameter.sldVersion;
+  } else {
+    Exception(`El parámetro no es de un tipo soportado: ${typeof parameter}`);
+  }
+  if (isNullOrEmpty(sldVersion)) {
+    sldVersion = undefined;
+  }
+  return sldVersion;
 };
 
 /**
@@ -2166,6 +2226,8 @@ export const wms = (userParameters) => {
     const visibility = getVisibilityWMS(userParam);
     const useCapabilities = getUseCapabilitiesWMS(userParam);
     const mergeLayers = getMergeLayersWMS(userParam);
+    const styles = getStylesWMS(userParam);
+    const sldVersion = getSldVersion(userParam);
 
     return {
       type,
@@ -2182,6 +2244,8 @@ export const wms = (userParameters) => {
       options,
       useCapabilities,
       mergeLayers,
+      styles,
+      sldVersion,
     };
   });
 

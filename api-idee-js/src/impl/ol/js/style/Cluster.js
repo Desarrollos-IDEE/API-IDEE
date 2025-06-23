@@ -77,7 +77,7 @@ class Cluster extends Style {
      * @type {ol.layer.Vector}
      * @expose
      */
-    this.oldOL3Layer_ = null;
+    this.oldLayer_ = null;
 
     /**
      *
@@ -186,10 +186,10 @@ class Cluster extends Style {
     this.clusterLayer_.setZIndex(99999);
     const ol3Layer = this.layer_.getImpl().getLayer();
     if (!(ol3Layer instanceof AnimatedCluster)) {
-      this.oldOL3Layer_ = ol3Layer;
+      this.oldLayer_ = ol3Layer;
     }
-    this.clusterLayer_.setMaxResolution(this.oldOL3Layer_.getMaxResolution());
-    this.clusterLayer_.setMinResolution(this.oldOL3Layer_.getMinResolution());
+    this.clusterLayer_.setMaxResolution(this.oldLayer_.getMaxResolution());
+    this.clusterLayer_.setMinResolution(this.oldLayer_.getMinResolution());
     this.layer_.getImpl().setLayer(this.clusterLayer_);
 
     if (isNullOrEmpty(this.options_.ranges)) {
@@ -486,7 +486,7 @@ class Cluster extends Style {
     } else if (numFeatures === 1) {
       let clusterOlFeatureStyle = clusterOlFeatures[0].getStyle();
       if (!clusterOlFeatureStyle) {
-        clusterOlFeatureStyle = this.oldOL3Layer_.getStyle();
+        clusterOlFeatureStyle = this.oldLayer_.getStyle();
       }
       olStyle = clusterOlFeatureStyle(clusterOlFeatures[0], resolution);
       if (!isArray(olStyle)) {
@@ -553,9 +553,9 @@ class Cluster extends Style {
    */
   unapply() {
     if (!isNullOrEmpty(this.clusterLayer_)) {
-      this.layer_.getImpl().setLayer(this.oldOL3Layer_);
-      this.oldOL3Layer_.setMaxResolution(this.clusterLayer_.getMaxResolution());
-      this.oldOL3Layer_.setMinResolution(this.clusterLayer_.getMinResolution());
+      this.layer_.getImpl().setLayer(this.oldLayer_);
+      this.oldLayer_.setMaxResolution(this.clusterLayer_.getMaxResolution());
+      this.oldLayer_.setMinResolution(this.clusterLayer_.getMinResolution());
       this.removeCoverInteraction_();
       this.removeSelectInteraction_();
       this.clearConvexHull();
@@ -668,14 +668,14 @@ class Cluster extends Style {
   }
 
   /**
-   * Devuelve el "oldOL3Layer".
+   * Devuelve el "oldLayer".
    * @public
    * @function
-   * @return {object} "oldOL3Layer".
+   * @return {object} "oldLayer".
    * @api stable
    */
-  get oldOL3Layer() {
-    return this.oldOL3Layer_;
+  get oldLayer() {
+    return this.oldLayer_;
   }
 }
 

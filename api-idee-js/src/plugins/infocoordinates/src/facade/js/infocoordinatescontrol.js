@@ -238,9 +238,9 @@ export default class InfocoordinatesControl extends IDEE.Control {
       success(altitudeFromElevationProcess);
     });
 
-    IDEE.proxy(false);
+    // IDEE.proxy(false);
     promesa.then((response) => {
-      IDEE.proxy(true);
+      // IDEE.proxy(true);
       if (!response || response === NO_DATA_VALUE) {
         altitudeFromElevationProcess = getValue('noDatafromElevationProcess');
       } else {
@@ -249,7 +249,9 @@ export default class InfocoordinatesControl extends IDEE.Control {
       featurePoint.setAttribute('Altitude', altitudeFromElevationProcess);
       altitudeBox.innerHTML = altitudeFromElevationProcess;
       buttonTab.addEventListener('click', () => this.openTabFromTab(numPoint));
-    }).catch(() => IDEE.proxy(true));
+    }).catch(() => {
+      // IDEE.proxy(true);
+    });
 
     this.layerFeatures.addFeatures([featurePoint]);
     this.layerFeatures.setZIndex(999);

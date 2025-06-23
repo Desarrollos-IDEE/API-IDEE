@@ -74,6 +74,7 @@ class WMTS extends LayerBase {
    *    attributions: 'wmts',
    *    ...
    *  })
+   *  tileLoadFunction: <funcion>
    * }
    * </code></pre>
    * @api
@@ -217,6 +218,42 @@ class WMTS extends LayerBase {
    */
   set options(newOptions) {
     this.getImpl().options = newOptions;
+  }
+
+  /**
+   * Sobrescribe la función de carga de teselas.
+   *
+   * @function
+   * @public
+   * @param {Function} func Función de carga de teselas.
+   * @api
+   */
+  setTileLoadFunction(func) {
+    this.getImpl().setTileLoadFunction(func);
+  }
+
+  /**
+   * Sobreescribe la URL de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newURL Nueva URL de la capa.
+   * @api
+   */
+  setURL(newURL) {
+    this.getImpl().setURL(newURL);
+  }
+
+  /**
+   * Sobreescribe el nombre de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newName Nuevo nombre de la capa.
+   * @api
+   */
+  setName(newName) {
+    this.getImpl().setName(newName);
   }
 
   /**
