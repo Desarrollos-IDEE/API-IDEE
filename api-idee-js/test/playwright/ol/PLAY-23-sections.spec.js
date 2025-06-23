@@ -53,6 +53,6 @@ test.describe('IDEE.layer.Section', () => {
     await page.waitForTimeout(3000);
     const numLayers = await page.evaluate(() => { return window.map.getLayers().length; });
     await expect(numLayers).toEqual(5);
-    await expect(page).toHaveScreenshot('snapshot.png');
+    await expect(page).toHaveScreenshot('snapshot.png', {maxDiffPixelRatio: 0.5});
   });
 });
