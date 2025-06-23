@@ -140,7 +140,6 @@ class OSM extends Layer {
    */
   addTo(map, addLayer = true) {
     this.map = map;
-    this.fire(EventType.ADDED_TO_MAP);
 
     this.olLayer = new OLLayerTile(extend(
       { visible: this.visibility },
@@ -154,6 +153,7 @@ class OSM extends Layer {
 
     if (addLayer) {
       this.map.getMapImpl().addLayer(this.olLayer);
+      this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
     }
 
     this.map.getImpl().getMapImpl().getControls().getArray()
