@@ -26,6 +26,7 @@ import * as EventType from '../event/eventtype';
  * @property {string} legend Indica el nombre que queremos que aparezca en el árbol
  * de contenidos, si lo hay.
  * @property {Boolean} isBase Define si la capa es base.
+ * @property {IDEE.layer.Section} section_ Indica si la capa pertenece a una sección.
  *
  * @api
  * @extends {IDEE.Base}
@@ -139,6 +140,15 @@ class LayerBase extends Base {
      * @private
      */
     this.isReset_ = false;
+
+    /**
+     * Sección de la capa.
+     *
+     * @private
+     * @type {IDEE.layer.Section}
+     * @api
+     */
+    this.section_ = null;
   }
 
   /**
@@ -497,6 +507,31 @@ class LayerBase extends Base {
    */
   setMap(map) {
     this.map_ = map;
+  }
+
+  /**
+   * Este método devuelve la sección de esta capa, si la tiene.
+   *
+   * @public
+   * @function
+   * @returns {IDEE.layer.Section} Sección de la capa.
+   * @api
+   */
+  getSection() {
+    return this.section_;
+  }
+
+  /**
+   * Este método añade la capa dentro de una sección. Una capa solo puede
+   * estar dentro de una sección a la vez.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @function
+   * @param {IDEE.layer.Section} section Sección a la que se añadirá la capa.
+   * @api
+   */
+  setSection_(section) {
+    this.section_ = section;
   }
 
   /**

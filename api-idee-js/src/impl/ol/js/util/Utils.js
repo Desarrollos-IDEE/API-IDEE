@@ -5,7 +5,12 @@ import Feature from 'IDEE/feature/Feature';
 import * as WKT from 'IDEE/geom/WKT';
 import { isNullOrEmpty, isString, generateRandom } from 'IDEE/util/Utils';
 import { extend, getWidth } from 'ol/extent';
-import { get as getProj, getTransform, transformExtent } from 'ol/proj';
+import {
+  get as getProj,
+  getTransform,
+  METERS_PER_UNIT,
+  transformExtent,
+} from 'ol/proj';
 import OLFeature from 'ol/Feature';
 import RenderFeature from 'ol/render/Feature';
 import Point from 'ol/geom/Point';
@@ -694,6 +699,42 @@ class Utils {
       }
     }
     return Math.trunc(scale);
+  }
+
+  /**
+   * Este método obtiene la escala para una resolución dada.
+   *
+   * @function
+   * @param {Number} resolution Resolución del mapa.
+   * @param {Number} mapUnits Unidades del mapa (en metros).
+   * @param {Number} dpi DPI del mapa.
+   * @returns {Number} Escala calculada.
+   * @public
+   * @api
+   */
+  static getScaleForResolution(resolution, mapUnits, dpi) {
+    const inchesPerMeter = 39.37;
+    return Math.round(((resolution * dpi) * inchesPerMeter) / mapUnits);
+  }
+
+  /**
+   * Este método obtiene la escala a partir de un valor de entrada
+   * utilizando funciones propias de OpenLayers.
+   *
+   * @function
+   * @param {Map} map Mapa.
+   * @param {String} inputValue Valor de entrada para la escala.
+   * @returns {Number} Escala calculada.
+   * @public
+   * @api
+   */
+  static getCurrentScale(map, inputValue) {
+    const view = map.getMapImpl().getView();
+    const unidades = view.getProjection().getUnits();
+    const unidadesMapa = METERS_PER_UNIT[unidades];
+    const dpi = IDEE.config.DPI || 72;
+    const inchesPerMeter = 39.37;
+    return (Number.parseFloat(inputValue) * unidadesMapa) / (dpi * inchesPerMeter);
   }
 }
 export default Utils;
