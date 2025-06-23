@@ -140,7 +140,6 @@ class OSM extends Layer {
    */
   addTo(map, addLayer = true) {
     this.map = map;
-    this.fire(EventType.ADDED_TO_MAP);
 
     this.olLayer = new OLLayerTile(extend(
       { visible: this.visibility },
@@ -154,6 +153,7 @@ class OSM extends Layer {
 
     if (addLayer) {
       this.map.getMapImpl().addLayer(this.olLayer);
+      this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
     }
 
     this.map.getImpl().getMapImpl().getControls().getArray()
@@ -350,40 +350,6 @@ class OSM extends Layer {
     }
 
     return equals;
-  }
-
-  /**
-   * Este método devuelve un clon de capa de esta instancia.
-   * @public
-   * @function
-   * @return {ol/layer/Tile}
-   * @api stable
-   * @deprecated
-   */
-  cloneOLLayer() {
-    let olLayer = null;
-    if (this.olLayer != null) {
-      const properties = this.olLayer.getProperties();
-      olLayer = new OLLayerTile(properties);
-    }
-    return olLayer;
-  }
-
-  /**
-   * Este método devuelve un clon de capa de esta instancia.
-   * @public
-   * @function
-   * @return {ol/layer/Tile}
-   * @api stable
-   * @deprecated
-   */
-  cloneLayer() {
-    let olLayer = null;
-    if (this.olLayer != null) {
-      const properties = this.olLayer.getProperties();
-      olLayer = new OLLayerTile(properties);
-    }
-    return olLayer;
   }
 }
 

@@ -338,7 +338,7 @@
     "url_git": "https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/rescale",
     "image": "img/api-logo.png",
     "description": "Hace zoom a la escala elegida.",
-    "obsolete": false
+    "obsolete": true
   },
   {
     "name": "selectiondraw",

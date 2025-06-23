@@ -1,4 +1,4 @@
-<div class="m-popup{{#gt tabs.length 1}} m-has-tabs{{/gt}} m-collapsed">
+<div id={{id}} class="m-popup{{#gt tabs.length 1}} m-has-tabs{{/gt}} m-collapsed">
   {{#gt tabs.length 1}}
     <div class="m-tabs">
       {{#each tabs}}
@@ -16,6 +16,19 @@
       {{/eq}}
       <a class="m-popup-closer" href="#" title="cerrar popup"></a>
     </div>
+     {{#if options.takeMeThere}}
+      {{#if options.textMode}}
+        <div class="m-footer">
+          <a target="_blank" href="{{url}}">{{options.msg}}</a>
+        </div>
+      {{else}}
+        <div class="m-footer">
+          <a target="_blank" href="{{url}}">
+            <button class="g-cartografia-localizacion3"></button>
+          </a>
+        </div>
+      {{/if}}
+    {{/if}}
     <div class="m-body">{{{tabs.0.content}}}</div>
   </div>
 </div>
