@@ -77,6 +77,7 @@
 - Se incorpora el uso de ticket en MVT.
 - En WFS eliminada logica de selectFeatures para usar la heredada de Vector.
 - En response añadida comprobación extra de que la respuesta es correcta.
+- Se eliminan los métodos selectFeatures, unselectFeatures y removePopup de la capa MVT.
 - Se añade un nuevo tipo de capa denominada Section.
 - Se eliminan los métodos cloneOLLayer y cloneLayer de la capa OSM.
 - Se modifica la clase exception para que devuelva un mensaje de tipo error
@@ -85,3 +86,4 @@
 - Se modifica el evento ADDED_TO_MAP de las capas MVT para que se dispare desde fachada.
 - Se implementa funcionalidad "takeMeThere" en popups.
 - Se modifica el evento ADDED_TO_MAP de las capas OSM para que se dispare desde fachada.
+
