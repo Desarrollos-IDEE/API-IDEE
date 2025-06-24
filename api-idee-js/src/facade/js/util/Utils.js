@@ -6,6 +6,7 @@
 import { get as remoteGet } from 'IDEE/util/Remote';
 import chroma from 'chroma-js';
 import Draggabilly from 'draggabilly';
+import reproj from 'impl/util/reprojection';
 import { getValue } from '../i18n/language';
 import { DOTS_PER_INCH, INCHES_PER_UNIT } from '../units';
 import * as WKT from '../geom/WKT';
@@ -1396,14 +1397,16 @@ export const draggabillyPlugin = (panel, handleEl) => {
  * @function
  * @param {string} element Selector del elemento a mover
  * @param {string} handleEl Selemento del elemento iniciador del movimiento
+ * @param {string} containmentEl Selector del elemento contenedor
  * @api
  */
-export const draggabillyElement = (elem, handleEl) => {
+export const draggabillyElement = (elem, handleEl, containmentEl = 'body') => {
   setTimeout(() => {
     const element = document.querySelector(elem);
+    const containerElement = document.querySelector(containmentEl);
     if (element !== null) {
       const draggable = new Draggabilly(element, {
-        containment: 'body',
+        containment: containerElement,
         handle: handleEl,
       });
 
@@ -1444,21 +1447,21 @@ export const returnPositionHtmlElement = (className, map) => {
  * @param {String} imageType formato de imagen resultante
  * @returns {HTMLCanvasElement} canvas resultante
  */
-const joinCanvas = (map, imageType = 'image/jpeg') => {
+export const joinCanvas = (map, imageType = 'image/jpeg') => {
   const canvasList = map.getMapImpl().getViewport().querySelectorAll('.ol-layer canvas, canvas.ol-layer');
-  if (canvasList.length === 1) {
-    return canvasList[0];
-  }
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   const mapImpl = map.getMapImpl();
   const size = mapImpl.getSize();
+
   canvas.width = size[0];
   canvas.height = size[1];
+
   if (/jp.*g$/.test(imageType)) {
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
+
   canvasList.forEach((c) => {
     if (c.width) {
       ctx.save();
@@ -1734,6 +1737,44 @@ export const ObjectToArrayExtent = (bbox, epsg) => {
     return [bbox.y.min, bbox.x.min, bbox.y.max, bbox.x.max];
   }
   return [bbox.x.min, bbox.y.min, bbox.x.max, bbox.y.max];
+};
+
+/**
+ * Este método determina el sistema operativo móvil.
+ *
+ * @function
+ * @public
+ * @returns {string} El sistema operativo móvil detectado ('iOS', 'Android',
+ * 'Windows Phone', or 'unknown').
+ * @api
+ */
+export const getSystem = () => {
+  const userAgent = window.navigator.userAgent || window.navigator.vendor || window.opera;
+  let env = 'unknown';
+  if (/android/i.test(userAgent)) {
+    env = 'android';
+  }
+
+  if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+    env = 'ios';
+  }
+
+  return env;
+};
+
+/**
+ * Este método reproyecta unas coordenadas de un sistema de referencia a otro.
+ *
+ * @ublic
+ * @function
+ * @param {Array<number>} coordinates Coordenadas a reproyectar.
+ * @param {string} sourceProj EPSG del sistema de referencia de origen.
+ * @param {string} destProj EPSG del sistema de referencia de destino.
+ * @returns {Array<number>} Coordenadas reproyectadas.
+ * @api
+ */
+export const reproject = (coordinates, sourceProj, destProj) => {
+  return reproj(coordinates, sourceProj, destProj);
 };
 
 /**

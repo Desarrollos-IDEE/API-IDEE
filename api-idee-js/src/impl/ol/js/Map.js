@@ -71,6 +71,7 @@ import LayerGroup from './layer/LayerGroup';
  * @property {Object} Z_INDEX_BASELAYER Objeto con los valores de los z-index.
  * @property {Number} currentZoom Almacena el zoom del mapa.
  * @property {Object} objectView Almacena las propiedades indicadas por el usuario para la vista.
+ * @property {Array<IDEE.layer.Section>} sections_ Secciones añadidas al mapa.
  *
  * @api
  * @extends {IDEE.Object}
@@ -98,7 +99,7 @@ class Map extends MObject {
    * @param {object} viewVendorOptions Parámetros para la vista del mapa de la librería base.
    * @api
    */
-  constructor(div, facadeMap, options = {}, viewVendorOptions = {}) {
+  constructor(div, facadeMap, dpi, options = {}, viewVendorOptions = {}) {
     super();
     /**
      * Fachada del mapa a implementar.
@@ -113,6 +114,13 @@ class Map extends MObject {
      * @type {ol.Collection<IDEE.Layer>}
      */
     this.layers_ = [];
+
+    /**
+     * Secciones de capas añadidas al mapa.
+     * @private
+     * @type {Array<IDEE.layer.Section>}
+     */
+    this.sections_ = [];
 
     /**
      * Controles añadidos al mapa.
@@ -206,6 +214,12 @@ class Map extends MObject {
     }
 
     /**
+     * Calcula la resolción del mapa a partir del dpi
+     * definido en el fichero de configuración.
+     */
+    const pixelRatio = Number.parseFloat(dpi) / 72;
+
+    /**
      * Implementación del mapa.
      * @private
      * @type {ol.Map}
@@ -217,6 +231,7 @@ class Map extends MObject {
       target: div.id,
       // renderer,
       view,
+      pixelRatio,
     });
 
     this.registerEvents_();
@@ -455,6 +470,13 @@ class Map extends MObject {
       this.removeUnknowLayers_(unknowLayers);
     }
 
+    layers.forEach((layer) => {
+      if (layer.getSection && !isNullOrEmpty(layer.getSection())) {
+        const section = layer.getSection();
+        section.deleteChild(layer);
+      }
+    });
+
     this.facadeMap_.fire(EventType.REMOVED_LAYER, [layers]);
 
     return this;
@@ -498,6 +520,89 @@ class Map extends MObject {
       initValue,
     );
     return maxZIndex;
+  }
+
+  /**
+   * Este método devuelve las secciones del mapa.
+   *
+   * @public
+   * @function
+   * @returns {Array<IDEE.layer.Section>} Secciones del mapa.
+   * @api
+   */
+  getSections() {
+    return this.sections_;
+  }
+
+  /**
+   * Este método devuelve todas las capas que están en alguna
+   * sección del mapa.
+   *
+   * @public
+   * @function
+   * @returns {Array<IDEE.Layer>} Capas en secciones del mapa.
+   * @api
+   */
+  getSectionsLayers() {
+    let sectionsLayers = [];
+
+    const sections = this.getSections();
+    if (sections.length === 1) {
+      sectionsLayers = sections[0].getAllLayers();
+    } else if (sections.length > 1) {
+      sectionsLayers = sections.reduce((a, v) => {
+        return Array.isArray(a) ? a.concat(v.getAllLayers())
+          : a.getAllLayers().concat(v.getAllLayers());
+      });
+    }
+
+    return sectionsLayers;
+  }
+
+  /**
+   * Este método añade las secciones al mapa.
+   *
+   * @public
+   * @function
+   * @param {Array<IDEE.layer.Section>} sections Secciones a añadir.
+   * @returns {IDEE.impl.Map}
+   * @api
+   */
+  addSections(sections) {
+    sections.forEach((section) => {
+      section.addTo(this.facadeMap_);
+      if (!includes(this.sections_, section)) {
+        this.sections_.push(section);
+        section.getAllLayers().forEach((layer) => {
+          this.facadeMap_.addLayers(layer);
+        });
+      }
+    });
+    return this;
+  }
+
+  /**
+   * Este método elimina las secciones del mapa.
+   *
+   * @public
+   * @function
+   * @param {Array<IDEE.layer.Section>} sections Secciones a eliminar.
+   * @returns {IDEE.impl.Map}
+   * @api
+   */
+  removeSections(sections) {
+    let sectionsI = [];
+    if (!Array.isArray(sections)) {
+      sectionsI = [sections];
+    } else {
+      sectionsI = [...sections];
+    }
+    sectionsI.forEach((section) => {
+      this.sections_.remove(section);
+      section.destroy();
+      section.fire(EventType.REMOVED_FROM_MAP, [section]);
+    });
+    return this;
   }
 
   /**
@@ -2789,6 +2894,8 @@ class Map extends MObject {
       const olPopup = popup.getImpl();
       const olMap = this.getMapImpl();
       olMap.removeOverlay(olPopup);
+      popup.fire(EventType.POPUP_REMOVED, [popup]);
+      this.facadeMap_.fire(EventType.POPUP_REMOVED, [popup]);
     }
     return this;
   }

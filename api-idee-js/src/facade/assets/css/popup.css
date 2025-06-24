@@ -212,6 +212,12 @@
         max-width: 100vw;
     }
 
+    .m-popup .m-footer {
+        position: relative;
+        display: flex;
+        padding: 10px 10px !important;
+    }
+
     .m-popup>div.m-content>div.m-header,
     .m-popup>div.m-tabs {
         text-align: center;
@@ -427,13 +433,20 @@
     text-align: right;
 }
 
-.m-popup>div.m-content>div.m-body>div.m-geojson-content>div.result>table td.key {
+.m-popup>div.m-content>div.m-body>div.m-geojson-content>div.result>table td.key,
+.m-popup>div.m-content>div.m-body>div.m-legend {
     font-weight: bold;
 }
 
 .m-popup>div.m-content>div.m-body>div.m-geojson-content>div.result>table td.value,
 .m-popup>div.m-content>div.m-body>div.m-geojson-content>div.result>table td.key {
     white-space: nowrap;
+}
+
+.m-popup>div.m-content>div.m-body>div.m-legend {
+    font-size: 15px;
+    border-bottom: 1px solid #e4e1e1;
+    margin-bottom: 5px;
 }
 
 /****************************
@@ -450,4 +463,26 @@
 
 .unsetTransform{
     transform: unset !important;
+}
+
+/****************************
+    TAKEMETHERE
+****************************/
+.m-popup .m-footer {
+    margin: 0px;
+    padding: 5px 0;
+    display: flex;
+}
+
+.m-popup .m-footer>a>button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    font-size: 18px;
+    color: #337ceb;
+    transition: color .3s;
+}
+
+.m-popup .m-footer>a>button:hover {
+    color: #d9534f;
 }

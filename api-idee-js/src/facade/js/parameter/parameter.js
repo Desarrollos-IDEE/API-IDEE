@@ -2118,8 +2118,6 @@ export const getMergeLayersWMS = (parameter) => {
   if (isObject(parameter)) {
     const name = parameter.name;
     mergeLayers = isUndefined(name) || name === '' ? parameter.mergeLayers : true;
-  } else {
-    Exception(`El parámetro no es de un tipo soportado: ${typeof parameter}`);
   }
 
   if (isUndefined(mergeLayers)) {
