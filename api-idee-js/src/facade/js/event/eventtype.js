@@ -385,7 +385,7 @@ export const POPUP_ADDED_TAB = 'popup:addtabed';
 export const POPUP_REMOVED_TAB = 'popup:removedtab';
 
 /**
- * Evento que se produce cuando se cambia la rotación de una capa.
+ * Evento que se produce cuando se cambia la rotación del mapa.
  * @public
  * @type {string}
  * @api

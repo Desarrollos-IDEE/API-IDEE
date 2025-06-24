@@ -4189,7 +4189,7 @@ class Map extends Base {
   }
 
   /**
-   * This function gets the rotation of the view map
+   * Función que modifica la rotación del mapa.
    *
    * @function
    * @public
@@ -4204,7 +4204,7 @@ class Map extends Base {
   }
 
   /**
-   * This function sets the rotation of the view map
+   * Función que devuelve la rotación del mapa.
    *
    * @function
    * @public
