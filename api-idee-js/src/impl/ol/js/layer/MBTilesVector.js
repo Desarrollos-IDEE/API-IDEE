@@ -8,7 +8,7 @@ import Popup from 'IDEE/Popup';
 import geojsonPopupTemplate from 'templates/geojson_popup';
 import { get as getProj, transformExtent } from 'ol/proj';
 // import { inflate } from 'pako';
-import OLLayerTile from 'ol/layer/Tile';
+// import OLLayerTile from 'ol/layer/Tile';
 import OLLayerVectorTile from 'ol/layer/VectorTile';
 import OLSourceVectorTile from 'ol/source/VectorTile';
 import TileGrid from 'ol/tilegrid/TileGrid';
@@ -430,9 +430,9 @@ class MBTilesVector extends Vector {
             vars: this.parseFeaturesForTemplate_(features),
             parseToHtml: false,
           });
-          if (this.name) {
-            const layerNameHTML = `<div>${this.name}</div>`;
-            htmlAsText = layerNameHTML + htmlAsText;
+          if (this.legend) {
+            const layerLegendHTML = `<div class="m-legend">${this.legend}</div>`;
+            htmlAsText = layerLegendHTML + htmlAsText;
           }
           const featureTabOpts = {
             icon: 'g-cartografia-pin',
@@ -582,23 +582,6 @@ class MBTilesVector extends Vector {
         this.facadeLayer_.fire(EventType.LOAD);
       }
     }
-  }
-
-  /**
-   * Este método devuelve una copia de la capa de esta instancia.
-   *
-   * @function
-   * @returns {ol.layer.Tile} Copia de la capa.
-   * @public
-   * @api
-   */
-  cloneOLLayer() {
-    let olLayer = null;
-    if (this.olLayer != null) {
-      const properties = this.olLayer.getProperties();
-      olLayer = new OLLayerTile(properties);
-    }
-    return olLayer;
   }
 }
 export default MBTilesVector;
