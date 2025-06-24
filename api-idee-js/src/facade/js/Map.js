@@ -4189,12 +4189,12 @@ class Map extends Base {
   }
 
   /**
-   * Función que modifica la rotación del mapa.
+   * Función que devuelve la rotación del mapa.
    *
    * @function
    * @public
    * @api
-   * @return {number}
+   * @return {number} Devuelve la rotación del mapa.
    */
   getRotation() {
     if (isUndefined(MapImpl.prototype.getRotation)) {
@@ -4204,12 +4204,12 @@ class Map extends Base {
   }
 
   /**
-   * Función que devuelve la rotación del mapa.
+   * Función que modifica la rotación del mapa.
    *
    * @function
    * @public
    * @api
-   * @param {number}
+   * @param {number} rotation Valor que indica cuanto va a rotar el mapa.
    */
   setRotation(rotation) {
     if (isUndefined(MapImpl.prototype.setRotation)) {
