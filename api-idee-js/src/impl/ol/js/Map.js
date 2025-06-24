@@ -3047,12 +3047,12 @@ class Map extends MObject {
   }
 
   /**
-   * This function gets the rotation of the view map
+   * Función que devuelve la rotación del mapa.
    *
    * @function
    * @public
    * @api
-   * @return {number}
+   * @return {number} Devuelve la rotación del mapa.
    */
   getRotation() {
     let rotation;
@@ -3064,12 +3064,12 @@ class Map extends MObject {
   }
 
   /**
-   * This function sets the rotation of the view map
+   * Función que modifica la rotación del mapa.
    *
    * @function
    * @public
    * @api
-   * @param {number}
+   * @param {number} rotation Valor que indica cuanto va a rotar el mapa.
    */
   setRotation(rotation) {
     const view = this.map_.getView();
