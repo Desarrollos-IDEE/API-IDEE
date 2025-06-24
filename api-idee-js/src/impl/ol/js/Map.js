@@ -217,7 +217,7 @@ class Map extends MObject {
      * Calcula la resolción del mapa a partir del dpi
      * definido en el fichero de configuración.
      */
-    const pixelRatio = Number.parseFloat(dpi) / 72;
+    const pixelRatio = Number.parseFloat(dpi) / 72 || 1;
 
     /**
      * Implementación del mapa.

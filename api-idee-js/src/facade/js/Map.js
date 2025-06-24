@@ -354,7 +354,7 @@ class Map extends Base {
     // zoomConstrains
     if (!isNullOrEmpty(params.zoomConstrains)) {
       this.setZoomConstrains(params.zoomConstrains);
-    } else if (IDEE.config.MAP_VIEWER_ZOOM_CONSTRAINS !== undefined) {
+    } else if (IDEE.config.MAP_VIEWER_ZOOM_CONSTRAINS !== '' && IDEE.config.MAP_VIEWER_ZOOM_CONSTRAINS !== undefined) {
       this.setZoomConstrains(IDEE.config.MAP_VIEWER_ZOOM_CONSTRAINS);
     } else {
       this.setZoomConstrains(false);
