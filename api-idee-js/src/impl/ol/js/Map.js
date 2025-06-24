@@ -3145,6 +3145,38 @@ class Map extends MObject {
   }
 
   /**
+   * Función que devuelve la rotación del mapa.
+   *
+   * @function
+   * @public
+   * @api
+   * @return {number} Devuelve la rotación del mapa.
+   */
+  getRotation() {
+    let rotation;
+    const view = this.map_.getView();
+    if (!isNullOrEmpty(view)) {
+      rotation = view.getRotation();
+    }
+    return rotation;
+  }
+
+  /**
+   * Función que modifica la rotación del mapa.
+   *
+   * @function
+   * @public
+   * @api
+   * @param {number} rotation Valor que indica cuanto va a rotar el mapa.
+   */
+  setRotation(rotation) {
+    const view = this.map_.getView();
+    if (!isNullOrEmpty(view)) {
+      view.setRotation(rotation);
+    }
+  }
+
+  /**
    * Este método se ejecuta cuando el usuario mueve el ratón.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function
