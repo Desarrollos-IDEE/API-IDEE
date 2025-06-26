@@ -1,11 +1,8 @@
 /**
  * @module IDEE/impl/layer/GeoJSON
  */
-import { isNullOrEmpty, /* isFunction, */ isObject } from 'IDEE/util/Utils';
+import { isNullOrEmpty, isObject } from 'IDEE/util/Utils';
 import * as EventType from 'IDEE/event/eventtype';
-// import Popup from 'IDEE/Popup';
-// import { compileSync as compileTemplate } from 'IDEE/util/Template';
-// import geojsonPopupTemplate from 'templates/geojson_popup';
 import GeoJSONFormat from 'IDEE/format/GeoJSON';
 import OLSourceVector from 'ol/source/Vector';
 import { get as getProj } from 'ol/proj';
