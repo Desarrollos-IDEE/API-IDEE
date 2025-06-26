@@ -93,7 +93,7 @@ export const LOZENGE = 'LOZENGE';
 export const SQUARE = 'SQUARE';
 
 /**
- * Forma de estilo cuadrado.
+ * Forma sin estilo.
  * @const
  * @type {string}
  * @public
@@ -111,7 +111,7 @@ export const NONE = 'none';
 export const DIAMOND = 'DIAMOND';
 
 /**
- * Forma de estilo POI.
+ * Forma de estilo puntero.
  * @const
  * @type {string}
  * @public
