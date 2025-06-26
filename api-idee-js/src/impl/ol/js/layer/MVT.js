@@ -54,6 +54,7 @@ class MVT extends Vector {
    *    attributions: 'mvt',
    *    ...
    *  })
+   *  tileLoadFunction: <funcion>
    * }
    * </code></pre>
    * @api
@@ -101,6 +102,13 @@ class MVT extends Vector {
     this.visibility_ = parameters.visibility !== false;
 
     /**
+     * WMS tileLoadFunction. Función de carga de tiles.
+     * @private
+     * @type {Function}
+     */
+    this.tileLoadFunction = vendorOptions?.tileLoadFunction;
+
+    /**
      * MVT layers_. Otras capas.
      */
     this.layers_ = parameters.layers;
@@ -143,6 +151,7 @@ class MVT extends Vector {
       format: this.formater_,
       url,
       projection: this.projection_,
+      tileLoadFunction: this.tileLoadFunction,
     });
 
     // register events in order to fire the LOAD event
@@ -332,6 +341,18 @@ class MVT extends Vector {
    */
   getProjection() {
     return this.projection_;
+  }
+
+  /**
+   * Este método establece la función de carga de teselas.
+   *
+   * @public
+   * @function
+   * @param {Function} func Función de carga de teselas.
+   * @api stable
+   */
+  setTileLoadFunction(func) {
+    this.olLayer.getSource().setTileLoadFunction(func);
   }
 
   /**
