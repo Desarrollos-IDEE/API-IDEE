@@ -12,7 +12,7 @@
 export const CIRCLE = 'CIRCLE';
 
 /**
- * Forma de estilo buble
+ * Forma de estilo burbuja
  * @const
  * @type {string}
  * @public
@@ -57,7 +57,7 @@ export const BLAZON = 'BLAZON';
 export const TRIANGLE = 'TRIANGLE';
 
 /**
- * forma de estilo de cantar.
+ * forma de estilo de signo de advertencia.
  * @const
  * @type {string}
  * @public
@@ -100,3 +100,48 @@ export const SQUARE = 'SQUARE';
  * @api
  */
 export const NONE = 'none';
+
+/**
+ * Forma de estilo diamante.
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+export const DIAMOND = 'DIAMOND';
+
+/**
+ * Forma de estilo POI.
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+export const POI = 'POI';
+
+/**
+ * Forma de estilo hexagono.
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+export const HEXAGON = 'HEXAGON';
+
+/**
+ * Forma de estilo marcapaginas.
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+export const BOOKMARK = 'BOOKMARK';
+
+/**
+ * Forma de estilo coma.
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+export const COMA = 'COMA';
