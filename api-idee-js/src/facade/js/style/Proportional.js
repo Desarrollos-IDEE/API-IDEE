@@ -226,9 +226,9 @@ class Proportional extends StyleComposite {
    */
   update_() {
     if (!isNullOrEmpty(this.layer_)) {
-      if (!isNullOrEmpty(this.style_)) {
-        this.layer_.setStyle(this.style_, true);
-      }
+      // if (!isNullOrEmpty(this.style_)) {
+      //   this.layer_.setStyle(this.style_, true);
+      // }
       if (this.layer_.getStyle() instanceof StyleChoropleth) {
         this.oldStyle_ = this.layer_.getStyle();
       } else if (this.layer_.getStyle() instanceof StyleComposite) {

@@ -88,4 +88,4 @@
 - Se implementa funcionalidad "takeMeThere" en popups.
 - Se mejora la comprobación de la geometría de la feature en el método read de GeoJSON.js.
 - Se modifica el evento ADDED_TO_MAP de las capas OSM para que se dispare desde fachada.
-
+- Se comenta codigo innecesario.
