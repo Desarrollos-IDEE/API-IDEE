@@ -102,7 +102,7 @@ class MVT extends Vector {
     this.visibility_ = parameters.visibility !== false;
 
     /**
-     * WMS tileLoadFunction. Función de carga de tiles.
+     * MVT tileLoadFunction. Función de carga de tiles.
      * @private
      * @type {Function}
      */
