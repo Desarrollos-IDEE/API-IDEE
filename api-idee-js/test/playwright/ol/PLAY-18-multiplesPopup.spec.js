@@ -44,6 +44,6 @@ test.describe('Popup', () => {
     expect(res[1], 'appPopup permite multiples popups').toBe(2);
     expect(res[2], 'appPopup elimina los popups anteriores').toBe(1);
     expect(res[3], 'appPopup añade multiples popups').toBe(4);
-    expect(res[4], 'removePopups elimina todos los popups').toBe(0);
+    expect(res[4], 'removePopups eliminar todos los popups').toBe(0);
   });
 });
