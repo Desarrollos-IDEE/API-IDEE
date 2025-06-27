@@ -10,7 +10,7 @@ import MObject from 'IDEE/Object';
  * al mapa, y las capas eliminadas de la sección se eliminarán automáticamente del mapa.
  * Los elementos dentro de la sección son considerados como hijos de la sección.
  *
- * @property {string} idLayer_ Identificador de la sección.
+ * @property {string} idSection_ Identificador de la sección.
  * @property {string} title_ Título de la sección.
  * @property {number} order_ Orden de visualización de la sección.
  * @property {number} zindex_ ZIndex de la sección.
@@ -25,12 +25,12 @@ class Section extends MObject {
    *
    * @constructor
    * @implements {IDEE.Object}
-   * @param {string} idLayer Identificador de la sección.
+   * @param {string} idSection Identificador de la sección.
    * @param {string} title Título de la sección.
    * @param {number} order Orden de visualización de la sección.
    * @api
    */
-  constructor(idLayer, title, order) {
+  constructor(idSection, title, order) {
     super();
 
     /**
@@ -39,7 +39,7 @@ class Section extends MObject {
      * @type {string}
      * @api
      */
-    this.idLayer_ = idLayer;
+    this.idSection_ = idSection;
 
     /**
      * Título de la sección.
