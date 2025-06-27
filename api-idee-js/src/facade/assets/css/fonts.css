@@ -6,11 +6,11 @@
 
 @font-face {
     font-family: 'g-cartografia';
-    src: url('../fonts/g-cartografia.eot?18585244');
-    src: url('../fonts/g-cartografia.eot?18585244#iefix') format('embedded-opentype'),
-        url('../fonts/g-cartografia.ttf?18585244') format('truetype'),
-        url('../fonts/g-cartografia.woff?18585244') format('woff'),
-        url('../fonts/g-cartografia.svg?18585244#g-cartografia') format('svg');
+    src: url('../fonts/g-cartografia.eot?8136377');
+    src: url('../fonts/g-cartografia.eot?8136377#iefix') format('embedded-opentype'),
+        url('../fonts/g-cartografia.ttf?8136377') format('truetype'),
+        url('../fonts/g-cartografia.woff?8136377') format('woff'),
+        url('../fonts/g-cartografia.svg?8136377#g-cartografia') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -123,6 +123,6 @@
     content: '\e92f';
 }
 
-.g-cartografia-map:before {
-    content: '\e800';
+.g-cartografia-mapa:before {
+    content: '\e933';
 }

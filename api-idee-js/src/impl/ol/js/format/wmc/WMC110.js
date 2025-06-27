@@ -95,11 +95,11 @@ class WMC110 extends XML {
     // create the layer
     const layer = this.getLayerFromInfo(layerInfo);
 
-    const groupId = layerInfo.options.groupDisplayLayerSwitcher;
-    const groupOrder = layerInfo.options.orderInsideGroupDisplayLayerSwitcher;
+    const sectionId = layerInfo.options.groupDisplayLayerSwitcher;
+    const sectionOrder = layerInfo.options.orderInsideGroupDisplayLayerSwitcher;
     const sections = context.layerGroups;
 
-    const group = Section.findGroupById(groupId, sections);
+    const section = Section.findGroupById(sectionId, sections);
 
     if (layerInfo.styles != null && layerInfo.styles[0] != null) {
       const firstStyle = layerInfo.styles[0];
@@ -109,10 +109,9 @@ class WMC110 extends XML {
       }
     }
 
-    if (!isNullOrEmpty(group)) {
+    if (!isNullOrEmpty(section)) {
       // -1 To match the addChild parameter (starts from 0)
-      layer.setZIndex(parseInt(groupOrder - 1, 10));
-      group.addLayers(layer);
+      section.addChild(layer, parseInt(sectionOrder - 1, 10));
     } else {
       if (isNullOrEmpty(context.layers)) {
         context.layers = [];

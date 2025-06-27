@@ -26,12 +26,6 @@ import * as EventType from '../event/eventtype';
  * @property {boolean} transparent (deprecated) Falso si es una capa base,
  * verdadero en caso contrario.
  * @property {boolean} isBase Define si la capa es base.
- * @property {Array<Number>} userMaxExtent MaxExtent proporcionado por el usuario, la medida en que
- * restringe la visualización a una región específica.
- * @property {string} legend Indica el nombre que queremos que aparezca en el árbol
- * de contenidos, si lo hay.
- * minZoom
- * maxZoom
  * @property {string} idLayer Identificador de la capa.
  * @property {Mx.parameters.LayerOptions} options Opciones de la capa.
  * @property {boolean} loaded_ Indica si la capa WMC y sus capas están cargadas.
@@ -49,19 +43,10 @@ class WMC extends LayerBase {
    * - attribution: Atribución de la capa.
    * - name: Nombre de la capa.
    * - isBase: Indica si la capa es base.
-   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
-   * - maxExtent: La medida en que restringe la visualización a una región específica.
-   * - legend: Nombre asociado en el árbol de contenidos, si usamos uno.
    * - url: url del servicio.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a la
    * implementación de la capa.
-   * - visibility: Define si la capa es visible o no. Verdadero por defecto.
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
-   * - opacity: Opacidad de capa, por defecto 1.
-   * - minZoom: Zoom mínimo aplicable a la capa.
-   * - maxZoom: Zoom máximo aplicable a la capa.
-   * - minScale: Escala mínima.
-   * - maxScale: Escala máxima.
    * @api
    */
   constructor(userParameters, options) {

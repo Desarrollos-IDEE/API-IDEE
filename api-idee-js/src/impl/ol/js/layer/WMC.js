@@ -17,7 +17,7 @@ import Layer from './Layer';
  *
  * @property {boolean} selected Indica si la capa fue seleccionada.
  * @property {Array<IDEE.layer.WMS>} layers Capas definidas en WMC.
- * @property {Array<IDEE.layer.LayerGroup>} groups Grupos definidos en WMC.
+ * @property {Array<IDEE.layer.Section>} sections Secciones definidas en WMC.
  * @property {Promise} loadContextPromise Promesa para la carga del WMC.
  * @property {Mx.Extent} maxExtent Máxima extensión de la capa.
  * @property {ol.Projection} extentProj_ Proyección actual.
@@ -33,14 +33,7 @@ class WMC extends Layer {
    * @constructor
    * @implements {IDEE.impl.Layer}
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
-   * - visibility: Define si la capa es visible o no. Verdadero por defecto.
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
-   * - opacity: Opacidad de capa, por defecto 1.
-   * - minZoom: Zoom mínimo aplicable a la capa.
-   * - maxZoom: Zoom máximo aplicable a la capa.
-   * - minScale: Escala mínima.
-   * - maxScale: Escala máxima.
-   * - maxExtent: La medida en que restringe la visualización a una región específica.
    * @api
    */
   constructor(options = {}) {
@@ -66,13 +59,12 @@ class WMC extends Layer {
     this.layers = [];
 
     /**
-     * WMC groups. Grupos de capas
-     * definidos en WMC.
+     * WMC sections. Secciones definidas en WMC.
      *
      * @public
-     * @type {Array<IDEE.layer.LayerGroup>}
+     * @type {Array<IDEE.layer.Section>}
      */
-    this.groups = [];
+    this.sections = [];
 
     /**
      * WMC loadContextPromise. Promesa para
@@ -175,10 +167,10 @@ class WMC extends Layer {
         this.map.removeLayers(this.layers);
       }
 
-      // removes all group layers
-      if (!isNullOrEmpty(this.groups)) {
-        const aux = [...this.groups];
-        this.groups = [];
+      // removes all sections
+      if (!isNullOrEmpty(this.sections)) {
+        const aux = [...this.sections];
+        this.sections = [];
         this.map.removeSections(aux);
       }
     }
@@ -197,19 +189,16 @@ class WMC extends Layer {
     this.layers = context.layers;
     this.maxExtent = context.maxExtent;
     if (!isNullOrEmpty(context.layerGroups)) {
-      this.groups = this.groups.concat(context.layerGroups);
+      this.sections = this.sections.concat(context.layerGroups);
     } else {
-      this.groups = [];
+      this.sections = [];
     }
     this.layers.forEach((wms) => wms.setWMCParent(this.facadeLayer_));
     this.map.addWMS(this.layers, true);
-    this.map.addSections(this.groups);
+    this.map.addSections(this.sections);
 
-    // updates the z-index of the layers and groups
-    this.layers.forEach((layer, i) => layer.setZIndex(this.getZIndex() + i));
-    this.groups.forEach((group, i) => group.setZIndex(this.getZIndex() + i));
     this.facadeLayer_.fire(EventType.LOAD, [this.layers]);
-    this.facadeLayer_.fire(EventType.LOAD, [this.groups]);
+    this.facadeLayer_.fire(EventType.LOAD, [this.sections]);
   }
 
   /**

@@ -70,11 +70,7 @@ class WMC extends XML {
     const parserVersion = 'v'.concat(normalize(this.version).replace(/\./g, ''));
     this.parser = new WMC[parserVersion](this.options);
 
-    // eslint-disable-next-line no-console
-    console.log(data);
     const context = this.parser.read(data);
-    // eslint-disable-next-line no-console
-    console.log(context);
 
     return context;
   }

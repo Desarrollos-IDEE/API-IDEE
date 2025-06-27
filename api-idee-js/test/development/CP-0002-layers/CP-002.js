@@ -1,5 +1,5 @@
 /* eslint-disable object-property-newline,no-console,no-underscore-dangle,max-len,camelcase,no-plusplus,no-param-reassign,no-proto,import/newline-after-import */
-import { map as Mmap } from 'IDEE/api-idee';
+import { map as Mmap, proxy } from 'IDEE/api-idee';
 // Escoger una de estas capas para probarlas.
 // import { tms_003 } from '../layers/tms/tms'; const capaPrueba = tms_003; window.tms = capaPrueba; // STRING ==> import { tms_002 } from '../layers/tms/tms'; const capaPrueba = tms_002; window.tms = tms_002;
 // import { wms_001, wms_003 } from '../layers/wms/wms'; const capaPrueba = wms_003; window.wms = capaPrueba; // STRING ==> import { wms_002 } from '../layers/wms/wms'; const capaPrueba = wms_002; window.wms = wms_002;
@@ -8,19 +8,23 @@ import { map as Mmap } from 'IDEE/api-idee';
 // import { osm_004 } from '../layers/osm/osm'; const capaPrueba = osm_004; window.osm = capaPrueba;// STRING ==> import { osm_002 } from '../layers/osm/osm'; const capaPrueba = osm_002; window.osm = osm_002;// STRING ==> import { osm_003 } from '../layers/osm/osm'; const capaPrueba = osm_003; window.osm = osm_003;
 // import { mbtile_02 } from '../layers/mbtiles/mbtiles'; const capaPrueba = mbtile_02; window.mbtile = capaPrueba;
 // import { generic_001 } from '../layers/generic/generic'; const capaPrueba = generic_001; window.generic = generic_001;
-// import { geotiff_004 } from '../layers/geotiff/geotiff'; const capaPrueba = geotiff_004; window.geotiff = capaPrueba;
+import { geotiff_004 } from '../layers/geotiff/geotiff'; const capaPrueba = geotiff_004; window.geotiff = capaPrueba;
 // import { layerGroup_001 } from '../layers/layerGroup/layerGroup'; const capaPrueba = layerGroup_001; window.layerGroup = layerGroup_001;
 // import { maplibre_001 } from '../layers/maplibre/maplibre'; const capaPrueba = maplibre_001; window.maplibre = maplibre_001;
-import { wmc_001 } from '../layers/wmc/wmc'; const capaPrueba = wmc_001; window.wmc = capaPrueba;// STRING ==> import { wmc_002 } from '../layers/wmc/wmc'; const capaPrueba = wmc_002; window.wmc = wmc_002;
+// import { wmc_001 } from '../layers/wmc/wmc'; const capaPrueba = wmc_001; window.wmc = capaPrueba;// STRING ==> import { wmc_002 } from '../layers/wmc/wmc'; const capaPrueba = wmc_002; window.wmc = wmc_002;
 window.capaPrueba = capaPrueba;
+
+// proxy(true); // WMC Test
+// IDEE.config('PROXY_URL', 'https://mapea4-sigc.juntadeandalucia.es/mapea/api/proxy'); // WMC Test
 
 const mapa = Mmap({
   container: 'map',
   projection: 'EPSG:3857*m',
-  // center: [-443273.10081370454, 4757481.749296248], zoom: 6, // Other Tests
+  center: [-443273.10081370454, 4757481.749296248], zoom: 6, // Other Tests
   // bbox: [287821.2283355333, 5226384.980194519, 324511.00191241794, 5237544.7863241555], // GeoTIFF Test
   // center: [309697, 5231113], zoom: 14, // GeoTIFF Test
-  center: [-527439.7561017586, 4554984.900936406], zoom: 8.65, // WMC Test
+  // center: [-527439.7561017586, 4554984.900936406], zoom: 8.65, // WMC Test
+  // wmc: [capaPrueba], // WMC Test
   layers: [capaPrueba],
   controls: ['attributions', 'scale'],
 });

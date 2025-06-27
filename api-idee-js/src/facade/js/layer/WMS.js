@@ -512,7 +512,6 @@ class WMS extends LayerBase {
    */
   setWMCParent(wmc) {
     this.wmcParent_ = wmc;
-    this.getImpl().useCapabilities = false;
   }
 
   /**
