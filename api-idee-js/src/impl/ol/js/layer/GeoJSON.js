@@ -165,6 +165,21 @@ class GeoJSON extends Vector {
   }
 
   /**
+   * Actualiza la capa con la nueva URL.
+   *
+   * @public
+   * @function
+   * @api stable
+   * @export
+   */
+  recreateLayer() {
+    // eslint-disable-next-line no-underscore-dangle
+    this.loader_.url_ = this.url;
+    this.loadFeaturesPromise_ = undefined;
+    this.updateSource_();
+  }
+
+  /**
    * Este método devuelve los objetos geográficos de manera asincrona.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
