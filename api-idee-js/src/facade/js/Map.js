@@ -3652,10 +3652,7 @@ class Map extends Base {
    * @param {Array<string>|Array<Mx.parameters.Layer>} layersParam Colecciones de etiquetas.
    * @api
    */
-  addLabel(labelParam, coordParam) {
-    const panMapIfOutOfView = labelParam.panMapIfOutOfView === undefined
-      ? true
-      : labelParam.panMapIfOutOfView;
+  addLabel(labelParam, coordParam, removePrevious = true) {
     // checks if the param is null or empty
     if (isNullOrEmpty(labelParam)) {
       Exception(getValue('exception').no_projection);
@@ -3669,31 +3666,50 @@ class Map extends Base {
     let text = null;
     let coord = null;
 
-    // object
-    if (isObject(labelParam)) {
-      text = escapeJSCode(labelParam.text);
-      coord = labelParam.coord;
-    } else {
-      // string
-      text = escapeJSCode(labelParam);
-      coord = coordParam;
+    let arrayLabel = labelParam;
+    let arrayCoordinate = coordParam;
+
+    if (!isArray(labelParam)) {
+      arrayLabel = [labelParam];
     }
 
-    if (isNullOrEmpty(coord)) {
-      coord = this.getCenter();
-    } else {
-      coord = parameter.center(coord);
+    if (!isUndefined(coordParam) && !isArray(coordParam[0])) {
+      arrayCoordinate = [coordParam];
+    } else if (isUndefined(coordParam)) {
+      arrayCoordinate = [];
     }
 
-    if (isNullOrEmpty(coord)) {
-      this.getInitCenter_().then((initCenter) => {
-        const label = new Label(text, initCenter, panMapIfOutOfView);
-        this.getImpl().addLabel(label);
-      });
-    } else {
-      const label = new Label(text, coord, panMapIfOutOfView);
-      this.getImpl().addLabel(label);
-    }
+    arrayLabel.forEach((element, index) => {
+      const panMapIfOutOfView = element.panMapIfOutOfView === undefined
+        ? true
+        : labelParam.panMapIfOutOfView;
+
+      // object
+      if (isObject(element)) {
+        text = escapeJSCode(element.text);
+        coord = element.coord;
+      } else {
+        // string
+        text = escapeJSCode(element);
+        coord = arrayCoordinate[index];
+      }
+
+      if (isNullOrEmpty(coord)) {
+        coord = this.getCenter();
+      } else {
+        coord = parameter.center(coord);
+      }
+
+      if (isNullOrEmpty(coord)) {
+        this.getInitCenter_().then((initCenter) => {
+          const label = new Label(text, initCenter, panMapIfOutOfView);
+          this.getImpl().addLabel(label, removePrevious);
+        });
+      } else {
+        const label = new Label(text, coord, panMapIfOutOfView);
+        this.getImpl().addLabel(label, removePrevious);
+      }
+    });
 
     return this;
   }

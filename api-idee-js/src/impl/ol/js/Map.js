@@ -2904,9 +2904,9 @@ class Map extends MObject {
    * @public
    * @api
    */
-  addLabel(label) {
+  addLabel(label, removePrevious) {
     this.label = label;
-    label.show(this.facadeMap_);
+    label.show(this.facadeMap_, removePrevious);
     return this;
   }
 

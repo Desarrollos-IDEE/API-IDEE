@@ -50,11 +50,12 @@ class Label extends Base {
    * @public
    * @function
    * @param {IDEE.Map} map Fachada del objeto "map".
+   * @param { Boolean } removePrevious - elimina labels anteriores.
    * @api
    * @export
    */
-  show(map) {
-    this.getImpl().show(map);
+  show(map, removePrevious) {
+    this.getImpl().show(map, removePrevious);
   }
 
   /**

@@ -37,13 +37,16 @@ test.describe('Popup', () => {
       // eslint-disable-next-line max-len
       map.addPopup([popup, popup2, popup3], [[240892, 4143880], [240892, 4143880], [240892, 4143880]], false);
       const hitTest4 = hit;
+      map.addLabel(['Etiqueta 1', 'Etiqueta 2'], [[240892, 0], [0, 4143880]], false);
+      const testLabel = hit;
       map.removePopup();
-      return [hitTest1, hitTest2, hitTest3, hitTest4, hit];
+      return [hitTest1, hitTest2, hitTest3, hitTest4, testLabel, hit];
     });
     expect(res[0], 'Funcionamiento estandard').toBe(1);
     expect(res[1], 'appPopup permite multiples popups').toBe(2);
     expect(res[2], 'appPopup elimina los popups anteriores').toBe(1);
     expect(res[3], 'appPopup añade multiples popups').toBe(4);
-    expect(res[4], 'removePopups eliminar todos los popups').toBe(0);
+    expect(res[4], 'addLabel añade multiples etiquetas sin eliminar nada').toBe(6);
+    expect(res[5], 'removePopups eliminar todos los popups').toBe(0);
   });
 });
