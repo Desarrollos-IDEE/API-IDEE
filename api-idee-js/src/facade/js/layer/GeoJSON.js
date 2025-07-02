@@ -229,6 +229,18 @@ class GeoJSON extends LayerVector {
   }
 
   /**
+   * Sobreescribe la URL de la capa.
+   *
+   * @function
+   * @public
+   * @param {String} newURL URL
+   * @api
+   */
+  setURL(newURL) {
+    this.getImpl().setURL(newURL);
+  }
+
+  /**
    * Este método sobrescribe la fuente del GeoJSON.
    *
    * @function
