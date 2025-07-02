@@ -220,7 +220,7 @@ class GeoJSON extends OLFormatGeoJSON {
       const id = geojsonFeature.id;
       const feature = new Feature(id, geojsonFeature);
       const olFeature = feature.getImpl().getFeature();
-      if (olFeature.getGeometry() !== null) {
+      if (!isNullOrEmpty(olFeature.getGeometry())) {
         const newGeometry = olFeature.getGeometry().transform(srcProj, dstProj);
         olFeature.setGeometry(newGeometry);
       }

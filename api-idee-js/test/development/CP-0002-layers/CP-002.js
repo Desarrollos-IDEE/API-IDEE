@@ -14,9 +14,6 @@ import { geotiff_004 } from '../layers/geotiff/geotiff'; const capaPrueba = geot
 // import { wmc_001 } from '../layers/wmc/wmc'; const capaPrueba = wmc_001; window.wmc = capaPrueba;// STRING ==> import { wmc_002 } from '../layers/wmc/wmc'; const capaPrueba = wmc_002; window.wmc = wmc_002;
 window.capaPrueba = capaPrueba;
 
-// proxy(true); // WMC Test
-// IDEE.config('PROXY_URL', 'https://mapea4-sigc.juntadeandalucia.es/mapea/api/proxy'); // WMC Test
-
 const mapa = Mmap({
   container: 'map',
   projection: 'EPSG:3857*m',

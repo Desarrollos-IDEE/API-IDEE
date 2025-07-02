@@ -218,7 +218,7 @@ class Map extends MObject {
      * Calcula la resolción del mapa a partir del dpi
      * definido en el fichero de configuración.
      */
-    const pixelRatio = Number.parseFloat(dpi) / 72;
+    const pixelRatio = Number.parseFloat(dpi) / 72 || 1;
 
     /**
      * Implementación del mapa.
@@ -3274,6 +3274,38 @@ class Map extends MObject {
       coord,
       vendor: evt,
     }]);
+  }
+
+  /**
+   * Función que devuelve la rotación del mapa.
+   *
+   * @function
+   * @public
+   * @api
+   * @return {number} Devuelve la rotación del mapa.
+   */
+  getRotation() {
+    let rotation;
+    const view = this.map_.getView();
+    if (!isNullOrEmpty(view)) {
+      rotation = view.getRotation();
+    }
+    return rotation;
+  }
+
+  /**
+   * Función que modifica la rotación del mapa.
+   *
+   * @function
+   * @public
+   * @api
+   * @param {number} rotation Valor que indica cuanto va a rotar el mapa.
+   */
+  setRotation(rotation) {
+    const view = this.map_.getView();
+    if (!isNullOrEmpty(view)) {
+      view.setRotation(rotation);
+    }
   }
 
   /**

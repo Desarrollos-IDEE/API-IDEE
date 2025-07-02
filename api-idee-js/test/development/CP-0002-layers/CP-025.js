@@ -3,8 +3,8 @@ import WMC from 'IDEE/layer/WMC';
 import WMS from 'IDEE/layer/WMS';
 import { ADDED_WMC, CHANGE_WMC } from 'IDEE/event/eventtype';
 
-proxy(true);
-IDEE.config('PROXY_URL', 'https://mapea4-sigc.juntadeandalucia.es/mapea/api/proxy');
+// proxy(true);
+// IDEE.config('PROXY_URL', 'https://mapea4-sigc.juntadeandalucia.es/mapea/api/proxy');
 
 const wms = new WMS({
   url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',

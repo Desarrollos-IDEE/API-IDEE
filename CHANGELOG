@@ -58,6 +58,7 @@
 - Eliminado el metodo getMaxExtent de la implementación de Layer.
 - Se modifica el evento ADDED_TO_MAP de las capas KML.
 - Se tienen en cuenta los filros aplicados en las capas Vector en el metodo getFeaturesExtent.
+- Se evita mostrar el popup al hacer clic en features de cluster en capas Vector.
 - Se añade identificador al Popup.
 - Se añaden los eventos POPUP_ADDED, POPUP_REMOVED, POPUP_ADDED_TAB, POPUP_REMOVED_TAB.
 - Se eliminan los métodos getLegendURL/setLegendURL de WMTS para que hereden de Layer.
@@ -68,6 +69,7 @@
 - Se evita que se muestre el popup en features cluster en kml
 - Se eliminan los métodos getLegendURL/setLegendURL de WMTS para que hereden de Layer.
 - En WFS eliminado extract, junto con su getter y setter, ya que los hereda de Vector y la funcionalidad es la misma.
+- Implementados el getter y el setter de Rotation. Aparte, se añade el evento CHANGE_ROTATION.
 - En MVT eliminado extract, junto con su getter y setter, ya que los hereda de Vector y la funcionalidad es la misma.
 - En MBTilesVector elimidado el metodo cloneOLLayer.
 - En MVT eliminados getFilter y removeFilter para que herede de vector.
@@ -75,6 +77,8 @@
 - Se incorpora el uso de ticket en MVT.
 - En WFS eliminada logica de selectFeatures para usar la heredada de Vector.
 - En response añadida comprobación extra de que la respuesta es correcta.
+- Se añade una comprobación adicional a getAttributes de Feature.
+- Se eliminan los métodos selectFeatures, unselectFeatures y removePopup de la capa MVT.
 - Se añade un nuevo tipo de capa denominada Section.
 - Se eliminan los métodos cloneOLLayer y cloneLayer de la capa OSM.
 - Se modifica la clase exception para que devuelva un mensaje de tipo error
@@ -82,5 +86,6 @@
 - En GeoJSON eliminado extract, junto con su getter y setter, ya que los hereda de Vector y la funcionalidad es la misma.
 - Se modifica el evento ADDED_TO_MAP de las capas MVT para que se dispare desde fachada.
 - Se implementa funcionalidad "takeMeThere" en popups.
+- Se mejora la comprobación de la geometría de la feature en el método read de GeoJSON.js.
 - Se modifica el evento ADDED_TO_MAP de las capas OSM para que se dispare desde fachada.
 - Se añaden capas WMC.

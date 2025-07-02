@@ -361,7 +361,7 @@ class Map extends Base {
     // zoomConstrains
     if (!isNullOrEmpty(params.zoomConstrains)) {
       this.setZoomConstrains(params.zoomConstrains);
-    } else if (IDEE.config.MAP_VIEWER_ZOOM_CONSTRAINS !== '') {
+    } else if (IDEE.config.MAP_VIEWER_ZOOM_CONSTRAINS !== '' && IDEE.config.MAP_VIEWER_ZOOM_CONSTRAINS !== undefined) {
       this.setZoomConstrains(IDEE.config.MAP_VIEWER_ZOOM_CONSTRAINS);
     } else {
       this.setZoomConstrains(false);
@@ -4441,6 +4441,37 @@ class Map extends Base {
    */
   get areasContainer() {
     return this._areasContainer;
+  }
+
+  /**
+   * Función que devuelve la rotación del mapa.
+   *
+   * @function
+   * @public
+   * @api
+   * @return {number} Devuelve la rotación del mapa.
+   */
+  getRotation() {
+    if (isUndefined(MapImpl.prototype.getRotation)) {
+      Exception(getValue('exception').no_get_rotation_method);
+    }
+    return (this.getImpl().getRotation()) * (180 / Math.PI);
+  }
+
+  /**
+   * Función que modifica la rotación del mapa.
+   *
+   * @function
+   * @public
+   * @api
+   * @param {number} rotation Valor que indica cuanto va a rotar el mapa.
+   */
+  setRotation(rotation) {
+    if (isUndefined(MapImpl.prototype.setRotation)) {
+      Exception(getValue('exception').no_set_rotation_method);
+    }
+    this.getImpl().setRotation(rotation * (Math.PI / 180));
+    this.fire(EventType.CHANGE_ROTATION, [rotation]);
   }
 }
 
