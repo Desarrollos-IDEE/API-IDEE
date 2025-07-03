@@ -4,7 +4,7 @@ import MouseSRS from 'facade/mousesrs';
 
 const map = IDEE.map({
   container: 'mapjs',
-  projection: 'EPSG:3857*m',
+  projection: 'EPSG:3857',
   // controls: ['backgroundlayers', 'scale'],
   center: [-443729, 4860856],
   zoom: 8,

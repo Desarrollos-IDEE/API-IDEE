@@ -47,7 +47,7 @@ const genericVendor = undefined; // Sin vendorOptions
 
 const mapa = Mmap({
   container: 'map',
-  projection: 'EPSG:3857*m',
+  projection: 'EPSG:3857',
   bbox: [-851173.2215231892, 4342210.914335397, -264136.84429303557, 4618912.956727735],
 });
 

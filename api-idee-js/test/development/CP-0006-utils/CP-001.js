@@ -8,7 +8,7 @@ IDEE.config.POPUP_INTELLIGENCE = oriPopupInteligence;
 
 const mapa = Mmap({
   container: "map",
-  projection: "EPSG:3857*m",
+  projection: "EPSG:3857",
 });
 
 window.mapa = mapa;

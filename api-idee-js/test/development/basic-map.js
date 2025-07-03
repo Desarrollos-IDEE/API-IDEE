@@ -9,7 +9,7 @@ const mapa = Mmap({
   container: 'map',
   getfeatureinfo: 'plain',
   controls: ['location', 'attributions'],
-  projection: 'EPSG:3857*m', // CASO EPSG:4326 'EPSG:4326*d',
+  projection: 'EPSG:3857', // CASO EPSG:4326 'EPSG:4326',
   // layers: ['OSM'],
 });
 
