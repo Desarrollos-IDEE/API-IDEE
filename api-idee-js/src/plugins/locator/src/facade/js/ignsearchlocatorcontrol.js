@@ -378,7 +378,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
       || jsonResult.tip_via === undefined) ? '' : jsonResult.tip_via;
     const address = (jsonResult.address === null
       || jsonResult.address === undefined) ? '' : jsonResult.address;
-    const portal = (jsonResult.type === 'portal' && !jsonResult.portalNumber) ? 'S-N' : jsonResult.portalNumber;
+    const portal = (jsonResult.type === 'portal' && !jsonResult.portalNumber) ? 'S-N' : (jsonResult.portalNumber || '');
     const muni = (jsonResult.muni === null
       || jsonResult.muni === undefined) ? '' : jsonResult.muni;
     const province = (jsonResult.province === null
