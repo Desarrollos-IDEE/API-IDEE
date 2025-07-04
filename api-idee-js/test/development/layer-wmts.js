@@ -8,7 +8,7 @@ const mapajs = map({
   maxZoom: 20,
   minZoom: 0,
   layers: ['OSM'],
-  projection: "EPSG:3857*m",
+  projection: "EPSG:3857",
 });
 
 const layer3 = new WMTS({

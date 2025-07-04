@@ -1,7 +1,7 @@
 const map = IDEE.map({
   container: 'map',
   controls: ['layerswitcher'],
-  projection: 'EPSG:3857*m',
+  projection: 'EPSG:3857',
   layers: ['OSM'],
 });
 

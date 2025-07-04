@@ -69,7 +69,7 @@ window.prioridadGetCapabilities = (evt) => {
     5. GetCapabilities: Si es una capa WMS o WMTS, se establecerá el maxExtent especificado en el GetCapabilities del servicio.
   `);
   removeLayers();
-  mapjs.setProjection("EPSG:25830*m");
+  mapjs.setProjection("EPSG:25830");
   mapjs.addControls(["layerswitcher", "mouse"]);
   mapjs.addLayers([redesEnergeticas, limites, toporaster, canarias]);
 };

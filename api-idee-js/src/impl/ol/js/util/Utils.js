@@ -716,8 +716,9 @@ class Utils {
     const projection = view.getProjection();
     const center = view.getCenter();
     const inchesPerMeter = 39.3700787;
+    const units = projection.getUnits();
 
-    const pointResolution = getPointResolution(projection, resolution, center);
+    const pointResolution = getPointResolution(projection, resolution, center, units);
     const scale = pointResolution * inchesPerMeter * dpi;
 
     return Math.round(scale);

@@ -20,7 +20,7 @@
         "emailUser": "",
         "errDescripcion": "",
         "URL": "http://localhost:6123/test/dev.html",
-        "paramsURL": "?center=-667143,4493011,zoom=6,projection=EPSG:3857*m"
+        "paramsURL": "?center=-667143,4493011,zoom=6,projection=EPSG:3857"
       }
     },
     {
