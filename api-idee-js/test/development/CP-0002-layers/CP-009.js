@@ -4,7 +4,7 @@ import { kml_001 } from '../layers/kml/kml';
 
 const mapa = Mmap({
   container: 'map',
-  // projection: 'EPSG:4326*d',
+  // projection: 'EPSG:4326',
   center: [-443273.10081370454, 4757481.749296248],
   zoom: 6,
   layers: ['OSM'],

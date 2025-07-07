@@ -13,7 +13,7 @@ import { vector_001 } from '../layers/vector/vector';
 
 const mapa = Mmap({
   container: 'map',
-  projection: 'EPSG:3857*m',
+  projection: 'EPSG:3857',
   bbox: [-1494620.1256278034, 3657488.0149567816, 853525.3832928112, 4764296.184526134],
 });
 

@@ -8,8 +8,8 @@ import { extend, getWidth } from 'ol/extent';
 import {
   get as getProj,
   getTransform,
-  METERS_PER_UNIT,
   transformExtent,
+  getPointResolution,
 } from 'ol/proj';
 import OLFeature from 'ol/Feature';
 import RenderFeature from 'ol/render/Feature';
@@ -706,35 +706,52 @@ class Utils {
    *
    * @function
    * @param {Number} resolution Resolución del mapa.
-   * @param {Number} mapUnits Unidades del mapa (en metros).
-   * @param {Number} dpi DPI del mapa.
+   * @param {View} view Vista del mapa.
+   * @param {Number} dpi DPI del mapa (por defecto 72).
    * @returns {Number} Escala calculada.
    * @public
    * @api
    */
-  static getScaleForResolution(resolution, mapUnits, dpi) {
-    const inchesPerMeter = 39.37;
-    return Math.round(((resolution * dpi) * inchesPerMeter) / mapUnits);
+  static getScaleForResolution(resolution, view, dpi = 72) {
+    const projection = view.getProjection();
+    const center = view.getCenter();
+    const inchesPerMeter = 39.3700787;
+    const units = projection.getUnits();
+
+    const pointResolution = getPointResolution(projection, resolution, center, units);
+    const scale = pointResolution * inchesPerMeter * dpi;
+
+    return Math.round(scale);
   }
 
   /**
-   * Este método obtiene la escala a partir de un valor de entrada
-   * utilizando funciones propias de OpenLayers.
+   * Este método ajusta la resolución de la vista del mapa
+   * según la escala proporcionada.
    *
    * @function
-   * @param {Map} map Mapa.
+   * @param {View} view Vista del mapa.
    * @param {String} inputValue Valor de entrada para la escala.
-   * @returns {Number} Escala calculada.
+   * @param {Number} dpi DPI del mapa (por defecto 72).
+   * @returns {Number} Resolución de la vista correspondiente a la escala.
    * @public
    * @api
    */
-  static getCurrentScale(map, inputValue) {
-    const view = map.getMapImpl().getView();
-    const unidades = view.getProjection().getUnits();
-    const unidadesMapa = METERS_PER_UNIT[unidades];
-    const dpi = IDEE.config.DPI || 72;
-    const inchesPerMeter = 39.37;
-    return (Number.parseFloat(inputValue) * unidadesMapa) / (dpi * inchesPerMeter);
+  static getCurrentScale(view, inputValue, dpi = 72) {
+    const inchesPerMeter = 39.3700787;
+    const scale = parseFloat(inputValue.replace(/\./g, ''));
+    const calculateResolution = (targetScale) => {
+      let resolution = targetScale / (inchesPerMeter * dpi);
+
+      for (let i = 0; i < 3; i + 1) {
+        const currentScale = this.getScaleForResolution(resolution, view, dpi);
+        const error = targetScale - currentScale;
+        resolution *= (targetScale / currentScale);
+
+        if (Math.abs(error) < 1) break;
+      }
+      return resolution;
+    };
+    return calculateResolution(scale);
   }
 }
 export default Utils;

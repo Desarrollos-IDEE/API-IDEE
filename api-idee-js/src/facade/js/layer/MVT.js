@@ -86,6 +86,7 @@ class MVT extends Vector {
    *    attributions: 'mvt',
    *    ...
    *  })
+   *  tileLoadFunction: <funcion>
    * }
    * </code></pre>
    * @api
@@ -125,6 +126,18 @@ class MVT extends Vector {
     this.maxZoom = optionsVar.maxZoom || Number.POSITIVE_INFINITY;
 
     this.mode = opts.mode || mode.RENDER;
+  }
+
+  /**
+   * Sobrescribe la función de carga de teselas.
+   *
+   * @function
+   * @public
+   * @param {Function} func Función de carga de teselas.
+   * @api
+   */
+  setTileLoadFunction(func) {
+    this.getImpl().setTileLoadFunction(func);
   }
 
   /**
