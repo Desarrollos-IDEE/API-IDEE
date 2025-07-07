@@ -88,8 +88,6 @@
 - Se implementa funcionalidad "takeMeThere" en popups.
 - Se mejora la comprobación de la geometría de la feature en el método read de GeoJSON.js.
 - Se modifica el evento ADDED_TO_MAP de las capas OSM para que se dispare desde fachada.
-<<<<<<< feat_208_mvtTileLoadFunction
 - Se implementa en MVT el parámetro tileLoadFunction en el vendors, ademas de setTileLoadFunction.
-=======
 - Se elimina codigo innecesario en el selectFeatures de GeoJSON. 
->>>>>>> develop
+-Se elimina método cloneOLLayer de MBTiles
