@@ -3646,10 +3646,14 @@ class Map extends Base {
   }
 
   /**
-   * Añade la etiqueta.
+   * Añade la etiqueta. Es posible añadir multiples etiquetas a la vez.
    *
    * @function
-   * @param {Array<string>|Array<Mx.parameters.Layer>} layersParam Colecciones de etiquetas.
+   * @param {Label|Array<Label>} labelParam Estquetas o colecciones de etiquetas a añadir.
+   * @param {Array} coordParam Array con las coordenadas de las etiquetas,
+   * o conjunto de Arrays de coordenadas.
+   * @param {boolean} removePrevious Opcional, indica si se eliminan o no las etiquetas anteriores.
+   * Si se añaden multiples etiquetas y el valor no es false, solo añade la última etiqueta.
    * @api
    */
   addLabel(labelParam, coordParam, removePrevious = true) {
@@ -3718,7 +3722,7 @@ class Map extends Base {
    * Devuelve las etiquetas.
    *
    * @function
-   * @returns {Array<object>} Devuelve las etiquetas.
+   * @returns {Array<Label>} Devuelve las etiquetas.
    * @api
    */
   getLabel() {
@@ -3947,11 +3951,11 @@ class Map extends Base {
   }
 
   /**
-   * Devuelve "Popup".
+   * Devuelve "Popup", en caso de existir más de un popup en el mapa devolverá el primero añadido.
    *
    * @function
    * @api
-   * @returns {Popup} Devuelve "Popup". Si hay más de uno, es el primero.
+   * @returns {Popup} Devuelve "Popup". Si hay más de uno,devolverá el primero añadido en el mapa.
    */
   getPopup() {
     let value = null;
@@ -3964,27 +3968,27 @@ class Map extends Base {
   }
 
   /**
-   * Devuelve todos los "popup".
+   * Devuelve todos los "popup" añadidos al mapa.
    *
    * @function
    * @api
-   * @returns {Popup[]} Devuelve todos los "popup". Si solo hay uno, devuelve nulo.
+   * @returns {Array<Popup>} Devuelve todos los "popup".
    */
   getPopups() {
-    let value = null;
-    if (this.popup_.length === 0) {
-      value = null;
-    } else if (this.popup_.length >= 1) {
-      value = this.popup_;
-    }
-    return value;
+    // let value = null;
+    // if (this.popup_.length === 0) {
+    //   value = null;
+    // } else if (this.popup_.length >= 1) {
+    //   value = this.popup_;
+    // }
+    return this.popup_;
   }
 
   /**
    * Elimina "Popup". Es posible eliminar multiples a la vez.
    *
    * @function
-   * @param {popup} popup "Popup" a eliminar.
+   * @param {popup|Array<Popup>} popup "Popup" o array de "popup" a eliminar.
    * @api
    * @returns {Map} Devuelve el estado del mapa.
    */
@@ -4021,13 +4025,14 @@ class Map extends Base {
   }
 
   /**
-   * Añade el "Popup". Es posible añadir multiples a la vez.
+   * Añade el "Popup". Es posible añadir multiples "Popup" a la vez.
    *
    * @function
-   * @param {popup} popup "Popup" a añadir.
-   * @param {Array} coordinate Array con las coordenadas del popup.
+   * @param {popup|Array<Popup>} popup "Popup" o array de "Popup" a añadir.
+   * @param {Array} coordinate Array con las coordenadas del popup,
+   * o conjunto de Arrays de coordenadas.
    * @param {boolean} removePrevious Opcional, indica si se eliminan o no los popups anteriores.
-   * Si se añaden multiples popups y el valor no es false, solo añade el ultimo popup.
+   * Si se añaden multiples popups y el valor no es false, solo añade el último popup.
    * @api
    * @returns {Map} Devuelve el estado del mapa.
    */
