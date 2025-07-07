@@ -90,4 +90,5 @@
 - Se modifica el evento ADDED_TO_MAP de las capas OSM para que se dispare desde fachada.
 - Se implementa en MVT el parámetro tileLoadFunction en el vendors, ademas de setTileLoadFunction.
 - Se elimina codigo innecesario en el selectFeatures de GeoJSON. 
--Se elimina método cloneOLLayer de MBTiles
+- Se elimina método cloneOLLayer de MBTiles
+- Se elimina el parámetro implementación en constructor en WFS
