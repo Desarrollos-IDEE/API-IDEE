@@ -133,7 +133,7 @@ function fun(IDEE_) {
    * @public
    * @api stable
    */
-  IDEE_.config('DEFAULT_PROJ', 'EPSG:3857*m');
+  IDEE_.config('DEFAULT_PROJ', 'EPSG:3857');
 
   /**
    * Predefined WMC files. It is composed of URL,

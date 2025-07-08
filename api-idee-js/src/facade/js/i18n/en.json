@@ -101,9 +101,6 @@
       "text2": "In the dropdown you can see all the available implementations (OpenLayers, Cesium, etc)."
     }
   },
-  "section": {
-    "title": "Section"
-  },
   "popup": {
     "msg": "Take me there"
   },

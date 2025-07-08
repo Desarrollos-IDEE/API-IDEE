@@ -4,7 +4,7 @@ import MBTilesVector from 'IDEE/layer/MBTilesVector';
 
 const mapjs = map({
   container: 'map',
-  projection: 'EPSG:3857*m',
+  projection: 'EPSG:3857',
   // layers: ['OSM', 'MBTilesVector*Countries*http://localhost:8080/test/development/countries.mbtiles*countries*true*eyJwYXJhbWV0ZXJzIjpbeyJyYWRpdXMiOjUsImZpbGwiOnsiY29sb3IiOiJvcmFuZ2UiLCJvcGFjaXR5IjoiMC44In0sInN0cm9rZSI6eyJjb2xvciI6InJlZCIsIndpZHRoIjoxfX1dLCJkZXNlcmlhbGl6ZWRNZXRob2QiOiIoKHNlcmlhbGl6ZWRQYXJhbWV0ZXJzKSA9PiBNLnN0eWxlLlNpbXBsZS5kZXNlcmlhbGl6ZShzZXJpYWxpemVkUGFyYW1ldGVycywgJ00uc3R5bGUuUG9pbnQnKSkifQ=='],
   layers: ['OSM'],
   bbox: [260000.55171202554, 4717655.167246935, 401638.36512445717, 4762982.325020044],

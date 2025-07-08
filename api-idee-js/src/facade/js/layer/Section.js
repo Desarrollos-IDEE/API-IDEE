@@ -19,7 +19,7 @@ import LayerGroup from './LayerGroup';
  * al mapa, y las capas eliminadas de la sección se eliminarán automáticamente del mapa.
  * Los elementos dentro de la sección son considerados como hijos de la sección.
  *
- * @property {string} idLayer Identificador de la sección.
+ * @property {string} idSection Identificador de la sección.
  * @property {string} title Título de la sección.
  * @property {boolean} collapsed Verdadero o falso para mostrar la sección colapsada
  * o expandida en el árbol de contenidos, si lo hay.
@@ -38,7 +38,7 @@ class Section extends MObject {
    *
    * @constructor
    * @param {string|Mx.parameters.Layer} userParameters Parámetros especificados por el usuario.
-   * - idLayer: Identificador de la sección.
+   * - idSection: Identificador de la sección.
    * - title: Título de la sección.
    * - collapsed: Verdadero o falso para mostrar la sección colapsada o expandida
    * en el árbol de contenidos, si lo hay.
@@ -57,12 +57,12 @@ class Section extends MObject {
 
     const parameters = { ...userParameters };
 
-    if (isNullOrEmpty(parameters.idLayer)) {
-      parameters.idLayer = generateRandom('Section').replace(/[^a-zA-Z0-9\-_]/g, '');
+    if (isNullOrEmpty(parameters.idSection)) {
+      parameters.idSection = generateRandom('Section').replace(/[^a-zA-Z0-9\-_]/g, '');
     }
 
     if (isNullOrEmpty(parameters.title)) {
-      parameters.title = getValue('section').title;
+      parameters.title = 'Sección';
     }
 
     if (isNullOrEmpty(parameters.zIndex)) {
@@ -83,12 +83,12 @@ class Section extends MObject {
     super(impl);
 
     /**
-     * Section idLayer: Identificador de la sección.
+     * Section idSection: Identificador de la sección.
      * @public
      * @type {string}
      * @api
      */
-    this.idLayer = parameters.idLayer;
+    this.idSection = parameters.idSection;
 
     /**
      * Section title: Título de la sección.
@@ -314,7 +314,9 @@ class Section extends MObject {
       arrChildren = [arrChildren];
     }
 
-    arrChildren.forEach(this.addChild, this);
+    arrChildren
+      .filter((child) => !(child instanceof LayerGroup))
+      .forEach(this.addChild, this);
   }
 
   /**
@@ -373,7 +375,7 @@ class Section extends MObject {
   static findGroupById(groupId, sections) {
     let group = null;
     if (isArray(sections) && sections.length > 0) {
-      group = sections.find((g) => g instanceof Section && g.idLayer === groupId);
+      group = sections.find((g) => g instanceof Section && g.idSection === groupId);
       if (group == null) {
         const childGroups = sections.map((g) => g.getChildren())
           .reduce((current, next) => current.concat(next), [])

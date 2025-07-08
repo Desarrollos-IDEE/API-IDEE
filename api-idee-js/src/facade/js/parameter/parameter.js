@@ -313,7 +313,6 @@ export const maxExtent = (maxExtentParam) => {
 export const projection = (projectionParameter) => {
   const projectionVar = {
     code: null,
-    units: null,
   };
 
   // checks if the param is null or empty
@@ -322,31 +321,24 @@ export const projection = (projectionParameter) => {
   }
 
   // string
-  if (isString(projectionParameter)) {
-    if (/^(EPSG:)?\d+\*((d(egrees)?)|(m(eters)?))$/i.test(projectionParameter)) {
-      const projectionArray = projectionParameter.split(/\*/);
-      projectionVar.code = projectionArray[0];
-      projectionVar.units = normalize(projectionArray[1].substring(0, 1));
+  const baseProjection = projectionParameter.split(/\*/)[0].trim();
+  if (isString(baseProjection)) {
+    if (/^(EPSG:)?\d+$/i.test(baseProjection)) {
+      projectionVar.code = baseProjection;
     } else {
       Exception(`El formato del parámetro projection no es correcto. </br>Se usará la proyección por defecto: ${IDEE.config.DEFAULT_PROJ}`);
     }
-  } else if (isObject(projectionParameter)) {
+  } else if (isObject(baseProjection)) {
     // object
     // y max
-    if (!isNull(projectionParameter.code)
-      && !isNull(projectionParameter.units)) {
-      projectionVar.code = projectionParameter.code;
-      projectionVar.units = normalize(projectionParameter.units.substring(0, 1));
+    if (!isNull(baseProjection.code)) {
+      projectionVar.code = baseProjection.code;
     } else {
       Exception(`El formato del parámetro projection no es correcto. </br>Se usará la proyección por defecto: ${IDEE.config.DEFAULT_PROJ}`);
     }
   } else {
     // unknown
-    Exception(`El parámetro no es de un tipo soportado: ${typeof projectionParameter}`);
-  }
-
-  if ((projectionVar.units !== 'm') && (projectionVar.units !== 'd')) {
-    Exception(`La unidad "${projectionParameter.units}" del parámetro projection no es válida. Las disponibles son: "m" o "d"`);
+    Exception(`El parámetro no es de un tipo soportado: ${typeof baseProjection}`);
   }
 
   return projectionVar;

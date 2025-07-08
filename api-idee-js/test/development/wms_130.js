@@ -5,7 +5,7 @@ import { compileSync } from 'IDEE/util/Template';
 let VERSION = '1.3.0';
 let TILED = false;
 const FORMAT = 'image/png';
-let PROJECTION = 'EPSG:4326*d';
+let PROJECTION = 'EPSG:4326';
 
 const init = (version, tiled, format, projection) => {
   const mapa = Mmap({

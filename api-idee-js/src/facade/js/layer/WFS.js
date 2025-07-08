@@ -96,7 +96,7 @@ class WFS extends Vector {
    * </code></pre>
    * @api
    */
-  constructor(userParams = {}, options = {}, vendorOpts = {}, implParam = undefined) {
+  constructor(userParams = {}, options = {}, vendorOpts = {}) {
     // checks if the param is null or empty.
     if (isNullOrEmpty(userParams)) {
       Exception(getValue('exception').no_param);
@@ -121,7 +121,7 @@ class WFS extends Vector {
       && isNullOrEmpty(Object.keys(WFSImpl)))) {
       Exception(getValue('exception').wfslayer_method);
     }
-    const impl = implParam || new WFSImpl(optionsVar, vendorOpts);
+    const impl = new WFSImpl(optionsVar, vendorOpts);
 
     // calls the super constructor
     super(parameters, optionsVar, undefined, impl);

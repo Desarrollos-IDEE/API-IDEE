@@ -6,7 +6,7 @@ import { JENKS } from 'IDEE/style/Quantification';
 
 const mapa = Mmap({
   container: 'map',
-  projection: 'EPSG:3857*m',
+  projection: 'EPSG:3857',
   bbox: [-1558215.73316107, 4168698.8601280265, 789929.7757595448, 5275507.029697379],
 });
 

@@ -3,7 +3,7 @@ import { wms_001 } from '../layers/wms/wms';
 
 const mapa = Mmap({
   container: 'map',
-  projection: 'EPSG:3857*m',
+  projection: 'EPSG:3857',
   // ? 01. Caso de uso: backgroundlayers
   // ! Añadir attribution capas rápidas -> api-idee.js
   // ! Añadir capas rápidas al configuration.js, ejemplo:

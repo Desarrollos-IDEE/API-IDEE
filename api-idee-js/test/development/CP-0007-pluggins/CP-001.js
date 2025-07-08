@@ -6,7 +6,7 @@ import 'plugins/layerswitcher/dist/layerswitcher.ol.min.css';
 
 const mapa = Mmap({
   container: 'map',
-  projection: 'EPSG:3857*m',
+  projection: 'EPSG:3857',
 });
 
 window.mapa = mapa;

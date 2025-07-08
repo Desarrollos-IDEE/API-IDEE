@@ -102,9 +102,6 @@
       "text2": "En el desplegable se muestran todas las implementaciones disponibles (OpenLayers, Cesium, etc)."
     }
   },
-  "section": {
-    "title": "Sección"
-  },
   "popup": {
     "msg": "Llévame allí"
   },
