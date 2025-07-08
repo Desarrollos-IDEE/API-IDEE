@@ -47,7 +47,7 @@ class WMC110 extends XML {
       const currentSection = objVar[1];
       const sections = context.layerGroups;
       const section = new Section({
-        idLayer: node.getAttribute('id'),
+        idSection: node.getAttribute('id'),
         title: node.getAttribute('title'),
         order: node.getAttribute('orderInsideGroupDisplay'),
       });

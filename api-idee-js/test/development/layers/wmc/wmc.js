@@ -3,8 +3,6 @@ import WMC from 'IDEE/layer/WMC';
 export const wmc_001 = new WMC({
   url: 'https://componentes.idee.es/estaticos/Datos/WMC/satelite.xml',
   name: 'Satelite',
-  // isBase: true,
-  // isBase: false,
 }, {
   displayInLayerSwitcher: true,
   // displayInLayerSwitcher: false,

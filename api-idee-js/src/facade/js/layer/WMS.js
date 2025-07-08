@@ -110,8 +110,8 @@ class WMS extends LayerBase {
     // This Layer is of parameters.
     const parameters = parameter.layer(userParameters, LayerType.WMS);
     const optionsVar = {
-      ...options,
       visibility: parameters.visibility,
+      ...options,
       queryable: parameters.queryable,
       displayInLayerSwitcher: parameters.displayInLayerSwitcher,
       useCapabilities: parameters.useCapabilities,

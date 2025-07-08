@@ -297,6 +297,7 @@
     "getsections_method": "La implementación usada no posee el método getSections.",
     "addsections_method": "La implementación usada no posee el método addSections.",
     "removesections_method": "La implementación usada no posee el método removeSections.",
-    "not_layergroup_in_section": "No es posible añadir un grupo de capas dentro de una sección."
+    "not_layergroup_in_section": "No es posible añadir un grupo de capas dentro de una sección.",
+    "setzindex_method": "No es posible aplicar un zIndex a una WMC."
   }
 }

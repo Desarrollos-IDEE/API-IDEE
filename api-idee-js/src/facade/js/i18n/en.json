@@ -296,6 +296,7 @@
     "getsections_method": "The used implementation does not have the getSections method.",
     "addsections_method": "The used implementation does not have the addSections method.",
     "removesections_method": "The used implementation does not have the removeSections method.",
-    "not_layergroup_in_section": "It is not possible to add a layer group in a section."
+    "not_layergroup_in_section": "It is not possible to add a layer group in a section.",
+    "setzindex_method": "It is not possible to change zIndex to WMC."
   }
 }

@@ -23,9 +23,6 @@ import * as EventType from '../event/eventtype';
  * @property {string} _type Tipo de la capa.
  * @property {string} url URL del servicio.
  * @property {string} name Nombre de la capa.
- * @property {boolean} transparent (deprecated) Falso si es una capa base,
- * verdadero en caso contrario.
- * @property {boolean} isBase Define si la capa es base.
  * @property {string} idLayer Identificador de la capa.
  * @property {Mx.parameters.LayerOptions} options Opciones de la capa.
  * @property {boolean} loaded_ Indica si la capa WMC y sus capas están cargadas.
@@ -42,7 +39,6 @@ class WMC extends LayerBase {
    * @param {string|Mx.parameters.WMC} userParameters Parámetros para la construcción de la capa.
    * - attribution: Atribución de la capa.
    * - name: Nombre de la capa.
-   * - isBase: Indica si la capa es base.
    * - url: url del servicio.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a la
    * implementación de la capa.
@@ -231,6 +227,18 @@ class WMC extends LayerBase {
    */
   calculateMaxExtent() {
     return this.getImpl().calculateMaxExtent();
+  }
+
+  /**
+   * Este método establece el z-index para esta capa.
+   *
+   * @function
+   * @param {Number} zIndex Nuevo z-index.
+   * @api
+   */
+  setZIndex(zIndex) {
+    // eslint-disable-next-line no-console
+    console.warn(getValue('exception').setzindex_method);
   }
 
   /**
