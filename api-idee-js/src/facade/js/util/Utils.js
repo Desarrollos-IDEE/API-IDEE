@@ -1040,22 +1040,6 @@ export const defineFunctionFromString = (objParam) => {
 };
 
 /**
- * Esta función elimina el HTML del control.
- * @function
- * @public
- * @param {HTMLElement} element Elemento del DOM que se desea eliminar.
- * @api
- */
-export const removeHTML = (element) => {
-  if (element) {
-    const parent = element.parentElement;
-    if (parent) {
-      parent.removeChild(element);
-    }
-  }
-};
-
-/**
  * Esta función devuelve verdadero si algún valor de objeto es función o "{{*}}".
  * @function
  * @public

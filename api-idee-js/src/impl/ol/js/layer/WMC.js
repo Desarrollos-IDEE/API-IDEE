@@ -4,6 +4,7 @@
 import { isNullOrEmpty, isFunction } from 'IDEE/util/Utils';
 import { get as getRemote } from 'IDEE/util/Remote';
 import * as EventType from 'IDEE/event/eventtype';
+import { getValue } from 'IDEE/i18n/language';
 import { get as getProj } from 'ol/proj';
 import FormatWMC from '../format/wmc/WMC';
 import Layer from './Layer';
@@ -106,6 +107,19 @@ class WMC extends Layer {
   }
 
   /**
+   * Este método establece la capa Openlayers.
+   *
+   * @function
+   * @param {ol.layer} layer Capa de Openlayers.
+   * @api stable
+   * @expose
+   */
+  setLayer(layer) {
+    // eslint-disable-next-line no-console
+    console.warn(getValue('exception').setlayer_method);
+  }
+
+  /**
    * Este método selecciona la capa WMC y lanza
    * el evento para dibujarla.
    *
@@ -138,10 +152,7 @@ class WMC extends Layer {
         // set projection with the wmc
         if (this.map.defaultProj) {
           const olproj = getProj(context.projection);
-          this.map.setProjection({
-            code: olproj.getCode(),
-            units: olproj.getUnits(),
-          }, true);
+          this.map.setProjection(`${olproj.getCode()}*${olproj.getUnits()}`, true);
         }
         // load layers
         this.loadLayers(context);
@@ -197,6 +208,9 @@ class WMC extends Layer {
     this.map.addWMS(this.layers, true);
     this.map.addSections(this.sections);
 
+    // updates the z-index of the layers and sections
+    this.layers.forEach((layer, i) => layer.setZIndex(this.getZIndex() + i));
+    this.sections.forEach((section, i) => section.setZIndex(this.getZIndex() + i));
     this.facadeLayer_.fire(EventType.LOAD, [this.layers]);
     this.facadeLayer_.fire(EventType.LOAD, [this.sections]);
   }

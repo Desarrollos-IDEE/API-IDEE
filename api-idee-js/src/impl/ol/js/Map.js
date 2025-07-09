@@ -822,6 +822,10 @@ class Map extends MObject {
       // checks if layer is WMC and was added to the map
       if (layer.type === LayerType.WMC) {
         if (!includes(this.layers_, layer)) {
+          // eslint-disable-next-line no-underscore-dangle, no-param-reassign
+          layer.zindex_ = Map.Z_INDEX[LayerType.WMC];
+          // eslint-disable-next-line no-underscore-dangle, no-param-reassign
+          layer.getImpl().zIndex_ = Map.Z_INDEX[LayerType.WMC];
           layer.getImpl().addTo(this.facadeMap_);
           this.layers_.push(layer);
         }
@@ -3337,6 +3341,7 @@ class Map extends MObject {
  */
 Map.Z_INDEX = {};
 Map.Z_INDEX_BASELAYER = 0;
+Map.Z_INDEX[LayerType.WMC] = 1;
 Map.Z_INDEX[LayerType.OSM] = 40;
 Map.Z_INDEX[LayerType.WMS] = 40;
 Map.Z_INDEX[LayerType.WMTS] = 40;

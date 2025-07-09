@@ -16,6 +16,8 @@ const mapa = Mmap({
   container: 'map',
   // projection: 'EPSG:3857*m',
   projection: 'EPSG:25830*m',
+  center: [286050.82659609657, 4152684.6940324996],
+  zoom: 6,
   layers: [wms],
   // wmc: ['WMC*https://componentes.idee.es/estaticos/Datos/WMC/satelite.xml*Satelite', 'WMC*https://componentes.idee.es/estaticos/Datos/WMC/wmc_grupos.xml*Secciones'],
   // wmcfiles: ['WMC*https://componentes.idee.es/estaticos/Datos/WMC/wmc_grupos.xml*Secciones'],
@@ -42,16 +44,9 @@ const wmc_001 = new WMC({
     contentAttributions: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
     contentType: 'kml',
   },
-  // isBase: true,
-  // isBase: false,
 }, {
   // displayInLayerSwitcher: true,
   displayInLayerSwitcher: false,
-  // crossOrigin: 'anonymous',
-  // minZoom: 10,
-  // maxZoom: 10,
-  // minScale: 1000000,
-  // maxScale: 552000,
 });
 window.wmc_001 = wmc_001;
 mapa.addWMC(wmc_001);
@@ -66,8 +61,6 @@ const wmc_002 = new WMC({
   //   contentAttributions: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
   //   contentType: 'kml',
   // },
-  // isBase: true,
-  // isBase: false,
 }, {
   displayInLayerSwitcher: true,
   // displayInLayerSwitcher: false,
@@ -85,8 +78,6 @@ const wmc_003 = new WMC({
     contentAttributions: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
     contentType: 'kml',
   },
-  // isBase: true,
-  // isBase: false,
 }, {
   displayInLayerSwitcher: true,
   // displayInLayerSwitcher: false,

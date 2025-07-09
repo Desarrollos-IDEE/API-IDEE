@@ -335,7 +335,7 @@ class Map extends Base {
     }
 
     // default TMS
-    if (isNullOrEmpty(params.layers) && !isArray(params.layers)) {
+    if (isNullOrEmpty(params.layers) && !isArray(params.layers) && isNullOrEmpty(params.wmc)) {
       this.addLayers(IDEE.config.baseLayer);
     }
 
@@ -1143,7 +1143,7 @@ class Map extends Base {
       }
       if (addedWmcLayers.length > 1) {
         this.removeControls('wmcselector');
-        this.addControls(new WMCSelector());
+        this.addControls('wmcselector');
       }
     }
     return this;

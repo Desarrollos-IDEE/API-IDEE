@@ -242,6 +242,77 @@ class WMC extends LayerBase {
   }
 
   /**
+   * Este método cambia la extensión máxima de la capa.
+   *
+   * @function
+   * @param {String} maxExtent Nuevo valor para el "MaxExtent".
+   * @api
+   * @export
+   */
+  setMaxExtent(maxExtent) {
+    // eslint-disable-next-line no-console
+    console.warn(getValue('exception').setmaxextent_no_apply);
+  }
+
+  /**
+   * Este método restablece la extensión máxima de la capa.
+   * @function
+   * @api
+   */
+  resetMaxExtent() {
+    // eslint-disable-next-line no-console
+    console.warn(getValue('exception').setmaxextent_no_apply);
+  }
+
+  /**
+   * Este método sobrescribe el mínimo zoom aplicable a la capa.
+   *
+   * @function
+   * @param {Number} zoom Nuevo zoom mínimo.
+   * @api
+   */
+  setMinZoom(zoom) {
+    // eslint-disable-next-line no-console
+    console.warn(getValue('exception').setminzoom_no_apply);
+  }
+
+  /**
+   * Este método sobrescribe el zoom máximo aplicable a la capa.
+   *
+   * @function
+   * @param {Number} zoom Nuevo zoom.
+   * @api
+   */
+  setMaxZoom(zoom) {
+    // eslint-disable-next-line no-console
+    console.warn(getValue('exception').setmaxzoom_no_apply);
+  }
+
+  /**
+   * Esta función establece el valor de la escala mínima para esta capa.
+   *
+   * @function
+   * @param {Number} minScale Nueva escala mínima.
+   * @api
+   */
+  setMinScale(minScale) {
+    // eslint-disable-next-line no-console
+    console.warn(getValue('exception').setminscale_no_apply);
+  }
+
+  /**
+   * Esta función establece el valor de la escala máxima para esta capa.
+   *
+   * @function
+   * @param {Number} maxScale Nueva escala máxima.
+   * @api
+   */
+  setMaxScale(maxScale) {
+    // eslint-disable-next-line no-console
+    console.warn(getValue('exception').setmaxscale_no_apply);
+  }
+
+  /**
    * Este método selecciona la capa WMC y lanza
    * el evento para dibujarla.
    *

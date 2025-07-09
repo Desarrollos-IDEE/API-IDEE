@@ -16,11 +16,12 @@ window.capaPrueba = capaPrueba;
 
 const mapa = Mmap({
   container: 'map',
+  // projection: 'EPSG:25830*m', // WMC Test
   projection: 'EPSG:3857',
   center: [-443273.10081370454, 4757481.749296248], zoom: 6, // Other Tests
   // bbox: [287821.2283355333, 5226384.980194519, 324511.00191241794, 5237544.7863241555], // GeoTIFF Test
   // center: [309697, 5231113], zoom: 14, // GeoTIFF Test
-  // center: [-527439.7561017586, 4554984.900936406], zoom: 8.65, // WMC Test
+  // center: [286050.82659609657, 4152684.6940324996], zoom: 6, // WMC Test
   // wmc: [capaPrueba], // WMC Test
   layers: [capaPrueba],
   controls: ['attributions', 'scale'],
