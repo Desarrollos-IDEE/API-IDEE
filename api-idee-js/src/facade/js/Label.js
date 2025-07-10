@@ -30,6 +30,9 @@ class Label extends Base {
 
     // calls the super constructor
     super(impl);
+
+    this.text = text;
+    this.coord = coordOpts;
   }
 
   /**
