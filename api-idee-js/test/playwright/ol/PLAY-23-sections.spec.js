@@ -34,7 +34,7 @@ test.describe('IDEE.layer.Section', () => {
       });
 
       const section_001 = new IDEE.layer.Section({
-        idLayer: 'id_section_1',
+        idSection: 'id_section_1',
         title: 'Sección 1',
         zIndex: 1000,
         children: [provincias, campamentos, wms_001],

@@ -60,7 +60,7 @@
         const mapa = IDEE.map({
             container: 'mapjs',
             getfeatureinfo: 'plain',
-            projection: 'EPSG:3857*m', // CASO EPSG:4326 'EPSG:4326*d',
+            projection: 'EPSG:3857', // CASO EPSG:4326 'EPSG:4326',
             center: [-421350.1318796586, 4895652.467539945],
             zoom: 6,
         });

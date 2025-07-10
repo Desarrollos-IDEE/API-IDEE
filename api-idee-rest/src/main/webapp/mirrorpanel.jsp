@@ -228,7 +228,7 @@
                 x: -667143.31,
                 y: 4493011.77,
             },
-            projection: "EPSG:3857*m",
+            projection: "EPSG:3857",
             zoom: 15,
         });
         const capasPNOA = [

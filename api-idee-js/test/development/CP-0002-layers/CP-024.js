@@ -56,7 +56,7 @@ window.layer = layer;
 // window.lg = lg;
 
 const section_001 = new Section({
-  // idLayer: 'id_section_1',
+  // idSection: 'id_section_1',
   title: 'Sección 1',
   // collapsed: true,
   collapsed: false,

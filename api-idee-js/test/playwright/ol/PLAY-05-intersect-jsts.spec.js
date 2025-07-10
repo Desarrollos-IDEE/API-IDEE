@@ -7,7 +7,7 @@ test('Comprobamos intersect geometría con WFS', async ({ page }) => {
     mapjs = IDEE.map({
       container: 'map',
       layers: ['OSM'],
-      projection: 'EPSG:4326*d',
+      projection: 'EPSG:4326',
       zoom: 5,
       center: [-5.9326171875, 38.15002441406251],
     });

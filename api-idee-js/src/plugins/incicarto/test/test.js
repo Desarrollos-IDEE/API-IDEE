@@ -11,7 +11,7 @@ const map = IDEE.map({
     y: 4493011,
     draw: false,
   },
-  projection: 'EPSG:3857*m',
+  projection: 'EPSG:3857',
   zoom: 6,
   /*/ Capas precargadas
   layers: [

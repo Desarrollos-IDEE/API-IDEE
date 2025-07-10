@@ -14,7 +14,7 @@ import { EQUAL } from 'IDEE/filter/Filter';
 
 const mapa = Mmap({
   container: 'map',
-  projection: 'EPSG:3857*m',
+  projection: 'EPSG:3857',
   layers: ['OSM'],
   controls: ['scale', 'getfeatureinfo'],
   bbox: [-2453322.859841021, 4116592.5953264493, 1460252.9883600033, 4967795.342310172]

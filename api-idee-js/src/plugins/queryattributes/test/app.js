@@ -25,7 +25,7 @@ const map = IDEE.map({
   zoom: 10, // 6
   maxZoom: 20,
   minZoom: 4,
-  projection: 'EPSG:3857*m',
+  projection: 'EPSG:3857',
   center: {
     x: -409000, // -712300,
     y: 4930000, // 4310700,

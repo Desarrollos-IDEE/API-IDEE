@@ -142,6 +142,6 @@
     {
         "name": "Parámetro bgcolorcontainer",
         "description": "Parámetro bgcolorcontainer",
-        "url": "/api-idee/?bgcolorcontainer=red&layers=OSM&projection=EPSG:25830*m&plugins=sharemap"
+        "url": "/api-idee/?bgcolorcontainer=red&layers=OSM&projection=EPSG:25830&plugins=sharemap"
     }
   ]
