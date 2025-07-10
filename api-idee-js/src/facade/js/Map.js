@@ -3719,7 +3719,7 @@ class Map extends Base {
   }
 
   /**
-   * Devuelve las etiquetas.
+   * Devuelve la etiqueta.
    *
    * @function
    * @returns {Array<Label>} Devuelve las etiquetas.
@@ -3727,6 +3727,17 @@ class Map extends Base {
    */
   getLabel() {
     return this.getImpl().getLabel();
+  }
+
+  /**
+   * Devuelve las etiquetas.
+   *
+   * @function
+   * @returns {Array<Label>} Devuelve las etiquetas.
+   * @api
+   */
+  getLabels() {
+    return this.getImpl().getLabels();
   }
 
   /**
@@ -3975,13 +3986,13 @@ class Map extends Base {
    * @returns {Array<Popup>} Devuelve todos los "popup".
    */
   getPopups() {
-    // let value = null;
-    // if (this.popup_.length === 0) {
-    //   value = null;
-    // } else if (this.popup_.length >= 1) {
-    //   value = this.popup_;
-    // }
-    return this.popup_;
+    let value = null;
+    if (this.popup_.length === 0) {
+      value = null;
+    } else if (this.popup_.length >= 1) {
+      value = this.popup_;
+    }
+    return value;
   }
 
   /**
