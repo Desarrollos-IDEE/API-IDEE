@@ -2907,6 +2907,8 @@ class Map extends MObject {
    *
    * @function
    * @param {IDEE.impl.Popup} label Etiqueta a añadir.
+   * @param {boolean} removePrevious Opcional, indica si se eliminan o no las etiquetas anteriores.
+   * Si se añaden multiples etiquetas y el valor no es false, solo añade la última etiqueta.
    * @returns {ol.Map} Mapa.
    * @public
    * @api

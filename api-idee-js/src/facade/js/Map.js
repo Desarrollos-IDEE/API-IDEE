@@ -3744,11 +3744,12 @@ class Map extends Base {
    * Elimina las etiquetas.
    *
    * @function
+   * @param {label|Array<Label>} label Etiqueta o array de etiquetas a eliminar.
    * @returns {Array<object>} Devuelve las etiquetas.
    * @api
    */
-  removeLabel() {
-    return this.getImpl().removeLabel();
+  removeLabel(label) {
+    return this.getImpl().removeLabel(label);
   }
 
   /**
