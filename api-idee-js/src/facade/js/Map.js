@@ -3701,6 +3701,11 @@ class Map extends Base {
       if (isNullOrEmpty(coord)) {
         coord = this.getCenter();
       } else {
+        if (isString(coord[0])) {
+          coord = coord[0].split(',');
+        } else if (isObject(coord[0])) {
+          coord = coord[0];
+        }
         coord = parameter.center(coord);
       }
 
