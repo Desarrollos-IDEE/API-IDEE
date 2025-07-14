@@ -42,7 +42,7 @@ class Label {
      * @private
      * @type {Array}
      */
-    this.coord_ = [coordOpts.x, coordOpts.y];
+    this.coord_ = coordOpts ? [coordOpts.x, coordOpts.y] : [];
 
     /**
      * "Popup" para mostrar información.
