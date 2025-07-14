@@ -3,6 +3,11 @@
  */
 import LabelImpl from 'impl/Label';
 import Base from './Base';
+import {
+  isArray,
+  isObject,
+  isString,
+} from './util/Utils';
 
 /**
  * @classdesc
@@ -32,7 +37,20 @@ class Label extends Base {
     super(impl);
 
     this.text = text;
-    this.coord = coordOpts;
+
+    let coord;
+    if (isString(coordOpts)) {
+      coord = coordOpts.split(',');
+    }
+    if (isArray(coord) || isArray(coordOpts)) {
+      coord = {
+        x: coord && coord[0] ? coord[0] : coordOpts[0],
+        y: coord && coord[1] ? coord[1] : coordOpts[1],
+      };
+    } else if (isObject(coordOpts)) {
+      coord = coordOpts;
+    }
+    this.coord = coord;
   }
 
   /**
