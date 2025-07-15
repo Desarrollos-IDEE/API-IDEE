@@ -89,6 +89,7 @@
 - Se mejora la comprobación de la geometría de la feature en el método read de GeoJSON.js.
 - Se modifica el evento ADDED_TO_MAP de las capas OSM para que se dispare desde fachada.
 - Se añaden capas WMC (en desarrollo).
+- Se implementa recreateLayer y setURL para capas GeoJSON
 - Se dan de alta nuevas formas.
 - Se implementa en MVT el parámetro tileLoadFunction en el vendors, ademas de setTileLoadFunction.
 - Se elimina codigo innecesario en el selectFeatures de GeoJSON. 

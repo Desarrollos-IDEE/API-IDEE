@@ -162,6 +162,33 @@ class GeoJSON extends Vector {
   }
 
   /**
+   * Actualiza la capa con la nueva URL.
+   *
+   * @public
+   * @function
+   * @api stable
+   * @export
+   */
+  recreateLayer() {
+    // eslint-disable-next-line no-underscore-dangle
+    this.loader_.url_ = this.url;
+    this.loadFeaturesPromise_ = undefined;
+    this.updateSource_();
+  }
+
+  /**
+   * Sobreescribe la URL de la capa.
+   *
+   * @public
+   * @function
+   * @api stable
+   */
+  setURL(newURL) {
+    this.url = newURL;
+    this.recreateLayer();
+  }
+
+  /**
    * Este método devuelve los objetos geográficos de manera asincrona.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
@@ -170,16 +197,16 @@ class GeoJSON extends Vector {
    * @api
    */
   requestFeatures_() {
-    if (isNullOrEmpty(this.loadFeaturesPromise_)) {
+    if (this.source) {
       this.loadFeaturesPromise_ = new Promise((resolve) => {
-        if (this.source) {
-          const features = this.formater_.read(this.source, this.map.getProjection());
+        const features = this.formater_.read(this.source, this.map.getProjection());
+        resolve(features);
+      });
+    } else if (isNullOrEmpty(this.loadFeaturesPromise_)) {
+      this.loadFeaturesPromise_ = new Promise((resolve) => {
+        this.loader_.getLoaderFn((features) => {
           resolve(features);
-        } else {
-          this.loader_.getLoaderFn((features) => {
-            resolve(features);
-          })(null, null, getProj(this.map.getProjection().code));
-        }
+        })(null, null, getProj(this.map.getProjection().code));
       });
     }
     return this.loadFeaturesPromise_;

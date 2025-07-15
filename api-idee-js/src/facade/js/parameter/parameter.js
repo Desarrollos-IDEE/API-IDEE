@@ -321,24 +321,29 @@ export const projection = (projectionParameter) => {
   }
 
   // string
-  const baseProjection = projectionParameter.split(/\*/)[0].trim();
-  if (isString(baseProjection)) {
+  if (isString(projectionParameter)) {
+    const baseProjection = projectionParameter.split(/\*/)[0].trim();
     if (/^(EPSG:)?\d+$/i.test(baseProjection)) {
       projectionVar.code = baseProjection;
     } else {
       Exception(`El formato del parámetro projection no es correcto. </br>Se usará la proyección por defecto: ${IDEE.config.DEFAULT_PROJ}`);
     }
-  } else if (isObject(baseProjection)) {
+  } else if (isObject(projectionParameter)) {
     // object
     // y max
-    if (!isNull(baseProjection.code)) {
-      projectionVar.code = baseProjection.code;
+    if (!isNull(projectionParameter.code)) {
+      const baseProjection = projectionParameter.code.split(/\*/)[0].trim();
+      if (/^(EPSG:)?\d+$/i.test(baseProjection)) {
+        projectionVar.code = baseProjection;
+      } else {
+        Exception(`El formato del parámetro projection no es correcto. </br>Se usará la proyección por defecto: ${IDEE.config.DEFAULT_PROJ}`);
+      }
     } else {
       Exception(`El formato del parámetro projection no es correcto. </br>Se usará la proyección por defecto: ${IDEE.config.DEFAULT_PROJ}`);
     }
   } else {
     // unknown
-    Exception(`El parámetro no es de un tipo soportado: ${typeof baseProjection}`);
+    Exception(`El parámetro no es de un tipo soportado: ${typeof projectionParameter}`);
   }
 
   return projectionVar;
