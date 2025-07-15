@@ -129,6 +129,14 @@ export const ADDED_XYZ = 'added:xyz';
 export const ADDED_TMS = 'added:tms';
 
 /**
+ * Evento que se produce al añadir wmc.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const ADDED_WMC = 'added:wmc';
+
+/**
  * Evento que se produce al añadir QuickLayers.
  * @public
  * @type {string}
@@ -279,6 +287,14 @@ export const COMPLETED = 'completed';
  * @api
  */
 export const CHANGE = 'change';
+
+/**
+ * Evento que se produce cuando ha cambiado una capa WMC.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const CHANGE_WMC = 'change:wmc';
 
 /**
  * Evento que se produce cuando se ha cambiado una proyección.

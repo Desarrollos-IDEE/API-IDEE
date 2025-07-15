@@ -1,5 +1,5 @@
 /* eslint-disable object-property-newline,no-console,no-underscore-dangle,max-len,camelcase,no-plusplus,no-param-reassign,no-proto,import/newline-after-import */
-import { map as Mmap } from 'IDEE/api-idee';
+import { map as Mmap, proxy } from 'IDEE/api-idee';
 // Escoger una de estas capas para probarlas.
 // import { tms_003 } from '../layers/tms/tms'; const capaPrueba = tms_003; window.tms = capaPrueba; // STRING ==> import { tms_002 } from '../layers/tms/tms'; const capaPrueba = tms_002; window.tms = tms_002;
 // import { wms_001, wms_003 } from '../layers/wms/wms'; const capaPrueba = wms_003; window.wms = capaPrueba; // STRING ==> import { wms_002 } from '../layers/wms/wms'; const capaPrueba = wms_002; window.wms = wms_002;
@@ -11,14 +11,18 @@ import { map as Mmap } from 'IDEE/api-idee';
 import { geotiff_004 } from '../layers/geotiff/geotiff'; const capaPrueba = geotiff_004; window.geotiff = capaPrueba;
 // import { layerGroup_001 } from '../layers/layerGroup/layerGroup'; const capaPrueba = layerGroup_001; window.layerGroup = layerGroup_001;
 // import { maplibre_001 } from '../layers/maplibre/maplibre'; const capaPrueba = maplibre_001; window.maplibre = maplibre_001;
+// import { wmc_001 } from '../layers/wmc/wmc'; const capaPrueba = wmc_001; window.wmc = capaPrueba;// STRING ==> import { wmc_002 } from '../layers/wmc/wmc'; const capaPrueba = wmc_002; window.wmc = wmc_002;
 window.capaPrueba = capaPrueba;
 
 const mapa = Mmap({
   container: 'map',
+  // projection: 'EPSG:25830*m', // WMC Test
   projection: 'EPSG:3857',
   center: [-443273.10081370454, 4757481.749296248], zoom: 6, // Other Tests
   // bbox: [287821.2283355333, 5226384.980194519, 324511.00191241794, 5237544.7863241555], // GeoTIFF Test
   // center: [309697, 5231113], zoom: 14, // GeoTIFF Test
+  // center: [286050.82659609657, 4152684.6940324996], zoom: 6, // WMC Test
+  // wmc: [capaPrueba], // WMC Test
   layers: [capaPrueba],
   controls: ['attributions', 'scale'],
 });

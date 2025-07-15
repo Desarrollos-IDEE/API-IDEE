@@ -26,6 +26,7 @@ import FacadeMBTiles from 'IDEE/layer/MBTiles';
 import FacadeMBTilesVector from 'IDEE/layer/MBTilesVector';
 import FacadeMVT from 'IDEE/layer/MVT';
 import FacadeGeoTIFF from 'IDEE/layer/GeoTIFF';
+import FacadeWMC from 'IDEE/layer/WMC';
 import * as EventType from 'IDEE/event/eventtype';
 import FacadeMap from 'IDEE/Map';
 import LayerBase from 'IDEE/layer/Layer';
@@ -264,6 +265,7 @@ class Map extends MObject {
    * @api
    */
   getLayers(filters) {
+    const wmcLayers = this.getWMC(filters);
     const kmlLayers = this.getKML(filters);
     const wmsLayers = this.getWMS(filters);
     const geotiffLayers = this.getGeoTIFF(filters);
@@ -279,7 +281,9 @@ class Map extends MObject {
     const layersGroup = this.getLayerGroups(filters);
     const unknowLayers = this.getUnknowLayers_(filters);
 
-    const layers = kmlLayers.concat(wmsLayers)
+    const layers = wmcLayers
+      .concat(kmlLayers)
+      .concat(wmsLayers)
       .concat(geotiffLayers)
       .concat(mapLibreLayers)
       .concat(wfsLayers)
@@ -333,7 +337,9 @@ class Map extends MObject {
     }
 
     layersRec.forEach((layer) => {
-      if (layer.type === LayerType.WMS) {
+      if (layer.type === LayerType.WMC) {
+        this.facadeMap_.addWMC(layer);
+      } else if (layer.type === LayerType.WMS) {
         this.facadeMap_.addWMS(layer);
       } else if (layer.type === LayerType.WMTS) {
         this.facadeMap_.addWMTS(layer);
@@ -451,6 +457,7 @@ class Map extends MObject {
     });
 
     if (knowLayers.length > 0) {
+      this.removeWMC(knowLayers);
       this.removeKML(knowLayers);
       this.removeWMS(knowLayers);
       this.removeGeoTIFF(knowLayers);
@@ -737,6 +744,122 @@ class Map extends MObject {
       this.layers_ = this.layers_.filter((layer) => !layerGroup.equals(layer));
       layerGroup.getImpl().destroy();
     });
+
+    return this;
+  }
+
+  /**
+   * Este método obtiene las capas WMC añadidas al mapa.
+   *
+   * @function
+   * @param {Array<IDEE.Layer>} filters Filtros a aplicar para la búsqueda.
+   * @returns {Array<IDEE.layer.WMC>} Capas WMC del mapa.
+   * @api stable
+   */
+  getWMC(filtersParam) {
+    let filters = filtersParam;
+    let foundLayers = [];
+
+    // get all wmcLayers
+    const wmcLayers = this.layers_.filter((layer) => {
+      return (layer.type === LayerType.WMC);
+    });
+
+    // parse to Array
+    if (isNullOrEmpty(filters)) {
+      filters = [];
+    }
+    if (!isArray(filters)) {
+      filters = [filters];
+    }
+
+    if (filters.length === 0) {
+      foundLayers = wmcLayers;
+    } else {
+      filters.forEach((filterLayer) => {
+        foundLayers = foundLayers.concat(wmcLayers.filter((wmcLayer) => {
+          let layerMatched = true;
+          // checks if the layer is not in selected layers
+          if (!foundLayers.includes(wmcLayer)) {
+            // if instanceof FacadeWMC check if it is the same
+            if (filterLayer instanceof FacadeWMC) {
+              layerMatched = (filterLayer === wmcLayer);
+            } else {
+              // type
+              if (!isNullOrEmpty(filterLayer.type)) {
+                layerMatched = (layerMatched && (filterLayer.type === wmcLayer.type));
+              }
+              // URL
+              if (!isNullOrEmpty(filterLayer.url)) {
+                layerMatched = (layerMatched && (filterLayer.url === wmcLayer.url));
+              }
+              // name
+              if (!isNullOrEmpty(filterLayer.name)) {
+                layerMatched = (layerMatched && (filterLayer.name === wmcLayer.name));
+              }
+            }
+          } else {
+            layerMatched = false;
+          }
+          return layerMatched;
+        }));
+      }, this);
+    }
+    return foundLayers;
+  }
+
+  /**
+   * Este método añade las capas WMC especificadas por el usuario al mapa.
+   *
+   * @function
+   * @param {Array<IDEE.layer.WMC>} layers Capas WMC a añadir.
+   * @returns {Map} Mapa.
+   * @public
+   * @api
+   */
+  addWMC(layers) {
+    layers.forEach((layer) => {
+      // checks if layer is WMC and was added to the map
+      if (layer.type === LayerType.WMC) {
+        if (!includes(this.layers_, layer)) {
+          // eslint-disable-next-line no-underscore-dangle, no-param-reassign
+          layer.zindex_ = Map.Z_INDEX[LayerType.WMC];
+          // eslint-disable-next-line no-underscore-dangle, no-param-reassign
+          layer.getImpl().zIndex_ = Map.Z_INDEX[LayerType.WMC];
+          layer.getImpl().addTo(this.facadeMap_);
+          this.layers_.push(layer);
+        }
+      }
+    }, this);
+
+    return this;
+  }
+
+  /**
+   * Este método elimina las capas WMC del mapa especificadas por el usuario.
+   *
+   * @function
+   * @param {Array<IDEE.layer.WMC>} layers Capas WMC a eliminar.
+   * @returns {Map} Mapa.
+   * @public
+   * @api
+   */
+  removeWMC(layers) {
+    const wmcMapLayers = this.getWMC(layers);
+    wmcMapLayers.forEach((wmcLayer) => {
+      if (wmcLayer.selected === true && wmcLayer.isLoaded() === false) {
+        wmcLayer.on(EventType.LOAD, () => {
+          this.layers_ = this.layers_.filter((layer) => !layer.equals(wmcLayer));
+          this.facadeMap_.removeWMS(wmcLayer.layers);
+          this.facadeMap_.refreshWMCSelectorControl();
+        });
+      } else {
+        this.layers_ = this.layers_.filter((layer) => !layer.equals(wmcLayer));
+        this.facadeMap_.removeWMS(wmcLayer.layers);
+      }
+      this.facadeMap_.refreshWMCSelectorControl();
+      wmcLayer.fire(EventType.REMOVED_FROM_MAP, [wmcLayer]);
+    }, this);
 
     return this;
   }
@@ -3076,6 +3199,19 @@ class Map extends MObject {
   }
 
   /**
+   * Este método establece el array de resoluciones calculadas.
+   *
+   * @function
+   * @public
+   * @param {Array<number>} _calculatedResolutions Array con las resoluciones
+   * calculadas.
+   * @api
+   */
+  setCalculatedResolutions(_calculatedResolutions) {
+    this._calculatedResolutions = _calculatedResolutions;
+  }
+
+  /**
    * Este método registra el evento de cambio de zoom.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function
@@ -3205,6 +3341,7 @@ class Map extends MObject {
  */
 Map.Z_INDEX = {};
 Map.Z_INDEX_BASELAYER = 0;
+Map.Z_INDEX[LayerType.WMC] = 1;
 Map.Z_INDEX[LayerType.OSM] = 40;
 Map.Z_INDEX[LayerType.WMS] = 40;
 Map.Z_INDEX[LayerType.WMTS] = 40;

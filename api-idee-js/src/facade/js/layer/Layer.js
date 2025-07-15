@@ -413,7 +413,15 @@ class LayerBase extends Base {
   setId(newID) {
     if (!isNullOrEmpty(this.map_)) {
       const findId = this.map_.getLayers().find((layer) => {
-        return layer.idLayer === newID;
+        let result = null;
+        if (layer.constructor.name === 'WMC') {
+          result = layer.layers.find((layerwmc) => {
+            return layerwmc.idLayer === newID;
+          });
+        } else {
+          result = layer.idLayer === newID;
+        }
+        return result;
       });
       if (isUndefined(findId)) {
         this.map_.getFeatureHandler().changeNamePrevs(this.idLayer, newID);

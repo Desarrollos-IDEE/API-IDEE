@@ -3,8 +3,8 @@
  */
 import * as EventType from 'IDEE/event/eventtype';
 import { isNullOrEmpty } from 'IDEE/util/Utils';
-import { getValue } from 'IDEE/i18n/language';
 import Section from 'IDEE/layer/Section';
+import WMC from 'IDEE/layer/WMC';
 import { Group } from 'ol/layer';
 import { Collection } from 'ol';
 import Layer from './Layer';
@@ -240,7 +240,7 @@ class LayerGroup extends Layer {
    */
   addLayer(userLayer) {
     let layer = userLayer;
-    if (!(layer instanceof Section)) {
+    if (!(layer instanceof Section) && !(layer instanceof WMC)) {
       if (typeof layer === 'string') {
         layer = this.map.getLayerByString(layer);
       }
@@ -261,7 +261,7 @@ class LayerGroup extends Layer {
       }
     } else {
       // eslint-disable-next-line no-console
-      console.warn(getValue('exception').not_sections_in_layergroup);
+      console.warn(`No es posible añadir una capa ${layer.type} dentro de un grupo.`);
       return null;
     }
 

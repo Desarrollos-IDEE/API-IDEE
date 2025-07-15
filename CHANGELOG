@@ -88,6 +88,7 @@
 - Se implementa funcionalidad "takeMeThere" en popups.
 - Se mejora la comprobación de la geometría de la feature en el método read de GeoJSON.js.
 - Se modifica el evento ADDED_TO_MAP de las capas OSM para que se dispare desde fachada.
+- Se añaden capas WMC (en desarrollo).
 - Se implementa recreateLayer y setURL para capas GeoJSON
 - Se dan de alta nuevas formas.
 - Se implementa en MVT el parámetro tileLoadFunction en el vendors, ademas de setTileLoadFunction.
@@ -95,4 +96,3 @@
 - Se elimina método cloneOLLayer de MBTiles
 - Se elimina el parámetro implementación en constructor en WFS
 - Se elimina el parámetro implParam de la fachada de WFS
-
