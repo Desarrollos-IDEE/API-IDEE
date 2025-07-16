@@ -190,6 +190,13 @@ class Map extends MObject {
     this._resolutionsBaseLayer = false;
 
     /**
+     * Etiquetas
+     * @private
+     * @type {Array}
+     */
+    this.label = [];
+
+    /**
      * Almacena el zoom del mapa.
      * @api
      * @type {Number}
@@ -3117,22 +3124,24 @@ class Map extends MObject {
   }
 
   /**
-   * Este método añade un "popup" y elimina el anterior.
+   * Este método añade una etiqueta y elimina la anterior.
    *
    * @function
-   * @param {IDEE.impl.Popup} label "Popup" a añadir.
+   * @param {IDEE.impl.Popup} label Etiqueta a añadir.
+   * @param {boolean} removePrevious Opcional, indica si se eliminan o no las etiquetas anteriores.
+   * Si se añaden multiples etiquetas y el valor no es false, solo añade la última etiqueta.
    * @returns {ol.Map} Mapa.
    * @public
    * @api
    */
-  addLabel(label) {
-    this.label = label;
-    label.show(this.facadeMap_);
+  addLabel(label, removePrevious) {
+    this.label.push(label);
+    label.show(this.facadeMap_, removePrevious);
     return this;
   }
 
   /**
-   * Este método obtiene un "popup" con el texto indicado.
+   * Este método obtiene una etiqueta. Si hay más de una, es la primera de la lista.
    *
    * @function
    * @returns {ol.Map} Mapa.
@@ -3140,22 +3149,51 @@ class Map extends MObject {
    * @api
    */
   getLabel() {
-    return this.label;
+    return this.label[0];
   }
 
   /**
-   * Este método elimina un "popup" con el texto indicado.
+   * Este método obtiene todas las etiquetas.
    *
    * @function
    * @returns {ol.Map} Mapa.
    * @public
    * @api
    */
-  removeLabel() {
+  getLabels() {
+    return this.label;
+  }
+
+  /**
+   * Este método elimina una etiqueta con el texto indicado.
+   *
+   * @function
+   * @param {IDEE.impl.Popup} label Etiqueta a eliminar.
+   * @returns {ol.Map} Mapa.
+   * @public
+   * @api
+   */
+  removeLabel(label) {
+    let arrayLabels = label;
     if (!isNullOrEmpty(this.label)) {
-      const popup = this.label.getPopup();
-      this.removePopup(popup);
-      this.label = null;
+      if (isNullOrEmpty(label)) {
+        this.label.forEach((lbl) => this.removePopup(lbl.getPopup()));
+        this.label = [];
+      } else {
+        if (!isArray(label)) {
+          arrayLabels = [label];
+        }
+        for (let i = arrayLabels.length - 1; i >= 0; i -= 1) {
+          const elm = arrayLabels[i];
+          const labelAux = this.label.findIndex(
+            (lbl) => lbl.text === elm.text && lbl.coord === elm.coord,
+          );
+          if (labelAux !== -1) {
+            this.removePopup(this.label[labelAux].getPopup());
+            this.label.splice(labelAux, 1);
+          }
+        }
+      }
     }
   }
 

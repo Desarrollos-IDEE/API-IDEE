@@ -297,7 +297,7 @@ class Popup extends Base {
     if (!isNullOrEmpty(evt)) {
       evt.preventDefault();
     }
-    this.getImpl().hide();
+    this.getImpl().hide(this);
   }
 
   /**

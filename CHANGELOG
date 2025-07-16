@@ -86,6 +86,7 @@
 - En GeoJSON eliminado extract, junto con su getter y setter, ya que los hereda de Vector y la funcionalidad es la misma.
 - Se modifica el evento ADDED_TO_MAP de las capas MVT para que se dispare desde fachada.
 - Se implementa funcionalidad "takeMeThere" en popups.
+- Se permite añadir varios popups al mapa.
 - Se mejora la comprobación de la geometría de la feature en el método read de GeoJSON.js.
 - Se modifica el evento ADDED_TO_MAP de las capas OSM para que se dispare desde fachada.
 - Se añaden capas WMC (en desarrollo).

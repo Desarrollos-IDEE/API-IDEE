@@ -294,11 +294,12 @@ class Popup extends OLOverlay {
    * Este método elimina el "Popup" del mapa.
    *
    * @function
+   * @param {popup} popup "Popup" a eliminar. Puede ser un array de popups.
    * @public
    * @api
    */
-  hide() {
-    this.facadeMap_.removePopup();
+  hide(popup) {
+    this.facadeMap_.removePopup(popup);
   }
 
   /**

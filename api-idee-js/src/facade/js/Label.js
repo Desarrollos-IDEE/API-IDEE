@@ -3,6 +3,11 @@
  */
 import LabelImpl from 'impl/Label';
 import Base from './Base';
+import {
+  isArray,
+  isObject,
+  isString,
+} from './util/Utils';
 
 /**
  * @classdesc
@@ -30,6 +35,22 @@ class Label extends Base {
 
     // calls the super constructor
     super(impl);
+
+    this.text = text;
+
+    let coord;
+    if (isString(coordOpts)) {
+      coord = coordOpts.split(',');
+    }
+    if (isArray(coord) || isArray(coordOpts)) {
+      coord = {
+        x: coord && coord[0] ? coord[0] : coordOpts[0],
+        y: coord && coord[1] ? coord[1] : coordOpts[1],
+      };
+    } else if (isObject(coordOpts)) {
+      coord = coordOpts;
+    }
+    this.coord = coord;
   }
 
   /**
@@ -50,11 +71,12 @@ class Label extends Base {
    * @public
    * @function
    * @param {IDEE.Map} map Fachada del objeto "map".
+   * @param { Boolean } removePrevious - elimina labels anteriores.
    * @api
    * @export
    */
-  show(map) {
-    this.getImpl().show(map);
+  show(map, removePrevious) {
+    this.getImpl().show(map, removePrevious);
   }
 
   /**

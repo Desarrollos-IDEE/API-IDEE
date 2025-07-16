@@ -12,7 +12,7 @@ import { addFileToMap } from './util/LoadFiles';
 import { getValue } from './i18n/language';
 import Exception from './exception/exception';
 import Label from './Label';
-import Popup from './Popup';
+// import Popup from './Popup';
 import Parameters from './parameter/Parameters';
 import * as parameter from './parameter/parameter';
 import * as EventType from './event/eventtype';
@@ -177,7 +177,7 @@ class Map extends Base {
     /**
      * Map: "Popup".
      */
-    this.popup_ = null;
+    this.popup_ = [];
 
     /**
      * Map: Indica si la proyección utilizada
@@ -3899,16 +3899,17 @@ class Map extends Base {
   }
 
   /**
-   * Añade la etiqueta.
+   * Añade la etiqueta. Es posible añadir multiples etiquetas a la vez.
    *
    * @function
-   * @param {Array<string>|Array<Mx.parameters.Layer>} layersParam Colecciones de etiquetas.
+   * @param {Label|Array<Label>} labelParam Estquetas o colecciones de etiquetas a añadir.
+   * @param {Array} coordParam Array con las coordenadas de las etiquetas,
+   * o conjunto de Arrays de coordenadas.
+   * @param {boolean} removePrevious Opcional, indica si se eliminan o no las etiquetas anteriores.
+   * Si se añaden multiples etiquetas y el valor no es false, solo añade la última etiqueta.
    * @api
    */
-  addLabel(labelParam, coordParam) {
-    const panMapIfOutOfView = labelParam.panMapIfOutOfView === undefined
-      ? true
-      : labelParam.panMapIfOutOfView;
+  addLabel(labelParam, coordParam, removePrevious = true) {
     // checks if the param is null or empty
     if (isNullOrEmpty(labelParam)) {
       Exception(getValue('exception').no_projection);
@@ -3922,40 +3923,66 @@ class Map extends Base {
     let text = null;
     let coord = null;
 
-    // object
-    if (isObject(labelParam)) {
-      text = escapeJSCode(labelParam.text);
-      coord = labelParam.coord;
-    } else {
-      // string
-      text = escapeJSCode(labelParam);
-      coord = coordParam;
+    let arrayLabel = labelParam;
+    let arrayCoordinate = coordParam;
+
+    if (!isArray(labelParam)) {
+      arrayLabel = [labelParam];
     }
 
-    if (isNullOrEmpty(coord)) {
-      coord = this.getCenter();
-    } else {
-      coord = parameter.center(coord);
+    if (!isUndefined(coordParam) && !isArray(coordParam[0])) {
+      arrayCoordinate = [coordParam];
+    } else if (isUndefined(coordParam)) {
+      arrayCoordinate = [];
     }
 
-    if (isNullOrEmpty(coord)) {
-      this.getInitCenter_().then((initCenter) => {
-        const label = new Label(text, initCenter, panMapIfOutOfView);
-        this.getImpl().addLabel(label);
-      });
-    } else {
-      const label = new Label(text, coord, panMapIfOutOfView);
-      this.getImpl().addLabel(label);
-    }
+    arrayLabel.forEach((element, index) => {
+      const panMapIfOutOfView = element.panMapIfOutOfView === undefined
+        ? true
+        : labelParam.panMapIfOutOfView;
+
+      // object
+      if (isObject(element)) {
+        text = escapeJSCode(element.text);
+        coord = element.coord;
+      } else {
+        // string
+        text = escapeJSCode(element);
+        coord = arrayCoordinate[index];
+      }
+
+      if (isNullOrEmpty(coord)) {
+        coord = this.getCenter();
+      } else {
+        if (isString(coord) && coord.indexOf('[' === -1)) {
+          coord = coord.split(',');
+        } else if (isString(coord[0])) {
+          coord = coord[0].split(',');
+        } else if (isObject(coord[0])) {
+          coord = coord[0];
+        }
+        coord = parameter.center(coord);
+      }
+
+      if (isNullOrEmpty(coord)) {
+        this.getInitCenter_().then((initCenter) => {
+          const label = new Label(text, initCenter, panMapIfOutOfView);
+          this.getImpl().addLabel(label, removePrevious);
+        });
+      } else {
+        const label = new Label(text, coord, panMapIfOutOfView);
+        this.getImpl().addLabel(label, removePrevious);
+      }
+    });
 
     return this;
   }
 
   /**
-   * Devuelve las etiquetas.
+   * Devuelve la etiqueta.
    *
    * @function
-   * @returns {Array<object>} Devuelve las etiquetas.
+   * @returns {Array<Label>} Devuelve las etiquetas.
    * @api
    */
   getLabel() {
@@ -3963,14 +3990,26 @@ class Map extends Base {
   }
 
   /**
+   * Devuelve las etiquetas.
+   *
+   * @function
+   * @returns {Array<Label>} Devuelve las etiquetas.
+   * @api
+   */
+  getLabels() {
+    return this.getImpl().getLabels();
+  }
+
+  /**
    * Elimina las etiquetas.
    *
    * @function
+   * @param {label|Array<Label>} label Etiqueta o array de etiquetas a eliminar.
    * @returns {Array<object>} Devuelve las etiquetas.
    * @api
    */
-  removeLabel() {
-    return this.getImpl().removeLabel();
+  removeLabel(label) {
+    return this.getImpl().removeLabel(label);
   }
 
   /**
@@ -4184,60 +4223,116 @@ class Map extends Base {
   }
 
   /**
-   * Devuelve "Popup".
+   * Devuelve "Popup", en caso de existir más de un popup en el mapa devolverá el primero añadido.
    *
    * @function
    * @api
-   * @returns {Popup} Devuelve "Popup".
+   * @returns {Popup} Devuelve "Popup". Si hay más de uno,devolverá el primero añadido en el mapa.
    */
   getPopup() {
-    return this.popup_;
+    let value = null;
+    if (this.popup_.length === 0) {
+      value = null;
+    } else {
+      value = this.popup_[0];
+    }
+    return value;
   }
 
   /**
-   * Elimina "Popup".
+   * Devuelve todos los "popup" añadidos al mapa.
    *
    * @function
    * @api
+   * @returns {Array<Popup>} Devuelve todos los "popup".
+   */
+  getPopups() {
+    let value = null;
+    if (this.popup_.length === 0) {
+      value = null;
+    } else if (this.popup_.length >= 1) {
+      value = this.popup_;
+    }
+    return value;
+  }
+
+  /**
+   * Elimina "Popup". Es posible eliminar multiples a la vez.
+   *
+   * @function
+   * @param {popup|Array<Popup>} popup "Popup" o array de "popup" a eliminar.
+   * @api
    * @returns {Map} Devuelve el estado del mapa.
    */
-  removePopup() {
+  removePopup(popup) {
     // checks if the implementation can add popups
     if (isUndefined(MapImpl.prototype.removePopup)) {
       Exception(getValue('exception').removepopup_method);
     }
 
-    if (!isNullOrEmpty(this.popup_)) {
-      this.getImpl().removePopup(this.popup_);
-      this.popup_.destroy();
-      this.popup_ = null;
+    if (isNullOrEmpty(popup)) {
+      this.popup_.forEach((elm) => {
+        this.getImpl().removePopup(elm);
+        elm.destroy();
+      });
+      this.popup_ = [];
+    } else if (isArray(popup)) {
+      for (let i = popup.length - 1; i >= 0; i -= 1) {
+        const elm = popup[i];
+        const find = this.popup_.findIndex((element) => element.getId() === elm.getId());
+        this.getImpl().removePopup(this.popup_[find]);
+        this.popup_[find].destroy();
+        this.popup_.splice(find, 1);
+      }
+    } else {
+      this.getImpl().removePopup(popup);
+      popup.destroy();
+      this.popup_.forEach((elm, index) => {
+        if (elm.getId() === popup.getId()) {
+          this.popup_.splice(index, 1);
+        }
+      });
     }
-
     return this;
   }
 
   /**
-   * Añade el "Popup".
+   * Añade el "Popup". Es posible añadir multiples "Popup" a la vez.
    *
    * @function
+   * @param {popup|Array<Popup>} popup "Popup" o array de "Popup" a añadir.
+   * @param {Array} coordinate Array con las coordenadas del popup,
+   * o conjunto de Arrays de coordenadas.
+   * @param {boolean} removePrevious Opcional, indica si se eliminan o no los popups anteriores.
+   * Si se añaden multiples popups y el valor no es false, solo añade el último popup.
    * @api
    * @returns {Map} Devuelve el estado del mapa.
    */
-  addPopup(popup, coordinate) {
+  addPopup(popup, coordinate, removePrevious = true) {
     // checks if the param is null or empty
     if (isNullOrEmpty(popup)) {
       Exception(getValue('exception').no_popup);
     }
 
-    if (!(popup instanceof Popup)) {
-      Exception(getValue('exception').invalid_popup);
+    let arrayPopup = popup;
+    let arrayCoordinate = coordinate;
+
+    if (!isArray(popup)) {
+      arrayPopup = [popup];
     }
 
-    if (!isNullOrEmpty(this.popup_)) {
-      this.removePopup();
+    if (!isArray(coordinate[0])) {
+      arrayCoordinate = [coordinate];
     }
-    this.popup_ = popup;
-    this.popup_.addTo(this, coordinate);
+
+    arrayPopup.forEach((popupAux, index) => {
+      if (removePrevious) {
+        this.removePopup(this.popup_);
+        this.popup_ = [];
+      }
+      this.popup_.push(popupAux);
+      popupAux.addTo(this, arrayCoordinate[index]);
+    });
 
     return this;
   }
