@@ -2962,7 +2962,8 @@ class Map extends MObject {
         if (!isArray(label)) {
           arrayLabels = [label];
         }
-        arrayLabels.forEach((elm) => {
+        for (let i = arrayLabels.length - 1; i >= 0; i -= 1) {
+          const elm = arrayLabels[i];
           const labelAux = this.label.findIndex(
             (lbl) => lbl.text === elm.text && lbl.coord === elm.coord,
           );
@@ -2970,7 +2971,7 @@ class Map extends MObject {
             this.removePopup(this.label[labelAux].getPopup());
             this.label.splice(labelAux, 1);
           }
-        });
+        }
       }
     }
   }
