@@ -473,22 +473,5 @@ class MBTiles extends Layer {
     }
     return equals;
   }
-
-  /**
-   * Este método devuelve una copia de la capa de esta instancia.
-   *
-   * @function
-   * @returns {ol.layer.Tile} Copia de la capa.
-   * @public
-   * @api
-   */
-  cloneOLLayer() {
-    let olLayer = null;
-    if (this.olLayer != null) {
-      const properties = this.olLayer.getProperties();
-      olLayer = new OLLayerTile(properties);
-    }
-    return olLayer;
-  }
 }
 export default MBTiles;

@@ -4,9 +4,6 @@
  */
 import OLSourceVectorTile from 'ol/source/VectorTile';
 import OLLayerVectorTile from 'ol/layer/VectorTile';
-import { compileSync as compileTemplate } from 'IDEE/util/Template';
-import geojsonPopupTemplate from 'templates/geojson_popup';
-import Popup from 'IDEE/Popup';
 import { isNullOrEmpty, extend, isObject } from 'IDEE/util/Utils';
 import * as EventType from 'IDEE/event/eventtype';
 import TileEventType from 'ol/source/TileEventType';
@@ -57,6 +54,7 @@ class MVT extends Vector {
    *    attributions: 'mvt',
    *    ...
    *  })
+   *  tileLoadFunction: <funcion>
    * }
    * </code></pre>
    * @api
@@ -67,11 +65,6 @@ class MVT extends Vector {
      * MVT formater_. Formato del objeto "MVTFormatter".
      */
     this.formater_ = null;
-
-    /**
-     * MVT popup_. Muestra el "popup".
-     */
-    this.popup_ = null;
 
     /**
      * MVT lastZoom_. Zoom anterior.
@@ -107,6 +100,13 @@ class MVT extends Vector {
      * MVT visibility_. Indica si la capa es visible.
      */
     this.visibility_ = parameters.visibility !== false;
+
+    /**
+     * MVT tileLoadFunction. Función de carga de tiles.
+     * @private
+     * @type {Function}
+     */
+    this.tileLoadFunction = vendorOptions?.tileLoadFunction;
 
     /**
      * MVT layers_. Otras capas.
@@ -151,6 +151,7 @@ class MVT extends Vector {
       format: this.formater_,
       url,
       projection: this.projection_,
+      tileLoadFunction: this.tileLoadFunction,
     });
 
     // register events in order to fire the LOAD event
@@ -197,81 +198,6 @@ class MVT extends Vector {
         });
       }
     });
-  }
-
-  /**
-   * Este método se ejecuta cuando se selecciona un objeto geográfico.
-   * @public
-   * @function
-   * @param {ol.Feature} feature Objetos geográficos de Openlayers.
-   * @param {Array} coord Coordenadas.
-   * @param {Object} evt Eventos.
-   * @api stable
-   */
-  selectFeatures(features, coord, evt) {
-    if (this.extract === true) {
-      const feature = features[0];
-      this.unselectFeatures();
-      if (!isNullOrEmpty(feature)) {
-        const popupTemplate = !isNullOrEmpty(this.template)
-          ? this.template : geojsonPopupTemplate;
-        let htmlAsText = compileTemplate(popupTemplate, {
-          vars: this.parseFeaturesForTemplate_(features),
-          parseToHtml: false,
-        });
-        if (this.legend) {
-          const layerLegendHTML = `<div class="m-legend">${this.legend}</div>`;
-          htmlAsText = layerLegendHTML + htmlAsText;
-        }
-
-        const featureTabOpts = {
-          icon: 'g-cartografia-pin',
-          title: this.name,
-          content: htmlAsText,
-        };
-
-        let popup = this.map.getPopup();
-        if (isNullOrEmpty(popup)) {
-          popup = new Popup();
-          popup.addTab(featureTabOpts);
-          this.map.addPopup(popup, coord);
-        } else {
-          popup.addTab(featureTabOpts);
-        }
-      }
-    }
-  }
-
-  /**
-   * Evento que se activa cuando se termina de hacer clic sobre
-   * un objeto geográfico.
-   *
-   * @public
-   * @function
-   * @api stable
-   */
-  unselectFeatures() {
-    if (!isNullOrEmpty(this.popup_)) {
-      this.popup_.hide();
-      this.popup_ = null;
-    }
-  }
-
-  /**
-   * Este método destruye el "popup" MVT.
-   *
-   * @public
-   * @function
-   * @api stable
-   */
-  removePopup() {
-    if (!isNullOrEmpty(this.popup_)) {
-      if (this.popup_.getTabs().length > 1) {
-        this.popup_.removeTab(this.tabPopup_);
-      } else {
-        this.map.removePopup();
-      }
-    }
   }
 
   /**
@@ -415,6 +341,18 @@ class MVT extends Vector {
    */
   getProjection() {
     return this.projection_;
+  }
+
+  /**
+   * Este método establece la función de carga de teselas.
+   *
+   * @public
+   * @function
+   * @param {Function} func Función de carga de teselas.
+   * @api stable
+   */
+  setTileLoadFunction(func) {
+    this.olLayer.getSource().setTileLoadFunction(func);
   }
 
   /**

@@ -27,12 +27,12 @@ public class DataSourceConfiguration {
 	
 	public void initDataSource(){
 		ResourceBundle bundle = ResourceBundle.getBundle("config-databases");
-		String [] nombres = bundle.getString("datasource.names").split(",");
-		String[] hosts = bundle.getString("datasource.hosts").split(",");
-		String[] puertos = bundle.getString("datasource.ports").split(",");
-		String[] bds = bundle.getString("datasource.bds").split(",");
-		String[] usuarios = bundle.getString("datasource.usernames").split(",");
-		String[] passwords = bundle.getString("datasource.passwords").split(",");
+		String [] nombres = bundle.getString("datasource.names").split(";");
+		String[] hosts = bundle.getString("datasource.hosts").split(";");
+		String[] puertos = bundle.getString("datasource.ports").split(";");
+		String[] bds = bundle.getString("datasource.bds").split(";");
+		String[] usuarios = bundle.getString("datasource.usernames").split(";");
+		String[] passwords = bundle.getString("datasource.passwords").split(";");
 		this.driverClassName = bundle.getString("datasource.driverClassName");
 		this.maxPoolSize = Integer.parseInt(bundle.getString("datasource.maxPoolSize"));
 		for (int i = 0; i < nombres.length; i++){

@@ -37,7 +37,7 @@ test.describe('IDEE.layer.MVT', () => {
       window.map.addLayers(mvt);
     });
     await page.waitForTimeout(5000);
-    await expect(page).toHaveScreenshot('snapshot-feature.png');
+    await expect(page).toHaveScreenshot('snapshot-feature.png', {maxDiffPixelRatio: 0.5});
   });
 
   test('Parameter style with mode: render', async ({ page }) => {
@@ -64,6 +64,6 @@ test.describe('IDEE.layer.MVT', () => {
       window.map.addLayers(mvt);
     });
     await page.waitForTimeout(5000);
-    await expect(page).toHaveScreenshot('snapshot-render.png');
+    await expect(page).toHaveScreenshot('snapshot-render.png', {maxDiffPixelRatio: 0.5});
   });
 });

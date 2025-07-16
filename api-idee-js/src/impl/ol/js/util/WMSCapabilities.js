@@ -140,7 +140,7 @@ class GetCapabilities {
             } else {
               const bbox = layer.BoundingBox[0];
               this.capabilitiesProj = bbox.crs;
-              const projSrc = getProjection(bbox.crs);
+              const projSrc = getProjection(bbox.crs) || getProjection(bbox.srs);
               const projDest = getProjection(this.projection_.code);
               extent = ImplUtils.transformExtent(bbox.extent, projSrc, projDest);
             }

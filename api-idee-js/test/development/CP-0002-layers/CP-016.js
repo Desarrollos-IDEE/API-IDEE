@@ -13,8 +13,8 @@ import { mvt_001 } from '../layers/mvt/mvt';
 
 const mapa = Mmap({
   container: 'map',
-  // projection: 'EPSG:3857*m',
-  // projection: 'EPSG:4326*d',
+  // projection: 'EPSG:3857',
+  // projection: 'EPSG:4326',
   // layers: ['OSM'],
   // center: [-443273.10081370454, 4757481.749296248],
   // zoom: 6,

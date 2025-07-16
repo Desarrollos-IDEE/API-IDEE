@@ -28,6 +28,7 @@ import ScaleLine from './control/ScaleLine';
 import Panzoom from './control/Panzoom';
 import Panzoombar from './control/Panzoombar';
 import BackgroundLayers from './control/BackgroundLayers';
+import WMCSelector from './control/WMCSelector';
 import Layer from './layer/Layer';
 import * as LayerType from './layer/Type';
 import Vector from './layer/Vector';
@@ -53,6 +54,7 @@ import OSM from './layer/OSM';
 import LayerGroup from './layer/LayerGroup';
 import Tiles3D from './layer/Tiles3D';
 import Terrain from './layer/Terrain';
+import WMC from './layer/WMC';
 import Attributions from './control/Attributions';
 import ImplementationSwitcher from './control/ImplementationSwitcher';
 
@@ -300,6 +302,11 @@ class Map extends Base {
       this.setMaxExtent(params.maxExtent, zoomToMaxExtent);
     }
 
+    // wmc
+    if (!isNullOrEmpty(params.wmc)) {
+      this.addWMC(params.wmc);
+    }
+
     this.addQuickLayers(IDEE.config.terrain.default);
 
     // layers
@@ -328,7 +335,7 @@ class Map extends Base {
     }
 
     // default TMS
-    if (isNullOrEmpty(params.layers) && !isArray(params.layers)) {
+    if (isNullOrEmpty(params.layers) && !isArray(params.layers) && isNullOrEmpty(params.wmc)) {
       this.addLayers(IDEE.config.baseLayer);
     }
 
@@ -354,7 +361,7 @@ class Map extends Base {
     // zoomConstrains
     if (!isNullOrEmpty(params.zoomConstrains)) {
       this.setZoomConstrains(params.zoomConstrains);
-    } else if (IDEE.config.MAP_VIEWER_ZOOM_CONSTRAINS !== '') {
+    } else if (IDEE.config.MAP_VIEWER_ZOOM_CONSTRAINS !== '' && IDEE.config.MAP_VIEWER_ZOOM_CONSTRAINS !== undefined) {
       this.setZoomConstrains(IDEE.config.MAP_VIEWER_ZOOM_CONSTRAINS);
     } else {
       this.setZoomConstrains(false);
@@ -600,7 +607,7 @@ class Map extends Base {
   }
 
   /**
-   * Este método obtiene las capas que no están en ningún grupo de capas.
+   * Este método obtiene las capas que no están en ningún grupo de capas o sección.
    *
    * @function
    * @param {Array<string>|Array<Mx.parameters.Layer>} layersParam Matriz de nombres de capas.
@@ -608,7 +615,8 @@ class Map extends Base {
    * @api
    */
   getRootLayers(layersParamVar) {
-    const layers = this.getLayers(layersParamVar).filter((l) => isNullOrEmpty(l.group));
+    const layers = this.getLayers(layersParamVar)
+      .filter((l) => isNullOrEmpty(l.group) && isNullOrEmpty(l.getSection()));
 
     return layers;
   }
@@ -727,6 +735,9 @@ class Map extends Base {
       switch (parameterVariable.type) {
         case 'WFS':
           layer = new WFS(layerParam, { style: parameterVariable.style });
+          break;
+        case 'WMC':
+          layer = new WMC(layerParam);
           break;
         case 'WMS':
           layer = new WMS(layerParam);
@@ -876,6 +887,73 @@ class Map extends Base {
   }
 
   /**
+   * Este método devuelve las secciones que tenga el mapa.
+   *
+   * @function
+   * @public
+   * @returns {Array<IDEE.layer.Section>} Secciones del mapa.
+   * @api
+   */
+  getSections() {
+    // checks if the implementation can manage layers
+    if (isUndefined(MapImpl.prototype.getSections)) {
+      Exception(getValue('exception').getsections_method);
+    }
+    return this.getImpl().getSections().sort(Map.LAYER_SORT);
+  }
+
+  /**
+   * Añade una sección al mapa.
+   *
+   * @public
+   * @function
+   * @param {Array<IDEE.layer.Section>} sections Secciones a añadir.
+   * @returns {IDEE.Map}
+   * @api
+   */
+  addSections(sections) {
+    let sect = sections;
+    // checks if the parameter is null or empty
+    if (isNull(sect)) {
+      Exception('No ha especificado ninguna sección');
+    }
+    // checks if the implementation can manage groups
+    if (isUndefined(MapImpl.prototype.addSections)) {
+      Exception(getValue('exception').addsections_method);
+    }
+    // parses parameters to Array
+    if (!isArray(sect)) {
+      sect = [sect];
+    }
+    // adds the groups
+    this.getImpl().addSections(sect);
+    return this;
+  }
+
+  /**
+   * Elimina una sección del mapa.
+   *
+   * @function
+   * @public
+   * @param {Array<IDEE.layer.Section>} sections Secciones a eliminar.
+   * @returns {IDEE.Map}
+   * @api
+   */
+  removeSections(sections) {
+    // checks if the parameter is null or empty
+    if (isNull(sections)) {
+      Exception('No ha especificado ninguna sección a eliminar');
+    }
+    // checks if the implementation can manage groups
+    if (isUndefined(this.getImpl().removeSections)) {
+      Exception(getValue('exception').removesections_method);
+    }
+    // removes the layers
+    this.getImpl().removeSections(sections);
+    return this;
+  }
+
+  /**
    * Este método devuelve los grupos que tenga el mapa.
    *
    * @function
@@ -973,6 +1051,148 @@ class Map extends Base {
     }
     // removes the layers
     this.getImpl().removeLayerGroups(layerGroups);
+    return this;
+  }
+
+  /**
+   * Este método obtiene las capas WMC añadidas al mapa.
+   *
+   * @function
+   * @param {Array<string>|Array<Mx.parameters.Layer>} layersParam Opcional.
+   * - Matriz de capas de nombres, tipo WMC.
+   * @returns {Array<WMC>} Matriz de capas, tipo WMC.
+   * @api
+   */
+  getWMC(layersParamVar) {
+    let layersParam = layersParamVar;
+    // checks if the implementation can manage layers
+    if (isUndefined(MapImpl.prototype.getWMC)) {
+      Exception(getValue('exception').getwmc_method);
+    }
+
+    // parses parameters to Array
+    if (isNull(layersParam)) {
+      layersParam = [];
+    } else if (!isArray(layersParam)) {
+      layersParam = [layersParam];
+    }
+
+    // gets the parameters as Layer objects to filter
+    let filters = [];
+    if (layersParam.length > 0) {
+      filters = layersParam.map((layerParam) => {
+        return parameter.layer(layerParam, LayerType.WMC);
+      });
+    }
+
+    // gets the layers
+    const layers = this.getImpl().getWMC(filters).sort(Map.LAYER_SORT);
+
+    return layers;
+  }
+
+  /**
+   * Este método añade capas WMC al mapa.
+   *
+   * @function
+   * @param {Array<string>|Array<Mx.parameters.WMC>} layersParam Colección u objeto de capa.
+   * @returns {Map} Devuelve el estado del mapa.
+   * @api
+   */
+  addWMC(layersParamVar) {
+    let layersParam = layersParamVar;
+    if (!isNullOrEmpty(layersParam)) {
+      // checks if the implementation can manage layers
+      if (isUndefined(MapImpl.prototype.addWMC)) {
+        Exception(getValue('exception').addwmc_method);
+      }
+
+      // parses parameters to Array
+      if (!isArray(layersParam)) {
+        layersParam = [layersParam];
+      }
+
+      // gets the parameters as WMC objects to add
+      const wmcLayers = [];
+      layersParam.forEach((layerParam) => {
+        if (isObject(layerParam) && (layerParam instanceof WMC)) {
+          layerParam.setMap(this);
+          wmcLayers.push(layerParam);
+        } else if (!(layerParam instanceof Layer)) {
+          try {
+            const wmcLayer = new WMC(layerParam, layerParam.options);
+            wmcLayer.setMap(this);
+            wmcLayers.push(wmcLayer);
+          } catch (err) {
+            Dialog.error(err.toString());
+            throw err;
+          }
+        }
+      });
+
+      // adds the layers
+      this.getImpl().addWMC(wmcLayers);
+      this.fire(EventType.ADDED_LAYER, [wmcLayers]);
+      this.fire(EventType.ADDED_WMC, [wmcLayers]);
+
+      /* checks if it should create the WMC control to select WMC */
+      const addedWmcLayers = this.getWMC();
+      const wmcSelected = addedWmcLayers.filter((wmc) => wmc.selected === true)[0];
+      if (wmcSelected == null) {
+        addedWmcLayers[0].select();
+      }
+      if (addedWmcLayers.length > 1) {
+        this.removeControls('wmcselector');
+        this.addControls('wmcselector');
+      }
+    }
+    return this;
+  }
+
+  /**
+   * Este método actualiza el control para seleccionar una capa WMC.
+   *
+   * @function
+   * @public
+   * @api
+   */
+  refreshWMCSelectorControl() {
+    this.removeControls('wmcselector');
+    if (this.getWMC().length === 1) {
+      this.getWMC()[0].select();
+    } else if (this.getWMC().length > 1) {
+      this.addControls(new WMCSelector());
+      const wmcSelected = this.getWMC().filter((wmc) => wmc.selected === true)[0];
+      if (wmcSelected == null) {
+        this.getWMC()[0].select();
+      }
+    }
+  }
+
+  /**
+   * Este método elimina las capas WMC del mapa.
+   *
+   * @function
+   * @param {Array<string>|Array<Mx.parameters.WMC>} layersParam Matriz de capas de nombres que
+   * desea eliminar.
+   * @returns {Map} Devuelve el estado del mapa.
+   * @api
+   */
+  removeWMC(layersParam) {
+    if (!isNullOrEmpty(layersParam)) {
+      // checks if the implementation can manage layers
+      if (isUndefined(MapImpl.prototype.removeWMC)) {
+        Exception(getValue('exception').removewmc_method);
+      }
+
+      // gets the layers
+      const wmcLayers = this.getWMC(layersParam);
+      if (wmcLayers.length > 0) {
+        this.fire(EventType.REMOVED_LAYER, [wmcLayers]);
+        // removes the layers
+        this.getImpl().removeWMC(wmcLayers);
+      }
+    }
     return this;
   }
 
@@ -2677,6 +2897,23 @@ class Map extends Base {
                   tooltip: getValue('implementationswitcher').title,
                 });
                 break;
+              case WMCSelector.NAME:
+                control = new WMCSelector();
+                panel = this.getPanels('map-info')[0];
+                if (isNullOrEmpty(panel)) {
+                  panel = new Panel('map-info', {
+                    collapsible: false,
+                    position: Position.BR,
+                    className: 'm-map-info',
+                  });
+                  panel.on(EventType.ADDED_TO_MAP, () => {
+                    if (this.getControls(['wmcselector', 'scale', 'scaleline']).length === 3) {
+                      this.getControls(['scaleline'])[0].getImpl().getElement().classList.add('ol-scale-line-up');
+                    }
+                  });
+                }
+                panel.addClassName('m-with-wmcselector');
+                break;
               default:
                 if (/backgroundlayers\*([0-9])+\*(true|false)/.test(controlParam)) {
                   const idLayer = controlParam.match(/backgroundlayers\*([0-9])+\*(true|false)/)[1];
@@ -2766,7 +3003,13 @@ class Map extends Base {
   getMaxExtent() {
     let maxExtent = this.userMaxExtent;
     if (isNullOrEmpty(maxExtent)) {
-      maxExtent = this.getProjection().getExtent();
+      const selectedWmc = this.getWMC().find((wmc) => wmc.selected);
+      if (!isNullOrEmpty(selectedWmc)) {
+        maxExtent = selectedWmc.getMaxExtent();
+      }
+      if (isNullOrEmpty(maxExtent)) {
+        maxExtent = this.getProjection().getExtent();
+      }
     }
     return maxExtent;
   }
@@ -2785,18 +3028,23 @@ class Map extends Base {
     return new Promise((resolve) => {
       let maxExtent = this.userMaxExtent;
       if (isNullOrEmpty(maxExtent)) {
-        const calculateExtents = this.getLayers().filter((layer) => layer.name !== '__draw__').map((l) => l.calculateMaxExtent());
-        Promise.all(calculateExtents).then((extents) => {
-          maxExtent = getEnvolvedExtent(extents);
-          if (isNullOrEmpty(maxExtent)) {
-            maxExtent = this.getProjection().getExtent();
-          }
-          // if the maxExtent is modified while are calculating maxExtent
-          if (!isNullOrEmpty(this.userMaxExtent)) {
-            maxExtent = this.userMaxExtent;
-          }
-          resolve(maxExtent);
-        });
+        const selectedWmc = this.getWMC().find((wmc) => wmc.selected);
+        if (isNullOrEmpty(selectedWmc)) {
+          const calculateExtents = this.getLayers().filter((layer) => layer.name !== '__draw__' && layer.isVisible()).map((l) => l.calculateMaxExtent());
+          Promise.all(calculateExtents).then((extents) => {
+            maxExtent = getEnvolvedExtent(extents);
+            if (isNullOrEmpty(maxExtent)) {
+              maxExtent = this.getProjection().getExtent();
+            }
+            // if the maxExtent is modified while are calculating maxExtent
+            if (!isNullOrEmpty(this.userMaxExtent)) {
+              maxExtent = this.userMaxExtent;
+            }
+            resolve(maxExtent);
+          });
+        } else {
+          selectedWmc.calculateMaxExtent().then(resolve);
+        }
       } else {
         resolve(maxExtent);
       }
@@ -3535,20 +3783,25 @@ class Map extends Base {
    */
   getEnvolvedExtent() {
     return new Promise((resolve) => {
-      // 1 check the WMC extent
-      const visibleBaseLayer = this.getBaseLayers().find((layer) => layer.isVisible());
-      if (!isNullOrEmpty(visibleBaseLayer)) {
-        resolve(visibleBaseLayer.getMaxExtent(resolve));
+      const wmcLayer = this.getWMC().find((wmc) => wmc.selected);
+      if (!isNullOrEmpty(wmcLayer)) {
+        wmcLayer.getMaxExtent(resolve);
       } else {
-        const layers = this.getLayers().filter((layer) => layer.name !== '__draw__');
-        Promise.all(layers.map((layer) => layer.calculateMaxExtent()))
-          .then((extents) => {
-            const extentsToCalculate = isNullOrEmpty(extents)
-              ? [this.getProjection().getExtent()]
-              : extents;
-            const envolvedMaxExtent = getEnvolvedExtent(extentsToCalculate);
-            resolve(envolvedMaxExtent);
-          });
+        // 1 check the WMC extent
+        const visibleBaseLayer = this.getBaseLayers().find((layer) => layer.isVisible());
+        if (!isNullOrEmpty(visibleBaseLayer)) {
+          resolve(visibleBaseLayer.getMaxExtent(resolve));
+        } else {
+          const layers = this.getLayers().filter((layer) => layer.name !== '__draw__');
+          Promise.all(layers.map((layer) => layer.calculateMaxExtent()))
+            .then((extents) => {
+              const extentsToCalculate = isNullOrEmpty(extents)
+                ? [this.getProjection().getExtent()]
+                : extents;
+              const envolvedMaxExtent = getEnvolvedExtent(extentsToCalculate);
+              resolve(envolvedMaxExtent);
+            });
+        }
       }
     });
   }
@@ -4283,6 +4536,37 @@ class Map extends Base {
    */
   get areasContainer() {
     return this._areasContainer;
+  }
+
+  /**
+   * Función que devuelve la rotación del mapa.
+   *
+   * @function
+   * @public
+   * @api
+   * @return {number} Devuelve la rotación del mapa.
+   */
+  getRotation() {
+    if (isUndefined(MapImpl.prototype.getRotation)) {
+      Exception(getValue('exception').no_get_rotation_method);
+    }
+    return (this.getImpl().getRotation()) * (180 / Math.PI);
+  }
+
+  /**
+   * Función que modifica la rotación del mapa.
+   *
+   * @function
+   * @public
+   * @api
+   * @param {number} rotation Valor que indica cuanto va a rotar el mapa.
+   */
+  setRotation(rotation) {
+    if (isUndefined(MapImpl.prototype.setRotation)) {
+      Exception(getValue('exception').no_set_rotation_method);
+    }
+    this.getImpl().setRotation(rotation * (Math.PI / 180));
+    this.fire(EventType.CHANGE_ROTATION, [rotation]);
   }
 }
 

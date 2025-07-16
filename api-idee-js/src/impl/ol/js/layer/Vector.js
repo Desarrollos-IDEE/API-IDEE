@@ -1,6 +1,7 @@
 /**
  * @module IDEE/impl/layer/Vector
  */
+import ClusteredFeature from 'IDEE/feature/Clustered';
 import { isNullOrEmpty, isFunction, includes } from 'IDEE/util/Utils';
 import { compileSync as compileTemplate } from 'IDEE/util/Template';
 import Popup from 'IDEE/Popup';
@@ -141,6 +142,24 @@ class Vector extends Layer {
       this.loaded_ = true;
       this.fire(EventType.LOAD, [this.features_]);
     }
+  }
+
+  /**
+   * Este método devuelve si la capa es válida.
+   *
+   * @public
+   * @function
+   * @returns {Boolean} Verdadero si es válida, falso si no.
+   * @api stable
+   */
+  isValidSource() {
+    if (isNullOrEmpty(this.olLayer)) {
+      return false;
+    }
+    if (isNullOrEmpty(this.olLayer.getSource())) {
+      return false;
+    }
+    return true;
   }
 
   /**
@@ -348,8 +367,8 @@ class Vector extends Layer {
    * @expose
    */
   selectFeatures(features, coord, evt) {
-    if (this.extract === true) {
-      const feature = features[0];
+    const feature = features[0];
+    if (!(feature instanceof ClusteredFeature) && (this.extract === true)) {
       if (!isNullOrEmpty(feature)) {
         const clickFn = feature.getAttribute('vendor.api_idee.click');
         if (isFunction(clickFn)) {

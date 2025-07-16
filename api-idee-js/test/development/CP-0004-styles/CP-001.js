@@ -96,7 +96,7 @@ const polygonVendor = undefined; // Sin vendorOptions
 
 const mapa = Mmap({
   container: 'map',
-  projection: 'EPSG:3857*m',
+  projection: 'EPSG:3857',
   bbox: [-662541.2130577073, 4348884.724285094, -589161.665903938, 4383472.479584137], // punto
   // bbox: [-310002.719495043, 4005086.440611637, -212316.19734658775, 4047432.554281625], // linea
   // bbox: [167553.43719930138, 3994732.042590404, 350849.43102715403, 4100215.141623947], // poligono

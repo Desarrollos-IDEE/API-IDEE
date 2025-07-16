@@ -807,19 +807,33 @@ class WMS extends LayerBase {
         );
         // gets the getCapabilities response
         getRemote(wmsGetCapabilitiesUrl).then((response) => {
-          if ('xml' in response && !isNullOrEmpty(response.xml)) {
-            const getCapabilitiesDocument = response.xml;
-            const getCapabilitiesParser = new FormatWMS();
-            const getCapabilities = getCapabilitiesParser.customRead(getCapabilitiesDocument);
-            const getCapabilitiesUtils = new GetCapabilities(getCapabilities, layerUrl, projection);
-            success(getCapabilitiesUtils);
-          } else {
-            getRemote(wmsGetCapabilitiesUrl, '', { ticket: false }).then((response2) => {
-              const getCapabilitiesDocument = response2.xml;
+          if ('xml' in response) {
+            const contentType = response.headers?.['content-type'] || '';
+            const isWmsXml = contentType.includes('application/vnd.ogc.wms_xml');
+
+            if (!isNullOrEmpty(response.xml) || isWmsXml) {
+              const getCapabilitiesDocument = !isNullOrEmpty(response.xml) ? response.xml : (new DOMParser()).parseFromString(response.text, 'text/xml');
               const getCapabilitiesParser = new FormatWMS();
               const getCapabilities = getCapabilitiesParser.customRead(getCapabilitiesDocument);
-              const capabilities = new GetCapabilities(getCapabilities, layerUrl, projection);
-              success(capabilities);
+              const getCapabilitiesUtils = new GetCapabilities(
+                getCapabilities,
+                layerUrl,
+                projection,
+              );
+              success(getCapabilitiesUtils);
+            }
+          } else {
+            getRemote(wmsGetCapabilitiesUrl, '', { ticket: false }).then((response2) => {
+              const contentType = response2.headers?.['content-type'] || '';
+              const isWmsXml = contentType.includes('application/vnd.ogc.wms_xml');
+
+              if (!isNullOrEmpty(response2.xml) || isWmsXml) {
+                const getCapabilitiesDocument = !isNullOrEmpty(response2.xml) ? response2.xml : (new DOMParser()).parseFromString(response2.text, 'text/xml');
+                const getCapabilitiesParser = new FormatWMS();
+                const getCapabilities = getCapabilitiesParser.customRead(getCapabilitiesDocument);
+                const capabilities = new GetCapabilities(getCapabilities, layerUrl, projection);
+                success(capabilities);
+              }
             });
           }
         });

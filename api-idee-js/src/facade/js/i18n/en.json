@@ -106,6 +106,8 @@
   },
   "exception": {
     "addto_method": "The used implementation does not have the addTo method",
+    "no_get_rotation_method": "The used implementation does not have the getRotation method",
+    "no_set_rotation_method": "The used implementation does not have the setRotation method",
     "getelement_method": "The used implementation does not have the getElement method",
     "getfeatureinfo_method": "The used implementation can not create GetFeatureInfo controls",
     "mouse_method": "The used implementation can not create Mouse controls",
@@ -175,6 +177,7 @@
     "getzoom_method": "The used implementation does not have the getZoom method.",
     "no_zoom": "You have not specified any zoom.",
     "invalid_zoom": "The specified zoom is invalid.",
+    "invalid_scale": "The specified scale is invalid.",
     "setzoom_method": "The implementation used does not have the setZoom method.",
     "getcenter_method": "The used implementation does not have the getCenter method.",
     "setcenter_method": "The used implementation does not have the setCenter method.",
@@ -284,6 +287,19 @@
     "id_exists": "ID already exists.",
     "transparent_deprecated": "'transparent' parameter has been deprecated, it is recommended to use 'isBase' instead.",
     "getOL3Layer_deprecated": "The getOL3Layer method has been deprecated, it is recommended to use the getLayer method.",
-    "setOL3Layer_deprecated": "The setOL3Layer method has been deprecated, it is recommended to use the setLayer method."
+    "setOL3Layer_deprecated": "The setOL3Layer method has been deprecated, it is recommended to use the setLayer method.",
+    "wmc_method": "The used implementation can not create WMC layers",
+    "sectionlayer_method": "The used implementation can not create Section layer.",
+    "getsections_method": "The used implementation does not have the getSections method.",
+    "addsections_method": "The used implementation does not have the addSections method.",
+    "removesections_method": "The used implementation does not have the removeSections method.",
+    "not_layergroup_in_section": "It is not possible to add a layer group in a section.",
+    "setzindex_method": "It is not possible to apply zIndex to WMC.",
+    "setlayer_method": "It is not possible to set the implementation layer of a WMC.",
+    "setmaxextent_no_apply": "It is not possible to apply the maximum extension to a WMC.",
+    "setminzoom_no_apply": "It is not possible to apply minimum zoom to the WMC layer.",
+    "setmaxzoom_no_apply": "It is not possible to apply maximum zoom to the WMC layer.",
+    "setminscale_no_apply": "It is not possible to apply minimum scale to the WMC layer.",
+    "setmaxscale_no_apply": "It is not possible to apply maximum scale to the WMC layer."
   }
 }
