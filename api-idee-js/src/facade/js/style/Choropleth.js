@@ -309,7 +309,7 @@ class Choropleth extends StyleComposite {
       }
       if (startLimit < 0) {
         vectorContext.fillText(` x  <=  ${endLimit}`, maxWidth + 5, coordinateY + (imageHeight / 2));
-      } else if (this.quantification_.name === 'media_sigma' && endLimit === Number(Math.max(...this.getValues()).toFixed(1))) {
+      } else if (this.quantification_.name === 'media_sigma' && endLimit === Number(Math.max(...this.dataValues_).toFixed(1))) {
         vectorContext.fillText(`${startLimit} <= x`, maxWidth + 5, coordinateY + (imageHeight / 2));
       } else {
         vectorContext.fillText(`${startLimit} <  x  <=  ${endLimit}`, maxWidth + 5, coordinateY + (imageHeight / 2));
