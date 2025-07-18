@@ -262,7 +262,7 @@ class Map extends MObject {
         } else if (e.type === 'pointermove') {
           this.onMapMoveMouse_(e);
         } else if (e.type === 'pointerup' && this.isRotating === true) {
-          this.onMapRotate_(e);
+          this.onMapRotate_();
         }
         return true;
       },
@@ -3286,11 +3286,10 @@ class Map extends MObject {
    * combinación de teclas Shift + Alt.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function
-   * @param {IDEE.evt} evt Evento.
    * @public
    * @api
    */
-  onMapRotate_(evt) {
+  onMapRotate_() {
     const radians = this.map_.getView().getRotation();
     const rotation = radians * (180 / Math.PI);
     this.facadeMap_.fire(EventType.CHANGE_ROTATION, [rotation]);
