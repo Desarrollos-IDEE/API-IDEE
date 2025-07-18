@@ -245,9 +245,12 @@ class Map extends MObject {
     this.registerEvents_();
 
     // this.map_.getView().setConstrainResolution(false);
+    this.isRotating = false;
     this.facadeMap_.on(EventType.COMPLETED, () => {
       this.map_.updateSize();
-      this.map_.getView().on('change:rotation', this.onMapRotate_.bind(this));
+      this.map_.getView().on('change:rotation', () => {
+        this.isRotating = true;
+      });
     });
     this.map_.on('singleclick', this.onMapClick_.bind(this));
 
@@ -258,6 +261,8 @@ class Map extends MObject {
           this.onMapMove_(e);
         } else if (e.type === 'pointermove') {
           this.onMapMoveMouse_(e);
+        } else if (e.type === 'pointerup' && this.isRotating === true) {
+          this.onMapRotate_(e);
         }
         return true;
       },
@@ -3286,9 +3291,10 @@ class Map extends MObject {
    * @api
    */
   onMapRotate_(evt) {
-    const radians = evt.target.getRotation();
+    const radians = this.map_.getView().getRotation();
     const rotation = radians * (180 / Math.PI);
     this.facadeMap_.fire(EventType.CHANGE_ROTATION, [rotation]);
+    this.isRotating = false;
   }
 
   /**
