@@ -183,6 +183,9 @@ export const legendInfo = (evt, layer, useProxy, statusProxy) => {
             const text = document.createTextNode(getValue(I18N_LEGEND_ERROR));
             messageError.appendChild(text);
             img.parentNode.insertBefore(messageError, img);
+            if (!IDEE.utils.isNullOrEmpty(img)) {
+              img.remove();
+            }
           } else if (newLegend !== '') {
             legend.querySelector('img').src = newLegend;
           } else {
