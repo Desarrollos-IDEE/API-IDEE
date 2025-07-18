@@ -247,8 +247,10 @@ class Map extends MObject {
     // this.map_.getView().setConstrainResolution(false);
     this.facadeMap_.on(EventType.COMPLETED, () => {
       this.map_.updateSize();
+      this.map_.getView().on('change:rotation', this.onMapRotate_.bind(this));
     });
     this.map_.on('singleclick', this.onMapClick_.bind(this));
+
     // pointermove
     this.map_.addInteraction(new OLInteraction({
       handleEvent: (e) => {
@@ -3272,6 +3274,21 @@ class Map extends MObject {
       this.facadeMap_.fire(EventType.CHANGE_ZOOM, this.facadeMap_);
       this.currentZoom = this.getZoom();
     }
+  }
+
+  /**
+   * Este método se ejecuta cuando el usuario rota el mapa con la
+   * combinación de teclas Shift + Alt.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @function
+   * @param {IDEE.evt} evt Evento.
+   * @public
+   * @api
+   */
+  onMapRotate_(evt) {
+    const radians = evt.target.getRotation();
+    const rotation = radians * (180 / Math.PI);
+    this.facadeMap_.fire(EventType.CHANGE_ROTATION, [rotation]);
   }
 
   /**
