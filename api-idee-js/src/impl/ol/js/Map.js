@@ -3369,6 +3369,7 @@ class Map extends MObject {
     const view = this.map_.getView();
     if (!isNullOrEmpty(view)) {
       view.setRotation(rotation);
+      this.onMapRotate_();
     }
   }
 
