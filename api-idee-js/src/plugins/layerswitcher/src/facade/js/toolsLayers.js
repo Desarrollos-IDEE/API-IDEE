@@ -184,7 +184,7 @@ export const legendInfo = (evt, layer, useProxy, statusProxy) => {
             messageError.appendChild(text);
             img.parentNode.insertBefore(messageError, img);
             if (!IDEE.utils.isNullOrEmpty(img)) {
-              img.remove();
+              img.src = '';
             }
           } else if (newLegend !== '') {
             legend.querySelector('img').src = newLegend;
