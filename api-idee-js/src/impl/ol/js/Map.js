@@ -73,6 +73,7 @@ import LayerGroup from './layer/LayerGroup';
  * @property {Number} currentZoom Almacena el zoom del mapa.
  * @property {Object} objectView Almacena las propiedades indicadas por el usuario para la vista.
  * @property {Array<IDEE.layer.Section>} sections_ Secciones añadidas al mapa.
+ * @property {Number} currentRotation Almacena la rotación del mapa.
  *
  * @api
  * @extends {IDEE.Object}
@@ -204,6 +205,13 @@ class Map extends MObject {
     this.currentZoom = null;
 
     /**
+     * Almacena la rotación del mapa.
+     * @api
+     * @type {Number}
+     */
+    this.currentRotation = null;
+
+    /**
      * Extent restringido de navegación para el mapa.
      * @api
      * @type {Mx.Extent}
@@ -245,12 +253,8 @@ class Map extends MObject {
     this.registerEvents_();
 
     // this.map_.getView().setConstrainResolution(false);
-    this.isRotating = false;
     this.facadeMap_.on(EventType.COMPLETED, () => {
       this.map_.updateSize();
-      this.map_.getView().on('change:rotation', () => {
-        this.isRotating = true;
-      });
     });
     this.map_.on('singleclick', this.onMapClick_.bind(this));
 
@@ -261,8 +265,6 @@ class Map extends MObject {
           this.onMapMove_(e);
         } else if (e.type === 'pointermove') {
           this.onMapMoveMouse_(e);
-        } else if (e.type === 'pointerup' && this.isRotating === true) {
-          this.onMapRotate_();
         }
         return true;
       },
@@ -3268,16 +3270,24 @@ class Map extends MObject {
   }
 
   /**
-   * Este método se ejecuta cuando el usuario realiza zoom.
+   * Este método se ejecuta cuando el usuario realiza zoom o rotación.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function
    * @public
    * @api
    */
   zoomEvent_() {
+    // Detectar cambios de zoom
     if (this.currentZoom !== this.getZoom()) {
       this.facadeMap_.fire(EventType.CHANGE_ZOOM, this.facadeMap_);
       this.currentZoom = this.getZoom();
+    }
+
+    // Detectar cambios de rotación
+    const currentRotation = this.getRotation();
+    if (this.currentRotation !== currentRotation) {
+      this.onMapRotate_();
+      this.currentRotation = currentRotation;
     }
   }
 
@@ -3293,7 +3303,6 @@ class Map extends MObject {
     const radians = this.map_.getView().getRotation();
     const rotation = radians * (180 / Math.PI);
     this.facadeMap_.fire(EventType.CHANGE_ROTATION, [rotation]);
-    this.isRotating = false;
   }
 
   /**
@@ -3369,7 +3378,6 @@ class Map extends MObject {
     const view = this.map_.getView();
     if (!isNullOrEmpty(view)) {
       view.setRotation(rotation);
-      this.onMapRotate_();
     }
   }
 
