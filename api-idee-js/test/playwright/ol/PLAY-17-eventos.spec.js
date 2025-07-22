@@ -3,10 +3,18 @@ import { test, expect } from '@playwright/test';
 test.describe('Eventos', () => {
   let map;
   test('Triggers de los eventos', async ({ page }) => {
+    let hitROT = 0;
+
     await page.goto('/test/playwright/ol/basic-ol.html');
+
+    page.on('console', (msg) => {
+      if (msg.type() === 'log' && msg.text().includes('Rotation: ')) {
+        hitROT += 1;
+      }
+    });
+
     const res = await page.evaluate(async () => {
       let hitPOP = 0;
-      let hitROT = 0;
       map = IDEE.map({ container: 'map' });
       window.map = map;
       // Eventos POPUP trigger mapa
@@ -17,8 +25,8 @@ test.describe('Eventos', () => {
         hitPOP += 1;
       });
       // Evento ROTATION
-      map.on(IDEE.evt.CHANGE_ROTATION, () => {
-        hitROT += 1;
+      map.on(IDEE.evt.CHANGE_ROTATION, (rot) => {
+        console.log(`Rotation: ${rot}`);
       });
       const popup = new IDEE.Popup();
       const featureTabOpts = {
@@ -44,9 +52,10 @@ test.describe('Eventos', () => {
       popup.removeTab(featureTabOpts);
       map.removePopup(popup);
       map.setRotation(10);
-      return [hitPOP, hitROT];
+      return [hitPOP];
     });
     expect(res[0]).toBe(6);// Eventos POPUP
-    expect(res[1]).toBe(1);// Evento ROTATION
+    await page.waitForTimeout(1000);
+    expect(hitROT).toBe(1);// Evento ROTATION
   });
 });
