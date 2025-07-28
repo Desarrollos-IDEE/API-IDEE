@@ -368,7 +368,7 @@ class GenericVector extends Vector {
    * @api
    */
   getStyle() {
-    if (this.styleFacade) {
+    if (this.style_) {
       return this.style_;
     }
     return new Generic(this.constructor.DEFAULT_OPTIONS_STYLE);
