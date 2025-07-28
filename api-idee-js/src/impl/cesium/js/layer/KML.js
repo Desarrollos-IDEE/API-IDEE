@@ -234,8 +234,9 @@ class KML extends Vector {
         const screenOverlay = response.screenOverlay;
         // removes previous features
         this.facadeVector_.clear();
-        this.facadeVector_.addFeatures(response.features);
         this.loaded_ = true;
+        this.facadeVector_.addFeatures(response.features);
+        this.fire(EventType.LOAD, [this.features_]);
         if (!isNullOrEmpty(screenOverlay)) {
           const screenOverLayImg = ImplUtils.addOverlayImage(
             screenOverlay,
@@ -245,8 +246,9 @@ class KML extends Vector {
           this.setScreenOverlayImg(screenOverLayImg);
         }
       } else {
-        this.facadeVector_.addFeatures(response.features);
         this.loaded_ = true;
+        this.facadeVector_.addFeatures(response.features);
+        this.fire(EventType.LOAD, [this.features_]);
       }
     });
   }
@@ -343,7 +345,7 @@ class KML extends Vector {
           .removeEventListener(this.tileLoadHandler);
       }
 
-      this.fire(EventType.LOAD, [this.features_]);
+      // this.fire(EventType.LOAD, [this.features_]);
     });
   }
 

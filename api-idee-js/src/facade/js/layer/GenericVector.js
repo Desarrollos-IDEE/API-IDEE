@@ -417,7 +417,7 @@ class GenericVector extends Vector {
       if (this.getImpl().isLoaded()) {
         this.getImpl().addFeatures(features, update);
       } else {
-        this.getImpl().on(EventType.LOAD, () => {
+        this.on(EventType.LOAD, () => {
           this.getImpl().addFeatures(features, update);
         });
       }
