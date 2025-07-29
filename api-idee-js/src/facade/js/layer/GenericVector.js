@@ -368,7 +368,7 @@ class GenericVector extends Vector {
    * @api
    */
   getStyle() {
-    if (this.styleFacade) {
+    if (this.style_) {
       return this.style_;
     }
     return new Generic(this.constructor.DEFAULT_OPTIONS_STYLE);
@@ -417,7 +417,7 @@ class GenericVector extends Vector {
       if (this.getImpl().isLoaded()) {
         this.getImpl().addFeatures(features, update);
       } else {
-        this.getImpl().on(EventType.LOAD, () => {
+        this.on(EventType.LOAD, () => {
           this.getImpl().addFeatures(features, update);
         });
       }

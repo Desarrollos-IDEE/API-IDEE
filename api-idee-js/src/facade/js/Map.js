@@ -3028,7 +3028,8 @@ class Map extends Base {
     return new Promise((resolve) => {
       let maxExtent = this.userMaxExtent;
       if (isNullOrEmpty(maxExtent)) {
-        const selectedWmc = this.getWMC().find((wmc) => wmc.selected);
+        const selectedWmc = !isUndefined(MapImpl.prototype.getWMC)
+          ? this.getWMC().find((wmc) => wmc.selected) : null;
         if (isNullOrEmpty(selectedWmc)) {
           const calculateExtents = this.getLayers().filter((layer) => layer.name !== '__draw__' && layer.isVisible()).map((l) => l.calculateMaxExtent());
           Promise.all(calculateExtents).then((extents) => {
