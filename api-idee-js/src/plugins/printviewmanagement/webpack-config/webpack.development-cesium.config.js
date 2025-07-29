@@ -34,6 +34,12 @@ module.exports = {
         },
       },
       {
+      test: /\.m?js$/,
+        resolve: {
+          fullySpecified: false,
+        },
+      },
+      {
         test: [/\.hbs$/, /\.html$/],
         loader: 'html-loader',
         exclude: /node_modules/,

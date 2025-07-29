@@ -205,12 +205,10 @@ class GeoJSON extends Vector {
     this.requestFeatures_().then((features) => {
       if (this.cesiumLayer) {
         this.facadeVector_.clear();
-        this.facadeVector_.addFeatures(features);
-        this.loaded_ = true;
-      } else {
-        this.facadeVector_.addFeatures(features);
-        this.loaded_ = true;
       }
+      this.loaded_ = true;
+      this.facadeVector_.addFeatures(features);
+      this.fire(EventType.LOAD, [features]);
     });
   }
 

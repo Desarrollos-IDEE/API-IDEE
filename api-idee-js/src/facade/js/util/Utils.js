@@ -6,6 +6,7 @@
 import { get as remoteGet } from 'IDEE/util/Remote';
 import chroma from 'chroma-js';
 import Draggabilly from 'draggabilly';
+import reproj from 'impl/util/reprojection';
 import { getValue } from '../i18n/language';
 import { DOTS_PER_INCH, INCHES_PER_UNIT } from '../units';
 import * as WKT from '../geom/WKT';
@@ -1396,14 +1397,16 @@ export const draggabillyPlugin = (panel, handleEl) => {
  * @function
  * @param {string} element Selector del elemento a mover
  * @param {string} handleEl Selemento del elemento iniciador del movimiento
+ * @param {string} containmentEl Selector del elemento contenedor
  * @api
  */
-export const draggabillyElement = (elem, handleEl) => {
+export const draggabillyElement = (elem, handleEl, containmentEl = 'body') => {
   setTimeout(() => {
     const element = document.querySelector(elem);
+    const containerElement = document.querySelector(containmentEl);
     if (element !== null) {
       const draggable = new Draggabilly(element, {
-        containment: 'body',
+        containment: containerElement,
         handle: handleEl,
       });
 
@@ -1444,21 +1447,21 @@ export const returnPositionHtmlElement = (className, map) => {
  * @param {String} imageType formato de imagen resultante
  * @returns {HTMLCanvasElement} canvas resultante
  */
-const joinCanvas = (map, imageType = 'image/jpeg') => {
+export const joinCanvas = (map, imageType = 'image/jpeg') => {
   const canvasList = map.getMapImpl().getViewport().querySelectorAll('.ol-layer canvas, canvas.ol-layer');
-  if (canvasList.length === 1) {
-    return canvasList[0];
-  }
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   const mapImpl = map.getMapImpl();
   const size = mapImpl.getSize();
+
   canvas.width = size[0];
   canvas.height = size[1];
+
   if (/jp.*g$/.test(imageType)) {
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
+
   canvasList.forEach((c) => {
     if (c.width) {
       ctx.save();
@@ -1634,12 +1637,12 @@ export const copyImageClipBoard = (map, canva) => {
  */
 export const findUrls = (text) => {
   const regex = /https?:\/\/[^\s"'<>]+/g;
-  const matches = text.match(regex);
+  const matches = String(text).match(regex) || [];
   const uniqueMatches = [...new Set(matches)];
 
   // Regex para encontrar URLs dentro de los atributos href o src (preservando el atributo completo)
   const regexHtmlAttrs = /(?:href|src)\s*=\s*(?:"|'|)(https?:\/\/[^\s"'>]+)(?:"|'|)/g;
-  const matchesHTML = text.match(regexHtmlAttrs);
+  const matchesHTML = String(text).match(regexHtmlAttrs) || [];
   const uniquematchesHTML = [...new Set(matchesHTML)];
 
   if (!uniqueMatches) return [];
@@ -1734,6 +1737,148 @@ export const ObjectToArrayExtent = (bbox, epsg) => {
     return [bbox.y.min, bbox.x.min, bbox.y.max, bbox.x.max];
   }
   return [bbox.x.min, bbox.y.min, bbox.x.max, bbox.y.max];
+};
+
+/**
+ * Este método determina el sistema operativo móvil.
+ *
+ * @function
+ * @public
+ * @returns {string} El sistema operativo móvil detectado ('iOS', 'Android',
+ * 'Windows Phone', or 'unknown').
+ * @api
+ */
+export const getSystem = () => {
+  const userAgent = window.navigator.userAgent || window.navigator.vendor || window.opera;
+  let env = 'unknown';
+  if (/android/i.test(userAgent)) {
+    env = 'android';
+  }
+
+  if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+    env = 'ios';
+  }
+
+  return env;
+};
+
+/**
+ * Este método reproyecta unas coordenadas de un sistema de referencia a otro.
+ *
+ * @ublic
+ * @function
+ * @param {Array<number>} coordinates Coordenadas a reproyectar.
+ * @param {string} sourceProj EPSG del sistema de referencia de origen.
+ * @param {string} destProj EPSG del sistema de referencia de destino.
+ * @returns {Array<number>} Coordenadas reproyectadas.
+ * @api
+ */
+export const reproject = (coordinates, sourceProj, destProj) => {
+  return reproj(coordinates, sourceProj, destProj);
+};
+
+/**
+ * Este método convierte una cadena WKT (Well-Known Text) de un sistema de
+ * referencia de coordenadas (CRS) en un objeto JSON estructurado,
+ * interpretando correctamente jerarquías, claves repetidas y valores anidados.
+ *
+ * - Si una clave aparece varias veces (como MEMBER), se agrupa en un array.
+ * - Si un valor no tiene clave explícita, se asigna a "name".
+ * - Si hay dos valores simples, se convierten en un objeto { clave: valor }.
+ * - Si hay un solo valor, se devuelve directamente.
+ *
+ * @public
+ * @function
+ * @param {string} wkt Cadena WKT que representa un sistema de referencia de coordenadas.
+ * @returns {Object} Objeto JSON estructurado equivalente al WKT.
+ * @api
+ */
+export const parseCRSWKTtoJSON = (wkt) => {
+  const tokens = wkt.match(/"[^"]*"|[[\],]|[^\s[\],]+/g);
+  let index = 0;
+
+  const parseValue = (token) => {
+    if (token.startsWith('"') && token.endsWith('"')) {
+      return token.slice(1, -1);
+    }
+
+    if (!Number.isNaN(Number(token))) {
+      return Number(token);
+    }
+
+    return token;
+  };
+
+  const parseArrayOrObject = (parentKey) => {
+    const values = [];
+    let hasNested = false;
+
+    while (index < tokens.length) {
+      const token = tokens[index];
+
+      if (token === ']') {
+        index += 1;
+        break;
+      }
+
+      if (token === ',') {
+        index += 1;
+      }
+
+      if (tokens[index + 1] === '[') {
+        const key = tokens[index];
+        index += 2; // skip key and '['
+        const value = parseArrayOrObject(key);
+        values.push({ [key]: value });
+        hasNested = true;
+      } else {
+        const value = parseValue(tokens[index]);
+        index += 1;
+        values.push(value);
+      }
+    }
+
+    if (!hasNested) {
+      if (values.length === 1) return values[0];
+      if (values.length === 2 && typeof values[0] !== 'object') {
+        return { [values[0]]: values[1] };
+      }
+      return values;
+    }
+
+    const obj = {};
+
+    if (values.length > 0 && typeof values[0] !== 'object') {
+      obj.name = values.shift();
+    }
+
+    values.forEach((item) => {
+      if (typeof item === 'object' && !Array.isArray(item)) {
+        const [key] = Object.keys(item);
+        const value = item[key];
+
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          if (!Array.isArray(obj[key])) {
+            obj[key] = [obj[key]];
+          }
+          obj[key].push(value);
+        } else {
+          obj[key] = value;
+        }
+      }
+    });
+
+    return obj;
+  };
+
+  const parseRoot = () => {
+    const key = tokens[index];
+    index += 2; // skip key and '['
+    const value = parseArrayOrObject(key);
+    return { [key]: value };
+  };
+
+  return parseRoot();
 };
 
 /**

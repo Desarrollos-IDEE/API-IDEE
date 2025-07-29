@@ -9,7 +9,7 @@ const mapa = Mmap({
   container: 'map',
   getfeatureinfo: 'plain',
   controls: ['location', 'attributions'],
-  projection: 'EPSG:3857*m', // CASO EPSG:4326 'EPSG:4326*d',
+  projection: 'EPSG:3857', // CASO EPSG:4326 'EPSG:4326',
   // layers: ['OSM'],
 });
 
@@ -46,7 +46,7 @@ const xyz = new XYZ({
 
 // mapa.addLayers(mvt);
 // mapa.addLayers(mvt2);
-mapa.addLayers(mvt3);
+// mapa.addLayers(mvt3);
 // mapa.addXYZ(xyz);
 // mapa.addLayers(mvt4);
 // IDEE.Popup.options.takeMeThere = true;

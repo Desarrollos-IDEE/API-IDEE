@@ -164,7 +164,11 @@ const ajax = (urlVar, dataVar, methodType, useProxy) => {
 
   // parses parameters to string
   if (isObject(data)) {
-    data = JSON.stringify(data);
+    if (methodType === method.GET) {
+      url = addParameters(url, data);
+    } else {
+      data = JSON.stringify(data);
+    }
   }
 
   return new Promise((success, fail) => {

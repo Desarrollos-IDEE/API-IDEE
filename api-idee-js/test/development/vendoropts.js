@@ -26,7 +26,7 @@ const mapjs = Mmap({
   container: 'map',
   layers: [],
   controls: ['panzoombar'],
-  projection: 'EPSG:3857*m',
+  projection: 'EPSG:3857',
 });
 
 window.vendorLocation = (evt) => {

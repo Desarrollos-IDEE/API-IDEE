@@ -129,6 +129,14 @@ export const ADDED_XYZ = 'added:xyz';
 export const ADDED_TMS = 'added:tms';
 
 /**
+ * Evento que se produce al añadir wmc.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const ADDED_WMC = 'added:wmc';
+
+/**
  * Evento que se produce al añadir QuickLayers.
  * @public
  * @type {string}
@@ -305,6 +313,14 @@ export const COMPLETED = 'completed';
 export const CHANGE = 'change';
 
 /**
+ * Evento que se produce cuando ha cambiado una capa WMC.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const CHANGE_WMC = 'change:wmc';
+
+/**
  * Evento que se produce cuando se ha cambiado una proyección.
  * @public
  * @type {string}
@@ -375,3 +391,43 @@ export const LOAD_TERRAIN = 'LOAD_TERRAIN';
  * @api
  */
 export const LOAD_GENERIC_VECTOR = 'LOAD_GENERIC_VECTOR';
+
+/**
+ * Evento que se produce cuando se añade un popup.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const POPUP_ADDED = 'popup:added';
+
+/**
+ * Evento que se produce cuando se elimina un popup.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const POPUP_REMOVED = 'popup:removed';
+
+/**
+ * Evento que se produce cuando se añade una ventana a un popup.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const POPUP_ADDED_TAB = 'popup:addtabed';
+
+/**
+ * Evento que se produce cuando se elimina una ventana de un popup.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const POPUP_REMOVED_TAB = 'popup:removedtab';
+
+/**
+ * Evento que se produce cuando se cambia la rotación del mapa.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const CHANGE_ROTATION = 'change:rotation';

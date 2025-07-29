@@ -204,15 +204,27 @@ class Vector extends LayerBase {
    * se incluirán a la capa.
    * @param {Boolean} update Verdadero se vuelve a cargar la capa,
    * falso no la vuelve a cargar.
+   * @param {Boolean} force Si es verdadero, fuerza no esperar al
+   * evento LOAD de la capa aunque no esté cargada o no sea válida.
    * @api
    */
-  addFeatures(featuresParam, update = false) {
-    let features = featuresParam;
-    if (!isNullOrEmpty(features)) {
-      if (!isArray(features)) {
-        features = [features];
+  addFeatures(featuresParam, update = false, force = false) {
+    if (force || (
+      (!isNullOrEmpty(this.url)
+      || !isNullOrEmpty(this.getImpl()))
+        && (this.getImpl().isValidSource()
+        && this.getImpl().isLoaded()))) {
+      let features = featuresParam;
+      if (!isNullOrEmpty(features)) {
+        if (!isArray(features)) {
+          features = [features];
+        }
+        this.getImpl().addFeatures(features, update);
       }
-      this.getImpl().addFeatures(features, update);
+    } else {
+      this.on(EventType.LOAD, () => {
+        this.addFeatures(featuresParam, update, true);
+      });
     }
   }
 
@@ -313,7 +325,9 @@ class Vector extends LayerBase {
    * @api
    */
   getFeaturesExtent(skipFilterParam) {
-    return this.getImpl().getFeaturesExtent(true, this.filter_);
+    let skipFilter = skipFilterParam;
+    if (isNullOrEmpty(this.getFilter())) skipFilter = true;
+    return this.getImpl().getFeaturesExtent(skipFilter, this.filter_);
   }
 
   /**

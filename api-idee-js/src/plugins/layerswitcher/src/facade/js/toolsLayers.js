@@ -138,14 +138,14 @@ const errorLegendLayer = (layer, useProxy, statusProxy) => {
       legend = url.replace('{z}/{x}/{y}', '0/0/0');
     }
     if (legend !== '') {
-      IDEE.proxy(useProxy);
+      // IDEE.proxy(useProxy);
       IDEE.remote.get(legend).then((response) => {
         if (response.code !== 200) {
           legend = '';
         }
         success(legend);
       });
-      IDEE.proxy(statusProxy);
+      // IDEE.proxy(statusProxy);
     } else {
       success('error legend');
     }
@@ -183,6 +183,9 @@ export const legendInfo = (evt, layer, useProxy, statusProxy) => {
             const text = document.createTextNode(getValue(I18N_LEGEND_ERROR));
             messageError.appendChild(text);
             img.parentNode.insertBefore(messageError, img);
+            if (!IDEE.utils.isNullOrEmpty(img)) {
+              img.src = '';
+            }
           } else if (newLegend !== '') {
             legend.querySelector('img').src = newLegend;
           } else {

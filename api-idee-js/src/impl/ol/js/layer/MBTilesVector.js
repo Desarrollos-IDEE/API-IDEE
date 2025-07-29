@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /**
  * @module IDEE/impl/layer/MBTilesVector
  */
@@ -7,7 +8,7 @@ import Popup from 'IDEE/Popup';
 import geojsonPopupTemplate from 'templates/geojson_popup';
 import { get as getProj, transformExtent } from 'ol/proj';
 // import { inflate } from 'pako';
-import OLLayerTile from 'ol/layer/Tile';
+// import OLLayerTile from 'ol/layer/Tile';
 import OLLayerVectorTile from 'ol/layer/VectorTile';
 import OLSourceVectorTile from 'ol/source/VectorTile';
 import TileGrid from 'ol/tilegrid/TileGrid';
@@ -425,10 +426,14 @@ class MBTilesVector extends Vector {
         } else {
           const popupTemplate = !isNullOrEmpty(this.template)
             ? this.template : geojsonPopupTemplate;
-          const htmlAsText = compileTemplate(popupTemplate, {
+          let htmlAsText = compileTemplate(popupTemplate, {
             vars: this.parseFeaturesForTemplate_(features),
             parseToHtml: false,
           });
+          if (this.legend) {
+            const layerLegendHTML = `<div class="m-legend">${this.legend}</div>`;
+            htmlAsText = layerLegendHTML + htmlAsText;
+          }
           const featureTabOpts = {
             icon: 'g-cartografia-pin',
             title: this.name,
@@ -529,22 +534,18 @@ class MBTilesVector extends Vector {
     let features = [];
     if (this.olLayer) {
       const olSource = this.olLayer.getSource();
-      const tileCache = olSource.tileCache;
-      if (tileCache.getCount() === 0) {
+      const tileCache = Object.values(olSource.sourceTiles_);
+      if (tileCache.length === 0) {
         return features;
       }
-      const z = Number(tileCache.peekFirstKey().split('/')[0]);
+      const z = Number(tileCache[0].getTileCoord()[0]);
       tileCache.forEach((tile) => {
         if (tile.tileCoord[0] !== z || tile.getState() !== 2) {
           return;
         }
-        const sourceTiles = tile.getSourceTiles();
-        for (let i = 0, ii = sourceTiles.length; i < ii; i += 1) {
-          const sourceTile = sourceTiles[i];
-          const olFeatures = sourceTile.getFeatures();
-          if (olFeatures) {
-            features = features.concat(olFeatures);
-          }
+        const olFeatures = tile.getFeatures();
+        if (olFeatures) {
+          features = features.concat(olFeatures);
         }
       });
     }
@@ -581,23 +582,6 @@ class MBTilesVector extends Vector {
         this.facadeLayer_.fire(EventType.LOAD);
       }
     }
-  }
-
-  /**
-   * Este método devuelve una copia de la capa de esta instancia.
-   *
-   * @function
-   * @returns {ol.layer.Tile} Copia de la capa.
-   * @public
-   * @api
-   */
-  cloneOLLayer() {
-    let olLayer = null;
-    if (this.olLayer != null) {
-      const properties = this.olLayer.getProperties();
-      olLayer = new OLLayerTile(properties);
-    }
-    return olLayer;
   }
 }
 export default MBTilesVector;

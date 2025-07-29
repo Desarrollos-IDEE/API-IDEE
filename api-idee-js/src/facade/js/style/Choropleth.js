@@ -79,6 +79,11 @@ class Choropleth extends StyleComposite {
     this.quantification_ = quantification;
 
     /**
+     * Valores definidos.
+     */
+    this.dataValues_ = [];
+
+    /**
      * Puntos de "puntos de ruptura".
      */
     this.breakPoints_ = [];
@@ -148,8 +153,7 @@ class Choropleth extends StyleComposite {
   setQuantification(quantification) {
     this.quantification_ = quantification;
     if (!this.choroplethStyles_.some((style) => isString(style))) {
-      const dataValues = this.getValues();
-      if (this.choroplethStyles_.length < this.quantification_(dataValues).length) {
+      if (this.choroplethStyles_.length < this.quantification_(this.dataValues_).length) {
         const [startStyle, endStyle] = this.choroplethStyles_;
         const geomType = this.layer_.getGeometryType().toLowerCase();
         let startColor = startStyle.get('fill.color') ? startStyle.get('fill.color') : startStyle.get(`${geomType}.fill.color`);
@@ -163,7 +167,7 @@ class Choropleth extends StyleComposite {
         this.choroplethStyles_ = [startColor, endColor];
       } else {
         this.choroplethStyles_ = this.choroplethStyles_
-          .slice(0, this.quantification_(dataValues).length);
+          .slice(0, this.quantification_(this.dataValues_).length);
       }
       this.update_();
       this.refresh();
@@ -305,7 +309,7 @@ class Choropleth extends StyleComposite {
       }
       if (startLimit < 0) {
         vectorContext.fillText(` x  <=  ${endLimit}`, maxWidth + 5, coordinateY + (imageHeight / 2));
-      } else if (this.quantification_.name === 'media_sigma' && endLimit === Number(Math.max(...this.getValues()).toFixed(1))) {
+      } else if (this.quantification_.name === 'media_sigma' && endLimit === Number(Math.max(...this.dataValues_).toFixed(1))) {
         vectorContext.fillText(`${startLimit} <= x`, maxWidth + 5, coordinateY + (imageHeight / 2));
       } else {
         vectorContext.fillText(`${startLimit} <  x  <=  ${endLimit}`, maxWidth + 5, coordinateY + (imageHeight / 2));
@@ -351,10 +355,10 @@ class Choropleth extends StyleComposite {
     if (!isNullOrEmpty(this.layer_)) {
       const features = this.layer_.getFeatures();
       if (!isNullOrEmpty(features)) {
-        const dataValues = this.getValues();
+        this.dataValues_ = this.getValues();
         if (isNullOrEmpty(this.choroplethStyles_) || (!isNullOrEmpty(this.choroplethStyles_)
             && (isString(this.choroplethStyles_[0]) || isString(this.choroplethStyles_[1])))) {
-          this.breakPoints_ = this.quantification_(dataValues);
+          this.breakPoints_ = this.quantification_(this.dataValues_);
           const colors = this.choroplethStyles_ || [];
           if (isUndefined(colors[0])) {
             colors.push(Choropleth.START_COLOR_DEFAULT);
@@ -371,7 +375,7 @@ class Choropleth extends StyleComposite {
             .map((c) => defaultStyle(c, this.borderColor)));
           this.choroplethStyles_ = generateStyle(scaleColor, Choropleth.DEFAULT_STYLE);
         } else {
-          this.breakPoints_ = this.quantification_(dataValues, this.choroplethStyles_.length);
+          this.breakPoints_ = this.quantification_(this.dataValues_, this.choroplethStyles_.length);
         }
       }
       for (let i = this.breakPoints_.length - 1; i > -1; i -= 1) {

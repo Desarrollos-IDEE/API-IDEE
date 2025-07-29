@@ -3,7 +3,7 @@ import Locatorscn from 'facade/locatorscn';
 IDEE.language.setLang('es');
 // IDEE.language.setLang('en');
 
-IDEE.proxy(false);
+// IDEE.proxy(false);
 
 const map = IDEE.map({
   container: 'mapjs',

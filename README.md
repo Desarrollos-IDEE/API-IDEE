@@ -13,7 +13,7 @@ API IDEE se presenta como una solución gratuita para la incorporación de clien
 
 La arquitectura de API IDEE está compuesta por los siguientes componentes:
 
-- [api-idee-js](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js) Librería JavaScript que provee una API para facilitar la creación de visores de mapas.
+- [api-idee-js](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js) Librería JavaScript que provee una API para facilitar la creación de visualizadores de mapas.
 - [api-idee-parent](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-parent) Módulo padre que hace uso de maven para compilar y generar el war final de api-idee.
 - [api-idee-proxy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-proxy) Proxy para realizar peticiones POST por si el [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS) no está habilitado.
 - [api-idee-rest](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-rest) Servicio Web con API RESTful que genera el código JS necesario para generar un visor con la configuración especificada por parámetros.

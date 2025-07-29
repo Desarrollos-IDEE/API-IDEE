@@ -313,7 +313,6 @@ export const maxExtent = (maxExtentParam) => {
 export const projection = (projectionParameter) => {
   const projectionVar = {
     code: null,
-    units: null,
   };
 
   // checks if the param is null or empty
@@ -323,30 +322,28 @@ export const projection = (projectionParameter) => {
 
   // string
   if (isString(projectionParameter)) {
-    if (/^(EPSG:)?\d+\*((d(egrees)?)|(m(eters)?))$/i.test(projectionParameter)) {
-      const projectionArray = projectionParameter.split(/\*/);
-      projectionVar.code = projectionArray[0];
-      projectionVar.units = normalize(projectionArray[1].substring(0, 1));
+    const baseProjection = projectionParameter.split(/\*/)[0].trim();
+    if (/^(EPSG:)?\d+$/i.test(baseProjection)) {
+      projectionVar.code = baseProjection;
     } else {
       Exception(`El formato del parámetro projection no es correcto. </br>Se usará la proyección por defecto: ${IDEE.config.DEFAULT_PROJ}`);
     }
   } else if (isObject(projectionParameter)) {
     // object
     // y max
-    if (!isNull(projectionParameter.code)
-      && !isNull(projectionParameter.units)) {
-      projectionVar.code = projectionParameter.code;
-      projectionVar.units = normalize(projectionParameter.units.substring(0, 1));
+    if (!isNull(projectionParameter.code)) {
+      const baseProjection = projectionParameter.code.split(/\*/)[0].trim();
+      if (/^(EPSG:)?\d+$/i.test(baseProjection)) {
+        projectionVar.code = baseProjection;
+      } else {
+        Exception(`El formato del parámetro projection no es correcto. </br>Se usará la proyección por defecto: ${IDEE.config.DEFAULT_PROJ}`);
+      }
     } else {
       Exception(`El formato del parámetro projection no es correcto. </br>Se usará la proyección por defecto: ${IDEE.config.DEFAULT_PROJ}`);
     }
   } else {
     // unknown
     Exception(`El parámetro no es de un tipo soportado: ${typeof projectionParameter}`);
-  }
-
-  if ((projectionVar.units !== 'm') && (projectionVar.units !== 'd')) {
-    Exception(`La unidad "${projectionParameter.units}" del parámetro projection no es válida. Las disponibles son: "m" o "d"`);
   }
 
   return projectionVar;
@@ -1707,7 +1704,9 @@ export const getNameWMS = (parameter) => {
       name = params[0].trim();
     }
   } else if (isObject(parameter) && !isNullOrEmpty(parameter.name)) {
-    name = parameter.name.trim();
+    name = isArray(parameter.name)
+      ? parameter.name.map((n) => n.trim()).join(',')
+      : parameter.name.trim();
   } else if (!isObject(parameter)) {
     Exception(`El parámetro no es de un tipo soportado: ${typeof parameter}`);
   }
@@ -2100,6 +2099,92 @@ export const getUseCapabilitiesWMS = (parameter) => {
 };
 
 /**
+ * Analiza el parámetro que indica si las capas de un servicio se añaden en una sola
+ * capa o por separado.
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {string|object} parameter Parámetro de la capa.
+ * @returns {boolean} Devuelve el valor de mergeLayers.
+ * @throws {Exception} Si el parámetro no es de un tipo soportado.
+ * @api
+ */
+export const getMergeLayersWMS = (parameter) => {
+  let mergeLayers;
+  if (isObject(parameter)) {
+    const name = parameter.name;
+    mergeLayers = isUndefined(name) || name === '' ? parameter.mergeLayers : true;
+  }
+
+  if (isUndefined(mergeLayers)) {
+    mergeLayers = true;
+  }
+
+  return mergeLayers;
+};
+
+/**
+ * Analiza el parámetro para obtener el estilo de la capa WMS.
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {string|object} parameter Parámetro de la capa.
+ * @returns {string} Estilo de la capa.
+ * @throws {Exception} Si el parámetro no es de un tipo soportado.
+ * @api
+ */
+export const getStylesWMS = (parameter) => {
+  let styles;
+  let params;
+  if (isString(parameter)) {
+    if (/^WMS\*[^*]+\*[^*]+\*[^*]+\*(true|false)\*(true|false)\*.*\*(\d\.\d\.\d)\*(true|false)\*(true|false)\*(true|false)\*(true|false)\*[^*]+/i.test(parameter)) {
+      params = parameter.split(/\*/);
+      styles = params[12].trim();
+    }
+  } else if (isObject(parameter)) {
+    styles = parameter.styles;
+  } else {
+    Exception(`El parámetro no es de un tipo soportado: ${typeof parameter}`);
+  }
+  if (isNullOrEmpty(styles)) {
+    styles = undefined;
+  }
+  return styles;
+};
+
+/**
+ * Analiza el parámetro para obtener el estilo de la capa WMS.
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {string|object} parameter Parámetro de la capa.
+ * @returns {string} Estilo de la capa.
+ * @throws {Exception} Si el parámetro no es de un tipo soportado.
+ * @api
+ */
+export const getSldVersion = (parameter) => {
+  let sldVersion;
+  let params;
+  if (isString(parameter)) {
+    if (/^WMS\*[^*]+\*[^*]+\*[^*]+\*(true|false)\*(true|false)\*.*\*(\d\.\d\.\d)\*(true|false)\*(true|false)\*(true|false)\*(true|false)\*[^*]+.*\*(\d\.\d\.\d)/i.test(parameter)) {
+      params = parameter.split(/\*/);
+      sldVersion = params[13].trim();
+    }
+  } else if (isObject(parameter)) {
+    sldVersion = parameter.sldVersion;
+  } else {
+    Exception(`El parámetro no es de un tipo soportado: ${typeof parameter}`);
+  }
+  if (isNullOrEmpty(sldVersion)) {
+    sldVersion = undefined;
+  }
+  return sldVersion;
+};
+
+/**
  * Analiza los parámetros WMS de la capa de usuario especificada en un objeto.
  *
  * @param {string|Mx.parameters.WMS} userParameters Parámetros para la capa WMS.
@@ -2137,6 +2222,9 @@ export const wms = (userParameters) => {
     const queryable = getQueryableWMS(userParam);
     const visibility = getVisibilityWMS(userParam);
     const useCapabilities = getUseCapabilitiesWMS(userParam);
+    const mergeLayers = getMergeLayersWMS(userParam);
+    const styles = getStylesWMS(userParam);
+    const sldVersion = getSldVersion(userParam);
 
     return {
       type,
@@ -2152,6 +2240,9 @@ export const wms = (userParameters) => {
       visibility,
       options,
       useCapabilities,
+      mergeLayers,
+      styles,
+      sldVersion,
     };
   });
 
@@ -4876,6 +4967,140 @@ export const terrain = (userParameters) => {
 };
 
 /**
+ * Analiza el parámetro para obtener el nombre de la capa WMC.
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {string|Mx.parameters.WMC} parameter Parámetro para obtener
+ * el nombre de la capa WMC.
+ * @returns {string} Nombre de la capa.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
+ * @api
+ */
+export const getNameWMC = (parameter) => {
+  let name;
+  let params;
+  if (isString(parameter)) {
+    // <WMC>*<URL>*<NAME>
+    if (/^\w{3,7}\*[^*]+\*[^*]+$/.test(parameter)) {
+      params = parameter.split(/\*/);
+      name = params[2].trim();
+    } else if (/^\w{3,7}\*[^*]$/.test(parameter)) {
+      // <WMC>*(<PREDEFINED_NAME> OR <URL>)
+      params = parameter.split(/\*/);
+      name = params[1].trim();
+    } else if (/^[^*]+\*[^*]+$/.test(parameter)) {
+      // (<URL>*<NAME>)
+      params = parameter.split(/\*/);
+      name = params[1].trim();
+    } else if (/^[^*]+$/.test(parameter) && !isUrl(parameter)) {
+      // (<PREDEFINED_NAME> OR <URL>)
+      name = parameter;
+    }
+  } else if (isObject(parameter)) {
+    name = normalize(parameter.name);
+  } else {
+    Exception(`El parámetro no es de un tipo soportado: ${typeof parameter}`);
+  }
+  if (isUrl(name)) {
+    name = null;
+  }
+  return name;
+};
+
+/**
+ * Analiza el parámetro para obtener la URL del servicio de la capa WMC.
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {string|Mx.parameters.WMC} parameter Parámetro para obtener la
+ * URL del servicio de la capa WMC.
+ * @returns {string} URL del servicio.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
+ * @api
+ */
+export const getURLWMC = (parameter) => {
+  let url;
+  if (isString(parameter)) {
+    const urlMatches = parameter.match(/^([^*]*\*)*(https?:\/\/[^*]+)([^*]*\*?)*$/i);
+    if (urlMatches && (urlMatches.length > 2)) {
+      url = urlMatches[2];
+    }
+  } else if (isObject(parameter)) {
+    url = parameter.url;
+  } else {
+    Exception(`El parámetro no es de un tipo soportado: ${typeof parameter}`);
+  }
+  return url;
+};
+
+/**
+ * Analiza los parámetros para obtener las opciones de la capa WMC.
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {string|Mx.parameters.WMC} parameter Parámetro para obtener
+ * las opciones de la capa WMC.
+ * @returns {string} Opciones de la capa.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
+ * @api
+ */
+export const getOptionsWMC = (parameter) => {
+  let options;
+  if (isString(parameter)) {
+    // TODO ver como se pone el parámetro
+  } else if (isObject(parameter)) {
+    options = parameter.options;
+  } else {
+    Exception(`El parámetro no es de un tipo soportado: ${typeof parameter}`);
+  }
+  return options;
+};
+
+/**
+ * Analiza los parámetros especificados por el usuario para la capa WMC.
+ *
+ * @param {string|Mx.parameters.WMC} userParameters Parámetros para la capa WMC.
+ * @returns {Mx.parameters.WMC|Array<Mx.parameters.WMC>} Parámetros de la
+ * capa WMC.
+ * @public
+ * @function
+ * @api
+ */
+export const wmc = (userParameters) => {
+  let layers = [];
+
+  // checks if the param is null or empty
+  if (isNullOrEmpty(userParameters)) {
+    Exception(getValue('exception').no_param);
+  }
+
+  // checks if the parameter is an array
+  let userParametersArray = userParameters;
+  if (!isArray(userParametersArray)) {
+    userParametersArray = [userParametersArray];
+  }
+
+  layers = userParametersArray.map((userParam) => {
+    const layerObj = {};
+    layerObj.type = LayerType.WMC;
+    layerObj.name = getNameWMC(userParam);
+    layerObj.url = getURLWMC(userParam);
+    layerObj.options = getOptionsWMC(userParam);
+    return layerObj;
+  });
+
+  if (!isArray(userParameters)) {
+    layers = layers[0];
+  }
+
+  return layers;
+};
+
+/**
  * Parámetros con los tipos de capa soportados.
  * @const
  * @type {object}
@@ -4902,6 +5127,7 @@ const parameterFunction = {
   genericraster,
   tiles3d,
   terrain,
+  wmc,
 };
 
 /**

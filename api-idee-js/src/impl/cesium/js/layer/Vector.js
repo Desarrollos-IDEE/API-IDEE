@@ -302,6 +302,24 @@ class Vector extends Layer {
     this.completeLoad_();
   }
 
+  /**
+   * Este método devuelve si la capa es válida.
+   *
+   * @public
+   * @function
+   * @returns {Boolean} Verdadero si es válida, falso si no.
+   * @api stable
+   */
+  isValidSource() {
+    if (isNullOrEmpty(this.cesiumLayer)) {
+      return false;
+    }
+    // if (isNullOrEmpty(this.cesiumLayer.getSource())) {
+    //   return false;
+    // }
+    return true;
+  }
+
   completeLoad_() {
     this.loaded_ = true;
     this.fire(EventType.LOAD, [this.features_]);
@@ -499,8 +517,6 @@ class Vector extends Layer {
         this.map.getMapImpl().scene.globe.tileLoadProgressEvent
           .removeEventListener(this.tileLoadHandler);
       }
-
-      this.fire(EventType.LOAD, [this.features_]);
     });
   }
 

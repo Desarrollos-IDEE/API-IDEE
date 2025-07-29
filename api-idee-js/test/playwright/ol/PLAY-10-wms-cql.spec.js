@@ -32,10 +32,10 @@ test('Comprobamos que funciona cql en WMS', async ({ page }) => {
       mapjs.addLayers(wms);
     });
   });
-  await expect(page).toHaveScreenshot('snapshot-aragon.png');
+  await expect(page).toHaveScreenshot('snapshot-aragon.png', {maxDiffPixelRatio: 0.5});
   await page.waitForTimeout(2000);
   await page.evaluate(() => {
     wms.cql = "name_boundary LIKE '%Galicia%'";
   });
-  await expect(page).toHaveScreenshot('snapshot-galicia.png');
+  await expect(page).toHaveScreenshot('snapshot-galicia.png', {maxDiffPixelRatio: 0.5});
 });

@@ -70,7 +70,7 @@
             controls: ['scale*true'],
             zoom: 6,
             maxZoom: 20,
-            projection: "EPSG:4326*d",
+            projection: "EPSG:4326",
             layers: ["WMTS*https://www.ign.es/wmts/ign-base?*IGNBaseTodo*EPSG:4326*Callejero*false"],
             minZoom: 6,
             center: [-7.524941874073047, 35.12866172993833],

@@ -117,5 +117,75 @@ test.describe('IDEE.layer.WMS', () => {
       const urlWMS = await page.evaluate(() => wms_005.url);
       expect(urlWMS).toEqual('https://www.ign.es/wms-inspire/redes-geodesicas?');
     });
+
+    test('WMSFULL with mergeLayers true', async ({ page }) => {
+      await page.evaluate(() => {
+        const wms_006 = new IDEE.layer.WMS({
+          url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
+          name: '',
+          legend: 'WMS',
+          mergeLayers: true,
+        });
+
+        map.addLayers(wms_006);
+        window.wms_006 = wms_006;
+      });
+
+      await page.waitForTimeout(5000);
+      const numLayers = await page.evaluate(() => map.getLayers().length);
+      expect(numLayers).toEqual(3);
+    });
+
+    test('WMSFULL with mergeLayers false', async ({ page }) => {
+      await page.evaluate(() => {
+        const wms_007 = new IDEE.layer.WMS({
+          url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
+          name: '',
+          legend: 'WMS',
+          mergeLayers: false,
+        });
+
+        map.addLayers(wms_007);
+        window.wms_007 = wms_007;
+      });
+
+      await page.waitForTimeout(5000);
+      const numLayers = await page.evaluate(() => map.getLayers().length);
+      expect(numLayers).toEqual(5);
+    });
+  });
+
+  test.describe('Method setVisible', () => {
+    test('2 WMS base layers', async ({ page }) => {
+      await page.evaluate(() => {
+        window.map.setBbox([
+          -686768.0771958077,
+          4251980.700187735,
+          -579147.4083832583,
+          4352721.50889354,
+        ]);
+
+        const wms_001 = new IDEE.layer.WMS({
+          url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
+          name: 'AU.AdministrativeUnit',
+          legend: 'Unidad administrativa',
+          isBase: true,
+        });
+        window.wms_001 = wms_001;
+
+        const wms_002 = new IDEE.layer.WMS({
+          url: 'https://www.ideandalucia.es/wms/mta10v_2007?',
+          name: 'Limites',
+          legend: 'Límites',
+          isBase: true,
+        });
+        window.wms_002 = wms_002;
+
+        window.map.addLayers([wms_001, wms_002]);
+      });
+      await page.evaluate(() => window.wms_002.setVisible(true));
+      await page.waitForTimeout(5000);
+      await expect(page).toHaveScreenshot('snapshot.png', { maxDiffPixelRatio: 0.5 });
+    });
   });
 });

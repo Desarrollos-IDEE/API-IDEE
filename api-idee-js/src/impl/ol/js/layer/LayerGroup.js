@@ -3,9 +3,10 @@
  */
 import * as EventType from 'IDEE/event/eventtype';
 import { isNullOrEmpty } from 'IDEE/util/Utils';
+import Section from 'IDEE/layer/Section';
+import WMC from 'IDEE/layer/WMC';
 import { Group } from 'ol/layer';
 import { Collection } from 'ol';
-
 import Layer from './Layer';
 
 /**
@@ -254,58 +255,63 @@ class LayerGroup extends Layer {
    */
   addLayer(userLayer) {
     let layer = userLayer;
-    if (typeof layer === 'string') {
-      layer = this.map.getLayerByString(layer);
-    }
+    if (!(layer instanceof Section) && !(layer instanceof WMC)) {
+      if (typeof layer === 'string') {
+        layer = this.map.getLayerByString(layer);
+      }
 
-    if (layer.type === 'GeoPackage') {
-      return new Promise((resolve) => {
-        layer.addTo(this.map, false);
-        layer.on(EventType.LOAD_LAYERS, (ls) => {
-          const layerPromises = Object.values(ls).map((value) => {
-            // Asignar el mismo orden que el GeoPackage padre
-            const parentOrder = this.layerOrder_.get(layer);
-            this.layerOrder_.set(value, parentOrder);
-            const aux = this.addLayer(value);
-            this.setZIndexChildren();
-            return aux;
-          });
+      if (layer.type === 'GeoPackage') {
+        return new Promise((resolve) => {
+          layer.addTo(this.map, false);
+          layer.on(EventType.LOAD_LAYERS, (ls) => {
+            const layerPromises = Object.values(ls).map((value) => {
+              const parentOrder = this.layerOrder_.get(layer);
+              this.layerOrder_.set(value, parentOrder);
+              const aux = this.addLayer(value);
+              this.setZIndexChildren();
+              return aux;
+            });
 
-          Promise.all(layerPromises).then(() => {
-            resolve(layer);
+            Promise.all(layerPromises).then(() => {
+              resolve(layer);
+            });
           });
         });
-      });
-    }
-
-    if (!this.layers.includes(layer)) {
-      const impl = layer.getImpl();
-      this.setOLLayerToLayer_(layer);
-      impl.rootGroup = this;
-
-      if (!this.layerOrder_.has(layer)) {
-        const maxOrder = Math.max(...Array.from(this.layerOrder_.values()), -1);
-        this.layerOrder_.set(layer, maxOrder + 1);
       }
 
-      const layerOrder = this.layerOrder_.get(layer);
-      if (layerOrder !== undefined) {
-        let insertIndex = 0;
-        for (let i = 0; i < this.layers.length; i += 1) {
-          const currentOrder = this.layerOrder_.get(this.layers[i]);
-          if (currentOrder !== undefined && currentOrder > layerOrder) {
-            insertIndex = i;
-            break;
-          }
-          insertIndex = i + 1;
+      if (!this.layers.includes(layer)) {
+        const impl = layer.getImpl();
+        this.setOLLayerToLayer_(layer);
+        impl.rootGroup = this;
+
+        if (!this.layerOrder_.has(layer)) {
+          const maxOrder = Math.max(...Array.from(this.layerOrder_.values()), -1);
+          this.layerOrder_.set(layer, maxOrder + 1);
         }
-        this.layers.splice(insertIndex, 0, layer);
-      } else {
-        this.layers.push(layer);
-      }
 
-      this.layersCollection.push(impl.getLayer());
-      return Promise.resolve(layer);
+        const layerOrder = this.layerOrder_.get(layer);
+        if (layerOrder !== undefined) {
+          let insertIndex = 0;
+          for (let i = 0; i < this.layers.length; i += 1) {
+            const currentOrder = this.layerOrder_.get(this.layers[i]);
+            if (currentOrder !== undefined && currentOrder > layerOrder) {
+              insertIndex = i;
+              break;
+            }
+            insertIndex = i + 1;
+          }
+          this.layers.splice(insertIndex, 0, layer);
+        } else {
+          this.layers.push(layer);
+        }
+
+        this.layersCollection.push(impl.getLayer());
+        return Promise.resolve(layer);
+      }
+    } else {
+      // eslint-disable-next-line no-console
+      console.warn(`No es posible añadir una capa ${layer.type} dentro de un grupo.`);
+      return null;
     }
 
     return Promise.resolve(layer);
@@ -379,9 +385,7 @@ class LayerGroup extends Layer {
    */
   setRootGroup_(layer, rootGroup) {
     const facadeLayer = layer;
-    if (facadeLayer.getImpl() instanceof LayerGroup) {
-      facadeLayer.getImpl().rootGroup = rootGroup;
-    }
+    facadeLayer.getImpl().rootGroup = rootGroup;
   }
 
   /**

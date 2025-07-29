@@ -4,10 +4,7 @@
  */
 import OLSourceVectorTile from 'ol/source/VectorTile';
 import OLLayerVectorTile from 'ol/layer/VectorTile';
-import { compileSync as compileTemplate } from 'IDEE/util/Template';
-import geojsonPopupTemplate from 'templates/geojson_popup';
-import Popup from 'IDEE/Popup';
-import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
+import { isNullOrEmpty, extend, isObject } from 'IDEE/util/Utils';
 import * as EventType from 'IDEE/event/eventtype';
 import TileEventType from 'ol/source/TileEventType';
 import TileState from 'ol/TileState';
@@ -57,6 +54,7 @@ class MVT extends Vector {
    *    attributions: 'mvt',
    *    ...
    *  })
+   *  tileLoadFunction: <funcion>
    * }
    * </code></pre>
    * @api
@@ -67,11 +65,6 @@ class MVT extends Vector {
      * MVT formater_. Formato del objeto "MVTFormatter".
      */
     this.formater_ = null;
-
-    /**
-     * MVT popup_. Muestra el "popup".
-     */
-    this.popup_ = null;
 
     /**
      * MVT lastZoom_. Zoom anterior.
@@ -109,6 +102,13 @@ class MVT extends Vector {
     this.visibility_ = parameters.visibility !== false;
 
     /**
+     * MVT tileLoadFunction. Función de carga de tiles.
+     * @private
+     * @type {Function}
+     */
+    this.tileLoadFunction = vendorOptions?.tileLoadFunction;
+
+    /**
      * MVT layers_. Otras capas.
      */
     this.layers_ = parameters.layers;
@@ -131,7 +131,7 @@ class MVT extends Vector {
    */
   addTo(map, addLayer = true) {
     this.map = map;
-    this.fire(EventType.ADDED_TO_MAP);
+
     if (this.layers_ !== undefined) {
       this.formater_ = new MVTFormatter({
         layers: this.layers_,
@@ -144,16 +144,19 @@ class MVT extends Vector {
     }
 
     const extent = this.maxExtent_ || this.facadeVector_.getMaxExtent();
+    const ticket = IDEE.config.TICKET;
+    const url = isNullOrEmpty(ticket) ? this.url : `${this.url}?ticket=${ticket}`;
 
     const source = new OLSourceVectorTile({
       format: this.formater_,
-      url: this.url,
+      url,
       projection: this.projection_,
+      tileLoadFunction: this.tileLoadFunction,
     });
 
     // register events in order to fire the LOAD event
     source.on(TileEventType.TILELOADERROR, (evt) => this.checkAllTilesLoaded_(evt));
-    // source.on(TileEventType.TILELOADEND, (evt) => this.checkAllTilesLoaded_(evt));
+    source.on(TileEventType.TILELOADEND, (evt) => this.checkAllTilesLoaded_(evt));
 
     this.olLayer = new OLLayerVectorTile(extend({
       source,
@@ -170,6 +173,7 @@ class MVT extends Vector {
 
     if (addLayer) {
       this.map.getMapImpl().addLayer(this.olLayer);
+      this.facadeVector_?.fire(EventType.ADDED_TO_MAP);
     }
 
     // clear features when zoom changes
@@ -194,93 +198,6 @@ class MVT extends Vector {
         });
       }
     });
-
-    setTimeout(() => {
-      const allLayers = [...this.map.getImpl().getAllLayerInGroup(), ...this.map.getLayers()];
-      const filtered = allLayers.filter((l) => {
-        const checkLayers = l.getImpl().layers_ !== undefined
-          ? l.getImpl().layers_ === this.layers_
-          : true;
-        return l.url === this.url && checkLayers && l.idLayer === this.facadeVector_.idLayer;
-      });
-
-      if (filtered.length > 0) {
-        if (filtered[0].getStyle() !== null) {
-          filtered[0].setStyle(filtered[0].getStyle());
-        }
-      }
-    }, 10);
-  }
-
-  /**
-   * Este método se ejecuta cuando se selecciona un objeto geográfico.
-   * @public
-   * @function
-   * @param {ol.Feature} feature Objetos geográficos de Openlayers.
-   * @param {Array} coord Coordenadas.
-   * @param {Object} evt Eventos.
-   * @api stable
-   */
-  selectFeatures(features, coord, evt) {
-    if (this.extract === true) {
-      const feature = features[0];
-      this.unselectFeatures();
-      if (!isNullOrEmpty(feature)) {
-        const popupTemplate = !isNullOrEmpty(this.template)
-          ? this.template : geojsonPopupTemplate;
-        const htmlAsText = compileTemplate(popupTemplate, {
-          vars: this.parseFeaturesForTemplate_(features),
-          parseToHtml: false,
-        });
-
-        const featureTabOpts = {
-          icon: 'g-cartografia-pin',
-          title: this.name,
-          content: htmlAsText,
-        };
-
-        let popup = this.map.getPopup();
-        if (isNullOrEmpty(popup)) {
-          popup = new Popup();
-          popup.addTab(featureTabOpts);
-          this.map.addPopup(popup, coord);
-        } else {
-          popup.addTab(featureTabOpts);
-        }
-      }
-    }
-  }
-
-  /**
-   * Evento que se activa cuando se termina de hacer clic sobre
-   * un objeto geográfico.
-   *
-   * @public
-   * @function
-   * @api stable
-   */
-  unselectFeatures() {
-    if (!isNullOrEmpty(this.popup_)) {
-      this.popup_.hide();
-      this.popup_ = null;
-    }
-  }
-
-  /**
-   * Este método destruye el "popup" MVT.
-   *
-   * @public
-   * @function
-   * @api stable
-   */
-  removePopup() {
-    if (!isNullOrEmpty(this.popup_)) {
-      if (this.popup_.getTabs().length > 1) {
-        this.popup_.removeTab(this.tabPopup_);
-      } else {
-        this.map.removePopup();
-      }
-    }
   }
 
   /**
@@ -297,22 +214,18 @@ class MVT extends Vector {
     let features = [];
     if (this.olLayer) {
       const olSource = this.olLayer.getSource();
-      const tileCache = olSource.tileCache;
-      if (tileCache.getCount() === 0) {
+      const tileCache = Object.values(olSource.sourceTiles_);
+      if (tileCache.length === 0) {
         return features;
       }
-      const z = Number(tileCache.peekFirstKey().split('/')[0]);
+      const z = Number(tileCache[0].getTileCoord()[0]);
       tileCache.forEach((tile) => {
         if (tile.tileCoord[0] !== z || tile.getState() !== TileState.LOADED) {
           return;
         }
-        const sourceTiles = tile.getSourceTiles();
-        for (let i = 0, ii = sourceTiles.length; i < ii; i += 1) {
-          const sourceTile = sourceTiles[i];
-          const olFeatures = sourceTile.getFeatures();
-          if (olFeatures) {
-            features = features.concat(olFeatures);
-          }
+        const olFeatures = tile.getFeatures();
+        if (olFeatures) {
+          features = features.concat(olFeatures);
         }
       });
     }
@@ -346,10 +259,10 @@ class MVT extends Vector {
         if (auxValue.tileCoord[0] === z && auxValue.getState() === TileState.LOADED) {
           const sourceTiles = auxValue.getSourceTiles();
           for (let i = 0, ii = sourceTiles.length; i < ii; i += 1) {
-            const olFeature = sourceTiles[i].getFeatures()
+            const implFeature = sourceTiles[i].getFeatures()
               .find((feature2) => feature2.getProperties().id === id); // feature2.getId()
-            if (olFeature) {
-              features.push(olFeature);
+            if (implFeature) {
+              features.push(implFeature);
             }
           }
         }
@@ -371,7 +284,10 @@ class MVT extends Vector {
   checkAllTilesLoaded_(evt) {
     const currTileCoord = evt.tile.getTileCoord();
     // eslint-disable-next-line no-underscore-dangle
-    const tileImages = this.olLayer.getSource().sourceTiles_;
+    let tileImages = this.olLayer.getSource().sourceTiles_;
+    if (isObject(tileImages)) {
+      tileImages = Object.values(tileImages);
+    }
     if (Array.isArray(tileImages)) {
       const loaded = tileImages.every((tile) => {
         const tileCoord = tile.getTileCoord();
@@ -428,14 +344,15 @@ class MVT extends Vector {
   }
 
   /**
-   * Devuelve verdadero si la capa esta cargada.
+   * Este método establece la función de carga de teselas.
    *
+   * @public
    * @function
-   * @returns {Boolean} Verdadero.
+   * @param {Function} func Función de carga de teselas.
    * @api stable
    */
-  isLoaded() {
-    return true;
+  setTileLoadFunction(func) {
+    this.olLayer.getSource().setTileLoadFunction(func);
   }
 
   /**

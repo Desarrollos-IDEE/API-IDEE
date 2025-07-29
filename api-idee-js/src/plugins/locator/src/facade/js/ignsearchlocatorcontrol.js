@@ -179,13 +179,13 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
       this.active(html);
     }
     if (this.requestStreet && this.requestStreet.length > 0) {
-      IDEE.proxy(this.useProxy);
+      // IDEE.proxy(this.useProxy);
       IDEE.remote.get(this.requestStreet).then((res) => {
         const geoJsonData = res.text.substring(9, res.text.length - 1);
         this.createGeometryStyles();
         this.drawGeocoderResult(geoJsonData);
       }).catch();
-      IDEE.proxy(this.statusProxy);
+      // IDEE.proxy(this.statusProxy);
     }
     if (this.geocoderCoords && this.geocoderCoords.length === 2) {
       const reprojCoords = this.getImpl().reproject('EPSG:4326', this.geocoderCoords);
@@ -351,7 +351,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
       this.geocoderCoords = etrs89pointCoordinates;
       const dataCoordinates = [etrs89pointCoordinates[1], etrs89pointCoordinates[0]];
       let fullAddress = '';
-      IDEE.proxy(this.useProxy);
+      // IDEE.proxy(this.useProxy);
       IDEE.remote.get(urlToGet).then((res) => {
         if (res.text) {
           const returnData = JSON.parse(res.text);
@@ -361,7 +361,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
         }
         this.showPopUp(fullAddress, mapCoordinates, dataCoordinates, null, e, false);
       });
-      IDEE.proxy(this.statusProxy);
+      // IDEE.proxy(this.statusProxy);
     }
   }
 
@@ -378,9 +378,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
       || jsonResult.tip_via === undefined) ? '' : jsonResult.tip_via;
     const address = (jsonResult.address === null
       || jsonResult.address === undefined) ? '' : jsonResult.address;
-    const portal = (jsonResult.portalNumber === null
-      || jsonResult.portalNumber === undefined
-      || jsonResult.portalNumber === 0) ? '' : jsonResult.portalNumber;
+    const portal = (jsonResult.type === 'portal' && (jsonResult.portalNumber === undefined || jsonResult.portalNumber === null)) ? 'S-N' : String(jsonResult.portalNumber ?? '');
     const muni = (jsonResult.muni === null
       || jsonResult.muni === undefined) ? '' : jsonResult.muni;
     const province = (jsonResult.province === null
@@ -486,7 +484,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
       let params = `q=${newInputVal}&limit=${this.maxResults}&no_process=${this.noProcess}`;
       params += `&countrycode=${this.countryCode}&autocancel=true`;
       const urlToGet = `${this.urlCandidates}?${params}`;
-      IDEE.proxy(this.useProxy);
+      // IDEE.proxy(this.useProxy);
       IDEE.remote.get(urlToGet).then((res) => {
         if (IDEE.utils.isNullOrEmpty(res.text) || res.code === 404 || res.code === 500) {
           IDEE.dialog.error(getValue('exception.error_candidates'));
@@ -498,7 +496,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
         }
         resolve();
       });
-      IDEE.proxy(this.statusProxy);
+      // IDEE.proxy(this.statusProxy);
     });
   }
 
@@ -737,7 +735,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
       const urlToGet = `${this.urlFind}?q=${address}${params}`;
       this.urlParse = urlToGet;
       this.requestStreet = urlToGet;
-      IDEE.proxy(this.useProxy);
+      // IDEE.proxy(this.useProxy);
       IDEE.remote.get(urlToGet).then((res) => {
         if (res.code === 404 || res.code === 500) {
           IDEE.dialog.error(getValue('exception.error_findjsonp'));
@@ -747,7 +745,7 @@ export default class IGNSearchLocatorControl extends IDEE.Control {
           resolve(geoJsonData);
         }
       });
-      IDEE.proxy(this.statusProxy);
+      // IDEE.proxy(this.statusProxy);
     });
   }
 

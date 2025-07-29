@@ -10,6 +10,7 @@ import {
 import FacadeLayerBase from 'IDEE/layer/Layer';
 import * as LayerType from 'IDEE/layer/Type';
 import { get as getRemote } from 'IDEE/util/Remote';
+import FacadeWMS from 'IDEE/layer/WMS';
 import * as EventType from 'IDEE/event/eventtype';
 import OLLayerTile from 'ol/layer/Tile';
 import OLLayerImage from 'ol/layer/Image';
@@ -32,6 +33,8 @@ import ImageWMS from '../source/ImageWMS';
  * @property {Object} options Opciones de la capa WMS.
  * @property {Array<IDEE.layer.WMS>} layers Intancia de WMS con metadatos.
  * @property {Function} tileLoadFunction Función de carga de tiles.
+ * @property {Boolean} mergeLayers Verdadero si se añaden todas las capas del servicio
+ * en una, falso en caso contrario. Por defecto, verdadero.
  *
  * @api
  * @extends {IDEE.impl.layer.Layer}
@@ -62,6 +65,8 @@ class WMS extends LayerBase {
    * y así sucesivamente. Debe ser 1 o superior. Por defecto es 1.
    * crossOrigin: Atributo crossOrigin para las imágenes cargadas.
    * - isWMSfull: establece si la capa es WMS_FULL.
+   * - mergeLayers: Verdadero si se añaden todas las capas del servicio
+   * en una, falso en caso contrario. Por defecto, verdadero.
    * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
    * <pre><code>
    * import OLSourceTileWMS from 'ol/source/TileWMS';
@@ -172,6 +177,11 @@ class WMS extends LayerBase {
     this.styles = this.options.styles || '';
 
     /**
+     * WMS sldVersion. Versión del SLD.
+     */
+    this.sldVersion = this.options.sldVersion || '1.0.0';
+
+    /**
      * WMS sldBody. Parámetros "ol.source.ImageWMS"
      */
     this.sldBody = options.sldBody;
@@ -214,6 +224,12 @@ class WMS extends LayerBase {
      * isWMSfull. Determina si es WMS_FULL.
      */
     this.isWMSfull = options.isWMSfull;
+
+    /**
+     * mergeLayers. Indica si todas las capas de un servicio se añaden por separado o no.
+     * Por defecto, verdadero.
+     */
+    this.mergeLayers = options.mergeLayers;
   }
 
   /**
@@ -238,10 +254,9 @@ class WMS extends LayerBase {
       }
 
       // updates resolutions and keep the zoom
-      const oldZoom = this.map.getZoom();
-      this.map.getImpl().updateResolutionsFromBaseLayer();
-      if (!isNullOrEmpty(oldZoom)) {
-        this.map.setZoom(oldZoom);
+      const oldBbox = this.map.getBbox();
+      if (!isNullOrEmpty(oldBbox)) {
+        this.map.setBbox(oldBbox);
       }
     } else if (!isNullOrEmpty(this.olLayer)) {
       this.olLayer.setVisible(visibility);
@@ -289,7 +304,9 @@ class WMS extends LayerBase {
     if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
     if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
 
-    if (this.useCapabilities || this.isWMSfull) {
+    if (!this.mergeLayers) {
+      this.addAllLayers_();
+    } else if (this.useCapabilities || this.isWMSfull) {
       // just one WMS layer and useCapabilities
       this.getCapabilities().then((capabilities) => {
         this.addSingleLayer_(capabilities);
@@ -306,10 +323,11 @@ class WMS extends LayerBase {
         REQUEST: 'GetLegendGraphic',
         LAYER: this.name,
         FORMAT: 'image/png',
+        STYLE: this.styles,
+        SLD_VERSION: this.sldVersion,
         // EXCEPTIONS: 'image/png',
       });
     }
-    this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
   }
 
   paramsOLLayers() {
@@ -340,6 +358,54 @@ class WMS extends LayerBase {
         this.olLayer.setSource(source);
         this.olLayer.setExtent(extent);
       }
+    });
+  }
+
+  /**
+   * Este método agrega todas las capas por separado definidas en el servidor.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   * @api stable
+   */
+  addAllLayers_() {
+    this.getCapabilities().then((getCapabilities) => {
+      if (this.useCapabilities) {
+        const capabilitiesInfo = this.map.collectionCapabilities.find((cap) => {
+          return cap.url === this.url;
+        }) || { capabilities: false };
+
+        capabilitiesInfo.capabilites = getCapabilities;
+      }
+
+      getCapabilities.getLayers().forEach((layer) => {
+        const wmsLayer = new FacadeWMS({
+          url: this.url,
+          name: layer.name,
+          version: layer.version,
+          tiled: this.tiled,
+          useCapabilities: this.useCapabilities,
+        }, this.vendorOptions_);
+        this.layers.push(wmsLayer);
+      });
+
+      this.layers.forEach((layer, i) => {
+        const layers = this.layers;
+        layer.on(EventType.ADDED_TO_MAP, () => {
+          if (i === this.layers.length - 1) {
+            this.layers = [];
+            this.map.removeLayers(this.facadeLayer_);
+            this.facadeLayer_.getImpl().layers = layers;
+            this.facadeLayer_?.fire(EventType.ADDED_TO_MAP, [this.facadeLayer_, layers]);
+          }
+        });
+      });
+
+      this.map.addWMS(this.layers);
+
+      this.layers.forEach((layer) => {
+        layer.setZIndex(layer.getZIndex() - 1);
+      });
     });
   }
 
@@ -397,6 +463,7 @@ class WMS extends LayerBase {
 
     if (this.addLayerToMap_) {
       this.map.getMapImpl().addLayer(this.olLayer);
+      this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
     }
 
     this.setVisible(this.visibility);
@@ -416,30 +483,51 @@ class WMS extends LayerBase {
     this.olLayer.setMinZoom(this.minZoom);
   }
 
+  /**
+   * Refresca la leyenda de la capa.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @public
+   * @function
+   * @param {Array<Number>} capabilites Capabilities a usar
+   * @api stable
+   */
+  refreshLegendUrlByCapabilities_(capabilites) {
+    const styles = isArray(this.styles) ? this.styles : [this.styles];
+    let style;
+    if (isNullOrEmpty(this.styles)) {
+      style = (capabilites.Style || capabilites.style || [])[0];
+    } else {
+      style = (capabilites.Style || capabilites.style || [])
+        .find((s) => s.Name === styles[0]);
+    }
+    if (style && style.LegendURL && style.LegendURL[0]
+      && style.LegendURL[0].OnlineResource) {
+      this.legendUrl_ = style.LegendURL[0].OnlineResource;
+    }
+  }
+
   // Devuelve un capabilities formateado en el caso
   // de que sea un array
   formatCapabilities_(capabilites, selff) {
     let capabilitiesLayer = capabilites;
+    const selffName = selff.facadeLayer_.name.split(',')[0];
     for (let i = 0, ilen = capabilitiesLayer.length; i < ilen; i += 1) {
       if (capabilitiesLayer[i] !== undefined && capabilitiesLayer[i].Name !== undefined
-        && (capabilitiesLayer[i].Name.toUpperCase() === selff.facadeLayer_.name.toUpperCase()
+        && (capabilitiesLayer[i].Name.toUpperCase() === selffName.toUpperCase()
           || (capabilitiesLayer[i].Identifier !== undefined
-            && capabilitiesLayer[i].Identifier.includes(selff.facadeLayer_.name)))) {
+            && capabilitiesLayer[i].Identifier.includes(selffName)))) {
         capabilitiesLayer = capabilitiesLayer[i];
 
         try {
-          this.legendUrl_ = capabilitiesLayer.Style[0].LegendURL[0].OnlineResource;
-          // this.legendUrl_ = capabilitiesLayer.Style
-          // .find((s) => s.Name === this.styles).LegendURL[0].OnlineResource;
+          this.refreshLegendUrlByCapabilities_(capabilitiesLayer);
         } catch (err) { /* Continue */ }
       } else if (capabilitiesLayer[i] !== undefined && capabilitiesLayer[i].Layer !== undefined) {
-        if (capabilitiesLayer[i].Layer.some((l) => l.Name === selff.facadeLayer_.name)) {
+        if (capabilitiesLayer[i].Layer.some((l) => l.Name === selffName)) {
           capabilitiesLayer = capabilitiesLayer[i].Layer
-            .find((l) => l.Name === selff.facadeLayer_.name);
+            .find((l) => l.Name === selffName);
           try {
-            this.legendUrl_ = capabilitiesLayer.Style[0].LegendURL[0].OnlineResource;
-            // this.legendUrl_ = capabilitiesLayer.Style
-            // .find((s) => s.Name === this.styles).LegendURL[0].OnlineResource;
+            this.refreshLegendUrlByCapabilities_(capabilitiesLayer);
           } catch (err) { /* Continue */ }
         }
       }
@@ -718,19 +806,33 @@ class WMS extends LayerBase {
         );
         // gets the getCapabilities response
         getRemote(wmsGetCapabilitiesUrl).then((response) => {
-          if ('xml' in response && !isNullOrEmpty(response.xml)) {
-            const getCapabilitiesDocument = response.xml;
-            const getCapabilitiesParser = new FormatWMS();
-            const getCapabilities = getCapabilitiesParser.customRead(getCapabilitiesDocument);
-            const getCapabilitiesUtils = new GetCapabilities(getCapabilities, layerUrl, projection);
-            success(getCapabilitiesUtils);
-          } else {
-            getRemote(wmsGetCapabilitiesUrl, '', { ticket: false }).then((response2) => {
-              const getCapabilitiesDocument = response2.xml;
+          if ('xml' in response) {
+            const contentType = response.headers?.['content-type'] || '';
+            const isWmsXml = contentType.includes('application/vnd.ogc.wms_xml');
+
+            if (!isNullOrEmpty(response.xml) || isWmsXml) {
+              const getCapabilitiesDocument = !isNullOrEmpty(response.xml) ? response.xml : (new DOMParser()).parseFromString(response.text, 'text/xml');
               const getCapabilitiesParser = new FormatWMS();
               const getCapabilities = getCapabilitiesParser.customRead(getCapabilitiesDocument);
-              const capabilities = new GetCapabilities(getCapabilities, layerUrl, projection);
-              success(capabilities);
+              const getCapabilitiesUtils = new GetCapabilities(
+                getCapabilities,
+                layerUrl,
+                projection,
+              );
+              success(getCapabilitiesUtils);
+            }
+          } else {
+            getRemote(wmsGetCapabilitiesUrl, '', { ticket: false }).then((response2) => {
+              const contentType = response2.headers?.['content-type'] || '';
+              const isWmsXml = contentType.includes('application/vnd.ogc.wms_xml');
+
+              if (!isNullOrEmpty(response2.xml) || isWmsXml) {
+                const getCapabilitiesDocument = !isNullOrEmpty(response2.xml) ? response2.xml : (new DOMParser()).parseFromString(response2.text, 'text/xml');
+                const getCapabilitiesParser = new FormatWMS();
+                const getCapabilities = getCapabilitiesParser.customRead(getCapabilitiesDocument);
+                const capabilities = new GetCapabilities(getCapabilities, layerUrl, projection);
+                success(capabilities);
+              }
             });
           }
         });
@@ -787,9 +889,66 @@ class WMS extends LayerBase {
    */
   set cql(newCql) {
     this.cql_ = newCql;
+    const olLayer = this.getLayer();
+    if (!isNullOrEmpty(olLayer)) {
+      olLayer.getSource().updateParams({ CQL_FILTER: newCql });
+    }
+  }
+
+  /**
+   * Devuelve el estilo de la capa.
+   *
+   * @public
+   * @function
+   * @returns {string | Array} Estilo de la capa.
+   * @api stable
+   */
+  getStyles() {
+    return this.styles;
+  }
+
+  /**
+   * Esta función aplica estilos a la capa
+   *
+   * @public
+   * @function
+   * @param { string | Array } newStyles Nuevo estilo a aplicar.
+   * @api stable
+   */
+  setStyles(newStyles) {
+    this.styles = newStyles;
     const ol3Layer = this.getLayer();
     if (!isNullOrEmpty(ol3Layer)) {
-      ol3Layer.getSource().updateParams({ CQL_FILTER: newCql });
+      ol3Layer.getSource().updateParams({ STYLES: newStyles });
+      this.refreshLegendUrlByCapabilities_(this.facadeLayer_.capabilitiesMetadata);
+    }
+  }
+
+  /**
+   * Devuelve la versión del SLD.
+   *
+   * @public
+   * @function
+   * @returns {string | Array} Versión del SLD.
+   * @api stable
+   */
+  getSldVersion() {
+    return this.sldVersion;
+  }
+
+  /**
+   * Esta función aplica la versión del SLD a la capa
+   *
+   * @public
+   * @function
+   * @param { string | Array } newSldVersion Nueva versión del SLD a aplicar.
+   * @api stable
+   */
+  setSldVersion(newSldVersion) {
+    this.sldVersion = newSldVersion;
+    const ol3Layer = this.getLayer();
+    if (!isNullOrEmpty(ol3Layer)) {
+      ol3Layer.getSource().updateParams({ SLD_VERSION: newSldVersion });
     }
   }
 
@@ -803,9 +962,9 @@ class WMS extends LayerBase {
    * @export
    */
   refresh() {
-    const ol3Layer = this.getLayer();
-    if (!isNullOrEmpty(ol3Layer)) {
-      ol3Layer.getSource().changed();
+    const olLayer = this.getLayer();
+    if (!isNullOrEmpty(olLayer)) {
+      olLayer.getSource().changed();
     }
   }
 
@@ -867,8 +1026,8 @@ class WMS extends LayerBase {
    */
   recreateLayer() {
     const olMap = this.map.getMapImpl();
-    if (!isNullOrEmpty(this.ol3Layer)) {
-      olMap.removeLayer(this.ol3Layer);
+    if (!isNullOrEmpty(this.olLayer)) {
+      olMap.removeLayer(this.olLayer);
       this.layers = [];
       this.getCapabilitiesPromise = null;
     }
@@ -906,7 +1065,9 @@ class WMS extends LayerBase {
    * @api
    */
   setName(newName, isWMSFull) {
-    this.name = newName;
+    this.name = isArray(newName)
+      ? newName.join(',')
+      : newName;
     this.isWMSfull = isWMSFull;
     this.recreateLayer();
   }

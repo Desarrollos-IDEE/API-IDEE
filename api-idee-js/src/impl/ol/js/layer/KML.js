@@ -1,6 +1,7 @@
 /**
  * @module IDEE/impl/layer/KML
  */
+import ClusteredFeature from 'IDEE/feature/Clustered';
 import { compileSync as compileTemplate } from 'IDEE/util/Template';
 import { get as getProj } from 'ol/proj';
 import popupKMLTemplate from 'templates/kml_popup';
@@ -149,7 +150,6 @@ class KML extends Vector {
    */
   addTo(map, addLayer = true) {
     this.map = map;
-    this.fire(EventType.ADDED_TO_MAP);
     map.on(EventType.CHANGE_PROJ, this.setProjection_.bind(this), this);
     this.formater_ = new FormatKML({
       label: this.label_,
@@ -178,6 +178,7 @@ class KML extends Vector {
 
     if (addLayer) {
       olMap.addLayer(this.olLayer);
+      this.facadeVector_?.fire(EventType.ADDED_TO_MAP);
     }
   }
 
@@ -189,22 +190,26 @@ class KML extends Vector {
    * @api stable
    */
   selectFeatures(features, coord, evt) {
-    if (this.extract === true) {
+    const feature = features[0];
+    if (!(feature instanceof ClusteredFeature) && (this.extract === true)) {
       // TODO: manage multiples features
-      const feature = features[0];
       if (!isNullOrEmpty(feature)) {
         const featureName = feature.getAttribute('name');
         const featureDesc = feature.getAttribute('description');
         const featureCoord = feature.getImpl().getFeature().getGeometry().getFirstCoordinate();
         const popupTemplate = !isNullOrEmpty(this.template)
           ? this.template : popupKMLTemplate;
-        const htmlAsText = compileTemplate(popupTemplate, {
+        let htmlAsText = compileTemplate(popupTemplate, {
           vars: {
             name: featureName,
             desc: featureDesc,
           },
           parseToHtml: false,
         });
+        if (this.legend) {
+          const layerLegendHTML = `<div class="m-legend">${this.legend}</div>`;
+          htmlAsText = layerLegendHTML + htmlAsText;
+        }
         this.tabPopup_ = {
           icon: 'g-cartografia-comentarios',
           title: featureName,
@@ -245,11 +250,13 @@ class KML extends Vector {
    *
    * @public
    * @function
+   * @param {boolean} force Indica si se debe forzar la solicitud
+   * de objetos geográficos.
    * @api stable
    */
-  updateSource_() {
+  updateSource_(force) {
     if (isNullOrEmpty(this.vendorOptions_.source)) {
-      this.requestFeatures_().then((response) => {
+      this.requestFeatures_(force).then((response) => {
         this.olLayer.setSource(new OLSourceVector({
           loader: () => {
             const screenOverlay = response.screenOverlay;
@@ -267,6 +274,52 @@ class KML extends Vector {
         this.facadeVector_.addFeatures(response.features);
       });
     }
+  }
+
+  /**
+   * Este método elimina y crea la capa de OpenLayers.
+   *
+   * @function
+   * @public
+   * @api
+   */
+  recreateLayer() {
+    const olMap = this.map.getMapImpl();
+    if (!isNullOrEmpty(this.olLayer)) {
+      olMap.removeLayer(this.olLayer);
+      this.olLayer = null;
+    }
+
+    this.formater_ = new FormatKML({
+      label: this.label_,
+      extractStyles: this.extractStyles_,
+    });
+    this.loader_ = new LoaderKML(this.map, this.url, this.formater_);
+    this.olLayer = new OLLayerVector(extend({
+      extent: this.maxExtent_,
+      opacity: this.opacity_,
+    }, this.vendorOptions_, true));
+    this.updateSource_(true);
+    this.setVisible(this.visibility);
+    // sets its z-index
+    if (this.zIndex_ !== null) {
+      this.setZIndex(this.zIndex_);
+    }
+
+    olMap.addLayer(this.olLayer);
+  }
+
+  /**
+   * Sobreescribe la URL de la capa.
+   *
+   * @function
+   * @param {String} newURL Nueva URL de la capa.
+   * @public
+   * @api
+   */
+  setURL(newURL) {
+    this.url = newURL;
+    this.recreateLayer();
   }
 
   /**
@@ -351,12 +404,14 @@ class KML extends Vector {
    *
    * @public
    * @function
+   * @param {boolean} force Indica si se debe forzar la solicitud
+   * de objetos geográficos.
    * @returns {IDEE.layer.GeoJSON.impl.loadFeaturesPromise_} Devuelve los objetos geográficos
    * tras realizar la petición, asincrono.
    * @api stable
    */
-  requestFeatures_() {
-    if (isNullOrEmpty(this.loadFeaturesPromise_)) {
+  requestFeatures_(force) {
+    if (force || isNullOrEmpty(this.loadFeaturesPromise_)) {
       this.loadFeaturesPromise_ = new Promise((resolve) => {
         this.loader_.getLoaderFn((features) => {
           resolve(features);

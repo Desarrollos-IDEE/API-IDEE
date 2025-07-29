@@ -3,7 +3,7 @@ import { generic_001, generic_002 } from '../layers/generic/generic';
 
 const mapa = Mmap({
   container: 'map',
-  projection: 'EPSG:3857*m',
+  projection: 'EPSG:3857',
   center: [-443273.10081370454, 4757481.749296248],
   zoom: 6,
   controls: ['panzoom', 'scale', 'getfeatureinfo'],

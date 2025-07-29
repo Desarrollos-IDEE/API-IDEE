@@ -224,6 +224,15 @@ export const GeoPackageTile = 'GeoPackageTile';
 export const GeoPackage = 'GeoPackage';
 
 /**
+ * Tipo WMC. Es un tipo de capa que permite agrupar capas en un único contexto de mapas.
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+export const WMC = 'WMC';
+
+/**
  * Todos los tipos de capas
  * @const
  * @type {object}
@@ -252,6 +261,7 @@ const layertypes = {
   Terrain,
   GeoPackage,
   GeoPackageTile,
+  WMC,
 };
 
 /**
@@ -304,6 +314,7 @@ export const know = (type) => {
     Terrain,
     GeoPackage,
     GeoPackageTile,
+    WMC,
   ];
   return (knowTypes.indexOf(parse(type)) !== -1);
 };

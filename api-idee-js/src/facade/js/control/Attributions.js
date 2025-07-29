@@ -142,15 +142,15 @@ class Attributions extends ControlBase {
       });
 
       this.accessibilityTab(html);
-      this.map_.getLayers().forEach(({ attribution, idLayer, isVisible }) => {
-        if (attribution) {
-          if (typeof attribution === 'string') {
-            this.addHTMLContent(attribution, idLayer);
+      this.map_.getLayers().forEach((layer) => {
+        if (layer.attribution) {
+          if (typeof layer.attribution === 'string') {
+            this.addHTMLContent(layer.attribution, layer.id);
           } else {
-            this.addAttributions(attribution);
+            this.addAttributions(layer.attribution);
           }
 
-          this.changeVisibility(idLayer, isVisible());
+          this.changeVisibility(layer.id, layer.isVisible());
         }
       });
       success(html);

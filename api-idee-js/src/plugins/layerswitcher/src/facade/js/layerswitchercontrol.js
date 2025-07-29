@@ -401,7 +401,7 @@ export default class LayerswitcherControl extends IDEE.Control {
               return this.parseLayerForTemplate_(sublayer).then((varsSubLayer) => {
                 const li = IDEE.template.compileSync(layerGroupChildTemplate, {
                   vars: {
-                    nameRadio: layer.name,
+                    nameRadio: layer.idLayer,
                     ...varsSubLayer,
                     ...this.getTemplateVariablesValues(),
                   },
@@ -532,7 +532,7 @@ export default class LayerswitcherControl extends IDEE.Control {
             const metadataURL = `${layer.url}${layer.name}?f=json`;
             const htmlURL = `${layer.url}${layer.name}?f=html`;
             let jsonResponseOgc;
-            IDEE.proxy(this.useProxy);
+            // IDEE.proxy(this.useProxy);
             IDEE.remote.get(metadataURL).then((response) => {
               jsonResponseOgc = JSON.parse(response.text);
               const vars = {
@@ -597,7 +597,7 @@ export default class LayerswitcherControl extends IDEE.Control {
                 }
               }
             });
-            IDEE.proxy(this.statusProxy);
+            // IDEE.proxy(this.statusProxy);
           } else if (layer.type === 'WMS' || layer.type === 'WMTS') {
             const vars = {
               name: layer.name, // nombre
@@ -611,7 +611,7 @@ export default class LayerswitcherControl extends IDEE.Control {
               vars.metadata = layer.capabilitiesMetadata.metadataURL[0].OnlineResource;
             }
             vars.provider = this.informationProvider(layer);
-            IDEE.proxy(this.useProxy);
+            // IDEE.proxy(this.useProxy);
             IDEE.remote.get(vars.capabilities).then((response) => {
               const source = response.text;
               const urlService = source.split('<inspire_common:URL>')[1].split('<')[0].split('&amp;').join('&');
@@ -633,7 +633,7 @@ export default class LayerswitcherControl extends IDEE.Control {
             }).catch((err) => {
               this.renderInfo(vars);
             });
-            IDEE.proxy(this.statusProxy);
+            // IDEE.proxy(this.statusProxy);
           } else {
             let rendInfo = true;
             const vars = {
@@ -683,7 +683,7 @@ export default class LayerswitcherControl extends IDEE.Control {
               url = url.replace(regex, 'metadata.json');
               const ext = layer.getMaxExtent();
               vars.extension = IDEE.utils.isNullOrEmpty(ext) ? ext : ext.toString().replaceAll(',', ', ');
-              IDEE.proxy(this.useProxy);
+              // IDEE.proxy(this.useProxy);
               IDEE.remote.get(url).then((response) => {
                 if (response.code === 200) {
                   const res = JSON.parse(response.text);
@@ -712,7 +712,7 @@ export default class LayerswitcherControl extends IDEE.Control {
                 }
                 this.renderInfo(vars, 'Others');
               });
-              IDEE.proxy(this.statusProxy);
+              // IDEE.proxy(this.statusProxy);
             } else if (type === 'OSM' || type === 'MBTiles') {
               const ext = layer.getMaxExtent();
               vars.extension = IDEE.utils.isNullOrEmpty(ext) ? ext : ext.toString().replaceAll(',', ', ');
@@ -979,7 +979,7 @@ export default class LayerswitcherControl extends IDEE.Control {
 
   // Centro de descarga
   infoDownloadCenter(url, vars) {
-    IDEE.proxy(this.useProxy);
+    // IDEE.proxy(this.useProxy);
     IDEE.remote.get(url).then((response) => {
       const metadataText = response.text;
       const unfiltered = metadataText.split('<gmd:MD_DigitalTransferOptions>')[1].split('<gmd:URL>').filter((elem) => {
@@ -995,7 +995,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     }).catch((err) => {
       this.renderInfo(vars);
     });
-    IDEE.proxy(this.statusProxy);
+    // IDEE.proxy(this.statusProxy);
   }
 
   // Esta función muestra/oculta todas las capas
@@ -1108,7 +1108,7 @@ export default class LayerswitcherControl extends IDEE.Control {
             } else if (url.indexOf('{z}/{x}/{y}' && !url.indexOf('.pbf')) >= 0) {
               this.printLayerModal(url, 'xyz');
             } else {
-              IDEE.proxy(this.useProxy);
+              // IDEE.proxy(this.useProxy);
               IDEE.remote.get(metadata).then((meta) => {
                 if (json && meta.text.indexOf('sources') !== -1 && meta.text.indexOf('version') !== -1 && meta.text.indexOf('layers') !== -1) {
                   this.printLayerModal(url, 'maplibre');
@@ -1143,7 +1143,7 @@ export default class LayerswitcherControl extends IDEE.Control {
                   }
                 }
               });
-              IDEE.proxy(this.statusProxy);
+              // IDEE.proxy(this.statusProxy);
             }
 
             // GeoTIFF
@@ -1161,12 +1161,12 @@ export default class LayerswitcherControl extends IDEE.Control {
           } else {
             const promise = new Promise((success, reject) => {
               const id = setTimeout(() => reject(), 15000);
-              IDEE.proxy(this.useProxy);
+              // IDEE.proxy(this.useProxy);
               IDEE.remote.get(IDEE.utils.getWMTSGetCapabilitiesUrl(url)).then((response) => {
                 clearTimeout(id);
                 success(response);
               });
-              IDEE.proxy(this.statusProxy);
+              // IDEE.proxy(this.statusProxy);
             });
 
             promise.then((response) => {
@@ -1184,12 +1184,12 @@ export default class LayerswitcherControl extends IDEE.Control {
               } else {
                 const promise2 = new Promise((success, reject) => {
                   const id = setTimeout(() => reject(), 15000);
-                  IDEE.proxy(this.useProxy);
+                  // IDEE.proxy(this.useProxy);
                   IDEE.remote.get(IDEE.utils.getWMSGetCapabilitiesUrl(url, '1.3.0')).then((response2) => {
                     clearTimeout(id);
                     success(response2);
                   });
-                  IDEE.proxy(this.statusProxy);
+                  // IDEE.proxy(this.statusProxy);
                 });
                 const promisewfs = new Promise((success, reject) => {
                   const id = setTimeout(() => reject(), 15000);
@@ -1200,12 +1200,12 @@ export default class LayerswitcherControl extends IDEE.Control {
                   urlAux = IDEE.utils.addParameters(urlAux, {
                     version: '1.3.0',
                   });
-                  IDEE.proxy(this.useProxy);
+                  // IDEE.proxy(this.useProxy);
                   IDEE.remote.get(urlAux).then((responsewfs) => {
                     clearTimeout(id);
                     success(responsewfs);
                   });
-                  IDEE.proxy(this.statusProxy);
+                  // IDEE.proxy(this.statusProxy);
                 });
                 Promise.all([promise2, promisewfs]).then((response2) => {
                   let wms = false;
@@ -1260,7 +1260,7 @@ export default class LayerswitcherControl extends IDEE.Control {
                           }
                         });
                       } else {
-                        IDEE.proxy(this.useProxy);
+                        // IDEE.proxy(this.useProxy);
                         const extension = url.includes('.') ? url.substring(url.lastIndexOf('.') + 1, url.length) : '';
                         if (['zip', 'gpx', 'gml'].includes(extension)) {
                           this.openFileFromUrl(url, extension);
@@ -1292,10 +1292,10 @@ export default class LayerswitcherControl extends IDEE.Control {
                             }
                           });
                         }
-                        IDEE.proxy(this.statusProxy);
+                        // IDEE.proxy(this.statusProxy);
                       }
                     });
-                    IDEE.proxy(this.statusProxy);
+                    // IDEE.proxy(this.statusProxy);
                   }
                 }).catch((eerror) => {
                   IDEE.dialog.error(getValue('exception.capabilities'), undefined, this.order);
@@ -1874,7 +1874,7 @@ export default class LayerswitcherControl extends IDEE.Control {
 
   // Determina si es OGCAPI
   checkIfOGCAPIFeatures(url) {
-    IDEE.proxy(this.useProxy);
+    // IDEE.proxy(this.useProxy);
     return IDEE.remote.get(`${url}?f=json`).then((response) => {
       let isJson = false;
       if (!IDEE.utils.isNullOrEmpty(response) && !IDEE.utils.isNullOrEmpty(response.text) && response.text.indexOf('collections') !== -1) {
@@ -1887,7 +1887,7 @@ export default class LayerswitcherControl extends IDEE.Control {
   }
 
   checkIfOGCAPICollection(url) {
-    IDEE.proxy(this.useProxy);
+    // IDEE.proxy(this.useProxy);
     const collections = `${(url.endsWith('/') ? url : `${url}/`)}collections?f=json`;
     return IDEE.remote.get(collections).then((response) => {
       let isOGCAPI = false;
@@ -2344,7 +2344,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       document.querySelector(SEARCH_INPUT).value = url;
 
       const collections = `${(urlOGC.endsWith('/') ? urlOGC : `${urlOGC}/`)}collections?f=json`;
-      IDEE.proxy(this.useProxy);
+      // IDEE.proxy(this.useProxy);
       IDEE.remote.get(collections).then((response) => {
         const resJSON = JSON.parse(response.text);
         const layers = resJSON.collections;
@@ -2407,7 +2407,7 @@ export default class LayerswitcherControl extends IDEE.Control {
         urlOGC = '';
         IDEE.dialog.error(getValue('exception.error_ogc'), undefined, this.order);
       });
-      IDEE.proxy(this.statusProxy);
+      // IDEE.proxy(this.statusProxy);
     }
   }
 
@@ -2513,7 +2513,7 @@ export default class LayerswitcherControl extends IDEE.Control {
           .then(() => {
             document.querySelector('#m-layerswitcher-ogc-check-results').focus();
           });
-        IDEE.proxy(this.statusProxy);
+        // IDEE.proxy(this.statusProxy);
       }
     });
 
@@ -2525,7 +2525,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       const limit = document.querySelector('#m-layerswitcher-ogc-limit-items').value;
       const checked = document.querySelector('#m-layerswitcher-ogc-search-bbox').checked;
       const urlQueryables = `${urlOGC}/collections/${selectValue}/queryables`;
-      IDEE.proxy(this.useProxy);
+      // IDEE.proxy(this.useProxy);
       IDEE.remote.get(urlQueryables).then((queryablesResponse) => {
         try {
           const res = JSON.parse(queryablesResponse.text);
@@ -2658,7 +2658,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       }).catch((err) => {
         IDEE.dialog.error(getValue('no_results'), undefined, this.order);
       });
-      IDEE.proxy(this.statusProxy);
+      // IDEE.proxy(this.statusProxy);
     });
   }
 
@@ -2783,7 +2783,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     const url = this.getFeatureUrl(layer);
     let numberFeatures;
     let jsonResponseOgc;
-    IDEE.proxy(this.useProxy);
+    // IDEE.proxy(this.useProxy);
     return IDEE.remote.get(url).then((response) => {
       jsonResponseOgc = JSON.parse(response.text);
       if (jsonResponseOgc !== null) {
@@ -2896,7 +2896,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     const DATA_SUMMARY = '@count';
 
     const url = this.generateUrlCODSI(pageNumber);
-    IDEE.proxy(this.useProxy);
+    // IDEE.proxy(this.useProxy);
     IDEE.remote.get(url).then((response) => {
       const data = JSON.parse(response.text);
       const total = data.summary[DATA_SUMMARY];
@@ -2908,7 +2908,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     }).catch((err) => {
       IDEE.dialog.error(getValue('exception.codsi'), undefined, this.order);
     });
-    IDEE.proxy(this.statusProxy);
+    // IDEE.proxy(this.statusProxy);
   }
 
   getResultCODSI(data) {

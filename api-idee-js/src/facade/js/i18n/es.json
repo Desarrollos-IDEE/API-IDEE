@@ -102,8 +102,13 @@
       "text2": "En el desplegable se muestran todas las implementaciones disponibles (OpenLayers, Cesium, etc)."
     }
   },
+  "popup": {
+    "msg": "Llévame allí"
+  },
   "exception": {
     "addto_method": "La implementación usada no posee el método addTo",
+    "no_get_rotation_method": "La implementación usada no posee el método getRotation",
+    "no_set_rotation_method": "La implementación usada no posee el método setRotation",
     "getelement_method": "La implementación usada no posee el método getElement",
     "getfeatureinfo_method": "La implementación usada no puede crear controles GetFeatureInfo",
     "mouse_method": "La implementación usada no puede crear controles Mouse",
@@ -173,6 +178,7 @@
     "getzoom_method": "La implementación usada no posee el método getZoom.",
     "no_zoom": "No ha especificado ningún zoom.",
     "invalid_zoom": "El zoom especificado no es válido.",
+    "invalid_scale": "La escala especificada no es válida.",
     "setzoom_method": "La implementación usada no posee el método setZoom.",
     "getcenter_method": "La implementación usada no posee el método getCenter.",
     "setcenter_method": "La implementación usada no posee el método setCenter.",
@@ -286,6 +292,19 @@
     "geopackagetile_method": "La implementación usada no puede crear capas GeoPackageTile.",
     "addgeopackagetile_method": "La implementación usada no posee el método addGeoPackageTile.",
     "getgeopackagetile_method": "La implementación usada no posee el método getGeoPackageTile.",
-    "removegeopackagetile_method": "La implementación usada no posee el método removeGeoPackageTile."
+    "removegeopackagetile_method": "La implementación usada no posee el método removeGeoPackageTile.",
+    "wmc_method": "La implementación usada no puede crear capas WMC",
+    "sectionlayer_method": "La implementación usada no puede crear capas Section.",
+    "getsections_method": "La implementación usada no posee el método getSections.",
+    "addsections_method": "La implementación usada no posee el método addSections.",
+    "removesections_method": "La implementación usada no posee el método removeSections.",
+    "not_layergroup_in_section": "No es posible añadir un grupo de capas dentro de una sección.",
+    "setzindex_method": "No es posible aplicar un zIndex a una WMC.",
+    "setlayer_method": "No es posible establecer la capa de la implementación de una WMC.",
+    "setmaxextent_no_apply": "No es posible aplicar la extensión máxima a una WMC.",
+    "setminzoom_no_apply": "No es posible aplicar el mínimo zoom a la capa WMC.",
+    "setmaxzoom_no_apply": "No es posible aplicar el máximo zoom a la capa WMC.",
+    "setminscale_no_apply": "No es posible aplicar la mínima escala a la capa WMC.",
+    "setmaxscale_no_apply": "No es posible aplicar la máxima escala a la capa WMC."
   }
 }
