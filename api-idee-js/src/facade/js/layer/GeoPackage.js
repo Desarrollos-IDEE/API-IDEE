@@ -117,7 +117,7 @@ class GeoPackage extends MObject {
    * @param {M/Map} map
    * @api
    */
-  addTo(map) {
+  addTo(map, addLayer = true) {
     this.map_ = map;
     this.connector_.getVectorProviders().then((vectorProviders) => {
       vectorProviders.forEach((vectorProvider) => {
@@ -130,7 +130,9 @@ class GeoPackage extends MObject {
         });
 
         this.layers_[tableName] = vectorLayer;
-        map.addLayers(vectorLayer);
+        if (addLayer) {
+          map.addLayers(vectorLayer);
+        }
       });
 
       this.loadedVectorLayers_ = true;
@@ -149,7 +151,9 @@ class GeoPackage extends MObject {
         const tileLayer = new GeoPackageTile(optsExt, tileProvider);
 
         this.layers_[tableName] = tileLayer;
-        map.addLayers(tileLayer);
+        if (addLayer) {
+          map.addLayers(tileLayer);
+        }
       });
       this.loadedTileLayers_ = true;
 

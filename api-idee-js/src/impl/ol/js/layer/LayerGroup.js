@@ -53,6 +53,8 @@ class LayerGroup extends Layer {
     this.layersCollection = new Collection();
     this.layers = [];
     this.rootGroup = null;
+
+    this.layerOrder_ = new Map();
   }
 
   /**
@@ -80,14 +82,27 @@ class LayerGroup extends Layer {
 
     this.setOpacity(this.opacity_);
 
-    this.layersParams_.forEach((layer) => {
+    this.layersParams_.forEach((layerParam, index) => {
+      let layer;
+      if (typeof layerParam === 'string') {
+        layer = this.map.getLayerByString(layerParam);
+      } else {
+        layer = layerParam;
+      }
+      this.layerOrder_.set(layer, index);
+    });
+
+    const layerPromises = this.layersParams_.map((layer) => {
       if (typeof layer === 'string') {
         const layerAPI = this.map.getLayerByString(layer);
-        this.addLayer(layerAPI);
-      } else {
-        this.addLayer(layer);
+        return this.addLayer(layerAPI);
       }
+      return this.addLayer(layer);
     });
+
+    layerPromises.reduce((promiseChain, layerPromise) => {
+      return promiseChain.then(() => layerPromise);
+    }, Promise.resolve());
 
     this.olLayer.on('change:zIndex', () => {
       this.setZIndexChildren();
@@ -243,22 +258,57 @@ class LayerGroup extends Layer {
       layer = this.map.getLayerByString(layer);
     }
 
+    if (layer.type === 'GeoPackage') {
+      return new Promise((resolve) => {
+        layer.addTo(this.map, false);
+        layer.on(EventType.LOAD_LAYERS, (ls) => {
+          const layerPromises = Object.values(ls).map((value) => {
+            // Asignar el mismo orden que el GeoPackage padre
+            const parentOrder = this.layerOrder_.get(layer);
+            this.layerOrder_.set(value, parentOrder);
+            const aux = this.addLayer(value);
+            this.setZIndexChildren();
+            return aux;
+          });
+
+          Promise.all(layerPromises).then(() => {
+            resolve(layer);
+          });
+        });
+      });
+    }
+
     if (!this.layers.includes(layer)) {
       const impl = layer.getImpl();
       this.setOLLayerToLayer_(layer);
-
       impl.rootGroup = this;
-      this.layers.push(layer);
 
-      /* if (this.zIndex_ !== null) {
-        // ? Por si existe subgrupos siga todo un orden
-        this.setZIndexChildren();
-      } */
+      if (!this.layerOrder_.has(layer)) {
+        const maxOrder = Math.max(...Array.from(this.layerOrder_.values()), -1);
+        this.layerOrder_.set(layer, maxOrder + 1);
+      }
+
+      const layerOrder = this.layerOrder_.get(layer);
+      if (layerOrder !== undefined) {
+        let insertIndex = 0;
+        for (let i = 0; i < this.layers.length; i += 1) {
+          const currentOrder = this.layerOrder_.get(this.layers[i]);
+          if (currentOrder !== undefined && currentOrder > layerOrder) {
+            insertIndex = i;
+            break;
+          }
+          insertIndex = i + 1;
+        }
+        this.layers.splice(insertIndex, 0, layer);
+      } else {
+        this.layers.push(layer);
+      }
 
       this.layersCollection.push(impl.getLayer());
+      return Promise.resolve(layer);
     }
 
-    return layer;
+    return Promise.resolve(layer);
   }
 
   /**

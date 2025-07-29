@@ -66,3 +66,6 @@ Mapa básico con capa GeoJSON y WFS, para probar select/unselect de features mú
 
 CP-023
 Mapa básico con Capas rápidas.
+
+CP-026
+Mapa básico con capa GeoPackage.
