@@ -48,9 +48,11 @@ class GeoPackageTile extends LayerBase {
    * - tileLoadFunction: Función de carga de tiles.
    * - opacity: Opacidad de capa, por defecto 1.
    * - visibility: Define si la capa es visible o no. Verdadero por defecto.
-   * - extent: La medida en que restringe la visualización a una región específica.
+   * - maxExtent: La medida en que restringe la visualización a una región específica.
    * - minZoom: Zoom mínimo aplicable a la capa.
    * - maxZoom: Zoom máximo aplicable a la capa.
+   * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
+   * - tileGridMaxZoom: Zoom máximo de cuadrícula de la tesela.
    * @param {IDEE.TileProvider} provider Proveedor de teselas para una capa ráster
    * en un archivo GeoPackage.
    * @api

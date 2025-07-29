@@ -23,7 +23,6 @@ import Layer from './Layer';
  * @property {Number} opacity_ Opacidad de la capa.
  * @property {Number} zIndex_ Índice z de la capa.
  * @property {Boolean} visibility Visibilidad de la capa.
- * @property {Number} tileSize_ Tamaño de la tesela.
  * @property {Array<number>} extent_ Extensión de la capa.
  * @property {Number} minZoom_ Mínimo zoom de la capa.
  * @property {Number} maxZoom_ Máximo zoom de la capa.
@@ -48,9 +47,11 @@ class GeoPackageTile extends Layer {
    * - tileLoadFunction: Función de carga de tiles.
    * - opacity: Opacidad de capa, por defecto 1.
    * - visibility: Define si la capa es visible o no. Verdadero por defecto.
-   * - extent: La medida en que restringe la visualización a una región específica.
+   * - maxExtent: La medida en que restringe la visualización a una región específica.
    * - minZoom: Zoom mínimo aplicable a la capa.
    * - maxZoom: Zoom máximo aplicable a la capa.
+   * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
+   * - tileGridMaxZoom: Zoom máximo de cuadrícula de la tesela.
    * @param {IDEE.TileProvider} provider Proveedor de teselas para una capa ráster
    * en un archivo GeoPackage.
    *
@@ -84,11 +85,6 @@ class GeoPackageTile extends Layer {
       * Visibilidad de la capa.
       */
     this.visibility = userParameters.visibility === false ? userParameters.visibility : true;
-
-    /**
-      * Tamaño de la tesela
-      */
-    this.tileSize_ = userParameters.tileSize || 256;
 
     /**
       * Extensión de la capa.
