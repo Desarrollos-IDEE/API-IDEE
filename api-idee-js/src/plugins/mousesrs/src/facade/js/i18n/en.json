@@ -15,6 +15,7 @@
   },
   "tooltip": "Coordinates",
   "select_srs": "Select a reference system",
+  "choose_create_epsg": "Select an option or create one",
   "close": "Close",
   "accessibility": {
     "src": "Click or Enter to modify the EPSG"
