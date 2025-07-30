@@ -1,7 +1,8 @@
 {
   "exception": {
     "impl": "La implementación no puede crear controles de Infocoordinates",
-    "query_profile": "No se han podido consultar los datos de altitud para este punto."
+    "query_profile": "No se han podido consultar los datos de altitud para este punto.",
+    "srs": "Plugin InfoCoordinates: El parámetro srs no es correcto. Por defecto se usará el SRS actual del mapa."
   },
   "textHelp": {
     "help1": "Haga clic en el mapa para obtener las coordenadas de un punto en el sistema de referencia seleccionado.",
@@ -38,5 +39,7 @@
   "copyAllPoints": "Copiar todos los puntos",
   "displayONAllPoints": "Mostrar coordenadas de todos los puntos",
   "displayOFFAllPoints": "Ocultar coordenadas de todos los puntos",
+  "select_srs": "Selecciona un sistema de referencia",
+  "choose_create_epsg": "Selecciona una opción o crea una",
   "clipboard": "Resultado copiado al portapapeles"
 }
