@@ -13,7 +13,8 @@
     "tile": "The request for some tile has caused a printing error. <br/>Please try again.",
     "support": "MBTiles and MBTilesVector layers are not supported",
     "error_download_image": "The download could not be completed at this time.",
-    "loaderror": "Base64 generation Error"
+    "loaderror": "Base64 generation Error",
+    "srs": "Plugin InfoCoordinates: The srs parameter is incorrect. The current map SRS will be used by default."
   },
   "textHelp": {
     "help1": "The print extension allows you to export both maps from templates and georeferenced images.",
@@ -89,6 +90,8 @@
   "scale": "Scale",
   "dpi": "DPI (dots per inches)",
   "defaultText": "Enter text",
+  "select_srs": "Select a reference system",
+  "choose_create_epsg": "Select an option or create one",
   "close": "Close",
   "apply": "Print",
   "clipBoard": "Copy to clipboard",
