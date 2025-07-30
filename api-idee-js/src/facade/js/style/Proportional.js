@@ -458,7 +458,7 @@ class Proportional extends StyleComposite {
               imageMin = styleMin.getImpl().olStyleFn().getImage().getImage()
                 .toDataURL();
             }
-          } else if (!isNullOrEmpty(options) && Object.keys(options).length > 0) {
+          } else if (!isNullOrEmpty(options)) {
             styleMax.set(sizeAttribute, maxRadius);
             imageMax = styleMax.toImage();
             styleMin.set(sizeAttribute, minRadius);
@@ -616,7 +616,7 @@ class Proportional extends StyleComposite {
         } else {
           this.setRadiusOlStyle(olStyles, radius);
         }
-      } else if (!isNullOrEmpty(styleOptions) && Object.keys(styleOptions).length > 0) {
+      } else if (!isNullOrEmpty(styleOptions)) {
         style.set(`${Proportional.getSizeAttribute(style)}`, radius);
         style.set('zindex', zindex);
       }

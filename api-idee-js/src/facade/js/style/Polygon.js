@@ -3,7 +3,7 @@
  */
 import PolygonImpl from 'impl/style/Polygon';
 import Simple from './Simple';
-import { isNull, extendsObj } from '../util/Utils';
+import { isNullOrEmpty, extendsObj } from '../util/Utils';
 
 /**
  * @classdesc
@@ -49,7 +49,7 @@ class Polygon extends Simple {
     if (vendorOptions) {
       options = {};
     } else {
-      if (isNull(options) || Object.keys(options).length === 0) {
+      if (isNullOrEmpty(options)) {
         options = Polygon.DEFAULT_NULL;
       }
       options = extendsObj({}, options);

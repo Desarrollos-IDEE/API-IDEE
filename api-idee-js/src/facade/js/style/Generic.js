@@ -5,7 +5,7 @@
 import GenericStyleImpl from 'impl/style/Generic';
 import Simple from './Simple';
 import {
-  isNull, extendsObj, isArray, isNullOrEmpty,
+  isNullOrEmpty, extendsObj, isArray,
 } from '../util/Utils';
 
 /**
@@ -28,11 +28,11 @@ class Generic extends Simple {
   constructor(optionsVar, vendorOptions) {
     let options = optionsVar;
     let vendorOpts = vendorOptions;
-    if (!isNull(vendorOpts) && Object.keys(vendorOpts).length > 0) {
+    if (!isNullOrEmpty(vendorOpts)) {
       options = extendsObj({}, Generic.DEFAULT);
     } else {
       vendorOpts = null;
-      if (isNull(options) || Object.keys(options).length === 0) {
+      if (isNullOrEmpty(options)) {
         options = Generic.DEFAULT_NULL;
       } else {
         options = extendsObj(options, Generic.DEFAULT);
@@ -81,7 +81,7 @@ class Generic extends Simple {
     let vendorOptsClone = {};
     const vendorOpts = this.getImpl().vendorOptions;
     extendsObj(optsClone, this.options_);
-    if (!isNullOrEmpty(vendorOpts) && Object.keys(vendorOpts).length > 0) {
+    if (!isNullOrEmpty(vendorOpts)) {
       if (isArray(vendorOpts)) {
         vendorOptsClone = vendorOpts.map((vo) => vo.clone());
       } else {
