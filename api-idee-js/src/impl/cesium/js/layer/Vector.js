@@ -116,6 +116,16 @@ class Vector extends Layer {
      * al suelo, por defecto falso.
      */
     this.clampToGround = options.clampToGround;
+
+    /**
+     * countFeatures_. Define el número de objetos geográficos de la capa.
+     */
+    this.countFeatures_ = 0;
+
+    /**
+     * countPromise_. Define el número de promesas completadas.
+     */
+    this.countPromise_ = 0;
   }
 
   /**
@@ -314,9 +324,6 @@ class Vector extends Layer {
     if (isNullOrEmpty(this.cesiumLayer)) {
       return false;
     }
-    // if (isNullOrEmpty(this.cesiumLayer.getSource())) {
-    //   return false;
-    // }
     return true;
   }
 
@@ -449,6 +456,8 @@ class Vector extends Layer {
    * @api stable
    */
   addFeatures_(features, update) {
+    this.countFeatures_ += features.length;
+
     const promises = [];
     features.forEach((newFeature) => {
       // eslint-disable-next-line no-underscore-dangle
@@ -458,8 +467,8 @@ class Vector extends Layer {
     Promise.all(promises).then(() => {
       const styleLayer = this.facadeVector_.getStyle();
       const othersEntities = [];
-
       features.forEach((newFeature) => {
+        this.countPromise_ += 1;
         const feature = this.features_.find((feature2) => feature2.equals(newFeature));
         if (isNullOrEmpty(feature)) {
           if (newFeature.getImpl().othersEntities) {
@@ -508,6 +517,12 @@ class Vector extends Layer {
           this.facadeVector_.addFeatures(othersFacadeEntities);
         }
       });
+
+      if (this.countFeatures_ === this.countPromise_) {
+        this.facadeVector_.fire(EventType.LOAD);
+        this.countFeatures_ = 0;
+        this.countPromise_ = 0;
+      }
 
       if (update) {
         this.updateLayer_();
