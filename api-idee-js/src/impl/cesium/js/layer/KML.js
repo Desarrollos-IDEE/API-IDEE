@@ -236,7 +236,6 @@ class KML extends Vector {
         this.facadeVector_.clear();
         this.loaded_ = true;
         this.facadeVector_.addFeatures(response.features);
-        this.fire(EventType.LOAD, [this.features_]);
         if (!isNullOrEmpty(screenOverlay)) {
           const screenOverLayImg = ImplUtils.addOverlayImage(
             screenOverlay,
@@ -248,7 +247,6 @@ class KML extends Vector {
       } else {
         this.loaded_ = true;
         this.facadeVector_.addFeatures(response.features);
-        this.fire(EventType.LOAD, [this.features_]);
       }
     });
   }
@@ -275,6 +273,8 @@ class KML extends Vector {
    * @api stable
    */
   addFeatures_(features, update) {
+    this.countFeatures_ += features.length;
+
     const promises = [];
     features.forEach((newFeature) => {
       // eslint-disable-next-line no-underscore-dangle
@@ -285,6 +285,7 @@ class KML extends Vector {
       const styleLayer = this.facadeVector_.getStyle();
       const othersEntities = [];
       features.forEach((newFeature) => {
+        this.countPromise_ += 1;
         const feature = this.features_.find((feature2) => feature2.equals(newFeature));
         if (isNullOrEmpty(feature)) {
           if (newFeature.getImpl().othersEntities) {
@@ -335,6 +336,12 @@ class KML extends Vector {
           this.facadeVector_.addFeatures(othersFacadeEntities);
         }
       });
+
+      if (this.countFeatures_ === this.countPromise_) {
+        this.facadeVector_.fire(EventType.LOAD);
+        this.countFeatures_ = 0;
+        this.countPromise_ = 0;
+      }
 
       if (update) {
         this.updateLayer_();

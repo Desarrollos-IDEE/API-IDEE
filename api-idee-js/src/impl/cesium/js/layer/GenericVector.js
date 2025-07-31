@@ -120,7 +120,6 @@ class GenericVector extends Vector {
           this.cesiumLayer.entities.removeAll();
           this.loaded_ = true;
           this.facadeLayer_.addFeatures(features);
-          this.facadeVector_.fire(EventType.LOAD, [features]);
         } else {
           // ? Features todavía no han sido cargados
           this.fnAddFeatures_ = this.addFeaturesToFacade.bind(this);
@@ -166,7 +165,6 @@ class GenericVector extends Vector {
         if (features.length > 0) {
           this.loaded_ = true;
           this.facadeLayer_.addFeatures(features);
-          this.facadeVector_.fire(EventType.LOAD, [features]);
           this.deactivate();
         }
       } else if (this.cesiumLayer && this.loaded_) {
