@@ -518,7 +518,7 @@ OLStyleFontSymbol.addDefs({
   },
   'g-cartografia-cancelar2': {
     font: 'g-cartografia',
-    code: 59752,
+    code: 59668,
     name: 'cancelar2',
     search: 'cancelar2',
   },
@@ -680,7 +680,7 @@ OLStyleFontSymbol.addDefs({
   },
   'g-cartografia-capas': {
     font: 'g-cartografia',
-    code: 59654,
+    code: 59752,
     name: 'capas',
     search: 'capas',
   },
@@ -1073,6 +1073,24 @@ OLStyleFontSymbol.addDefs({
     code: 59667,
     name: 'implementacion',
     search: 'implementacion',
+  },
+  'g-cartografia-check-circle': {
+    font: 'g-cartografia',
+    code: 59677,
+    name: 'check-circle',
+    search: 'check-circle',
+  },
+  'g-cartografia-notification': {
+    font: 'g-cartografia',
+    code: 59665,
+    name: 'notification',
+    search: 'notification',
+  },
+  'g-cartografia-warning': {
+    font: 'g-cartografia',
+    code: 59664,
+    name: 'warning',
+    search: 'warning',
   },
 });
 
