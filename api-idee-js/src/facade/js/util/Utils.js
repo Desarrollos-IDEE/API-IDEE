@@ -1882,6 +1882,33 @@ export const parseCRSWKTtoJSON = (wkt) => {
 };
 
 /**
+ * Esta función filtra una lista de elementos en base al valor del input.
+ *
+ * @param {String} inputId ID del input que contiene el filtro.
+ * @param {String} listId ID de la lista que se va a filtrar.
+ * @function
+ * @api
+ */
+export const filterList = (inputId, listId) => {
+  const input = document.getElementById(inputId);
+  const filter = input.value.toUpperCase();
+  const ul = document.getElementById(listId);
+  const li = ul.getElementsByTagName('li');
+
+  for (let i = 0; i < li.length; i += 1) {
+    const a = li[i].getElementsByTagName('a')[0];
+    if (!a.hasAttribute('disabled')) {
+      const txtValue = a.textContent || a.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        li[i].style.display = '';
+      } else {
+        li[i].style.display = 'none';
+      }
+    }
+  }
+};
+
+/**
  * Este comentario no se verá, es necesario incluir
  * una exportación por defecto para que el compilador
  * muestre las funciones.

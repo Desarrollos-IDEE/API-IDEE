@@ -7,8 +7,9 @@ import { PREVIEW_MAP_ORIENTATION } from '../../constants';
 const ID_TEMPLATE_ORIENTATION = 'input[name="map-orientation"]';
 const ID_TEMPLATE_LAYOUT = '#template-layout';
 const ID_TEMPLATE_SCALE = '#template-scale';
-const ID_TEMPLATE_PROJECTION = '#template-projection';
 const ID_TEMPLATE_DPI = '#template-dpi';
+const ID_TEMPLATE_INPUT_SRS = '#epsg-selected';
+const ID_TEMPLATE_SRS_SELECTOR = '#m-customize-template-srs-selector';
 
 export default class TemplateCustomizer extends IDEE.Control {
   /**
@@ -126,7 +127,7 @@ export default class TemplateCustomizer extends IDEE.Control {
      * @private
      * @type {string}
      */
-    this.projection = this.projectionsOptions_[0];
+    this.projection = null;
 
     /**
      * DPI seleccionado por defecto
@@ -151,6 +152,7 @@ export default class TemplateCustomizer extends IDEE.Control {
    */
   init() {
     const currentProjection = this.map.getMapImpl().getView().getProjection().getCode();
+    this.projection = currentProjection;
     const content = IDEE.template.compileSync(templateCustomizer, {
       jsonp: true,
       parseToHtml: true,
@@ -161,10 +163,8 @@ export default class TemplateCustomizer extends IDEE.Control {
         dpiOptions: this.dpiOptions_,
         layoutOptions: this.layoutOptions_,
         templateElements: this.templateData_.types,
-        projectionsOptions: this.projectionsOptions_.map((proj) => ({
-          value: proj,
-          default: proj === currentProjection,
-        })),
+        defaultProjection: currentProjection,
+        projectionsOptions: this.projectionsOptions_,
         defaultScale: this.map.getImpl().getScale(),
         translations: {
           mapElements: getValue('mapElements'),
@@ -178,6 +178,8 @@ export default class TemplateCustomizer extends IDEE.Control {
           layout: getValue('layout'),
           scale: getValue('scale'),
           epsg: getValue('projection'),
+          select_srs: getValue('select_srs'),
+          choose_create_epsg: getValue('choose_create_epsg'),
           dpi: getValue('dpi'),
           apply: getValue('apply'),
           close: getValue('close'),
@@ -255,8 +257,8 @@ export default class TemplateCustomizer extends IDEE.Control {
     this.setupMapOrientationControl(ID_TEMPLATE_ORIENTATION);
     this.setupLayoutControl(ID_TEMPLATE_LAYOUT);
     this.setupScaleControl(ID_TEMPLATE_SCALE);
-    this.setupProjectionControl(ID_TEMPLATE_PROJECTION);
     this.setupDpiControl(ID_TEMPLATE_DPI);
+    this.setupInputSelectorControl(ID_TEMPLATE_INPUT_SRS, ID_TEMPLATE_SRS_SELECTOR);
   }
 
   /**
@@ -601,6 +603,112 @@ export default class TemplateCustomizer extends IDEE.Control {
         this.zoomToScale(this.scale);
       }
     });
+  }
+
+  /**
+   * Configura el control de entrada de SRS
+   * @param {String} inputElementId ID del elemento de entrada de SRS
+   * @param {String} selectorElementId ID del listado de SRS
+   */
+  setupInputSelectorControl(inputElementId, selectorElementId) {
+    const inputElement = document.querySelector(inputElementId);
+    const inputElementIdentifier = inputElement.getAttribute('id');
+    const selectorElement = document.querySelector(selectorElementId);
+    const selectorElementIdentifier = selectorElement.getAttribute('id');
+    inputElement.addEventListener('focus', () => {
+      selectorElement.style.display = 'block';
+      const list = selectorElement.querySelectorAll('li a');
+      list.forEach((li) => {
+        li.addEventListener('mousedown', (event) => {
+          inputElement.value = event.target.getAttribute('value');
+          this.changeProjection(inputElement.value);
+        });
+      });
+      IDEE.utils.filterList(inputElementIdentifier, selectorElementIdentifier);
+    });
+    inputElement.addEventListener('blur', () => {
+      selectorElement.style.display = 'none';
+    });
+    inputElement.addEventListener('keyup', (event) => {
+      if (event.key === 'Enter') {
+        this.changeProjection(inputElement.value);
+      } else {
+        IDEE.utils.filterList(inputElementIdentifier, selectorElementIdentifier);
+      }
+    });
+  }
+
+  /**
+   * Cambia la proyección del mapa de previsualización
+   * a la indicada por parámetro
+   * @param {String} epsg - Código EPSG de la proyección a aplicar
+   */
+  async changeProjection(epsg) {
+    this.projection = epsg;
+    const previewView = this.previewMap.getMapImpl().getView();
+    const currentProjection = previewView.getProjection().getCode();
+    const selectorEl = document.querySelector(ID_TEMPLATE_SRS_SELECTOR);
+    if (currentProjection !== this.projection) {
+      const currentCenter = previewView.getCenter();
+      let transformedCenter;
+      try {
+        transformedCenter = this.getImpl().transformCoordinates(
+          currentCenter,
+          currentProjection,
+          this.projection,
+        );
+      } catch (error) {
+        try {
+          await IDEE.impl.ol.js.projections.setNewProjection(epsg);
+          transformedCenter = this.getImpl().transformCoordinates(
+            currentCenter,
+            currentProjection,
+            this.projection,
+          );
+        } catch (err) {
+          this.projection = currentProjection;
+          transformedCenter = this.getImpl().transformCoordinates(
+            currentCenter,
+            currentProjection,
+            this.projection,
+          );
+          IDEE.dialog.error(getValue('exception.srs'));
+        }
+      }
+
+      this.projectionsOptions_ = IDEE.impl.ol.js.projections.getSupportedProjs();
+      selectorEl.innerHTML = `
+        <li><a class="m-customize-template-option-disabled" href="#" value="default" tabindex="-1" disabled>
+            ${getValue('choose_create_epsg')}
+        </a></li>
+        ${this.projectionsOptions_.map((proj) => `
+            <li>
+                <a href="#" value="${proj.codes[0]}">
+                    ${proj.codes[0]}
+                </a>
+            </li>
+        `).join('')}
+      `;
+
+      const newView = this.getImpl().createView({
+        projection: this.projection,
+        center: transformedCenter,
+        zoom: previewView.getZoom(),
+        minZoom: this.map.getImpl().getMinZoom(),
+        maxZoom: this.map.getImpl().getMaxZoom(),
+      });
+
+      this.previewMap.getMapImpl().setView(newView);
+      this.previewMap.getMapImpl().renderSync();
+      this.setupViewScaleListener();
+
+      const scaleElement = document.querySelector(ID_TEMPLATE_SCALE);
+      if (scaleElement) {
+        const scale = this.previewMap.getImpl().getScale();
+        scaleElement.value = `1:${scale}`;
+        this.scale = scale;
+      }
+    }
   }
 
   /**

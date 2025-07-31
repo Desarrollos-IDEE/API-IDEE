@@ -96,14 +96,7 @@ export const GEOREFIMAGEEPSG_FORMAT = 'jpg';
  * @private
  * @type {Array<String>}
  */
-export const PROJECTIONS_TEMPLATE = [
-  'EPSG:25829',
-  'EPSG:25830',
-  'EPSG:25831',
-  'EPSG:3857',
-  'EPSG:4326',
-  'EPSG:4258',
-];
+export const PROJECTIONS_TEMPLATE = IDEE.impl.ol.js.projections.getSupportedProjs();
 
 /**
  * Elementos a insertar dentro de una plantilla personalizada.

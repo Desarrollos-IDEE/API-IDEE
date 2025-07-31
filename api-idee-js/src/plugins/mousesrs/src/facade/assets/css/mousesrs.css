@@ -25,17 +25,64 @@
 }
 
 .m-mousesrs-srs-container {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
     text-align: center;
     width: 100%;
-    margin: 1rem 0 1rem 1.2rem;
-    display: flex;
-    justify-content: center;
+    margin: 1rem 0 1rem 0;
 }
 
-.m-mousesrs-srs-container select {
-    background-color: white;
-    padding: 7px 10px;
+.m-mousesrs-select-editable {
+    display: flex;
+    flex-direction: column;
+}
+
+.m-mousesrs-srs-container .m-mousesrs-input-select {
+    box-sizing: border-box;
+    color: black;
+    background-color: #fff;
     cursor: pointer;
+    padding: 7px 10px !important;
+    max-width: 120px;
+}
+
+.m-mousesrs-srs-container .m-mousesrs-srs-selector {
+    display: none;
+    position: absolute;
+    margin: 5px;
+    top: 100%;
+    padding: 1px 0;
+    margin-top: 0;
+    max-height: 200px;
+    max-width: 120px;
+    overflow-y: auto;
+    list-style: none;
+    z-index: 1000;
+    color: black;
+    background-color: white;
+    font-size: 13px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.m-mousesrs-srs-selector .m-mousesrs-option-disabled {
+    pointer-events: none;
+    color: #aaa !important;
+    cursor: default;
+}
+
+.m-mousesrs-srs-container .m-mousesrs-srs-selector li a {
+    display: block;
+    margin-top: -1px;
+    padding: 4px 13px;
+    text-decoration: none;
+    color: black;
+}
+
+.m-mousesrs-srs-container .m-mousesrs-srs-selector li:hover {
+    background-color: #eee;
 }
 
 .m-mousesrs-srs-container .m-mousesrs-help-button {
