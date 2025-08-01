@@ -488,6 +488,21 @@ const proj4346 = {
 };
 
 /**
+ * CRS:84
+ * @type {Object}
+ * @public
+ * @api
+ */
+const crs84 = {
+  def: '+proj=longlat +datum=WGS84 +no_defs',
+  extent: [-180, -90, 180, 90],
+  codes: ['CRS:84'],
+  units: 'd',
+  metersPerUnit: 111319.49079327358,
+  axisOrientation: 'enu',
+};
+
+/**
  * Lista con las proyecciones anteriores
  * @type {Array<Object>}
  * @public
@@ -518,6 +533,7 @@ const projections = [
   proj4328,
   proj4346,
   proj4979,
+  crs84,
 ];
 
 /**
