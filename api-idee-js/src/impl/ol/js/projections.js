@@ -529,7 +529,11 @@ const projections = [
  * @public
  * @api
  */
-const addProjections = (projectionsParam) => {
+const addProjections = (projs) => {
+  let projectionsParam = projs;
+  if (!Array.isArray(projectionsParam)) {
+    projectionsParam = [projectionsParam];
+  }
   // Register and publish projections
   projectionsParam.forEach((projection) => {
     projection.codes.forEach((code) => {
@@ -546,6 +550,9 @@ const addProjections = (projectionsParam) => {
       });
     });
     addEquivalentProjections(olProjections);
+    if (projections.indexOf(projection) === -1) {
+      projections.push(projection);
+    }
   });
   register(proj4);
 };
