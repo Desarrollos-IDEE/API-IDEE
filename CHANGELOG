@@ -34,6 +34,8 @@
 - Se soluciona error con la edición de geometrías en plugin VectorsManagement.
 - Se implementa el uso del ticket en capas WMS, incluyendo el control getFeatureInfo y el plugin information.
 - Se implementa el uso del ticket en el plugin comparators.
+- Se implementa el parámetro tileLoadFunction en el vendors, ademas de setTileLoadFunction.
+- Se implementa capa GeoPackage.
 - Se implementa en WMS el parámetro tileLoadFunction en el vendors, ademas de setTileLoadFunction.
 - Se añade el parámetro "mergeLayers" en las capas WMS.
 - Se añade /doc a api/actions.

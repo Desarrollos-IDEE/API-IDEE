@@ -26,6 +26,7 @@ import FacadeMBTiles from 'IDEE/layer/MBTiles';
 import FacadeMBTilesVector from 'IDEE/layer/MBTilesVector';
 import FacadeMVT from 'IDEE/layer/MVT';
 import FacadeGeoTIFF from 'IDEE/layer/GeoTIFF';
+import FacadeGeoPackageTile from 'IDEE/layer/GeoPackageTile';
 import FacadeWMC from 'IDEE/layer/WMC';
 import * as EventType from 'IDEE/event/eventtype';
 import FacadeMap from 'IDEE/Map';
@@ -295,6 +296,7 @@ class Map extends MObject {
     const xyzLayers = this.getXYZs(filters);
     const tmsLayers = this.getTMS(filters);
     const layersGroup = this.getLayerGroups(filters);
+    const geopackagetileLayers = this.getGeoPackageTile(filters);
     const unknowLayers = this.getUnknowLayers_(filters);
 
     const layers = wmcLayers
@@ -311,6 +313,7 @@ class Map extends MObject {
       .concat(xyzLayers)
       .concat(tmsLayers)
       .concat(layersGroup)
+      .concat(geopackagetileLayers)
       .concat(unknowLayers);
 
     return layers.sort((layer1, layer2) => FacadeMap.LAYER_SORT(layer1, layer2, this.facadeMap_));
@@ -379,6 +382,8 @@ class Map extends MObject {
         this.facadeMap_.addXYZ(layer);
       } else if (layer.type === LayerType.TMS) {
         this.facadeMap_.addTMS(layer);
+      } else if (layer.type === LayerType.GeoPackageTile) {
+        this.facadeMap_.addGeoPackageTile(layer);
       } else if (layer.type === LayerType.LayerGroup) {
         this.facadeMap_.addLayerGroups(layer);
       } else if (!LayerType.know(layer.type)) {
@@ -487,6 +492,7 @@ class Map extends MObject {
       this.removeXYZ(knowLayers);
       this.removeTMS(knowLayers);
       this.removeLayerGroups(knowLayers);
+      this.removeGeoPackageTile(knowLayers);
     }
 
     if (unknowLayers.length > 0) {
@@ -2279,6 +2285,94 @@ class Map extends MObject {
   }
 
   /**
+   * Este método obtiene las capas GeoPackageTile añadidas al mapa.
+   *
+   * @function
+   * @param {Array<IDEE.Layer>} filters Filtros para aplicar en la búsqueda.
+   * @returns {Array<IDEE.layer.GeoPackageTile>} Capas GeoPackageTile del mapa.
+   * @public
+   * @api
+   */
+  getGeoPackageTile(filtersParam) {
+    let foundLayers = [];
+    let filters = filtersParam;
+    const layers = this.layers_.filter((layer) => layer.type === LayerType.GeoPackageTile);
+
+    // parse to Array
+    if (isNullOrEmpty(filters)) {
+      filters = [];
+    }
+    if (!isArray(filters)) {
+      filters = [filters];
+    }
+
+    if (filters.length === 0) {
+      foundLayers = layers;
+    } else {
+      filters.forEach((filterLayer) => {
+        const filteredLayers = layers.filter((layer) => {
+          let layerMatched = true;
+          // checks if the layer is not in selected layers
+          if (!foundLayers.includes(layer)) {
+            // if instanceof FacadeTMS check if it is the same
+            if (filterLayer instanceof FacadeGeoPackageTile) {
+              layerMatched = (filterLayer.equals(layer));
+            } else {
+              // type
+              if (!isNullOrEmpty(filterLayer.type)) {
+                layerMatched = (layerMatched && (filterLayer.type === layer.type));
+              }
+              // name
+              if (!isNullOrEmpty(filterLayer.name)) {
+                layerMatched = (layerMatched && (filterLayer.name === layer.name));
+              }
+            }
+          } else {
+            layerMatched = false;
+          }
+          return layerMatched;
+        });
+        foundLayers = foundLayers.concat(filteredLayers);
+      });
+    }
+    return foundLayers;
+  }
+
+  /**
+   * Este método añade las capas GeoPackageTile especificadas por el usuario al mapa.
+   *
+   * @function
+   * @param {Array<IDEE.layer.GeoPackageTile>} layers Capas GeoPackageTile a añadir.
+   * @returns {IDEE.impl.Map} Mapa.
+   * @public
+   * @api
+   */
+  addGeoPackageTile(layers) {
+    this.addToLayers_(layers);
+    return this;
+  }
+
+  /**
+   * Este método elimina las capas GeoPackageTile del mapa especificadas por el usuario.
+   *
+   * @function
+   * @param {Array<IDEE.layer.GeoPackageTile>} layers Capas GeoPackageTile a eliminar.
+   * @returns {IDEE.impl.Map} Mapa.
+   * @public
+   * @api
+   */
+  removeGeoPackageTile(layers) {
+    const tileLayers = this.getGeoPackageTile(layers);
+    tileLayers.forEach((tileLayer) => {
+      this.layers_ = this.layers_.filter((layer) => !layer.equals(tileLayer));
+      tileLayer.getImpl().destroy();
+      tileLayer.fire(EventType.REMOVED_FROM_MAP, [tileLayer]);
+    });
+
+    return this;
+  }
+
+  /**
    * Este método obtiene los controles especificados por el usuario.
    *
    * @function
@@ -3429,5 +3523,6 @@ Map.Z_INDEX[LayerType.OGCAPIFeatures] = 40;
 Map.Z_INDEX[LayerType.GenericVector] = 40;
 Map.Z_INDEX[LayerType.GenericRaster] = 40;
 Map.Z_INDEX[LayerType.LayerGroup] = 40;
+Map.Z_INDEX[LayerType.GeoPackageTile] = 40;
 
 export default Map;
