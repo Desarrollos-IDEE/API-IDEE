@@ -129,6 +129,19 @@ class OSM extends LayerBase {
   }
 
   /**
+   * Este método sets tileLoadFunction
+   * en la implementación
+   *
+   * @function
+   * @public
+   * @param {Function} func Function to override
+   * @api
+   */
+  setTileLoadFunction(func) {
+    this.getImpl().setTileLoadFunction(func);
+  }
+
+  /**
    * Este método comprueba si un objeto es igual
    * a esta capa.
    *
