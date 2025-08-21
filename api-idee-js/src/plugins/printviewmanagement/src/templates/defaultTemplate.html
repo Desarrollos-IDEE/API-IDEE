@@ -1,49 +1,256 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title></title>
-	<style type="text/css">
-		#leyenda {
-			position: relative;
-			top: 10px;
-			left: 10px;
-		}
-		#titulo {
-			background-color: blueviolet;
-		}
-		#flecha {
-			position: absolute;
-			bottom: 10px;
-			right: 10px;
-			width: 200px;
-			height: 200px;
-		}
-        .borde {
-            border: 10px solid black;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+    <meta charset="UTF-8">
+    <title>Documento A4 con Marco Negro</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
         }
 
-		.imagen2 {
-			background-color: green;
-			width: 100px;
-			height: 100px;
-			border-radius: 50%;
-		}
-	</style>
+        /* Variables for responsive template */
+        :root {
+            --superior-height: 10.58mm;
+            --inferior-height: 10.58mm;
+            --gap: 2mm;
+        }
+
+        .api-idee-template-container {
+		   width: 90%;
+		   height: 100%;    
+		   box-sizing: border-box;
+		   display: flex;
+		   flex-direction: column;
+           overflow: hidden;
+	   }
+
+         /* Containers */
+        .interior-container {
+            width: 90%;
+            margin: auto;
+            border: 1px solid black;
+            box-sizing: border-box;
+            display: grid;
+            grid-template-columns: 1fr 17fr 1fr;
+            grid-template-rows: 1fr 14fr 1fr;
+            position: absolute;
+			top: calc(var(--superior-height) + var(--gap));
+            height: calc(100% - var(--superior-height) - var(--inferior-height) - 2 * var(--gap));
+        }
+
+        .api-idee-template-container:not(:has(.superior-container)) .interior-container {
+            top: 0;
+            height: calc(100% - var(--inferior-height) - var(--gap));
+        }
+
+        .api-idee-template-container:not(:has(.inferior-container)) .interior-container {
+            top: calc(var(--superior-height) + var(--gap));
+            height: calc(100% - var(--superior-height) - var(--gap));
+        }
+
+        .api-idee-template-container:not(:has(.superior-container, .inferior-container)) .interior-container {
+            top: 0 !important;
+            height: 100% !important;
+        }
+
+        .api-idee-template-container:not(:has(.interior-container)) .imagen-mascara {
+            margin: auto;
+            height: calc(100% - var(--superior-height) - var(--inferior-height) - 2 * var(--gap));
+        }
+
+        .api-idee-template-container:not(:has(.interior-container, .inferior-container)) .imagen-mascara {
+            margin: auto;
+            top: calc(var(--superior-height) + var(--gap));
+            height: calc(100% - var(--superior-height) - var(--gap));
+        }
+
+        .api-idee-template-container:not(:has(.interior-container, .superior-container)) .imagen-mascara {
+            margin: auto;
+            top: 0;
+            width: 90%;
+            position: absolute;
+            height: calc(100% - var(--inferior-height) - var(--gap));
+        }
+
+        .api-idee-template-container:not(:has(.interior-container, .superior-container, .inferior-container)) .imagen-mascara {
+            margin: auto;
+            height: 100%;
+        }
+        
+        .inferior-container, .superior-container {
+            width: 90%;
+            margin: auto;
+            border: 1px solid black;
+            box-sizing: border-box;
+            display: grid;
+            grid-template-columns: 8fr 2fr;
+            grid-template-rows: 1fr;
+
+        }
+        .superior-container {
+            border: none;
+            align-items: center;
+            grid-template-columns: auto 1fr auto;
+            position: absolute;
+            top: 0;
+            min-height: 50px;
+        }
+
+        .superior-container img {
+            height: 40px;
+        }
+
+		.inferior-container {
+            position: absolute;
+            bottom: 0;
+            min-height: 50px;
+        }
+
+         /* Celdas */
+        .cell {
+            border: 1px solid #00000050;
+            box-sizing: border-box;
+            grid-column: 2fr;
+            grid-row: 1fr;
+            display: grid;
+        }
+        .cell-interior {
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100%;
+            line-height: 1em;
+        }
+
+        /*Contenido Mapa */
+        .imagen-mascara {
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .imagen-mascara .ol-viewport {
+            height: 100% !important;
+        }
+
+        /* textos */
+        .vertical-texts {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: space-between;
+        }
+
+        .horizontal-texts {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: space-between;
+        }
+        .left-text {
+            align-self: flex-end;
+            padding: 7px;
+        }
+        .right-text {
+            align-self: flex-end;
+            padding: 7px;
+        }
+        .titulo-principal {
+            font-size: 17.6px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding-left: 20px;
+            letter-spacing: 2px;
+            height: 100%;
+        }
+
+        .body-text {
+            font-size: 9.6px;
+            letter-spacing: 0.8px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding-left: 20px;
+            height: 100%;
+            line-height: 4em;
+        }
+        .small-text {
+            font-size: 8px;
+            letter-spacing: 1.5px;
+        }
+
+        .small-text-inferior {
+            font-size: 8px;
+            letter-spacing: 1.5px;
+        }
+        .small-top-text,
+        .small-bottom-text {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .small-bottom-text span {
+            align-self: normal;
+        }
+    </style>
 </head>
 <body>
-	<div id="leyenda" data-type="api-idee-template-leyenda"></div>
-	<div id="titulo" data-type="api-idee-template-titulo">
-		<img src="">
-		<img class="imagen2">
-	</div>
-	<img src="" id="flecha" data-type="api-idee-template-flecha-norte"></img>
-    <div class="borde" data-type="api-idee-template-borde"></div>
+    <div class="api-idee-template-container" id="api-idee-template-container">
+        
+        <div class="superior-container" data-type="api-idee-template-titulo">
+            <div class="logo-left">
+                <img src="https://componentes.idee.es/estaticos/imagenes/logos/IDEE-logo.png" alt="Logo IDEE">
+            </div>
+            <div class="titulo-principal" contenteditable="true">Introduzca título</div>
+            <div class="logo-right">
+                <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_1/API_1.png" alt="Logo API-IDEE">
+            </div>
+        </div>
+
+        <div class="interior-container" data-type="api-idee-template-borde">
+            <div class="cell"></div>
+            <div class="cell">
+                <div class="vertical-texts small-text small-top-text">
+                    <span class="left-text" id="top-left-coord"></span>
+                    <span class="right-text" id="top-right-coord"></span>
+                </div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell small-text">
+                <div class="horizontal-texts">
+                    <span class="left-text" id="left-top-coord"></span>
+                    <span class="right-text" id="left-bottom-coord"></span>
+                </div>
+            </div>
+            <div class="cell imagen-mascara" id="imagen-mascara"></div>
+            <div class="cell small-text">
+                <div class="horizontal-texts">
+                    <span class="left-text" id="right-top-coord"></span>
+                    <span class="right-text" id="right-bottom-coord"></span>
+                </div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell small-text">
+                <div class="vertical-texts small-bottom-text">
+                    <span class="left-text" id="bottom-left-coord"></span>
+                    <span class="right-text" id="bottom-right-coord"></span>
+                </div>
+            </div>
+            <div class="cell"></div>
+        </div>
+        <div class="inferior-container" data-type="api-idee-template-texto-libre" data-type-name="descripcion">
+            <div class="cell body-text" contenteditable="true">Introduzca descripción...</div>
+            <div class="cell small-text-inferior">
+                <div class="cell horizontal-texts cell-interior" id="current-date"></div>
+                <div class="cell horizontal-texts cell-interior" id="map-epsg"></div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
