@@ -283,14 +283,14 @@
     cursor: pointer;
     padding: 0 !important;
     margin: 0 5px 0 5px;
-    max-width: 90px;
+    max-width: 120px;
 }
 
 .m-infocoordinates-comboDatum .m-infocoordinates-srs-selector {
     display: none;
     position: absolute;
     margin: 5px;
-    top: 100%;
+    top: 90%;
     padding: 1px 0;
     margin-top: 0;
     max-height: 200px;
@@ -298,29 +298,28 @@
     overflow-y: auto;
     list-style: none;
     z-index: 1000;
-    color: black;
+    color: #000;
     background-color: white;
     font-size: 13px;
     text-align: left;
     border: 1px solid #ddd;
 }
 
-.m-infocoordinates-comboDatum .m-infocoordinates-option-disabled {
-    pointer-events: none;
-    color: #aaa !important;
-    cursor: default;
+.m-infocoordinates-comboDatum .m-infocoordinates-srs-selector li {
+    border-bottom: 1px solid #ddd;
 }
 
 .m-infocoordinates-comboDatum .m-infocoordinates-srs-selector li a {
     display: block;
     margin-top: -1px;
-    padding: 4px 13px;
+    padding: 4px 12px;
     text-decoration: none;
-    color: black;
+    color: #6c6c6c;
 }
 
 .m-infocoordinates-comboDatum .m-infocoordinates-srs-selector li:hover {
-    background-color: #eee;
+    color: #000;
+    border: 1px solid #000;
 }
 
 @-moz-document url-prefix() {
