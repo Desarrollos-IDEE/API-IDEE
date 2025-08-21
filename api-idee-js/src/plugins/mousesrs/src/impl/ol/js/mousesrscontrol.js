@@ -159,26 +159,48 @@ export default class MouseSRSControl extends IDEE.impl.Control {
     IDEE.dialog.info(content.outerHTML, getValue('select_srs'), this.order);
     setTimeout(() => {
       document.querySelector('.m-dialog>div.m-modal>div.m-content').style.minWidth = '260px';
-      document.querySelector('#epsg-selected').addEventListener('focus', () => {
-        document.getElementById('m-mousesrs-srs-selector').style.display = 'block';
-        const list = document.querySelectorAll('#m-mousesrs-srs-selector li a');
-        list.forEach((li) => {
-          li.addEventListener('mousedown', (event) => {
-            const select = document.querySelector('#epsg-selected');
-            select.value = event.target.getAttribute('value');
-            this.changeSRS(map, html);
+      const input = document.querySelector('#epsg-selected');
+      const listElem = document.getElementById('m-mousesrs-srs-selector');
+      let isEditable = false;
+
+      input.addEventListener('focus', () => {
+        if (!isEditable) {
+          listElem.style.display = 'block';
+          const list = document.querySelectorAll('#m-mousesrs-srs-selector li a');
+          list.forEach((li) => {
+            li.addEventListener('mousedown', (event) => {
+              event.preventDefault();
+              const value = event.target.getAttribute('value');
+              if (value === 'default') {
+                isEditable = true;
+                input.removeAttribute('readonly');
+                input.value = '';
+                input.placeholder = getValue('placeholder_custom_epsg');
+                listElem.style.display = 'none';
+                input.focus();
+              } else {
+                input.value = value;
+                this.changeSRS(map, html);
+              }
+            });
           });
-        });
-        IDEE.utils.filterList('epsg-selected', 'm-mousesrs-srs-selector');
+        }
       });
-      document.querySelector('#epsg-selected').addEventListener('blur', () => {
-        document.getElementById('m-mousesrs-srs-selector').style.display = 'none';
+
+      input.addEventListener('blur', () => {
+        listElem.style.display = 'none';
+        isEditable = false;
+        if (!input.hasAttribute('readonly')) {
+          input.setAttribute('readonly', 'readonly');
+          input.value = this.srs_;
+        }
       });
-      document.querySelector('#epsg-selected').addEventListener('keyup', (event) => {
-        if (event.key === 'Enter') {
+
+      input.addEventListener('keyup', (event) => {
+        if (isEditable && event.key === 'Enter') {
+          isEditable = false;
+          input.setAttribute('readonly', 'readonly');
           this.changeSRS(map, html);
-        } else {
-          IDEE.utils.filterList('epsg-selected', 'm-mousesrs-srs-selector');
         }
       });
       document.querySelector('div.m-api-idee-container div.m-dialog div.m-title').style.backgroundColor = '#71a7d3';
@@ -186,6 +208,13 @@ export default class MouseSRSControl extends IDEE.impl.Control {
       button.innerHTML = getValue('close');
       button.style.width = '75px';
       button.style.backgroundColor = '#71a7d3';
+
+      button.addEventListener('click', () => {
+        isEditable = false;
+        if (!input.hasAttribute('readonly')) {
+          input.setAttribute('readonly', 'readonly');
+        }
+      });
     }, 10);
     if (this.draggableDialog) {
       IDEE.utils.draggabillyElement('.m-dialog .m-modal .m-content', '.m-dialog .m-modal .m-content .m-title');
@@ -252,9 +281,9 @@ export default class MouseSRSControl extends IDEE.impl.Control {
         // eslint-disable-next-line no-underscore-dangle
         srsUnits = newProj.units_;
       } catch (err) {
-        IDEE.dialog.error(getValue('exception.srs'));
         this.srs_ = 'EPSG:4326';
         this.label_ = 'EPSG:4326';
+        IDEE.dialog.error(`${getValue('exception.srs')} ${this.srs_}`);
         // eslint-disable-next-line no-underscore-dangle
         srsUnits = ol.proj.get('EPSG:4326').units_;
       }
