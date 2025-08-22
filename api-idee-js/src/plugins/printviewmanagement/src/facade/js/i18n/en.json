@@ -14,7 +14,7 @@
     "support": "MBTiles and MBTilesVector layers are not supported",
     "error_download_image": "The download could not be completed at this time.",
     "loaderror": "Base64 generation Error",
-    "srs": "Plugin InfoCoordinates: The srs parameter is incorrect. The current map SRS will be used by default."
+    "srs": "The EPSG code entered is not valid. Default will be used: "
   },
   "textHelp": {
     "help1": "The print extension allows you to export both maps from templates and georeferenced images.",
@@ -91,7 +91,8 @@
   "dpi": "DPI (dots per inches)",
   "defaultText": "Enter text",
   "select_srs": "Select a reference system",
-  "choose_create_epsg": "Select an option or create one",
+  "choose_create_epsg": "Add EPSG",
+  "placeholder_custom_epsg": "Enter your EPSG",
   "close": "Close",
   "apply": "Print",
   "clipBoard": "Copy to clipboard",

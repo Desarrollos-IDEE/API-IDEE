@@ -99,3 +99,14 @@
 - Se elimina método cloneOLLayer de MBTiles
 - Se elimina el parámetro implementación en constructor en WFS
 - Se elimina el parámetro implParam de la fachada de WFS
+- Se añade un nuevo parámetro en el fichero de configuración para que el usuario pueda activar/desactivar los niveles de zoom intermedios
+- Se añade nuevo parámetro en el fichero de configuración para definir el DPI con el que se inicializará la instancia del mapa de OpenLayers.
+- Se permite la carga de plantillas creadas por el usuario en el plugin printviewmanagement.
+- Se da la opcion de cambiar el dpi en cualquiera de los métodos de impresión.
+- Se calcula la escala exacta en el control scale.
+- Al utilizar una proyección, ya no es obligatorio añadir el sufijo de la unidad (*m o *d).
+- Se permite definir al vuelo nuevos EPSGs.
+- Se implementa carga al vuelo de EPSG en el plugin printviewmanagement, mousesrs e infocoordinates.
+- Se añade la posibilidad de parametrizar las plantillas a elegir por el usuario en el plugin printviewmanagement.
+- Se refactoriza el CSS de la plantilla a imprimir para que la posición de los elementos sea visualmente correcta.
+- Se cambia la UI del control Scale para indicar los campos editables.

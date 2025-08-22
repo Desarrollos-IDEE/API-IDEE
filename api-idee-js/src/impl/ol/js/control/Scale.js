@@ -103,8 +103,6 @@ class Scale extends Control {
    */
   addZoomLevelListeners() {
     if (this.zoomLevelContainer_ !== null) {
-      this.zoomLevelContainer_.addEventListener('mouseenter', () => { this.zoomLevelContainer_.classList.add('blinking-background'); });
-      this.zoomLevelContainer_.addEventListener('mouseleave', () => { this.zoomLevelContainer_.classList.remove('blinking-background'); });
       this.zoomLevelContainer_.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
           event.preventDefault();
@@ -146,8 +144,6 @@ class Scale extends Control {
    */
   addScaleListeners() {
     if (this.scaleContainer_ !== null) {
-      this.scaleContainer_.addEventListener('mouseenter', () => { this.scaleContainer_.classList.add('blinking-background'); });
-      this.scaleContainer_.addEventListener('mouseleave', () => { this.scaleContainer_.classList.remove('blinking-background'); });
       this.scaleContainer_.addEventListener('focus', () => { this.previousScale_ = this.scaleContainer_.textContent; });
       this.scaleContainer_.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {

@@ -6,10 +6,11 @@
 # Descripción
 
 Plugin que permite utilizar diferentes herramientas de impresión.
-- Impresión de imagen con plantilla.
-- Impresión de imagen (desde servidor o desde cliente).
+- Impresión de imagen con plantilla personalizada.
+- Impresión de imagen desde cliente.
 - Impresión de imágenes de capas precargadas.
 - Posibilidad de añadir fichero de georreferenciación (WLD).
+- Posibilidad de indicar los DPI (dots per inches) de la imagen impresa.
 
 # Dependencias
 
@@ -31,6 +32,24 @@ Ejemplo:
  <link href="https://componentes.idee.es/api-idee/plugins/printviewmanagement/printviewmanagement-1.0.0.ol.min.css" rel="stylesheet" />
  <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/printviewmanagement/printviewmanagement-1.0.0.ol.min.js"></script>
 ```
+Para poder utilizar una de las versiones, basta con indicar la versión en cada una de las dependencias:
+<ul>
+  <li>
+    En caso de usar la versión 1.0:
+    <ul>
+      <li>printviewmanagement-1.0.0.ol.min.js</li>
+      <li>printviewmanagement-1.0.0.ol.min.css</li>
+    </ul>
+  </li>
+    
+  <li>
+    En caso de usar la versión 2.0:
+    <ul>
+      <li>printviewmanagement-2.0.0.ol.min.js</li>
+      <li>printviewmanagement-2.0.0.ol.min.css</li>
+    </ul>
+  </li>
+</ul>
 
 # Parámetros
 
@@ -116,6 +135,124 @@ El constructor se inicializa con un JSON con los siguientes atributos:
   - **filterTemplates**: Listado de nombres de plantillas que queremos tener disponibles, si no se manda el parámetro aparecerán todas por defecto.
   - **logo**: URL de una imagen para añadir como logo en la esquina superior derecha.
 - **defaultOpenControl**: Indica el control que aparecerá abierto al inicio. Por defecto: 0.
+
+# Uso de plantilla personalizada
+Para crear una plantilla personalizada para el plugin de impresión, se deben de seguir estos pasos detallados para garantizar un diseño funcional y compatible:
+
+1. **Formato del archivo**: La plantilla debe ser un archivo HTML. Se puede incluir estilos CSS mediante:
+   - Estilos inline en las etiquetas HTML.
+   - Hojas de estilo externas mediante la etiqueta `<link>`.
+   - Estilos definidos dentro de una etiqueta `<style>` en el mismo archivo.
+
+2. **Adaptación dinámica de estilos**: La creación de estilos CSS debe de tener en cuenta que los elementos de la plantilla deben adaptarse dinámicamente al contenedor principal según los elementos activos o inactivos. Asegúrarse de probar diferentes configuraciones para verificar la adaptabilidad de los elementos.
+
+3. **Propiedades CSS no soportadas**: La librería de exportación html2canvas no admite ciertas propiedades CSS. Evitar usar las siguientes:
+   - `background-blend-mode`
+   - `border-image`
+   - `box-decoration-break`
+   - `box-shadow`
+   - `filter`
+   - `font-variant-ligatures`
+   - `mix-blend-mode`
+   - `object-fit`
+   - `repeating-linear-gradient()`
+   - `writing-mode`
+   - `zoom`
+
+4. **Identificación de elementos editables**: Para que el plugin reconozca los elementos que pueden activarse o desactivarse, debe de añadirse el atributo `data-type` a los elementos correspondientes. Este atributo debe tener uno de los siguientes valores:
+   - `api-idee-template-titulo`
+   - `api-idee-template-texto-libre`
+   - `api-idee-template-leyenda`
+   - `api-idee-template-flecha-norte`
+   - `api-idee-template-escala`
+   - `api-idee-template-borde`
+   
+   Ejemplo:
+   ```html
+   <div class="superior-container" data-type="api-idee-template-titulo">
+   ```
+
+   El elemento texto-libre es un elemento genérico, es decir, se puede introducir en la plantilla tantos elementos texto-libre como sea necesario. Para poder diferenciarlos, ademas del atributo `data-type`, es necesario añadirles el atributo `data-type-name`, el cual se usará internamente para diferenciar los elementos texto-libre. Este atributo puede tener el valor que se desee, aunque hay que tener precaución para que el valor no coincida con otro valor ya asignado a un atributo `data-type-name`.
+
+5. **Uso de imágenes**: Evitar el formato SVG, ya que la librería html2canvas no lo soporta correctamente al exportar. Debe de utilizarse formatos como PNG, JPG o JPEG para las imágenes incluidas en la plantilla.
+
+6. **Diseño de bordes**: Si se desea incluir un borde alrededor del mapa, asegurarse de crear un contenedor con el `id="imagen-mascara"`. Este contenedor es obligatorio, ya que el plugin insertará la previsualización del mapa dentro de él. Ejemplo:
+  ```html
+  <div class="interior-container" data-type="api-idee-template-borde">
+      <div class="cell imagen-mascara" id="imagen-mascara"></div>
+  </div>
+  ```
+
+7. **Contenedor principal**: El contenedor raíz de la plantilla debe tener el `id="api-idee-template-container"` para garantizar su correcto funcionamiento.
+Ejemplo:
+  ```html
+  <div class="api-idee-template-container" id="api-idee-template-container">
+  ```
+
+### Ejemplo de elementos en una plantilla personalizada
+
+A continuación, se muestran ejemplos de elementos correctamente configurados para la plantilla:
+
+- **Elemento de tipo título**:
+   ```html
+   <div class="api-idee-template-container" id="api-idee-template-container">
+       <div class="superior-container" data-type="api-idee-template-titulo">
+           <div class="logo-left">
+               <img src="https://componentes.idee.es/estaticos/imagenes/logos/IDEE-logo.png" alt="Logo IDEE">
+           </div>
+           <div class="titulo-principal" contenteditable="true">Introduzca título</div>
+           <div class="logo-right">
+               <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_1/API_1.png" alt="Logo API-IDEE">
+           </div>
+       </div>
+   </div>
+   ```
+
+- **Elemento de tipo borde**:
+   ```html
+   <div class="interior-container" data-type="api-idee-template-borde">
+       <div class="cell"></div>
+       <div class="cell">
+           <div class="vertical-texts small-text small-top-text">
+               <span class="left-text" id="top-left-coord"></span>
+               <span class="right-text" id="top-right-coord"></span>
+           </div>
+       </div>
+       <div class="cell"></div>
+       <div class="cell small-text">
+           <div class="horizontal-texts">
+               <span class="left-text" id="left-top-coord"></span>
+               <span class="right-text" id="left-bottom-coord"></span>
+           </div>
+       </div>
+       <div class="cell imagen-mascara" id="imagen-mascara"></div>
+       <div class="cell small-text">
+           <div class="horizontal-texts">
+               <span class="left-text" id="right-top-coord"></span>
+               <span class="right-text" id="right-bottom-coord"></span>
+           </div>
+       </div>
+       <div class="cell"></div>
+       <div class="cell small-text">
+           <div class="vertical-texts small-bottom-text">
+               <span class="left-text" id="bottom-left-coord"></span>
+               <span class="right-text" id="bottom-right-coord"></span>
+           </div>
+       </div>
+       <div class="cell"></div>
+   </div>
+   ```
+
+- **Elemento de tipo texto libre**:
+   ```html
+   <div class="inferior-container" data-type="api-idee-template-texto-libre">
+       <div class="cell body-text" contenteditable="true">Introduzca descripción...</div>
+       <div class="cell small-text">
+           <div class="cell horizontal-texts cell-interior" id="current-date"></div>
+           <div class="cell horizontal-texts cell-interior" id="map-epsg"></div>
+       </div>
+   </div>
+   ```
 
 # API-REST
 

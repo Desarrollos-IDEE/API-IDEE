@@ -46,7 +46,7 @@
                                 {{/if}}
                             </td>
                             <td colspan="2">
-                                <div id="m-infocoordinates-comboDatum" class="m-infocoordinates-comboDatum">
+                               <div id="m-infocoordinates-comboDatum" class="m-infocoordinates-comboDatum">
                                     <input
                                         type="text"
                                         id="epsg-selected"
@@ -57,14 +57,13 @@
                                         title="{{translations.select_srs}}"
                                         tabindex="{{order}}"
                                         autocomplete="off"
+                                        readonly="readonly"
                                     />
-                                    <ul title="{{select_srs}}" id="m-infocoordinates-srs-selector" class="m-infocoordinates-srs-selector">
+                                    <ul title="{{translations.select_srs}}" id="m-infocoordinates-srs-selector" class="m-infocoordinates-srs-selector">
                                         <li><a class="m-infocoordinates-option-disabled" href="#" value="default" tabindex="-1" disabled>{{translations.choose_create_epsg}}</a></li>
                                         {{#each projections}}
                                             <li>
-                                                <a href="#" value="{{this.codes.[0]}}">
-                                                    {{this.codes.[0]}}
-                                                </a>
+                                                <a href="#" value="{{this.codes.[0]}}">{{this.codes.[0]}}</a>
                                             </li>
                                         {{/each}}
                                     </ul>

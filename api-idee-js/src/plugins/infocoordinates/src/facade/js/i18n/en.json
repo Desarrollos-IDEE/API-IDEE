@@ -2,7 +2,7 @@
   "exception": {
     "impl": "The implementation used cannot create Infocoordinates controls.",
     "query_profile": "The altitude data for this point could not be queried.",
-    "srs": "InfoCoordinates Plugin: The srs parameter is incorrect. The current map SRS will be used by default."
+    "srs": "The EPSG code entered is not valid. Default will be used: "
   },
   "textHelp": {
     "help1": "Click on the map to obtain the coordinates of a point in the selected reference system.",
@@ -40,6 +40,7 @@
   "displayONAllPoints": "Show coordinates of all points",
   "displayOFFAllPoints": "Hide coordinates of all points",
   "select_srs": "Select a reference system",
-  "choose_create_epsg": "Select an option or create one",
+  "choose_create_epsg": "Add EPSG",
+  "placeholder_custom_epsg": "Enter your EPSG",
   "clipboard": "Result copied to clipboard"
 }

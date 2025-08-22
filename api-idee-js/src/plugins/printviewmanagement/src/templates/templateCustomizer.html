@@ -6,9 +6,9 @@
       {{#each templateElements}}
         <div class="m-customize-template-option">
           <label class="m-custom-checkbox">
-            <input type="checkbox" id="m-show-{{this}}">
+            <input type="checkbox" id="m-show-{{this.id}}" name="m-show-{{this.id}}" checked>
             <span class="m-checkmark"></span>
-            <span class="m-label-text">{{this}}</span>
+            <span class="m-label-text">{{this.label}}</span>
           </label>
         </div>
       {{/each}}
@@ -63,9 +63,10 @@
             title="{{translations.select_srs}}"
             tabindex="{{order}}"
             autocomplete="off"
+            readonly="readonly"
           />
-          <ul title="{{select_srs}}" id="m-customize-template-srs-selector" class="m-customize-template-srs-selector">
-            <li><a class="m-customize-template-option-disabled" href="#" value="default" tabindex="-1" disabled>{{translations.choose_create_epsg}}</a></li>
+          <ul title="{{translations.select_srs}}" id="m-customize-template-srs-selector" class="m-customize-template-srs-selector">
+            <li><a href="#" value="default" tabindex="-1" disabled>{{translations.choose_create_epsg}}</a></li>
             {{#each projectionsOptions}}
               <li><a href="#" value="{{this.codes.[0]}}">{{this.codes.[0]}}</a></li>
             {{/each}}
