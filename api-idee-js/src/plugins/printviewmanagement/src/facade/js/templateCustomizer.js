@@ -786,19 +786,19 @@ export default class TemplateCustomizer extends IDEE.Control {
    */
   setupDpiControl(dpiElementId) {
     const dpiSelect = document.querySelector(dpiElementId);
-    const map = this.previewMap;
+    const map = this.previewMap.getMapImpl();
 
     dpiSelect.addEventListener('change', (e) => {
       this.dpi = e.target.value;
-      const originalSize = map.getMapImpl().getSize();
-      const originalResolution = map.getMapImpl().getView().getResolution();
-      const scaleFactor = this.dpi / 96;
-      const newWidth = Math.round(originalSize[0] * scaleFactor);
-      const newHeight = Math.round(originalSize[1] * scaleFactor);
-      map.getMapImpl().setSize([newWidth, newHeight]);
-      const scaling = Math.min(newWidth / originalSize[0], newHeight / originalSize[1]);
-      map.getMapImpl().getView().setResolution(originalResolution / scaling);
-      map.getMapImpl().updateSize();
+      const dims = this.layoutOptions_.find((layout) => layout.value === this.layout).dimensions;
+      const width = Math.round((dims[1] * this.dpi) / 25.4);
+      const height = Math.round((dims[0] * this.dpi) / 25.4);
+      const size = map.getSize();
+      const viewResolution = map.getView().getResolution();
+      const printSize = [width, height];
+      map.setSize(printSize);
+      const scaling = Math.min(width / size[0], height / size[1]);
+      map.getView().setResolution(viewResolution / scaling);
     });
   }
 
