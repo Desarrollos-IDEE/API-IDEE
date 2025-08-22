@@ -54,9 +54,9 @@ export const LAYOUTS = [
     label: 'A3 - 297x420 mm',
     dimensions: [297, 420],
     default: true,
-    fontSizeMultiplier: 1,
-    letterSpacingMultiplier: 1,
-    lineHeight: 1,
+    fontSizeMultiplier: 0.7,
+    letterSpacingMultiplier: 3,
+    lineHeight: 5,
     scale: 2,
   },
   {
