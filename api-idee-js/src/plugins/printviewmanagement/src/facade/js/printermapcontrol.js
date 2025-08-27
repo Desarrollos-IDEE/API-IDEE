@@ -43,6 +43,8 @@ export default class PrinterMapControl extends IDEE.Control {
       tooltip,
       filterTemplates,
       showDefaultTemplate,
+      defaultDpiOptions,
+      layoutsRestraintFromDpi,
     },
     map,
     statusProxy,
@@ -107,7 +109,14 @@ export default class PrinterMapControl extends IDEE.Control {
      * @private
      * @type {Array<Number>}
      */
-    this.dpiOptions_ = DPI_OPTIONS;
+    this.dpiOptions_ = defaultDpiOptions || DPI_OPTIONS;
+
+    /**
+     * Layouts en los que no se puede modificar el nivel de DPI.
+     * @private
+     * @type {Array<String>}
+     */
+    this.layoutsRestraintFromDpi = layoutsRestraintFromDpi || [];
 
     /**
      * Formatos de salida para la impresión del mapa.
@@ -173,7 +182,7 @@ export default class PrinterMapControl extends IDEE.Control {
      * @private
      * @type {Boolean}
      */
-    this.showDefaultTemplate = (showDefaultTemplate === 'true') || false;
+    this.showDefaultTemplate = showDefaultTemplate || false;
   }
 
   /**
@@ -735,6 +744,7 @@ export default class PrinterMapControl extends IDEE.Control {
         dpiOptions: this.dpiOptions_,
         layoutOptions: this.layoutOptions_,
         projectionsOptions: this.proyectionsDefect_,
+        layoutsRestraintFromDpi: this.layoutsRestraintFromDpi,
         map: this.map_,
         order: this.order,
         helpUrl: this.helpUrl,

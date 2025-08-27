@@ -53,6 +53,7 @@
       <fieldset>
         <legend>{{translations.epsg}}</legend>
         <div class="m-customize-template-option m-customize-template-select-editable">
+          <!-- Deshabilitado hasta que se arregle la reproyección de capas -->
           <input
             type="text"
             id="epsg-selected"
@@ -64,6 +65,7 @@
             tabindex="{{order}}"
             autocomplete="off"
             readonly="readonly"
+            disabled
           />
           <ul title="{{translations.select_srs}}" id="m-customize-template-srs-selector" class="m-customize-template-srs-selector">
             <li><a href="#" value="default" tabindex="-1" disabled>{{translations.choose_create_epsg}}</a></li>
