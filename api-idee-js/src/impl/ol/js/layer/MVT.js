@@ -119,6 +119,12 @@ class MVT extends Vector {
      * por defecto verdadero.
      */
     this.extract = parameters.extract;
+
+    /**
+     * MVT fireLoad_.
+     * Controla el disparo del evento LOAD
+     */
+    this.fireLoad_ = false;
   }
 
   /**
@@ -300,7 +306,11 @@ class MVT extends Vector {
       });
       if (loaded && !this.loaded_) {
         this.loaded_ = true;
+        this.facadeVector_.fire(EventType.LOAD_ALL_TILES);
+      }
+      if (this.fireLoad_ === false) {
         this.facadeVector_.fire(EventType.LOAD);
+        this.fireLoad_ = true;
       }
     }
   }

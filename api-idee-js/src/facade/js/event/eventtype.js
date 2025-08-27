@@ -431,3 +431,11 @@ export const POPUP_REMOVED_TAB = 'popup:removedtab';
  * @api
  */
 export const CHANGE_ROTATION = 'change:rotation';
+
+/**
+ * Evento que se produce cuando se cargan todas las teselas.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const LOAD_ALL_TILES = 'load:alltiles';
