@@ -152,6 +152,33 @@ export function formatImageBase64(base64) {
   return base64.replace(REGEX_FORMAT_IMAGE, '');
 }
 
+// Create loading spinner
+export function createLoadingSpinner() {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', '50');
+  svg.setAttribute('height', '50');
+  svg.setAttribute('viewBox', '0 0 50 50');
+  svg.setAttribute('class', 'loading-spinner');
+
+  const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  circle.setAttribute('cx', '25');
+  circle.setAttribute('cy', '25');
+  circle.setAttribute('r', '20');
+  circle.setAttribute('stroke', '#fff');
+  circle.setAttribute('stroke-width', '5');
+  circle.setAttribute('fill', 'none');
+  circle.setAttribute('stroke-dasharray', '31.4 31.4');
+
+  svg.appendChild(circle);
+
+  const container = document.createElement('div');
+  container.setAttribute('class', 'loading-overlay');
+  container.appendChild(svg);
+  document.body.appendChild(container);
+
+  return container;
+}
+
 // Services SIG Geoprint List
 export const LIST_SERVICES = `
     <section style='max-height: 56vh; overflow-y: auto;'>

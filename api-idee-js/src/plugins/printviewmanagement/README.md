@@ -65,8 +65,6 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 - **tooltip**: Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Impresión del mapa.
 - **isDraggable**: "True" para que el plugin se pueda desplazar, por defecto false.
 - **useProxy**: Define si el plugin utilizará el proxy o no, valores true o false. Por defecto: false.
-- **serverUrl**: URL del servidor Geoprint. Por defecto: https://componentes.cnig.es/geoprint.
-- **printStatusUrl**: URL para consultar el estado de la impresión. Por defecto: https://componentes.cnig.es/geoprint/print/status.
 - **georefImageEpsg**: Indica si el control "Impresión de imágenes de capas precargadas" se añade al plugin (true/false). Por defecto: true.
   - **tooltip**: Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Impresión del mapa.
   - **layers**: Array de objetos con información de las capas a imprimir.
@@ -122,19 +120,28 @@ El constructor se inicializa con un JSON con los siguientes atributos:
     ],
 
   ```
+  - **defaultDpiOptions**: Array de niveles de DPI a elegir por el usuario. Por defecto [72, 150, 300].
 - **georefImage**: Indica si el control "Impresión de imagen (desde servidor o desde cliente)" se añade al plugin (true/false). Por defecto: true.
   - **tooltip**: Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Impresión del mapa.
-  - **printTemplateUrl**: URL con las plantillas.
   - **printSelector**: Añade los dos modos de impresión (true/false). Por defecto: true.
   - **printType**: Define el modo de impresión (client/server), es necesario que printSelector tenga valor false.
+  - **defaultDpiOptions**: Array de niveles de DPI a elegir por el usuario. Por defecto [72, 150, 300].
 - **printermap**:  Indica si el control "Impresión de imagen con plantilla" se añade al plugin (true/false). Por defecto: true.
   - **tooltip**: Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Impresión del mapa.
-  - **printTemplateUrl**: URL con las plantillas a utilizar. Por defecto: https://componentes.cnig.es/geoprint/print/CNIG.
   - **fixedDescription**: Valor booleano que indica si añadir por defecto un texto a la descripción específico de fototeca sin posibilidad de edición (true/false). Por defecto: false.
   - **headerLegend**: URL de una imagen para añadir como leyenda en la parte central de la cabecera.
-  - **filterTemplates**: Listado de nombres de plantillas que queremos tener disponibles, si no se manda el parámetro aparecerán todas por defecto.
-  - **logo**: URL de una imagen para añadir como logo en la esquina superior derecha.
-- **defaultOpenControl**: Indica el control que aparecerá abierto al inicio. Por defecto: 0.
+  - **filterTemplates**: Listado de rutas realtivas o absolutas de las cuales se obtendrán cada una de las plantillas a elegir en el modo de impresión. Por defecto:
+  ```JavaScript
+  "filterTemplates": [
+    "https://componentes.idee.es/estaticos/plantillas/html/templateConBorde.html",
+    "https://componentes.idee.es/estaticos/plantillas/html/templateConCabezeraYBorde.html",
+    "https://componentes.idee.es/estaticos/plantillas/html/templateConFooterYBorde.html",
+    ],
+  ```
+  - **defaultOpenControl**: Indica el control que aparecerá abierto al inicio. Por defecto: 0.
+  - **showDefaultTemplate**: Si se quiere mostrar la opción de elegir la plantilla por defecto que tiene el plugin asignado. Por defecto: false.
+  - **defaultDpiOptions**: Valores DPI a elegir en el modo de impresión. Por defecto 72, 150 y 300.
+  - **layoutsRestraintFromDpi**: Plantillas en las que no se puede elegir el DPI debido al esfuerzo computaciona. Por defecto no se puede en A2, A1, A0 y tamaño pantalla.
 
 # Uso de plantilla personalizada
 Para crear una plantilla personalizada para el plugin de impresión, se deben de seguir estos pasos detallados para garantizar un diseño funcional y compatible:
@@ -292,16 +299,6 @@ URL_API?printviewmanagement=position*collapsed*collapsible*tooltip*isDraggable*s
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
-    <td>serverUrl</td>
-    <td>serverUrl</td>
-    <td>Base64 ✔️ | Separador ✔️</td>
-  </tr>
-  <tr>
-    <td>printStatusUrl</td>
-    <td>printStatusUrl</td>
-    <td>Base64 ✔️ | Separador ✔️</td>
-  </tr>
-  <tr>
     <td>georefImageEpsg (*)</td>
     <td>true/false</td>
     <td>Base64 ✔️ | Separador ✔️</td>
@@ -367,11 +364,12 @@ IDEE.utils.encodeBase64(obj_params);
         legend: 'Imagen (PNOA) ETRS89 UTM',
       },
     ],
+    defaultDpiOptions: [72, 150, 300],
   },
   georefImage: {
     tooltip: 'Georeferenciar imagen',
-    printTemplateUrl: 'https://componentes.cnig.es/geoprint/print/mapexport',
     printSelector: true,
+    defaultDpiOptions: [72, 150, 300],
   },
   printermap: true,
   defaultOpenControl: 3
@@ -412,9 +410,7 @@ const mp = new IDEE.plugin.PrintViewManagement({
   collapsible: true,
   collapsed: true,
   tooltip: 'Imprimir',
-  serverUrl: 'https://componentes.cnig.es/geoprint',
-  printStatusUrl: 'https://componentes.cnig.es/geoprint/print/status',
-  defaultOpenControl: 3
+  defaultOpenControl: 3,
   georefImageEpsg: {
     tooltip: 'Georeferenciar imagen',
     layers: [
@@ -433,19 +429,24 @@ const mp = new IDEE.plugin.PrintViewManagement({
         // EPSG: 'EPSG:4258',
       },
     ],
+    defaultDpiOptions: [72, 150, 300],
   },
   georefImage: {
     tooltip: 'Georeferenciar imagen',
-    printTemplateUrl: 'https://componentes.cnig.es/geoprint/print/mapexport',
     printSelector: false,
     printType: 'client', // 'client' or 'server'
+    defaultDpiOptions: [72, 150, 300],
   },
   printermap: {
-    printTemplateUrl: 'https://componentes.cnig.es/geoprint/print/CNIG',
     // fixedDescription: true,
-    headerLegend: 'https://www.idee.es/csw-codsi-idee/images/cabecera-CODSI.png',
-    filterTemplates: ['A3 Horizontal'],
-    logo: 'https://www.idee.es/csw-codsi-idee/images/cabecera-CODSI.png',
+    filterTemplates: [
+      "https://componentes.idee.es/estaticos/plantillas/html/templateConBorde.html",
+      "https://componentes.idee.es/estaticos/plantillas/html/templateConCabezeraYBorde.html",
+      "https://componentes.idee.es/estaticos/plantillas/html/templateConFooterYBorde.html",
+    ],
+    showDefaultTemplate: true,
+    defaultDpiOptions: [72, 150, 300],
+    layoutsRestraintFromDpi: ['screensize', 'A0', 'A1', 'A2'],
   },
 });
 

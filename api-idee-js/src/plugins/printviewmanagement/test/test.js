@@ -200,13 +200,16 @@ const mp = new PrintViewManagement({
       "https://componentes.idee.es/estaticos/plantillas/html/templateConCabezeraYBorde.html",
       "https://componentes.idee.es/estaticos/plantillas/html/templateConFooterYBorde.html",
     ], // Array de paths que hacen referencia a las plantillas a elegir por el usuario
-    showDefaultTemplate: "true", // Si se quiere mostrar la opción de elegir la plantilla por defecto que tiene el plugin
+    showDefaultTemplate: true, // Si se quiere mostrar la opción de elegir la plantilla por defecto que tiene el plugin
+    defaultDpiOptions: [72, 150, 300], // Valores DPI a elegir en el modo de impresión printermap
+    layoutsRestraintFromDpi: ['screensize', 'A0', 'A1', 'A2'], // Plantillas en las que no se puede elegir el DPI
   },
   // georefImage: true,
   georefImage: { // serverUrl y printStatusUrl añadidos fuera de este.
     tooltip: 'TEST TOOLTIP georefImage',
     printSelector: true, // Activa las opciones de escoger configuraciones de este, si es false se usa "printType" para definir el método default
     printType: 'client', // 'client' | 'server'
+    defaultDpiOptions: [72, 150, 300], // Valores DPI a elegir en el modo de impresión georefImage
   }, // */
   georefImageEpsg: true,
   /* /

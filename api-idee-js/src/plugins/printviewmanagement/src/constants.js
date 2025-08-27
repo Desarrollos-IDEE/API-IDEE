@@ -20,7 +20,6 @@ export const LAYOUTS = [
     fontSizeMultiplier: 0.2,
     letterSpacingMultiplier: 12,
     lineHeight: 14,
-    scale: 5,
   },
   {
     value: 'A0',
@@ -29,7 +28,6 @@ export const LAYOUTS = [
     fontSizeMultiplier: 0.30,
     letterSpacingMultiplier: 8.3,
     lineHeight: 11,
-    scale: 4,
   },
   {
     value: 'A1',
@@ -38,7 +36,6 @@ export const LAYOUTS = [
     fontSizeMultiplier: 0.45,
     letterSpacingMultiplier: 6,
     lineHeight: 5,
-    scale: 3,
   },
   {
     value: 'A2',
@@ -47,7 +44,6 @@ export const LAYOUTS = [
     fontSizeMultiplier: 0.6,
     letterSpacingMultiplier: 6,
     lineHeight: 5,
-    scale: 3,
   },
   {
     value: 'A3',
@@ -57,7 +53,6 @@ export const LAYOUTS = [
     fontSizeMultiplier: 0.7,
     letterSpacingMultiplier: 3,
     lineHeight: 5,
-    scale: 2,
   },
   {
     value: 'A4',
@@ -66,7 +61,6 @@ export const LAYOUTS = [
     fontSizeMultiplier: 0.8,
     letterSpacingMultiplier: 1,
     lineHeight: 1,
-    scale: 2,
   },
   {
     value: 'US Letter',
@@ -75,7 +69,6 @@ export const LAYOUTS = [
     fontSizeMultiplier: 0.7,
     letterSpacingMultiplier: 1,
     lineHeight: 1,
-    scale: 2,
   },
   {
     value: 'A5',
@@ -84,7 +77,6 @@ export const LAYOUTS = [
     fontSizeMultiplier: 0.6,
     letterSpacingMultiplier: 1,
     lineHeight: 1,
-    scale: 2,
   },
   {
     value: 'B4',
@@ -93,7 +85,6 @@ export const LAYOUTS = [
     fontSizeMultiplier: 0.75,
     letterSpacingMultiplier: 1,
     lineHeight: 1,
-    scale: 2,
   },
   {
     value: 'B5',
@@ -102,7 +93,6 @@ export const LAYOUTS = [
     fontSizeMultiplier: 0.65,
     letterSpacingMultiplier: 1,
     lineHeight: 1,
-    scale: 2,
   },
 ];
 

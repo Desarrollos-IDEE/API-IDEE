@@ -2,6 +2,7 @@ import html2canvas from 'html2canvas';
 import TemplateCustomizerImpl from '../../impl/ol/js/templateCustomizer';
 import templateCustomizer from '../../templates/templateCustomizer';
 import { getValue } from './i18n/language';
+import { createLoadingSpinner } from './utils';
 import { PREVIEW_MAP_ORIENTATION } from '../../constants';
 
 const ID_TEMPLATE_ORIENTATION = 'input[name="map-orientation"]';
@@ -30,6 +31,7 @@ export default class TemplateCustomizer extends IDEE.Control {
       dpiOptions,
       layoutOptions,
       projectionsOptions,
+      layoutsRestraintFromDpi,
       order,
       helpUrl,
       templateData,
@@ -99,6 +101,13 @@ export default class TemplateCustomizer extends IDEE.Control {
     this.projectionsOptions_ = projectionsOptions;
 
     /**
+     * Layouts en los que no está permitido el uso de DPI
+     * @private
+     * @type {Array<string>}
+     */
+    this.layoutsRestraintFromDpi = layoutsRestraintFromDpi;
+
+    /**
      * Datos de la plantilla que se personaliza
      * @private
      * @type {Object}
@@ -142,6 +151,13 @@ export default class TemplateCustomizer extends IDEE.Control {
     this.dpi = this.dpiOptions_[0];
 
     /**
+     * DPI base para el cálculo del parametro scale de la libreria html2canvas
+     * @private
+     * @type {number}
+     */
+    this.baseDpi_ = 48;
+
+    /**
      * Escala inicial del mapa de previsualización
      * @private
      * @type {number|null}
@@ -161,6 +177,13 @@ export default class TemplateCustomizer extends IDEE.Control {
      * @type {Array<Object>}
      */
     this.freeTextElements_ = [];
+
+    /**
+     * Elemento SVG de carga
+     * @private
+     * @type {HTMLElement}
+     */
+    this.loadingOverlay_ = null;
 
     this.init();
     this.addEvents();
@@ -226,6 +249,7 @@ export default class TemplateCustomizer extends IDEE.Control {
 
     const closeButton = buttonContainer.querySelector('button');
     closeButton.innerHTML = getValue('close');
+    closeButton.id = 'close-button';
     closeButton.style.width = '75px';
     closeButton.style.backgroundColor = '#71a7d3';
     closeButton.style.marginRight = '10px';
@@ -242,8 +266,6 @@ export default class TemplateCustomizer extends IDEE.Control {
     applyButton.addEventListener('click', () => {
       const config = this.returnTemplateConfig();
       this.toggleEvent(config);
-      this.cleanTemplateResources();
-      closeButton.click();
     });
 
     closeButton.addEventListener('click', () => {
@@ -786,19 +808,8 @@ export default class TemplateCustomizer extends IDEE.Control {
    */
   setupDpiControl(dpiElementId) {
     const dpiSelect = document.querySelector(dpiElementId);
-    const map = this.previewMap.getMapImpl();
-
     dpiSelect.addEventListener('change', (e) => {
       this.dpi = e.target.value;
-      const dims = this.layoutOptions_.find((layout) => layout.value === this.layout).dimensions;
-      const width = Math.round((dims[1] * this.dpi) / 25.4);
-      const height = Math.round((dims[0] * this.dpi) / 25.4);
-      const size = map.getSize();
-      const viewResolution = map.getView().getResolution();
-      const printSize = [width, height];
-      map.setSize(printSize);
-      const scaling = Math.min(width / size[0], height / size[1]);
-      map.getView().setResolution(viewResolution / scaling);
     });
   }
 
@@ -962,6 +973,11 @@ export default class TemplateCustomizer extends IDEE.Control {
         this.layout = selectedLayout.value;
         this.applyLayout(selectedLayout);
       }
+      if (this.layoutsRestraintFromDpi.includes(this.layout)) {
+        document.querySelector(ID_TEMPLATE_DPI).disabled = true;
+      } else {
+        document.querySelector(ID_TEMPLATE_DPI).disabled = false;
+      }
     });
   }
 
@@ -1015,20 +1031,31 @@ export default class TemplateCustomizer extends IDEE.Control {
    * Genera una imagen en base64 del mapa de previsualización
    * @returns {Promise<string>} Promesa que resuelve con la imagen en base64
    */
-  async generateMapImage64() {
+  async generateTemplateImage64() {
     const templateContainer = document.querySelector(ID_CONTAINER_DEFAULT_TEMPLATE);
     const currentLayout = this.layoutOptions_.find((layout) => layout.value === this.layout);
     const originalStyles = this.applyExportStyles(currentLayout);
+    const html2canvasScale = this.getHtml2CanvasScale(this.dpi);
     const canvas = await html2canvas(templateContainer, {
       useCORS: true,
       allowTaint: true,
       backgroundColor: 'white',
-      scale: currentLayout.scale,
+      scale: html2canvasScale,
     });
     if (this.styleContainer_) {
       this.styleContainer_.textContent = originalStyles;
     }
     return canvas.toDataURL('image/png', 1.0);
+  }
+
+  /**
+   * Funcion que devuelve el factor de escala de la libreria
+   * html2canvas según el dpi elegido.
+   * @param {Number} dpi DPI elegido por el usuario
+   * @returns {Number} Factor de escala para html2canvas
+   */
+  getHtml2CanvasScale(dpi) {
+    return Number(dpi) / this.baseDpi_;
   }
 
   /**
@@ -1078,19 +1105,90 @@ export default class TemplateCustomizer extends IDEE.Control {
    * @param {Object} config - Configuración de la plantilla
    */
   async toggleEvent(config) {
-    const image64 = await this.generateMapImage64();
-    const event = new CustomEvent('templateConfigApplied', {
-      detail: { image64, config },
-    });
-    document.dispatchEvent(event);
+    this.loadingOverlay_ = createLoadingSpinner();
+    this.generateMapImage64(config);
+  }
 
-    if (this.onApplyCallback) {
-      this.onApplyCallback({
-        instancePreviewMap: this.previewMap.getMapImpl(),
-        imagePreviewMap: image64,
-        layout: this.layout,
-        orientation: this.mapOrientation,
+  /**
+   * Genera la imagen en base 64 del visor con el dpi elegido
+   * @param {Object} config - Configuración de la plantilla
+   */
+  generateMapImage64(config) {
+    const map = this.previewMap.getMapImpl();
+    const originalSize = map.getSize();
+    const originalResolution = map.getView().getResolution();
+
+    const scaleFactor = this.dpi / 72;
+    const newWidth = Math.round(originalSize[0] * scaleFactor);
+    const newHeight = Math.round(originalSize[1] * scaleFactor);
+    map.once('rendercomplete', async () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+      const context = canvas.getContext('2d');
+      Array.prototype.forEach.call(
+        map.getViewport().querySelectorAll('.ol-layer canvas'),
+        (layerCanvas) => {
+          if (layerCanvas.width > 0) {
+            const opacity = layerCanvas.parentNode.style.opacity || '1';
+            context.globalAlpha = Number(opacity);
+            const transform = layerCanvas.style.transform;
+
+            if (transform) {
+              const matrix = transform
+                .match(/^matrix\(([^(]*)\)$/)[1]
+                .split(',')
+                .map(Number);
+              context.setTransform(...matrix);
+            }
+
+            context.drawImage(layerCanvas, 0, 0, newWidth, newHeight);
+          }
+        },
+      );
+      map.setSize(originalSize);
+      map.getView().setResolution(originalResolution);
+
+      this.insertMapImageIntoTemplate(canvas.toDataURL('image/png'));
+      const templateImage64 = await this.generateTemplateImage64();
+      const event = new CustomEvent('templateConfigApplied', {
+        detail: { templateImage64, config },
       });
-    }
+      document.dispatchEvent(event);
+
+      if (this.onApplyCallback) {
+        this.onApplyCallback({
+          instancePreviewMap: this.previewMap.getMapImpl(),
+          imagePreviewMap: templateImage64,
+          layout: this.layout,
+          orientation: this.mapOrientation,
+        });
+      }
+      const closeButton = document.querySelector('#close-button');
+      closeButton.click();
+      if (this.loadingOverlay_) {
+        this.loadingOverlay_.remove();
+        this.loadingOverlay_ = null;
+      }
+    });
+    map.setSize([newWidth, newHeight]);
+    const scaling = Math.min(newWidth / originalSize[0], newHeight / originalSize[1]);
+    map.getView().setResolution(originalResolution / scaling);
+  }
+
+  /**
+   * Se crea elemento HTML img y en el src se introduce la imagen del mapa en base 64
+   * @param {String} mapImage64 Imagen del mapa en base 64
+   */
+  insertMapImageIntoTemplate(mapImage64) {
+    const img = document.createElement('img');
+    img.src = mapImage64;
+    img.style.width = '100%';
+    img.style.height = '100%';
+    const imagenMascara = document.querySelector(ID_MAP_CONTAINER_TEMPLATE);
+    const containerId = imagenMascara ? MAP_CONTAINER_TEMPLATE : MAP_CONTAINER;
+    const maskImageContainer = document.querySelector(`#${containerId}`);
+    maskImageContainer.innerHTML = '';
+    maskImageContainer.appendChild(img);
   }
 }
