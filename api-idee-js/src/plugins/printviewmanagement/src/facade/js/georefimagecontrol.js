@@ -7,7 +7,7 @@ import georefimageHTML from '../../templates/georefimage';
 import { getValue } from './i18n/language';
 import {
   innerQueueElement, removeLoadQueueElement, createWLD, createZipFile,
-  generateTitle, getBase64Image, formatImageBase64,
+  generateTitle, getBase64Image, formatImageBase64, createLoadingSpinner,
 } from './utils';
 import { DPI_OPTIONS, GEOREFIMAGE_FORMATS } from '../../constants';
 // ID ELEMENTS
@@ -32,7 +32,14 @@ export default class GeorefimageControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api stable
    */
-  constructor(map, statusProxy, useProxy) {
+  constructor(
+    {
+      defaultDpiOptions,
+    },
+    map,
+    statusProxy,
+    useProxy,
+  ) {
     if (IDEE.utils.isUndefined(GeorefimageControlImpl)
       || (IDEE.utils.isObject(GeorefimageControlImpl)
       && IDEE.utils.isNullOrEmpty(Object.keys(GeorefimageControlImpl)))) {
@@ -115,7 +122,7 @@ export default class GeorefimageControl extends IDEE.Control {
      * @private
      * @type {Array<Number>}
      */
-    this.dpisOptions_ = DPI_OPTIONS;
+    this.dpisOptions_ = defaultDpiOptions || DPI_OPTIONS;
 
     /**
      * Formatos de salida de la imagen
@@ -144,6 +151,13 @@ export default class GeorefimageControl extends IDEE.Control {
      * @type {Boolean}
      */
     this.useProxy = useProxy;
+
+    /**
+     * Elemento SVG de carga
+     * @private
+     * @type {HTMLElement}
+     */
+    this.loadingOverlay_ = null;
   }
 
   /**
@@ -265,6 +279,8 @@ export default class GeorefimageControl extends IDEE.Control {
       title,
       this.elementQueueContainer_,
     );
+
+    this.loadingOverlay_ = createLoadingSpinner();
 
     const map = this.map_.getMapImpl();
     const originalSize = map.getSize();
@@ -458,6 +474,10 @@ export default class GeorefimageControl extends IDEE.Control {
 
     queueEl.addEventListener('click', zipEvent);
     queueEl.addEventListener('keydown', zipEvent);
+    if (this.loadingOverlay_) {
+      this.loadingOverlay_.remove();
+      this.loadingOverlay_ = null;
+    }
   }
 
   /**
