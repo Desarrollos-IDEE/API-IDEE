@@ -110,3 +110,6 @@
 - Se añade la posibilidad de parametrizar las plantillas a elegir por el usuario en el plugin printviewmanagement.
 - Se refactoriza el CSS de la plantilla a imprimir para que la posición de los elementos sea visualmente correcta.
 - Se cambia la UI del control Scale para indicar los campos editables.
+- Se omite la representación en tiempo real del cambio de DPI en la plantilla de impresión.
+- Se añade SVG de carga al exportar el mapa en cualquier de los métodos de impresión.
+- Se parametriza los niveles de DPI y los layouts en los que no está permitido el cambio de DPI.
