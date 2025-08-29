@@ -187,7 +187,7 @@ class WMS extends LayerBase {
      * @param {string|Array} layerNames Nombres de las capas
      * @return {string} Estilos procesados
      */
-    this.processStyles_ = function processStyles(styles, layerNames) {
+    this.processStyles = function processStyles(styles, layerNames) {
       if (isNullOrEmpty(styles) || isNullOrEmpty(layerNames)) {
         return styles;
       }
@@ -616,7 +616,7 @@ class WMS extends LayerBase {
       const layerNames = isNullOrEmpty(this.layers) ? this.name : this.layers;
 
       // Procesar los estilos para que coincidan con el número de nombres de capas
-      const processedStyles = this.processStyles_(this.styles, layerNames);
+      const processedStyles = this.processStyles(this.styles, layerNames);
 
       const layerParams = {
         LAYERS: layerNames,
@@ -961,7 +961,7 @@ class WMS extends LayerBase {
 
     // Procesar los estilos para que coincidan con el número de nombres de capas
     const layerNames = isNullOrEmpty(this.layers) ? this.name : this.layers;
-    const processedStyles = this.processStyles_(newStyles, layerNames);
+    const processedStyles = this.processStyles(newStyles, layerNames);
 
     const ol3Layer = this.getLayer();
     if (!isNullOrEmpty(ol3Layer)) {
