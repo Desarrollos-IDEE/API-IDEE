@@ -13,7 +13,8 @@
     "tile": "The request for some tile has caused a printing error. <br/>Please try again.",
     "support": "MBTiles and MBTilesVector layers are not supported",
     "error_download_image": "The download could not be completed at this time.",
-    "loaderror": "Base64 generation Error"
+    "loaderror": "Base64 generation Error",
+    "srs": "The EPSG code entered is not valid. Default will be used: "
   },
   "textHelp": {
     "help1": "The print extension allows you to export both maps from templates and georeferenced images.",
@@ -89,6 +90,9 @@
   "scale": "Scale",
   "dpi": "DPI (dots per inches)",
   "defaultText": "Enter text",
+  "select_srs": "Select a reference system",
+  "choose_create_epsg": "Add EPSG",
+  "placeholder_custom_epsg": "Enter your EPSG",
   "close": "Close",
   "apply": "Print",
   "clipBoard": "Copy to clipboard",

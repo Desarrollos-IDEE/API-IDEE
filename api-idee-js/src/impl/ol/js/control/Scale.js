@@ -6,7 +6,6 @@ import Utils from 'impl/util/Utils';
 import { getValue } from 'IDEE/i18n/language';
 import * as Dialog from 'IDEE/dialog';
 import Exception from 'IDEE/exception/exception';
-import { METERS_PER_UNIT } from 'ol/proj';
 import Control from './Control';
 
 /**
@@ -34,11 +33,9 @@ export const formatLongNumber = (num) => {
 const updateElement = (container, map) => {
   const containerVariable = container;
   const view = map.getMapImpl().getView();
-  const unidades = view.getProjection().getUnits();
-  const unidadesMapa = METERS_PER_UNIT[unidades];
   const resolution = view.getResolution();
-  const dpi = IDEE.config.DPI || 72;
-  const num = Utils.getScaleForResolution(resolution, unidadesMapa, dpi);
+  const dpi = IDEE.config.DPI;
+  const num = Utils.getScaleForResolution(resolution, view, dpi);
 
   if (!isNullOrEmpty(num)) {
     containerVariable.innerHTML = formatLongNumber(num);
@@ -106,8 +103,6 @@ class Scale extends Control {
    */
   addZoomLevelListeners() {
     if (this.zoomLevelContainer_ !== null) {
-      this.zoomLevelContainer_.addEventListener('mouseenter', () => { this.zoomLevelContainer_.classList.add('blinking-background'); });
-      this.zoomLevelContainer_.addEventListener('mouseleave', () => { this.zoomLevelContainer_.classList.remove('blinking-background'); });
       this.zoomLevelContainer_.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
           event.preventDefault();
@@ -149,22 +144,22 @@ class Scale extends Control {
    */
   addScaleListeners() {
     if (this.scaleContainer_ !== null) {
-      this.scaleContainer_.addEventListener('mouseenter', () => { this.scaleContainer_.classList.add('blinking-background'); });
-      this.scaleContainer_.addEventListener('mouseleave', () => { this.scaleContainer_.classList.remove('blinking-background'); });
       this.scaleContainer_.addEventListener('focus', () => { this.previousScale_ = this.scaleContainer_.textContent; });
       this.scaleContainer_.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
           event.preventDefault();
           const scaleText = this.scaleContainer_.textContent.trim();
+          const unformatScaleText = scaleText.replace(/\./g, '');
           try {
-            if (!/^\d+$/.test(scaleText)) {
+            if (!/^\d+$/.test(unformatScaleText)) {
               Exception(getValue('exception').invalid_scale);
             }
             this.scaleContainer_.textContent = scaleText;
             const view = this.facadeMap_.getMapImpl().getView();
             const resolution = Utils.getCurrentScale(
-              this.facadeMap_,
+              this.facadeMap_.getMapImpl().getView(),
               scaleText,
+              IDEE.config.DPI,
             );
             view.animate({
               center: view.getCenter(),

@@ -1,3 +1,5 @@
+import proj4 from 'proj4';
+
 /**
  * Esta función reproyecta coordenadas de un sistema de referencia a otro.
  *
@@ -10,8 +12,7 @@
  * @api
  */
 const reproject = (coordinates, sourceProj, destProj) => {
-  // TODO
-  return null;
+  return proj4(sourceProj, destProj, coordinates);
 };
 
 export default reproject;

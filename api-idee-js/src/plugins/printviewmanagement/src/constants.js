@@ -15,54 +15,84 @@ export const DPI_OPTIONS = [72, 150, 300];
 export const LAYOUTS = [
   {
     value: 'screensize',
-    label: `Pantalla - ${window.innerWidth}x${window.innerHeight} px`,
-    dimensions: [window.innerWidth, window.innerHeight],
+    label: `Pantalla - ${window.innerHeight}x${window.innerWidth} px`,
+    dimensions: [window.innerHeight, window.innerWidth],
+    fontSizeMultiplier: 0.2,
+    letterSpacingMultiplier: 12,
+    lineHeight: 14,
   },
   {
     value: 'A0',
     label: 'A0 - 841x1189 mm',
     dimensions: [841, 1189],
+    fontSizeMultiplier: 0.30,
+    letterSpacingMultiplier: 8.3,
+    lineHeight: 11,
   },
   {
     value: 'A1',
     label: 'A1 - 594x841 mm',
     dimensions: [594, 841],
+    fontSizeMultiplier: 0.45,
+    letterSpacingMultiplier: 6,
+    lineHeight: 5,
   },
   {
     value: 'A2',
     label: 'A2 - 420x594 mm',
     dimensions: [420, 594],
+    fontSizeMultiplier: 0.6,
+    letterSpacingMultiplier: 6,
+    lineHeight: 5,
   },
   {
     value: 'A3',
     label: 'A3 - 297x420 mm',
     dimensions: [297, 420],
     default: true,
+    fontSizeMultiplier: 0.7,
+    letterSpacingMultiplier: 3,
+    lineHeight: 5,
   },
   {
     value: 'A4',
     label: 'A4 - 210x297 mm',
     dimensions: [210, 297],
+    fontSizeMultiplier: 0.8,
+    letterSpacingMultiplier: 1,
+    lineHeight: 1,
   },
   {
     value: 'US Letter',
     label: 'US Letter - 215.9x279.4 mm',
     dimensions: [215.9, 279.4],
+    fontSizeMultiplier: 0.7,
+    letterSpacingMultiplier: 1,
+    lineHeight: 1,
   },
   {
     value: 'A5',
     label: 'A5 - 148x210 mm',
     dimensions: [148, 210],
+    fontSizeMultiplier: 0.6,
+    letterSpacingMultiplier: 1,
+    lineHeight: 1,
   },
   {
     value: 'B4',
     label: 'B4 - 257x364 mm',
     dimensions: [257, 364],
+    fontSizeMultiplier: 0.75,
+    letterSpacingMultiplier: 1,
+    lineHeight: 1,
   },
   {
     value: 'B5',
     label: 'B5 - 182x257 mm',
     dimensions: [182, 257],
+    fontSizeMultiplier: 0.65,
+    letterSpacingMultiplier: 1,
+    lineHeight: 1,
   },
 ];
 
@@ -96,14 +126,7 @@ export const GEOREFIMAGEEPSG_FORMAT = 'jpg';
  * @private
  * @type {Array<String>}
  */
-export const PROJECTIONS_TEMPLATE = [
-  'EPSG:25829',
-  'EPSG:25830',
-  'EPSG:25831',
-  'EPSG:3857',
-  'EPSG:4326',
-  'EPSG:4258',
-];
+export const PROJECTIONS_TEMPLATE = IDEE.impl.ol.js.projections.getSupportedProjs();
 
 /**
  * Elementos a insertar dentro de una plantilla personalizada.

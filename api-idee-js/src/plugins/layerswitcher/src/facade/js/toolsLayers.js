@@ -183,6 +183,9 @@ export const legendInfo = (evt, layer, useProxy, statusProxy) => {
             const text = document.createTextNode(getValue(I18N_LEGEND_ERROR));
             messageError.appendChild(text);
             img.parentNode.insertBefore(messageError, img);
+            if (!IDEE.utils.isNullOrEmpty(img)) {
+              img.src = '';
+            }
           } else if (newLegend !== '') {
             legend.querySelector('img').src = newLegend;
           } else {
@@ -355,11 +358,19 @@ const changeLayerConfig = (layer, otherStyles) => {
         }
       }
     } else {
-      layer.getImpl().getLayer().getSource().updateParams({ STYLES: styleSelected });
+      let styleProcessed = styleSelected;
+      if (layer instanceof IDEE.layer.WMS) {
+        const layerImpl = layer.getImpl();
+        const layerNames = IDEE.utils.isNullOrEmpty(layerImpl.layers)
+          ? layerImpl.name
+          : layerImpl.layers;
+        styleProcessed = layer.getImpl().processStyles(styleProcessed, layerNames);
+      }
+      layer.getImpl().getLayer().getSource().updateParams({ STYLES: styleProcessed });
       const cm = layer.capabilitiesMetadata;
       if (!IDEE.utils.isNullOrEmpty(cm) && !IDEE.utils.isNullOrEmpty(cm.style)) {
         const filtered = layer.capabilitiesMetadata.style.filter((style) => {
-          return style.Name === styleSelected;
+          return style.Name === styleProcessed;
         });
 
         if (filtered.length > 0 && filtered[0].LegendURL.length > 0) {

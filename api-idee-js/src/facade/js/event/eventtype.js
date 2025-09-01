@@ -129,6 +129,14 @@ export const ADDED_XYZ = 'added:xyz';
 export const ADDED_TMS = 'added:tms';
 
 /**
+ * Evento que se produce al añadir wmc.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const ADDED_WMC = 'added:wmc';
+
+/**
  * Evento que se produce al añadir QuickLayers.
  * @public
  * @type {string}
@@ -159,6 +167,22 @@ export const ADDED_TILES3D = 'added:tiles3d';
  * @api
  */
 export const ADDED_TERRAIN = 'added:terrain';
+
+/**
+ * Evento que se produce al añadir GeoPackage.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const ADDED_GEOPACKAGE = 'added:geopackage';
+
+/**
+ * Evento que se produce al añadir GeoPackageTile.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const ADDED_GEOPACKAGE_TILE = 'added:geopackagetile';
 
 /**
  * Evento que se produce al eliminar layer.
@@ -265,6 +289,14 @@ export const LEAVE_FEATURES = 'leave:features';
 export const LOAD = 'load';
 
 /**
+ * Evento que se produce al cargarse las capas.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const LOAD_LAYERS = 'load:layers';
+
+/**
  * Evento que se produce al pasar un estado completado.
  * @public
  * @type {string}
@@ -279,6 +311,14 @@ export const COMPLETED = 'completed';
  * @api
  */
 export const CHANGE = 'change';
+
+/**
+ * Evento que se produce cuando ha cambiado una capa WMC.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const CHANGE_WMC = 'change:wmc';
 
 /**
  * Evento que se produce cuando se ha cambiado una proyección.
@@ -391,3 +431,11 @@ export const POPUP_REMOVED_TAB = 'popup:removedtab';
  * @api
  */
 export const CHANGE_ROTATION = 'change:rotation';
+
+/**
+ * Evento que se produce cuando se cargan todas las teselas.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const LOAD_ALL_TILES = 'load:alltiles';

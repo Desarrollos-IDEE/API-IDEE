@@ -13,7 +13,8 @@
     "tile": "La petición de alguna tesela ha provocado un error en la impresión. <br/>Por favor, inténtelo de nuevo.",
     "support": "Las capas MBTiles y MBTilesVector no están soportadas.",
     "error_download_image": "No ha podido realizarse la descarga.",
-    "loaderror": "Error de generado de base64"
+    "loaderror": "Error de generado de base64",
+    "srs": "El código EPSG introducido no es válido. Se usará por defecto: "
   },
   "textHelp": {
     "help1": "La extensión de imprimir permite exportar tanto mapas a partir de plantillas como imágenes georreferenciadas.",
@@ -89,6 +90,9 @@
   "scale": "Escala",
   "dpi": "DPI (puntos por pulgadas)",
   "defaultText": "Introduzca texto",
+  "select_srs": "Seleccione un sistema de referencia",
+  "choose_create_epsg": "Añade EPSG",
+  "placeholder_custom_epsg": "Escribe tu EPSG",
   "close": "Cerrar",
   "apply": "Imprimir",
   "clipBoard": "Copiar al portapapeles",

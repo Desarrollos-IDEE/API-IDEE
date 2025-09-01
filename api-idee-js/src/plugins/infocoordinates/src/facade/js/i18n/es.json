@@ -1,7 +1,8 @@
 {
   "exception": {
     "impl": "La implementación no puede crear controles de Infocoordinates",
-    "query_profile": "No se han podido consultar los datos de altitud para este punto."
+    "query_profile": "No se han podido consultar los datos de altitud para este punto.",
+    "srs": "El código EPSG introducido no es válido. Se usará por defecto: "
   },
   "textHelp": {
     "help1": "Haga clic en el mapa para obtener las coordenadas de un punto en el sistema de referencia seleccionado.",
@@ -38,5 +39,8 @@
   "copyAllPoints": "Copiar todos los puntos",
   "displayONAllPoints": "Mostrar coordenadas de todos los puntos",
   "displayOFFAllPoints": "Ocultar coordenadas de todos los puntos",
+  "select_srs": "Selecciona un sistema de referencia",
+  "choose_create_epsg": "Añadir EPSG",
+  "placeholder_custom_epsg": "Escribe tu EPSG",
   "clipboard": "Resultado copiado al portapapeles"
 }

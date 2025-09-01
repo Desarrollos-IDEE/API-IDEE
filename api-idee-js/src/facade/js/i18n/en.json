@@ -101,9 +101,6 @@
       "text2": "In the dropdown you can see all the available implementations (OpenLayers, Cesium, etc)."
     }
   },
-  "section": {
-    "title": "Section"
-  },
   "popup": {
     "msg": "Take me there"
   },
@@ -291,11 +288,22 @@
     "transparent_deprecated": "'transparent' parameter has been deprecated, it is recommended to use 'isBase' instead.",
     "getOL3Layer_deprecated": "The getOL3Layer method has been deprecated, it is recommended to use the getLayer method.",
     "setOL3Layer_deprecated": "The setOL3Layer method has been deprecated, it is recommended to use the setLayer method.",
+    "geopackagetile_method": "The implementation used can not create GeoPackageTile layers.",
+    "addgeopackagetile_method": "The implementation used does not have addGeoPackageTile method.",
+    "getgeopackagetile_method": "The implementation used does not have getGeoPackageTile method.",
+    "removegeopackagetile_method": "The implementation used does not have removeGeoPackageTile method.",
+    "wmc_method": "The used implementation can not create WMC layers",
     "sectionlayer_method": "The used implementation can not create Section layer.",
     "getsections_method": "The used implementation does not have the getSections method.",
     "addsections_method": "The used implementation does not have the addSections method.",
     "removesections_method": "The used implementation does not have the removeSections method.",
     "not_layergroup_in_section": "It is not possible to add a layer group in a section.",
-    "not_sections_in_layergroup": "It is not possible to add a section in a layer group."
+    "setzindex_method": "It is not possible to apply zIndex to WMC.",
+    "setlayer_method": "It is not possible to set the implementation layer of a WMC.",
+    "setmaxextent_no_apply": "It is not possible to apply the maximum extension to a WMC.",
+    "setminzoom_no_apply": "It is not possible to apply minimum zoom to the WMC layer.",
+    "setmaxzoom_no_apply": "It is not possible to apply maximum zoom to the WMC layer.",
+    "setminscale_no_apply": "It is not possible to apply minimum scale to the WMC layer.",
+    "setmaxscale_no_apply": "It is not possible to apply maximum scale to the WMC layer."
   }
 }

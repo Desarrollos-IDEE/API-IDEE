@@ -73,6 +73,8 @@ export const isNullOrEmpty = (obj) => {
 
   if (isNull(obj)) {
     nullOrEmpty = true;
+  } else if (Object.getPrototypeOf(obj) === Object.prototype) {
+    nullOrEmpty = Object.keys(obj).length === 0;
   } else if (isArray(obj)) {
     nullOrEmpty = (!(obj.length > 0) || !obj.some((objElem) => !isNullOrEmpty(objElem)));
   } else {
@@ -1637,12 +1639,12 @@ export const copyImageClipBoard = (map, canva) => {
  */
 export const findUrls = (text) => {
   const regex = /https?:\/\/[^\s"'<>]+/g;
-  const matches = text.match(regex);
+  const matches = String(text).match(regex) || [];
   const uniqueMatches = [...new Set(matches)];
 
   // Regex para encontrar URLs dentro de los atributos href o src (preservando el atributo completo)
   const regexHtmlAttrs = /(?:href|src)\s*=\s*(?:"|'|)(https?:\/\/[^\s"'>]+)(?:"|'|)/g;
-  const matchesHTML = text.match(regexHtmlAttrs);
+  const matchesHTML = String(text).match(regexHtmlAttrs) || [];
   const uniquematchesHTML = [...new Set(matchesHTML)];
 
   if (!uniqueMatches) return [];
@@ -1775,6 +1777,137 @@ export const getSystem = () => {
  */
 export const reproject = (coordinates, sourceProj, destProj) => {
   return reproj(coordinates, sourceProj, destProj);
+};
+
+/**
+ * Este método convierte una cadena WKT (Well-Known Text) de un sistema de
+ * referencia de coordenadas (CRS) en un objeto JSON estructurado,
+ * interpretando correctamente jerarquías, claves repetidas y valores anidados.
+ *
+ * - Si una clave aparece varias veces (como MEMBER), se agrupa en un array.
+ * - Si un valor no tiene clave explícita, se asigna a "name".
+ * - Si hay dos valores simples, se convierten en un objeto { clave: valor }.
+ * - Si hay un solo valor, se devuelve directamente.
+ *
+ * @public
+ * @function
+ * @param {string} wkt Cadena WKT que representa un sistema de referencia de coordenadas.
+ * @returns {Object} Objeto JSON estructurado equivalente al WKT.
+ * @api
+ */
+export const parseCRSWKTtoJSON = (wkt) => {
+  const tokens = wkt.match(/"[^"]*"|[[\],]|[^\s[\],]+/g);
+  let index = 0;
+
+  const parseValue = (token) => {
+    if (token.startsWith('"') && token.endsWith('"')) {
+      return token.slice(1, -1);
+    }
+
+    if (!Number.isNaN(Number(token))) {
+      return Number(token);
+    }
+
+    return token;
+  };
+
+  const parseArrayOrObject = (parentKey) => {
+    const values = [];
+    let hasNested = false;
+
+    while (index < tokens.length) {
+      const token = tokens[index];
+
+      if (token === ']') {
+        index += 1;
+        break;
+      }
+
+      if (token === ',') {
+        index += 1;
+      }
+
+      if (tokens[index + 1] === '[') {
+        const key = tokens[index];
+        index += 2; // skip key and '['
+        const value = parseArrayOrObject(key);
+        values.push({ [key]: value });
+        hasNested = true;
+      } else {
+        const value = parseValue(tokens[index]);
+        index += 1;
+        values.push(value);
+      }
+    }
+
+    if (!hasNested) {
+      if (values.length === 1) return values[0];
+      if (values.length === 2 && typeof values[0] !== 'object') {
+        return { [values[0]]: values[1] };
+      }
+      return values;
+    }
+
+    const obj = {};
+
+    if (values.length > 0 && typeof values[0] !== 'object') {
+      obj.name = values.shift();
+    }
+
+    values.forEach((item) => {
+      if (typeof item === 'object' && !Array.isArray(item)) {
+        const [key] = Object.keys(item);
+        const value = item[key];
+
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          if (!Array.isArray(obj[key])) {
+            obj[key] = [obj[key]];
+          }
+          obj[key].push(value);
+        } else {
+          obj[key] = value;
+        }
+      }
+    });
+
+    return obj;
+  };
+
+  const parseRoot = () => {
+    const key = tokens[index];
+    index += 2; // skip key and '['
+    const value = parseArrayOrObject(key);
+    return { [key]: value };
+  };
+
+  return parseRoot();
+};
+
+/**
+ * Esta función filtra una lista de elementos en base al valor del input.
+ *
+ * @param {String} inputId ID del input que contiene el filtro.
+ * @param {String} listId ID de la lista que se va a filtrar.
+ * @function
+ * @api
+ */
+export const filterList = (inputId, listId) => {
+  const input = document.getElementById(inputId);
+  const filter = input.value.toUpperCase();
+  const ul = document.getElementById(listId);
+  const li = ul.getElementsByTagName('li');
+
+  for (let i = 0; i < li.length; i += 1) {
+    const a = li[i].getElementsByTagName('a')[0];
+    if (!a.hasAttribute('disabled')) {
+      const txtValue = a.textContent || a.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        li[i].style.display = '';
+      } else {
+        li[i].style.display = 'none';
+      }
+    }
+  }
 };
 
 /**

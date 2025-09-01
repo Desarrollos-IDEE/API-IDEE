@@ -55,6 +55,17 @@ export default class TemplateCustomizer extends IDEE.impl.Control {
     return ol.proj.transform(coordinates, sourceProjection, targetProjection);
   }
 
+  /**
+   * Función auxiliar para transformar un extent entre proyecciones
+   * @param {ol.View.Extent} extent
+   * @param {String} sourceProjection
+   * @param {String} targetProjection
+   * @returns {ol.View.Extent} Extent transformado
+   */
+  transformExtent(extent, sourceProjection, targetProjection) {
+    return ol.proj.transformExtent(extent, sourceProjection, targetProjection);
+  }
+
   getMetersPerUnit(units) {
     return ol.proj.Units.METERS_PER_UNIT[units];
   }

@@ -1,13 +1,24 @@
 <div class="m-mousesrs-srs-container" role="menu" aria-label="Menu EPSG" tabindex="{{order}}">
-  <select title="{{select_srs}}" aria-label="{{select_srs}}" role="select" tabindex="{{order}}" id="m-mousesrs-srs-selector">
-    <option value="EPSG:4326" {{#eq selected "EPSG:4326"}}selected{{/eq}}>EPSG:4326</option>
-    <option value="EPSG:4083" {{#eq selected "EPSG:4083"}}selected{{/eq}}>EPSG:4083</option>
-    <option value="EPSG:25829" {{#eq selected "EPSG:25829"}}selected{{/eq}}>EPSG:25829</option>
-    <option value="EPSG:25830" {{#eq selected "EPSG:25830"}}selected{{/eq}}>EPSG:25830</option>
-    <option value="EPSG:25831" {{#eq selected "EPSG:25831"}}selected{{/eq}}>EPSG:25831</option>
-    <option value="EPSG:3857" {{#eq selected "EPSG:3857"}}selected{{/eq}}>EPSG:3857</option>
-    <option value="EPSG:4258" {{#eq selected "EPSG:4258"}}selected{{/eq}}>EPSG:4258</option>
-  </select>
+  <div class="m-mousesrs-select-editable">
+    <input
+      type="text"
+      id="epsg-selected"
+      class="m-mousesrs-input-select"
+      name="epsg-selected"
+      value="{{selected}}"
+      aria-label="{{select_srs}}"
+      title="{{select_srs}}"
+      tabindex="{{order}}"
+      autocomplete="off"
+      readonly="readonly"
+    />
+    <ul title="{{select_srs}}" id="m-mousesrs-srs-selector" class="m-mousesrs-srs-selector">
+      <li><a href="#" value="default">{{choose_create_epsg}}</a></li>
+      {{#each projections}}
+        <li><a href="#" value="{{this.codes.[0]}}">{{this.codes.[0]}}</a></li>
+      {{/each}}
+    </ul>
+  </div>
   {{#if hasHelp}}
     <div class="m-mousesrs-help-button" title="Help EPSG">
       <a tabindex="{{order}}" role="link" aria-label="Help EPSG" href="{{helpUrl}}" target="_blank"><i class="icon-help"></i></a>

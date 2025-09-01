@@ -11,7 +11,7 @@ import Feature from 'IDEE/feature/Feature';
 const mapjs = Mmap({
   container: 'map',
   bbox: [-14.000431738376271, 34.65932772351375, 7.093318261623729, 40.67983553601375],
-  projection: 'EPSG:4326*d',
+  projection: 'EPSG:4326',
   layers: ['OSM']
 });
 window.mapjs = mapjs;

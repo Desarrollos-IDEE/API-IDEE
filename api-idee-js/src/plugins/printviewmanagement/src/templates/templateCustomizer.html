@@ -6,9 +6,9 @@
       {{#each templateElements}}
         <div class="m-customize-template-option">
           <label class="m-custom-checkbox">
-            <input type="checkbox" id="m-show-{{this}}">
+            <input type="checkbox" id="m-show-{{this.id}}" name="m-show-{{this.id}}" checked>
             <span class="m-checkmark"></span>
-            <span class="m-label-text">{{this}}</span>
+            <span class="m-label-text">{{this.label}}</span>
           </label>
         </div>
       {{/each}}
@@ -52,12 +52,27 @@
       
       <fieldset>
         <legend>{{translations.epsg}}</legend>
-        <div class="m-customize-template-option">
-          <select id="template-projection">
+        <div class="m-customize-template-option m-customize-template-select-editable">
+          <!-- Deshabilitado hasta que se arregle la reproyección de capas -->
+          <input
+            type="text"
+            id="epsg-selected"
+            class="customize-template-input-select"
+            name="epsg-selected"
+            value="{{defaultProjection}}"
+            aria-label="{{translations.select_srs}}"
+            title="{{translations.select_srs}}"
+            tabindex="{{order}}"
+            autocomplete="off"
+            readonly="readonly"
+            disabled
+          />
+          <ul title="{{translations.select_srs}}" id="m-customize-template-srs-selector" class="m-customize-template-srs-selector">
+            <li><a href="#" value="default" tabindex="-1" disabled>{{translations.choose_create_epsg}}</a></li>
             {{#each projectionsOptions}}
-              <option value="{{this.value}}" {{#if this.default}} selected{{/if}}>{{this.value}}</option>
+              <li><a href="#" value="{{this.codes.[0]}}">{{this.codes.[0]}}</a></li>
             {{/each}}
-          </select>
+          </ul>
         </div>
       </fieldset>
       

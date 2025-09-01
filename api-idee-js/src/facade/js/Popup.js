@@ -27,7 +27,7 @@ const getUrlFromPlatform = (platform, coords) => {
   const platformURL = {
     android: (coord) => `geo:${coord[1]}},${coord[0]}?q=${coord[1]},${coord[0]}`,
     ios: (coord) => `maps://?ll=${coord[1]},${coord[0]}`,
-    unknown: (coord) => `http://maps.google.com?q=${coord[1]},${coord[0]}`,
+    unknown: (coord) => `https://maps.google.com?q=${coord[1]},${coord[0]}`,
   };
   return platformURL[platform](coords);
 };
@@ -297,7 +297,7 @@ class Popup extends Base {
     if (!isNullOrEmpty(evt)) {
       evt.preventDefault();
     }
-    this.getImpl().hide();
+    this.getImpl().hide(this);
   }
 
   /**

@@ -9,7 +9,7 @@ import { ADDED_LAYER, ADDED_OGCAPIFEATURES } from 'IDEE/event/eventtype';
 const mapa = Mmap({
   container: 'map',
   getfeatureinfo: 'plain',
-  projection: 'EPSG:3857*m',
+  projection: 'EPSG:3857',
   bbox: [-1770541.6193632658, 4068168.5500396686, 577603.8895573488, 4694340.685751832],
   // layers: ['OSM', 'OGCAPIFeatures*Capa*http://ignsolarguadaltel.desarrollo.guadaltel.es/collections/*rutas*30']
   // layers: ['OSM', 'OGCAPIFeatures*Capa*http://ignsolarguadaltel.desarrollo.guadaltel.es/collections/*rutas*30***10*json']

@@ -1,7 +1,7 @@
 {
   "exception": {
     "impl": "La implementación usada no puede crear controles MouseSRSControl.",
-    "srs": "Plugin MouseSRS: El parámetro srs no es correcto. Por defecto se usará EPSG:4326"
+    "srs": "El código EPSG introducido no es válido. Se usará por defecto: "
   },
   "textHelp": {
     "help1": "Para seleccionar el sistema de coordenadas basta con hacer clic en cualquier punto de la barra.",
@@ -15,6 +15,8 @@
   },
   "tooltip": "Coordenadas",
   "select_srs": "Selecciona un sistema de referencia",
+  "choose_create_epsg": "Añadir EPSG",
+  "placeholder_custom_epsg": "Escribe tu EPSG",
   "close": "Cerrar",
   "accessibility": {
     "src": "Clic o Enter para modificar el EPSG"

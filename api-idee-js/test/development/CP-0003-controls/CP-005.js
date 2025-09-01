@@ -4,7 +4,7 @@ import { wms_001, wms_002, wms_003 } from '../layers/wms/wms';
 
 const mapa = Mmap({
   container: 'map',
-  projection: 'EPSG:3857*m',
+  projection: 'EPSG:3857',
   controls: ['getfeatureinfo*false'],
   center: [-443273.10081370454, 4757481.749296248],
   zoom: 6,

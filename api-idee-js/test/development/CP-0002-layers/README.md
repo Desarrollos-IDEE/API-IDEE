@@ -69,3 +69,10 @@ Mapa básico con Capas rápidas.
 
 CP-024
 Mapa básico con secciones.
+
+CP-025
+Mapa básico con Capas WMC y una WMS.
+
+CP-026
+Mapa básico con capa GeoPackage.
+
