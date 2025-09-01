@@ -358,11 +358,19 @@ const changeLayerConfig = (layer, otherStyles) => {
         }
       }
     } else {
-      layer.getImpl().getLayer().getSource().updateParams({ STYLES: styleSelected });
+      let styleProcessed = styleSelected;
+      if (layer instanceof IDEE.layer.WMS) {
+        const layerImpl = layer.getImpl();
+        const layerNames = IDEE.utils.isNullOrEmpty(layerImpl.layers)
+          ? layerImpl.name
+          : layerImpl.layers;
+        styleProcessed = layer.getImpl().processStyles(styleProcessed, layerNames);
+      }
+      layer.getImpl().getLayer().getSource().updateParams({ STYLES: styleProcessed });
       const cm = layer.capabilitiesMetadata;
       if (!IDEE.utils.isNullOrEmpty(cm) && !IDEE.utils.isNullOrEmpty(cm.style)) {
         const filtered = layer.capabilitiesMetadata.style.filter((style) => {
-          return style.Name === styleSelected;
+          return style.Name === styleProcessed;
         });
 
         if (filtered.length > 0 && filtered[0].LegendURL.length > 0) {

@@ -177,6 +177,41 @@ class WMS extends LayerBase {
     this.styles = this.options.styles || '';
 
     /**
+     * Procesa los estilos para que coincidan con el número de nombres de capas.
+     * Si hay más nombres de capas que estilos, duplica el último estilo.
+     * Si hay más estilos que nombres de capas, trunca los estilos.
+     *
+     * @private
+     * @function
+     * @param {string|Array} styles Estilos a procesar
+     * @param {string|Array} layerNames Nombres de las capas
+     * @return {string} Estilos procesados
+     */
+    this.processStyles = function processStyles(styles, layerNames) {
+      if (isNullOrEmpty(styles) || isNullOrEmpty(layerNames)) {
+        return styles;
+      }
+
+      const layerNamesArray = isArray(layerNames) ? layerNames : layerNames.split(',');
+      const stylesArray = isArray(styles) ? styles : styles.split(',');
+
+      // Si hay más nombres de capas que estilos, duplicar el último estilo
+      if (layerNamesArray.length > stylesArray.length) {
+        const lastStyle = stylesArray[stylesArray.length - 1] || '';
+        while (stylesArray.length < layerNamesArray.length) {
+          stylesArray.push(lastStyle);
+        }
+        return stylesArray.join(',');
+      }
+      // Si hay más estilos que nombres de capas, truncar los estilos
+      if (stylesArray.length > layerNamesArray.length) {
+        return stylesArray.slice(0, layerNamesArray.length).join(',');
+      }
+
+      return styles;
+    };
+
+    /**
      * WMS sldVersion. Versión del SLD.
      */
     this.sldVersion = this.options.sldVersion || '1.0.0';
@@ -577,12 +612,18 @@ class WMS extends LayerBase {
   createOLSource_(resolutions, minResolution, maxResolution, extent) {
     let olSource = this.vendorOptions_.source;
     if (isNullOrEmpty(this.vendorOptions_.source)) {
+      // Obtener los nombres de capas
+      const layerNames = isNullOrEmpty(this.layers) ? this.name : this.layers;
+
+      // Procesar los estilos para que coincidan con el número de nombres de capas
+      const processedStyles = this.processStyles(this.styles, layerNames);
+
       const layerParams = {
-        LAYERS: isNullOrEmpty(this.layers) ? this.name : this.layers,
+        LAYERS: layerNames,
         VERSION: this.version,
         TRANSPARENT: !this.isBase,
         FORMAT: this.format,
-        STYLES: this.styles,
+        STYLES: processedStyles,
         CQL_FILTER: this.cql_,
         TILED: this.tiled,
       };
@@ -917,9 +958,14 @@ class WMS extends LayerBase {
    */
   setStyles(newStyles) {
     this.styles = newStyles;
+
+    // Procesar los estilos para que coincidan con el número de nombres de capas
+    const layerNames = isNullOrEmpty(this.layers) ? this.name : this.layers;
+    const processedStyles = this.processStyles(newStyles, layerNames);
+
     const ol3Layer = this.getLayer();
     if (!isNullOrEmpty(ol3Layer)) {
-      ol3Layer.getSource().updateParams({ STYLES: newStyles });
+      ol3Layer.getSource().updateParams({ STYLES: processedStyles });
       this.refreshLegendUrlByCapabilities_(this.facadeLayer_.capabilitiesMetadata);
     }
   }
@@ -1051,6 +1097,7 @@ class WMS extends LayerBase {
    */
   setURL(newURL) {
     this.url = newURL;
+    this.styles = '';
     this.recreateLayer();
   }
 
@@ -1069,6 +1116,7 @@ class WMS extends LayerBase {
       ? newName.join(',')
       : newName;
     this.isWMSfull = isWMSFull;
+    this.styles = '';
     this.recreateLayer();
   }
 
