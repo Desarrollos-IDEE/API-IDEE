@@ -53,7 +53,7 @@ const generateResolutions = (extent, tileSize, maxZoomLevel) => {
  * @classdesc
  * Implementación de la capa MBTilesVector.
  *
- * @property {function} tileLoadFunction_ Función de carga de la tesela vectorial.
+ * @property {function} tileLoadFunction Función de carga de la tesela vectorial.
  * @property {string} url_ Url del fichero o servicio que genera el MBTilesVector.
  * @property {ArrayBuffer|Uint8Array|Response|File} source_ Fuente de la capa.
  * @property {File|String} style_ Define el estilo de la capa.
@@ -112,7 +112,7 @@ class MBTilesVector extends Vector {
      * MBTilesVector tileLoadFunction: Función de carga de la tesela
      * vectorial proporcionada por el usuario.
      */
-    this.tileLoadFunction_ = userParameters.tileLoadFunction || null;
+    this.tileLoadFunction = userParameters.tileLoadFunction || null;
 
     /**
      * MBTilesVector url: Url del fichero o servicio que genera el MBTilesVector.
@@ -197,7 +197,7 @@ class MBTilesVector extends Vector {
     if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
     if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
 
-    if (!this.tileLoadFunction_ && isNullOrEmpty(this.vendorOptions_.source)) {
+    if (!this.tileLoadFunction && isNullOrEmpty(this.vendorOptions_.source)) {
       this.fetchSource().then((tileProvider) => {
         tileProvider.getMaxZoomLevel().then((maxZoomLevel) => {
           if (!this.maxZoomLevel_) {
@@ -284,7 +284,7 @@ class MBTilesVector extends Vector {
    */
   createLayer(opts) {
     let tileLoadFn = this.loadVectorTileWithProvider;
-    if (this.tileLoadFunction_) {
+    if (this.tileLoadFunction) {
       tileLoadFn = this.loadVectorTile;
     }
     const mvtFormat = new MVT();
@@ -320,7 +320,7 @@ class MBTilesVector extends Vector {
     tile.setLoader((extent, resolution, projection) => {
       const tileCoord = tile.getTileCoord();
       // eslint-disable-next-line
-      target.tileLoadFunction_(tileCoord[0], tileCoord[1], -tileCoord[2] - 1).then((_vectorTile) => {
+      target.tileLoadFunction(tileCoord[0], tileCoord[1], -tileCoord[2] - 1).then((_vectorTile) => {
         if (_vectorTile) {
           try {
             const vectorTile = new Uint8Array(_vectorTile);
