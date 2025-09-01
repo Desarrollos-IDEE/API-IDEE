@@ -281,8 +281,7 @@ class OSM extends Layer {
   }
 
   /**
-   * This function sets
-   * the tileLoadFunction
+   * Este método establece tileLoadFunction
    *
    * @public
    * @function
