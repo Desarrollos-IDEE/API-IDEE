@@ -74,14 +74,7 @@ export const isNullOrEmpty = (obj) => {
   if (isNull(obj)) {
     nullOrEmpty = true;
   } else if (Object.getPrototypeOf(obj) === Object.prototype) {
-    nullOrEmpty = true;
-    // eslint-disable-next-line no-restricted-syntax
-    for (const prop in obj) {
-      if (Object.hasOwn(obj, prop)) {
-        nullOrEmpty = false;
-        break;
-      }
-    }
+    nullOrEmpty = Object.keys(obj).length === 0;
   } else if (isArray(obj)) {
     nullOrEmpty = (!(obj.length > 0) || !obj.some((objElem) => !isNullOrEmpty(objElem)));
   } else {
