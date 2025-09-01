@@ -489,6 +489,9 @@ const proj4346 = {
 
 /**
  * CRS:84
+ * Proyección geográfica que utiliza el sistema de coordenadas de latitud y longitud
+ * basado en el datum WGS 84. Es ampliamente utilizada en servicios web y estándares OGC,
+ * siendo equivalente a EPSG:4326 pero con el orden de los ejes longitud, latitud.
  * @type {Object}
  * @public
  * @api
@@ -500,6 +503,9 @@ const crs84 = {
   units: 'd',
   metersPerUnit: 111319.49079327358,
   axisOrientation: 'enu',
+  datum: 'WGS 84',
+  proj: 'long, lat',
+  coordRefSys: 'https://defs.opengis.net/prez/object?uri=https://www.opengis.net/def/ogc/CRS84',
 };
 
 /**
