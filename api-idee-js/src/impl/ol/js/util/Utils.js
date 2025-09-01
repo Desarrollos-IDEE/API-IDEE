@@ -4,7 +4,7 @@
 import Feature from 'IDEE/feature/Feature';
 import * as WKT from 'IDEE/geom/WKT';
 import { isNullOrEmpty, isString, generateRandom } from 'IDEE/util/Utils';
-import { extend, getWidth } from 'ol/extent';
+import { extend, getWidth, getCenter } from 'ol/extent';
 import {
   get as getProj,
   getTransform,
@@ -377,46 +377,12 @@ class Utils {
     */
   static getCentroid(geometry) {
     let centroid;
-    let medianIdx;
-    let points;
     if (isNullOrEmpty(geometry)) {
       centroid = null;
     } else if (geometry instanceof RenderFeature) {
       centroid = geometry;
     } else {
-      switch (geometry.getType()) {
-        case 'Point':
-          centroid = geometry.getCoordinates();
-          break;
-        case 'LineString':
-        case 'LinearRing':
-          const coordinates = geometry.getCoordinates();
-          medianIdx = Math.floor(coordinates.length / 2);
-          centroid = coordinates[medianIdx];
-          break;
-        case 'Polygon':
-          centroid = Utils.getCentroid(geometry.getInteriorPoint());
-          break;
-        case 'MultiPoint':
-          points = geometry.getPoints();
-          medianIdx = Math.floor(points.length / 2);
-          centroid = Utils.getCentroid(points[medianIdx]);
-          break;
-        case 'MultiLineString':
-          const lineStrings = geometry.getLineStrings();
-          medianIdx = Math.floor(lineStrings.length / 2);
-          centroid = Utils.getCentroid(lineStrings[medianIdx]);
-          break;
-        case 'MultiPolygon':
-          points = geometry.getInteriorPoints();
-          centroid = Utils.getCentroid(points);
-          break;
-        case 'Circle':
-          centroid = geometry.getCenter();
-          break;
-        default:
-          return null;
-      }
+      centroid = getCenter(geometry.getExtent());
     }
     return centroid;
   }
