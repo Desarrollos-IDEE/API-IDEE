@@ -3,6 +3,7 @@
  */
 import { defineFunctionFromString, isDynamic, drawDynamicStyle } from '../util/Utils';
 import StyleFeature from './Feature';
+import { getValue } from '../i18n/language';
 
 /**
  * @classdesc
@@ -23,6 +24,9 @@ class Simple extends StyleFeature {
    * @api
    */
   apply(layer, applyToFeature, isNullStyle) {
+    // eslint-disable-next-line no-console
+    console.warn(getValue('exception').simple_deprecated);
+
     this.layer_ = layer;
     this.getImpl().applyToLayer(layer);
     if (applyToFeature === true) {
