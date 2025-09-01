@@ -2,10 +2,7 @@
 /**
  * @module IDEE/impl/layer/MBTilesVector
  */
-import { isNullOrEmpty, isFunction, extend } from 'IDEE/util/Utils';
-import { compileSync as compileTemplate } from 'IDEE/util/Template';
-import Popup from 'IDEE/Popup';
-import geojsonPopupTemplate from 'templates/geojson_popup';
+import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
 import { get as getProj, transformExtent } from 'ol/proj';
 // import { inflate } from 'pako';
 // import OLLayerTile from 'ol/layer/Tile';
@@ -401,55 +398,6 @@ class MBTilesVector extends Vector {
         reject(new Error(getValue('exception').no_source));
       }
     });
-  }
-
-  /**
-   * Este método ejecuta un objeto geográfico seleccionado.
-   *
-   * @function
-   * @param {ol.features} features Objetos geográficos de Openlayers.
-   * @param {Array} coord Coordenadas.
-   * @param {Object} evt Eventos.
-   * @api stable
-   * @expose
-   */
-  selectFeatures(features, coord, evt) {
-    if (this.extract === true) {
-      const feature = features[0];
-      // unselects previous features
-      this.unselectFeatures();
-
-      if (!isNullOrEmpty(feature)) {
-        const clickFn = feature.getAttribute('vendor.api_idee.click');
-        if (isFunction(clickFn)) {
-          clickFn(evt, feature);
-        } else {
-          const popupTemplate = !isNullOrEmpty(this.template)
-            ? this.template : geojsonPopupTemplate;
-          let htmlAsText = compileTemplate(popupTemplate, {
-            vars: this.parseFeaturesForTemplate_(features),
-            parseToHtml: false,
-          });
-          if (this.legend) {
-            const layerLegendHTML = `<div class="m-legend">${this.legend}</div>`;
-            htmlAsText = layerLegendHTML + htmlAsText;
-          }
-          const featureTabOpts = {
-            icon: 'g-cartografia-pin',
-            title: this.name,
-            content: htmlAsText,
-          };
-          let popup = this.map.getPopup();
-          if (isNullOrEmpty(popup)) {
-            popup = new Popup();
-            popup.addTab(featureTabOpts);
-            this.map.addPopup(popup, coord);
-          } else {
-            popup.addTab(featureTabOpts);
-          }
-        }
-      }
-    }
   }
 
   /**
