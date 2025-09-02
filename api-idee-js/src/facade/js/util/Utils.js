@@ -731,7 +731,13 @@ export const enableTouchScroll = (elem) => {
  * @api
  */
 export const rgbToHex = (rgbColor) => {
-  const hexColor = chroma(rgbColor).hex();
+  let hexColor;
+  // eslint-disable-next-line no-useless-catch
+  try {
+    hexColor = chroma(rgbColor).hex();
+  } catch (err) {
+    throw err;
+  }
   return hexColor;
 };
 
