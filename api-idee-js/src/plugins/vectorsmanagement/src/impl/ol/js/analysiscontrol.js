@@ -104,7 +104,7 @@ export default class Analysiscontrol extends IDEE.impl.Control {
    * @api
    * @param {IDEE.Feature} feature
    */
-  calculateProfile(id, feature, show = true) {
+  calculateProfile(feature, id, show = true) {
     const altitudes = [];
     let coordinates = [];
 
@@ -423,7 +423,7 @@ export default class Analysiscontrol extends IDEE.impl.Control {
   }
 
   get3DLength(id, feature) {
-    this.calculateProfile(id, feature, false);
+    this.calculateProfile(feature, id, false);
   }
 
   getAreaGeoJSON(features) {

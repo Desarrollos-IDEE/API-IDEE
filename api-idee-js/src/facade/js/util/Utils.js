@@ -73,6 +73,8 @@ export const isNullOrEmpty = (obj) => {
 
   if (isNull(obj)) {
     nullOrEmpty = true;
+  } else if (Object.getPrototypeOf(obj) === Object.prototype) {
+    nullOrEmpty = Object.keys(obj).length === 0;
   } else if (isArray(obj)) {
     nullOrEmpty = (!(obj.length > 0) || !obj.some((objElem) => !isNullOrEmpty(objElem)));
   } else {
