@@ -47,12 +47,12 @@ test.describe('IDEE.layer.Section', () => {
         window.section_001.on(IDEE.evt.ADDED_TO_MAP, () => {
           resolve();
         });
-        window.map.addSections(section_001);
+        window.map.addSections(window.section_001);
       });
     });
     await page.waitForTimeout(3000);
     const numLayers = await page.evaluate(() => { return window.map.getLayers().length; });
     await expect(numLayers).toEqual(5);
-    await expect(page).toHaveScreenshot('snapshot.png', {maxDiffPixelRatio: 0.5});
+    await expect(page).toHaveScreenshot('snapshot.png', { maxDiffPixelRatio: 0.5 });
   });
 });

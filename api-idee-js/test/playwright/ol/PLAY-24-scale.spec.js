@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('IDEE.control.Scale', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/test/playwright/ol/basic-ol.html');
-    
+
     await page.evaluate(() => {
       const map = IDEE.map({
         container: 'map',
@@ -14,7 +14,7 @@ test.describe('IDEE.control.Scale', () => {
       window.map = map;
     });
   });
-  
+
   test('Verificar escala al cambiar el nivel de zoom', async ({ page }) => {
     const zoomLevel = 7;
     const expectedScale = 2761266;
@@ -23,7 +23,7 @@ test.describe('IDEE.control.Scale', () => {
       const zoomElement = document.querySelector('#m-level-number');
       zoomElement.textContent = zoom.toString();
 
-      const event = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true });
+      const event = new window.KeyboardEvent('keydown', { key: 'Enter', bubbles: true });
       zoomElement.dispatchEvent(event);
 
       return new Promise((resolve) => {
@@ -32,11 +32,11 @@ test.describe('IDEE.control.Scale', () => {
         });
       });
     }, zoomLevel);
-    
+
     await page.waitForTimeout(2000);
     const finalScale = await page.evaluate(() => {
       const scaleText = document.querySelector('#m-scale-span').textContent;
-      return parseInt(scaleText.replace(/\./g, ''));
+      return parseInt(scaleText.replace(/\./g, ''), 10);
     });
     await expect(finalScale).toBe(expectedScale);
   });

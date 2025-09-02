@@ -15,14 +15,13 @@ test('Parámetro transparent en capas WFS', async ({ page }) => {
     }
   });
 
-  let mapjs;
   await page.evaluate(() => {
-    mapjs = IDEE.map({
+    const mapjs = IDEE.map({
       container: 'map',
     });
+    window.mapjs = mapjs;
   });
-  await page.waitForFunction(() => mapjs.isFinished());
-  let lyProvincias;
+  await page.waitForFunction(() => window.mapjs.isFinished());
   await page.evaluate(() => {
     lyProvincias = new IDEE.layer.WFS({
       url: 'https://hcsigc.juntadeandalucia.es/geoserver/wfs?',
@@ -33,7 +32,7 @@ test('Parámetro transparent en capas WFS', async ({ page }) => {
       extract: true,
       transparent: true,
     });
-    mapjs.addLayers(lyProvincias);
+    window.mapjs.addLayers(lyProvincias);
   });
   expect(hasWarning).toBe(true);
 });
@@ -53,22 +52,20 @@ test('Parámetro transparent en capas WMS', async ({ page }) => {
     }
   });
 
-  let mapjs;
   await page.evaluate(() => {
-    mapjs = IDEE.map({
+    window.mapjs = IDEE.map({
       container: 'map',
     });
   });
-  await page.waitForFunction(() => mapjs.isFinished());
-  let wms;
+  await page.waitForFunction(() => window.mapjs.isFinished());
   await page.evaluate(() => {
-    wms = new IDEE.layer.WMS({
+    const wms = new IDEE.layer.WMS({
       url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
       name: 'AU.AdministrativeUnit',
       legend: 'Capa WMS',
       transparent: true,
     });
-    mapjs.addLayers(wms);
+    window.mapjs.addLayers(wms);
   });
   expect(hasWarning).toBe(true);
 });

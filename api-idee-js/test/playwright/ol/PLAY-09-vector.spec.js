@@ -29,8 +29,8 @@ test.describe('Vector layers', () => {
     }, customTemplate);
 
     await page.waitForTimeout(5000);
-    await page.mouse.click(599, 132);
-    const popup = await page.locator('.m-popup.m-collapsed .m-body');
+    await page.click('#map', { position: { x: 599, y: 132 } });
+    const popup = await page.locator('.m-popup .m-body');
     // try {
     const text = await popup.innerText({ timeout: 2000 });
     expect(text).toContain(textPopup);
@@ -41,4 +41,3 @@ test.describe('Vector layers', () => {
     } */
   });
 });
-

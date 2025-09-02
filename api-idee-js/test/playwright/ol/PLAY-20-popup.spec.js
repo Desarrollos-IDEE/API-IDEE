@@ -27,12 +27,13 @@ test.describe('IDEE.Popup', () => {
         legend: 'Capa OGCAPIFeatures',
         extract: true,
       });
+      window.ogc_001 = ogc_001;
 
       return new Promise((resolve) => {
         window.map.on(IDEE.evt.ADDED_OGCAPIFEATURES, () => {
           resolve();
         });
-        window.map.addLayers(ogc_001);
+        window.map.addLayers(window.ogc_001);
       });
     }, text);
     await page.mouse.click(562, 293);
