@@ -12,6 +12,7 @@ import { getValue } from '../i18n/language';
  * @classdesc
  * Crea un punto de estilo.
  * @api
+ * @deprecated
  * @extends {IDEE.style.Simple}
  */
 class Point extends Simple {

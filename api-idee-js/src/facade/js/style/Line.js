@@ -10,6 +10,7 @@ import { isNull, extendsObj } from '../util/Utils';
  * Crea un estilo de línea
  * con parámetros especificados por el usuario.
  * @api
+ * @deprecated
  * @extends {IDEE.style.Simple}
  */
 class Line extends Simple {

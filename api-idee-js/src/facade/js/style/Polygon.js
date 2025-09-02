@@ -10,6 +10,7 @@ import { getValue } from '../i18n/language';
  * @classdesc
  * Crea el estilo de un polígono.
  * @api
+ * @deprecated
  * @extends {IDEE.style.Simple}
  */
 class Polygon extends Simple {
