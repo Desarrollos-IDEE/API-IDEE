@@ -3,7 +3,7 @@
  */
 import MObject from 'IDEE/Object';
 import { get as getRemote } from 'IDEE/util/Remote';
-import { isNullOrEmpty } from 'IDEE/util/Utils';
+import { isNullOrEmpty, addParameters, isString } from 'IDEE/util/Utils';
 import Exception from 'IDEE/exception/exception';
 import * as Dialog from 'IDEE/dialog';
 import { getValue } from 'IDEE/i18n/language';
@@ -83,8 +83,12 @@ class WFS extends MObject {
     * @api
     */
   loadInternal_(url, projection) {
+    let parameterizedURL = url;
     return new Promise((success, fail) => {
-      getRemote(url).then((response) => {
+      if (isString(IDEE.config.TICKET)) {
+        parameterizedURL = addParameters(parameterizedURL, { ticket: IDEE.config.TICKET });
+      }
+      getRemote(parameterizedURL).then((response) => {
         if (!isNullOrEmpty(response.text) && response.text.indexOf('ServiceExceptionReport') < 0) {
           let text = response.text;
           // Arreglo para WFS 2.0.0 #7434
