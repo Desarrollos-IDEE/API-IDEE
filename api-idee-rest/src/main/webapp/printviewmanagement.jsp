@@ -77,10 +77,6 @@
         
         <label for="inputOrder">Parámetro order</label>
         <input type="text" name="orderValue" id="inputOrder" list="orderValueSug">
-        <label for="inputServerUrl">Parámetro serverUrl</label>
-        <input type="text" name="serverUrlValue" id="inputServerUrl" list="serverUrlValueSug">
-        <label for="inputPrintStatusUrl">Parámetro printStatusUrl</label>
-        <input type="text" name="printStatusUrlValue" id="inputPrintStatusUrl" list="printStatusUrlValueSug">
 
     	<label for="georefImageEpsgInput">Parámetro georefImageEpsg</label>
         <input type="text" id="georefImageEpsgInput"/>
@@ -111,13 +107,10 @@
         const urlParams = new URLSearchParams(window.location.search);
         IDEE.language.setLang(urlParams.get('language') || 'es');
 
-		const DEFAULT_serverUrl = "https://componentes.cnig.es/geoprint";
-		const DEFAULT_printStatusUrl = "https://componentes.cnig.es/geoprint/print/status";
-        
-        const DEFAULT_georefImageEpsg = '{"tooltip": "Georeferenciar imagen","layers": [{"url": "http://www.ign.es/wms-inspire/mapa-raster?","name": "mtn_rasterizado","format": "image/jpeg","legend": "Mapa ETRS89 UTM"},{"url": "http://www.ign.es/wms-inspire/pnoa-ma?","name": "OI.OrthoimageCoverage","format": "image/jpeg","legend": "Imagen (PNOA) ETRS89 UTM"}]}';
-        const DEFAULT_georefImage = '{"tooltip": "Georeferenciar imagen","printTemplateUrl": "https://componentes.cnig.es/geoprint/print/mapexport","printSelector": true}';
-        const DEFAULT_printermap = '{"printTemplateUrl": "https://componentes.cnig.es/geoprint/print/CNIG","headerLegend": "https://www.idee.es/csw-codsi-idee/images/cabecera-CODSI.png","filterTemplates": ["A3 Horizontal"],"logo": "https://www.idee.es/csw-codsi-idee/images/cabecera-CODSI.png"}';
-        
+        const DEFAULT_georefImageEpsg = '{"tooltip": "Georeferenciar imagen","layers": [{"url": "http://www.ign.es/wms-inspire/mapa-raster?","name": "mtn_rasterizado","format": "image/jpeg","legend": "Mapa ETRS89 UTM"},{"url": "http://www.ign.es/wms-inspire/pnoa-ma?","name": "OI.OrthoimageCoverage","format": "image/jpeg","legend": "Imagen (PNOA) ETRS89 UTM"}], "defaultDpiOptions": [72, 150, 300]}';
+        const DEFAULT_georefImage = '{"tooltip": "Georeferenciar imagen","printSelector": true, "defaultDpiOptions": [72, 150, 300]}';
+        const DEFAULT_printermap = '{"filterTemplates": ["https://componentes.idee.es/estaticos/plantillas/html/templateConBorde.html", "https://componentes.idee.es/estaticos/plantillas/html/templateConCabezeraYBorde.html", "https://componentes.idee.es/estaticos/plantillas/html/templateConFooterYBorde.html"],"showDefaultTemplate": false, "defaultDpiOptions": [72, 150, 300], "layoutsRestraintFromDpi": ["screensize", "A0", "A1", "A2"]}';
+
         const map = IDEE.map({
             container: 'mapjs',
             zoom: 5,
@@ -142,8 +135,6 @@
 
         let mp;
         let position, collapsed, collapsible, tooltip, isDraggable, order, useProxy,
-        	serverUrl = DEFAULT_serverUrl,
-        	printStatusUrl = DEFAULT_printStatusUrl,
         	georefImageEpsg = JSON.parse(DEFAULT_georefImageEpsg),
         	georefImage = JSON.parse(DEFAULT_georefImage),
         	printermap = JSON.parse(DEFAULT_printermap);
@@ -155,8 +146,6 @@
         	isDraggable,
             useProxy,
 			order,
-			serverUrl,
-			printStatusUrl,
 			georefImageEpsg,
 			georefImage,
 			printermap,
@@ -170,8 +159,6 @@
         const selectIsdraggable = document.getElementById("selectIsdraggable");
         const selectUseProxy = document.getElementById("selectUseProxy");
         const inputOrder = document.getElementById("inputOrder");
-        const inputServerUrl = document.getElementById("inputServerUrl");
-        const inputPrintStatusUrl = document.getElementById("inputPrintStatusUrl");
         const georefImageEpsgInput = document.getElementById("georefImageEpsgInput");
         const georefImageInput = document.getElementById("georefImageInput");
         const printermapInput = document.getElementById("printermapInput");
@@ -179,8 +166,6 @@
         georefImageEpsgInput.value = DEFAULT_georefImageEpsg;
        	georefImageInput.value = DEFAULT_georefImage;
    		printermapInput.value = DEFAULT_printermap;
-   		inputServerUrl.value = DEFAULT_serverUrl;
-   		inputPrintStatusUrl.value = DEFAULT_printStatusUrl;
         
         selectPosition.addEventListener('change', cambiarTest);
         selectCollapsed.addEventListener('change', cambiarTest);
@@ -190,8 +175,6 @@
         selectIsdraggable.addEventListener('change',cambiarTest);
         selectUseProxy.addEventListener('change',cambiarTest);
         inputOrder.addEventListener('change', cambiarTest);
-        inputServerUrl.addEventListener('change', cambiarTest);
-        inputPrintStatusUrl.addEventListener('change', cambiarTest);
         georefImageEpsgInput.addEventListener('change',cambiarTest);
         georefImageInput.addEventListener('change',cambiarTest);
         printermapInput.addEventListener('change',cambiarTest);
@@ -209,8 +192,6 @@
             let useProxyValor = selectUseProxy.options[selectUseProxy.selectedIndex].value;
             useProxy = useProxyValor != "" ? objeto.useProxy = (useProxyValor == "true" || useProxyValor == true) : "true";
             objeto.order = inputOrder.value != "" ? inputOrder.value : "";
-            objeto.serverUrl = inputServerUrl.value != "" ? inputServerUrl.value : "";
-            objeto.printStatusUrl = inputPrintStatusUrl.value != "" ? inputPrintStatusUrl.value : "";
             objeto.georefImageEpsg = georefImageEpsgInput.value != "" ? JSON.parse(georefImageEpsgInput.value) : "";
             objeto.georefImage = georefImageInput.value != "" ? JSON.parse(georefImageInput.value) : "";
             objeto.printermap = printermapInput.value != "" ? JSON.parse(printermapInput.value) : "";

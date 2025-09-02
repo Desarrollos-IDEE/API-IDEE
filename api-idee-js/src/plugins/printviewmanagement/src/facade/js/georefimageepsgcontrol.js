@@ -7,7 +7,7 @@ import georefimage2HTML from '../../templates/georefimageepsg';
 import { getValue } from './i18n/language';
 import {
   innerQueueElement, removeLoadQueueElement, createWLD, createZipFile,
-  generateTitle,
+  generateTitle, createLoadingSpinner,
 } from './utils';
 import { DPI_OPTIONS, GEOREFIMAGEEPSG_FORMAT } from '../../constants';
 
@@ -25,7 +25,7 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
     * @extends {IDEE.Control}
     * @api stable
     */
-  constructor({ order, layers }, map) {
+  constructor({ order, layers, defaultDpiOptions }, map) {
     if (IDEE.utils.isUndefined(Georefimage2ControlImpl)
       || (IDEE.utils.isObject(Georefimage2ControlImpl)
       && IDEE.utils.isNullOrEmpty(Object.keys(Georefimage2ControlImpl)))) {
@@ -73,7 +73,7 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
       * @private
       * @type {HTMLElement}
       */
-    this.dpisOptions_ = DPI_OPTIONS;
+    this.dpisOptions_ = defaultDpiOptions || DPI_OPTIONS;
 
     /**
      * Imagen por defecto a descargar si no hay ninguna capa seleccionada
@@ -88,6 +88,13 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
      * @type {number}
      */
     this.order = order >= -1 ? order : null;
+
+    /**
+     * Elemento SVG de carga
+     * @private
+     * @type {HTMLElement}
+     */
+    this.loadingOverlay_ = null;
   }
 
   /**
@@ -285,6 +292,7 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
     const imageUrl = url !== null ? url : this.documentRead_.src;
     const dpi = Number(this.template_.querySelector('#m-georefimageepsg-dpi').value);
     const format = this.format_;
+    this.loadingOverlay_ = createLoadingSpinner();
     const map = this.map_.getMapImpl();
     const originalSize = map.getSize();
     const originalResolution = map.getView().getResolution();
@@ -331,6 +339,10 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
             };
             this.queueEl.addEventListener('click', zipEvent);
             this.queueEl.addEventListener('keydown', zipEvent);
+            if (this.loadingOverlay_) {
+              this.loadingOverlay_.remove();
+              this.loadingOverlay_ = null;
+            }
           };
           reader.readAsArrayBuffer(blob);
         }, `image/${format}`);

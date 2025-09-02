@@ -120,7 +120,7 @@ const proj25829 = {
 const proj25830 = {
   def: '+proj=utm +zone=30 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs',
   extent: [-729785.83, 3715125.82, 940929.67, 9518470.69],
-  codes: ['EPSG:25830', 'urn:ogc:def:crs:EPSG::25830', 'http://www.opengis.net/gml/srs/epsg.xml#23030'],
+  codes: ['EPSG:25830', 'EPSG:3042', 'urn:ogc:def:crs:EPSG::25830', 'urn:ogc:def:crs:EPSG::3042', 'http://www.opengis.net/gml/srs/epsg.xml#25830', 'http://www.opengis.net/gml/srs/epsg.xml#23030', 'http://www.opengis.net/gml/srs/epsg.xml#3042'],
   units: 'm',
   datum: 'GRS80 (ETRS89)',
   proj: 'UTM 30 N',
@@ -488,6 +488,27 @@ const proj4346 = {
 };
 
 /**
+ * CRS:84
+ * Proyección geográfica que utiliza el sistema de coordenadas de latitud y longitud
+ * basado en el datum WGS 84. Es ampliamente utilizada en servicios web y estándares OGC,
+ * siendo equivalente a EPSG:4326 pero con el orden de los ejes longitud, latitud.
+ * @type {Object}
+ * @public
+ * @api
+ */
+const crs84 = {
+  def: '+proj=longlat +datum=WGS84 +no_defs',
+  extent: [-180, -90, 180, 90],
+  codes: ['CRS:84'],
+  units: 'd',
+  metersPerUnit: 111319.49079327358,
+  axisOrientation: 'enu',
+  datum: 'WGS 84',
+  proj: 'long, lat',
+  coordRefSys: 'https://defs.opengis.net/prez/object?uri=https://www.opengis.net/def/ogc/CRS84',
+};
+
+/**
  * Lista con las proyecciones anteriores
  * @type {Array<Object>}
  * @public
@@ -518,6 +539,7 @@ const projections = [
   proj4328,
   proj4346,
   proj4979,
+  crs84,
 ];
 
 /**

@@ -2,10 +2,7 @@
 /**
  * @module IDEE/impl/layer/MBTilesVector
  */
-import { isNullOrEmpty, isFunction, extend } from 'IDEE/util/Utils';
-import { compileSync as compileTemplate } from 'IDEE/util/Template';
-import Popup from 'IDEE/Popup';
-import geojsonPopupTemplate from 'templates/geojson_popup';
+import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
 import { get as getProj, transformExtent } from 'ol/proj';
 // import { inflate } from 'pako';
 // import OLLayerTile from 'ol/layer/Tile';
@@ -56,7 +53,7 @@ const generateResolutions = (extent, tileSize, maxZoomLevel) => {
  * @classdesc
  * Implementación de la capa MBTilesVector.
  *
- * @property {function} tileLoadFunction_ Función de carga de la tesela vectorial.
+ * @property {function} tileLoadFunction Función de carga de la tesela vectorial.
  * @property {string} url_ Url del fichero o servicio que genera el MBTilesVector.
  * @property {ArrayBuffer|Uint8Array|Response|File} source_ Fuente de la capa.
  * @property {File|String} style_ Define el estilo de la capa.
@@ -115,7 +112,7 @@ class MBTilesVector extends Vector {
      * MBTilesVector tileLoadFunction: Función de carga de la tesela
      * vectorial proporcionada por el usuario.
      */
-    this.tileLoadFunction_ = userParameters.tileLoadFunction || null;
+    this.tileLoadFunction = userParameters.tileLoadFunction || null;
 
     /**
      * MBTilesVector url: Url del fichero o servicio que genera el MBTilesVector.
@@ -200,7 +197,7 @@ class MBTilesVector extends Vector {
     if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
     if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
 
-    if (!this.tileLoadFunction_ && isNullOrEmpty(this.vendorOptions_.source)) {
+    if (!this.tileLoadFunction && isNullOrEmpty(this.vendorOptions_.source)) {
       this.fetchSource().then((tileProvider) => {
         tileProvider.getMaxZoomLevel().then((maxZoomLevel) => {
           if (!this.maxZoomLevel_) {
@@ -287,7 +284,7 @@ class MBTilesVector extends Vector {
    */
   createLayer(opts) {
     let tileLoadFn = this.loadVectorTileWithProvider;
-    if (this.tileLoadFunction_) {
+    if (this.tileLoadFunction) {
       tileLoadFn = this.loadVectorTile;
     }
     const mvtFormat = new MVT();
@@ -323,7 +320,7 @@ class MBTilesVector extends Vector {
     tile.setLoader((extent, resolution, projection) => {
       const tileCoord = tile.getTileCoord();
       // eslint-disable-next-line
-      target.tileLoadFunction_(tileCoord[0], tileCoord[1], -tileCoord[2] - 1).then((_vectorTile) => {
+      target.tileLoadFunction(tileCoord[0], tileCoord[1], -tileCoord[2] - 1).then((_vectorTile) => {
         if (_vectorTile) {
           try {
             const vectorTile = new Uint8Array(_vectorTile);
@@ -401,55 +398,6 @@ class MBTilesVector extends Vector {
         reject(new Error(getValue('exception').no_source));
       }
     });
-  }
-
-  /**
-   * Este método ejecuta un objeto geográfico seleccionado.
-   *
-   * @function
-   * @param {ol.features} features Objetos geográficos de Openlayers.
-   * @param {Array} coord Coordenadas.
-   * @param {Object} evt Eventos.
-   * @api stable
-   * @expose
-   */
-  selectFeatures(features, coord, evt) {
-    if (this.extract === true) {
-      const feature = features[0];
-      // unselects previous features
-      this.unselectFeatures();
-
-      if (!isNullOrEmpty(feature)) {
-        const clickFn = feature.getAttribute('vendor.api_idee.click');
-        if (isFunction(clickFn)) {
-          clickFn(evt, feature);
-        } else {
-          const popupTemplate = !isNullOrEmpty(this.template)
-            ? this.template : geojsonPopupTemplate;
-          let htmlAsText = compileTemplate(popupTemplate, {
-            vars: this.parseFeaturesForTemplate_(features),
-            parseToHtml: false,
-          });
-          if (this.legend) {
-            const layerLegendHTML = `<div class="m-legend">${this.legend}</div>`;
-            htmlAsText = layerLegendHTML + htmlAsText;
-          }
-          const featureTabOpts = {
-            icon: 'g-cartografia-pin',
-            title: this.name,
-            content: htmlAsText,
-          };
-          let popup = this.map.getPopup();
-          if (isNullOrEmpty(popup)) {
-            popup = new Popup();
-            popup.addTab(featureTabOpts);
-            this.map.addPopup(popup, coord);
-          } else {
-            popup.addTab(featureTabOpts);
-          }
-        }
-      }
-    }
   }
 
   /**

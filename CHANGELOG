@@ -34,6 +34,8 @@
 - Se soluciona error con la edición de geometrías en plugin VectorsManagement.
 - Se implementa el uso del ticket en capas WMS, incluyendo el control getFeatureInfo y el plugin information.
 - Se implementa el uso del ticket en el plugin comparators.
+- Se implementa el parámetro tileLoadFunction en el vendors, ademas de setTileLoadFunction.
+- Se implementa capa GeoPackage.
 - Se implementa en WMS el parámetro tileLoadFunction en el vendors, ademas de setTileLoadFunction.
 - Se añade el parámetro "mergeLayers" en las capas WMS.
 - Se añade /doc a api/actions.
@@ -89,6 +91,7 @@
 - Se permite añadir varios popups al mapa.
 - Se mejora la comprobación de la geometría de la feature en el método read de GeoJSON.js.
 - Se modifica el evento ADDED_TO_MAP de las capas OSM para que se dispare desde fachada.
+- Se comenta codigo innecesario en proportional método update para que no vuelva a aplicar un estilo innecesariamente.
 - Se añaden capas WMC (en desarrollo).
 - Se implementa recreateLayer y setURL para capas GeoJSON
 - Se dan de alta nuevas formas.
@@ -97,3 +100,17 @@
 - Se elimina método cloneOLLayer de MBTiles
 - Se elimina el parámetro implementación en constructor en WFS
 - Se elimina el parámetro implParam de la fachada de WFS
+- Se añade un nuevo parámetro en el fichero de configuración para que el usuario pueda activar/desactivar los niveles de zoom intermedios
+- Se añade nuevo parámetro en el fichero de configuración para definir el DPI con el que se inicializará la instancia del mapa de OpenLayers.
+- Se permite la carga de plantillas creadas por el usuario en el plugin printviewmanagement.
+- Se da la opcion de cambiar el dpi en cualquiera de los métodos de impresión.
+- Se calcula la escala exacta en el control scale.
+- Al utilizar una proyección, ya no es obligatorio añadir el sufijo de la unidad (*m o *d).
+- Se permite definir al vuelo nuevos EPSGs.
+- Se implementa carga al vuelo de EPSG en el plugin printviewmanagement, mousesrs e infocoordinates.
+- Se añade la posibilidad de parametrizar las plantillas a elegir por el usuario en el plugin printviewmanagement.
+- Se refactoriza el CSS de la plantilla a imprimir para que la posición de los elementos sea visualmente correcta.
+- Se cambia la UI del control Scale para indicar los campos editables.
+- Se omite la representación en tiempo real del cambio de DPI en la plantilla de impresión.
+- Se añade SVG de carga al exportar el mapa en cualquier de los métodos de impresión.
+- Se parametriza los niveles de DPI y los layouts en los que no está permitido el cambio de DPI.

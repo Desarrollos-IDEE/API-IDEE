@@ -10,9 +10,10 @@
       title="{{select_srs}}"
       tabindex="{{order}}"
       autocomplete="off"
+      readonly="readonly"
     />
     <ul title="{{select_srs}}" id="m-mousesrs-srs-selector" class="m-mousesrs-srs-selector">
-      <li><a class="m-mousesrs-option-disabled" href="#" value="default" tabindex="-1" disabled>{{choose_create_epsg}}</a></li>
+      <li><a href="#" value="default">{{choose_create_epsg}}</a></li>
       {{#each projections}}
         <li><a href="#" value="{{this.codes.[0]}}">{{this.codes.[0]}}</a></li>
       {{/each}}

@@ -63,6 +63,7 @@ module.exports = {
       path: false,
       crypto: false,
       'buffer': require.resolve('buffer/'),
+      util: require.resolve('util/'),
     },
   },
   module: {
@@ -134,5 +135,6 @@ module.exports = {
   watchOptions: {
     poll: 1000,
   },
+  externals: ['better-sqlite3'],
   devtool: 'eval-source-map',
 };

@@ -3,13 +3,15 @@
  */
 import StyleLineImpl from 'impl/style/Line';
 import Simple from './Simple';
-import { isNull, extendsObj } from '../util/Utils';
+import { isNullOrEmpty, extendsObj } from '../util/Utils';
+import { getValue } from '../i18n/language';
 
 /**
  * @classdesc
  * Crea un estilo de línea
  * con parámetros especificados por el usuario.
  * @api
+ * @deprecated
  * @extends {IDEE.style.Simple}
  */
 class Line extends Simple {
@@ -36,11 +38,14 @@ class Line extends Simple {
    * @api
    */
   constructor(optionsVar, vendorOptions) {
+    // eslint-disable-next-line no-console
+    console.warn(getValue('exception').simple_deprecated);
+
     let options = optionsVar;
     if (vendorOptions) {
       options = {};
     } else {
-      if (isNull(options) || Object.keys(options).length === 0) {
+      if (isNullOrEmpty(options)) {
         options = Line.DEFAULT_NULL;
       }
       options = extendsObj({}, options);

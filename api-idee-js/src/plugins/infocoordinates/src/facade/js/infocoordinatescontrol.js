@@ -138,31 +138,49 @@ export default class InfocoordinatesControl extends IDEE.Control {
   initCustomDropdown(html) {
     const input = html.querySelector('#epsg-selected');
     const selector = html.querySelector('#m-infocoordinates-srs-selector');
+    let isEditable = false;
 
+    input.setAttribute('readonly', 'readonly');
     input.value = this.selectedProjection;
 
     input.addEventListener('focus', () => {
-      selector.style.display = 'block';
-      const list = document.querySelectorAll('#m-infocoordinates-srs-selector li a');
-      list.forEach((li) => {
-        li.addEventListener('mousedown', (event) => {
-          const select = document.querySelector('#epsg-selected');
-          select.value = event.target.getAttribute('value');
-          this.changeSelectSRSorChangeFormat();
+      if (!isEditable) {
+        selector.style.display = 'block';
+        const list = selector.querySelectorAll('li a');
+        list.forEach((li) => {
+          li.addEventListener('mousedown', (event) => {
+            event.preventDefault();
+            const value = event.target.getAttribute('value');
+            if (value === 'default') {
+              isEditable = true;
+              input.removeAttribute('readonly');
+              input.value = '';
+              input.placeholder = getValue('placeholder_custom_epsg');
+              selector.style.display = 'none';
+              input.focus();
+            } else {
+              input.value = value;
+              this.changeSelectSRSorChangeFormat();
+            }
+          });
         });
-      });
-      IDEE.utils.filterList('epsg-selected', 'm-infocoordinates-srs-selector');
+      }
     });
 
     input.addEventListener('blur', () => {
       selector.style.display = 'none';
+      isEditable = false;
+      if (!input.hasAttribute('readonly')) {
+        input.setAttribute('readonly', 'readonly');
+        input.value = this.selectedProjection;
+      }
     });
 
     input.addEventListener('keyup', (event) => {
-      if (event.key === 'Enter') {
+      if (isEditable && event.key === 'Enter') {
+        isEditable = false;
+        input.setAttribute('readonly', 'readonly');
         this.changeSelectSRSorChangeFormat();
-      } else {
-        IDEE.utils.filterList('epsg-selected', 'm-infocoordinates-srs-selector');
       }
     });
   }
@@ -505,7 +523,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
           this.decimalUTMcoord,
         );
         inputSRS.value = this.selectedProjection;
-        IDEE.dialog.error(getValue('exception.srs'));
+        IDEE.dialog.error(`${getValue('exception.srs')} ${this.selectedProjection}`);
       }
     }
 

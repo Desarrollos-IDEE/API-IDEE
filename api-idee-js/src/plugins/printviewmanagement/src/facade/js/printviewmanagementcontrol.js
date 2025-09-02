@@ -241,6 +241,7 @@ export default class PrintViewManagementControl extends IDEE.Control {
 
   addGeorefImageControl(html) {
     this.georefImageControl = new GeorefimageControl(
+      this.georefImage_,
       this.map_,
       this.statusProxy,
       this.useProxy,

@@ -4,13 +4,15 @@
 import StylePointImpl from 'impl/style/Point';
 import Simple from './Simple';
 import {
-  isNull, extendsObj, isArray,
+  isNullOrEmpty, extendsObj, isArray,
 } from '../util/Utils';
+import { getValue } from '../i18n/language';
 
 /**
  * @classdesc
  * Crea un punto de estilo.
  * @api
+ * @deprecated
  * @extends {IDEE.style.Simple}
  */
 class Point extends Simple {
@@ -26,13 +28,16 @@ class Point extends Simple {
    * @api
    */
   constructor(optionsVar, vendorOptions) {
+    // eslint-disable-next-line no-console
+    console.warn(getValue('exception').simple_deprecated);
+
     let options = optionsVar;
     let vendorOpts = vendorOptions;
-    if (!isNull(vendorOpts) && Object.keys(vendorOpts).length > 0) {
+    if (!isNullOrEmpty(vendorOpts)) {
       options = extendsObj({}, Point.DEFAULT);
     } else {
       vendorOpts = null;
-      if (isNull(options) || Object.keys(options).length === 0) {
+      if (isNullOrEmpty(options)) {
         options = Point.DEFAULT_NULL;
       } else {
         options = extendsObj(options, Point.DEFAULT);
@@ -81,7 +86,7 @@ class Point extends Simple {
     let vendorOptsClone = {};
     const vendorOpts = this.getImpl().vendorOptions;
     extendsObj(optsClone, this.options_);
-    if (!isNull(vendorOpts) && Object.keys(vendorOpts).length > 0) {
+    if (!isNullOrEmpty(vendorOpts)) {
       if (isArray(vendorOpts)) {
         vendorOptsClone = vendorOpts.map((vo) => vo.clone());
       } else {

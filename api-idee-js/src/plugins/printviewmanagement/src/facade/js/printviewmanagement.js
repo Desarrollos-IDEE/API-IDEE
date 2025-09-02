@@ -109,6 +109,7 @@ export default class PrintViewManagement extends IDEE.Plugin {
           },
         ],
         order: 0,
+        defaultDpiOptions: [72, 150, 300],
       };
     } else if (options.georefImageEpsg) {
       this.georefImageEpsg = this.getGeorefImageEpsg();
@@ -257,13 +258,14 @@ export default class PrintViewManagement extends IDEE.Plugin {
    * @api
    */
   getGeorefImageEpsg() {
-    const { layers, tooltip } = this.options.georefImageEpsg;
+    const { layers, tooltip, defaultDpiOptions } = this.options.georefImageEpsg;
 
     const order = 0; // ?¿
     const georefImageEpsg = {
       layers,
       order,
       tooltip,
+      defaultDpiOptions,
     };
     return georefImageEpsg;
   }

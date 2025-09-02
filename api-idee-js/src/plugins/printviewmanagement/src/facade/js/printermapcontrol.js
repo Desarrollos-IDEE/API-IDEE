@@ -41,6 +41,10 @@ export default class PrinterMapControl extends IDEE.Control {
     {
       order,
       tooltip,
+      filterTemplates,
+      showDefaultTemplate,
+      defaultDpiOptions,
+      layoutsRestraintFromDpi,
     },
     map,
     statusProxy,
@@ -105,7 +109,14 @@ export default class PrinterMapControl extends IDEE.Control {
      * @private
      * @type {Array<Number>}
      */
-    this.dpiOptions_ = DPI_OPTIONS;
+    this.dpiOptions_ = defaultDpiOptions || DPI_OPTIONS;
+
+    /**
+     * Layouts en los que no se puede modificar el nivel de DPI.
+     * @private
+     * @type {Array<String>}
+     */
+    this.layoutsRestraintFromDpi = layoutsRestraintFromDpi || [];
 
     /**
      * Formatos de salida para la impresión del mapa.
@@ -158,6 +169,20 @@ export default class PrinterMapControl extends IDEE.Control {
      * @type {Boolean}
      */
     this.useProxy = useProxy;
+
+    /**
+     *  Array de paths donde se encuentran las plantillas por defecto (opcional)
+     * @private
+     * @type {Array<String>}
+     */
+    this.filterTemplates = filterTemplates || [];
+
+    /**
+     * Si se puede seleccionar la plantilla que tiene el plugin por defecto
+     * @private
+     * @type {Boolean}
+     */
+    this.showDefaultTemplate = showDefaultTemplate || false;
   }
 
   /**
@@ -168,7 +193,7 @@ export default class PrinterMapControl extends IDEE.Control {
     * @param {IDEE.Map} map to add the control
     * @api stabletrue
     */
-  active(html) {
+  async active(html) {
     this.html_ = html;
     const button = this.html_.querySelector(ID_PRINTERMAP_BUTTON);
 
@@ -201,12 +226,50 @@ export default class PrinterMapControl extends IDEE.Control {
 
     this.addEvents(template);
 
+    if (this.filterTemplates.length > 0) {
+      await this.loadFilterTemplates();
+    }
+
     if (!button.classList.contains('activated')) {
       this.html_.querySelector(ID_PRINTERMAP_CONTROL).appendChild(template);
     } else {
       document.querySelector('.m-printermap-container').remove();
     }
     button.classList.toggle('activated');
+  }
+
+  /**
+   * Loads and processes templates from this.filterTemplates
+   * @private
+   * @function
+   */
+  async loadFilterTemplates() {
+    try {
+      const promises = this.filterTemplates.map(async (templatePath) => {
+        const normalizedPath = templatePath.startsWith('http') || templatePath.startsWith('/')
+          ? templatePath
+          : `/${templatePath}`;
+
+        const response = await fetch(normalizedPath, {
+          headers: { 'Accept': 'text/html' },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch template at ${templatePath}: ${response.statusText}`);
+        }
+
+        const content = await response.text();
+        const templateName = templatePath.split('/').pop().split('.')[0];
+
+        const file = { name: `${templateName}.html` };
+
+        this.handleTemplateUpload({ target: { result: content } }, file);
+      });
+
+      await Promise.all(promises);
+    } catch (error) {
+      IDEE.toast.error(`Error loading templates: ${error.message}`, null, 3000);
+    }
   }
 
   /**
@@ -238,59 +301,38 @@ export default class PrinterMapControl extends IDEE.Control {
     imageData,
     imageType = 'PNG',
     title = 'map',
-    layout = { dimensions: 'a4' },
+    layout = 'a4',
+    orientation = 'horizontal',
     errorCallback = () => {},
     finallyCallback = () => {},
   }) {
+    const dimensions = this.layoutOptions_.find((l) => l.value.toLowerCase()
+    === layout.toLowerCase()).dimensions;
+    if (orientation === 'vertical') {
+      [dimensions[0], dimensions[1]] = [dimensions[1], dimensions[0]];
+    }
     // eslint-disable-next-line new-cap
     const doc = new jsPDF({
-      orientation: 'landscape',
+      orientation: orientation === 'vertical' ? 'portrait' : 'landscape',
       unit: 'mm',
-      format: layout.dimensions,
-      putOnlyUsedFonts: true,
+      format: dimensions,
     });
 
-    const margin = 10;
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-
-    img.onload = () => {
-      try {
-        const imgWidth = img.width;
-        const imgHeight = img.height;
-
-        const maxWidth = pageWidth - 2 * margin;
-        const maxHeight = pageHeight - 2 * margin;
-
-        let drawWidth = maxWidth;
-        let drawHeight = (imgHeight / imgWidth) * maxWidth;
-
-        if (drawHeight > maxHeight) {
-          drawHeight = maxHeight;
-          drawWidth = (imgWidth / imgHeight) * maxHeight;
-        }
-
-        const x = (pageWidth - drawWidth) / 2;
-        const y = (pageHeight - drawHeight) / 2;
-
-        doc.addImage(img, imageType, x, y, drawWidth, drawHeight);
-        doc.save(`${title}.pdf`);
-      } catch (error) {
-        errorCallback(error);
-      } finally {
-        finallyCallback();
-      }
-    };
-
-    img.onerror = () => {
-      errorCallback(new Error('Error CrossOrigin'));
+    try {
+      doc.addImage(
+        imageData,
+        imageType,
+        0,
+        0,
+        dimensions[1],
+        dimensions[0],
+      );
+      doc.save(`${title}.pdf`);
+    } catch (error) {
+      errorCallback(error);
+    } finally {
       finallyCallback();
-    };
-
-    img.src = imageData;
+    }
   }
 
   /**
@@ -318,7 +360,8 @@ export default class PrinterMapControl extends IDEE.Control {
         imageData,
         imageType,
         title: title.value,
-        layout: this.layoutOptions_.find((l) => l.value === this.options_.layout),
+        layout: (config && config.layout) ? config.layout : 'a4',
+        orientation: (config && config.orientation) ? config.orientation : 'horizontal',
         errorCallback: (error) => {
           queueEl.parentElement.remove();
           IDEE.toast.error(error.message, null, 6000);
@@ -331,6 +374,7 @@ export default class PrinterMapControl extends IDEE.Control {
         : IDEE.utils.getImageMap(this.map_, `image/${formatImage}`);
       this.downloadPrint(queueEl, base64image);
     }
+    this.templateConfig = null;
   }
 
   /**
@@ -603,10 +647,12 @@ export default class PrinterMapControl extends IDEE.Control {
       selectElement.remove(1);
     }
 
-    const defaultOption = document.createElement('option');
-    defaultOption.value = 'default';
-    defaultOption.textContent = getValue('defaultTemplate');
-    selectElement.appendChild(defaultOption);
+    if (this.showDefaultTemplate) {
+      const defaultOption = document.createElement('option');
+      defaultOption.value = 'default';
+      defaultOption.textContent = getValue('defaultTemplate');
+      selectElement.appendChild(defaultOption);
+    }
 
     this.uploadedTemplates.forEach((template) => {
       const option = document.createElement('option');
@@ -653,7 +699,14 @@ export default class PrinterMapControl extends IDEE.Control {
 
       const types = Array.from(dataTypeElements).map((element) => {
         const fullType = element.getAttribute('data-type');
-        return fullType.split('api-idee-template-').pop();
+        let typeSuffix = fullType.split('api-idee-template-').pop();
+        if (typeSuffix === 'texto-libre') {
+          const typeName = element.getAttribute('data-type-name');
+          if (typeName) {
+            typeSuffix = `${typeSuffix}:${typeName}`;
+          }
+        }
+        return typeSuffix;
       });
       const styles = this.extractStyles(doc);
       const scripts = this.extractScripts(doc);
@@ -668,8 +721,19 @@ export default class PrinterMapControl extends IDEE.Control {
       const selectedTemplateName = this.template_.querySelector(ID_UPLOADED_TEMPLATES).value;
       templateData = this.uploadedTemplates.find((t) => t.name === selectedTemplateName);
       if (templateData) {
-        templateData.types = templateData.types.map((fullType) => {
-          return fullType.split('api-idee-template-').pop();
+        templateData.types = templateData.types.map((fullType, idx) => {
+          let typeSuffix = fullType.split('api-idee-template-').pop();
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(templateData.content, 'text/html');
+          const dataTypeElements = doc.querySelectorAll('[data-type]');
+          const element = dataTypeElements[idx];
+          if (typeSuffix === 'texto-libre' && element) {
+            const typeName = element.getAttribute('data-type-name');
+            if (typeName) {
+              typeSuffix = `${typeSuffix}:${typeName}`;
+            }
+          }
+          return typeSuffix;
         });
       }
     }
@@ -680,6 +744,7 @@ export default class PrinterMapControl extends IDEE.Control {
         dpiOptions: this.dpiOptions_,
         layoutOptions: this.layoutOptions_,
         projectionsOptions: this.proyectionsDefect_,
+        layoutsRestraintFromDpi: this.layoutsRestraintFromDpi,
         map: this.map_,
         order: this.order,
         helpUrl: this.helpUrl,
