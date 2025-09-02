@@ -133,6 +133,30 @@ export const isUrl = (obj) => {
 };
 
 /**
+ * Devuelve verdadero si es valor que se le pasa por
+ * parámetros es un numero.
+ * @function
+ * @param {number} number Valor que se quiere comprobar.
+ * @returns {Boolean} Verdadero si es un numero.
+ * @api
+ */
+export const isNumber = (number) => {
+  return typeof number === 'number';
+};
+
+/**
+ * Devuelve verdadero si es valor que se le pasa por
+ * parámetros es un numero positivo.
+ * @function
+ * @param {number} number Valor que se quiere comprobar.
+ * @returns {Boolean} Verdadero si es un numero positivo.
+ * @api
+ */
+export const isPositiveNumber = (number) => {
+  return isNumber(number) && number > 0;
+};
+
+/**
  * Devuelve un texto normalizado (sin espacios y en mayúsculas o minúsculas).
  * @function
  * @param {String} stringToNormalize Valor que se quiere normalizar.
