@@ -6,11 +6,13 @@ import Simple from './Simple';
 import {
   isNullOrEmpty, extendsObj, isArray,
 } from '../util/Utils';
+import { getValue } from '../i18n/language';
 
 /**
  * @classdesc
  * Crea un punto de estilo.
  * @api
+ * @deprecated
  * @extends {IDEE.style.Simple}
  */
 class Point extends Simple {
@@ -26,6 +28,9 @@ class Point extends Simple {
    * @api
    */
   constructor(optionsVar, vendorOptions) {
+    // eslint-disable-next-line no-console
+    console.warn(getValue('exception').simple_deprecated);
+
     let options = optionsVar;
     let vendorOpts = vendorOptions;
     if (!isNullOrEmpty(vendorOpts)) {

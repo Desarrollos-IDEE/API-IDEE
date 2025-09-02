@@ -3,12 +3,14 @@
  */
 import PolygonImpl from 'impl/style/Polygon';
 import Simple from './Simple';
+import { getValue } from '../i18n/language';
 import { isNullOrEmpty, extendsObj } from '../util/Utils';
 
 /**
  * @classdesc
  * Crea el estilo de un polígono.
  * @api
+ * @deprecated
  * @extends {IDEE.style.Simple}
  */
 class Polygon extends Simple {
@@ -45,6 +47,9 @@ class Polygon extends Simple {
    * @api
    */
   constructor(optionsParam = {}, vendorOptions = undefined) {
+    // eslint-disable-next-line no-console
+    console.warn(getValue('exception').simple_deprecated);
+
     let options = optionsParam;
     if (vendorOptions) {
       options = {};

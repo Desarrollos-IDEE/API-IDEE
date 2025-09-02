@@ -288,6 +288,7 @@
     "transparent_deprecated": "'transparent' parameter has been deprecated, it is recommended to use 'isBase' instead.",
     "getOL3Layer_deprecated": "The getOL3Layer method has been deprecated, it is recommended to use the getLayer method.",
     "setOL3Layer_deprecated": "The setOL3Layer method has been deprecated, it is recommended to use the setLayer method.",
+    "simple_deprecated": "Simple style (M.style.Point, M.style.Polygon y M.style.Line) has been deprecated, it is recommended to use generic style instead.",
     "geopackagetile_method": "The implementation used can not create GeoPackageTile layers.",
     "addgeopackagetile_method": "The implementation used does not have addGeoPackageTile method.",
     "getgeopackagetile_method": "The implementation used does not have getGeoPackageTile method.",

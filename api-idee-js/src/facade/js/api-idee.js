@@ -12,7 +12,7 @@ import TMS from 'IDEE/layer/TMS';
 import LayerGroup from 'IDEE/layer/LayerGroup';
 import WMTS from 'IDEE/layer/WMTS';
 import MapLibre from 'IDEE/layer/MapLibre';
-import Point from 'IDEE/style/Point';
+import Generic from 'IDEE/style/Generic';
 import pkg from '../../../package';
 import 'assets/css/idee';
 import { isUndefined, isNullOrEmpty } from './util/Utils';
@@ -187,11 +187,13 @@ const redesGeodesicasRegenteWFS = () => {
       geometry: 'POINT',
       extract: true,
     }, {
-      style: new Point({
-        radius: 2,
-        fill: {
-          color: 'black',
-          opacity: 0.5,
+      style: new Generic({
+        point: {
+          radius: 2,
+          fill: {
+            color: 'black',
+            opacity: 0.5,
+          },
         },
       }),
     });
