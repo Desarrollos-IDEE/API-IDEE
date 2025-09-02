@@ -4,6 +4,7 @@
 import StyleLineImpl from 'impl/style/Line';
 import Simple from './Simple';
 import { isNullOrEmpty, extendsObj } from '../util/Utils';
+import { getValue } from '../i18n/language';
 
 /**
  * @classdesc
