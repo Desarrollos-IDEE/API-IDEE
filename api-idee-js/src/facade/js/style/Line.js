@@ -36,6 +36,9 @@ class Line extends Simple {
    * @api
    */
   constructor(optionsVar, vendorOptions) {
+    // eslint-disable-next-line no-console
+    console.warn(getValue('exception').simple_deprecated);
+
     let options = optionsVar;
     if (vendorOptions) {
       options = {};

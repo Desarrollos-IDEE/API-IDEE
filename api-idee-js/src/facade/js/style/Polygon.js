@@ -4,6 +4,7 @@
 import PolygonImpl from 'impl/style/Polygon';
 import Simple from './Simple';
 import { isNull, extendsObj } from '../util/Utils';
+import { getValue } from '../i18n/language';
 
 /**
  * @classdesc
@@ -45,6 +46,9 @@ class Polygon extends Simple {
    * @api
    */
   constructor(optionsParam = {}, vendorOptions = undefined) {
+    // eslint-disable-next-line no-console
+    console.warn(getValue('exception').simple_deprecated);
+
     let options = optionsParam;
     if (vendorOptions) {
       options = {};

@@ -6,6 +6,7 @@ import Simple from './Simple';
 import {
   isNull, extendsObj, isArray,
 } from '../util/Utils';
+import { getValue } from '../i18n/language';
 
 /**
  * @classdesc
@@ -26,6 +27,9 @@ class Point extends Simple {
    * @api
    */
   constructor(optionsVar, vendorOptions) {
+    // eslint-disable-next-line no-console
+    console.warn(getValue('exception').simple_deprecated);
+
     let options = optionsVar;
     let vendorOpts = vendorOptions;
     if (!isNull(vendorOpts) && Object.keys(vendorOpts).length > 0) {
