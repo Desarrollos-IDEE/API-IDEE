@@ -255,7 +255,7 @@ export const generateRandom = (prefix, sufix) => {
  * @returns {String} Devuelve los metadatos.
  * @api
  */
-export const getWMSGetCapabilitiesUrl = (serverUrl, version, ticket = false) => {
+export const getWMSGetCapabilitiesUrl = (serverUrl, version, ticket) => {
   let wmsGetCapabilitiesUrl = serverUrl;
 
   // request
