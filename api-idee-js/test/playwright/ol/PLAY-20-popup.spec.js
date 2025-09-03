@@ -36,8 +36,8 @@ test.describe('IDEE.Popup', () => {
         window.map.addLayers(window.ogc_001);
       });
     }, text);
-    await page.mouse.click(562, 293);
-    const footer = await page.locator('.m-popup.m-collapsed .m-footer');
+    await await page.click('#map', { position: { x: 562, y: 293 } });
+    const footer = await page.locator('.m-popup .m-footer');
     await expect(footer).toHaveText(text);
   });
 });

@@ -60,8 +60,8 @@ test.describe('popup muentra nombre de capa', () => {
     });
 
     await page.waitForTimeout(2000);
-    await page.mouse.click(640, 360);
-    const popup = await page.locator('.m-popup.m-collapsed .m-body');
+    await await page.click('#map', { position: { x: 640, y: 360 } });
+    const popup = await page.locator('.m-popup .m-body');
     const text = await popup.innerText({ timeout: 2000 });
     expect(text).toContain('feature que cubre Andalucía');
   });
