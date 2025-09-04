@@ -114,3 +114,4 @@
 - Se omite la representación en tiempo real del cambio de DPI en la plantilla de impresión.
 - Se añade SVG de carga al exportar el mapa en cualquier de los métodos de impresión.
 - Se parametriza los niveles de DPI y los layouts en los que no está permitido el cambio de DPI.
+- Se modifica Punto, Linea, Poligono, Genérico y proporcional para que use isNUllOrEmpty a secas donde procede, y modificado isNullOrEmpty para solucionar un error.
