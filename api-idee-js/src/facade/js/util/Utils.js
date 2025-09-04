@@ -7,6 +7,7 @@ import { get as remoteGet } from 'IDEE/util/Remote';
 import chroma from 'chroma-js';
 import Draggabilly from 'draggabilly';
 import reproj from 'impl/util/reprojection';
+import getImplWMTSCapabilities from 'impl/util/GetCapabilities';
 import { getValue } from '../i18n/language';
 import { DOTS_PER_INCH, INCHES_PER_UNIT } from '../units';
 import * as WKT from '../geom/WKT';
@@ -1762,6 +1763,16 @@ export const getSystem = () => {
   }
 
   return env;
+};
+
+/**
+ * @function
+ * @public
+ * @param {String| URLLike} url
+ * @returns {Promise}
+ */
+export const getWMTSCapabilities = (url) => {
+  return getImplWMTSCapabilities(url);
 };
 
 /**
