@@ -25,7 +25,6 @@ test.describe('IDEE.layer.MVT', () => {
           width: 0.5,
         },
       });
-      window.line = line;
 
       const mvt = new IDEE.layer.MVT({
         url: 'https://vt-fedme.idee.es/vt.senderogr/{z}/{x}/{y}.pbf',
@@ -37,7 +36,7 @@ test.describe('IDEE.layer.MVT', () => {
       window.map.addLayers(mvt);
     });
     await page.waitForTimeout(5000);
-    await expect(page).toHaveScreenshot('snapshot-feature.png', {maxDiffPixelRatio: 0.5});
+    await expect(page).toHaveScreenshot('snapshot-feature.png', { maxDiffPixelRatio: 0.5 });
   });
 
   test('Parameter style with mode: render', async ({ page }) => {
@@ -52,7 +51,6 @@ test.describe('IDEE.layer.MVT', () => {
           width: 0.5,
         },
       });
-      window.line = line;
 
       const mvt = new IDEE.layer.MVT({
         url: 'https://vt-fedme.idee.es/vt.senderogr/{z}/{x}/{y}.pbf',
@@ -64,6 +62,6 @@ test.describe('IDEE.layer.MVT', () => {
       window.map.addLayers(mvt);
     });
     await page.waitForTimeout(5000);
-    await expect(page).toHaveScreenshot('snapshot-render.png', {maxDiffPixelRatio: 0.5});
+    await expect(page).toHaveScreenshot('snapshot-render.png', { maxDiffPixelRatio: 0.5 });
   });
 });

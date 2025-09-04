@@ -1,13 +1,11 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Popup', () => {
-  let map;
   test('Añadir y eliminar multiples popup', async ({ page }) => {
     await page.goto('/test/playwright/ol/basic-ol.html');
     const res = await page.evaluate(async () => {
       let hit = 0;
-      map = IDEE.map({ container: 'map' });
-      window.map = map;
+      const map = IDEE.map({ container: 'map' });
       map.on(IDEE.evt.POPUP_ADDED, () => {
         hit += 1;
       });

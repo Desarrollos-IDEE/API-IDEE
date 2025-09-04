@@ -11,16 +11,15 @@ test('Capa MVT - tileLoadFunction', async ({ page }) => {
     }
   });
 
-  let mapjs;
   await page.evaluate(() => {
-    mapjs = IDEE.map({
+    const mapjs = IDEE.map({
       container: 'map',
     });
+    window.mapjs = mapjs;
   });
 
-  let mvt;
   await page.evaluate(() => {
-    mvt = new IDEE.layer.MVT({
+    const mvt = new IDEE.layer.MVT({
       url: 'https://vt-fedme.idee.es/vt.senderogr/{z}/{x}/{y}.pbf',
       // url: 'https://ahocevar.com/geoserver/gwc/service/tms/1.0.0/ne:ne_10m_admin_0_countries@EPSG%3A900913@pbf/{z}/{x}/{-y}.pbf',
       name: 'vectortile',
@@ -42,7 +41,7 @@ test('Capa MVT - tileLoadFunction', async ({ page }) => {
         });
       },
     });
-    mapjs.addLayers([mvt]);
+    window.mapjs.addLayers([mvt]);
   });
   await page.waitForTimeout(4000);
   expect(hasTileLog).toBe(true);

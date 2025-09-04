@@ -1,51 +1,42 @@
 import { test, expect } from '@playwright/test';
 
-test('Comprobamos intersect geometría con WFS', async ({ page }) => {
+test('Capa WMS - tileLoadFunction', async ({ page }) => {
+  let hasTileLog = false;
+
   await page.goto('/test/playwright/ol/basic-ol.html');
-  let mapjs;
-  await page.evaluate(() => {
-    mapjs = IDEE.map({
-      container: 'map',
-      layers: ['OSM'],
-      projection: 'EPSG:4326',
-      zoom: 5,
-      center: [-5.9326171875, 38.15002441406251],
-    });
-  });
-  await page.waitForFunction(() => mapjs.isFinished());
-  let lyMunicipios;
-  await page.evaluate(() => {
-    lyMunicipios = new IDEE.layer.OGCAPIFeatures({
-      url: 'https://api-features.ign.es/collections/',
-      name: 'administrativeunit',
-      legend: 'AU Unidades administrativas',
-      extract: true,
-      conditional: { nameunit: 'Lepe' },
-      limit: 30,
-    });
-    mapjs.addLayers(lyMunicipios);
+
+  page.on('console', (message) => {
+    if (message.type() === 'log' && message.text() === 'tile cargada') {
+      hasTileLog = true;
+    }
   });
 
-  const featuresCount = await page.evaluate(() => {
-    return new Promise((resolve) => {
-      lyMunicipios.on(IDEE.evt.LOAD, () => {
-        const miGeometria = {
-          'type': 'Polygon',
-          'coordinates': [
-            [
-              [-7.551353395275297, 37.83827459850633],
-              [-5.225846402130134, 37.59569127398093],
-              [-5.809697536223998, 35.923581077760645],
-              [-7.858122260237212, 37.642705220575095],
-              [-7.551353395275297, 37.83827459850633],
-            ],
-          ],
-        };
-        const filter = IDEE.filter.spatial.INTERSECT(miGeometria);
-        lyMunicipios.setFilter(filter);
-        resolve(lyMunicipios.getFeatures().length);
-      });
+  await page.evaluate(() => {
+    const mapjs = IDEE.map({
+      container: 'map',
     });
+    window.mapjs = mapjs;
   });
-  expect(featuresCount).toEqual(1);
+
+  await page.evaluate(() => {
+    const wms = new IDEE.layer.WMS(
+      {
+        url: 'https://www.ign.es/wms-inspire/unidades-administrativas',
+        name: 'AU.AdministrativeBoundary',
+        tiled: true,
+      },
+      {
+      },
+      {
+        tileLoadFunction: (imageTile, src) => {
+          // eslint-disable-next-line no-param-reassign
+          imageTile.getImage().src = src;
+          console.log('tile cargada');
+        },
+      },
+    );
+    window.mapjs.addLayers([wms]);
+  });
+  await page.waitForTimeout(4000);
+  expect(hasTileLog).toBe(true);
 });

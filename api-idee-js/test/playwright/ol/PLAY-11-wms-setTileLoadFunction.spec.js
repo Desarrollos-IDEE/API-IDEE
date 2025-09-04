@@ -11,16 +11,15 @@ test('Capa WMS - tileLoadFunction', async ({ page }) => {
     }
   });
 
-  let mapjs;
   await page.evaluate(() => {
-    mapjs = IDEE.map({
+    const mapjs = IDEE.map({
       container: 'map',
     });
+    window.mapjs = mapjs;
   });
 
-  let wms;
   await page.evaluate(() => {
-    wms = new IDEE.layer.WMS(
+    const wms = new IDEE.layer.WMS(
       {
         url: 'https://www.ign.es/wms-inspire/unidades-administrativas',
         name: 'AU.AdministrativeBoundary',
@@ -36,7 +35,7 @@ test('Capa WMS - tileLoadFunction', async ({ page }) => {
         },
       },
     );
-    mapjs.addLayers([wms]);
+    window.mapjs.addLayers([wms]);
   });
   await page.waitForTimeout(4000);
   expect(hasTileLog).toBe(true);

@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Eventos', () => {
-  let map;
   test('Triggers de los eventos', async ({ page }) => {
     let hitROT = 0;
 
@@ -15,7 +14,7 @@ test.describe('Eventos', () => {
 
     const res = await page.evaluate(async () => {
       let hitPOP = 0;
-      map = IDEE.map({ container: 'map' });
+      const map = IDEE.map({ container: 'map' });
       window.map = map;
       // Eventos POPUP trigger mapa
       map.on(IDEE.evt.POPUP_ADDED, () => {
