@@ -300,7 +300,7 @@ export const getIconForm = (options, featureVariable, layer) => {
     }),
     stroke: options.icon.color ? new OLStyleStroke({
       color: Simple.getValue(options.icon.color, featureVariable, layer),
-      width: 1,
+      width: 2,
     }) : undefined,
     anchor: Simple.getValue(options.icon.anchor, featureVariable, layer),
     anchorXUnits: Simple.getValue(options.icon.anchorxunits, featureVariable, layer),
