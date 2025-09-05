@@ -4,11 +4,10 @@
  * @example import template from 'IDEE/template';
  */
 import Handlebars from 'handlebars';
-import { allowInsecurePrototypeAccess } from '@handlebars/allow-prototype-access';
-import registerHelpers from './handlebarshelpers';
 import {
   isUndefined, stringToHtml, extendsObj,
 } from './Utils';
+import './handlebarshelpers';
 
 /**
  * Plantilla.
@@ -35,9 +34,7 @@ export const compileSync = (string, options) => {
     parseToHtml = options.parseToHtml;
   }
 
-  const insecureHandlebars = allowInsecurePrototypeAccess(Handlebars);
-  registerHelpers(insecureHandlebars);
-  const templateFn = insecureHandlebars.compile(string);
+  const templateFn = Handlebars.compile(string);
   const htmlText = templateFn(templateVars);
   if (parseToHtml !== false) {
     template = stringToHtml(htmlText);

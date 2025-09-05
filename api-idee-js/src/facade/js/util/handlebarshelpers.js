@@ -3,17 +3,16 @@
  * @module IDEE/handlebarshelpers
  * @example import handlebarshelpers from 'IDEE/handlebarshelpers';
  */
-
+import Handlebars from 'handlebars';
 import { getTextFromHtml } from './Utils';
 
 /**
  * Esta función incluye métodos para ayudar a "Handlebars".
  * https://handlebarsjs.com/
  * @function
- * @param {Object} insecureHandlebars "Handlebars".
  * @api
  */
-const helpers = (insecureHandlebars) => {
+const helpers = () => {
   /**
    * Ayudantes para "Handlebars" que compara si el
    * el primer argumento es mayor que el segundo.
@@ -25,7 +24,7 @@ const helpers = (insecureHandlebars) => {
    *
    * @returns {Object} Lo invierte si es falso.
    */
-  insecureHandlebars.registerHelper('gt', function gt(arg1, arg2, options) {
+  Handlebars.registerHelper('gt', function gt(arg1, arg2, options) {
     if (arg1 > arg2) {
       return options.fn(this);
     }
@@ -43,7 +42,7 @@ const helpers = (insecureHandlebars) => {
    *
    * @returns {Object} Lo invierte si es falso.
    */
-  insecureHandlebars.registerHelper('lt', function lt(arg1, arg2, options) {
+  Handlebars.registerHelper('lt', function lt(arg1, arg2, options) {
     if (arg1 < arg2) {
       return options.fn(this);
     }
@@ -61,7 +60,7 @@ const helpers = (insecureHandlebars) => {
    *
    * @returns {Object} Lo invierte si es falso.
    */
-  insecureHandlebars.registerHelper('eq', function eq(arg1, arg2, options) {
+  Handlebars.registerHelper('eq', function eq(arg1, arg2, options) {
     if (Object.equals(arg1, arg2)) {
       return options.fn(this);
     }
@@ -77,7 +76,7 @@ const helpers = (insecureHandlebars) => {
    *
    * @returns {Object} Lo invierte si es falso.
    */
-  insecureHandlebars.registerHelper('oneword', function oneword(arg1, options) {
+  Handlebars.registerHelper('oneword', function oneword(arg1, options) {
     if (!/\s/g.test(getTextFromHtml(arg1))) {
       return options.fn(this);
     }
@@ -96,7 +95,7 @@ const helpers = (insecureHandlebars) => {
    *
    * @returns {HTMLElement} Devuelve un elemento "li" con los parámetros.
    */
-  insecureHandlebars.registerHelper('printType', (type, address, id, municipality, cps) => {
+  Handlebars.registerHelper('printType', (type, address, id, municipality, cps) => {
     let line = `<li id=${id}><span id="info">${address}</span>`;
     // add following lines if asked to show entity type again
     // (but not if type's portal, callejero or Codpost)
@@ -117,7 +116,7 @@ const helpers = (insecureHandlebars) => {
    *
    * @returns {String} Ruta.
    */
-  insecureHandlebars.registerHelper('pattern', (options) => {
+  Handlebars.registerHelper('pattern', (options) => {
     let output = '';
     options.data.root.fields.forEach((field) => {
       if (!field.isFormatter) return;
@@ -139,7 +138,7 @@ const helpers = (insecureHandlebars) => {
    *
    * @returns {String} Cadena formateada.
    */
-  insecureHandlebars.registerHelper('formatterStr', (item) => {
+  Handlebars.registerHelper('formatterStr', (item) => {
     let symbolPattern = '';
     let numRepeat = 0;
     let output = '';
@@ -162,7 +161,7 @@ const helpers = (insecureHandlebars) => {
    *
    * @returns {String} Verdadero, inversa.
    */
-  insecureHandlebars.registerHelper('ifCond', (v1, v2, options) => {
+  Handlebars.registerHelper('ifCond', (v1, v2, options) => {
     return v1 === v2 ? options.fn(this) : options.inverse(this);
   });
 
@@ -175,7 +174,7 @@ const helpers = (insecureHandlebars) => {
    *
    * @returns {Number} Resultado de la suma.
    */
-  insecureHandlebars.registerHelper('sum', (n1, n2) => {
+  Handlebars.registerHelper('sum', (n1, n2) => {
     return n1 + n2;
   });
 
@@ -188,7 +187,7 @@ const helpers = (insecureHandlebars) => {
    *
    * @returns {Number} Resultado de la suma.
    */
-  insecureHandlebars.registerHelper('neq', (arg1, arg2, options) => {
+  Handlebars.registerHelper('neq', (arg1, arg2, options) => {
     if (!Object.equals(arg1, arg2)) {
       return options.fn(this);
     }
@@ -204,7 +203,7 @@ const helpers = (insecureHandlebars) => {
    *
    * @returns {Number} Si el argumento 1 es "falsy" devuelve la inversa.
    */
-  insecureHandlebars.registerHelper('unless', (arg1, options) => {
+  Handlebars.registerHelper('unless', (arg1, options) => {
     if (!arg1) {
       return options.fn(this);
     }
@@ -220,7 +219,7 @@ const helpers = (insecureHandlebars) => {
    *
    * @returns {*} Devuelve el valor de un array.
    */
-  insecureHandlebars.registerHelper('get', (index, array) => {
+  Handlebars.registerHelper('get', (index, array) => {
     return array[index];
   });
 
@@ -232,7 +231,7 @@ const helpers = (insecureHandlebars) => {
    *
    * @returns {String} Cadena en mayúsculas.
    */
-  insecureHandlebars.registerHelper('uppercase', (string) => {
+  Handlebars.registerHelper('uppercase', (string) => {
     return string.toUpperCase();
   });
 
@@ -244,9 +243,11 @@ const helpers = (insecureHandlebars) => {
    *
    * @returns {String} Cadena en mayúsculas.
    */
-  insecureHandlebars.registerHelper('lowercase', (string) => {
+  Handlebars.registerHelper('lowercase', (string) => {
     return string.toLowerCase();
   });
 };
+
+helpers();
 
 export default helpers;
