@@ -155,7 +155,7 @@ export default class TemplateCustomizer extends IDEE.Control {
      * @private
      * @type {number}
      */
-    this.baseDpi_ = 48;
+    this.baseDpi_ = 28;
 
     /**
      * Escala inicial del mapa de previsualización
@@ -241,7 +241,7 @@ export default class TemplateCustomizer extends IDEE.Control {
     document.querySelector('.m-dialog>div.m-modal>div.m-content').style.minWidth = '80vw';
     document.querySelector('.m-dialog>div.m-modal>div.m-content').style.minHeight = '80vh';
     document.querySelector('.m-dialog>div.m-modal>div.m-content').style.maxWidth = '80vw';
-    document.querySelector('.m-dialog>div.m-modal>div.m-content').style.maxHeight = '80vh';
+    document.querySelector('.m-dialog>div.m-modal>div.m-content').style.maxHeight = 'fit-content';
     document.querySelector('.m-dialog>div.m-modal>div.m-content').style.padding = '0';
     document.querySelector('div.m-api-idee-container div.m-dialog div.m-title').style.backgroundColor = '#71a7d3';
 
@@ -249,16 +249,37 @@ export default class TemplateCustomizer extends IDEE.Control {
 
     const closeButton = buttonContainer.querySelector('button');
     closeButton.innerHTML = getValue('close');
-    closeButton.id = 'close-button';
     closeButton.style.width = '75px';
-    closeButton.style.backgroundColor = '#71a7d3';
-    closeButton.style.marginRight = '10px';
+    closeButton.style.padding = '8px';
+    closeButton.style.backgroundColor = '#FFF';
+    closeButton.style.color = '#71a7d3';
+    closeButton.style.border = '1px solid #71a7d3';
+    closeButton.style.margin = '10px';
+    closeButton.style.borderRadius = '4px';
+    closeButton.style.transition = 'background-color 0.3s ease';
+    closeButton.addEventListener('mouseover', () => {
+      closeButton.style.backgroundColor = '#1470dbFF';
+      closeButton.style.color = '#FFF';
+    });
+    closeButton.addEventListener('mouseout', () => {
+      closeButton.style.backgroundColor = '#FFF';
+      closeButton.style.color = '#71a7d3';
+    });
 
     const applyButton = document.createElement('button');
     applyButton.innerHTML = getValue('apply');
     applyButton.style.width = '75px';
+    applyButton.style.padding = '8px';
     applyButton.style.backgroundColor = '#71a7d3';
-    applyButton.style.marginRight = '10px';
+    applyButton.style.margin = '10px';
+    applyButton.style.borderRadius = '4px';
+    applyButton.style.transition = 'background-color 0.3s ease';
+    applyButton.addEventListener('mouseover', () => {
+      applyButton.style.backgroundColor = '#1470dbFF';
+    });
+    applyButton.addEventListener('mouseout', () => {
+      applyButton.style.backgroundColor = '#71a7d3';
+    });
 
     buttonContainer.appendChild(applyButton);
     buttonContainer.insertBefore(closeButton, applyButton);
@@ -331,14 +352,16 @@ export default class TemplateCustomizer extends IDEE.Control {
     const containerId = imagenMascara ? MAP_CONTAINER_TEMPLATE : MAP_CONTAINER;
     this.previewMap = new IDEE.Map({
       container: containerId,
-      view: this.map.getMapImpl().getView(),
-      minZoom: this.map.getImpl().getMinZoom(),
-      maxZoom: this.map.getImpl().getMaxZoom(),
       zoom: this.map.getImpl().getZoom(),
       center: Object.values(this.map.getImpl().getCenter()),
     });
 
     this.previewMap.addLayers(this.map.getLayers());
+    this.map.getLayers().forEach((layer) => {
+      if (typeof layer.getStyle === 'function' && layer.getStyle()) {
+        layer.setStyle(layer.getStyle());
+      }
+    });
     const previewContainer = document.querySelector(ID_CONTAINER_DEFAULT_TEMPLATE);
     this.templateElementsContainer_ = previewContainer;
     this.stylesApplied_ = false;
@@ -975,8 +998,11 @@ export default class TemplateCustomizer extends IDEE.Control {
       }
       if (this.layoutsRestraintFromDpi.includes(this.layout)) {
         document.querySelector(ID_TEMPLATE_DPI).disabled = true;
+        IDEE.toast.warning(getValue('exception.disabledDpiSelector'), null, 6000);
+        this.dpi = 72;
       } else {
         document.querySelector(ID_TEMPLATE_DPI).disabled = false;
+        this.dpi = document.querySelector(ID_TEMPLATE_DPI).value;
       }
     });
   }
@@ -1067,10 +1093,15 @@ export default class TemplateCustomizer extends IDEE.Control {
     if (!this.styleContainer_) return '';
 
     const originalStyles = this.styleContainer_.textContent;
-    const fontSizeScaleFactor = currentLayout.fontSizeMultiplier;
-    const letterSpacingScaleFactor = currentLayout.letterSpacingMultiplier;
+    let fontSizeScaleFactor = currentLayout.fontSizeMultiplier;
+    let letterSpacingScaleFactor = currentLayout.letterSpacingMultiplier;
 
     let cssContent = this.templateData_.styles.styleTags.join('\n');
+
+    if (this.mapOrientation === 'vertical') {
+      fontSizeScaleFactor *= 0.625;
+      letterSpacingScaleFactor *= 2.5;
+    }
 
     cssContent = cssContent.replace(/font-size\s*:\s*(\d+\.?\d*)px/g, (match, fontSize) => {
       const originalFontSize = parseFloat(fontSize);
@@ -1121,6 +1152,10 @@ export default class TemplateCustomizer extends IDEE.Control {
     const scaleFactor = this.dpi / 72;
     const newWidth = Math.round(originalSize[0] * scaleFactor);
     const newHeight = Math.round(originalSize[1] * scaleFactor);
+    const maskImageContainer = document.querySelector(`#${MAP_CONTAINER_TEMPLATE}`);
+    const originalMapViewport = map.getViewport();
+    const parentNode = originalMapViewport.parentNode;
+
     map.once('rendercomplete', async () => {
       const canvas = document.createElement('canvas');
       canvas.width = newWidth;
@@ -1164,12 +1199,12 @@ export default class TemplateCustomizer extends IDEE.Control {
           orientation: this.mapOrientation,
         });
       }
-      const closeButton = document.querySelector('#close-button');
-      closeButton.click();
       if (this.loadingOverlay_) {
         this.loadingOverlay_.remove();
         this.loadingOverlay_ = null;
       }
+      maskImageContainer.innerHTML = '';
+      parentNode.appendChild(originalMapViewport);
     });
     map.setSize([newWidth, newHeight]);
     const scaling = Math.min(newWidth / originalSize[0], newHeight / originalSize[1]);
