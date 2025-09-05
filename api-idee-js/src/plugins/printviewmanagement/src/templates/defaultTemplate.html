@@ -114,7 +114,7 @@
             grid-column: 2fr;
             grid-row: 1fr;
             display: grid;
-            overflow: hidden;
+            min-width: 60px;
         }
         .cell-interior {
             padding: 4px;
@@ -155,6 +155,9 @@
         .left-text {
             align-self: flex-end;
             padding: 7px;
+        }
+        .horizontal-texts .left-text {
+            align-self: flex-start;
         }
         .right-text {
             align-self: flex-end;

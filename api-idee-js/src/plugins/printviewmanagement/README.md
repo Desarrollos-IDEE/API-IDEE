@@ -128,8 +128,6 @@ El constructor se inicializa con un JSON con los siguientes atributos:
   - **defaultDpiOptions**: Array de niveles de DPI a elegir por el usuario. Por defecto [72, 150, 300].
 - **printermap**:  Indica si el control "Impresión de imagen con plantilla" se añade al plugin (true/false). Por defecto: true.
   - **tooltip**: Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Impresión del mapa.
-  - **fixedDescription**: Valor booleano que indica si añadir por defecto un texto a la descripción específico de fototeca sin posibilidad de edición (true/false). Por defecto: false.
-  - **headerLegend**: URL de una imagen para añadir como leyenda en la parte central de la cabecera.
   - **filterTemplates**: Listado de rutas realtivas o absolutas de las cuales se obtendrán cada una de las plantillas a elegir en el modo de impresión. Por defecto:
   ```JavaScript
   "filterTemplates": [
@@ -264,7 +262,7 @@ A continuación, se muestran ejemplos de elementos correctamente configurados pa
 # API-REST
 
 ```javascript
-URL_API?printviewmanagement=position*collapsed*collapsible*tooltip*isDraggable*serverUrl*printStatusUrl*georefImageEpsg*georefImage*printermap*defaultOpenControl
+URL_API?printviewmanagement=position*collapsed*collapsible*tooltip*isDraggable*georefImageEpsg*georefImage*printermap*defaultOpenControl
 ```
 
 <table>
@@ -434,11 +432,10 @@ const mp = new IDEE.plugin.PrintViewManagement({
   georefImage: {
     tooltip: 'Georeferenciar imagen',
     printSelector: false,
-    printType: 'client', // 'client' or 'server'
+    printType: 'client',
     defaultDpiOptions: [72, 150, 300],
   },
   printermap: {
-    // fixedDescription: true,
     filterTemplates: [
       "https://componentes.idee.es/estaticos/plantillas/html/templateConBorde.html",
       "https://componentes.idee.es/estaticos/plantillas/html/templateConCabezeraYBorde.html",

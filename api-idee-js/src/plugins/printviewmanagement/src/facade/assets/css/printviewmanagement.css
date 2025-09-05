@@ -321,6 +321,10 @@ div.m-area.m-bottom.m-left>div.m-plugin-printviewmanagement.m-panel.opened>butto
     margin-bottom: 10px;
   }
 
+  .m-printviewmanagement-controls:has(.m-printermap-container) + .m-georefimage-download-button {
+    display: none !important;
+  }
+
   .m-georefimage-container {
     display: flex;
     justify-content: space-between;
@@ -387,8 +391,7 @@ div.m-area.m-bottom.m-left>div.m-plugin-printviewmanagement.m-panel.opened>butto
   .m-georefimage-titleFormat label, 
   .m-printermap-titleFormat label, 
   .m-printermap-paramsLabel, 
-  .m-georefimageepsg-label,
-  .m-printermap-labelTextarea{
+  .m-georefimageepsg-label{
     position: absolute;
     clip: rect(1px 1px 1px 1px);
     border: 0;
@@ -496,6 +499,17 @@ div.m-area.m-bottom.m-left>div.m-plugin-printviewmanagement.m-panel.opened>butto
     font-family: 'Muli', 'sans-serif' !important;
   }
 
+  .m-printermap-params .customTemplate {
+    color: #ffffffFF;
+    background-color: #71a7d3FF;
+    border: none;
+    transition: background-color 0.3s ease;
+  }
+
+  .m-printermap-params .customTemplate:hover {
+    background-color: #1470dbFF;
+  }
+
   .m-printermap-custom-templates > * {
     margin: 10px 0;
     cursor: pointer;
@@ -529,14 +543,18 @@ div.m-area.m-bottom.m-left>div.m-plugin-printviewmanagement.m-panel.opened>butto
 
 .m-georefimage-download-button button {
     border-radius: 4px;
-    border: 1px solid rgba(0, 0, 0, 0.4);
+    border: none;
     font-size: 15px;
     line-height: 25px;
     cursor: pointer;
-    opacity: 0.75;
-    -webkit-transition: opacity 0.25s ease 0s;
-    transition: opacity 0.25s ease 0s;
-    color: #404040;
+    -webkit-transition: background-color 0.3s ease 0s;
+    transition: background-color 0.3s ease 0s;
+    background-color: #71a7d3FF !important;
+    color: #ffffffFF !important;
+}
+
+.m-georefimage-download-button button:hover {
+    background-color: #1470dbFF !important;
 }
 
 .m-georefimage-download-button button i {
@@ -653,7 +671,8 @@ div.m-area.m-bottom.m-left>div.m-plugin-printviewmanagement.m-panel.opened>butto
     left: 0;
     height: 20px;
     width: 20px;
-    background-color: #eee;
+    background-color: #FFF;
+    outline: 1px solid #ADB5BD;
     border-radius: 50%;
     transition: all 0.3s;
 }
@@ -664,7 +683,8 @@ div.m-area.m-bottom.m-left>div.m-plugin-printviewmanagement.m-panel.opened>butto
     left: 0;
     height: 20px;
     width: 20px;
-    background-color: #eee;
+    background-color: #fff;
+    outline: 1px solid #ADB5BD;
     transition: all 0.3s;
 }
 
@@ -673,9 +693,14 @@ div.m-area.m-bottom.m-left>div.m-plugin-printviewmanagement.m-panel.opened>butto
     background-color: #ccc;
 }
 
-.m-custom-checkbox input:checked ~ .m-checkmark,
+.m-custom-checkbox input:checked ~ .m-checkmark{
+    background-color: #1470dbFF;
+    outline: none;
+}
+
 .m-custom-radio input:checked ~ .m-radiomark {
-    background-color: #2c3e50;
+    background-color: #FFF;
+    outline: 1px solid #1470dbFF;
 }
 
 .m-checkmark:after,
@@ -699,12 +724,12 @@ div.m-area.m-bottom.m-left>div.m-plugin-printviewmanagement.m-panel.opened>butto
 }
 
 .m-custom-radio .m-radiomark:after {
-    left: 7px;
-    top: 7px;
-    width: 6px;
-    height: 6px;
+    left: 4.5px;
+    top: 4.5px;
+    width: 10.5px;
+    height: 10.5px;
     border-radius: 50%;
-    background: white;
+    background: #1470dbFF;
 }
 
 .m-label-text {
@@ -792,94 +817,6 @@ div.m-area.m-bottom.m-left>div.m-plugin-printviewmanagement.m-panel.opened>butto
 .m-customize-template-option .m-customize-template-srs-selector li:hover {
     color: #000;
     border: 1px solid #000;
-}
-
-/*********************
-     QUEUE PANEL
-*********************/
-
-.m-printviewmanagement-queue{
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    padding: 0px;
-    margin: 0px;
-    list-style: none;
-    font-family: 'Muli', 'sans-serif' !important;
-    background-color: white;
-}
-
-@media only screen and (min-width: 769px) {
-    .m-printviewmanagement-queue {
-        max-height: 20vh;
-        overflow: auto;
-    }
-}
-
-
-/*********************
-     QUEUE ELEM
-*********************/
-
-.queue-container {
-    padding-inline-start: 0px;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-}
-
-.m-printviewmanagement-queue .queue-container>li {
-    position: relative;
-    padding: 10px;
-    -webkit-transition: box-shadow 0.3s ease 0s, background 0.3s ease 0s, transform 0.05s ease 0s;
-    transition: box-shadow 0.3s ease 0s, background 0.3s ease 0s, transform 0.05s ease 0s;
-    cursor: pointer;
-    margin: 0px;
-    border-top: 1px solid rgba(0, 0, 0, 0.13);
-    box-sizing: border-box;
-    font-family: 'Muli', 'sans-serif' !important;
-    speak: none;
-    font-style: normal;
-    font-weight: normal;
-    font-variant: normal;
-    text-transform: none;
-    /* Better Font Rendering =========== */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    list-style: none;
-    width: 95%;
-}
-
-.m-printviewmanagement-queue .queue-container>li:after,
-.m-printviewmanagement-queue .queue-container>li.printing:after {
-    position: absolute;
-    right: 15px;
-    font-size: 19px;
-    color: #e7338c;
-    font-family: 'printviewmanagement' !important;
-}
-
-.m-printviewmanagement-queue .finished:after {
-    content: '\e960';
-}
-
-.m-printviewmanagement-queue .printing:after {
-    /*   border: 1px solid #A914DA;*/
-    content: '\e97f';
-    -webkit-animation: mloading 1s linear infinite;
-    -moz-animation: mloading 1s linear infinite;
-    animation: mloading 1s linear infinite;
-}
-
-.m-printviewmanagement-queue .queue-container>li:nth-child(1) {
-    border-top: 0px;
-}
-
-.m-printviewmanagement-queue .queue-container>li:not(.printing):hover {
-    background-color: rgba(231, 51, 140, 0.1);
-    box-sizing: border-box;
-    border-bottom: 0;
 }
 
 /*********************

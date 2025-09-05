@@ -9,8 +9,7 @@ import printermapHTML from '../../templates/printermap';
 import { getValue } from './i18n/language';
 import TemplateCustomizer from './templateCustomizer';
 import {
-  innerQueueElement, removeLoadQueueElement, createZipFile,
-  generateTitle, getBase64Image, formatImageBase64,
+  createZipFile, generateTitle, getBase64Image, formatImageBase64,
 } from './utils';
 import {
   DPI_OPTIONS,
@@ -210,7 +209,6 @@ export default class PrinterMapControl extends IDEE.Control {
           projection: getValue('projection'),
           delete: getValue('delete'),
           download: getValue('download'),
-          fixeddescription: getValue('fixeddescription'),
           nameTitle: getValue('title_map'),
           maintain_view: getValue('maintain_view'),
           customizeTemplate: getValue('customizeTemplate'),
@@ -306,8 +304,8 @@ export default class PrinterMapControl extends IDEE.Control {
     errorCallback = () => {},
     finallyCallback = () => {},
   }) {
-    const dimensions = this.layoutOptions_.find((l) => l.value.toLowerCase()
-    === layout.toLowerCase()).dimensions;
+    const dimensions = [...this.layoutOptions_.find((l) => l.value.toLowerCase()
+    === layout.toLowerCase()).dimensions];
     if (orientation === 'vertical') {
       [dimensions[0], dimensions[1]] = [dimensions[1], dimensions[0]];
     }
@@ -343,11 +341,6 @@ export default class PrinterMapControl extends IDEE.Control {
   downloadClient(config = null) {
     const formatImage = document.querySelector(ID_FORMAT_SELECT).value;
     const title = document.querySelector(ID_TITLE);
-    const queueEl = innerQueueElement(
-      this.html_,
-      title,
-      this.elementQueueContainer_,
-    );
 
     if (formatImage === 'pdf') {
       const imageData = config
@@ -363,28 +356,25 @@ export default class PrinterMapControl extends IDEE.Control {
         layout: (config && config.layout) ? config.layout : 'a4',
         orientation: (config && config.orientation) ? config.orientation : 'horizontal',
         errorCallback: (error) => {
-          queueEl.parentElement.remove();
           IDEE.toast.error(error.message, null, 6000);
         },
-        finallyCallback: () => removeLoadQueueElement(queueEl),
       });
     } else {
       const base64image = config
         ? config.imagePreviewMap
         : IDEE.utils.getImageMap(this.map_, `image/${formatImage}`);
-      this.downloadPrint(queueEl, base64image);
+      this.downloadPrint(base64image);
     }
     this.templateConfig = null;
   }
 
   /**
    * Construye el zip con la imagen del mapa y setea el evento de descarga.
-   * @param {HTMLElement} queueEl Elemento de la cola de descarga
    * @param {String} imgBase64 Imagen en formato base64.
    * Si no se pasa, se obtiene de la imagen del mapa.
    * @param {Object} config Configuración de la plantilla proveniente del control templateCustomizer
    */
-  downloadPrint(queueEl, imgBase64) {
+  downloadPrint(imgBase64) {
     const formatImage = document.querySelector(ID_FORMAT_SELECT).value;
     const title = document.querySelector(ID_TITLE).value;
 
@@ -400,16 +390,7 @@ export default class PrinterMapControl extends IDEE.Control {
       data: base64image,
       base64: true,
     };
-
-    const zipEvent = (evt) => {
-      if (evt.key === undefined || evt.key === 'Enter' || evt.key === ' ') {
-        createZipFile([fileIMG], '.zip', titulo);
-      }
-    };
-
-    queueEl.addEventListener('click', zipEvent);
-    queueEl.addEventListener('keydown', zipEvent);
-    removeLoadQueueElement(queueEl);
+    createZipFile([fileIMG], '.zip', titulo);
   }
 
   /**

@@ -192,9 +192,8 @@ const mp = new PrintViewManagement({
   tooltip: 'Imprimir',
   defaultOpenControl: 1, // 1 (printermap), 2 (georefImage), 3 (georefImageEpsg) OR 0 , >=4 (Ninguno) Abre el control indicado inicialmente.
   // printermap: true,
-  printermap: { // serverUrl y printStatusUrl añadidos fuera de este.
+  printermap: {
     tooltip: 'TEST TOOLTIP printermap', // Tooltip del botón para escoger esta opción
-    fixedDescription: true, // Si es true no se puede cambiar la descripción
     filterTemplates: [
       "https://componentes.idee.es/estaticos/plantillas/html/templateConBorde.html",
       "https://componentes.idee.es/estaticos/plantillas/html/templateConCabezeraYBorde.html",
@@ -205,7 +204,7 @@ const mp = new PrintViewManagement({
     layoutsRestraintFromDpi: ['screensize', 'A0', 'A1', 'A2'], // Plantillas en las que no se puede elegir el DPI
   },
   // georefImage: true,
-  georefImage: { // serverUrl y printStatusUrl añadidos fuera de este.
+  georefImage: {
     tooltip: 'TEST TOOLTIP georefImage',
     printSelector: true, // Activa las opciones de escoger configuraciones de este, si es false se usa "printType" para definir el método default
     printType: 'client', // 'client' | 'server'

@@ -15,17 +15,9 @@
         </select>
     </section>
 
-    <!-- Selección de la descripción -->
-    <label class="m-printermap-labelTextarea" tabindex="0" for="m-printermap-description" role="text" aria-label="{{translations.description}}">{{translations.description}} </label>
-    {{#if fixedDescription}}
-        <textarea class="m-printermap-textarea" id="m-printermap-description" tabindex="0" aria-label="{{translations.fixeddescription}}" disabled title="{{translations.description}}">{{translations.fixeddescription}}</textarea>
-        {{^}}
-            <textarea class="m-printermap-textarea" id="m-printermap-description" tabindex="0" aria-label="{{translations.description}}" placeholder="{{translations.description}}" title="{{translations.description}}"></textarea>
-    {{/if}}
-
     <fieldset class="m-printermap-custom-templates">
         <legend tabindex="0" role="text" aria-label="{{translations.uploadTemplate}}">{{translations.uploadTemplate}}</legend>
-        <label class="m-printermap-paramsLabel" tabindex="0" role="text" aria-label="{{translations.uploadTemplate}}">{{translations.uploadTemplate}}</label>
+        <label for="m-printermap-template-upload"  class="m-printermap-paramsLabel" tabindex="0" role="text" aria-label="{{translations.uploadTemplate}}">{{translations.uploadTemplate}}</label>
         <input type="file" id="m-printermap-template-upload" accept=".html,.txt" title=" " class="m-printermap-file-input">
         <select id="m-printermap-uploaded-templates" class="m-printermap-template-select" disabled>
             <option disabled hidden selected>-- {{translations.selectUploadedTemplate}} --</option>
