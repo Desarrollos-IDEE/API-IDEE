@@ -44,6 +44,7 @@ class OLStyleFontSymbol extends OLStyleRegularShape {
     super({
       radius: options.radius,
       fill: options.fill,
+      stroke: options.stroke,
       rotation: options.rotation,
       rotateWithView: options.rotateWithView,
     });
