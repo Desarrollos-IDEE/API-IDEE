@@ -6,7 +6,7 @@ import { reproject, transformExt } from 'impl/utils';
 import georefimageHTML from '../../templates/georefimage';
 import { getValue } from './i18n/language';
 import {
-  innerQueueElement, removeLoadQueueElement, createWLD, createZipFile,
+  createWLD, createZipFile,
   generateTitle, getBase64Image, formatImageBase64, createLoadingSpinner,
 } from './utils';
 import { DPI_OPTIONS, GEOREFIMAGE_FORMATS } from '../../constants';
@@ -161,41 +161,6 @@ export default class GeorefimageControl extends IDEE.Control {
   }
 
   /**
-   * This function checks when map printing is finished.
-   * @param {String} url - Mapfish GET request url
-   * @param {Function} callback - function that removes loading icon class.
-   */
-  getStatus(url, callback, queueEl) {
-    // IDEE.proxy(this.useProxy);
-    const newUrl = `${url}?timestamp=${new Date().getTime()}`;
-    IDEE.remote.get(newUrl).then((response) => {
-      if (response.code === 404) {
-        throw new Error('Error 404');
-      }
-
-      const statusJson = response.text ? JSON.parse(response.text) : 'error';
-      const { status } = statusJson;
-      if (status === 'finished') {
-        callback(queueEl);
-      } else if (status === 'error' || status === 'cancelled') {
-        callback(queueEl);
-        if (statusJson.error.toLowerCase().indexOf('network is unreachable') > -1 || statusJson.error.toLowerCase().indexOf('illegalargument') > -1) {
-          IDEE.toast.error(getValue('exception.teselaError'), 6000);
-        } else {
-          IDEE.toast.error(getValue('exception.printError'), 6000);
-        }
-      } else {
-        setTimeout(() => this.getStatus(url, callback, queueEl), 1000);
-      }
-    }).catch((err) => {
-      callback(queueEl);
-      queueEl.remove();
-      IDEE.dialog.error(getValue('exception.error_download_image'));
-    });
-    // IDEE.proxy(this.statusProxy);
-  }
-
-  /**
    * Activa el control de impresión
    * @param {*} html
    */
@@ -270,15 +235,8 @@ export default class GeorefimageControl extends IDEE.Control {
    * Descarga el mapa usando el DPI seleccionado y el formato elegido.
    */
   downloadClient() {
-    const title = document.querySelector(ID_TITLE);
     const format = document.querySelector(ID_FORMAT_SELECT).value;
     const dpi = Number(document.querySelector(ID_DPI).value);
-
-    const queueEl = innerQueueElement(
-      this.html_,
-      title,
-      this.elementQueueContainer_,
-    );
 
     this.loadingOverlay_ = createLoadingSpinner();
 
@@ -321,8 +279,7 @@ export default class GeorefimageControl extends IDEE.Control {
       map.getView().setResolution(originalResolution);
 
       const base64image = canvas.toDataURL(`image/${format}`);
-      this.downloadPrint(queueEl, base64image);
-      removeLoadQueueElement(queueEl);
+      this.downloadPrint(base64image);
     });
 
     map.setSize([newWidth, newHeight]);
@@ -431,7 +388,7 @@ export default class GeorefimageControl extends IDEE.Control {
    * @function
    * @api stable
    */
-  downloadPrint(queueEl, imgBase64) {
+  downloadPrint(imgBase64) {
     const formatImage = document.querySelector(ID_FORMAT_SELECT).value;
     const title = document.querySelector(ID_TITLE).value;
     const dpi = document.querySelector(ID_DPI).value;
@@ -466,14 +423,8 @@ export default class GeorefimageControl extends IDEE.Control {
     fileIMG,
     ] : [fileIMG];
 
-    const zipEvent = (evt) => {
-      if (evt.key === undefined || evt.key === 'Enter' || evt.key === ' ') {
-        createZipFile(files, TYPE_SAVE, titulo);
-      }
-    };
+    createZipFile(files, TYPE_SAVE, titulo);
 
-    queueEl.addEventListener('click', zipEvent);
-    queueEl.addEventListener('keydown', zipEvent);
     if (this.loadingOverlay_) {
       this.loadingOverlay_.remove();
       this.loadingOverlay_ = null;

@@ -6,8 +6,7 @@ import { adjustExtentForSquarePixels, reproject } from 'impl/utils';
 import georefimage2HTML from '../../templates/georefimageepsg';
 import { getValue } from './i18n/language';
 import {
-  innerQueueElement, removeLoadQueueElement, createWLD, createZipFile,
-  generateTitle, createLoadingSpinner,
+  createWLD, createZipFile, generateTitle, createLoadingSpinner,
 } from './utils';
 import { DPI_OPTIONS, GEOREFIMAGEEPSG_FORMAT } from '../../constants';
 
@@ -160,12 +159,6 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
 
     title = `${title}_${date}_${hour}`;
 
-    this.queueEl = innerQueueElement(
-      this.html_,
-      title,
-      this.elementQueueContainer_,
-    );
-
     // Bbox Mapa
     const mapBbox = this.map_.getBbox();
     // Size
@@ -308,7 +301,6 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
       map.setSize(originalSize);
       map.getView().setResolution(originalResolution);
 
-      let zipEvent;
       const layerImage = new Image();
       layerImage.crossOrigin = 'anonymous';
       layerImage.onload = () => {
@@ -332,13 +324,7 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
               binary: true,
             }];
 
-            zipEvent = (evt) => {
-              if (!evt.key || evt.key === 'Enter' || evt.key === ' ') {
-                createZipFile(files, TYPE_SAVE, titulo);
-              }
-            };
-            this.queueEl.addEventListener('click', zipEvent);
-            this.queueEl.addEventListener('keydown', zipEvent);
+            createZipFile(files, TYPE_SAVE, titulo);
             if (this.loadingOverlay_) {
               this.loadingOverlay_.remove();
               this.loadingOverlay_ = null;
@@ -348,7 +334,6 @@ export default class GeorefImageEpsgControl extends IDEE.Control {
         }, `image/${format}`);
       };
       layerImage.src = imageUrl;
-      removeLoadQueueElement(this.queueEl);
     });
     map.setSize([newWidth, newHeight]);
     const scaling = Math.min(newWidth / originalSize[0], newHeight / originalSize[1]);
