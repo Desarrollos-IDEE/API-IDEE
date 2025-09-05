@@ -39,34 +39,24 @@
       "position": 4
     },
     {
-      "type": "simple",
-      "name": "serverUrl",
-      "position": 5
-    },
-    {
-      "type": "simple",
-      "name": "printStatusUrl",
-      "position": 6
-    },
-    {
       "type": "boolean",
       "name": "georefImageEpsg",
-      "position": 7
+      "position": 5
     },
     {
       "type": "boolean",
       "name": "georefImage",
-      "position": 8
+      "position": 6
     },
     {
       "type": "boolean",
       "name": "printermap",
-      "position": 9
+      "position": 7
     },
     {
       "type": "number",
       "name": "defaultOpenControl",
-      "position": 10,
+      "position": 8,
       "possibleValues": [0, 1, 2, 3]
     }
   ]
