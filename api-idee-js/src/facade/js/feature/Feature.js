@@ -7,7 +7,7 @@ import { isNullOrEmpty, isUndefined } from '../util/Utils';
 import GeoJSON from '../format/GeoJSON';
 import * as dialog from '../dialog';
 import StyleFeature from '../style/Feature';
-import StylePoint from '../style/Point';
+import StyleGeneric from '../style/Generic';
 import * as EventType from '../event/eventtype';
 import { getValue } from '../i18n/language';
 
@@ -263,15 +263,17 @@ class Feature extends Base {
   getCentroid() {
     const id = this.getId();
     const attributes = this.getAttributes();
-    const style = new StylePoint({
-      stroke: {
-        color: '#67af13',
-        width: 2,
-      },
-      radius: 8,
-      fill: {
-        color: '#67af13',
-        opacity: 0.2,
+    const style = new StyleGeneric({
+      point: {
+        stroke: {
+          color: '#67af13',
+          width: 2,
+        },
+        radius: 8,
+        fill: {
+          color: '#67af13',
+          opacity: 0.2,
+        },
       },
     });
     const centroid = this.getImpl().getCentroid();
