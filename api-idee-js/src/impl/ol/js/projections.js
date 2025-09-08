@@ -258,7 +258,7 @@ const proj23031 = {
 const proj4326 = {
   def: '+proj=longlat +datum=WGS84 +no_defs',
   extent: [-180, -90, 180, 90],
-  codes: ['EPSG:4326', 'urn:ogc:def:crs:EPSG::4326', 'urn:ogc:def:crs:OGC:1.3:CRS84', 'http://www.opengis.net/def/crs/OGC/1.3/CRS84'],
+  codes: ['EPSG:4326', 'urn:ogc:def:crs:EPSG::4326'],
   units: 'd',
   metersPerUnit: 111319.49079327358,
   axisOrientation: 'neu',
@@ -499,7 +499,7 @@ const proj4346 = {
 const crs84 = {
   def: '+proj=longlat +datum=WGS84 +no_defs',
   extent: [-180, -90, 180, 90],
-  codes: ['CRS:84'],
+  codes: ['CRS:84', 'urn:ogc:def:crs:OGC:1.3:CRS84', 'http://www.opengis.net/def/crs/OGC/1.3/CRS84'],
   units: 'd',
   metersPerUnit: 111319.49079327358,
   axisOrientation: 'enu',
