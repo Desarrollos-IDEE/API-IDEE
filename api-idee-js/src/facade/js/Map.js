@@ -45,7 +45,7 @@ import * as Position from './ui/position';
 import GeoJSON from './layer/GeoJSON';
 import GeoTIFF from './layer/GeoTIFF';
 import MapLibre from './layer/MapLibre';
-import StylePoint from './style/Point';
+import StyleGeneric from './style/Generic';
 import MBTiles from './layer/MBTiles';
 import MBTilesVector from './layer/MBTilesVector';
 import XYZ from './layer/XYZ';
@@ -277,7 +277,7 @@ class Map extends Base {
       name: '__draw__',
     }, { displayInLayerSwitcher: false });
 
-    this.drawLayer_.setStyle(new StylePoint(Map.DRAWLAYER_STYLE));
+    this.drawLayer_.setStyle(new StyleGeneric(Map.DRAWLAYER_STYLE));
 
     if (!isNullOrEmpty(MapImpl.Z_INDEX)) {
       this.drawLayer_.setZIndex(MapImpl.Z_INDEX[LayerType.WFS] + 999);
@@ -4721,14 +4721,16 @@ class Map extends Base {
  * @api
  */
 Map.DRAWLAYER_STYLE = {
-  fill: {
-    color: '#009e00',
+  point: {
+    fill: {
+      color: '#009e00',
+    },
+    stroke: {
+      color: '#fcfcfc',
+      width: 2,
+    },
+    radius: 7,
   },
-  stroke: {
-    color: '#fcfcfc',
-    width: 2,
-  },
-  radius: 7,
 };
 
 export default Map;
