@@ -1,13 +1,11 @@
+/* eslint-disable no-underscore-dangle */
 /**
  * @module IDEE/impl/layer/MBTilesVector
  */
-import { isNullOrEmpty, isFunction, extend } from 'IDEE/util/Utils';
-import { compileSync as compileTemplate } from 'IDEE/util/Template';
-import Popup from 'IDEE/Popup';
-import geojsonPopupTemplate from 'templates/geojson_popup';
+import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
 import { get as getProj, transformExtent } from 'ol/proj';
 // import { inflate } from 'pako';
-import OLLayerTile from 'ol/layer/Tile';
+// import OLLayerTile from 'ol/layer/Tile';
 import OLLayerVectorTile from 'ol/layer/VectorTile';
 import OLSourceVectorTile from 'ol/source/VectorTile';
 import TileGrid from 'ol/tilegrid/TileGrid';
@@ -55,7 +53,7 @@ const generateResolutions = (extent, tileSize, maxZoomLevel) => {
  * @classdesc
  * Implementación de la capa MBTilesVector.
  *
- * @property {function} tileLoadFunction_ Función de carga de la tesela vectorial.
+ * @property {function} tileLoadFunction Función de carga de la tesela vectorial.
  * @property {string} url_ Url del fichero o servicio que genera el MBTilesVector.
  * @property {ArrayBuffer|Uint8Array|Response|File} source_ Fuente de la capa.
  * @property {File|String} style_ Define el estilo de la capa.
@@ -114,7 +112,7 @@ class MBTilesVector extends Vector {
      * MBTilesVector tileLoadFunction: Función de carga de la tesela
      * vectorial proporcionada por el usuario.
      */
-    this.tileLoadFunction_ = userParameters.tileLoadFunction || null;
+    this.tileLoadFunction = userParameters.tileLoadFunction || null;
 
     /**
      * MBTilesVector url: Url del fichero o servicio que genera el MBTilesVector.
@@ -199,7 +197,7 @@ class MBTilesVector extends Vector {
     if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
     if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
 
-    if (!this.tileLoadFunction_ && isNullOrEmpty(this.vendorOptions_.source)) {
+    if (!this.tileLoadFunction && isNullOrEmpty(this.vendorOptions_.source)) {
       this.fetchSource().then((tileProvider) => {
         tileProvider.getMaxZoomLevel().then((maxZoomLevel) => {
           if (!this.maxZoomLevel_) {
@@ -286,7 +284,7 @@ class MBTilesVector extends Vector {
    */
   createLayer(opts) {
     let tileLoadFn = this.loadVectorTileWithProvider;
-    if (this.tileLoadFunction_) {
+    if (this.tileLoadFunction) {
       tileLoadFn = this.loadVectorTile;
     }
     const mvtFormat = new MVT();
@@ -322,7 +320,7 @@ class MBTilesVector extends Vector {
     tile.setLoader((extent, resolution, projection) => {
       const tileCoord = tile.getTileCoord();
       // eslint-disable-next-line
-      target.tileLoadFunction_(tileCoord[0], tileCoord[1], -tileCoord[2] - 1).then((_vectorTile) => {
+      target.tileLoadFunction(tileCoord[0], tileCoord[1], -tileCoord[2] - 1).then((_vectorTile) => {
         if (_vectorTile) {
           try {
             const vectorTile = new Uint8Array(_vectorTile);
@@ -400,51 +398,6 @@ class MBTilesVector extends Vector {
         reject(new Error(getValue('exception').no_source));
       }
     });
-  }
-
-  /**
-   * Este método ejecuta un objeto geográfico seleccionado.
-   *
-   * @function
-   * @param {ol.features} features Objetos geográficos de Openlayers.
-   * @param {Array} coord Coordenadas.
-   * @param {Object} evt Eventos.
-   * @api stable
-   * @expose
-   */
-  selectFeatures(features, coord, evt) {
-    if (this.extract === true) {
-      const feature = features[0];
-      // unselects previous features
-      this.unselectFeatures();
-
-      if (!isNullOrEmpty(feature)) {
-        const clickFn = feature.getAttribute('vendor.api_idee.click');
-        if (isFunction(clickFn)) {
-          clickFn(evt, feature);
-        } else {
-          const popupTemplate = !isNullOrEmpty(this.template)
-            ? this.template : geojsonPopupTemplate;
-          const htmlAsText = compileTemplate(popupTemplate, {
-            vars: this.parseFeaturesForTemplate_(features),
-            parseToHtml: false,
-          });
-          const featureTabOpts = {
-            icon: 'g-cartografia-pin',
-            title: this.name,
-            content: htmlAsText,
-          };
-          let popup = this.map.getPopup();
-          if (isNullOrEmpty(popup)) {
-            popup = new Popup();
-            popup.addTab(featureTabOpts);
-            this.map.addPopup(popup, coord);
-          } else {
-            popup.addTab(featureTabOpts);
-          }
-        }
-      }
-    }
   }
 
   /**
@@ -529,22 +482,18 @@ class MBTilesVector extends Vector {
     let features = [];
     if (this.olLayer) {
       const olSource = this.olLayer.getSource();
-      const tileCache = olSource.tileCache;
-      if (tileCache.getCount() === 0) {
+      const tileCache = Object.values(olSource.sourceTiles_);
+      if (tileCache.length === 0) {
         return features;
       }
-      const z = Number(tileCache.peekFirstKey().split('/')[0]);
+      const z = Number(tileCache[0].getTileCoord()[0]);
       tileCache.forEach((tile) => {
         if (tile.tileCoord[0] !== z || tile.getState() !== 2) {
           return;
         }
-        const sourceTiles = tile.getSourceTiles();
-        for (let i = 0, ii = sourceTiles.length; i < ii; i += 1) {
-          const sourceTile = sourceTiles[i];
-          const olFeatures = sourceTile.getFeatures();
-          if (olFeatures) {
-            features = features.concat(olFeatures);
-          }
+        const olFeatures = tile.getFeatures();
+        if (olFeatures) {
+          features = features.concat(olFeatures);
         }
       });
     }
@@ -581,23 +530,6 @@ class MBTilesVector extends Vector {
         this.facadeLayer_.fire(EventType.LOAD);
       }
     }
-  }
-
-  /**
-   * Este método devuelve una copia de la capa de esta instancia.
-   *
-   * @function
-   * @returns {ol.layer.Tile} Copia de la capa.
-   * @public
-   * @api
-   */
-  cloneOLLayer() {
-    let olLayer = null;
-    if (this.olLayer != null) {
-      const properties = this.olLayer.getProperties();
-      olLayer = new OLLayerTile(properties);
-    }
-    return olLayer;
   }
 }
 export default MBTilesVector;

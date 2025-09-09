@@ -5,8 +5,10 @@
     title="Control {{title}}"
     >
     <div role="text" class="m-level">{{level}} </div>
-    <div role="text" id="m-level-number" contenteditable="true"></div>
+    <div role="text" class="m-zoom" id="m-level-number" contenteditable="true"></div>
     <span class="m-scale-separator"> | </span>
-    <div role="text" class="m-unit">{{scale}} = 1 : </div>
-    <div role="text" class="m-scale" id="m-scale-span"></div>
+    <div class="m-full-scale">
+        <div role="text" class="m-unit">{{scale}} = 1 : </div>
+        <div role="text" class="m-scale" id="m-scale-span" contenteditable="true"></div>
+    </div>
 </div>

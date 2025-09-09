@@ -37,7 +37,7 @@ const mapa = Mmap(
     // maxExtent: [-1781344.2275488114, 4283234.297146627, 566801.2813718033, 5456084.059154372]
     layers: ['OSM'],
     // bbox: [-160000, 4800000, -120000, 4860000],
-    // projection: 'EPSG:4326*d',
+    // projection: 'EPSG:4326',
     // kml: 'KML*Delegaciones IGN*https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml*true', // OK se ven los puntos de ejemplo este
     // wms: 'WMS*Unidad administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*false*true*true*1.3.0*true*true*true', // OK se ve sin transparencia.
     // wmts: 'WMTS*http://wmts-mapa-lidar.idee.es/lidar*EL.GridCoverageDSM*GoogleMapsCompatible*Modelo Digital de Superficies LiDAR*true*image/png*true*true*true', // OK se ve mapa satélite LiDAR
@@ -447,7 +447,7 @@ if (listAllFunctions && listAllFunctions.length > 0) { // Confirmar que existen 
           } else if (auxName === 'setMinZoom') {
             showResult(auxButton, 'SET_MIN_ZOOM', mapa[auxName]((Math.round(Math.random() * 10) % 3) + 3));
           } else if (auxName === 'setProjection') {
-            showResult(auxButton, 'SET_PROJECTION', mapa[auxName]('EPSG:4258*d'));
+            showResult(auxButton, 'SET_PROJECTION', mapa[auxName]('EPSG:4258'));
           } else if (auxName === 'setResolutions') {
             showResult(auxButton, 'SET_RESOLUTIONS', mapa[auxName]('40000,20000,10000,5000,2500,1250,625,312.5,156.25,78.125,39.0625,19.53125,9.765625,4.8828125,2.44140625'));
           } else if (auxName === 'setTicket') {

@@ -1,11 +1,10 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Vector layers', () => {
-  let map;
   test.beforeEach(async ({ page }) => {
     await page.goto('/test/playwright/ol/basic-ol.html');
     await page.evaluate(() => {
-      map = IDEE.map({ container: 'map' });
+      const map = IDEE.map({ container: 'map' });
       window.map = map;
     });
   });
@@ -15,31 +14,30 @@ test.describe('Vector layers', () => {
     const customTemplate = `<div>${textPopup}</div>`;
 
     await page.evaluate((temp) => {
-      const wfs_001 = new IDEE.layer.WFS({
-        name: 'reservas_biosfera',
-        namespace: 'reservas_biosfera',
-        legend: 'Reservas biosferas',
-        geometry: 'POLYGON',
-        url: 'https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_WFS_Patrimonio_Natural?',
-        version: '1.1.0',
+      const ogc_001 = new IDEE.layer.OGCAPIFeatures({
+        url: 'https://api-features.ign.es/collections/',
+        name: 'administrativeunit',
+        legend: 'AU Unidades administrativas',
         extract: true,
+        conditional: { nameunit: 'Lepe' },
+        limit: 30,
         template: temp,
       });
 
-      map.addLayers(wfs_001);
-      window.wfs_001 = wfs_001;
+      window.map.addLayers(ogc_001);
+      window.ogc_001 = ogc_001;
     }, customTemplate);
 
     await page.waitForTimeout(5000);
-    await page.mouse.click(604, 128);
-    const popup = await page.locator('.m-popup.m-collapsed .m-body');
-    try {
-      const text = await popup.innerText({ timeout: 2000 });
-      expect(text).toEqual(textPopup);
-      const template = await page.evaluate(() => wfs_001.template);
-      expect(template).toEqual(customTemplate);
-    } catch (e) {
+    await page.click('#map', { position: { x: 599, y: 132 } });
+    const popup = await page.locator('.m-popup .m-body');
+    // try {
+    const text = await popup.innerText({ timeout: 2000 });
+    expect(text).toContain(textPopup);
+    const template = await page.evaluate(() => window.ogc_001.template);
+    expect(template).toEqual(customTemplate);
+    /* } catch (e) {
       console.warn('⚠️ Popup no apareció. El servicio podría no haber cargado los features.');
-    }
+    } */
   });
 });

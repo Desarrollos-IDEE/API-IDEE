@@ -186,9 +186,9 @@ class OLChart extends OLStyleRegularShape {
    * @returns {Object}
    * @api stable
    */
-  get data() {
+  /* get data() {
     return this.data_;
-  }
+  } */
 
   /**
    * Sobreescritura los datos del gráfico.
@@ -197,10 +197,10 @@ class OLChart extends OLStyleRegularShape {
    * @param {Object} data Datos del gráfico.
    * @api stable
    */
-  set data(data) {
+  /* set data(data) {
     this.data_ = data;
     this.renderChart_();
-  }
+  } */
 
   /**
    * Devuelve el radio del gráfico.
@@ -209,9 +209,9 @@ class OLChart extends OLStyleRegularShape {
    * @returns {number}
    * @api stable
    */
-  get radius() {
+  /* get radius() {
     return this.radius_;
-  }
+  } */
 
   /**
    * Sobrescribe el radio del gráfico.
@@ -220,10 +220,10 @@ class OLChart extends OLStyleRegularShape {
    * @param {number} radius Radio del gráfico.
    * @api stable
    */
-  set radius(radius) {
+  /* set radius(radius) {
     this.radius_ = radius;
     this.renderChart_();
-  }
+  } */
 
   /**
    * Sobrescribe de tipos de relación de donut y radio.

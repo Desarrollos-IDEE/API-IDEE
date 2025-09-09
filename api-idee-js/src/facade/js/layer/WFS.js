@@ -3,7 +3,7 @@
  */
 import WFSImpl from 'impl/layer/WFS';
 import {
-  isUndefined, isNullOrEmpty, isString, normalize, isObject,
+  isUndefined, isNullOrEmpty, isObject,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import Vector from './Vector';
@@ -96,7 +96,7 @@ class WFS extends Vector {
    * </code></pre>
    * @api
    */
-  constructor(userParams = {}, options = {}, vendorOpts = {}, implParam = undefined) {
+  constructor(userParams = {}, options = {}, vendorOpts = {}) {
     // checks if the param is null or empty.
     if (isNullOrEmpty(userParams)) {
       Exception(getValue('exception').no_param);
@@ -121,7 +121,7 @@ class WFS extends Vector {
       && isNullOrEmpty(Object.keys(WFSImpl)))) {
       Exception(getValue('exception').wfslayer_method);
     }
-    const impl = implParam || new WFSImpl(optionsVar, vendorOpts);
+    const impl = new WFSImpl(optionsVar, vendorOpts);
 
     // calls the super constructor
     super(parameters, optionsVar, undefined, impl);
@@ -161,12 +161,6 @@ class WFS extends Vector {
     this.version = parameters.version;
 
     /**
-     * WFS extract: Opcional, activa la consulta haciendo clic en un objeto geográfico,
-     * por defecto verdadero.
-     */
-    this.extract = parameters.extract === undefined ? true : parameters.extract;
-
-    /**
      * WFS minZoom: Límite del zoom mínimo.
      * @public
      * @type {Number}
@@ -184,36 +178,6 @@ class WFS extends Vector {
      * options: Opciones WFS.
      */
     this.options = options;
-  }
-
-  /**
-   * Devuelve el valor de la propiedad "extract".
-   * Activa la consulta haciendo clic en el objeto geográfico, por defecto verdadero.
-   * @function
-   * @return {IDEE.layer.WFS.impl.extract} Devuelve el valor de la propiedad "extract".
-   * @api
-   */
-  get extract() {
-    return this.getImpl().extract;
-  }
-
-  /**
-   * Sobrescribe el valor de la propiedad "extract".
-   * Activa la consulta haciendo clic en el objeto geográfico, por defecto verdadero.
-   * @function
-   * @param {Boolean} newExtract Nuevo valor de la propiedad""extract".
-   * @api
-   */
-  set extract(newExtract) {
-    if (!isNullOrEmpty(newExtract)) {
-      if (isString(newExtract)) {
-        this.getImpl().extract = (normalize(newExtract) === 'true');
-      } else {
-        this.getImpl().extract = newExtract;
-      }
-    } else {
-      this.getImpl().extract = true;
-    }
   }
 
   /**
@@ -328,6 +292,42 @@ class WFS extends Vector {
     } else {
       this.getImpl().version = '2.0.0'; // default value
     }
+  }
+
+  /**
+   * Este método sobreescribe la URL de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newURL Nueva URL de la capa.
+   * @api
+   */
+  setURL(newURL) {
+    this.getImpl().setURL(newURL);
+  }
+
+  /**
+   * Este método sobreescribe el nombre de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newName Nuevo nombre de la capa.
+   * @api
+   */
+  setName(newName) {
+    this.getImpl().setName(newName);
+  }
+
+  /**
+   * Este método sobreescribe el espacio de nombres de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newNamespace Nuevo espacio de nombres de la capa.
+   * @api
+   */
+  setNamespace(newNamespace) {
+    this.getImpl().setNamespace(newNamespace);
   }
 
   /**

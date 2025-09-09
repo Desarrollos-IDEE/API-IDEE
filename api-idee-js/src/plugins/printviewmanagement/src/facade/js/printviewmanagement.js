@@ -108,7 +108,7 @@ export default class PrintViewManagement extends IDEE.Plugin {
             legend: 'Imagen (PNOA) ETRS89 UTM',
           },
         ],
-        order: 0,
+        defaultDpiOptions: [72, 150, 300],
       };
     } else if (options.georefImageEpsg) {
       this.georefImageEpsg = this.getGeorefImageEpsg();
@@ -126,8 +126,8 @@ export default class PrintViewManagement extends IDEE.Plugin {
     if (georefImage === true) {
       this.georefImage = {
         tooltip: 'Georeferenciar imagen',
-        printTemplateUrl: 'https://componentes.cnig.es/geoprint/print/mapexport',
         printSelector: true,
+        defaultDpiOptions: [72, 150, 300],
       };
     } else if (options.georefImage) {
       this.georefImage = options.georefImage;
@@ -144,25 +144,20 @@ export default class PrintViewManagement extends IDEE.Plugin {
      */
     if (printermap === true) {
       this.printermap = {
-        printTemplateUrl: 'https://componentes.cnig.es/geoprint/print/CNIG',
-        // headerLegend: 'https://www.idee.es/csw-codsi-idee/images/cabecera-CODSI.png',
-        filterTemplates: [],
-        credits: '',
-        // logo: 'https://www.idee.es/csw-codsi-idee/images/cabecera-CODSI.png',
+        filterTemplates: [
+          'https://componentes.idee.es/estaticos/plantillas/html/templateConBorde.html',
+          'https://componentes.idee.es/estaticos/plantillas/html/templateConCabezeraYBorde.html',
+          'https://componentes.idee.es/estaticos/plantillas/html/templateConFooterYBorde.html',
+        ],
+        showDefaultTemplate: true,
+        defaultDpiOptions: [72, 150, 300],
+        layoutsRestraintFromDpi: ['screensize', 'A0', 'A1', 'A2'],
       };
     } else if (options.printermap) {
       this.printermap = options.printermap;
     } else {
       this.printermap = false;
     }
-
-    let serverUrl = options.serverUrl;
-    if (serverUrl && serverUrl.endsWith('/geoprint/')) {
-      serverUrl = serverUrl.replace('/geoprint/', '/geoprint');
-    }
-    this.serverUrl = serverUrl || 'https://componentes.cnig.es/geoprint';
-
-    this.printStatusUrl = options.printStatusUrl || 'https://componentes.cnig.es/geoprint/print/status';
 
     this.defaultOpenControl = options.defaultOpenControl || 0;
 
@@ -226,9 +221,6 @@ export default class PrintViewManagement extends IDEE.Plugin {
       printermap: this.printermap,
       order: this.order,
       map: this.map_,
-      serverUrl: this.serverUrl,
-      printTemplateUrl: this.printTemplateUrl,
-      printStatusUrl: this.printStatusUrl,
       defaultOpenControl: this.defaultOpenControl,
       useProxy: this.useProxy,
       statusProxy: this.statusProxy,
@@ -257,13 +249,14 @@ export default class PrintViewManagement extends IDEE.Plugin {
    * @api
    */
   getGeorefImageEpsg() {
-    const { layers, tooltip } = this.options.georefImageEpsg;
+    const { layers, tooltip, defaultDpiOptions } = this.options.georefImageEpsg;
 
     const order = 0; // ?¿
     const georefImageEpsg = {
       layers,
       order,
       tooltip,
+      defaultDpiOptions,
     };
     return georefImageEpsg;
   }
@@ -277,7 +270,7 @@ export default class PrintViewManagement extends IDEE.Plugin {
    */
   getAPIRest() {
     return `${this.name}=${this.position_}*${this.collapsed}*${this.collapsible}*${this.tooltip_}*${this.isDraggable}`
-      + `*${this.serverUrl}*${this.printStatusUrl}*${!!this.georefImageEpsg}*${!!this.georefImage}*${!!this.printermap}*${this.defaultOpenControl}`;
+      + `*${!!this.georefImageEpsg}*${!!this.georefImage}*${!!this.printermap}*${this.defaultOpenControl}`;
   }
 
   /**

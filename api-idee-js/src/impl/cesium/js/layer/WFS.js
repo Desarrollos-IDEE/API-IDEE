@@ -209,12 +209,12 @@ class WFS extends Vector {
 
     this.requestFeatures_().then((features) => {
       if (forceNewSource === true || isNullOrEmpty(this.cesiumLayer)) {
-        this.facadeVector_.addFeatures(features);
         this.loaded_ = true;
+        this.facadeVector_.addFeatures(features);
       } else {
         this.facadeVector_.clear();
-        this.facadeVector_.addFeatures(features);
         this.loaded_ = true;
+        this.facadeVector_.addFeatures(features);
       }
     });
   }

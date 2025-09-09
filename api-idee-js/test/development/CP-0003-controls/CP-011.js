@@ -11,7 +11,7 @@ IDEE.config.backgroundlayers = [{
 
 Mmap({
   container: 'map',
-  projection: 'EPSG:3857*m',
+  projection: 'EPSG:3857',
   controls: ['implementationswitcher'],
   center: [-443273.10081370454, 4757481.749296248],
   zoom: 6,

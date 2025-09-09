@@ -2,10 +2,10 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Parámetro idLayer', () => {
   test.beforeEach(async ({ page }) => {
-    let map;
     await page.goto('/test/playwright/ol/basic-ol.html');
     await page.evaluate(() => {
-      map = IDEE.map({ container: 'map', bgColorContainer: 'red' });
+      const map = IDEE.map({ container: 'map', bgColorContainer: 'red' });
+      window.map = map;
     });
   });
 
@@ -25,9 +25,9 @@ test.describe('Parámetro idLayer', () => {
         isBase: false,
       });
 
-      map.addLayers([wms_001, wms_002]);
+      window.map.addLayers([wms_001, wms_002]);
     });
-    const WMSLength = await page.evaluate(() => map.getWMS().length);
+    const WMSLength = await page.evaluate(() => window.map.getWMS().length);
     expect(WMSLength).toEqual(2);
   });
 
@@ -49,10 +49,10 @@ test.describe('Parámetro idLayer', () => {
         extract: true,
       });
 
-      map.addLayers([ogc_001, ogc_002]);
+      window.map.addLayers([ogc_001, ogc_002]);
     });
 
-    const OGCLength = await page.evaluate(() => map.getOGCAPIFeatures().length);
+    const OGCLength = await page.evaluate(() => window.map.getOGCAPIFeatures().length);
     expect(OGCLength).toEqual(2);
   });
 });

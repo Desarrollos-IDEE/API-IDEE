@@ -255,10 +255,14 @@ class GenericVector extends Vector {
       if (!isNullOrEmpty(feature)) {
         const popupTemplate = !isNullOrEmpty(this.template)
           ? this.template : geojsonPopupTemplate;
-        const htmlAsText = compileTemplate(popupTemplate, {
+        let htmlAsText = compileTemplate(popupTemplate, {
           vars: this.parseFeaturesForTemplate_(features),
           parseToHtml: false,
         });
+        if (this.legend) {
+          const layerLegendHTML = `<div class="m-legend">${this.legend}</div>`;
+          htmlAsText = layerLegendHTML + htmlAsText;
+        }
 
         const featureTabOpts = {
           icon: 'g-cartografia-pin',

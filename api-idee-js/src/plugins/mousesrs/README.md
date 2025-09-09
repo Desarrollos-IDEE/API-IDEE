@@ -5,7 +5,9 @@
 
 # Descripción
 
-Muestra las coordenas en el sistema de referencia elegido del puntero del ratón.
+<p>Muestra las coordenas en el sistema de referencia elegido del puntero del ratón. Se puede elegir tanto un sistema de referencia previamente registrado o uno nuevo.</p>
+<p>Para utilizar un sistema de referencia nuevo, basta con elegir la opción 'Añadir EPSG'. Una vez elegida, el usuario podrá escribir el sistema que desee, siempre y cuando exista.</p>
+<p>El sistema de referencia nuevo se registrará a nivel de toda la API, por lo que se podrá utilizar en otras funcionalidades.</p>
 
 # Dependencias
 

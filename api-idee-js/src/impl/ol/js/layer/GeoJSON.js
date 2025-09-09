@@ -1,11 +1,8 @@
 /**
  * @module IDEE/impl/layer/GeoJSON
  */
-import { isNullOrEmpty, isFunction, isObject } from 'IDEE/util/Utils';
+import { isNullOrEmpty, isObject } from 'IDEE/util/Utils';
 import * as EventType from 'IDEE/event/eventtype';
-import Popup from 'IDEE/Popup';
-import { compileSync as compileTemplate } from 'IDEE/util/Template';
-import geojsonPopupTemplate from 'templates/geojson_popup';
 import GeoJSONFormat from 'IDEE/format/GeoJSON';
 import OLSourceVector from 'ol/source/Vector';
 import { get as getProj } from 'ol/proj';
@@ -165,6 +162,33 @@ class GeoJSON extends Vector {
   }
 
   /**
+   * Actualiza la capa con la nueva URL.
+   *
+   * @public
+   * @function
+   * @api stable
+   * @export
+   */
+  recreateLayer() {
+    // eslint-disable-next-line no-underscore-dangle
+    this.loader_.url_ = this.url;
+    this.loadFeaturesPromise_ = undefined;
+    this.updateSource_();
+  }
+
+  /**
+   * Sobreescribe la URL de la capa.
+   *
+   * @public
+   * @function
+   * @api stable
+   */
+  setURL(newURL) {
+    this.url = newURL;
+    this.recreateLayer();
+  }
+
+  /**
    * Este método devuelve los objetos geográficos de manera asincrona.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
@@ -173,16 +197,16 @@ class GeoJSON extends Vector {
    * @api
    */
   requestFeatures_() {
-    if (isNullOrEmpty(this.loadFeaturesPromise_)) {
+    if (this.source) {
       this.loadFeaturesPromise_ = new Promise((resolve) => {
-        if (this.source) {
-          const features = this.formater_.read(this.source, this.map.getProjection());
+        const features = this.formater_.read(this.source, this.map.getProjection());
+        resolve(features);
+      });
+    } else if (isNullOrEmpty(this.loadFeaturesPromise_)) {
+      this.loadFeaturesPromise_ = new Promise((resolve) => {
+        this.loader_.getLoaderFn((features) => {
           resolve(features);
-        } else {
-          this.loader_.getLoaderFn((features) => {
-            resolve(features);
-          })(null, null, getProj(this.map.getProjection().code));
-        }
+        })(null, null, getProj(this.map.getProjection().code));
       });
     }
     return this.loadFeaturesPromise_;
@@ -209,7 +233,7 @@ class GeoJSON extends Vector {
             },
           }));
         }
-        this.facadeVector_.addFeatures(features);
+        // this.facadeVector_.addFeatures(features);
       });
     }
   }
@@ -238,51 +262,6 @@ class GeoJSON extends Vector {
         });
       }
     });
-  }
-
-  /**
-   * Evento que se ejecuta cuando se hace clic sobre un objeto geográfico.
-   *
-   * @public
-   * @function
-   * @param {ol.Feature} feature Objetos geográficos de Openlayers.
-   * @param {Array} coord Coordenadas.
-   * @param {Object} evt Eventos.
-   * @api stable
-   */
-  selectFeatures(features, coord, evt) {
-    if (this.extract === true) {
-      const feature = features[0];
-      // unselects previous features
-      this.unselectFeatures();
-
-      if (!isNullOrEmpty(feature)) {
-        const clickFn = feature.getAttribute('vendor.api_idee.click');
-        if (isFunction(clickFn)) {
-          clickFn(evt, feature);
-        } else {
-          const popupTemplate = !isNullOrEmpty(this.template)
-            ? this.template : geojsonPopupTemplate;
-          const htmlAsText = compileTemplate(popupTemplate, {
-            vars: this.parseFeaturesForTemplate_(features),
-            parseToHtml: false,
-          });
-          const featureTabOpts = {
-            icon: 'g-cartografia-pin',
-            title: this.name,
-            content: htmlAsText,
-          };
-          let popup = this.map.getPopup();
-          if (isNullOrEmpty(popup)) {
-            popup = new Popup();
-            popup.addTab(featureTabOpts);
-            this.map.addPopup(popup, coord);
-          } else {
-            popup.addTab(featureTabOpts);
-          }
-        }
-      }
-    }
   }
 
   // /**

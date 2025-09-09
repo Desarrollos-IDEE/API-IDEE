@@ -204,6 +204,35 @@ export const Terrain = 'Terrain';
 export const LayerGroup = 'LayerGroup';
 
 /**
+ * Tipo GeoPackageTile. Es un tipo de capa que utiliza el formato GeoPackage
+ * para almacenar teselas ráster.
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+export const GeoPackageTile = 'GeoPackageTile';
+
+/**
+ * Tipo GeoPackage. Es un tipo de capa que permite agrupar múltiples capas,
+ * tanto vectoriales como raster, en un contenedor SQLite.
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+export const GeoPackage = 'GeoPackage';
+
+/**
+ * Tipo WMC. Es un tipo de capa que permite agrupar capas en un único contexto de mapas.
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+export const WMC = 'WMC';
+
+/**
  * Todos los tipos de capas
  * @const
  * @type {object}
@@ -230,6 +259,9 @@ const layertypes = {
   LayerGroup,
   Tiles3D,
   Terrain,
+  GeoPackage,
+  GeoPackageTile,
+  WMC,
 };
 
 /**
@@ -280,6 +312,9 @@ export const know = (type) => {
     LayerGroup,
     Tiles3D,
     Terrain,
+    GeoPackage,
+    GeoPackageTile,
+    WMC,
   ];
   return (knowTypes.indexOf(parse(type)) !== -1);
 };

@@ -41,6 +41,8 @@ export default class InfocoordinatesControl extends IDEE.Control {
     this.clickedDeactivate = false;
     this.order = order;
     this.outputDownloadFormat = outputDownloadFormat;
+    this.projections = IDEE.impl.ol.js.projections.getSupportedProjs();
+    this.selectedProjection = null;
   }
 
   /**
@@ -53,6 +55,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
    */
   createView(map) {
     this.map_ = map;
+    this.selectedProjection = this.map_.getProjection().code;
     if (!IDEE.template.compileSync) { // JGL: retrocompatibilidad API IDEE
       IDEE.template.compileSync = (string, options) => {
         let templateCompiled;
@@ -79,6 +82,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
         vars: {
           hasHelp: this.helpUrl !== undefined && IDEE.utils.isUrl(this.helpUrl),
           helpUrl: this.helpUrl,
+          projections: this.projections,
           translations: {
             title: getValue('title'),
             point: getValue('point'),
@@ -97,10 +101,13 @@ export default class InfocoordinatesControl extends IDEE.Control {
             copyAllPoints: getValue('copyAllPoints'),
             displayONAllPoints: getValue('displayONAllPoints'),
             displayOFFAllPoints: getValue('displayOFFAllPoints'),
+            select_srs: getValue('select_srs'),
+            choose_create_epsg: getValue('choose_create_epsg'),
           },
         },
       };
       const html = IDEE.template.compileSync(template, options);
+      this.initCustomDropdown(html);
       // Añadir código dependiente del DOM
       this.accessibilityTab(html);
 
@@ -113,11 +120,68 @@ export default class InfocoordinatesControl extends IDEE.Control {
       html.querySelector('#m-infocoordinates-buttonImportAllPoints').addEventListener('click', this.importAllPoints.bind(this));
       html.querySelector('#m-infocoordinates-buttonCopyAllPoints').addEventListener('click', this.copyAllPoints.bind(this));
       html.querySelector('#m-infocoordinates-buttonDisplayAllPoints').addEventListener('click', this.displayAllPoints.bind(this));
-      html.querySelector('#m-infocoordinates-comboDatum').addEventListener('change', this.changeSelectSRSorChangeFormat.bind(this));
       html.querySelector('#m-infocoordinates-buttonConversorFormat').addEventListener('change', this.changeSelectSRSorChangeFormat.bind(this));
       html.querySelector('#m-infocoordinates-buttonRemovePoint').addEventListener('click', this.removePoint.bind(this));
       html.querySelector('#m-infocoordinates-copylatlon').addEventListener('click', this.copylatlon.bind(this));
       html.querySelector('#m-infocoordinates-copyxy').addEventListener('click', this.copyxy.bind(this));
+    });
+  }
+
+  /**
+   * This function initializes the custom dropdown for SRS selection
+   * @param {*} html
+   *
+   * @public
+   * @function
+   * @api stable
+   */
+  initCustomDropdown(html) {
+    const input = html.querySelector('#epsg-selected');
+    const selector = html.querySelector('#m-infocoordinates-srs-selector');
+    let isEditable = false;
+
+    input.setAttribute('readonly', 'readonly');
+    input.value = this.selectedProjection;
+
+    input.addEventListener('focus', () => {
+      if (!isEditable) {
+        selector.style.display = 'block';
+        const list = selector.querySelectorAll('li a');
+        list.forEach((li) => {
+          li.addEventListener('mousedown', (event) => {
+            event.preventDefault();
+            const value = event.target.getAttribute('value');
+            if (value === 'default') {
+              isEditable = true;
+              input.removeAttribute('readonly');
+              input.value = '';
+              input.placeholder = getValue('placeholder_custom_epsg');
+              selector.style.display = 'none';
+              input.focus();
+            } else {
+              input.value = value;
+              this.changeSelectSRSorChangeFormat();
+            }
+          });
+        });
+      }
+    });
+
+    input.addEventListener('blur', () => {
+      selector.style.display = 'none';
+      isEditable = false;
+      if (!input.hasAttribute('readonly')) {
+        input.setAttribute('readonly', 'readonly');
+        input.value = this.selectedProjection;
+      }
+    });
+
+    input.addEventListener('keyup', (event) => {
+      if (isEditable && event.key === 'Enter') {
+        isEditable = false;
+        input.setAttribute('readonly', 'readonly');
+        this.changeSelectSRSorChangeFormat();
+      }
     });
   }
 
@@ -238,9 +302,9 @@ export default class InfocoordinatesControl extends IDEE.Control {
       success(altitudeFromElevationProcess);
     });
 
-    IDEE.proxy(false);
+    // IDEE.proxy(false);
     promesa.then((response) => {
-      IDEE.proxy(true);
+      // IDEE.proxy(true);
       if (!response || response === NO_DATA_VALUE) {
         altitudeFromElevationProcess = getValue('noDatafromElevationProcess');
       } else {
@@ -249,7 +313,9 @@ export default class InfocoordinatesControl extends IDEE.Control {
       featurePoint.setAttribute('Altitude', altitudeFromElevationProcess);
       altitudeBox.innerHTML = altitudeFromElevationProcess;
       buttonTab.addEventListener('click', () => this.openTabFromTab(numPoint));
-    }).catch(() => IDEE.proxy(true));
+    }).catch(() => {
+      // IDEE.proxy(true);
+    });
 
     this.layerFeatures.addFeatures([featurePoint]);
     this.layerFeatures.setZIndex(999);
@@ -409,7 +475,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
     }
   }
 
-  displayXYcoordinates(numPoint) {
+  async displayXYcoordinates(numPoint) {
     const featureSelected = this.layerFeatures.getFeatureById(numPoint);
 
     // Capturo los elementos
@@ -419,21 +485,61 @@ export default class InfocoordinatesControl extends IDEE.Control {
     const datumBox = document.getElementById('m-infocoordinates-datum');
     const coordX = document.getElementById('m-infocoordinates-coordX');
     const coordY = document.getElementById('m-infocoordinates-coordY');
+    const inputSRS = document.querySelector('.m-infocoordinates-input-select');
+    const selector = document.querySelector('#m-infocoordinates-srs-selector');
 
     // Cojo el srs seleccionado en el select
-    const selectSRS = document.getElementById('m-infocoordinates-comboDatum').value;
+    const selectSRS = inputSRS.value;
 
     // Cojo el formato de las coordenadas geográficas
     const formatGMS = document.getElementById('m-infocoordinates-buttonConversorFormat').checked;
 
     // Cambio coordenadas y calculo las UTM
-    const pointDataOutput = this.getImpl().getCoordinates(
-      featureSelected,
-      selectSRS,
-      formatGMS,
-      this.decimalGEOcoord,
-      this.decimalUTMcoord,
-    );
+    let pointDataOutput;
+    try {
+      pointDataOutput = this.getImpl().getCoordinates(
+        featureSelected,
+        selectSRS,
+        formatGMS,
+        this.decimalGEOcoord,
+        this.decimalUTMcoord,
+      );
+    } catch (error) {
+      try {
+        await IDEE.impl.ol.js.projections.setNewProjection(selectSRS);
+        pointDataOutput = this.getImpl().getCoordinates(
+          featureSelected,
+          selectSRS,
+          formatGMS,
+          this.decimalGEOcoord,
+          this.decimalUTMcoord,
+        );
+      } catch (err) {
+        pointDataOutput = this.getImpl().getCoordinates(
+          featureSelected,
+          this.selectedProjection,
+          formatGMS,
+          this.decimalGEOcoord,
+          this.decimalUTMcoord,
+        );
+        inputSRS.value = this.selectedProjection;
+        IDEE.dialog.error(`${getValue('exception.srs')} ${this.selectedProjection}`);
+      }
+    }
+
+    this.projections = IDEE.impl.ol.js.projections.getSupportedProjs();
+    selector.innerHTML = `
+      <li><a class="m-infocoordinates-option-disabled" href="#" value="default" tabindex="-1" disabled>
+          ${getValue('choose_create_epsg')}
+      </a></li>
+      ${this.projections.map((proj) => `
+          <li>
+              <a href="#" value="${proj.codes[0]}">
+                  ${proj.codes[0]}
+              </a>
+          </li>
+      `).join('')}
+    `;
 
     // pinto
     pointBox.innerHTML = pointDataOutput.NumPoint;
@@ -542,7 +648,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
       const alt = featureSelected.getAttributes().Altitude !== undefined ? parseFloat(featureSelected.getAttributes().Altitude) : '-';
 
       // Cojo el srs seleccionado en el select
-      const selectSRS = document.getElementById('m-infocoordinates-comboDatum').value;
+      const selectSRS = document.querySelector('.m-infocoordinates-input-select').value;
 
       // Cojo el formato de las coordenadas geográficas
       const formatGMS = document.getElementById('m-infocoordinates-buttonConversorFormat').checked;
@@ -593,7 +699,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
       const alt = featureSelected.getAttributes().Altitude !== undefined ? parseFloat(featureSelected.getAttributes().Altitude) : '-';
 
       // Cojo el srs seleccionado en el select
-      const selectSRS = document.getElementById('m-infocoordinates-comboDatum').value;
+      const selectSRS = document.querySelector('.m-infocoordinates-input-select').value;
 
       // Cojo el formato de las coordenadas geográficas
       const formatGMS = document.getElementById('m-infocoordinates-buttonConversorFormat').checked;
@@ -708,7 +814,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
   calculateUTMcoordinates(numPoint) {
     const featureSelected = this.layerFeatures.getFeatureById(numPoint);
     // Cojo el srs seleccionado en el select
-    const selectSRS = document.getElementById('m-infocoordinates-comboDatum').value;
+    const selectSRS = document.querySelector('.m-infocoordinates-input-select').value;
 
     // Cojo el formato de las coordenadas geográficas
     const formatGMS = document.getElementById('m-infocoordinates-buttonConversorFormat').checked;

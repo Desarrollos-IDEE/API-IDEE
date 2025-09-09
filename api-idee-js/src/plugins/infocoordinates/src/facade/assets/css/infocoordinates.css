@@ -125,6 +125,7 @@
 
 .m-panel .m-control.m-container.m-infocoordinates {
     cursor: default;
+    overflow: visible !important;
 }
 
 #m-infocoordinates-buttonRemovePoint {
@@ -267,6 +268,58 @@
 .m-plugin-infocoordinates .m-infocoordinates-help-td {
     display: flex;
     align-items: center;
+}
+
+.m-plugin-infocoordinates .m-infocoordinates-comboDatum {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.m-infocoordinates-comboDatum .m-infocoordinates-input-select {
+    box-sizing: border-box;
+    color: black;
+    background-color: #fff;
+    cursor: pointer;
+    padding: 0 !important;
+    margin: 0 5px 0 5px;
+    max-width: 120px;
+}
+
+.m-infocoordinates-comboDatum .m-infocoordinates-srs-selector {
+    display: none;
+    position: absolute;
+    margin: 5px;
+    top: 90%;
+    padding: 1px 0;
+    margin-top: 0;
+    max-height: 200px;
+    max-width: 120px;
+    overflow-y: auto;
+    list-style: none;
+    z-index: 1000;
+    color: #000;
+    background-color: white;
+    font-size: 13px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.m-infocoordinates-comboDatum .m-infocoordinates-srs-selector li {
+    border-bottom: 1px solid #ddd;
+}
+
+.m-infocoordinates-comboDatum .m-infocoordinates-srs-selector li a {
+    display: block;
+    margin-top: -1px;
+    padding: 4px 12px;
+    text-decoration: none;
+    color: #6c6c6c;
+}
+
+.m-infocoordinates-comboDatum .m-infocoordinates-srs-selector li:hover {
+    color: #000;
+    border: 1px solid #000;
 }
 
 @-moz-document url-prefix() {

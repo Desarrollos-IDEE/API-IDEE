@@ -37,21 +37,21 @@
     margin-right: 2px;
 }
 
-#m-level-number {
+.m-scale-container .m-scale,
+.m-scale-container .m-zoom {
     outline: 0px solid transparent;
     padding: 1px 2px;
 }
 
-.blinking-background {
-    animation: blink 2.5s infinite;
+.m-scale-container .m-full-scale {
+    display: flex;
+    align-items: center;
 }
 
-/* Background blink animation */
-
-@keyframes blink {
-    0% { background-color: transparent; }
-    50% { background-color: rgb(20, 75, 131); }
-    100% { background-color: transparent; }
+.m-scale-container .m-zoom,
+.m-scale-container .m-full-scale .m-scale {
+    text-decoration: underline;
+    cursor: text;
 }
 
 /* Firefox fix */

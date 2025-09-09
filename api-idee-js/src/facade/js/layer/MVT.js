@@ -6,7 +6,7 @@ import RenderFeatureImpl from 'impl/feature/RenderFeature';
 import FeatureImpl from 'impl/feature/Feature';
 import Vector from './Vector';
 import {
-  isUndefined, isNullOrEmpty, isString, normalize, isObject,
+  isUndefined, isNullOrEmpty, isObject,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import * as dialog from '../dialog';
@@ -86,6 +86,7 @@ class MVT extends Vector {
    *    attributions: 'mvt',
    *    ...
    *  })
+   *  tileLoadFunction: <funcion>
    * }
    * </code></pre>
    * @api
@@ -124,43 +125,19 @@ class MVT extends Vector {
      */
     this.maxZoom = optionsVar.maxZoom || Number.POSITIVE_INFINITY;
 
-    /**
-     * extract: Optional Activa la consulta al hacer clic sobre un objeto geográfico,
-     * por defecto verdadero.
-     */
-    this.extract = opts.extract === undefined ? true : opts.extract;
-
     this.mode = opts.mode || mode.RENDER;
   }
 
   /**
-   * Devuelve el valor de la propiedad "extract". La propiedad "extract"
-   * activa la consulta al hacer clic sobre un objeto geográfico, por defecto verdadero.
+   * Sobrescribe la función de carga de teselas.
+   *
    * @function
-   * @return {IDEE.layer.MVT.impl.extract} Devuelve valor del "extract".
+   * @public
+   * @param {Function} func Función de carga de teselas.
    * @api
    */
-  get extract() {
-    return this.getImpl().extract;
-  }
-
-  /**
-   * Sobrescribe el valor de la propiedad "extract". La propiedad "extract"
-   * activa la consulta al hacer clic sobre un objeto geográfico, por defecto verdadero.
-   * @function
-   * @param {Boolean} newExtract Nuevo valor para el "extract".
-   * @api
-   */
-  set extract(newExtract) {
-    if (!isNullOrEmpty(newExtract)) {
-      if (isString(newExtract)) {
-        this.getImpl().extract = (normalize(newExtract) === 'true');
-      } else {
-        this.getImpl().extract = newExtract;
-      }
-    } else {
-      this.getImpl().extract = true;
-    }
+  setTileLoadFunction(func) {
+    this.getImpl().setTileLoadFunction(func);
   }
 
   /**
@@ -221,12 +198,12 @@ class MVT extends Vector {
    */
   getFeatures() {
     const features = this.getImpl().getFeatures();
-    return features.map((olFeature) => {
+    return features.map((implFeature) => {
       if (this.mode === mode.RENDER) {
-        return RenderFeatureImpl.feature2Facade(olFeature);
+        return RenderFeatureImpl.feature2Facade(implFeature);
       }
       if (this.mode === mode.FEATURE) {
-        return FeatureImpl.feature2Facade(olFeature, undefined, this.getProjection());
+        return FeatureImpl.feature2Facade(implFeature, undefined, this.getProjection());
       }
       return null;
     });
@@ -263,15 +240,6 @@ class MVT extends Vector {
   }
 
   /**
-   * Devuelve el valor de la propiedad filter.
-   *
-   * @function
-   * @public
-   * @api
-   */
-  getFilter() {}
-
-  /**
    * Modifica el filtro.
    *
    * @function
@@ -279,15 +247,6 @@ class MVT extends Vector {
    * @api
    */
   setFilter() {}
-
-  /**
-   * Elimina valor de la propiedad "filter".
-   *
-   * @function
-   * @public
-   * @api
-   */
-  removeFilter() {}
 
   /**
    * Añade objeto geográficos.

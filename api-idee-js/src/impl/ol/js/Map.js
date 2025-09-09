@@ -26,6 +26,8 @@ import FacadeMBTiles from 'IDEE/layer/MBTiles';
 import FacadeMBTilesVector from 'IDEE/layer/MBTilesVector';
 import FacadeMVT from 'IDEE/layer/MVT';
 import FacadeGeoTIFF from 'IDEE/layer/GeoTIFF';
+import FacadeGeoPackageTile from 'IDEE/layer/GeoPackageTile';
+import FacadeWMC from 'IDEE/layer/WMC';
 import * as EventType from 'IDEE/event/eventtype';
 import FacadeMap from 'IDEE/Map';
 import LayerBase from 'IDEE/layer/Layer';
@@ -71,6 +73,8 @@ import LayerGroup from './layer/LayerGroup';
  * @property {Object} Z_INDEX_BASELAYER Objeto con los valores de los z-index.
  * @property {Number} currentZoom Almacena el zoom del mapa.
  * @property {Object} objectView Almacena las propiedades indicadas por el usuario para la vista.
+ * @property {Array<IDEE.layer.Section>} sections_ Secciones añadidas al mapa.
+ * @property {Number} currentRotation Almacena la rotación del mapa.
  *
  * @api
  * @extends {IDEE.Object}
@@ -98,7 +102,7 @@ class Map extends MObject {
    * @param {object} viewVendorOptions Parámetros para la vista del mapa de la librería base.
    * @api
    */
-  constructor(div, facadeMap, options = {}, viewVendorOptions = {}) {
+  constructor(div, facadeMap, dpi, options = {}, viewVendorOptions = {}) {
     super();
     /**
      * Fachada del mapa a implementar.
@@ -113,6 +117,13 @@ class Map extends MObject {
      * @type {ol.Collection<IDEE.Layer>}
      */
     this.layers_ = [];
+
+    /**
+     * Secciones de capas añadidas al mapa.
+     * @private
+     * @type {Array<IDEE.layer.Section>}
+     */
+    this.sections_ = [];
 
     /**
      * Controles añadidos al mapa.
@@ -181,11 +192,25 @@ class Map extends MObject {
     this._resolutionsBaseLayer = false;
 
     /**
+     * Etiquetas
+     * @private
+     * @type {Array}
+     */
+    this.label = [];
+
+    /**
      * Almacena el zoom del mapa.
      * @api
      * @type {Number}
      */
     this.currentZoom = null;
+
+    /**
+     * Almacena la rotación del mapa.
+     * @api
+     * @type {Number}
+     */
+    this.currentRotation = null;
 
     /**
      * Extent restringido de navegación para el mapa.
@@ -206,6 +231,12 @@ class Map extends MObject {
     }
 
     /**
+     * Calcula la resolción del mapa a partir del dpi
+     * definido en el fichero de configuración.
+     */
+    const pixelRatio = Number.parseFloat(dpi) / 72 || 1;
+
+    /**
      * Implementación del mapa.
      * @private
      * @type {ol.Map}
@@ -217,6 +248,7 @@ class Map extends MObject {
       target: div.id,
       // renderer,
       view,
+      pixelRatio,
     });
 
     this.registerEvents_();
@@ -226,6 +258,7 @@ class Map extends MObject {
       this.map_.updateSize();
     });
     this.map_.on('singleclick', this.onMapClick_.bind(this));
+
     // pointermove
     this.map_.addInteraction(new OLInteraction({
       handleEvent: (e) => {
@@ -249,6 +282,7 @@ class Map extends MObject {
    * @api
    */
   getLayers(filters) {
+    const wmcLayers = this.getWMC(filters);
     const kmlLayers = this.getKML(filters);
     const wmsLayers = this.getWMS(filters);
     const geotiffLayers = this.getGeoTIFF(filters);
@@ -262,9 +296,12 @@ class Map extends MObject {
     const xyzLayers = this.getXYZs(filters);
     const tmsLayers = this.getTMS(filters);
     const layersGroup = this.getLayerGroups(filters);
+    const geopackagetileLayers = this.getGeoPackageTile(filters);
     const unknowLayers = this.getUnknowLayers_(filters);
 
-    const layers = kmlLayers.concat(wmsLayers)
+    const layers = wmcLayers
+      .concat(kmlLayers)
+      .concat(wmsLayers)
       .concat(geotiffLayers)
       .concat(mapLibreLayers)
       .concat(wfsLayers)
@@ -276,6 +313,7 @@ class Map extends MObject {
       .concat(xyzLayers)
       .concat(tmsLayers)
       .concat(layersGroup)
+      .concat(geopackagetileLayers)
       .concat(unknowLayers);
 
     return layers.sort((layer1, layer2) => FacadeMap.LAYER_SORT(layer1, layer2, this.facadeMap_));
@@ -318,7 +356,9 @@ class Map extends MObject {
     }
 
     layersRec.forEach((layer) => {
-      if (layer.type === LayerType.WMS) {
+      if (layer.type === LayerType.WMC) {
+        this.facadeMap_.addWMC(layer);
+      } else if (layer.type === LayerType.WMS) {
         this.facadeMap_.addWMS(layer);
       } else if (layer.type === LayerType.WMTS) {
         this.facadeMap_.addWMTS(layer);
@@ -342,6 +382,8 @@ class Map extends MObject {
         this.facadeMap_.addXYZ(layer);
       } else if (layer.type === LayerType.TMS) {
         this.facadeMap_.addTMS(layer);
+      } else if (layer.type === LayerType.GeoPackageTile) {
+        this.facadeMap_.addGeoPackageTile(layer);
       } else if (layer.type === LayerType.LayerGroup) {
         this.facadeMap_.addLayerGroups(layer);
       } else if (!LayerType.know(layer.type)) {
@@ -436,6 +478,7 @@ class Map extends MObject {
     });
 
     if (knowLayers.length > 0) {
+      this.removeWMC(knowLayers);
       this.removeKML(knowLayers);
       this.removeWMS(knowLayers);
       this.removeGeoTIFF(knowLayers);
@@ -449,11 +492,19 @@ class Map extends MObject {
       this.removeXYZ(knowLayers);
       this.removeTMS(knowLayers);
       this.removeLayerGroups(knowLayers);
+      this.removeGeoPackageTile(knowLayers);
     }
 
     if (unknowLayers.length > 0) {
       this.removeUnknowLayers_(unknowLayers);
     }
+
+    layers.forEach((layer) => {
+      if (layer.getSection && !isNullOrEmpty(layer.getSection())) {
+        const section = layer.getSection();
+        section.deleteChild(layer);
+      }
+    });
 
     this.facadeMap_.fire(EventType.REMOVED_LAYER, [layers]);
 
@@ -498,6 +549,89 @@ class Map extends MObject {
       initValue,
     );
     return maxZIndex;
+  }
+
+  /**
+   * Este método devuelve las secciones del mapa.
+   *
+   * @public
+   * @function
+   * @returns {Array<IDEE.layer.Section>} Secciones del mapa.
+   * @api
+   */
+  getSections() {
+    return this.sections_;
+  }
+
+  /**
+   * Este método devuelve todas las capas que están en alguna
+   * sección del mapa.
+   *
+   * @public
+   * @function
+   * @returns {Array<IDEE.Layer>} Capas en secciones del mapa.
+   * @api
+   */
+  getSectionsLayers() {
+    let sectionsLayers = [];
+
+    const sections = this.getSections();
+    if (sections.length === 1) {
+      sectionsLayers = sections[0].getAllLayers();
+    } else if (sections.length > 1) {
+      sectionsLayers = sections.reduce((a, v) => {
+        return Array.isArray(a) ? a.concat(v.getAllLayers())
+          : a.getAllLayers().concat(v.getAllLayers());
+      });
+    }
+
+    return sectionsLayers;
+  }
+
+  /**
+   * Este método añade las secciones al mapa.
+   *
+   * @public
+   * @function
+   * @param {Array<IDEE.layer.Section>} sections Secciones a añadir.
+   * @returns {IDEE.impl.Map}
+   * @api
+   */
+  addSections(sections) {
+    sections.forEach((section) => {
+      section.addTo(this.facadeMap_);
+      if (!includes(this.sections_, section)) {
+        this.sections_.push(section);
+        section.getAllLayers().forEach((layer) => {
+          this.facadeMap_.addLayers(layer);
+        });
+      }
+    });
+    return this;
+  }
+
+  /**
+   * Este método elimina las secciones del mapa.
+   *
+   * @public
+   * @function
+   * @param {Array<IDEE.layer.Section>} sections Secciones a eliminar.
+   * @returns {IDEE.impl.Map}
+   * @api
+   */
+  removeSections(sections) {
+    let sectionsI = [];
+    if (!Array.isArray(sections)) {
+      sectionsI = [sections];
+    } else {
+      sectionsI = [...sections];
+    }
+    sectionsI.forEach((section) => {
+      this.sections_.remove(section);
+      section.destroy();
+      section.fire(EventType.REMOVED_FROM_MAP, [section]);
+    });
+    return this;
   }
 
   /**
@@ -632,6 +766,122 @@ class Map extends MObject {
       this.layers_ = this.layers_.filter((layer) => !layerGroup.equals(layer));
       layerGroup.getImpl().destroy();
     });
+
+    return this;
+  }
+
+  /**
+   * Este método obtiene las capas WMC añadidas al mapa.
+   *
+   * @function
+   * @param {Array<IDEE.Layer>} filters Filtros a aplicar para la búsqueda.
+   * @returns {Array<IDEE.layer.WMC>} Capas WMC del mapa.
+   * @api stable
+   */
+  getWMC(filtersParam) {
+    let filters = filtersParam;
+    let foundLayers = [];
+
+    // get all wmcLayers
+    const wmcLayers = this.layers_.filter((layer) => {
+      return (layer.type === LayerType.WMC);
+    });
+
+    // parse to Array
+    if (isNullOrEmpty(filters)) {
+      filters = [];
+    }
+    if (!isArray(filters)) {
+      filters = [filters];
+    }
+
+    if (filters.length === 0) {
+      foundLayers = wmcLayers;
+    } else {
+      filters.forEach((filterLayer) => {
+        foundLayers = foundLayers.concat(wmcLayers.filter((wmcLayer) => {
+          let layerMatched = true;
+          // checks if the layer is not in selected layers
+          if (!foundLayers.includes(wmcLayer)) {
+            // if instanceof FacadeWMC check if it is the same
+            if (filterLayer instanceof FacadeWMC) {
+              layerMatched = (filterLayer === wmcLayer);
+            } else {
+              // type
+              if (!isNullOrEmpty(filterLayer.type)) {
+                layerMatched = (layerMatched && (filterLayer.type === wmcLayer.type));
+              }
+              // URL
+              if (!isNullOrEmpty(filterLayer.url)) {
+                layerMatched = (layerMatched && (filterLayer.url === wmcLayer.url));
+              }
+              // name
+              if (!isNullOrEmpty(filterLayer.name)) {
+                layerMatched = (layerMatched && (filterLayer.name === wmcLayer.name));
+              }
+            }
+          } else {
+            layerMatched = false;
+          }
+          return layerMatched;
+        }));
+      }, this);
+    }
+    return foundLayers;
+  }
+
+  /**
+   * Este método añade las capas WMC especificadas por el usuario al mapa.
+   *
+   * @function
+   * @param {Array<IDEE.layer.WMC>} layers Capas WMC a añadir.
+   * @returns {Map} Mapa.
+   * @public
+   * @api
+   */
+  addWMC(layers) {
+    layers.forEach((layer) => {
+      // checks if layer is WMC and was added to the map
+      if (layer.type === LayerType.WMC) {
+        if (!includes(this.layers_, layer)) {
+          // eslint-disable-next-line no-underscore-dangle, no-param-reassign
+          layer.zindex_ = Map.Z_INDEX[LayerType.WMC];
+          // eslint-disable-next-line no-underscore-dangle, no-param-reassign
+          layer.getImpl().zIndex_ = Map.Z_INDEX[LayerType.WMC];
+          layer.getImpl().addTo(this.facadeMap_);
+          this.layers_.push(layer);
+        }
+      }
+    }, this);
+
+    return this;
+  }
+
+  /**
+   * Este método elimina las capas WMC del mapa especificadas por el usuario.
+   *
+   * @function
+   * @param {Array<IDEE.layer.WMC>} layers Capas WMC a eliminar.
+   * @returns {Map} Mapa.
+   * @public
+   * @api
+   */
+  removeWMC(layers) {
+    const wmcMapLayers = this.getWMC(layers);
+    wmcMapLayers.forEach((wmcLayer) => {
+      if (wmcLayer.selected === true && wmcLayer.isLoaded() === false) {
+        wmcLayer.on(EventType.LOAD, () => {
+          this.layers_ = this.layers_.filter((layer) => !layer.equals(wmcLayer));
+          this.facadeMap_.removeWMS(wmcLayer.layers);
+          this.facadeMap_.refreshWMCSelectorControl();
+        });
+      } else {
+        this.layers_ = this.layers_.filter((layer) => !layer.equals(wmcLayer));
+        this.facadeMap_.removeWMS(wmcLayer.layers);
+      }
+      this.facadeMap_.refreshWMCSelectorControl();
+      wmcLayer.fire(EventType.REMOVED_FROM_MAP, [wmcLayer]);
+    }, this);
 
     return this;
   }
@@ -2035,6 +2285,94 @@ class Map extends MObject {
   }
 
   /**
+   * Este método obtiene las capas GeoPackageTile añadidas al mapa.
+   *
+   * @function
+   * @param {Array<IDEE.Layer>} filters Filtros para aplicar en la búsqueda.
+   * @returns {Array<IDEE.layer.GeoPackageTile>} Capas GeoPackageTile del mapa.
+   * @public
+   * @api
+   */
+  getGeoPackageTile(filtersParam) {
+    let foundLayers = [];
+    let filters = filtersParam;
+    const layers = this.layers_.filter((layer) => layer.type === LayerType.GeoPackageTile);
+
+    // parse to Array
+    if (isNullOrEmpty(filters)) {
+      filters = [];
+    }
+    if (!isArray(filters)) {
+      filters = [filters];
+    }
+
+    if (filters.length === 0) {
+      foundLayers = layers;
+    } else {
+      filters.forEach((filterLayer) => {
+        const filteredLayers = layers.filter((layer) => {
+          let layerMatched = true;
+          // checks if the layer is not in selected layers
+          if (!foundLayers.includes(layer)) {
+            // if instanceof FacadeTMS check if it is the same
+            if (filterLayer instanceof FacadeGeoPackageTile) {
+              layerMatched = (filterLayer.equals(layer));
+            } else {
+              // type
+              if (!isNullOrEmpty(filterLayer.type)) {
+                layerMatched = (layerMatched && (filterLayer.type === layer.type));
+              }
+              // name
+              if (!isNullOrEmpty(filterLayer.name)) {
+                layerMatched = (layerMatched && (filterLayer.name === layer.name));
+              }
+            }
+          } else {
+            layerMatched = false;
+          }
+          return layerMatched;
+        });
+        foundLayers = foundLayers.concat(filteredLayers);
+      });
+    }
+    return foundLayers;
+  }
+
+  /**
+   * Este método añade las capas GeoPackageTile especificadas por el usuario al mapa.
+   *
+   * @function
+   * @param {Array<IDEE.layer.GeoPackageTile>} layers Capas GeoPackageTile a añadir.
+   * @returns {IDEE.impl.Map} Mapa.
+   * @public
+   * @api
+   */
+  addGeoPackageTile(layers) {
+    this.addToLayers_(layers);
+    return this;
+  }
+
+  /**
+   * Este método elimina las capas GeoPackageTile del mapa especificadas por el usuario.
+   *
+   * @function
+   * @param {Array<IDEE.layer.GeoPackageTile>} layers Capas GeoPackageTile a eliminar.
+   * @returns {IDEE.impl.Map} Mapa.
+   * @public
+   * @api
+   */
+  removeGeoPackageTile(layers) {
+    const tileLayers = this.getGeoPackageTile(layers);
+    tileLayers.forEach((tileLayer) => {
+      this.layers_ = this.layers_.filter((layer) => !layer.equals(tileLayer));
+      tileLayer.getImpl().destroy();
+      tileLayer.fire(EventType.REMOVED_FROM_MAP, [tileLayer]);
+    });
+
+    return this;
+  }
+
+  /**
    * Este método obtiene los controles especificados por el usuario.
    *
    * @function
@@ -2789,6 +3127,8 @@ class Map extends MObject {
       const olPopup = popup.getImpl();
       const olMap = this.getMapImpl();
       olMap.removeOverlay(olPopup);
+      popup.fire(EventType.POPUP_REMOVED, [popup]);
+      this.facadeMap_.fire(EventType.POPUP_REMOVED, [popup]);
     }
     return this;
   }
@@ -2887,22 +3227,24 @@ class Map extends MObject {
   }
 
   /**
-   * Este método añade un "popup" y elimina el anterior.
+   * Este método añade una etiqueta y elimina la anterior.
    *
    * @function
-   * @param {IDEE.impl.Popup} label "Popup" a añadir.
+   * @param {IDEE.impl.Popup} label Etiqueta a añadir.
+   * @param {boolean} removePrevious Opcional, indica si se eliminan o no las etiquetas anteriores.
+   * Si se añaden multiples etiquetas y el valor no es false, solo añade la última etiqueta.
    * @returns {ol.Map} Mapa.
    * @public
    * @api
    */
-  addLabel(label) {
-    this.label = label;
-    label.show(this.facadeMap_);
+  addLabel(label, removePrevious) {
+    this.label.push(label);
+    label.show(this.facadeMap_, removePrevious);
     return this;
   }
 
   /**
-   * Este método obtiene un "popup" con el texto indicado.
+   * Este método obtiene una etiqueta. Si hay más de una, es la primera de la lista.
    *
    * @function
    * @returns {ol.Map} Mapa.
@@ -2910,22 +3252,51 @@ class Map extends MObject {
    * @api
    */
   getLabel() {
-    return this.label;
+    return this.label[0];
   }
 
   /**
-   * Este método elimina un "popup" con el texto indicado.
+   * Este método obtiene todas las etiquetas.
    *
    * @function
    * @returns {ol.Map} Mapa.
    * @public
    * @api
    */
-  removeLabel() {
+  getLabels() {
+    return this.label;
+  }
+
+  /**
+   * Este método elimina una etiqueta con el texto indicado.
+   *
+   * @function
+   * @param {IDEE.impl.Popup} label Etiqueta a eliminar.
+   * @returns {ol.Map} Mapa.
+   * @public
+   * @api
+   */
+  removeLabel(label) {
+    let arrayLabels = label;
     if (!isNullOrEmpty(this.label)) {
-      const popup = this.label.getPopup();
-      this.removePopup(popup);
-      this.label = null;
+      if (isNullOrEmpty(label)) {
+        this.label.forEach((lbl) => this.removePopup(lbl.getPopup()));
+        this.label = [];
+      } else {
+        if (!isArray(label)) {
+          arrayLabels = [label];
+        }
+        for (let i = arrayLabels.length - 1; i >= 0; i -= 1) {
+          const elm = arrayLabels[i];
+          const labelAux = this.label.findIndex(
+            (lbl) => lbl.text === elm.text && lbl.coord === elm.coord,
+          );
+          if (labelAux !== -1) {
+            this.removePopup(this.label[labelAux].getPopup());
+            this.label.splice(labelAux, 1);
+          }
+        }
+      }
     }
   }
 
@@ -2969,6 +3340,19 @@ class Map extends MObject {
   }
 
   /**
+   * Este método establece el array de resoluciones calculadas.
+   *
+   * @function
+   * @public
+   * @param {Array<number>} _calculatedResolutions Array con las resoluciones
+   * calculadas.
+   * @api
+   */
+  setCalculatedResolutions(_calculatedResolutions) {
+    this._calculatedResolutions = _calculatedResolutions;
+  }
+
+  /**
    * Este método registra el evento de cambio de zoom.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function
@@ -2980,17 +3364,39 @@ class Map extends MObject {
   }
 
   /**
-   * Este método se ejecuta cuando el usuario realiza zoom.
+   * Este método se ejecuta cuando el usuario realiza zoom o rotación.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function
    * @public
    * @api
    */
   zoomEvent_() {
+    // Detectar cambios de zoom
     if (this.currentZoom !== this.getZoom()) {
       this.facadeMap_.fire(EventType.CHANGE_ZOOM, this.facadeMap_);
       this.currentZoom = this.getZoom();
     }
+
+    // Detectar cambios de rotación
+    const currentRotation = this.getRotation();
+    if (this.currentRotation !== currentRotation) {
+      this.onMapRotate_();
+      this.currentRotation = currentRotation;
+    }
+  }
+
+  /**
+   * Este método se ejecuta cuando el usuario rota el mapa con la
+   * combinación de teclas Shift + Alt.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @function
+   * @public
+   * @api
+   */
+  onMapRotate_() {
+    const radians = this.map_.getView().getRotation();
+    const rotation = radians * (180 / Math.PI);
+    this.facadeMap_.fire(EventType.CHANGE_ROTATION, [rotation]);
   }
 
   /**
@@ -3038,6 +3444,38 @@ class Map extends MObject {
   }
 
   /**
+   * Función que devuelve la rotación del mapa.
+   *
+   * @function
+   * @public
+   * @api
+   * @return {number} Devuelve la rotación del mapa.
+   */
+  getRotation() {
+    let rotation;
+    const view = this.map_.getView();
+    if (!isNullOrEmpty(view)) {
+      rotation = view.getRotation();
+    }
+    return rotation;
+  }
+
+  /**
+   * Función que modifica la rotación del mapa.
+   *
+   * @function
+   * @public
+   * @api
+   * @param {number} rotation Valor que indica cuanto va a rotar el mapa.
+   */
+  setRotation(rotation) {
+    const view = this.map_.getView();
+    if (!isNullOrEmpty(view)) {
+      view.setRotation(rotation);
+    }
+  }
+
+  /**
    * Este método se ejecuta cuando el usuario mueve el ratón.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @function
@@ -3066,6 +3504,7 @@ class Map extends MObject {
  */
 Map.Z_INDEX = {};
 Map.Z_INDEX_BASELAYER = 0;
+Map.Z_INDEX[LayerType.WMC] = 1;
 Map.Z_INDEX[LayerType.OSM] = 40;
 Map.Z_INDEX[LayerType.WMS] = 40;
 Map.Z_INDEX[LayerType.WMTS] = 40;
@@ -3084,5 +3523,6 @@ Map.Z_INDEX[LayerType.OGCAPIFeatures] = 40;
 Map.Z_INDEX[LayerType.GenericVector] = 40;
 Map.Z_INDEX[LayerType.GenericRaster] = 40;
 Map.Z_INDEX[LayerType.LayerGroup] = 40;
+Map.Z_INDEX[LayerType.GeoPackageTile] = 40;
 
 export default Map;

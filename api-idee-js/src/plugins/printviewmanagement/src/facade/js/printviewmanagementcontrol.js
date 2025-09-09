@@ -8,8 +8,6 @@ import PrinterMapControl from './printermapcontrol';
 import GeorefImageEpsgControl from './georefimageepsgcontrol';
 import GeorefimageControl from './georefimagecontrol';
 
-import { removeQueueElements } from './utils';
-
 export default class PrintViewManagementControl extends IDEE.Control {
   /**
    * Main constructor of the class. Creates a PluginControl
@@ -20,8 +18,8 @@ export default class PrintViewManagementControl extends IDEE.Control {
    * @api
    */
   constructor({
-    isDraggable, georefImageEpsg, georefImage, printermap, order, map,
-    serverUrl, printStatusUrl, defaultOpenControl, useProxy, statusProxy,
+    isDraggable, georefImageEpsg, georefImage, printermap, order,
+    defaultOpenControl, useProxy, statusProxy,
   }) {
     if (IDEE.utils.isUndefined(PrintViewManagementImpl)
       || (IDEE.utils.isObject(PrintViewManagementImpl)
@@ -65,10 +63,6 @@ export default class PrintViewManagementControl extends IDEE.Control {
     * @type {Boolean}
     */
     this.georefImage_ = georefImage;
-    if (this.georefImage_ instanceof Object) {
-      this.georefImage_.serverUrl = serverUrl;
-      this.georefImage_.printStatusUrl = printStatusUrl;
-    }
 
     this.tooltipGeorefImage_ = georefImage.tooltip || getValue('georeferenced_img');
 
@@ -78,10 +72,6 @@ export default class PrintViewManagementControl extends IDEE.Control {
     * @type {Boolean}
      */
     this.printermap_ = printermap;
-    if (this.printermap_ instanceof Object) {
-      this.printermap_.serverUrl = serverUrl;
-      this.printermap_.printStatusUrl = printStatusUrl;
-    }
 
     this.tooltipPrintermap_ = printermap.tooltip || getValue('map_printing');
 
@@ -139,19 +129,13 @@ export default class PrintViewManagementControl extends IDEE.Control {
 
   selectElementHTML() {
     // IDs
-    const ID_REMOVE_BUTTON = '#m-printviewmanagement-remove';
     const ID_PRINT_BUTTON = '#m-printviewmanagement-print';
 
     // Elements
-    this.elementRemoveButton_ = this.html.querySelector(ID_REMOVE_BUTTON);
     this.elementPrintButton_ = this.html.querySelector(ID_PRINT_BUTTON);
   }
 
   addEvent() {
-    // ADD EVENT REMOVE
-    // TO-DO EVITAR PETICIONES ? Problem CORE
-    this.elementRemoveButton_.addEventListener('click', () => removeQueueElements(this.html));
-
     // ADD EVENT PRINT
     this.elementPrintButton_.addEventListener('click', (evt) => {
       const active = this.getControlActive(this.html);

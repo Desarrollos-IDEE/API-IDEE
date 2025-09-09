@@ -6,6 +6,7 @@ import proj4 from 'proj4';
 import OLProjection from 'ol/proj/Projection';
 import { register } from 'ol/proj/proj4';
 import { addEquivalentProjections } from 'ol/proj';
+import { parseCRSWKTtoJSON } from '../../../facade/js/util/Utils';
 
 /**
  * EPSG:4979 es una proyección que se refiere a un sistema de coordenadas geodésicas 3D
@@ -119,7 +120,7 @@ const proj25829 = {
 const proj25830 = {
   def: '+proj=utm +zone=30 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs',
   extent: [-729785.83, 3715125.82, 940929.67, 9518470.69],
-  codes: ['EPSG:25830', 'urn:ogc:def:crs:EPSG::25830', 'http://www.opengis.net/gml/srs/epsg.xml#23030'],
+  codes: ['EPSG:25830', 'EPSG:3042', 'urn:ogc:def:crs:EPSG::25830', 'urn:ogc:def:crs:EPSG::3042', 'http://www.opengis.net/gml/srs/epsg.xml#25830', 'http://www.opengis.net/gml/srs/epsg.xml#23030', 'http://www.opengis.net/gml/srs/epsg.xml#3042'],
   units: 'm',
   datum: 'GRS80 (ETRS89)',
   proj: 'UTM 30 N',
@@ -257,7 +258,7 @@ const proj23031 = {
 const proj4326 = {
   def: '+proj=longlat +datum=WGS84 +no_defs',
   extent: [-180, -90, 180, 90],
-  codes: ['EPSG:4326', 'urn:ogc:def:crs:EPSG::4326', 'urn:ogc:def:crs:OGC:1.3:CRS84', 'http://www.opengis.net/def/crs/OGC/1.3/CRS84'],
+  codes: ['EPSG:4326', 'urn:ogc:def:crs:EPSG::4326'],
   units: 'd',
   metersPerUnit: 111319.49079327358,
   axisOrientation: 'neu',
@@ -487,6 +488,27 @@ const proj4346 = {
 };
 
 /**
+ * CRS:84
+ * Proyección geográfica que utiliza el sistema de coordenadas de latitud y longitud
+ * basado en el datum WGS 84. Es ampliamente utilizada en servicios web y estándares OGC,
+ * siendo equivalente a EPSG:4326 pero con el orden de los ejes longitud, latitud.
+ * @type {Object}
+ * @public
+ * @api
+ */
+const crs84 = {
+  def: '+proj=longlat +datum=WGS84 +no_defs',
+  extent: [-180, -90, 180, 90],
+  codes: ['CRS:84', 'urn:ogc:def:crs:OGC:1.3:CRS84', 'http://www.opengis.net/def/crs/OGC/1.3/CRS84'],
+  units: 'd',
+  metersPerUnit: 111319.49079327358,
+  axisOrientation: 'enu',
+  datum: 'WGS 84',
+  proj: 'long, lat',
+  coordRefSys: 'https://defs.opengis.net/prez/object?uri=https://www.opengis.net/def/ogc/CRS84',
+};
+
+/**
  * Lista con las proyecciones anteriores
  * @type {Array<Object>}
  * @public
@@ -517,6 +539,7 @@ const projections = [
   proj4328,
   proj4346,
   proj4979,
+  crs84,
 ];
 
 /**
@@ -546,6 +569,7 @@ const addProjections = (projectionsParam) => {
     });
     addEquivalentProjections(olProjections);
   });
+  register(proj4);
 };
 
 /**
@@ -560,9 +584,94 @@ const getSupportedProjs = () => {
   return projections;
 };
 
+/**
+ * Esta función extrae el código de una proyección
+ * @param {String} projection Proyección de la que extraer el código
+ * @returns {String} Código de la proyección
+ *
+ * @public
+ * @function
+ * @api
+ */
+const getCode = (projection) => {
+  return projection.split(':')[1];
+};
+
+/**
+ * Esta función refactoriza las unidades de una proyección devuelta
+ * por la API EPSG.io en formato WKT2 para que sea compatible
+ * con las unidades proj4 de OpenLayers.
+ * @param {String} units Unidades de la proyección en formato WKT2.
+ * @return {String} Unidades refactorizadas.
+ * @function
+ * @api
+ */
+const refactorUnits = (units) => {
+  switch (units) {
+    case 'metre':
+    case 'meters':
+      return 'm';
+    case 'degree':
+    case 'deg':
+      return 'degrees';
+    case 'foot':
+      return 'ft';
+    default:
+      return units;
+  }
+};
+
+/**
+ * Esta función obtiene la definición de una proyección EPSG
+ * @param {String} code Código de la proyección EPSG
+ * @returns {Promise<String>} Definición de la proyección EPSG
+ */
+const getDefProjection = async (code) => {
+  const response = await fetch(`https://epsg.io/${code}.proj4`);
+  if (!response.ok) {
+    throw new Error(`EPSG code ${code} not found`);
+  }
+  return response.text();
+};
+
+/**
+ * Esta función añade una nueva proyección al array de proyecciones
+ * y la registra en ol/proj.
+ * @param {String} projection Código de la proyección a añadir
+ *
+ * @public
+ * @function
+ * @api
+ */
+const setNewProjection = async (projection) => {
+  const code = getCode(projection);
+  const defProjectionRaw = await getDefProjection(code);
+  const defProjection = defProjectionRaw.replace(/\+nadgrids=[^\s]+/, '').trim();
+  const url = `https://epsg.io/${code}.wkt2`;
+
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`No se pudo obtener la definición WKT de EPSG:${code}`);
+  }
+
+  const wktResponse = await response.text();
+  const jsonResponse = parseCRSWKTtoJSON(wktResponse).PROJCRS;
+  const newProjection = {
+    def: defProjection,
+    extent: jsonResponse.USAGE.BBOX,
+    codes: [`${Object.keys(jsonResponse.ID)[0]}:${jsonResponse.ID[Object.keys(jsonResponse.ID)[0]]}`],
+    units: refactorUnits(Object.keys(jsonResponse.AXIS[0].LENGTHUNIT)[0]),
+    datum: jsonResponse.BASEGEOGCRS.DATUM.name,
+    proj: jsonResponse.name,
+    coordRefSys: `http://www.opengis.net/def/crs/EPSG/0/${code}`,
+  };
+
+  projections.push(newProjection);
+  addProjections([newProjection]);
+};
+
 // register proj4
 addProjections(projections);
-register(proj4);
 
 /**
  * Este comentario no se verá, es necesario incluir
@@ -575,4 +684,5 @@ register(proj4);
 export default {
   addProjections,
   getSupportedProjs,
+  setNewProjection,
 };

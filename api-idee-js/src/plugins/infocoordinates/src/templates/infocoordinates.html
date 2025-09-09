@@ -46,13 +46,28 @@
                                 {{/if}}
                             </td>
                             <td colspan="2">
-                                <select tabindex="0" id="m-infocoordinates-comboDatum" class="m-infocoordinates-comboDatum">
-                                    <option value="EPSG:25829">EPSG:25829</option>
-                                    <option value="EPSG:25830" selected>EPSG:25830</option>
-                                    <option value="EPSG:25831">EPSG:25831</option>
-                                    <option value="EPSG:3857">EPSG:3857</option>
-                                    <option value="EPSG:4083">EPSG:4083</option>
-                                </select>
+                               <div id="m-infocoordinates-comboDatum" class="m-infocoordinates-comboDatum">
+                                    <input
+                                        type="text"
+                                        id="epsg-selected"
+                                        class="m-infocoordinates-input-select"
+                                        name="epsg-selected"
+                                        value="{{selected}}"
+                                        aria-label="{{translations.select_srs}}"
+                                        title="{{translations.select_srs}}"
+                                        tabindex="{{order}}"
+                                        autocomplete="off"
+                                        readonly="readonly"
+                                    />
+                                    <ul title="{{translations.select_srs}}" id="m-infocoordinates-srs-selector" class="m-infocoordinates-srs-selector">
+                                        <li><a class="m-infocoordinates-option-disabled" href="#" value="default" tabindex="-1" disabled>{{translations.choose_create_epsg}}</a></li>
+                                        {{#each projections}}
+                                            <li>
+                                                <a href="#" value="{{this.codes.[0]}}">{{this.codes.[0]}}</a>
+                                            </li>
+                                        {{/each}}
+                                    </ul>
+                                </div>
                             </td>
                         </tr>
                         <tr tabindex="0">

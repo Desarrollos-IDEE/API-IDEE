@@ -8,7 +8,7 @@ const mapajs = Mmap({
   container: 'map',
   controls: ['mouse', 'layerswitcher'],
   layers: ['WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*false'],
-  projection: 'EPSG:25830*m',
+  projection: 'EPSG:25830',
 });
 
 window.mapjs = mapajs;

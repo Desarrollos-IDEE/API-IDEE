@@ -80,6 +80,7 @@ export default class SelectionControl extends IDEE.Control {
     const layers = this.map_.getLayers().filter((l) => l.name === 'selectLayer');
     if (layers.length > 0) {
       this.selectionLayer = layers[0];
+      this.layer_.getImpl().extract = false;
     } else {
       this.selectionLayer = new IDEE.layer.Vector({
         extract: false,

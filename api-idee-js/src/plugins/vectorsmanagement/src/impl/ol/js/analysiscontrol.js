@@ -104,7 +104,7 @@ export default class Analysiscontrol extends IDEE.impl.Control {
    * @api
    * @param {IDEE.Feature} feature
    */
-  calculateProfile(id, feature, show = true) {
+  calculateProfile(feature, id, show = true) {
     const altitudes = [];
     let coordinates = [];
 
@@ -129,9 +129,9 @@ export default class Analysiscontrol extends IDEE.impl.Control {
       success(altitudeFromElevationProfileProcess);
     });
 
-    IDEE.proxy(false);
+    // IDEE.proxy(false);
     promesa.then((response) => {
-      IDEE.proxy(true);
+      // IDEE.proxy(true);
       document.querySelector('#vectorsmanagement-analysis-btn').style.display = 'block';
       document.querySelector('#vectorsmanagement-analysis-div').innerHTML = '';
       document.querySelector('#vectorsmanagement-analysis-div').style.height = '0';
@@ -146,7 +146,10 @@ export default class Analysiscontrol extends IDEE.impl.Control {
         this.arrayXYZ = altitudes;
         this.calculate3DLength(id);
       }
-    }).catch(() => IDEE.proxy(true));
+    }).catch(() => {
+      console.warning('Error reading elevation profile'); // eslint-disable-line no-console
+      // IDEE.proxy(true)
+    });
   }
 
   /**
@@ -181,9 +184,9 @@ export default class Analysiscontrol extends IDEE.impl.Control {
       success(altitudeFromElevationProcess);
     });
 
-    IDEE.proxy(false);
+    // IDEE.proxy(false);
     promesa.then((response) => {
-      IDEE.proxy(true);
+      // IDEE.proxy(true);
       document.querySelector('#vectorsmanagement-analysis-btn').style.display = 'block';
       document.querySelector('#vectorsmanagement-analysis-div').innerHTML = '';
       document.querySelector('#vectorsmanagement-analysis-div').style.height = '0';
@@ -192,7 +195,10 @@ export default class Analysiscontrol extends IDEE.impl.Control {
         pointXYZ.altitude = altitudeFromElevationProcess;
         this.facadeControl.showPointProfile(pointXYZ);
       }
-    }).catch(() => IDEE.proxy(true));
+    }).catch(() => {
+      console.warning('Error reading elevation profile'); // eslint-disable-line no-console
+      // IDEE.proxy(true)
+    });
   }
 
   /**
@@ -417,7 +423,7 @@ export default class Analysiscontrol extends IDEE.impl.Control {
   }
 
   get3DLength(id, feature) {
-    this.calculateProfile(id, feature, false);
+    this.calculateProfile(feature, id, false);
   }
 
   getAreaGeoJSON(features) {

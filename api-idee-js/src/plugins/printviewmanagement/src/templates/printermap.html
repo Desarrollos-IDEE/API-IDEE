@@ -9,39 +9,22 @@
         <!-- Selección del formato -->
         <label tabindex="0" for="m-printermap-format" role="text" aria-label="{{translations.format}}">{{translations.format}} </label>
         <select tabindex="0" role="select" id="m-printermap-format" title="{{translations.format}}">
-            {{#each format}}
-                <option value="{{name}}" {{#if default}} selected{{/if}}>{{name}}</option>
+            {{#each formats}}
+                <option value="{{this}}" {{#if default}} selected{{/if}}>{{this}}</option>
             {{/each}}
         </select>
     </section>
 
-
-    <!-- Selección de la descripción -->
-    <label class="m-printermap-labelTextarea" tabindex="0" for="m-printermap-description" role="text" aria-label="{{translations.description}}">{{translations.description}} </label>
-    {{#if fixedDescription}}
-        <textarea class="m-printermap-textarea" id="m-printermap-description" tabindex="0" aria-label="{{translations.fixeddescription}}" disabled title="{{translations.description}}">{{translations.fixeddescription}}</textarea>
-        {{^}}
-            <textarea class="m-printermap-textarea" id="m-printermap-description" tabindex="0" aria-label="{{translations.description}}" placeholder="{{translations.description}}" title="{{translations.description}}"></textarea>
-    {{/if}}
-
+    <fieldset class="m-printermap-custom-templates">
+        <legend tabindex="0" role="text" aria-label="{{translations.uploadTemplate}}">{{translations.uploadTemplate}}</legend>
+        <label for="m-printermap-template-upload"  class="m-printermap-paramsLabel" tabindex="0" role="text" aria-label="{{translations.uploadTemplate}}">{{translations.uploadTemplate}}</label>
+        <input type="file" id="m-printermap-template-upload" accept=".html,.txt" title=" " class="m-printermap-file-input">
+        <select id="m-printermap-uploaded-templates" class="m-printermap-template-select" disabled>
+            <option disabled hidden selected>-- {{translations.selectUploadedTemplate}} --</option>
+        </select>
+    </fieldset>
     <section class="m-printermap-params">
-        <!-- Selección de layout -->
-        <label class="m-printermap-paramsLabel" tabindex="0" role="text" aria-label="{{translations.layout}}">{{translations.layout}}</label>
-        <select tabindex="0" role="select" id="m-printermap-layout" title="{{translations.layout}}">
-            {{#each layouts}}
-                <option value="{{name}}" {{#if default}} selected{{/if}}>{{name}}</option>
-            {{/each}}
-        </select>
-
-        <!-- Selección de DPI -->
-        <div>
-            <label tabindex="0" role="text" aria-label="DPI">DPI </label>
-            <select tabindex="0" role="select" aria-label="DPI" id="m-printermap-dpi" title="DPI">
-                {{#each dpis}}
-                    <option value="{{value}}" {{#if default}} selected{{/if}}>{{value}}</option>
-                {{/each}}
-            </select>
-        </div>
+        <label class="m-printermap-paramsLabel" tabindex="0" role="text" aria-label="{{translations.customizeTemplate}}">{{translations.customizeTemplate}}</label>
+        <button tabindex="0" id="m-printermap-customTemplate" class="customTemplate" title="{{translations.customizeTemplate}}">{{translations.customizeTemplate}}</button>
     </section>
-    <label>* {{translations.maintain_view}}</label>
 </main>

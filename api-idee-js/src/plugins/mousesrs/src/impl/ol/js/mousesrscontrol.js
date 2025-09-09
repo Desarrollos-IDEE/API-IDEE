@@ -85,6 +85,8 @@ export default class MouseSRSControl extends IDEE.impl.Control {
     this.epsgFormat = epsgFormat;
 
     this.draggableDialog = draggableDialog;
+
+    this.projections = null;
   }
 
   /**
@@ -103,10 +105,10 @@ export default class MouseSRSControl extends IDEE.impl.Control {
     this.renderPlugin(map, html);
   }
 
-  renderPlugin(map, html) {
+  async renderPlugin(map, html) {
     this.facadeMap_ = map;
     this.mousePositionControl = new ExtendedMouse({
-      coordinateFormat: ol.coordinate.createStringXY(this.getDecimalUnits()), // this.precision_),
+      coordinateFormat: ol.coordinate.createStringXY(await this.getDecimalUnits()),
       projection: this.srs_,
       label: (this.epsgFormat) ? this.formatEPSG(this.label_) : this.label_,
       placeholder: '',
@@ -136,6 +138,7 @@ export default class MouseSRSControl extends IDEE.impl.Control {
   }
 
   openChangeSRS(map, html) {
+    this.projections = IDEE.impl.ol.js.projections.getSupportedProjs();
     const content = IDEE.template.compileSync(template, {
       jsonp: true,
       parseToHtml: true,
@@ -144,7 +147,9 @@ export default class MouseSRSControl extends IDEE.impl.Control {
         hasHelp: this.helpUrl !== undefined && IDEE.utils.isUrl(this.helpUrl),
         helpUrl: this.helpUrl,
         select_srs: getValue('select_srs'),
+        choose_create_epsg: getValue('choose_create_epsg'),
         order: this.order,
+        projections: this.projections,
       },
     });
 
@@ -154,12 +159,62 @@ export default class MouseSRSControl extends IDEE.impl.Control {
     IDEE.dialog.info(content.outerHTML, getValue('select_srs'), this.order);
     setTimeout(() => {
       document.querySelector('.m-dialog>div.m-modal>div.m-content').style.minWidth = '260px';
-      document.querySelector('#m-mousesrs-srs-selector').addEventListener('change', this.changeSRS.bind(this, map, html));
+      const input = document.querySelector('#epsg-selected');
+      const listElem = document.getElementById('m-mousesrs-srs-selector');
+      let isEditable = false;
+
+      input.addEventListener('focus', () => {
+        if (!isEditable) {
+          listElem.style.display = 'block';
+          const list = document.querySelectorAll('#m-mousesrs-srs-selector li a');
+          list.forEach((li) => {
+            li.addEventListener('mousedown', (event) => {
+              event.preventDefault();
+              const value = event.target.getAttribute('value');
+              if (value === 'default') {
+                isEditable = true;
+                input.removeAttribute('readonly');
+                input.value = '';
+                input.placeholder = getValue('placeholder_custom_epsg');
+                listElem.style.display = 'none';
+                input.focus();
+              } else {
+                input.value = value;
+                this.changeSRS(map, html);
+              }
+            });
+          });
+        }
+      });
+
+      input.addEventListener('blur', () => {
+        listElem.style.display = 'none';
+        isEditable = false;
+        if (!input.hasAttribute('readonly')) {
+          input.setAttribute('readonly', 'readonly');
+          input.value = this.srs_;
+        }
+      });
+
+      input.addEventListener('keyup', (event) => {
+        if (isEditable && event.key === 'Enter') {
+          isEditable = false;
+          input.setAttribute('readonly', 'readonly');
+          this.changeSRS(map, html);
+        }
+      });
       document.querySelector('div.m-api-idee-container div.m-dialog div.m-title').style.backgroundColor = '#71a7d3';
       const button = document.querySelector('div.m-dialog.info div.m-button > button');
       button.innerHTML = getValue('close');
       button.style.width = '75px';
       button.style.backgroundColor = '#71a7d3';
+
+      button.addEventListener('click', () => {
+        isEditable = false;
+        if (!input.hasAttribute('readonly')) {
+          input.setAttribute('readonly', 'readonly');
+        }
+      });
     }, 10);
     if (this.draggableDialog) {
       IDEE.utils.draggabillyElement('.m-dialog .m-modal .m-content', '.m-dialog .m-modal .m-content .m-title');
@@ -200,9 +255,9 @@ export default class MouseSRSControl extends IDEE.impl.Control {
   }
 
   changeSRS(map, html) {
-    const select = document.querySelector('#m-mousesrs-srs-selector');
-    this.srs_ = select.options[select.selectedIndex].value;
-    this.label_ = select.options[select.selectedIndex].text;
+    const select = document.querySelector('#epsg-selected');
+    this.srs_ = select.value;
+    this.label_ = select.value;
     this.facadeMap_.getMapImpl().removeControl(this.mousePositionControl);
     document.querySelector('div.m-api-idee-container div.m-dialog').remove();
     this.renderPlugin(map, html);
@@ -213,17 +268,25 @@ export default class MouseSRSControl extends IDEE.impl.Control {
    * @private
    * @function
    */
-  getDecimalUnits() {
+  async getDecimalUnits() {
     let decimalDigits;
     let srsUnits;
     try {
       // eslint-disable-next-line no-underscore-dangle
       srsUnits = ol.proj.get(this.srs_).units_;
     } catch (e) {
-      IDEE.dialog.error(getValue('exception.srs'));
-      // eslint-disable-next-line no-underscore-dangle
-      srsUnits = ol.proj.get('EPSG:4326').units_;
-      this.srs_ = 'EPSG:4326';
+      try {
+        await IDEE.impl.ol.js.projections.setNewProjection(this.srs_);
+        const newProj = ol.proj.get(this.srs_);
+        // eslint-disable-next-line no-underscore-dangle
+        srsUnits = newProj.units_;
+      } catch (err) {
+        this.srs_ = 'EPSG:4326';
+        this.label_ = 'EPSG:4326';
+        IDEE.dialog.error(`${getValue('exception.srs')} ${this.srs_}`);
+        // eslint-disable-next-line no-underscore-dangle
+        srsUnits = ol.proj.get('EPSG:4326').units_;
+      }
     }
 
     if (srsUnits === 'd' && this.geoDecimalDigits !== undefined) {

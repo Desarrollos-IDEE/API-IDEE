@@ -4,7 +4,7 @@
  */
 import WMSImpl from 'impl/layer/WMS';
 import {
-  isUndefined, isNullOrEmpty, isFunction, isString, normalize, sameUrl, isObject,
+  isUndefined, isNullOrEmpty, isArray, isFunction, isString, normalize, sameUrl, isObject,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import LayerBase from './Layer';
@@ -31,6 +31,7 @@ import { getValue } from '../i18n/language';
  * @property {Boolean} useCapabilities Define si se utilizará el capabilities para generar la capa.
  * @property {Boolean} isBase Define si la capa es base.
  * @property {String} cql Parámetro de filtrado.
+ * @property {IDEE.layer.WMC} wmcParent_ Capa WMC padre.
  * @api
  * @extends {IDEE.Layer}
  */
@@ -56,6 +57,8 @@ class WMS extends LayerBase {
    * - tiled: Verdadero si queremos dividir la capa en tiles, falso en caso contrario.
    * - type: Tipo de la capa.
    * - useCapabilities: Define si se utilizará el capabilities para generar la capa.
+   * - mergeLayers: Verdadero si se añaden todas las capas del servicio
+   * en una, falso en caso contrario. Por defecto, verdadero.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a
    * la implementación de la capa.
    * - opacity: Opacidad de capa, por defecto 1.
@@ -107,12 +110,15 @@ class WMS extends LayerBase {
     // This Layer is of parameters.
     const parameters = parameter.layer(userParameters, LayerType.WMS);
     const optionsVar = {
-      ...options,
       visibility: parameters.visibility,
+      ...options,
       queryable: parameters.queryable,
       displayInLayerSwitcher: parameters.displayInLayerSwitcher,
       useCapabilities: parameters.useCapabilities,
       isWMSfull: parameters.name === undefined,
+      mergeLayers: parameters.mergeLayers,
+      styles: parameters.styles,
+      sldVersion: parameters.sldVersion ? parameters.sldVersion : '1.1.0',
     };
 
     const impl = new WMSImpl(optionsVar, vendorOptions);
@@ -164,6 +170,11 @@ class WMS extends LayerBase {
      * WMS options: Opciones WMS.
      */
     this.options = optionsVar;
+
+    /**
+     * Capa WMC padre.
+     */
+    this.wmcParent_ = null;
 
     /**
      * Obtener metadatos en forma de promesa.
@@ -302,6 +313,54 @@ class WMS extends LayerBase {
   }
 
   /**
+   * Devuelve el estilo de la capa.
+   *
+   * @public
+   * @function
+   * @returns {string | Array} Estilo de la capa.
+   * @api stable
+   */
+  getStyles() {
+    return this.getImpl().getStyles();
+  }
+
+  /**
+   * Esta función aplica estilos a la capa
+   *
+   * @public
+   * @function
+   * @param { string | Array } newStyles Nuevo estilo a aplicar.
+   * @api stable
+   */
+  setStyles(newStyles) {
+    this.getImpl().setStyles(newStyles);
+  }
+
+  /**
+   * Devuelve la versión del SLD.
+   *
+   * @public
+   * @function
+   * @returns {string | Array} Versión del SLD.
+   * @api stable
+   */
+  getSldVersion() {
+    return this.getImpl().getSldVersion();
+  }
+
+  /**
+   * Esta función aplica la versión del SLD a la capa
+   *
+   * @public
+   * @function
+   * @param { string | Array } newSldVersion Nueva versión del SLD a aplicar.
+   * @api stable
+   */
+  setSldVersion(newSldVersion) {
+    this.getImpl().setSldVersion(newSldVersion);
+  }
+
+  /**
    * Este método calcula la extensión máxima de esta capa.
    *
    * @function
@@ -314,25 +373,35 @@ class WMS extends LayerBase {
     if (isNullOrEmpty(this.userMaxExtent)) {
       if (isNullOrEmpty(this.options.wmcMaxExtent)) {
         if (isNullOrEmpty(this.map_.userMaxExtent)) {
-          if (this.useCapabilities && !this.isReset_) {
-            // maxExtent provided by the service
-            this.getCapabilities().then((capabilities) => {
-              const capabilitiesMaxExtent = this.getImpl()
-                .getExtentFromCapabilities(capabilities);
-              if (isNullOrEmpty(capabilitiesMaxExtent)) {
-                const projMaxExtent = this.map_.getProjection().getExtent();
-                this.maxExtent_ = projMaxExtent;
-              } else {
-                this.maxExtent_ = capabilitiesMaxExtent;
-              }
-              // this allows get the async extent by the capabilites
+          const selectedWMC = this.map_.getWMC().find((wmc) => wmc.selected);
+          if (isNullOrEmpty(selectedWMC)) {
+            if (this.useCapabilities && !this.isReset_) {
+              // maxExtent provided by the service
+              this.getCapabilities().then((capabilities) => {
+                const capabilitiesMaxExtent = this.getImpl()
+                  .getExtentFromCapabilities(capabilities);
+                if (isNullOrEmpty(capabilitiesMaxExtent)) {
+                  const projMaxExtent = this.map_.getProjection().getExtent();
+                  this.maxExtent_ = projMaxExtent;
+                } else {
+                  this.maxExtent_ = capabilitiesMaxExtent;
+                }
+                // this allows get the async extent by the capabilites
+                if (isFunction(callbackFn)) {
+                  callbackFn(this.maxExtent_);
+                }
+              });
+            } else {
+              const projMaxExtent = this.map_.getProjection().getExtent();
+              this.maxExtent_ = projMaxExtent;
+            }
+          } else {
+            selectedWMC.calculateMaxExtent().then((wmcMaxExtent) => {
+              this.maxExtent_ = wmcMaxExtent;
               if (isFunction(callbackFn)) {
                 callbackFn(this.maxExtent_);
               }
             });
-          } else {
-            const projMaxExtent = this.map_.getProjection().getExtent();
-            this.maxExtent_ = projMaxExtent;
           }
         } else {
           this.maxExtent_ = this.map_.userMaxExtent;
@@ -433,6 +502,32 @@ class WMS extends LayerBase {
   }
 
   /**
+   * Este método establece su capa WMC padre.
+   *
+   * @function
+   * @public
+   * @param {IDEE.layer.WMC} wmcParent Capa WMC que incluye
+   * a esta capa.
+   * @api
+   */
+  setWMCParent(wmc) {
+    this.wmcParent_ = wmc;
+  }
+
+  /**
+   * Este método obtiene su capa WMC padre.
+   *
+   * @function
+   * @public
+   * @returns {IDEE.layer.WMC} Capa WMC que contiene a
+   * esta capa.
+   * @api
+   */
+  getWMCParent() {
+    return this.wmcParent_;
+  }
+
+  /**
    * Actualización de capas WMS de resolución mínima y máxima.
    *
    * @public
@@ -482,7 +577,14 @@ class WMS extends LayerBase {
    * @api
    */
   setName(newName) {
-    this.name = !isNullOrEmpty(newName) ? newName : undefined;
+    if (isArray(newName)) {
+      this.name = newName.join(',');
+    } else if (newName) {
+      this.name = newName;
+    } else {
+      this.name = undefined;
+    }
+
     const isWMSfull = isNullOrEmpty(newName);
     this.getImpl().setName(this.name, isWMSfull);
   }
