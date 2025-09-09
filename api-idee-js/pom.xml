@@ -1,0 +1,94 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <artifactId>api-idee-js</artifactId>
+   <packaging>pom</packaging>
+   <name>API IDEE JS</name>
+   <parent>
+     <groupId>es.idee.api</groupId>
+      <artifactId>api-idee-parent</artifactId>
+      <version>1.0.0</version>
+      <relativePath>../api-idee-parent/pom.xml</relativePath>
+   </parent>
+	<licenses>
+		<license>
+			<name>European Union Public Licence - EUPL v.1.1</name>
+			<url>LICENSE.txt</url>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<organization>Guadaltel S.A.</organization>
+			<organizationUrl>www.guadaltel.com</organizationUrl>
+		</developer>
+	</developers>
+   <build>
+      <finalName>api-idee</finalName>
+      <plugins>
+         <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <version>1.6</version>
+            <configuration>
+               <workingDirectory></workingDirectory>
+            </configuration>
+            <executions>
+               <!-- INSTALL NODE AND NPM -->
+               <execution>
+                  <id>install node and npm</id>
+                  <goals>
+                     <goal>install-node-and-npm</goal>
+                  </goals>
+                  <phase>generate-resources</phase>
+                  <configuration>
+                     <nodeVersion>v18.20.4</nodeVersion>
+                     <npmVersion>10.7.0</npmVersion>
+                     <!--<nodeDownloadRoot>http://nodejs.org/dist/</nodeDownloadRoot>
+                        <npmDownloadRoot>http://nodejs.org/dist/</npmDownloadRoot> -->
+                  </configuration>
+               </execution>
+               <!-- RUNNING NPM -->
+               <execution>
+                  <id>run npm install</id>
+                  <goals>
+                     <goal>npm</goal>
+                  </goals>
+                  <phase>generate-resources</phase>
+                  <configuration>
+                     <arguments>install</arguments>
+                  </configuration>
+               </execution>
+               <!-- RUNNING NPM BUILD -->
+               <execution>
+                  <id>run npm build</id>
+                  <goals>
+                     <goal>npm</goal>
+                  </goals>
+                  <phase>generate-resources</phase>
+                  <configuration>
+                     <arguments>run build</arguments>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>packed build javascript</id>
+                  <goals>
+                     <goal>single</goal>
+                  </goals>
+                  <phase>package</phase>
+                  <configuration>
+                     <descriptors>
+                        <descriptor>assembly/dist-resources.xml</descriptor>
+                        <descriptor>assembly/doc-resources.xml</descriptor>
+                     </descriptors>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+      </plugins>
+   </build>
+</project>

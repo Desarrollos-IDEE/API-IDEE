@@ -1,0 +1,30 @@
+<main class="m-container m-printermap m-printermap-container">
+    <h3 class="m-plugin-printviewmanagement-title-map">{{translations.nameTitle}}</h3>
+
+    <section class="m-printermap-titleFormat">
+        <!-- Selección del título -->
+        <label tabindex="0" for="m-printermap-title" role="text" aria-label="{{translations.title}}">{{translations.title}} </label>
+        <input tabindex="0" id="m-printermap-title" aria-label="{{translations.title}}" type="text" title="{{translations.title}}" placeholder="{{translations.title}}">
+
+        <!-- Selección del formato -->
+        <label tabindex="0" for="m-printermap-format" role="text" aria-label="{{translations.format}}">{{translations.format}} </label>
+        <select tabindex="0" role="select" id="m-printermap-format" title="{{translations.format}}">
+            {{#each formats}}
+                <option value="{{this}}" {{#if default}} selected{{/if}}>{{this}}</option>
+            {{/each}}
+        </select>
+    </section>
+
+    <fieldset class="m-printermap-custom-templates">
+        <legend tabindex="0" role="text" aria-label="{{translations.uploadTemplate}}">{{translations.uploadTemplate}}</legend>
+        <label for="m-printermap-template-upload"  class="m-printermap-paramsLabel" tabindex="0" role="text" aria-label="{{translations.uploadTemplate}}">{{translations.uploadTemplate}}</label>
+        <input type="file" id="m-printermap-template-upload" accept=".html,.txt" title=" " class="m-printermap-file-input">
+        <select id="m-printermap-uploaded-templates" class="m-printermap-template-select" disabled>
+            <option disabled hidden selected>-- {{translations.selectUploadedTemplate}} --</option>
+        </select>
+    </fieldset>
+    <section class="m-printermap-params">
+        <label class="m-printermap-paramsLabel" tabindex="0" role="text" aria-label="{{translations.customizeTemplate}}">{{translations.customizeTemplate}}</label>
+        <button tabindex="0" id="m-printermap-customTemplate" class="customTemplate" title="{{translations.customizeTemplate}}">{{translations.customizeTemplate}}</button>
+    </section>
+</main>

@@ -1,0 +1,69 @@
+/** Estilos propios*/
+
+.m-areas>div.m-area>div.m-panel.m-plugin-basic.collapsed {
+    max-height: 40px;
+}
+
+.m-areas>div.m-area>div.m-panel.m-plugin-basic.opened {
+    width: max-content;
+}
+
+.m-areas>div.m-area>div.m-plugin-basic.collapsed>button.m-panel-btn {
+    background-color: #71a7d3 !important;
+    font-family: 'basic' !important;
+}
+
+.m-areas>div.m-area>div.m-plugin-basic.opened>button.m-panel-btn {
+    background-color: white !important;
+    color: #71a7d3 !important;
+}
+
+.m-areas>div.m-area.m-left>div.m-plugin-basic.opened>button.m-panel-btn {
+    position: absolute;
+    margin-left: 240px;
+    background-color: #71a7d3;
+}
+
+.m-areas>div.m-area.m-left>div.m-plugin-basic.opened.no-collapsible {
+    border-radius: 4px;
+}
+
+.m-areas>div.m-area.m-right>div.m-plugin-basic.opened>button.m-panel-btn {
+    position: absolute;
+    left: -40px;
+    background-color: #71a7d3;
+}
+
+.m-areas>div.m-area>div.m-plugin-basic.opened>button.m-panel-btn.opened-left {
+    position: absolute;
+    right: -2.53rem;
+    left: unset !important;
+    color: #71a7d3;
+}
+
+.m-areas>div.m-area>div.m-plugin-basic.opened>button.m-panel-btn.opened-right {
+    position: absolute;
+    left: -2.53rem;
+    right: unset !important;
+    color: #71a7d3;
+}
+
+#div-contenedor-m-basic {
+    display: block;
+}
+
+/*********************
+     TITLE
+*********************/
+
+.m-control.m-container.m-basic>div.title {
+    color: #fff !important;
+    background-color: #71a7d3;
+    font-family: 'Muli',
+        'sans-serif' !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    font-size: 15px;
+    height: 39px;
+    line-height: 40px;
+    text-align: center;
+}

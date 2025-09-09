@@ -1,0 +1,898 @@
+@font-face {
+    font-family: 'printviewmanagement';
+    src:  url('../fonts/printviewmanagement.eot?xvqygs');
+    src:  url('../fonts/printviewmanagement.eot?xvqygs#iefix') format('embedded-opentype'),
+      url('../fonts/printviewmanagement.ttf?xvqygs') format('truetype'),
+      url('../fonts/printviewmanagement.woff?xvqygs') format('woff'),
+      url('../fonts/printviewmanagement.svg?xvqygs#printviewmanagement') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+  }
+  
+  [class^="printviewmanagement-icon-"], [class*=" printviewmanagement-icon-"] {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'printviewmanagement' !important;
+    speak: never;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+  }
+
+
+/* Opening & closing buttons */
+
+.m-panel.m-plugin-printviewmanagement.collapsed {
+    height: 40px;
+}
+
+.m-plugin-printviewmanagement.opened .m-panel-btn.g-cartografia-flecha-derecha,
+.m-plugin-printviewmanagement.opened .m-panel-btn.g-cartografia-flecha-izquierda {
+    background-color: white !important;
+    color: #71a7d3 !important;
+}
+
+.m-areas>div.m-area.m-right>div.m-plugin-printviewmanagement.opened>button.m-panel-btn {
+    position: absolute;
+    left: -40px;
+}
+
+.m-areas>div.m-area.m-left>div.m-plugin-printviewmanagement.opened>button.m-panel-btn {
+    position: absolute;
+    right: -40px;
+}
+
+/* Title and images container */
+
+.m-control.m-container.m-printviewmanagement {
+    width: 450px;
+}
+
+/* Título */
+
+.m-printviewmanagement-title {
+    background-color: #71a7d3;
+    color: white;
+    display: block;
+    font-size: 15px;
+    height: 40px;
+    line-height: 40px;
+    padding: 0 5px;
+    text-align: center;
+    width: 100%;
+}
+
+.m-printviewmanagement-previews {
+    background-color: white;
+}
+
+#m-printviewmanagement-printermap,
+#m-printviewmanagement-georefImage,
+#m-printviewmanagement-zoompanel,
+.printviewmanagement-georefImageEpsg {
+    padding: 10px;
+    font-size: 22px;
+    cursor: pointer;
+
+    font-family: 'printviewmanagement';
+    background-color: white;
+    border: none;
+    color: #6c6c6c;
+}
+
+.printviewmanagement-icon-flecha-historial.activated,
+.printviewmanagement-icon-expand.activated:before ,
+.printviewmanagement-icon-zoom-extension.activated,
+.printviewmanagement-georefImageEpsg.activated,
+.printviewmanagement-icon-flecha-izquierda3.activated:before {
+    color: #71a7d3 !important;
+}
+
+.m-printviewmanagement-previews {
+    display: flex;
+    justify-content: center;
+}
+
+#m-printermap-panel,
+#m-zoompanel-panel {
+    background-color: #ededed;
+    border-top: 1px solid #adadad;
+    padding: 10px;
+    text-align: center;
+    width: 230px;
+}
+
+.printviewmanagement-icon-expand {
+    border: none;
+    background-color: transparent;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* Images container */
+
+.m-printviewmanagement .activeprintviewmanagementDiv {
+    border: 5px solid #92c1e7 !important;
+}
+
+/* Bottom positions fix when images row turns into columns */
+
+.m-printviewmanagement-previews {
+    background-color: white;
+    display: flex;
+    /* width: 220px; */
+}
+
+.m-bottom.m-left>.m-panel.m-plugin-printviewmanagement.opened>.m-panel-controls {
+    display: flow-root;
+}
+
+.m-bottom.m-left>.m-plugin-printviewmanagement.opened>.m-panel-btn {
+    position: relative;
+    right: -40px;
+}
+
+.m-areas>div.m-area>div.m-panel.opened.m-plugin-printviewmanagement {
+    background-color: transparent !important;
+    /* box-shadow: none !important; */
+    order: 0;
+}
+
+.m-areas>div.m-area.m-left>div.m-panel.opened.m-plugin-printviewmanagement {
+    display: block !important;
+}
+
+.m-areas>div.m-area.m-bottom.m-right>div.m-panel.opened.no-collapsible.m-plugin-printviewmanagement>div.m-panel-controls>div.m-control.m-container.m-printviewmanagement {
+    padding-right: 0px;
+}
+
+.m-areas>div.m-area>div.m-panel.collapsed>div.m-panel-controls {
+    display: none;
+}
+
+.m-areas>div.m-area>div.m-panel.m-plugin-printviewmanagement.collapsed>div.m-panel-controls>div {
+    display: none;
+}
+
+/* Firefox fix */
+
+@-moz-document url-prefix() {
+    .m-bottom.m-right .m-plugin-printviewmanagement.opened {
+        display: flex;
+    }
+
+    .m-areas>div.m-area.m-bottom.m-right>div.m-panel.opened.m-plugin-printviewmanagement>div.m-panel-controls>div.m-control.m-container.m-printviewmanagement {
+        padding-right: unset;
+    }
+
+    .m-areas>div.m-area.m-bottom.m-right>div.m-panel.opened.no-collapsible.m-plugin-printviewmanagement>div.m-panel-controls>div.m-control.m-container.m-printviewmanagement {
+        padding-right: 0px;
+    }
+}
+
+/* Mobile fix */
+
+@media only screen and (max-width: 1000px) {
+    .m-areas>div.m-area.m-right>div.m-panel.m-plugin-printviewmanagement.opened {
+        margin-right: 10px;
+    }
+
+    .m-areas>div.m-area.m-right>div.m-panel.m-plugin-printviewmanagement.opened {
+        margin-left: 10px;
+    }
+
+    .m-areas>div.m-area>div.m-panel.opened {
+        z-index: 10;
+    }
+
+    .m-printviewmanagement-title {
+        font-size: 13px;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    /* Firefox fix */
+
+    @-moz-document url-prefix() {
+        .m-bottom.m-left>.m-panel.m-plugin-printviewmanagement.opened>.m-panel-controls {
+            display: flow-root;
+        }
+
+        .m-areas>div.m-area>div.m-panel.m-plugin-printviewmanagement.opened {
+            width: auto;
+        }
+
+        .m-bottom.m-left>.m-panel.m-plugin-printviewmanagement.opened>.m-panel-controls {
+            display: flex;
+        }
+
+        .m-bottom.m-left>.m-panel.m-plugin-printviewmanagement.opened>button {
+            left: 0px;
+        }
+
+        .m-areas>div.m-area>div.m-panel>div.m-panel-controls {
+            display: flex;
+        }
+    }
+
+    /* Edge fix */
+
+    @supports (-ms-ime-align:auto) {
+
+        .m-areas>div.m-area>div.m-panel>div.m-panel-controls {
+            padding-left: 0px;
+        }
+
+        .m-bottom.m-left>.m-plugin-printviewmanagement.opened>.m-panel-btn {
+            position: static;
+        }
+    }
+}
+
+/* Edge fix */
+@supports (-ms-ime-align:auto) {
+    .m-areas>div.m-area>div.m-panel>div.m-panel-controls {
+        padding-left: 40px;
+    }
+
+    .m-bottom.m-left>.m-plugin-printviewmanagement.opened>.m-panel-btn {
+        right: 0px;
+    }
+}
+
+
+.printviewmanagement-georefImageEpsg:before {
+    content: "\e90e";
+}
+
+.printviewmanagement-icon-zoom-extension:before {
+    content: "\e90d";
+}
+
+.printviewmanagement-icon-zoom-mapa:before {
+    content: "\e9c7";
+}
+
+.printviewmanagement-icon-flecha-historial:before {
+    content: "\e954";
+}
+
+.printviewmanagement-icon-clipboard:before {
+    content: "\e92c";
+}
+
+
+div.m-area.m-top.m-left>div.m-plugin-printviewmanagement.m-panel>button.m-panel-btn {
+    font-family: printviewmanagement !important;
+}
+
+div.m-area.m-top.m-left>div.m-plugin-printviewmanagement.m-panel.opened>button.m-panel-btn {
+    font-family: g-cartografia !important;
+}
+
+div.m-area.m-top.m-right>div.m-plugin-printviewmanagement.m-panel>button.m-panel-btn {
+    font-family: printviewmanagement !important;
+}
+
+div.m-area.m-top.m-right>div.m-plugin-printviewmanagement.m-panel.opened>button.m-panel-btn {
+    font-family: g-cartografia !important;
+}
+
+div.m-area.m-bottom.m-right>div.m-plugin-printviewmanagement.m-panel>button.m-panel-btn {
+    font-family: printviewmanagement !important;
+}
+
+div.m-area.m-bottom.m-right>div.m-plugin-printviewmanagement.m-panel.opened>button.m-panel-btn {
+    font-family: g-cartografia !important;
+}
+
+div.m-area.m-bottom.m-left>div.m-plugin-printviewmanagement.m-panel>button.m-panel-btn {
+    font-family: printviewmanagement !important;
+}
+
+div.m-area.m-bottom.m-left>div.m-plugin-printviewmanagement.m-panel.opened>button.m-panel-btn {
+    font-family: g-cartografia !important;
+}
+
+  .m-georefimageepsg-container,.m-georefimage-container, .m-printermap-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      width: 100%;
+      gap: 20px;
+      background-color: white;
+      padding: 20px 0;
+  }
+
+  .m-printermap-container fieldset {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 0 auto;
+    width: 90%;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+
+  .m-printviewmanagement-controls:has(.m-printermap-container) + .m-georefimage-download-button {
+    display: none !important;
+  }
+
+  .m-georefimage-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 0;
+    gap: 0;
+  }
+
+  .m-georefimage-container .georefimage-jgwKeppview div:first-child {
+    flex: 3.5;
+  }
+
+  .m-georefimage-container .georefimage-jgwKeppview select {
+    flex: 0.5;
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    font-size: 15px;
+    line-height: 25px;
+    cursor: pointer;
+    color: #404040;
+    background-color: #e9e9e9;
+    opacity: 1;
+    font-family: 'Muli', 'sans-serif' !important;
+  }
+
+/*********************
+    georefimageepsg
+  *********************/
+  .m-georefimageepsg-container select {
+    width: 90%;
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    font-size: 15px;
+    line-height: 25px;
+    cursor: pointer;
+    color: #404040;
+    background-color: #e9e9e9;
+    opacity: 1;
+    font-family: 'Muli', 'sans-serif' !important;
+  }
+
+  .m-georefimageepsg-select-container {
+    display: flex;
+    gap: 60px;
+    width: 90%;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .m-georefimageepsg-select-container select:first-child {
+    flex: 4;
+  }
+  .m-georefimageepsg-select-container select:last-child {
+    flex: 1;
+  }
+
+
+  /*********************
+    georefimage
+  *********************/
+
+   /* Oculta el label sin perder accesibilidad */
+  .m-georefimage-titleFormat label, 
+  .m-printermap-titleFormat label, 
+  .m-printermap-paramsLabel, 
+  .m-georefimageepsg-label{
+    position: absolute;
+    clip: rect(1px 1px 1px 1px);
+    border: 0;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+  }
+
+  .m-georefimage-container fieldset {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 0 auto;
+    width: 90%;
+    border-radius: 4px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    font-size: 1rem;
+
+    margin-bottom: 10px;
+  }
+
+  .m-georefimage-container fieldset h3 {
+    margin-block-start: 0px;
+    margin-block-end: 0px;
+  }
+
+  .m-georefimage-container h2 {
+    font-size: 1.1rem;
+    margin-block-start: 0px;
+    margin-block-end: 30px;
+  }
+
+  .m-georefimage-titleFormat, .m-printermap-titleFormat{
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+
+        font-size: 1rem;
+  }
+
+  .m-georefimage-projectionOther, .m-georefimage-download-button  {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 1rem;
+    gap: 25px;
+  }
+
+  .m-georefimage-projection {
+    text-align: center;
+    padding-top: 10px;
+  }
+
+  .georefimage-jgwKeppview {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    font-size: 1rem;
+    margin: 25px 0 0 0;
+  }
+
+  .m-georefimage-titleFormat input, .m-printermap-titleFormat input{
+    width: 65%;
+    height: 21px;
+  }
+
+  .georefimage-projectionTypeImg {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        margin: 20px 0;
+
+  }
+
+  .georefimage-projection {
+    font-size: 1.1rem;
+  }
+
+  .georefimage-projection select,
+  .m-georefimage-titleFormat select,
+  .m-printermap-titleFormat select,
+  .m-printermap-params select,
+  .m-customize-template select,
+  .m-printermap-params .customTemplate{
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    font-size: 15px;
+    line-height: 25px;
+    cursor: pointer;
+    color: #404040;
+    background-color: #e9e9e9;
+    opacity: 1;
+    font-family: 'Muli', 'sans-serif' !important;
+  }
+
+  .m-printermap-params .customTemplate {
+    color: #ffffffFF;
+    background-color: #71a7d3FF;
+    border: none;
+    transition: background-color 0.3s ease;
+  }
+
+  .m-printermap-params .customTemplate:hover {
+    background-color: #1470dbFF;
+  }
+
+  .m-printermap-custom-templates > * {
+    margin: 10px 0;
+    cursor: pointer;
+  }
+
+  .m-printermap-custom-templates select {
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    font-size: 15px;
+    line-height: 25px;
+    color: #404040;
+    background-color: #e9e9e9;
+    font-family: 'Muli', 'sans-serif' !important;
+  }
+
+  #m-printermap-layout{
+    max-width: 65%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }  
+
+  .m-georefimage-download-button {
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+    background-color: rgb(170, 170, 170) !important;
+  }
+
+
+.m-georefimage-download-button button {
+    border-radius: 4px;
+    border: none;
+    font-size: 15px;
+    line-height: 25px;
+    cursor: pointer;
+    -webkit-transition: background-color 0.3s ease 0s;
+    transition: background-color 0.3s ease 0s;
+    background-color: #71a7d3FF !important;
+    color: #ffffffFF !important;
+}
+
+.m-georefimage-download-button button:hover {
+    background-color: #1470dbFF !important;
+}
+
+.m-georefimage-download-button button i {
+    font-size: 20px;
+    vertical-align: text-bottom;
+}
+
+.m-georefimage-download-button button:hover {
+    opacity: 1;
+}
+
+.m-georefimage-download-button button:focus {
+    outline: none;
+}
+
+.m-georefimage-download-button button:before {
+    font-size: 21px;
+    margin-right: 10px;
+}
+
+.m-georefimage-download-button .print {
+    width: 60%;
+    margin: 10px 5% 10px 5%;
+    padding: 5px;
+    background-color: #fff;
+    font-family: 'Muli', 'sans-serif' !important;
+    cursor: pointer;
+}
+
+.m-georefimage-download-button .remove {
+    width: 25%;
+    margin: 10px 5% 10px 0;
+    padding: 5px;
+    background-color: #fff;
+    font-family: 'Muli', 'sans-serif' !important;
+    cursor: pointer;
+}
+
+.printviewmanagement-icon-clipboard {
+    background-color: #fff;
+    border: none;
+}
+
+.printviewmanagement-icon-clipboard:hover {
+    color: #71a7d3;
+    cursor: pointer;
+}
+
+/*********************
+    templateCustomizer
+*********************/
+.m-customize-template {
+    border-radius: 5px;
+    max-height: 80vh;
+    height: 69vh;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    display: flex;
+}
+
+.m-customize-template-left {
+    padding: 10px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    min-width: 200px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.m-customize-template-right-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.m-customize-template-right {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1191px;
+    height: 842px;
+    transform: translate(-50%, -50%) scale(0.72196);
+    box-sizing: border-box;
+}
+
+.m-customize-template-option {
+    margin-bottom: 15px;
+}
+
+.m-custom-checkbox,
+.m-custom-radio {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding-left: 30px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.m-custom-checkbox input,
+.m-custom-radio input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.m-custom-radio .m-radiomark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #FFF;
+    outline: 1px solid #ADB5BD;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.m-customize-template .m-checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #fff;
+    outline: 1px solid #ADB5BD;
+    transition: all 0.3s;
+}
+
+.m-custom-checkbox:hover input ~ .m-checkmark,
+.m-custom-radio:hover input ~ .m-radiomark {
+    background-color: #ccc;
+}
+
+.m-custom-checkbox input:checked ~ .m-checkmark{
+    background-color: #1470dbFF;
+    outline: none;
+}
+
+.m-custom-radio input:checked ~ .m-radiomark {
+    background-color: #FFF;
+    outline: 1px solid #1470dbFF;
+}
+
+.m-checkmark:after,
+.m-radiomark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.m-custom-checkbox input:checked ~ .m-checkmark:after,
+.m-custom-radio input:checked ~ .m-radiomark:after {
+    display: block;
+}
+
+.m-custom-checkbox .m-checkmark:after {
+    content: "✔";
+    font-size: 14px;
+    color: white;
+    left: 4px;
+    top: 1px;
+}
+
+.m-custom-radio .m-radiomark:after {
+    left: 4.5px;
+    top: 4.5px;
+    width: 10.5px;
+    height: 10.5px;
+    border-radius: 50%;
+    background: #1470dbFF;
+}
+
+.m-label-text {
+    margin-left: 10px;
+}
+
+.m-customize-template-option select:disabled,
+.m-customize-template-option .customize-template-input-select:disabled {
+    background-color: #f0f0f0;
+    color: #a0a0a0;
+    cursor: not-allowed;
+}
+
+.m-customize-template-option select, input[type="string"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+.m-customize-template fieldset {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.m-customize-template input[type="text"] {
+    padding: 5px;
+    width: 90%;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    font-size: 15px;
+    line-height: 25px;
+    color: #404040;
+    background-color: #e9e9e9;
+    opacity: 1;
+    font-family: 'Muli', 'sans-serif' !important;
+}
+
+.m-customize-template-select-editable {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.m-customize-template-option .m-customize-template-input-select {
+    box-sizing: border-box;
+    color: black;
+    background-color: #fff;
+    cursor: pointer;
+    padding: 7px 10px !important;
+    max-width: 120px;
+}
+
+.m-customize-template-option .m-customize-template-srs-selector {
+    display: none;
+    position: absolute;
+    margin: 5px;
+    top: 90%;
+    padding: 1px 0;
+    margin-top: 0;
+    max-height: 200px;
+    width: 160px;
+    max-width: 160px;
+    overflow-y: auto;
+    list-style: none;
+    z-index: 1000;
+    color: #000;
+    background-color: white;
+    font-size: 13px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.m-customize-template-option .m-customize-template-srs-selector li a {
+    display: block;
+    margin-top: -1px;
+    padding: 4px 12px;
+    text-decoration: none;
+    color: #6c6c6c;
+}
+
+.m-customize-template-option .m-customize-template-srs-selector li:hover {
+    color: #000;
+    border: 1px solid #000;
+}
+
+/*********************
+     Printermap
+*********************/
+
+.m-printermap-textarea {
+    width: 90%;
+    height: 100px;
+    resize: none;
+}
+
+.m-printermap-params {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    width: 100%;
+}
+
+.m-printermap-params div label {
+    margin-right: 5px;
+}
+
+@media (width <= 507px) {
+    .m-control.m-container.m-printviewmanagement {
+        width: 300px;
+    }
+
+    .georefimage-jgwKeppview {
+        flex-direction: column;
+    }
+    .m-georefimage-titleFormat input {
+        width: 50%;
+    }
+
+    .georefimage-jgwKeppview div:first-child {
+        width: 80%;
+    }
+}
+
+.m-plugin-printviewmanagement-title-map {
+    margin: -5px 0px 0px -5px;
+}
+
+.m-plugin-printviewmanagement-title-view {
+    margin: 15px 10px 15px 10px;
+    text-align: center;
+}
+
+.m-plugin-printviewmanagement-title-list {
+    margin: -5px 10px 0px 10px;
+    text-align: center;
+}
+
+/*******************
+ * Loading Spinner *
+ *******************/
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999999999;
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

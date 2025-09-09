@@ -1,0 +1,352 @@
+/* eslint-disable no-console */
+/**
+ * @module IDEE/layer/WMTS
+ */
+import WMTSImpl from 'impl/layer/WMTS';
+import {
+  isUndefined, isNullOrEmpty, isObject, isString,
+} from '../util/Utils';
+import Exception from '../exception/exception';
+import LayerBase from './Layer';
+import * as parameter from '../parameter/parameter';
+import * as LayerType from './Type';
+import { getValue } from '../i18n/language';
+
+/**
+ * @classdesc
+ * WMTS (Web Map Tile Service) es un estándar OGC para servir información geográfica en el
+ * forma de mosaicos pregenerados en resoluciones específicas.
+ * La API permite visualizar este tipo de capas.
+ *
+ * @property {String} idLayer Identificador de la capa.
+ * @property {Number} minZoom Limitar el zoom mínimo.
+ * @property {Number} maxZoom Limitar el zoom máximo.
+ * @property {String} matrixSet La matriz seleccionada de las definidas en las Capacidades
+ * del servicio.
+ * @property {String} legend El nombre que la capa mostrará en el árbol de contenido, si existe.
+ * @property {Boolean} transparent (deprecated) Falso si es una capa base,
+ * verdadero en caso contrario.
+ * @property {Object} options Opciones de capas de WMTS.
+ * @property {Object} capabilitiesMetadata Capacidades de metadatos WMTS.
+ * @property {Boolean} useCapabilities Define si se utilizará el capabilities para generar la capa.
+ * @property {Boolean} isBase Define si la capa es base.
+ *
+ * @api
+ * @extends {IDEE.Layer}
+ */
+class WMTS extends LayerBase {
+  /**
+   * Constructor principal de la clase. Crea una capa WMTS
+   * con parámetros especificados por el usuario.
+   * @constructor
+   * @param {string|Mx.parameters.WMTS} userParameters Parámetros para la construcción de la capa.
+   * - url: Url del servicio WMTS.
+   * - name: Identifier de la Layer en el Capabilities del servicio.
+   * - matrixSet: La matriz seleccionada de las definidas en el Capabilities del servicio.
+   * - legend: Nombre que mostrará la capa en el árbol de contenido, si existe.
+   * - format: Opcionalmente, el formato en el que solicitar la imagen.
+   * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
+   * - type: Tipo de la capa.
+   * - isBase: Define si la capa es base o no.
+   * - useCapabilities: Define si se utilizará el capabilities para generar la capa.
+   * - maxExtent: La medida en que restringe la visualización a una región específica.
+   * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán
+   * a la implementación de la capa.
+   * - maxZoom: Zoom máximo aplicable a la capa.
+   * - minZoom: Zoom mínimo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
+   * - minResolution: Resolucción mínima.
+   * - maxResolution: Resolucción máxima.
+   * - format: Formato.
+   * - visibility: Define si la capa es visible o no. Verdadero por defecto.
+   * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
+   * - opacity: Opacidad de capa, por defecto 1.
+   * - crossOrigin: Atributo crossOrigin para las imágenes cargadas
+   * - tileMatrixLabels: Lista de identificadores en TileMatrix para usar en solicitudes WMTS,
+   *   uno por nivel de TileMatrix. Solo disponible para Cesium.
+   * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
+   * <pre><code>
+   * import { default as OLSourceWMTS } from 'ol/source/WMTS';
+   * {
+   *  opacity: 0.1,
+   *  source: new OLSourceWMTS({
+   *    attributions: 'wmts',
+   *    ...
+   *  })
+   *  tileLoadFunction: <funcion>
+   * }
+   * </code></pre>
+   * @api
+   */
+  constructor(userParameters, options = {}, vendorOptions = {}) {
+    // checks if the param is null or empty.
+    if (isNullOrEmpty(userParameters)) {
+      Exception(getValue('exception').no_param);
+    }
+
+    if (isString(userParameters) || !isUndefined(userParameters.transparent)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').transparent_deprecated);
+    }
+
+    const parameters = parameter.layer(userParameters, LayerType.WMTS);
+
+    const optionsVar = {
+      ...options,
+      useCapabilities: parameters.useCapabilities,
+    };
+
+    if (typeof userParameters !== 'string') {
+      optionsVar.maxExtent = userParameters.maxExtent;
+    }
+
+    /**
+     * WMTS minZoom: Límite del zoom mínimo.
+     * @public
+     * @type {Number}
+     */
+    if (userParameters.minZoom !== undefined) {
+      optionsVar.minZoom = userParameters.minZoom;
+    }
+
+    /**
+     * WMTS maxZoom: Límite del zoom máximo.
+     * @public
+     * @type {Number}
+     */
+    if (userParameters.maxZoom !== undefined) {
+      optionsVar.maxZoom = userParameters.maxZoom;
+    }
+
+    // checks if the implementation can create WMTS layers.
+    if (isUndefined(WMTSImpl) || (isObject(WMTSImpl) && isNullOrEmpty(Object.keys(WMTSImpl)))) {
+      Exception(getValue('exception').wmts_method);
+    }
+
+    /**
+     * Implementación de esta capa.
+     * @public
+     * @implements {IDEE.layer.WMTS}
+     * @type {IDEE.layer.WMTS}
+     */
+    const impl = new WMTSImpl(optionsVar, vendorOptions);
+
+    // calls the super constructor.
+    super(parameters, impl);
+
+    /**
+     * WMTS matrixSet: "MatrixSet" definido por los metadatos del servicio.
+     */
+    this.matrixSet = parameters.matrixSet;
+
+    /**
+     * WMTS legend: El nombre que la capa mostrará en el árbol de contenido, si existe.
+     */
+    this.legend = parameters.legend;
+
+    /**
+     * WMTS options: Opciones de capas de WMTS.
+     */
+    this.options = optionsVar;
+
+    /**
+     * WMTS options: Define si se realiza la petición GetCapabilities.
+     */
+    this.useCapabilities = parameters.useCapabilities !== false;
+
+    /**
+     * WMTS minZoom: Límite del zoom mínimo.
+     */
+    this.minZoom = optionsVar.minZoom || Number.NEGATIVE_INFINITY;
+
+    /**
+     * WMTS maxZoom: Límite del zoom máximo.
+     */
+    this.maxZoom = optionsVar.maxZoom || Number.POSITIVE_INFINITY;
+
+    /**
+     * WMTS capabilitiesMetadata: Capacidades de metadatos WMTS.
+     */
+    if (!isNullOrEmpty(vendorOptions.capabilitiesMetadata)) {
+      this.capabilitiesMetadata = vendorOptions.capabilitiesMetadata;
+    }
+  }
+
+  /**
+   * Devuelve el valor de la propiedad "matrixSet".
+   * @function
+   * @getter
+   * @return {IDEE.layer.WMTS.impl.matrixSet} "matrixSet" de la capa.
+   * @api
+   */
+  get matrixSet() {
+    return this.getImpl().matrixSet;
+  }
+
+  /**
+   * Sobrescribe el valor de la "propiedad matrixSet".
+   *
+   * @function
+   * @setter
+   * @param {IDEE.layer.WMTS.impl.matrixSet} newMatrixSet Nuevo valor "matrixSet".
+   * @api
+   */
+  set matrixSet(newMatrixSet) {
+    this.getImpl().matrixSet = newMatrixSet;
+  }
+
+  /**
+   * Devuelve las opciones de la capa.
+   *
+   * @function
+   * @getter
+   * @return {IDEE.layer.WMTS.options} Devuelve las opciones.
+   * @api
+   */
+  get options() {
+    return this.getImpl().options;
+  }
+
+  /**
+   * Sobrescribe las opciones de la capa.
+   *
+   * @function
+   * @setter
+   * @param {Object} newOptions Nuevas opciones.
+   * @api
+   */
+  set options(newOptions) {
+    this.getImpl().options = newOptions;
+  }
+
+  /**
+   * Sobrescribe la función de carga de teselas.
+   *
+   * @function
+   * @public
+   * @param {Function} func Función de carga de teselas.
+   * @api
+   */
+  setTileLoadFunction(func) {
+    this.getImpl().setTileLoadFunction(func);
+  }
+
+  /**
+   * Sobreescribe la URL de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newURL Nueva URL de la capa.
+   * @api
+   */
+  setURL(newURL) {
+    this.getImpl().setURL(newURL);
+  }
+
+  /**
+   * Sobreescribe el nombre de la capa.
+   *
+   * @function
+   * @public
+   * @param {string} newName Nuevo nombre de la capa.
+   * @api
+   */
+  setName(newName) {
+    this.getImpl().setName(newName);
+  }
+
+  /**
+   * Este método recupera una promesa que será
+   * resuelto cuando se recupera la solicitud GetCapabilities
+   * por el servicio y analizado. Las capacidades se almacenan en caché
+   * para evitar solicitudes múltiples.
+   *
+   * @function
+   * @return {IDEE.layer.WMTS.getCapabilitiesPromise_} Devuelve el fichero de Capacidades
+   * o Metadatos.
+   * @api
+   */
+  getCapabilities() {
+    if (isNullOrEmpty(this.getCapabilitiesPromise_)) {
+      this.getCapabilitiesPromise_ = this.getImpl().getCapabilities();
+    }
+    return this.getCapabilitiesPromise_;
+  }
+
+  /**
+   * Devuelve la extensión de la capa.
+   * @returns {Array} Devuelve la extensión de la capa.
+   */
+  getMaxExtent() {
+    return this.getImpl().getMaxExtent();
+  }
+
+  /**
+   * Este método comprueba si un objeto es igual
+   * a esta capa.
+   *
+   * @function
+   * @param {Object} obj Objeto a comparar.
+   * @returns {Boolean} Valor verdadero es igual, falso no lo es.
+   * @api
+   */
+  equals(obj) {
+    let equals = false;
+
+    if (obj instanceof WMTS) {
+      equals = (this.url === obj.url);
+      equals = equals && (this.name === obj.name);
+      equals = equals && (this.matrixSet === obj.matrixSet);
+      equals = equals && (this.idLayer === obj.idLayer);
+    }
+
+    return equals;
+  }
+
+  /**
+   * Devuelve la url de los objetos geográficos.
+   *
+   * @function
+   * @public
+   * @param {Array} coordinate Coordenadas.
+   * Para 3D La coordenada X Y del mosaico.
+   * @param {Number} zoom Nivel de zoom del mapa.
+   * Para 3D El nivel del mosaico.
+   * @param {String} formatInfo Formato.
+   * @param {Array} longlat Sólo disponible para Cesium.
+   * Longitud y latitud en la que se seleccionarán las características.
+   * @api
+   */
+  getFeatureInfoUrl(coordinate, zoom, formatInfo, longlat) {
+    return this.getImpl().getFeatureInfoUrl(coordinate, zoom, formatInfo, longlat);
+  }
+
+  /**
+   * Devuelve la columna de mosaicos y la fila de la tesela.
+   *
+   * @function
+   * @public
+   * @param {Array} coordinate Coordenadas.
+   * @param {Number} zoom Nivel de zoom del mapa.
+   * @return {IDEE.impl.getTileColTileRow} Columna y fila de la tesela.
+   * @api
+   */
+  getTileColTileRow(coordinate, zoom) {
+    return this.getImpl().getTileColTileRow(coordinate, zoom);
+  }
+
+  /**
+   * Sobrescribe el formato.
+   *
+   * @function
+   * @public
+   * @param {String} newFormat Nuevo formato.
+   * @api
+   */
+  setFormat(newFormat) {
+    this.options.format = newFormat;
+  }
+}
+
+export default WMTS;

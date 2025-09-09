@@ -1,0 +1,100 @@
+{
+  "name": "apiidee",
+  "version": "1.0.0",
+  "description": "Herramienta para desarrollo de mapas interactivos de forma sencilla",
+  "keywords": [
+    "map",
+    "mapping",
+    "tool",
+    "IDEE"
+  ],
+  "homepage": "https://idee.es",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Desarrollos-IDEE/API-IDEE"
+  },
+  "license": "EUPL",
+  "bugs": {
+    "url": "https://github.com/Desarrollos-IDEE/API-IDEE/issues"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.50.1",
+    "buffer": "6.0.3",
+    "chromedriver": "115.0.1",
+    "copy-webpack-plugin": "11.0.0",
+    "cross-env": "5.2.1",
+    "css-loader": "6.8.1",
+    "css-minimizer-webpack-plugin": "5.0.1",
+    "eslint": "8.51.0",
+    "eslint-config-airbnb": "19.0.4",
+    "eslint-plugin-import": "2.28.1",
+    "eslint-plugin-jsx-a11y": "6.10.2",
+    "eslint-plugin-react": "7.37.4",
+    "eslint-webpack-plugin": "4.2.0",
+    "expect.js": "0.3.1",
+    "fs-extra": "11.2.0",
+    "html-loader": "0.5.5",
+    "jsdoc-plugin-typescript": "2.3.0",
+    "mini-css-extract-plugin": "2.7.6",
+    "mocha": "10.2.0",
+    "style-loader": "3.3.3",
+    "terser-webpack-plugin": "5.3.9",
+    "walk": "2.3.15",
+    "webpack": "5.88.2",
+    "webpack-cli": "5.1.4",
+    "webpack-dev-server": "4.15.1",
+    "yargs": "17.0.0"
+  },
+  "dependencies": {
+    "@geoblocks/ol-maplibre-layer": "1.0.3",
+    "@handlebars/allow-prototype-access": "1.0.5",
+    "@ngageoint/geopackage": "4.2.6",
+    "cesium": "1.118.0",
+    "chroma-js": "1.4.1",
+    "draggabilly": "3.0.0",
+    "get-image-colors": "4.0.1",
+    "handlebars": "4.7.8",
+    "jsdoc": "3.6.11",
+    "jsts": "2.12.1",
+    "maplibre-gl": "4.3.2",
+    "ol": "10.4.0",
+    "pako": "1.0.11",
+    "proj4": "2.15.0",
+    "shpjs": "6.1.0",
+    "sql.js": "1.7.0",
+    "util": "0.12.5"
+  },
+  "optionalDependencies": {
+    "better-sqlite3": "9.1.1"
+  },
+  "overrides": {
+    "webpack": "5.88.2",
+    "eslint": "8.51.0"
+  },
+  "scripts": {
+    "build": "cross-env NODE_OPTIONS=--max_old_space_size=2048 ./node/npm run build:core && ./node/npm run build:plugins",
+    "build:sourcemap": "npm run prebuild && npm run build:core -- --source-map && npm run build:plugins",
+    "build:core": "npm run build:ol-core && npm run build:cesium-core",
+    "build:ol-core": "webpack --config=webpack-config/webpack.production-ol-core.config.js",
+    "build:cesium-core": "webpack --config=webpack-config/webpack.production-cesium-core.config.js",
+    "build:plugins": "node tasks/build-plugins",
+    "debug:build": "webpack serve --config=webpack-config/webpack.test-production.config.js",
+    "debug:prebuild": "node --inspect-brk tasks/generate-index.js",
+    "generate-doc": "npm run generate-doc:ol && npm run generate-doc:cesium",
+    "generate-doc:ol": "jsdoc ../README.md -c config/jsdoc/api/conf-ol.json",
+    "generate-doc:cesium": "jsdoc ../README.md -c config/jsdoc/api/conf-cesium.json",
+    "generate-test": "node tasks/test-generator",
+    "prebuild": "node tasks/clean-build.js --path=dist && npm run prebuild:ol && npm run prebuild:cesium",
+    "prebuild:ol": "node tasks/generate-index-ol.js",
+    "prebuild:cesium": "node tasks/generate-index-cesium.js",
+    "postbuild": "npm run generate-doc && node tasks/copy-legacy.js && node tasks/copy-index-doc.js",
+    "start": "webpack-dev-server --config=webpack-config/webpack.development-ol.config.js",
+    "start:ol": "webpack-dev-server --config=webpack-config/webpack.development-ol.config.js",
+    "start:cesium": "webpack-dev-server --config=webpack-config/webpack.development-cesium.config.js",
+    "start:test": "webpack-dev-server --config=webpack-config/webpack.playwright.config.js",
+    "start:build": "npm run build && npm run debug:build",
+    "test:playwright-ol": "playwright test --config=./playwright-config/playwright-ol.config.js",
+    "test:playwright-cesium": "playwright test --config=./playwright-config/playwright-cesium.config.js",
+    "test:all": "npm run test:playwright-ol; npm run test:playwright-cesium"
+  }
+}

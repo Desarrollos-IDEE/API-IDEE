@@ -1,0 +1,96 @@
+<div id="m-layerswitcher-layerContainer">
+    <section id="m-layerswitcher-groups-fields" class="m-layerswitcher-groups-fields-container"></section>
+    {{#eq type 'geojson'}}
+        <p>{{translations.data_layer}} GeoJSON</p>
+    {{/eq}}
+    {{#eq type 'osm'}}
+        <p>{{translations.data_layer}} OSM</p>
+    {{/eq}}
+    {{#eq type 'tms'}}
+        <p>{{translations.data_layer}} TMS</p>
+    {{/eq}}
+    {{#eq type 'xyz'}}
+        <p>{{translations.data_layer}} XYZ</p>
+    {{/eq}}
+    {{#eq type 'mvt'}}
+        <p>{{translations.data_layer}} MVT</p>
+        {{#gt layers.length 0}}
+            <div id="m-layerswitcher-addservices-results">
+                <div class="m-layerswitcher-table-results">
+                    <div class="m-layerswitcher-table-container">
+                        <table id="m-layerswitcher-all">
+                            <thead>
+                                <tr>
+                                    <th><button tabindex="0" aria-label="{{translations.addAllLayers}}" id="m-layerswitcher-addservices-selectall" class="m-layerswitcher-icons-check"></button></th>
+                                    <th>{{translations.layers}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each layers}}
+                                    <tr tabindex="0">
+                                        <td><span tabindex="0" aria-label="{{translations.add_service}}" role="button" id="{{name}}" name="{{name}}" class="m-check-layerswitcher-addservices m-layerswitcher-icons-check"></span></td>
+                                        <td class="m-layerswitcher-table-layer-name" name="{{name}}" title="{{abstract}}">{{name}}</td>
+                                    </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {{/gt}}
+    {{/eq}}
+    {{#eq type 'kml'}}
+        <p>{{translations.data_layer}} KML</p>
+        {{#gt layers.length 0}}
+            <div id="m-layerswitcher-addservices-results">
+                <div class="m-layerswitcher-table-results">
+                    <div class="m-layerswitcher-table-container">
+                        <table id="m-layerswitcher-all">
+                            <thead>
+                                <tr tabindex="0">
+                                    <th><button tabindex="0" aria-label="{{translations.addAllLayers}}" id="m-layerswitcher-addservices-selectall" class="m-layerswitcher-icons-check"></button></th>
+                                    <th>{{translations.layers}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each layers}}
+                                    <tr tabindex="0">
+                                        <td><span aria-label="{{translations.add_service}}" role="button" abindex="0" id="{{name}}" name="{{name}}" class="m-check-layerswitcher-addservices m-layerswitcher-icons-check"></span></td>
+                                        <td class="m-layerswitcher-table-layer-name" name="{{name}}" title="{{abstract}}">{{name}}</td>
+                                    </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {{/gt}}
+    {{/eq}}
+    <div class="m-layerswitcher-layer-fields">
+        {{#if isMVT}}
+            {{#eq layers.length 0}}
+                <label tabindex="0" class="m-layerswitcher-layer-label" for="m-layerswitcher-layer-name">{{translations.name}}</label>
+                <input tabindex="0" type="text" id="m-layerswitcher-layer-name" placeholder="{{translations.separatedby}}" />
+            {{/eq}}
+        {{/if}}    
+    </div>
+    <div class="m-layerswitcher-layer-fields">
+        <label tabindex="0" class="m-layerswitcher-layer-label" for="m-layerswitcher-layer-legend">{{translations.legend}}</label>
+        <input tabindex="0" type="text" id="m-layerswitcher-layer-legend" placeholder="{{translations.placeHolderLegend}}"/>
+    </div>
+    {{#eq type 'osm'}}
+        <div class="m-layerswitcher-layer-fields">
+            <label tabindex="0" class="m-layerswitcher-layer-label" for="m-layerswitcher-layer-matrixset">MatrixSet</label>
+            <input tabindex="0" type="text" id="m-layerswitcher-layer-matrixset" />
+        </div>
+    {{/eq}}
+    {{#eq type 'mvt'}}
+        <!--<div class="m-layerswitcher-layer-fields">
+            <label tabindex="0" class="m-layerswitcher-layer-label" for="m-layerswitcher-layer-matrixset">MatrixSet</label>
+            <input tabindex="0" type="text" id="m-layerswitcher-layer-matrixset" />
+        </div>-->
+    {{/eq}}
+    <div class="button">
+        <button tabindex="0" class="m-layerswitcher-common-btn" id="m-layerswitcher-layer-button"> {{translations.add_btn}}</button>
+    </div>
+</div>

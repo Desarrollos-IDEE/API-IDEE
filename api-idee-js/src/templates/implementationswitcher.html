@@ -1,0 +1,14 @@
+<div id="m-implementationswitcher-container" class="m-control m-container m-implementationswitcher">
+    <button id='close-button' class="{{icon}}"></button>
+    <header>
+        <h1>{{title}}</h1>
+    </header>
+    <div class="m-implementationswitcher-select-label">
+        {{description}}
+    </div>
+    <select id="m-implementationswitcher-select" class="m-implementationswitcher-select">
+        {{#each implementations}}
+            <option value="{{this.id}}" {{#if this.selected}}selected{{/if}}>{{this.title}}</option>
+        {{/each}}
+    </select>
+</div>

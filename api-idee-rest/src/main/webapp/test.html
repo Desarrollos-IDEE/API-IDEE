@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>API IDEE - Galería de test - Plugins & Controles</title>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" type="text/css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css">
+
+        <style type="text/css">
+            @import url(https://fonts.googleapis.com/css?family=Quattrocento+Sans:400,400italic,700);
+
+            html {
+                position: relative;
+                min-height: 100%;
+            }
+
+            body {
+                font-family: 'Quattrocento Sans', sans-serif;
+                font-size: 16px;
+                padding-top: 70px;
+            }
+
+            .navbar {
+                background-color: #8f2031;
+                color: white;
+                border: 0;
+                border-radius: 0;
+            }
+
+            .navbar-brand {
+                color: white;
+                font-weight: bold;
+                font-size: 160%;
+                padding: 8px 0;
+            }
+
+            .navbar-brand:hover,
+            .navbar-brand:focus {
+                color: #aae1e9;
+            }
+
+            .navbar-brand img {
+                height: 35px;
+                vertical-align: middle;
+                margin-right: 5px;
+                display: inline-block;
+            }
+
+            .dropdown-item.active,
+            .dropdown-item:hover {
+                color: #fff;
+                text-decoration: none;
+                background-color: #268591
+            }
+
+            .nav>li>a:hover,
+            .nav>li>a:focus,
+            .nav>li>a.active {
+                background-color: #268591;
+            }
+
+            .navbar-nav>li>a {
+                color: white;
+            }
+
+            .display-table {
+                display: table;
+            }
+
+            a {
+                color: #03899c;
+                text-decoration: none
+            }
+
+            a:hover,
+            a:focus {
+                color: #ff7a00;
+                text-decoration: none
+            }
+
+            .btn-link {
+                font-weight: 400;
+                color: #03899c;
+                text-decoration: none;
+            }
+
+            .btn-link:hover {
+                color: #ff7a00;
+                text-decoration: none;
+            }
+
+            .version-form,
+            .navbar-form {
+                display: table-cell;
+                vertical-align: middle;
+            }
+
+            .version-form {
+                color: #333;
+            }
+
+            #title {
+                margin-top: 0;
+            }
+
+            .badge-group {
+                display: inline-block;
+            }
+
+            .badge-group>.badge:not(:last-child) {
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+
+            .badge-group>.badge:not(:first-child) {
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+            }
+
+            .tag-modal-toggle {
+                cursor: pointer;
+            }
+
+            .modal-tag-example .modal-body {
+                padding: 0;
+            }
+
+            .modal-tag-example .list-group-item:focus,
+            .modal-tag-example .list-group-item:hover,
+            .modal-tag-example .list-group-item:active {
+                background-color: rgba(31, 107, 117, .6875);
+                border-color: #1F6B75;
+                color: white;
+            }
+
+            .modal-tag-example .list-group-item.active {
+                background-color: #1F6B75;
+                color: white;
+            }
+
+            #docs {
+                margin-top: 1em;
+            }
+
+            ul.inline,
+            ol.inline {
+                margin-left: 0;
+                padding-left: 0;
+                list-style: none;
+            }
+
+            ul.inline>li,
+            ol.inline>li {
+                display: inline-block;
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+
+            .map {
+                height: 400px;
+                width: 100%;
+                background: url(map-background.jpg) repeat;
+                margin-bottom: 10px;
+            }
+
+            .ol-attribution.ol-logo-only,
+            .ol-attribution.ol-uncollapsible {
+                max-width: calc(100% - 3em);
+            }
+
+            .ol-attribution ul {
+                font-size: 14px;
+            }
+
+            .iframe-info iframe {
+                width: 100%;
+            }
+
+            .source-heading {
+                margin-top: 1em;
+                margin-bottom: 0;
+                padding-left: .6em;
+                font-weight: bold;
+            }
+
+            pre[class*="language-"] {
+                background: #FFFFFF;
+                font-size: 87.5%;
+            }
+
+            pre {
+                border: 1px solid #eee;
+                border-radius: 0;
+            }
+
+            #tags,
+            #shortdesc,
+            .hidden {
+                display: none;
+            }
+
+            #api-links ul {
+                display: inline;
+            }
+
+            #latest-check {
+                margin-top: -10px;
+                margin-bottom: 10px;
+            }
+
+            /* restyle prism copy button */
+            div.code-toolbar>.toolbar {
+                opacity: 1;
+                top: -2.4em;
+            }
+
+            div.code-toolbar>.toolbar button {
+                font-size: 16px;
+                color: #03899c;
+                background-color: transparent;
+                box-shadow: none;
+                padding: .615rem .75rem;
+            }
+
+            div.code-toolbar>.toolbar button:hover,
+            div.code-toolbar>.toolbar button:focus {
+                color: #ff7a00;
+            }
+
+            div.code-toolbar>.toolbar button:focus {
+                outline: 0;
+                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, .25);
+            }
+
+            div.code-toolbar>.toolbar button:before {
+                margin-right: .184em;
+                font: normal normal normal 14px/1 FontAwesome;
+                font-size: inherit;
+                text-rendering: auto;
+                -webkit-font-smoothing: antialiased;
+                content: "\f0ea";
+                font-size: 1.33333333em;
+                line-height: .75em;
+                vertical-align: middle;
+            }
+        </style>
+    </head>
+
+<body>
+
+    <header class="navbar navbar-expand-md navbar-dark mb-3 py-0 fixed-top" role="navigation">
+        <a class="navbar-brand" href="#"><img class="header-logo" src="https://componentes.idee.es/estaticos/imagenes/logos/logo-apicnig.png" alt="">&nbsp;API-IDEE</a> Tests
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#olmenu" aria-controls="olmenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <nav class="collapse navbar-collapse" id="olmenu">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item dropdown">
+                </li>
+                <li class="nav-item"><a target="_blank" class="nav-link" href="https://github.com/Desarrollos-IDEE/API-IDEE/wiki"><i class="fas fa-user-graduate"></i> Wiki</a></li>
+                <li class="nav-item"><a target="_blank" class="nav-link" href="https://github.com/Desarrollos-IDEE/API-IDEE"><i class="fa fa-sitemap mr-1"></i> API</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container mt-5">
+        <section class="col-md-12 m-auto">
+            <h3 class="text-center mb-3">
+                <i class="fas fa-puzzle-piece"> <span style="font-family: 'Quattrocento Sans', sans-serif;">GALERÍA DE PLUGINS</span></i>
+            </h3>
+            <div class="form-group">
+                <input type="text" class="form-control form-control-lg" placeholder="Buscar plugin" name="search" id="search">
+            </div>
+            <div id="match-list" class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3 py-5">
+            </div>
+        </section>
+
+        <section class="col-md-12 m-auto">
+            <h3 class="text-center mb-3">
+                <i class="fas fa-gamepad"> <span style="font-family: 'Quattrocento Sans', sans-serif;">CONTROLES</span></i>
+                <a href="https://github.com/Desarrollos-IDEE/API-IDEE/wiki/2.2.-Controles-b%C3%A1sicos-y-opciones" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/wiki.svg"></a>
+            </h3>
+            <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3 py-5">
+                <div class="col" style="padding-bottom:15px;">
+                    <!-- attributions -->
+                    <div class="card shadow-sm h-100" style="background-color: rgba(240, 128, 128,0.15);">
+                        <h4 class="text-primary text-center pt-2">[attributions]</h4>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <a href="attributions_control.jsp?language=es" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/spain-flag.svg"></a>
+                                    <a href="attributions_control.jsp?language=en" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/uk-flag.svg"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col" style="padding-bottom:15px;">
+                    <!-- backgroundlayers -->
+                    <div class="card shadow-sm h-100" style="background-color: rgba(240, 128, 128,0.15);">
+                        <h4 class="text-primary text-center pt-2">[backgroundlayers]</h4>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <a href="backgroundlayers.jsp?language=es" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/spain-flag.svg"></a>
+                                    <a href="backgroundlayers.jsp?language=en" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/uk-flag.svg"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col" style="padding-bottom:15px;">
+                    <!-- getfeatureinfo -->
+                    <div class="card shadow-sm h-100" style="background-color: rgba(240, 128, 128,0.15);">
+                        <h4 class="text-primary text-center pt-2">[getfeatureinfo]</h4>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <a href="getfeatureinfo.jsp?language=es" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/spain-flag.svg"></a>
+                                    <a href="getfeatureinfo.jsp?language=en" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/uk-flag.svg"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col" style="padding-bottom:15px;">
+                    <!-- implementationswitcher -->
+                    <div class="card shadow-sm h-100" style="background-color: rgba(240, 128, 128,0.15);">
+                        <h4 class="text-primary text-center pt-2">[implementationswitcher]</h4>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <a href="implementationswitcher.jsp?language=es" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/spain-flag.svg"></a>
+                                    <a href="implementationswitcher.jsp?language=en" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/uk-flag.svg"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col" style="padding-bottom:15px;">
+                    <!-- location -->
+                    <div class="card shadow-sm h-100" style="background-color: rgba(240, 128, 128,0.15);">
+                        <h4 class="text-primary text-center pt-2">[location]</h4>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <a href="location.jsp?location=es" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/spain-flag.svg"></a>
+                                    <a href="location.jsp?location=en" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/uk-flag.svg"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col" style="padding-bottom:15px;">
+                    <!-- panzoom -->
+                    <div class="card shadow-sm h-100" style="background-color: rgba(240, 128, 128,0.15);">
+                        <h4 class="text-primary text-center pt-2">[panzoom]</h4>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <a href="panzoom.jsp?language=es" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/spain-flag.svg"></a>
+                                    <a href="panzoom.jsp?language=en" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/uk-flag.svg"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col" style="padding-bottom:15px;">
+                    <!-- panzoombar -->
+                    <div class="card shadow-sm h-100" style="background-color: rgba(240, 128, 128,0.15);">
+                        <h4 class="text-primary text-center pt-2">[panzoombar]</h4>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <a href="panzoombar.jsp?language=es" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/spain-flag.svg"></a>
+                                    <a href="panzoombar.jsp?language=en" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/uk-flag.svg"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col" style="padding-bottom:15px;">
+                    <!-- rotate -->
+                    <div class="card shadow-sm h-100" style="background-color: rgba(240, 128, 128,0.15);">
+                        <h4 class="text-primary text-center pt-2">[rotate]</h4>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <a href="rotate.jsp?language=es" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/spain-flag.svg"></a>
+                                    <a href="rotate.jsp?language=en" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/uk-flag.svg"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col" style="padding-bottom:15px;">
+                    <!-- scale -->
+                    <div class="card shadow-sm h-100" style="background-color: rgba(240, 128, 128,0.15);">
+                        <h4 class="text-primary text-center pt-2">[scale]</h4>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <a href="scale.jsp?language=es" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/spain-flag.svg"></a>
+                                    <a href="scale.jsp?language=en" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/uk-flag.svg"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col" style="padding-bottom:15px;">
+                    <!-- scaleline -->
+                    <div class="card shadow-sm h-100" style="background-color: rgba(240, 128, 128,0.15);">
+                        <h4 class="text-primary text-center pt-2">[scaleline]</h4>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <a href="scaleline.jsp?language=es" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/spain-flag.svg"></a>
+                                    <a href="scaleline.jsp?language=en" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/uk-flag.svg"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="col-md-12 m-auto">
+            <h3 class="text-center mb-3">
+                <i class="fas fa-gamepad"> <span style="font-family: 'Quattrocento Sans', sans-serif;">PLUGINS OBSOLETOS</span></i>
+            </h3>
+            <div id="match-list-obsolete" class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3 py-5">
+            </div>
+        </section>
+    </main>
+
+    <script src="js/stringtools.js"></script>
+    <script src="js/plugins.js"></script>
+</body>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-19NTRSBP21"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+    gtag('config', 'G-19NTRSBP21');
+</script>
+
+</html>

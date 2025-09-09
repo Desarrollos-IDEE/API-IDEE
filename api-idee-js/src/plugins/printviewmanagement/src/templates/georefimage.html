@@ -1,0 +1,29 @@
+<section class="m-container m-georefimage m-georefimage-container">
+    <h3 class="m-plugin-printviewmanagement-title-view">{{translations.nameTitle}}</h3>
+
+    <div class="m-georefimage-titleFormat">
+        <label style="display: none;" tabindex="0" for="title-georefimage" title="{{translations.title}}" aria-label="{{translations.format}}">{{translations.title}}"</label>
+        <input tabindex="0" type="text" id="m-georefimage-title" aria-label="{{translations.title}}" title="{{translations.title}}" name="title-georefimage" placeholder="{{translations.title}}">
+
+        <label style="display: none;" tabindex="0" for="format-georefimage" title="{{translations.format}}" aria-label="{{translations.format}}">Formato de Descarga</label>
+        <select tabindex="0" role="select" id="m-georefimage-format" title="{{translations.format}}">
+            {{#each formats}}
+                <option value="{{this}}" {{#if default}} selected{{/if}}>{{this}}</option>
+            {{/each}}
+        </select>
+
+    </div>
+    <div class="georefimage-jgwKeppview">
+        <div>
+            <label tabindex="0" for="m-georefimage-wld" title="{{translations.georefimageWld}}" aria-label="{{translations.georefimageWld}}">{{translations.georefimageWld}}</label>
+            <input tabindex="0" value="wld" type="checkbox" title="{{translations.georefimageWld}}" id="m-georefimage-wld" aria-label="{{translations.georefimageWld}}">
+        </div>
+
+        <select tabindex="0" role="select" id="m-georefimage-dpi" title="{{translations.selectDpi}}">
+            {{#each dpis}}
+                <option value="{{this}}" {{#if default}} selected{{/if}}>{{this}}</option>
+            {{/each}}
+        </select>
+    </div>
+    <h3 tabindex="0" id="m-georefimage-projection" class="m-georefimage-projection" title="EPSG"></h3>
+</section>

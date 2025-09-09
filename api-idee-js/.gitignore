@@ -1,0 +1,24 @@
+# Directorios y ficheros ignorados por git
+*.settings
+*.project
+*.classpath
+*.externalToolBuilders
+*.log
+.atomignore
+node
+node_modules
+target
+libraries
+doc
+dist
+index.js
+index-*.js
+entry-points-plugins.json
+package-lock.json
+*~
+chromedriver.log
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

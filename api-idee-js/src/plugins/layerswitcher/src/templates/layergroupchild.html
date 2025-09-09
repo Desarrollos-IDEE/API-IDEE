@@ -1,0 +1,97 @@
+<li tabindex="0" class="m-layerswitcher-sectionPanel m-layerswitcher-sectionPanel-group" aria-label="{{translations.layers}}" data-layer-id="{{idLayer}}" data-layer-name="{{id}}" data-layer-type="{{type}}" data-layer-url="{{url}}" data-order="{{dataOrder}}">
+    <div class="m-layerswitcher-title-layer">
+        {{#if isEyes}}
+            <div class="m-layerswitcher-visible-control">
+                <button 
+                    title="{{#if visible}}{{translations.hide_service}}{{^}}{{translations.show_service}}{{/if}}" 
+                    aria-label="{{#if visible}}{{translations.hide_service}}{{^}}{{translations.show_service}}{{/if}}" 
+                    tabindex="0" 
+                    data-select-type="eye" 
+                    data-layer-id="{{idLayer}}"
+                    class="m-layerswitcher-check {{#if visible}}m-layerswitcher-icons-ver{{^}}m-layerswitcher-icons-ocultar{{/if}} {{#if outOfRange}}m-layerswitcher-outOfRange{{/if}}">
+                </button>
+            </div>
+        {{/if}}
+        {{#if isRadio}}
+            <div class="m-layerswitcher-visible-control m-layerswitcher-radio">
+                <input 
+                aria-label="{{#if visible}}{{translations.hide_service}}{{^}}{{translations.show_service}}{{/if}}" 
+                tabindex="0" {{#eq checkedLayer "true"}}checked{{/eq}} 
+                type="radio" 
+                data-layer-id="{{idLayer}}"
+                data-select-type="radio" 
+                class="m-layerswitcher-check {{#if outOfRange}}m-layerswitcher-outOfRange-input{{/if}}" 
+                value="{{type}}-{{id}}"
+                name="{{nameRadio}}"
+                >
+            </div>
+        {{/if}}
+        <div class="m-layerswitcher-visible-typeContent">
+            <table>
+                <tbody>
+                    <tr>
+                        <td><span {{#if displayLabel}}style="display: none"{{/if}} aria-label="Tipo de servicio {{type}}" tabindex="0" class="m-layerswitcher-type">{{type}}</span></td>
+                        <td><span tabindex="0"  data-layer-id="{{idLayer}}" data-layer-type="{{type}}" title="{{translations.changeName}}" data-layer-name="{{id}}" data-layer-url="{{url}}" class="m-layerswitcher-title-box">{{title}}</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {{#if isDelete}}
+            <button 
+               title="{{translations.remove_layer}}" 
+               data-layer-id="{{idLayer}}"
+               tabindex="0" 
+               aria-label="{{translations.remove_layer}}" 
+               class="m-layerswitcher-icons-delete">
+            </button>
+        {{/if}}
+    </div>
+    {{#if visible}}
+        <div class="m-layerswitcher-tools">
+            {{#if isTransparency}}
+                <div class="m-layerswitcher-opacity">
+                    <input tabindex="0" type="range" data-layer-id="{{idLayer}}" data-layer-type="{{type}}" data-layer-name="{{id}}" data-layer-url="{{url}}" class="m-layerswitcher-transparency" min="0" max="1" step="0.1" value="{{opacity}}" {{#unless visible}} disabled {{/unless}} {{#if outOfRange}} disabled {{/if}} />
+                </div>
+            {{/if}}
+            <div class="m-layerswitcher-action-tools">
+                {{#if isLegend}}
+                    <button 
+                        tabindex="0" 
+                        title="{{translations.show_hide}}" 
+                        data-layer-id="{{idLayer}}"
+                        class="m-layerswitcher-icons-image">
+                    </button>
+                {{/if}}
+                {{#if isZoom}}
+                    <button 
+                        tabindex="0" 
+                        title="{{translations.zoom}}" 
+                        data-layer-id="{{idLayer}}" 
+                        class="m-layerswitcher-icons-target">
+                    </button>
+                {{/if}}
+                {{#if isInformation}}
+                    <button 
+                        tabindex="0" 
+                        title="{{translations.info_metadata}}" 
+                        data-layer-id="{{idLayer}}" 
+                        class="m-layerswitcher-icons-info">
+                    </button>
+                {{/if}}
+                {{#if isStyle}}
+                    {{#if hasStyles}}
+                        <button 
+                            tabindex="0" 
+                            title="{{translations.change_style}}" 
+                            data-layer-id="{{idLayer}}" 
+                            class="m-layerswitcher-icons-style">
+                        </button>
+                    {{/if}}
+                {{/if}}
+            </div>
+        </div>
+        <div class="m-layerswitcher-legend">
+            <img></img>
+        </div>
+    {{/if}}
+</li>

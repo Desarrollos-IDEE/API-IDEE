@@ -1,0 +1,24 @@
+{
+  "exception": {
+    "impl": "The implementation used cannot create MouseSRSControl.",
+    "srs": "The EPSG code entered is not valid. Default will be used: "
+  },
+  "textHelp": {
+    "help1": "To select the coordinate system just click on any point on the bar.",
+    "help2": "The available values are:",
+    "help3": "Units: degrees",
+    "help4": "Units: meters",
+    "help5": "More information about reference systems in:",
+    "help6": "Depending on the chosen coordinate system, we will display geographic coordinates in degrees with decimal format or projected in meters. The approximate height above sea level in Alicante is also shown.",
+    "help7": "The information relevant to the extension and its possible parameterization is documented in",
+    "help8": "The example of use of its parameters can be checked in"
+  },
+  "tooltip": "Coordinates",
+  "select_srs": "Select a reference system",
+  "choose_create_epsg": "Add EPSG",
+  "placeholder_custom_epsg": "Enter your EPSG",
+  "close": "Close",
+  "accessibility": {
+    "src": "Click or Enter to modify the EPSG"
+  }
+}

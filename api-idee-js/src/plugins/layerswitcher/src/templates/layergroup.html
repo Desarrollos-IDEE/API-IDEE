@@ -1,0 +1,58 @@
+<li class="m-layerswitcher-sectionPanel m-layerswitcher-sectionPanel-colorPanel" data-layer-id="{{idLayer}}" data-layer-name="{{id}}" data-layer-type="{{type}}" data-layer-url="{{url}}" data-order="{{dataOrder}}">
+    <section class="m-layerswitcher-sectionPanel-header">
+        <div>
+            {{#if isEyes}}
+            <button title="{{#if visible}}{{translations.hide_service}}{{^}}{{translations.show_service}}{{/if}}"
+                aria-label="{{#if visible}}{{translations.hide_service}}{{^}}{{translations.show_service}}{{/if}}"
+                tabindex="0"
+                data-select-type="eye"
+                data-layer-id="{{idLayer}}"
+                class="m-layerswitcher-visible-control-button m-layerswitcher-check {{#if visible}}m-layerswitcher-icons-ver{{^}}m-layerswitcher-icons-ocultar{{/if}} {{#if outOfRange}}m-layerswitcher-outOfRange{{/if}}">
+            </button>
+            {{/if}}
+            {{#if isRadio}}
+            <input
+                aria-label="{{#if visible}}{{translations.hide_service}}{{^}}{{translations.show_service}}{{/if}}"
+                tabindex="0"
+                {{#eq checkedLayer "true" }}checked{{/eq}}
+                type="radio"
+                data-layer-id="{{idLayer}}"
+                data-select-type="radio"
+                class="m-layerswitcher-check {{#if outOfRange}}m-layerswitcher-outOfRange-input{{/if}}"
+                name="{{nameRadio}}"
+                value="{{type}}-{{id}}">
+            {{/if}}
+
+            <p tabindex="0"
+            class="m-layerswitcher-sectionPanel-header-text"
+            data-layer-id="{{idLayer}}"
+            data-layer-type="{{type}}"
+            data-layer-name="{{id}}"
+            title="{{changeName}}"
+            data-layer-url="{{url}}">
+                <span {{#if displayLabel}}style="display: none" {{/if}} aria-label="Tipo de servicio {{type}}"
+                    tabindex="0" class="m-layerswitcher-type">{{type}}</span>
+                {{title}}
+            </p>
+        </div>
+
+        <div class="m-layerswitcher-sectionPanel-header-tools">
+            <button
+            class="{{#if displayGroup}}m-layerswitcher-icons-colapsar{{else}}m-layerswitcher-icons-desplegar{{/if}}  m-layerswitcher-groupDisplay"
+            data-layer-id="{{idLayer}}"
+            title="{{#if displayGroup}} {{hide_group}} {{else}} {{show_group}} {{/if}}"
+            aria-label="{{#if displayGroup}} {{hide_group}} {{else}} {{show_group}} {{/if}}"
+            ></button>
+            {{#if isDelete}}
+            <button
+                data-layer-id="{{idLayer}}"
+                title="{{translations.remove_layer}}"
+                tabindex="0"
+                aria-label="{{translations.remove_layer}}"
+                class="m-layerswitcher-icons-delete">
+            </button>
+            {{/if}}
+        </div>
+    </section>
+    <ul style="display: {{#if displayGroup}}block{{else}}none{{/if}}" tabindex="0" class="m-layerswitcher-ullayersGroup nested-sortable" data-layer-name="{{id}}" data-layer-id="{{idLayer}}"></ul>
+</li>

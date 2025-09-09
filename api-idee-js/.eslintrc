@@ -1,0 +1,70 @@
+{
+  "extends": "airbnb",
+  "globals": {
+    "IDEE": true,
+    "ol": true,
+    "cesium": true,
+    "Handlebars": true,
+    "proj4": true,
+    "ActiveXObject": true,
+    "jsts": true,
+    "document": true,
+    "window": true,
+    "DOMParser": true,
+    "XMLHttpRequest": true,
+    "Image": true,
+    "Draggabilly": true,
+    "XMLSerializer": true,
+    "File": true,
+    "Response": true
+  },
+  // "ignorePatterns": [
+  //   "node_modules/",
+  //   "**/node_modules/",
+  //   "/**/node_modules/*",
+  //   "src"
+  // ],
+  "parserOptions": {
+    "ecmaVersion": 2020
+  },
+  "settings": {
+    "react": {
+      "version": "18.2.0"
+    }
+  },
+  "rules": {
+    "no-underscore-dangle": [
+      "error",
+      {
+        "allowAfterThis": true
+      }
+    ],
+    "import/extensions": [
+      "error",
+      "never"
+    ],
+    "import/no-unresolved": "off",
+    "prefer-destructuring": "off",
+    "arrow-body-style": "off",
+    "no-unused-vars": [
+      "error",
+      {
+        "vars": "all",
+        "args": "none"
+      }
+    ],
+    "class-methods-use-this": "off",
+    "no-case-declarations": "off",
+    "import/no-mutable-exports": "off",
+    "no-template-curly-in-string": "off",
+    "import/no-named-default": "off",
+    "no-bitwise": "off",
+    "max-classes-per-file": "off",
+    "quote-props": "off",
+    "import/no-absolute-path": "off",
+    "import/no-cycle": "off",
+    "consistent-return": "off",
+    "array-callback-return": "off",
+    "grouped-accessor-pairs": "off"
+  }
+}

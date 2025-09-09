@@ -1,0 +1,52 @@
+{
+  "url": {
+    "name": "rescale",
+    "separator": "*"
+  },
+  "constructor": "IDEE.plugin.Rescale",
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+        "type": "simple",
+        "name": "position",
+        "position": 0
+      },
+      {
+        "type": "boolean",
+        "name": "collapsed",
+        "position": 1
+      },
+      {
+        "type": "boolean",
+        "name": "collapsible",
+        "position": 2
+      },
+      {
+        "type": "simple",
+        "name": "tooltip",
+        "position": 3
+      }
+    ]
+  }],
+  "files": {
+    "ol": {
+      "scripts": ["rescale.ol.min.js"],
+      "styles": ["rescale.ol.min.css"]
+    },
+    "cesium": {
+      "scripts": ["rescale.cesium.min.js"],
+      "styles": ["rescale.cesium.min.css"]
+    }
+  },
+  "metadata": {
+    "name": "Rescale",
+    "description": "Zooms to given scale",
+    "text": "Zooms to given scale",
+    "version": "2.0.2",
+    "date": "September 2019",
+    "author": "",
+    "org": "",
+    "tags": "api-idee,plugin",
+    "icon": "./facade/assets/icons/icons.svg"
+  }
+}

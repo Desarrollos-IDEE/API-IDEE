@@ -1,0 +1,109 @@
+<div class="m-control m-container m-infocoordinates">
+
+    <div class="div-m-infocoordinates-panel">
+
+        <div role="heading" tabindex="0" class="m-infocoordinates-title">
+            <p id="titleInfo" class="m-infocoordinates-titleInfo">{{translations.title}}</p>
+        </div>
+
+        <div class="m-infocoordinates-content">
+            <!-- Tabs -->
+            <div class="m-infocoordinates-tabs">
+
+            </div>
+
+            <!-- Tab content -->
+            <div id="tabContent" class='m-infocoordinates-tabContent'>
+                <table>
+                    <tbody>
+                        <tr tabindex="0">
+                            <td>{{translations.point}}</td>
+                            <td id="m-infocoordinates-point">--</td>
+                            <td><button type="button" tabindex="0" class="icon-bin2 noDisplay" id="m-infocoordinates-buttonRemovePoint" title="{{translations.removePoint}}"></button></td>
+                        </tr>
+                        <tr tabindex="0">
+                            <td>{{translations.datum}}</td>
+                            <td id="m-infocoordinates-datum" colspan="2">ETRS89</td>
+                        </tr>
+                        <tr tabindex="0">
+                            <td>{{translations.latitude}}</td>
+                            <td id="m-infocoordinates-latitude" colspan="2">--</td>
+                            <td><button type="button" tabindex="0" class="icon-copy noDisplay" id="m-infocoordinates-copylatlon" title="{{translations.copyLatLon}}"></button></td>
+                        <tr tabindex="0">
+                            <td>{{translations.longitude}}</td>
+                            <td id="m-infocoordinates-longitude" colspan="2">--</td>
+                        </tr>
+                        <tr tabindex="0">
+                            <td></td>
+                            <td><input tabindex="0" id="m-infocoordinates-buttonConversorFormat" type="checkbox" disabled>{{translations.formatCoordinates}}</td>
+                            <td></td>
+                        </tr>
+                        <tr tabindex="0">
+                            <td class="m-infocoordinates-help-td">
+                                <span>CRS:</span>
+                                {{#if hasHelp}}
+                                    <div role="navigation" class="m-infocoordinates-help" title="EPSG"><a tabindex="0" title="Help" href="{{helpUrl}}" target="_blank"><i class="icon-help"></i></a></div>
+                                {{/if}}
+                            </td>
+                            <td colspan="2">
+                               <div id="m-infocoordinates-comboDatum" class="m-infocoordinates-comboDatum">
+                                    <input
+                                        type="text"
+                                        id="epsg-selected"
+                                        class="m-infocoordinates-input-select"
+                                        name="epsg-selected"
+                                        value="{{selected}}"
+                                        aria-label="{{translations.select_srs}}"
+                                        title="{{translations.select_srs}}"
+                                        tabindex="{{order}}"
+                                        autocomplete="off"
+                                        readonly="readonly"
+                                    />
+                                    <ul title="{{translations.select_srs}}" id="m-infocoordinates-srs-selector" class="m-infocoordinates-srs-selector">
+                                        <li><a class="m-infocoordinates-option-disabled" href="#" value="default" tabindex="-1" disabled>{{translations.choose_create_epsg}}</a></li>
+                                        {{#each projections}}
+                                            <li>
+                                                <a href="#" value="{{this.codes.[0]}}">{{this.codes.[0]}}</a>
+                                            </li>
+                                        {{/each}}
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr tabindex="0">
+                            <td>{{translations.coordX}}</td>
+                            <td id="m-infocoordinates-coordX" colspan="2">--</td>
+                            <td><button type="button" tabindex="0" class="icon-copy noDisplay" id="m-infocoordinates-copyxy" title="{{translations.copyxy}}"></button></td>
+                        </tr>
+                        <tr tabindex="0">
+                            <td>{{translations.coordY}}</td>
+                            <td id="m-infocoordinates-coordY" colspan="2">--</td>
+                        </tr>
+                        <tr tabindex="0">
+                            <td>{{translations.altitude}}</td>
+                            <td id="m-infocoordinates-altitude" colspan="2">--</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="m-infocoordinates-div-buttonRemoveAllPoints noDisplay">
+                <button type="button" tabindex="0" class="icon-bin2" id="m-infocoordinates-buttonRemoveAllPoints" title="{{translations.removeAllPoints}}"></button>
+            </div>
+
+            <div class="m-infocoordinates-div-buttonImportAllPoints noDisplay">
+                <button type="button" tabindex="0" class="icon-file" id="m-infocoordinates-buttonImportAllPoints" title="{{translations.importAllPoints}}"></button>
+            </div>
+
+            <div class="m-infocoordinates-div-buttonCopyAllPoints noDisplay">
+                <button type="button" tabindex="0" class="icon-copy" id="m-infocoordinates-buttonCopyAllPoints" title="{{translations.copyAllPoints}}"></button>
+            </div>
+
+            <div class="m-infocoordinates-div-buttonDisplayAllPoints noDisplay">
+                <button type="button" tabindex="0" class="icon-displayON" id="m-infocoordinates-buttonDisplayAllPoints" title="{{translations.displayONAllPoints}}"></button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</div>

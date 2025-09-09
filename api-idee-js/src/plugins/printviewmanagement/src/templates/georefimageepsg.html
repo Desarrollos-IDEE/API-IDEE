@@ -1,0 +1,16 @@
+<section class="m-georefimageepsg-container">
+  <h3 class="m-plugin-printviewmanagement-title-list">{{translations.nameTitle}}</h3>
+  <label for="m-georefimageepsg-select" class="m-georefimageepsg-label">{{translations.selectLayer}}</label>
+  <div class="m-georefimageepsg-select-container">
+    <select id="m-georefimageepsg-select" title="{{translations.selectLayer}}">
+      {{#each layers}}
+        <option value='{{name}}'>{{legend}}</option>
+      {{/each}}
+    </select>
+    <select tabindex="0" role="select" id="m-georefimageepsg-dpi" title="{{translations.selectDpi}}">
+        {{#each dpis}}
+            <option value="{{this}}" {{#if default}} selected{{/if}}>{{this}}</option>
+        {{/each}}
+    </select>
+  </div>
+</section>

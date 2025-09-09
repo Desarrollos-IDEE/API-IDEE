@@ -1,0 +1,147 @@
+[
+    {
+      "name": "Actions disponibles",
+      "description": "Invocación de las distintas actions disponibles.",
+      "url": "/api-idee/api/actions" 
+    },
+    {
+        "name": "Parámetros Capas Rápidas",
+        "description": "Parámetros de las capas rápidas",
+        "url": "/api-idee/?layers=QUICK*RelieveSombreado_TMS,QUICK*IGNBaseOrto_TMS&center=-616447.7038098746,4491015.287866212&zoom=5" 
+    }, 
+    {
+        "name": "Parámetros capa WMS",
+        "description": "Parámetros de la capa WMS",
+        "url": "/api-idee/?layers=QUICK*Base_IGNBaseTodo_TMS,WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5" 
+    },
+    {
+        "name": "Parámetros capa WMS FULL",
+        "description": "Cargar un servicio WMS completo",
+        "url": "/api-idee/?layers=QUICK*Base_IGNBaseTodo_TMS,WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?**true*true**true*true*true*1.3.0&center=-1264453.9015709583,4323899.840546544&zoom=5" 
+    },
+    {
+        "name": "Parámetros capa WMTS",
+        "description": "Parámetros de la capa WMTS",
+        "url": "/api-idee/?layers=WMTS*http://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*imagen*true*image/jpeg*true*true*true&center=-1264453.9015709583,4323899.840546544&zoom=5"
+    },
+    {
+        "name": "Parámetros capa KML",
+        "description": "Parámetros de la capa KML",
+        "url": "/api-idee/?layers=QUICK*Base_IGNBaseTodo_TMS,KML*Delegaciones%20IGN*https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml*true*true&center=-616447.7038098746,4491015.287866212&zoom=5" 
+    },
+    {
+        "name": "Parámetros TMS",
+        "description": "Parámetros de la capa TMS",
+        "url": "/api-idee/?layers=TMS*IGNBaseTodo*https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/{z}/{x}/{-y}.jpeg"
+    }, 
+    {
+        "name": "Parámetros XYZ",
+        "description": "Parámetros de la capa XYZ",
+        "url": "/api-idee/?layers=XYZ*Rioja*https://rts.larioja.org/mapa-base/rioja/{z}/{x}/{y}.png*true*true*true*Rioja"
+    }, 
+    {
+        "name": "Parámetros capa WFS",
+        "description": "Parámetros de la capa WFS",
+        "url": "/api-idee/?layers=QUICK*Base_IGNBaseTodo_TMS,WFS*RED_REGENTE*https://www.ign.es/wfs/redes-geodesicas?*RED_REGENTE*POINT&center=-1264453.9015709583,4323899.840546544&zoom=5" 
+    },
+    {
+        "name": "Parámetros capa OSM",
+        "description": "Parámetros de la capa OSM",
+        "url": "/api-idee/?layers=OSM"
+    },
+    {
+        "name": "Parámetros capa GeoTIFF",
+        "description": "Parámetros de la capa GeoTIFF",
+        "url": "/api-idee/?center=-9677.319268328576,4677685.28650575&zoom=12&layers=OSM,GeoTIFF*EMSR719*https://rapidmapping-viewer.s3.eu-west-1.amazonaws.com/EMSR719/AOI01/GRA_PRODUCT/EMSR719_AOI01_GRA_PRODUCT_PLEIADES_20240420_1058_ORTHO.tif*capa*true**true*true"
+    },
+    {
+        "name": "Parámetros capa MVT",
+        "description": "Parámetros de la capa MVT",
+        "url": "/api-idee/?center=-9677.319268328576,4677685.28650575&zoom=5&layers=MVT*https://vt-unidades-administrativas.ign.es/1.0.0/uadministrativa/{z}/{x}/{y}.pbf*UnidadesAdministrativas"
+    },
+    {
+        "name": "Parámetros capa MBTiles",
+        "description": "Parámetros de la capa MBTiles",
+        "url": "/api-idee/?layers=OSM,MBTiles*IslaCabrera*https://componentes.idee.es/estaticos/Datos/mbtiles/cabrera.mbtiles*cabrera*true*true&center=328154.9072092024,4746614.8701052265&zoom=12"
+    },
+    {
+        "name": "Parámetros capa MBTilesVector",
+        "description": "Parámetros de la capa MBTilesVector",
+        "url": "/api-idee/?layers=OSM,MBTilesVector*countries*https://componentes.idee.es/estaticos/Datos/mbtiles/countries.mbtiles*countries*true*true"
+    },
+    {
+        "name": "Parámetros capa MapLibre",
+        "description": "Parámetros de la capa MapLibre",
+        "url": "/api-idee/?layers=MapLibre*Mundo*https://demotiles.maplibre.org/style.json*NAME_TEST*false*false*true*false*false*W3siaWQiOiJjb2FzdGxpbmUiLCJwYWludCI6W3sicHJvcGVydHkiOiJsaW5lLWNvbG9yIiwidmFsdWUiOiIjMDAwIn0seyJwcm9wZXJ0eSI6ImxpbmUtd2lkdGgiLCJ2YWx1ZSI6N31dfSx7ImlkIjoiY291bnRyaWVzLWxhYmVsIiwicGFpbnQiOlt7InByb3BlcnR5IjoidGV4dC1jb2xvciIsInZhbHVlIjoicmVkIn1dfV0="
+    },
+    {
+        "name": "Parámetros capa GeoJSON",
+        "description": "Parámetros de la capa GeoJSON",
+        "url": "/api-idee/?layers=QUICK*Base_IGNBaseTodo_TMS,GeoJSON*Tenerife*https://www.santacruzdetenerife.es/opendata/dataset/f1728492-96a2-4b5f-8d89-ad932ff1f489/resource/0cae87a8-b1ba-4f9c-a963-2abcc1b926a2/download/distritos.geojson*true*eyJwYXJhbWV0ZXJzIjpbeyJmaWxsIjp7ImNvbG9yIjoicmdiYSgyNTUsIDI1NSwgMjU1LCAwLjQpIiwib3BhY2l0eSI6MC40fSwic3Ryb2tlIjp7ImNvbG9yIjoiI0ZGRDczMyIsIndpZHRoIjoxLjV9LCJyYWRpdXMiOjV9XSwiZGVzZXJpYWxpemVkTWV0aG9kIjoiKChzZXJpYWxpemVkUGFyYW1ldGVycykgPT4gTS5zdHlsZS5TaW1wbGUuZGVzZXJpYWxpemUoc2VyaWFsaXplZFBhcmFtZXRlcnMsICdNLnN0eWxlLlBvbHlnb24nKSkifQ==&center=-1796082.2314628728,3308446.811891394&zoom=11"
+    },
+    {
+        "name": "Parámetros capas GenericRaster",
+        "description": "Parámetros de la capa GenericRaster",
+        "url": "/api-idee/?layers=QUICK*Base_IGNBaseTodo_TMS,GenericRaster*bmV3IG9sLmxheWVyLkltYWdlKHsKICAgICAgICAgIHNvdXJjZTogbmV3IG9sLnNvdXJjZS5JbWFnZVdNUyh7CiAgICAgICAgICAgIHVybDogJ2h0dHBzOi8vd3d3Lmlnbi5lcy93bXMtaW5zcGlyZS91bmlkYWRlcy1hZG1pbmlzdHJhdGl2YXM/JywKICAgICAgICAgICAgcGFyYW1zOiB7ICdMQVlFUlMnOiAnQVUuQWRtaW5pc3RyYXRpdmVVbml0JyB9LAogICAgICAgICAgfSksCiAgICAgICAgICBsZWdlbmQ6ICdDYXBhIFdNUycKICAgICAgICB9KQ=="
+    },
+    {
+        "name": "Parámetros capas GenericVector",
+        "description": "Parámetros de la capa GenericVector",
+        "url": "/api-idee/?layers=QUICK*Base_IGNBaseTodo_TMS,GenericVector*bmV3IG9sLmxheWVyLlZlY3Rvcih7CiAgICAgICAgICBzb3VyY2U6IG5ldyBvbC5zb3VyY2UuVmVjdG9yKHsKICAgICAgICAgICAgZm9ybWF0OiBuZXcgb2wuZm9ybWF0Lkdlb0pTT04oKSwKICAgICAgICAgICAgdXJsOiAnaHR0cHM6Ly9vcGVubGF5ZXJzLm9yZy9kYXRhL3ZlY3Rvci9lY29yZWdpb25zLmpzb24nLAogICAgICAgICAgICBzdHJhdGVneTogb2wubG9hZGluZ3N0cmF0ZWd5LmJib3gsCiAgICAgICAgICB9KSwKICAgICAgICB9KQ=="
+    },
+    {
+        "name": "Parámetros capa WMS + KML",
+        "description": "Parámetros de la capa KML",
+        "url": "/api-idee/?layers=QUICK*Base_IGNBaseTodo_TMS,WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0,KML*Delegaciones%20IGN*https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml*true*true&center=-1264453.9015709583,4323899.840546544&zoom=5" 
+    },
+    {
+        "name": "Parámetros capa WMS + WMS FULL",
+        "description": "Parámetros de la capa KML",
+        "url": "/api-idee/?layers=WMS*SIPNOA2019S*https://www.ign.es/wms/pnoa-historico?*PNOA2019,WMS**http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**true*true*true*1.3.0" 
+    },
+    {
+        "name": "Parámetro Zoom",
+        "description": "Parámetro Zoom",
+        "url": "/api-idee/?zoom=5" 
+    },
+    {
+        "name": "Parámetro Center",
+        "description": "Parámetro Center",
+        "url": "/api-idee/?center=-1264453.9015709583,4323899.840546544" 
+    },
+    {
+        "name": "Parámetro Center con chincheta",
+        "description": "Parámetro chincheta",
+        "url": "/api-idee/?center=-1264453.9015709583,4323899.840546544*true&zoom=5" 
+    },
+    {
+        "name": "Parámetro Bbox",
+        "description": "Parámetro Bbox",
+        "url": "/api-idee/?bbox=-708686.0244472813,4848880.959772236,-121649.64721712761,5015819.429547061"
+    },
+    {
+        "name": "Parámetro MaxExtent",
+        "description": "Parámetro MaxExtent",
+        "url": "/api-idee/?maxextent=-708686.0244472813,4848880.959772236,-121649.64721712761,5015819.429547061"
+    },
+    {
+        "name": "Parámetros MaxExtent + Center",
+        "description": "Parámetros MaxExtent y Center",
+        "url": "/api-idee/?maxextent=-708686.0244472813,4848880.959772236,-121649.64721712761,5015819.429547061&center=-1264453.9015709583,4323899.840546544"
+    },
+    {
+        "name": "Parámetro label",
+        "description": "Parámetro label",
+        "url": "/api-idee/?center=-1264453.9015709583,4323899.840546544&label=%3Cb%3EPopup%20de%20prueba%3C/b%3E%3Cbr%3EFunciona%20correctamente%20con%20tildes:%20cami%C3%B3n%20%C3%A1%C3%A9%C3%AD%C3%B3%C3%BA"
+    },
+    {
+        "name": "Parámetro label con chincheta",
+        "description": "Parámetro label con chincheta",
+        "url": "/api-idee/?center=-1264453.9015709583,4323899.840546544*true&label=%3Cb%3EPopup%20de%20prueba%3C/b%3E%3Cbr%3EFunciona%20correctamente%20con%20tildes:%20cami%C3%B3n%20%C3%A1%C3%A9%C3%AD%C3%B3%C3%BA"
+    },
+    {
+        "name": "Parámetro bgcolorcontainer",
+        "description": "Parámetro bgcolorcontainer",
+        "url": "/api-idee/?bgcolorcontainer=red&layers=OSM&projection=EPSG:25830&plugins=sharemap"
+    }
+  ]

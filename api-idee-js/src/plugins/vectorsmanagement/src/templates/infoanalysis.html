@@ -1,0 +1,33 @@
+<section>
+    {{#if point}}
+        <table>
+            <tr tabindex="0">
+                <td>Coordenadas</td>
+                <td>X: {{point.x}}</td>
+                <td>Y: {{point.y}}</td>
+            </tr>
+        </table>
+    {{/if}}
+    {{#if line}}
+    <table>
+        <tr tabindex="0">
+            <th>Distancia</th>
+            <td>2D</td>
+            <td>3D</td>
+        </tr>
+        <tr>
+            <td>Elipsoidal</td>
+            <td>{{line.length}} {{line.units}}</td>
+            <td id="ellipsoidal3DLength">Calculando...</td>
+        </tr>
+    </table>
+    {{/if}}
+    {{#if polygon}}
+    <table>
+        <tr tabindex="0">
+            <td>Área</td>
+            <td>{{polygon.area}}{{polygon.areaUnits}}<sup>2</sup> </td>
+        </tr>
+    </table>
+{{/if}}
+</section>

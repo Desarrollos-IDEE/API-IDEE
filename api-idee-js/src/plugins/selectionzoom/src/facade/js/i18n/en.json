@@ -1,0 +1,14 @@
+{
+  "exception": {
+    "impl": "The implementation used cannot create SelectionZoom controls.",
+    "formatMRE": "No value specified for the bbox or zoom and center parameters.",
+    "parameterizationDeprecated": "Warning IDEE.plugin.selectionzoom: The parameter definition set in the plugin has been deprecated. Review the new definition: https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/selectionzoom",
+    "formatBBoxAndZoom": "No value specified for the bbox or zoom parameters."
+  },
+  "textHelp": {
+    "help1": "Allows you to quickly move the map to the predefined views: Peninsula, Canary Islands, Balearic Islands, Ceuta or Melilla.",
+    "help2": "The information relevant to the extension and its possible parameterization is documented in",
+    "help3": "The example of use of its parameters can be checked in"
+  },
+  "tooltip": "Default views"
+}

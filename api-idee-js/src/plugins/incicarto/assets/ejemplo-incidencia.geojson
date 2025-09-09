@@ -1,0 +1,52 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "incidencia_1655377662645.1655377663161",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.959844410933493,
+          41.17687390582381,
+          0
+        ]
+      },
+      "properties": {
+        "email_subject": "Metadatos de la incidencia",
+        "theme": "1",
+        "destinatary": "consultas@cnig.es",
+        "emailName": "",
+        "emailUser": "",
+        "errDescripcion": "",
+        "URL": "http://localhost:6123/test/dev.html",
+        "paramsURL": "?center=-667143,4493011,zoom=6,projection=EPSG:3857"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "incidencia_1655377662645.1655377768853",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -3.598028004683495,
+          41.0941297430613,
+          1227.617
+        ]
+      },
+      "properties": {}
+    },
+    {
+      "type": "Feature",
+      "id": "incidencia_1655377662645.1655377769399",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -5.443731129683495,
+          39.94162324213195
+        ]
+      },
+      "properties": {}
+    }
+  ]
+}

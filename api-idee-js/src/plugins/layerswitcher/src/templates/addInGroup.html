@@ -1,0 +1,11 @@
+
+<div>
+    <select class="m-layerswitcher-groups-fields">
+        <option tabindex="0" class="m-check-layerswitcher-addservices m-layerswitcher-icons-check" value="">
+            {{translations.defaultSelectOption}}</option>
+        {{#each groups}}
+        <option tabindex="0" class="m-check-layerswitcher-addservices m-layerswitcher-icons-check"
+            value="{{impl_.olLayer.ol_uid}}">{{legend}}</option>
+        {{/each}}
+    </select>
+</div>

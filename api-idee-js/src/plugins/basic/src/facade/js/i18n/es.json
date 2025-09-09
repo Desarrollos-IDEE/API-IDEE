@@ -1,0 +1,13 @@
+{
+  "exception": {
+    "impl": "La implementación no puede crear controles de Basic."
+  },
+  "textHelp": {
+    "help1": "Texto de ejemplo 1.",
+    "help2": "Texto de ejemplo 2",
+    "help3": "Texto de ejemplo 3"
+  },
+  "tooltip": "Plantilla plugin",
+  "title": "Plantilla plugin",
+  "text": "Contenido del plugin de ejemplo"
+}

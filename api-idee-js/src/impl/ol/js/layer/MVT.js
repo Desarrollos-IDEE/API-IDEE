@@ -1,0 +1,391 @@
+/* eslint-disable no-underscore-dangle */
+/**
+ * @module IDEE/impl/layer/MVT
+ */
+import OLSourceVectorTile from 'ol/source/VectorTile';
+import OLLayerVectorTile from 'ol/layer/VectorTile';
+import { isNullOrEmpty, extend, isObject } from 'IDEE/util/Utils';
+import * as EventType from 'IDEE/event/eventtype';
+import TileEventType from 'ol/source/TileEventType';
+import TileState from 'ol/TileState';
+import MVTFormatter from 'ol/format/MVT';
+import Feature from 'ol/Feature';
+import RenderFeature from 'ol/render/Feature';
+import { mode } from 'IDEE/layer/MVT';
+import Vector from './Vector';
+import ImplUtils from '../util/Utils';
+
+/**
+ * @classdesc
+ * Las capas de tipo Vector Tile ofrecen ciertas ventajas en algunos escenarios,
+ * debido a su bajo peso y carga rápida,
+ * ya que se sirven en forma de teselas que contienen la información vectorial
+ * del área que delimitan.
+ *
+ * @api
+ * @extends {IDEE.impl.layer.Vector}
+ */
+
+class MVT extends Vector {
+  /**
+   * Constructor principal de la clase. Crea una capa MVT
+   * con parámetros especificados por el usuario.
+   *
+   * @constructor
+   * @implements {IDEE.impl.layer.Vector}
+   * @param {IDEE.layer.MVT.parameters} parameters Opciones de la fachada, la fachada se refiere a
+   * un patrón estructural como una capa de abstracción con un patrón de diseño.
+   * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
+   * - style: Define el estilo de la capa.
+   * - minZoom. Zoom mínimo aplicable a la capa.
+   * - maxZoom. Zoom máximo aplicable a la capa.
+   * - minScale: Escala mínima.
+   * - maxScale: Escala máxima.
+   * - visibility. Define si la capa es visible o no. Verdadero por defecto.
+   * - displayInLayerSwitcher. Indica si la capa se muestra en el selector de capas.
+   * - opacity. Opacidad de capa, por defecto 1.
+   * - maxExtent: La medida en que restringe la visualización a una región específica.
+   * @param {Object} vendorOptions Opciones para la biblioteca base. Ejemplo vendorOptions:
+   *  <pre><code>
+   * import OLSourceVector from 'ol/source/Vector';
+   * {
+   *  opacity: 0.1,
+   *  source: new OLSourceVector({
+   *    attributions: 'mvt',
+   *    ...
+   *  })
+   *  tileLoadFunction: <funcion>
+   * }
+   * </code></pre>
+   * @api
+   */
+  constructor(parameters, options, vendorOptions) {
+    super(options, vendorOptions);
+    /**
+     * MVT formater_. Formato del objeto "MVTFormatter".
+     */
+    this.formater_ = null;
+
+    /**
+     * MVT lastZoom_. Zoom anterior.
+     */
+    this.lastZoom_ = -1;
+
+    /**
+     * MVT projection_. Proyección de la capa.
+     */
+    this.projection_ = parameters.projection || 'EPSG:3857';
+
+    /**
+     * MVT features_. Objetos geográficos de la fuente de openlayers.
+     */
+    this.features_ = [];
+
+    /**
+     * MVT mode_. Modos de renderizado posible ("render" o "feature").
+     */
+    this.mode_ = parameters.mode;
+
+    /**
+     * MVT loaded_. Muestra si esta cargada la capa o no.
+     */
+    this.loaded_ = false;
+
+    /**
+     * MVT opacity_. Opacidad entre 0 y 1. Por defecto 1.
+     */
+    this.opacity_ = parameters.opacity || 1;
+
+    /**
+     * MVT visibility_. Indica si la capa es visible.
+     */
+    this.visibility_ = parameters.visibility !== false;
+
+    /**
+     * MVT tileLoadFunction. Función de carga de tiles.
+     * @private
+     * @type {Function}
+     */
+    this.tileLoadFunction = vendorOptions?.tileLoadFunction;
+
+    /**
+     * MVT layers_. Otras capas.
+     */
+    this.layers_ = parameters.layers;
+
+    /**
+     * MVT extract_.
+     * Activa la consulta cuando se hace clic en un objeto geográfico,
+     * por defecto verdadero.
+     */
+    this.extract = parameters.extract;
+
+    /**
+     * MVT fireLoad_.
+     * Controla el disparo del evento LOAD
+     */
+    this.fireLoad_ = false;
+  }
+
+  /**
+   * Este metodo añade la capa al mapa.
+   *
+   * @public
+   * @function
+   * @param {IDEE.impl.Map} map Mapa de la implementación.
+   * @api
+   */
+  addTo(map, addLayer = true) {
+    this.map = map;
+
+    if (this.layers_ !== undefined) {
+      this.formater_ = new MVTFormatter({
+        layers: this.layers_,
+        featureClass: this.mode_ === mode.FEATURE ? Feature : RenderFeature,
+      });
+    } else {
+      this.formater_ = new MVTFormatter({
+        featureClass: this.mode_ === mode.FEATURE ? Feature : RenderFeature,
+      });
+    }
+
+    const extent = this.maxExtent_ || this.facadeVector_.getMaxExtent();
+    const ticket = IDEE.config.TICKET;
+    const url = isNullOrEmpty(ticket) ? this.url : `${this.url}?ticket=${ticket}`;
+
+    const source = new OLSourceVectorTile({
+      format: this.formater_,
+      url,
+      projection: this.projection_,
+      tileLoadFunction: this.tileLoadFunction,
+    });
+
+    // register events in order to fire the LOAD event
+    source.on(TileEventType.TILELOADERROR, (evt) => this.checkAllTilesLoaded_(evt));
+    source.on(TileEventType.TILELOADEND, (evt) => this.checkAllTilesLoaded_(evt));
+
+    this.olLayer = new OLLayerVectorTile(extend({
+      source,
+      extent,
+    }, this.vendorOptions_, true));
+    this.olLayer.setMaxZoom(this.maxZoom);
+    this.olLayer.setMinZoom(this.minZoom);
+
+    if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
+    if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
+
+    this.setOpacity(this.opacity_);
+    this.setVisible(this.visibility_);
+
+    if (addLayer) {
+      this.map.getMapImpl().addLayer(this.olLayer);
+      this.facadeVector_?.fire(EventType.ADDED_TO_MAP);
+    }
+
+    // clear features when zoom changes
+    this.map.on(EventType.CHANGE_ZOOM, () => {
+      if (this.map) {
+        const newZoom = this.map.getZoom();
+        if (this.lastZoom_ !== newZoom) {
+          this.features_.length = 0;
+          this.lastZoom_ = newZoom;
+        }
+      }
+    });
+
+    this.map.on(EventType.MOVE, (e) => {
+      if (this.map) {
+        const selector = this.map.getContainer().parentElement.parentElement.id;
+        document.getElementById(selector).style.cursor = 'inherit';
+        this.map.getMapImpl().forEachFeatureAtPixel(e.pixel, (feature) => {
+          if (feature) {
+            document.getElementById(selector).style.cursor = 'pointer';
+          }
+        });
+      }
+    });
+  }
+
+  /**
+   * Este método devuelve todos los objetos geográficos, se puede filtrar.
+   *
+   * @function
+   * @public
+   * @param {boolean} skipFilter Indica si el filtro es de tipo "skip".
+   * @param {IDEE.Filter} filter Filtro que se ejecutará.
+   * @return {Array<IDEE.Feature>} Devuelve los objetos geográficos.
+   * @api
+   */
+  getFeatures(skipFilter, filter) {
+    let features = [];
+    if (this.olLayer) {
+      const olSource = this.olLayer.getSource();
+      const tileCache = Object.values(olSource.sourceTiles_);
+      if (tileCache.length === 0) {
+        return features;
+      }
+      const z = Number(tileCache[0].getTileCoord()[0]);
+      tileCache.forEach((tile) => {
+        if (tile.tileCoord[0] !== z || tile.getState() !== TileState.LOADED) {
+          return;
+        }
+        const olFeatures = tile.getFeatures();
+        if (olFeatures) {
+          features = features.concat(olFeatures);
+        }
+      });
+    }
+    return features;
+  }
+
+  /**
+   * Este método devuelve un objeto geográfico por su id.
+   *
+   * @function
+   * @public
+   * @param {string|number} id Identificador del objeto geográfico..
+   * @return {Array<IDEE.feature>} Objeto Geográfico - Devuelve el objeto geográfico con
+   * ese id si se encuentra, en caso de que no se encuentre o no indique el id devuelve array vacío.
+   * @api stable
+   */
+  getFeatureById(id) {
+    const features = [];
+    if (this.olLayer) {
+      const tileCache = this.olLayer.getSource().tileCache;
+      if (!tileCache) {
+        return features;
+      }
+      const count = tileCache.getCount();
+      if (count === 0) {
+        return features;
+      }
+      const z = Number(tileCache.peekFirstKey().split('/')[0]);
+      for (let k = 0; k < count; k += 1) {
+        const auxValue = tileCache.getValues()[k];
+        if (auxValue.tileCoord[0] === z && auxValue.getState() === TileState.LOADED) {
+          const sourceTiles = auxValue.getSourceTiles();
+          for (let i = 0, ii = sourceTiles.length; i < ii; i += 1) {
+            const implFeature = sourceTiles[i].getFeatures()
+              .find((feature2) => feature2.getProperties().id === id); // feature2.getId()
+            if (implFeature) {
+              features.push(implFeature);
+            }
+          }
+        }
+      }
+    }
+    return features;
+  }
+
+  /**
+   * Este método comprueba si la tesela esta cargada.
+   *
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @public
+   * @function
+   * @param {ol/source/Tile.TileSourceEvent} evt Evento.
+   * @api stable
+   */
+  checkAllTilesLoaded_(evt) {
+    const currTileCoord = evt.tile.getTileCoord();
+    // eslint-disable-next-line no-underscore-dangle
+    let tileImages = this.olLayer.getSource().sourceTiles_;
+    if (isObject(tileImages)) {
+      tileImages = Object.values(tileImages);
+    }
+    if (Array.isArray(tileImages)) {
+      const loaded = tileImages.every((tile) => {
+        const tileCoord = tile.getTileCoord();
+        const tileState = tile.getState();
+        const sameTile = (currTileCoord[0] === tileCoord[0]
+          && currTileCoord[1] === tileCoord[1]
+          && currTileCoord[2] === tileCoord[2]);
+        const tileLoaded = sameTile || (tileState !== TileState.LOADING);
+        return tileLoaded;
+      });
+      if (loaded && !this.loaded_) {
+        this.loaded_ = true;
+        this.facadeVector_.fire(EventType.LOAD_ALL_TILES);
+      }
+      if (this.fireLoad_ === false) {
+        this.facadeVector_.fire(EventType.LOAD);
+        this.fireLoad_ = true;
+      }
+    }
+  }
+
+  /**
+   * Este método devuelve la extensión de todas los objetos geográficos
+   * o discrimina por el filtro, asíncrono.
+   *
+   * @function
+   * @param {boolean} skipFilter Indica si se salta el filtro.
+   * @param {M.Filter} filter Filtro para ejecutar.
+   * @return {Array<number>} Alcance de los objetos geográficos.
+   * @api stable
+   */
+  getFeaturesExtentPromise(skipFilter, filter) {
+    return new Promise((resolve) => {
+      const codeProj = this.map.getProjection().code;
+      if (this.isLoaded() === true) {
+        const features = this.getFeatures(skipFilter, filter);
+        const extent = ImplUtils.getFeaturesExtent(features, codeProj);
+        resolve(extent);
+      } else {
+        this.requestFeatures_().then((features) => {
+          const extent = ImplUtils.getFeaturesExtent(features, codeProj);
+          resolve(extent);
+        });
+      }
+    });
+  }
+
+  /**
+   * Devuelve la proyeccion de la capa.
+   *
+   * @public
+   * @function
+   * @returns {String} SRS de la capa.
+   * @api stable
+   */
+  getProjection() {
+    return this.projection_;
+  }
+
+  /**
+   * Este método establece la función de carga de teselas.
+   *
+   * @public
+   * @function
+   * @param {Function} func Función de carga de teselas.
+   * @api stable
+   */
+  setTileLoadFunction(func) {
+    this.olLayer.getSource().setTileLoadFunction(func);
+  }
+
+  /**
+   * Este método comprueba si un objeto es igual
+   * a esta capa.
+   *
+   * @public
+   * @function
+   * @param {Object} obj Objeto a comparar.
+   * @returns {Boolean} Verdadero es igual, falso si no.
+   * @api
+   */
+  equals(obj) {
+    let equals = false;
+    if (obj instanceof MVT) {
+      equals = (this.url === obj.url);
+      equals = equals && (this.name === obj.name);
+      equals = equals && (this.extract === obj.extract);
+      equals = equals && (this.template === obj.template);
+    }
+
+    return equals;
+  }
+}
+
+export default MVT;

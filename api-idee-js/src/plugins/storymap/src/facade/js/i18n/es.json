@@ -1,0 +1,21 @@
+{
+  "exception": {
+    "impl": "La implementación no puede crear controles de StoryMap.",
+    "cobertura": "Comprobando cobertura en la zona...",
+    "nocobertura": "Esta capa no tiene cobertura en esta zona"
+  },
+  "textHelp": {
+    "help1": "La extensión de 'storyMap' permite interactuar mediante un panel de texto con el mapa de un visualizador",
+    "help2": "El panel de texto se divide en índice, capítulos y pasos de cada capítulo.",
+    "help3": "La parte del índice hace un resumen de los capítulos en los que está dividido el 'storyMap':",
+    "help4": "Una vez entrado en un capítulo, podemos ir pasando por los distintos pasos del capítulo:",
+    "help5": "Existen tres formas de interactuar con el panel del 'storyMap'.",
+    "help6": "La primera de ellas es haciendo 'scroll' hacia abajo en el panel de texto, esto hará que se vaya pasando de paso en paso:",
+    "help7": "La segunda, es mediante los controles de 'play', pausa y velocidad. Esto hará que el 'storyMap' avance automáticamente:",
+    "help8": "Y la tercera es desde el control de capítulos y pasos, los círculos más a la derecha marcan los distintos capítulos que tiene el 'storyMap' y los de la derecha marcan los pasos que tiene cada capítulo:",
+    "help9": "La información relevante a la extensión y su posible parametrización está documentada en",
+    "help10": "El ejemplo de uso de sus parámetros puede comprobarse en"
+  },
+  "tooltip": "Story Map",
+  "warning": "AVISO"
+}

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{translations.header}}</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: Muli, sans-serif;
+      width: 100%;
+    }
+
+    .indexLink {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    #m-help-header {
+      height: 50px;
+      background-color: #364b5f;
+      display: flex;
+      align-items: center;
+    }
+
+    #m-help-header>img {
+      max-height: 50px;
+      margin-left: 0.2rem;
+    }
+
+    #m-help-header>h1 {
+      margin: 0 auto;
+      color: white;
+    }
+
+    #m-help-section {
+      display: flex;
+      height: calc(100vh - 50px);
+    }
+
+    #m-help-index {
+      width: 20%;
+      float: left;
+      box-shadow: 0 1px 5px 0 rgba(0, 0, 0, .2), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .12);
+      overflow-y: auto;
+      padding: 25px 15px 15px 15px;
+    }
+
+    #m-help-index>div:nth-child(2) {
+      padding-top: 15px;
+    }
+
+    #m-help-content {
+      width: 80%;
+      float: right;
+      padding: 15px 40px 15px 40px;
+      overflow-y: auto;
+    }
+
+    .m-help-hidden,
+    .m-help-hidden-index {
+      display: none;
+    }
+
+    .m-help-show,
+    .m-help-show-index {
+      display: block;
+    }
+
+    .m-help-active {
+      background-color: rgba(63, 81, 181, 0.12);
+    }
+
+    #m-help-index>div>div {
+      cursor: pointer;
+    }
+
+    #m-help-index>div>div:hover {
+      cursor: pointer;
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+
+    #m-help-download {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #ffffff;
+      border: none;
+      cursor: pointer;
+      outline: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 10px;
+    }
+
+    #m-help-download>img {
+      width: 90%;
+      height: 90%;
+    }
+
+    #m-help-index ol {
+      counter-reset: item;
+      list-style: none;
+      padding-left: 10px;
+    }
+
+    .m-help-tools {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+    }
+
+    #m-help-index li a:before {
+      content: counters(item, ".") " ";
+      counter-increment: item;
+    }
+    #m-help-index li:not(:has(> span)) > a {
+      padding-left: 18px;
+    }
+
+    .hiddenSubContent {
+      display: none;
+    }
+
+    #m-help-toggle {
+      background-color: #364860;
+      border: 2px solid white;
+      height: 28px;
+      width: 28px;
+      position: fixed;
+      float: left;
+      color: white;
+      left: 20%;
+      margin-left: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      top: 53px;
+      cursor: pointer;
+    }
+
+    #m-help-input {
+      padding: 5px 5px !important;
+      height: 20px;
+    }
+
+    #m-help-index>div:nth-child(1) {
+      text-align: center;
+    }
+
+    .zoom {
+      width: 35px;
+    }
+
+    .m-help-btn {
+      color: white;
+      background-color: rgb(54, 75, 95);
+      padding: 7px 6px;
+      border: 2px solid #364b5f;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    #m-help-content .ic-content-magnifyed {
+      width: 150px;
+      height: 150px;
+      position: absolute;
+      border-radius: 100%;
+      cursor: none;
+      /* for box shadow for glass effect  */
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.85),
+        0 0 7px 7px rgba(0, 0, 0, 0.25),
+        inset 0 0 40px 2px rgba(0, 0, 0, 0.25);
+    }
+
+    #m-help-content .m-help-btnMagnify {
+      padding: 5px;
+      border: 0;
+      background-color: transparent;
+      margin: 0 auto;
+      margin-bottom: 15px;
+      display: block;
+    }
+
+    .m-help-btnMagnify .m-help-magnifyOn {
+      position: relative;
+      width: 25px;
+    }
+
+    @media only screen and (max-width: 1623px) {
+      .m-help-btn {
+        margin-top: 5px;
+      }
+    }
+
+    @media only screen and (max-width: 1100px) {
+      #m-help-header>img {
+        display: none;
+      }
+
+      #m-help-section {
+        display: block;
+      }
+
+      #m-help-index {
+        width: 100%;
+        padding: 25px 10px 15px 10px;
+        box-sizing: border-box;
+      }
+
+      #m-help-content {
+        display: block;
+        width: 100%;
+        margin: 0;
+        box-sizing: border-box;
+        padding: 25px 10px 15px 10px;
+      }
+
+      #m-help-toggle {
+        display: none;
+      }
+    }
+  </style>
+
+  <script src="{{library}}"></script>
+
+  <script>
+    const showContent = (idContent, e) => {
+      const hidden = document.getElementsByClassName('m-help-show');
+      if (hidden.length >= 1) {
+        hidden[0].classList.add('m-help-hidden');
+        hidden[0].classList.remove('m-help-show');
+        const active = document.getElementsByClassName('m-help-active');
+        if (active.length >= 1) {
+          active[0].classList.remove('m-help-active');
+        }
+      }
+      const show = document.getElementById(idContent);
+      show.classList.add('m-help-show');
+      show.classList.remove('m-help-hidden');
+      e.stopPropagation();
+      e.target.classList.add('m-help-active');
+    }
+
+    const downloadPDF = () => {
+      const elements = document.querySelectorAll('.m-help-magnifyOn');
+      elements.forEach((e) => {
+        e.parentElement.style.display = 'none'
+      });
+      window.printJS('m-help-contents', 'html');
+      elements.forEach((e) => {
+        e.parentElement.style.display = 'block';
+      });
+    }
+
+    const changeStatusIndex = () => {
+      const mIndex = document.getElementById('m-help-index');
+      const mContainer = document.getElementById('m-help-content');
+      const mToggle = document.getElementById('m-help-toggle');
+      if (mIndex.classList.contains('m-help-show-index')) {
+        mIndex.classList.remove('m-help-show-index');
+        mIndex.classList.add('m-help-hidden-index');
+        mContainer.style.width = '100%';
+        mToggle.style.left = '0';
+        mToggle.style.marginLeft = 0;
+        mToggle.innerText = '>';
+      } else {
+        mIndex.classList.add('m-help-show-index');
+        mIndex.classList.remove('m-help-hidden-index');
+        mContainer.style.width = '80%';
+        mToggle.style.left = '20%';
+        mToggle.style.marginLeft = '8px';
+        mToggle.innerText = '<';
+      }
+    }
+
+    const filterResults = (e) => {
+      if (e.keyCode === 13 || e.type === 'click') {
+        const text = document.getElementById('m-help-input').value;
+        const ol = document.querySelector('#m-help-index > div:nth-child(2) > ol');
+        const lis = ol.getElementsByTagName('li');
+        Array.prototype.forEach.call(lis, (element) => {
+          element.style.display = 'block';
+          if (element.textContent.toLocaleLowerCase().indexOf(text.toLocaleLowerCase()) === -1) {
+            element.style.display = 'none';
+          }
+        });
+      }
+    }
+
+    addZoomAction = () => {
+      const content = document.getElementById('m-help-contents');
+      const lstImg = content.querySelectorAll('img:not(h2 img)');
+      let lstBtn, btn;
+      if (lstImg && lstImg.length > 0) {
+        lstImg.forEach((img) => {
+          img.classList.add('m-help-content-magnify');
+            btn = document.createElement('button');
+            btn.className = 'm-help-btnMagnify';
+            const icon = document.createElement('img');
+            icon.src = '{{zoom1}}';
+            icon.className = 'm-help-magnifyOn';
+            icon.id = 'h-help-magnifyOff';
+            btn.appendChild(icon);
+            btn.addEventListener('click', this.applyZoom);
+            const div = document.createElement('div');
+            img.parentElement.insertBefore(div, img);
+            div.appendChild(btn);
+            div.appendChild(img);
+        });
+      }
+    }
+
+    applyZoom = (e) => {
+      var zoom = 2;
+      let img, imgZoomed, parent, btn, icon;
+
+      btn = e.currentTarget;
+      icon = btn.querySelector('.m-help-magnifyOn');
+      parent = btn.parentElement;
+      img = parent.querySelector('.m-help-content-magnify');
+      imgZoomed = document.createElement('div');
+      imgZoomed.className = "ic-content-magnifyed";
+      imgZoomed.style.background = 'url("' + img.src + '") no-repeat';
+      imgZoomed.style.backgroundSize = (img.width * zoom) + 'px ' + (img.height * zoom) + 'px';
+      imgZoomed.style.backgroundColor = 'white';
+      imgZoomed.style.display = 'none';
+
+      parent.appendChild(imgZoomed);
+
+      parent.addEventListener("mousemove", this.moveMagnifier);
+      icon.src = '{{zoom2}}';
+      icon.id = 'm-help-magnifyOn';
+      btn.removeEventListener('click', this.applyZoom);
+      btn.addEventListener('click', this.removeZoom);
+    }
+
+
+    removeZoom = (e) => {
+      let btn, imgZoomed, parent, icon;
+
+      btn = e.currentTarget;
+      icon = btn.querySelector('.m-help-magnifyOn');
+      parent = btn.parentElement;
+      imgZoomed = parent.querySelector('.ic-content-magnifyed');
+
+      parent.removeEventListener("mousemove", this.moveMagnifier);
+      btn.removeEventListener('click', this.removeZoom);
+      icon.src = '{{zoom1}}';;
+      icon.id = 'h-help-magnifyOff';
+      btn.addEventListener('click', this.applyZoom);
+      parent.removeChild(imgZoomed);
+    }
+
+    moveMagnifier = (e) => {
+      const zoom = 2;
+      let pos, x, y;
+      let w, h, bw;
+      let parent, img, imgZoomed;
+
+      parent = e.currentTarget;
+      img = parent.querySelector('.m-help-content-magnify');
+      imgZoomed = parent.querySelector('.ic-content-magnifyed');
+      /*prevent any other actions that may occur when moving over the image*/
+      e.preventDefault();
+
+      // offsets width and height of the img zoomed (new div)
+      w = imgZoomed.offsetWidth / 2;
+      h = imgZoomed.offsetHeight / 2;
+      bw = 3;
+
+      /*get the cursor's x and y positions:*/
+      pos = this.getCursorPos({ x: e.pageX, y: e.pageY }, img);
+      x = pos.x;
+      y = pos.y;
+
+      /*prevent the magnifier glass from being positioned outside the image:*/
+      if (x < parseFloat(getComputedStyle(img).width)
+        && y < parseFloat(getComputedStyle(img).height)
+        && x > 0 && y > 0) {
+        imgZoomed.style.display = "";
+        /*set the position of the magnifier glass:*/
+        var px = (e.pageX - window.pageXOffset - (parseFloat(getComputedStyle(imgZoomed).width) / 2));
+        var py = (e.pageY - window.pageYOffset - (parseFloat(getComputedStyle(imgZoomed).height) / 2));
+
+        imgZoomed.style.left = px + "px";
+        imgZoomed.style.top = py + "px";
+        imgZoomed.style.backgroundPosition = (-1 * ((x * zoom) - w + bw)) + "px " + (-1 * ((y * zoom) - h + bw)) + "px";
+      } else {
+        imgZoomed.style.display = "none";
+      }
+    }
+
+    getCursorPos = (e, img) => {
+      let x = 0;
+      let y = 0;
+      // get X and Y of the original image
+      const imgPos = img.getBoundingClientRect();
+
+      // calculate the cursor's X and Y, relative to the image
+      x = e.x - imgPos.left;
+      y = e.y - imgPos.top;
+
+      x = x - window.pageXOffset;
+      y = y - window.pageYOffset;
+      return { x: x, y: y };
+    }
+
+    increaseFont = () => {
+      const ind = document.querySelector('#m-help-index > div:nth-child(2)');
+      const cont = document.querySelector('#m-help-contents');
+      const size = ind.style.fontSize ? parseInt(ind.style.fontSize.replace(/[a-zA-Z]+$/, '')) : 16;
+      ind.style.fontSize = `${size + 4}px`;
+      cont.style.fontSize = `${size + 4}px`;
+    }
+
+    reduceFont = () => {
+      const ind = document.querySelector('#m-help-index > div:nth-child(2)');
+      const cont = document.querySelector('#m-help-contents');
+      const size = ind.style.fontSize ? parseInt(ind.style.fontSize.replace(/[a-zA-Z]+$/, '')) : 16;
+      ind.style.fontSize = `${size - 4}px`;
+      cont.style.fontSize = `${size - 4}px`;
+    }
+  </script>
+</head>
+
+<body>
+  <header id="m-help-header">
+    {{#each headerImages}}
+    <img src="{{this}}" />
+    {{/each}}
+    <h1>{{translations.title}}</h1>
+    <button tabindex="0" aria-label="{{translations.pdf}}" title="{{translations.pdf}}" id='m-help-download' onclick="downloadPDF()">
+      <img src="{{downloadPDFimg}}" />
+    </button>
+  </header>
+  <section id="m-help-section">
+    <div id="m-help-index" class="m-help-show-index">
+      <div class="m-help-tools">
+        <input type="text" onkeydown="filterResults(event)" placeholder="{{translations.write}}..." id="m-help-input" />
+        <button class="m-help-btn" onclick="filterResults(event)">{{translations.search}}</button>
+        <button class="m-help-btn zoom" onclick="increaseFont(event)">A+</button>
+        <button class="m-help-btn zoom" onclick="reduceFont(event)">A-</button>
+      </div>
+      <div></div>
+    </div>
+    <div id="m-help-content">
+      <div id="m-help-toggle" onclick="changeStatusIndex()">
+        < </div>
+          <div id="m-help-contents">
+            <div>
+              <div>
+                <div></div>
+              </div>
+            </div>
+          </div>
+      </div>
+  </section>
+</body>
+
+</html>

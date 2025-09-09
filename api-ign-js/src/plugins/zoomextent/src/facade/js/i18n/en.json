@@ -1,7 +1,0 @@
-{
-  "exception": {
-    "impl": "The implementation used cannot create ZoomExtentControl.",
-    "zoomextent_obsolete": "Message to the developer: M.plugin.ZoomExtent has been deprecated, please use M.plugin.ViewManagement instead"
-  },
-  "tooltip": "Zoom to box"
-}

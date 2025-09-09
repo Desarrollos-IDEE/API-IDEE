@@ -1,0 +1,25 @@
+<div aria-label="Plugin View Management" role="menuitem" id="div-contenedor-printviewmanagement" class="m-control m-container m-printviewmanagement">
+     <!-- Título del plugin -->
+    <header role="heading" tabindex="0" id="m-printviewmanagement-title" class="m-printviewmanagement-title">{{translations.headertitle}}</header>
+
+    <!-- Contenedor de controles -->
+    <section id="m-printviewmanagement-previews" class="m-printviewmanagement-previews">
+        {{#if printermap}}
+        <button tabindex="0" id="m-printviewmanagement-printermap" title="{{translations.printermap}}" class="printviewmanagement-icon-flecha-historial"></button>
+        {{/if}}
+        {{#if georefImage}}
+        <button tabindex="0" id="m-printviewmanagement-georefImage" title="{{translations.georefImage}}" class="printviewmanagement-icon-zoom-extension"></button>
+        {{/if}}
+        {{#if georefImageEpsg}}
+        <button tabindex="0" id="m-printviewmanagement-georefImageEpsg" title="{{translations.tooltipGeorefImageEpsg}}" class="printviewmanagement-georefImageEpsg"></button>
+        {{/if}}
+    </section>
+
+     <!-- Contenedor de controles -->
+    <section id="m-printviewmanagement-controls" class="m-printviewmanagement-controls"></section>
+
+    <!-- Botones para descargar -->
+    <div class="m-georefimage-download-button" id="m-georefimage-download-button" style="display: none;">
+        <button tabindex="0" id="m-printviewmanagement-print" class="print" title="{{translations.downImg}}">{{translations.downImg}}</button>
+    </div>
+</div>
