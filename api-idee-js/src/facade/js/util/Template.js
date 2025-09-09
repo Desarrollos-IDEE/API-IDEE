@@ -35,7 +35,10 @@ export const compileSync = (string, options) => {
   }
 
   const templateFn = Handlebars.compile(string);
-  const htmlText = templateFn(templateVars);
+  const htmlText = templateFn(templateVars, {
+    allowProtoPropertiesByDefault: true,
+    allowProtoMethodsByDefault: true,
+  });
   if (parseToHtml !== false) {
     template = stringToHtml(htmlText);
   } else {
