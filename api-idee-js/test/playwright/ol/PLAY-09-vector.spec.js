@@ -13,6 +13,7 @@ test.describe('Vector layers', () => {
     const textPopup = 'Popup personalizado';
     const customTemplate = `<div>${textPopup}</div>`;
 
+    await page.waitForFunction(() => window.map.isFinished());
     await page.evaluate((temp) => {
       const ogc_001 = new IDEE.layer.OGCAPIFeatures({
         url: 'https://api-features.ign.es/collections/',
@@ -28,7 +29,14 @@ test.describe('Vector layers', () => {
       window.ogc_001 = ogc_001;
     }, customTemplate);
 
-    await page.waitForTimeout(5000);
+    await page.evaluate(() => {
+      return new Promise((resolve) => {
+        window.ogc_001.on(IDEE.evt.LOAD, () => {
+          resolve();
+        });
+      });
+    });
+
     await page.click('#map', { position: { x: 599, y: 132 } });
     const popup = await page.locator('.m-popup .m-body');
     // try {
