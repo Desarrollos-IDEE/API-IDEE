@@ -136,7 +136,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
    * @api stable
    */
   initCustomDropdown(html) {
-    const input = html.querySelector('#epsg-selected');
+    const input = html.querySelector('#m-infocoordinates-epsg-selected');
     const selector = html.querySelector('#m-infocoordinates-srs-selector');
     let isEditable = false;
 
