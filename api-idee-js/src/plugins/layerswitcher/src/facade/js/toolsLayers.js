@@ -64,8 +64,6 @@ const CLASS_CHECK = 'm-layerswitcher-check';
 /* LEGEND LAYER */
 const I18N_LEGEND_ERROR = 'legend_error';
 
-const LEGEND_DEFAULT_IMG = 'https://componentes.idee.es/estaticos/imagenes/leyenda/legend-default.png';
-
 /* TARGET LAYER */
 const layersTypesTarget = ['WMTS', 'WFS', 'MBTilesVector', 'MBTiles', 'OSM', 'XYZ', 'TMS', 'GeoJSON', 'KML', 'OGCAPIFeatures', 'Vector', 'GenericRaster', 'GenericVector', 'MVT', 'GeoTIFF', 'MapLibre'];
 
@@ -153,6 +151,7 @@ const errorLegendLayer = (layer, useProxy, statusProxy) => {
 };
 
 export const legendInfo = (evt, layer, useProxy, statusProxy) => {
+  const LEGEND_DEFAULT_IMG = `${IDEE.config.STATIC_RESOURCES_URL}/imagenes/leyenda/legend-default.png`;
   if (evt.target.className.indexOf('m-layerswitcher-icons-image') > -1) {
     const legend = evt.target.parentElement.parentElement.parentElement.querySelector('.m-layerswitcher-legend');
     if (legend.style.display !== 'block') {

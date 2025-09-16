@@ -72,6 +72,9 @@ class LayerBase extends Base {
      */
     this.url = parameter.url;
 
+    LayerBase.LEGEND_DEFAULT = `${IDEE.config.STATIC_RESOURCES_URL}/imagenes/leyenda/legend-default.png`;
+    LayerBase.LEGEND_ERROR = `${IDEE.config.STATIC_RESOURCES_URL}/imagenes/leyenda/legend-error.png`;
+
     /**
      * Layer name: Nombre de la capa.
      */
