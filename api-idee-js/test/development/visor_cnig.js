@@ -62,7 +62,7 @@ const mp2 = new Attributions({
   scale: 10000,
   // defaultAttribution: 'Instituto Geográfico Nacional',
   // defaultURL: 'https://www.ign.es/',
-  // url: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+  // url: `${IDEE.config.STATIC_RESOURCES_URL}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml`,
   // type: 'kml',
 });
 

@@ -83,7 +83,7 @@ class Scale extends ControlBase {
       content: new Promise((success) => {
         const html = compileTemplate(myhelp, {
           vars: {
-            urlImages: 'https://componentes.idee.es/estaticos/imagenes/controles',
+            urlImages: `${IDEE.config.STATIC_RESOURCES_URL}/imagenes/controles`,
             translations: {
               help1: textHelp.text1,
               help2: textHelp.text2,

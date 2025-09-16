@@ -25,7 +25,7 @@ test('Capa GeoPackage', async ({ page }) => {
   });
 
   await page.evaluate(() => {
-    window.fetch('https://componentes.idee.es/estaticos/Datos/gpkg/rivers.gpkg').then((response) => {
+    window.fetch(`${IDEE.config.STATIC_RESOURCES_URL}/Datos/gpkg/rivers.gpkg`).then((response) => {
       const gpkg = new IDEE.layer.GeoPackage(response);
 
       window.mapjs.on(IDEE.evt.ADDED_GEOPACKAGE, () => {

@@ -64,7 +64,7 @@ const ogcAPIFeatures = new OGCAPIFeatures({
 
 const mbTiles = new MBTiles({
   name: 'Capa mbtiles',
-  url: 'https://componentes.idee.es/estaticos/Datos/mbtiles/cabrera.mbtiles',
+  url: `${IDEE.config.STATIC_RESOURCES_URL}/Datos/mbtiles/cabrera.mbtiles`,
 }, {
   minScale: 40000,
   maxScale: 160000,

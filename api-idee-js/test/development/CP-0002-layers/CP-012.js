@@ -46,7 +46,8 @@ setTimeout(() => {
 window.capa = generic_001;
 mapa.addLayers(generic_001);
 
-// window.fetch('https://componentes.idee.es/estaticos/Datos/mbtiles/cabrera.mbtiles').then((response) => {
+// window.fetch(`${IDEE.config.STATIC_RESOURCES_URL}/Datos/mbtiles/cabrera.mbtiles`).then(
+// (response) => {
 //   const mbtile = new MBTiles({
 //     name: 'mbtiles',
 //     legend: 'Capa MBTiles L',

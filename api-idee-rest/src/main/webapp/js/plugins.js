@@ -69,9 +69,9 @@ const outputHTMLBootstrap = matches =>{
             <p class="card-text" style="min-height:100px;">${match.description}</p>
             <div class="d-flex justify-content-between align-items-center">
               <div class="btn-group">
-                <a href="${match.url_es}" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/spain-flag.svg"></a>
-                <a href="${match.url_en}" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/uk-flag.svg"></a>
-                <a href="${match.url_git}" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg"></a>
+                <a href="${match.url_es}" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="${IDEE.config.STATIC_RESOURCES_URL}/imagenes/logos/spain-flag.svg"></a>
+                <a href="${match.url_en}" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="${IDEE.config.STATIC_RESOURCES_URL}/imagenes/logos/uk-flag.svg"></a>
+                <a href="${match.url_git}" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="${IDEE.config.STATIC_RESOURCES_URL}/imagenes/logos/logo-github.svg"></a>
               </div>
               <small class="text-muted">${match.version}</small>
             </div>

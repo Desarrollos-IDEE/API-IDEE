@@ -15,7 +15,7 @@ export const mbtileVector_001 = new MBTilesVector({
   //     name: 'Name Prueba KML',
   //     description: 'Description Prueba',
   //     url: 'https://www.ign.es',
-  //     contentAttributions: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+  //     contentAttributions: `${IDEE.config.STATIC_RESOURCES_URL}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml`,
   //     contentType: 'kml',
   //   },
   extract: true,

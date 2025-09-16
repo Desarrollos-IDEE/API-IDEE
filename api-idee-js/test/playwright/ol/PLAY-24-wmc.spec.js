@@ -18,7 +18,7 @@ test.describe('IDEE.layer.WMC', () => {
   test('Add layer', async ({ page }) => {
     await page.evaluate(() => {
       const wmc_001 = new IDEE.layer.WMC({
-        url: 'https://componentes.idee.es/estaticos/Datos/WMC/wmc_grupos.xml',
+        url: `${IDEE.config.STATIC_RESOURCES_URL}/Datos/WMC/wmc_grupos.xml`,
         name: 'Secciones',
       });
       window.wmc_001 = wmc_001;
@@ -34,7 +34,7 @@ test.describe('IDEE.layer.WMC', () => {
   test('Add two WMC', async ({ page }) => {
     await page.evaluate(() => {
       const wmc_001 = new IDEE.layer.WMC({
-        url: 'https://componentes.idee.es/estaticos/Datos/WMC/satelite.xml',
+        url: `${IDEE.config.STATIC_RESOURCES_URL}/Datos/WMC/satelite.xml`,
         name: 'Satelite',
       });
       window.wmc_001 = wmc_001;
@@ -42,7 +42,7 @@ test.describe('IDEE.layer.WMC', () => {
       window.map.addWMC(wmc_001);
 
       const wmc_002 = new IDEE.layer.WMC({
-        url: 'https://componentes.idee.es/estaticos/Datos/WMC/context_cdau_hibrido_25830_no_cache.xml',
+        url: `${IDEE.config.STATIC_RESOURCES_URL}/Datos/WMC/context_cdau_hibrido_25830_no_cache.xml`,
         name: 'Híbrido',
       });
       window.wmc_002 = wmc_002;

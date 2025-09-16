@@ -97,7 +97,7 @@ const capaVector = new IDEE.layer.Vector({
     url: 'https://www.google.es',
     nameLayer: 'Nombre capa',
     name: 'Otro nombre', // se puede llamar description?
-    contentAttributions: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+    contentAttributions: `${IDEE.config.STATIC_RESOURCES_URL}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml`,
     contentType: 'kml',
   },
 });
@@ -137,7 +137,7 @@ const capaXYZ = new IDEE.layer.XYZ({
 map.addLayers(capaXYZ); window.capaXYZ = capaXYZ; // */
 
 /* / Capa MBTiles fetch
-window.fetch('https://componentes.idee.es/estaticos/Datos/mbtiles/cabrera.mbtiles').then((response) => {
+window.fetch(`${IDEE.config.STATIC_RESOURCES_URL}/Datos/mbtiles/cabrera.mbtiles`).then((response) => {
   const mbtile = new IDEE.layer.MBTiles({
     name: 'mbtiles', legend: 'Capa MBTiles L',
     source: response,
@@ -146,7 +146,7 @@ window.fetch('https://componentes.idee.es/estaticos/Datos/mbtiles/cabrera.mbtile
 }).catch((e) => { throw e; }); // */
 
 /* / Capa MBTilesVector fetch
-window.fetch('https://componentes.idee.es/estaticos/Datos/mbtiles/countries.mbtiles').then((response) => {
+window.fetch(`${IDEE.config.STATIC_RESOURCES_URL}/Datos/mbtiles/countries.mbtiles`).then((response) => {
   const mbtilesvector = new IDEE.layer.MBTilesVector({
     name: 'mbtiles_vector', legend: 'Capa MBTilesVector L',
     source: response,
@@ -195,9 +195,9 @@ const mp = new PrintViewManagement({
   printermap: {
     tooltip: 'TEST TOOLTIP printermap', // Tooltip del botón para escoger esta opción
     filterTemplates: [
-      "https://componentes.idee.es/estaticos/plantillas/html/templateConBorde.html",
-      "https://componentes.idee.es/estaticos/plantillas/html/templateConCabezeraYBorde.html",
-      "https://componentes.idee.es/estaticos/plantillas/html/templateConFooterYBorde.html",
+      `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/templateConBorde.html`,
+      `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/templateConCabezeraYBorde.html`,
+      `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/templateConFooterYBorde.html`,
     ], // Array de paths que hacen referencia a las plantillas a elegir por el usuario
     showDefaultTemplate: true, // Si se quiere mostrar la opción de elegir la plantilla por defecto que tiene el plugin
     defaultDpiOptions: [72, 150, 300], // Valores DPI a elegir en el modo de impresión printermap
