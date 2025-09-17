@@ -53,6 +53,7 @@ class LayerBase extends Base {
   constructor(userParameters, impl) {
     // calls the super constructor
     super(impl);
+    this.constructorParameters = { userParameters, impl };
 
     // This layer is of parameters.
     const parameter = parserParameter.layer(userParameters);

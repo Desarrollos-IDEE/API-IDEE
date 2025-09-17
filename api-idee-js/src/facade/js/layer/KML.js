@@ -121,6 +121,7 @@ class KML extends LayerVector {
 
     // calls the super constructor
     super(parameters, options, undefined, impl);
+    this.constructorParameters = { userParameters, options, vendorOptions };
 
     /**
      * KML options: Optiones que se mandan a la implementación.

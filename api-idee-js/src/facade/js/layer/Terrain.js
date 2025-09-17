@@ -76,6 +76,7 @@ class Terrain extends LayerBase {
     const impl = new TerrainImpl(userParameters, options, vendorOptions);
     // calls the super constructor
     super(parameters, impl);
+    this.constructorParameters = { userParameters, options, vendorOptions };
 
     /**
      * Terrain url: Url del servicio Terrain.

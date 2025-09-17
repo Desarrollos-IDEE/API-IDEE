@@ -110,6 +110,9 @@ class MVT extends Vector {
     }
     const impl = implParam || new MVTTileImpl(opts, optionsVar, vendorOptions);
     super(opts, optionsVar, undefined, impl);
+    this.constructorParameters = {
+      parameters, options, vendorOptions, implParam,
+    };
 
     /**
      * MVT minZoom: Límite del zoom mínimo.

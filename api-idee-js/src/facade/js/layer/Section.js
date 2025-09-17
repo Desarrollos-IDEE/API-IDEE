@@ -81,6 +81,7 @@ class Section extends MObject {
      */
     const impl = new SectionImpl(parameters);
     super(impl);
+    this.constructorParameters = { userParameters };
 
     /**
      * Section idSection: Identificador de la sección.

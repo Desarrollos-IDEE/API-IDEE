@@ -86,6 +86,7 @@ class LayerGroup extends LayerBase {
      */
     const impl = new LayerGroupImpl(parameters, opt, vendorOptions);
     super(parameters, impl);
+    this.constructorParameters = { userParameters, options, vendorOptions };
 
     this.layers = impl.layers;
 

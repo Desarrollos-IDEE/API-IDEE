@@ -142,6 +142,7 @@ class OGCAPIFeatures extends Vector {
 
     // Llama al contructor del que se extiende la clase
     super(parameters, optionsVar, undefined, impl);
+    this.constructorParameters = { userParams, opt, vendorOpts };
 
     /**
      * OGCAPIFeatures legend: Indica el nombre que queremos

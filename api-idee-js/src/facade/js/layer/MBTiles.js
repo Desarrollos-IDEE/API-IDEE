@@ -100,6 +100,7 @@ class MBTiles extends LayerBase {
 
     // calls the super constructor
     super(parameters, impl);
+    this.constructorParameters = { userParameters, options, vendorOptions };
 
     /**
      * MBTiles name: Nombre de la capa.

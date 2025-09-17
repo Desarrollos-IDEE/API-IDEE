@@ -124,6 +124,7 @@ class WMS extends LayerBase {
     const impl = new WMSImpl(optionsVar, vendorOptions);
     // calls the super constructor
     super(parameters, impl);
+    this.constructorParameters = { userParameters, options, vendorOptions };
 
     /**
      * WMS legend: Nombre asociado en el árbol de contenido, si usamos uno.

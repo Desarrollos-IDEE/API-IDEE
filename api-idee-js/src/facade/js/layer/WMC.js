@@ -62,6 +62,7 @@ class WMC extends LayerBase {
     const parameters = parameter.layer(userParameters, LayerType.WMC);
     // calls the super constructor
     super(parameters, impl);
+    this.constructorParameters = { userParameters, options };
 
     /**
      * WMC options: Opciones WMC.

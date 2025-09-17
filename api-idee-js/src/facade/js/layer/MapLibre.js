@@ -109,6 +109,7 @@ class MapLibre extends LayerBase {
 
     // calls the super constructor
     super(opts, impl);
+    this.constructorParameters = { parameters, options, vendorOptions };
 
     impl.facade = this;
 

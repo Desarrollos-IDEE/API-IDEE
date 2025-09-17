@@ -104,6 +104,8 @@ class XYZ extends LayerBase {
     const impl = new XYZImpl(userParameters, optionsVar, vendorOptions);
     // calls the super constructor
     super(parameters, impl);
+    this.constructorParameters = { userParameters, options, vendorOptions };
+
     /**
      * XYZ url: Url del servicio XYZ.
      */

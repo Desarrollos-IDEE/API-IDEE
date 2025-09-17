@@ -356,7 +356,7 @@ export default class TemplateCustomizer extends IDEE.Control {
       center: Object.values(this.map.getImpl().getCenter()),
     });
 
-    this.previewMap.addLayers(this.map.getLayers());
+    this.previewMap.addLayers(this.map.getLayers().map((layer) => layer.clone()));
     this.previewMap.getLayers().forEach((layer) => {
       if (typeof layer.getStyle === 'function' && layer.getStyle()) {
         layer.setStyle(layer.getStyle());

@@ -71,6 +71,7 @@ class GeoPackageTile extends LayerBase {
 
     // calls the super constructor
     super(userParameters, impl);
+    this.constructorParameters = { userParameters, provider };
   }
 
   /**
