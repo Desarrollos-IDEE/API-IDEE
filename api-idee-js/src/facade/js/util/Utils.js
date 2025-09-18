@@ -1066,6 +1066,23 @@ export const defineFunctionFromString = (objParam) => {
 };
 
 /**
+ * Esta función añade o elimina una clase a un elemento html
+ * @private
+ * @function
+ * @param {htmlElement} htmlElement Elemento html
+ * @param {string} className Clase a añadir/eliminar
+ * @api
+ */
+export const classToggle = (htmlElement, className) => {
+  const classList = htmlElement.classList;
+  if (classList.contains(className)) {
+    classList.remove(className);
+  } else {
+    classList.add(className);
+  }
+};
+
+/**
  * Esta función devuelve verdadero si algún valor de objeto es función o "{{*}}".
  * @function
  * @public
