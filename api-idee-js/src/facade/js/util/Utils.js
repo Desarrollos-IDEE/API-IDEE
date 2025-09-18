@@ -1066,6 +1066,21 @@ export const defineFunctionFromString = (objParam) => {
 };
 
 /**
+ * Esta función reemplaza un nodo por otro
+ * @private
+ * @function
+ * @param {Node} newNode Nuevo nodo
+ * @param {Node} oldNode Antiguo nodo
+ * @api
+ */
+export const replaceNode = (newNode, oldNode) => {
+  const parent = oldNode.parentNode;
+  if (parent) {
+    parent.replaceChild(newNode, oldNode);
+  }
+};
+
+/**
  * Esta función devuelve verdadero si algún valor de objeto es función o "{{*}}".
  * @function
  * @public
