@@ -241,7 +241,7 @@ params.forEach((param) => {
    * @private
    * @type {String}
    */
-  IDEE.config('SQL_WASM_URL', `${(location.protocol !== 'file' && location.protocol !== 'file:') ? location.protocol : 'http:'}\${sql_wasm.url}`);
+  IDEE.config('SQL_WASM_URL', `${(location.protocol !== 'file' && location.protocol !== 'file:') ? location.protocol : 'https:'}\${sql_wasm.url}`);
 
   /**
    * MAP Viewer - Center
