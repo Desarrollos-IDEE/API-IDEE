@@ -116,6 +116,7 @@ class GeoJSON extends LayerVector {
 
     // Llama al contructor del que se extiende la clase
     super(opts, optionsVar, undefined, impl);
+    this.constructorParameters = { parameters, options, vendorOptions };
 
     if (isString(parameters)) {
       this.url = parameters;

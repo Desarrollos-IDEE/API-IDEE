@@ -111,6 +111,7 @@ class MBTilesVector extends Vector {
     }
     const impl = new MBTilesVectorImpl(parameters, optionsVar, vendorOptions);
     super(parameters, options, undefined, impl);
+    this.constructorParameters = { userParameters, options, vendorOptions };
 
     /**
      * MBTilesVector minZoom: Límite del zoom mínimo.
