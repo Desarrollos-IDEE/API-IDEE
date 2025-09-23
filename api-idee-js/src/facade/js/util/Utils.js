@@ -1066,11 +1066,10 @@ export const defineFunctionFromString = (objParam) => {
 };
 
 /**
- * Esta función reemplaza un nodo por otro
- * @private
+ * Esta función reemplaza un nodo HTML por otro
  * @function
- * @param {Node} newNode Nuevo nodo
- * @param {Node} oldNode Antiguo nodo
+ * @param {Node} newNode Nuevo nodo HTML
+ * @param {Node} oldNode Antiguo nodo HTML
  * @api
  */
 export const replaceNode = (newNode, oldNode) => {
