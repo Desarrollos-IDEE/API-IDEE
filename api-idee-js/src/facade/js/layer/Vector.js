@@ -105,6 +105,9 @@ class Vector extends LayerBase {
     const impl = implParam || new VectorImpl(optionsVars, vendorOptions);
     // calls the super constructor
     super(optns, impl);
+    this.constructorParameters = {
+      parameters, options, vendorOptions, implParam,
+    };
 
     /**
      * Vector style_. Estilo de la capa.
