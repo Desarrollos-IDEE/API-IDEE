@@ -182,15 +182,29 @@ class Generic extends Simple {
 
     // Canvas / Context
     const canvasGL = document.createElement('canvas');
-    canvasGL.width = 200;
-    canvasGL.height = 50;
+    canvasGL.height = 20;
     const ctxGL = canvasGL.getContext('2d');
 
-    const positions = [0, 60, 120];
+    const positions = [0, 35, 70];
     let cont = 0;
 
     // Loading images
     return Promise.all(promises).then((values) => {
+      const lngt = values.length;
+      if (lngt === 1) {
+        canvasGL.width = 35;
+      } else if (lngt === 2) {
+        canvasGL.width = 70;
+      } else {
+        canvasGL.width = 100;
+      }
+      let height = 0;
+      values.forEach((image) => {
+        if (image.height > height) {
+          height = image.height;
+        }
+      });
+      canvasGL.height = height;
       values.forEach((image) => {
         ctxGL.drawImage(image, positions[cont], 0);
         cont += 1;

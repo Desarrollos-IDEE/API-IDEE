@@ -1083,6 +1083,20 @@ export const removeHTML = (element) => {
 };
 
 /**
+ * Esta función reemplaza un nodo HTML por otro
+ * @function
+ * @param {Node} newNode Nuevo nodo HTML
+ * @param {Node} oldNode Antiguo nodo HTML
+ * @api
+ */
+export const replaceNode = (newNode, oldNode) => {
+  const parent = oldNode.parentNode;
+  if (parent) {
+    parent.replaceChild(newNode, oldNode);
+  }
+};
+
+/**
  * Esta función devuelve verdadero si algún valor de objeto es función o "{{*}}".
  * @function
  * @public

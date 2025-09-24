@@ -102,6 +102,7 @@ class OSM extends LayerBase {
 
     // Calls the super constructor.
     super(parameters, impl);
+    this.constructorParameters = { userParametersVar, options, vendorOptions };
 
     /**
      * OSM name. Nombre de la capa, OSM.
