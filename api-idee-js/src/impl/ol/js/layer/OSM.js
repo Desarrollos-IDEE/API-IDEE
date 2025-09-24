@@ -253,14 +253,14 @@ class OSM extends Layer {
     if (!isNullOrEmpty(this.olLayer) && isNullOrEmpty(this.vendorOptions_.source)) {
       const extent = this.facadeLayer_.getMaxExtent();
       let newSource = '';
-      if (!isUndefined(this.url_)) {
+      if (!isUndefined(this.url)) {
         newSource = new SourceXYZ({
-          url: this.url_,
+          url: this.url,
           tileLoadFunction: this.tileLoadFunction,
         });
       } else {
         newSource = new SourceOSM({
-          url: this.url,
+          tileLoadFunction: this.tileLoadFunction,
         });
       }
       this.olLayer.setSource(newSource);
