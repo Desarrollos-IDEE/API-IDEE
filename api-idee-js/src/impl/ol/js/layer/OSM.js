@@ -56,6 +56,7 @@ class OSM extends Layer {
    *    ...
    *  })
    * }
+   * tileLoadFunction: <funcion>
    * </code></pre>
    * @api stable
    */
@@ -92,7 +93,7 @@ class OSM extends Layer {
     }
 
     /**
-     * OMS tileLoadFunction.
+     * OMS tileLoadFunction. Función de carga de tiles.
      */
     this.tileLoadFunction = vendorOptions?.tileLoadFunction;
 

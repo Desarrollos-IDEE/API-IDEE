@@ -60,6 +60,7 @@ class OSM extends LayerBase {
    *    ...
    *  })
    * }
+   * tileLoadFunction: <funcion>
    * </code></pre>
    * @api
    */
@@ -129,12 +130,11 @@ class OSM extends LayerBase {
   }
 
   /**
-   * Este método sets tileLoadFunction
-   * en la implementación
+   * Sobrescribe la función de carga de teselas.
    *
    * @function
    * @public
-   * @param {Function} func Function to override
+   * @param {Function} func Función de carga de teselas.
    * @api
    */
   setTileLoadFunction(func) {
