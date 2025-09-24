@@ -1066,6 +1066,23 @@ export const defineFunctionFromString = (objParam) => {
 };
 
 /**
+ * Esta función elimina el elemento html de un elemento padre.
+ * @public
+ * @param {HTMLElement} element Elemento html a eliminar
+ * @function
+ * @api
+ */
+export const removeHTML = (element) => {
+  if (element) {
+    const parent = element.parentElement;
+    if (parent) {
+      parent.removeChild(element);
+    }
+  }
+};
+    
+
+/**    
  * Esta función añade o elimina una clase a un elemento html
  * @function
  * @public
