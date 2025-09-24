@@ -1067,9 +1067,9 @@ export const defineFunctionFromString = (objParam) => {
 
 /**
  * Esta función añade o elimina una clase a un elemento html
- * @private
  * @function
- * @param {htmlElement} htmlElement Elemento html
+ * @public
+ * @param {htmlElement} htmlElement Elemento html para añadir/eliminar la clase
  * @param {string} className Clase a añadir/eliminar
  * @api
  */
