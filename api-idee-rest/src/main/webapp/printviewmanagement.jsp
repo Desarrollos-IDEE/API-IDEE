@@ -109,7 +109,7 @@
 
         const DEFAULT_georefImageEpsg = '{"tooltip": "Georeferenciar imagen","layers": [{"url": "http://www.ign.es/wms-inspire/mapa-raster?","name": "mtn_rasterizado","format": "image/jpeg","legend": "Mapa ETRS89 UTM"},{"url": "http://www.ign.es/wms-inspire/pnoa-ma?","name": "OI.OrthoimageCoverage","format": "image/jpeg","legend": "Imagen (PNOA) ETRS89 UTM"}], "defaultDpiOptions": [72, 150, 300]}';
         const DEFAULT_georefImage = '{"tooltip": "Georeferenciar imagen","printSelector": true, "defaultDpiOptions": [72, 150, 300]}';
-        const DEFAULT_printermap = '{"filterTemplates": ["https://componentes.idee.es/estaticos/plantillas/html/templateConBorde.html", "https://componentes.idee.es/estaticos/plantillas/html/templateConCabezeraYBorde.html", "https://componentes.idee.es/estaticos/plantillas/html/templateConFooterYBorde.html"],"showDefaultTemplate": false, "defaultDpiOptions": [72, 150, 300], "layoutsRestraintFromDpi": ["screensize", "A0", "A1", "A2"]}';
+        const DEFAULT_printermap = '{"filterTemplates": ["${api-idee.static_resources.url}/plantillas/html/templateConBorde.html", "${api-idee.static_resources.url}/plantillas/html/templateConCabezeraYBorde.html", "${api-idee.static_resources.url}/plantillas/html/templateConFooterYBorde.html"],"showDefaultTemplate": false, "defaultDpiOptions": [72, 150, 300], "layoutsRestraintFromDpi": ["screensize", "A0", "A1", "A2"]}';
 
         const map = IDEE.map({
             container: 'mapjs',

@@ -72,9 +72,6 @@ class LayerBase extends Base {
      */
     this.url = parameter.url;
 
-    LayerBase.LEGEND_DEFAULT = `${IDEE.config.STATIC_RESOURCES_URL}/imagenes/leyenda/legend-default.png`;
-    LayerBase.LEGEND_ERROR = `${IDEE.config.STATIC_RESOURCES_URL}/imagenes/leyenda/legend-error.png`;
-
     /**
      * Layer name: Nombre de la capa.
      */
@@ -838,7 +835,11 @@ class LayerBase extends Base {
  * @public
  * @api
  */
-LayerBase.LEGEND_DEFAULT = 'https://componentes.idee.es/estaticos/imagenes/leyenda/legend-default.png';
+Object.defineProperty(LayerBase, 'LEGEND_DEFAULT', {
+  get() {
+    return `${IDEE.config.STATIC_RESOURCES_URL}/imagenes/leyenda/legend-default.png`;
+  },
+});
 
 /**
  * Imagen de error PNG para la leyenda predeterminada.
@@ -847,6 +848,10 @@ LayerBase.LEGEND_DEFAULT = 'https://componentes.idee.es/estaticos/imagenes/leyen
  * @public
  * @api
  */
-LayerBase.LEGEND_ERROR = 'https://componentes.idee.es/estaticos/imagenes/leyenda/legend-error.png';
+Object.defineProperty(LayerBase, 'LEGEND_ERROR', {
+  get() {
+    return `${IDEE.config.STATIC_RESOURCES_URL}/imagenes/leyenda/legend-error.png`;
+  },
+});
 
 export default LayerBase;

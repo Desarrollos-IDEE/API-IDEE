@@ -60,7 +60,7 @@ public class Proxy {
 	public ServletContext context_ = null;
 	private static ResourceBundle configProperties = ResourceBundle.getBundle("configuration");
 	private static final String THEME_URL = configProperties.getString("api-idee.theme.url");
-	private static final String LEGEND_ERROR = "https://componentes.idee.es/estaticos/imagenes/leyenda/legend-error.png";
+	private static final String LEGEND_ERROR = "${api-idee.static_resources.url}/imagenes/leyenda/legend-error.png";
 	private static final int IMAGE_MAX_BYTE_SIZE = Integer.parseInt(configProperties.getString("max.image.size"));
 
   // Log4J

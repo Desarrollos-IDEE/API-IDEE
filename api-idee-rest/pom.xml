@@ -48,6 +48,20 @@
                <include>**/*.ftl</include>
             </includes>
          </resource>
+         <resource>
+            <directory>src/main/java/es/api_idee/api</directory>
+            <filtering>true</filtering>
+            <includes>
+               <include>**/*.java</include>
+            </includes>
+         </resource>
+         <resource>
+            <directory>src/main/resources/properties</directory>
+            <filtering>true</filtering>
+            <includes>
+               <include>**/*.json</include>
+            </includes>
+         </resource>
       </resources>
       <filters>
          <filter>${basedir}/../api-idee-parent/src/main/filters/${environment}.properties</filter>
@@ -77,6 +91,16 @@
                      <includes>
                         <include>configuration.js</include>
                         <include>configuration-${project.version}.js</include>
+                     </includes>
+                  </resource>
+                  <!-- Filtering for webapp files -->
+                  <resource>
+                     <directory>${project.build.directory}/../src/main/webapp</directory>
+                     <filtering>true</filtering>
+                     <includes>
+                        <include>**/*.jsp</include>
+                        <include>**/*.html</include>
+                        <include>**/*.json</include>
                      </includes>
                   </resource>
                </webResources>
