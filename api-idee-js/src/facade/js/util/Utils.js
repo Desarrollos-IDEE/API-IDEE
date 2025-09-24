@@ -1086,9 +1086,8 @@ export const removeHTML = (element) => {
     }
   }
 };
-    
 
-/**    
+/**
  * Esta función añade o elimina una clase a un elemento html
  * @function
  * @public
