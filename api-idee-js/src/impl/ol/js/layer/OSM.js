@@ -289,7 +289,7 @@ class OSM extends Layer {
    * @api stable
    */
   setTileLoadFunction(func) {
-    this.getOLLayer().getSource().setTileLoadFunction(func);
+    this.getLayer().getSource().setTileLoadFunction(func);
   }
 
   /**
