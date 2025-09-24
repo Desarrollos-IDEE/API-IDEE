@@ -1767,10 +1767,14 @@ export const getSystem = () => {
 
 /**
  * Este método recupera la información descriptiva del servicio WMTS.
+ *
  * @function
  * @public
- * @param {String| URLLike} url URL del servicio WMTS
- * @returns {Promise}
+ * @param {string} url URL del servicio WMTS (debe incluir el parámetro service=WMTS y
+ *  request=GetCapabilities)
+ * @returns {Promise<Object>} Promesa que se resuelve con un objeto que contiene
+ *  las capacidades del servicio WMTS.
+ * @api
  */
 export const getWMTSCapabilities = (url) => {
   return getImplWMTSCapabilities(url);
