@@ -1066,11 +1066,12 @@ export const defineFunctionFromString = (objParam) => {
 };
 
 /**
- * Esta función elimina el elemento html of control
+ * Esta función elimina el elemento html de un elemento padre.
  *
- * @private
+ * @public
  * @param {HTMLElement} element Elemento html a eliminar
  * @function
+ * @api
  */
 export const removeHTML = (element) => {
   if (element) {
