@@ -525,17 +525,19 @@ const projections = [
  * usando ol/proj (libreria de proyecciones de openlayers).
  *
  * @function
- * @param {Array<Object>} projectionsParam Proyecciones a registrar
+ * @param {Array<Object>} projs Proyecciones a registrar
+ * @param {boolean} [forceDuplicates=false] Forzar duplicados
  * @public
  * @api
  */
-const addProjections = (projs) => {
+const addProjections = (projs, forceDuplicates = false) => {
   let projectionsParam = projs;
   if (!Array.isArray(projectionsParam)) {
     projectionsParam = [projectionsParam];
   }
   // Register and publish projections
   projectionsParam.forEach((projection) => {
+    if (!forceDuplicates && projections.some((p) => p.codes[0] === projection.codes[0])) return;
     projection.codes.forEach((code) => {
       proj4.defs(code, projection.def);
     });
@@ -550,9 +552,6 @@ const addProjections = (projs) => {
       });
     });
     addEquivalentProjections(olProjections);
-    if (projections.indexOf(projection) === -1) {
-      projections.push(projection);
-    }
   });
   register(proj4);
 };
@@ -652,11 +651,11 @@ const setNewProjection = async (projection) => {
   };
 
   projections.push(newProjection);
-  addProjections([newProjection]);
+  addProjections([newProjection], true);
 };
 
 // register proj4
-addProjections(projections);
+addProjections(projections, true);
 
 /**
  * Este comentario no se verá, es necesario incluir
