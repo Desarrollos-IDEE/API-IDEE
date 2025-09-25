@@ -913,7 +913,7 @@ export const getRgba = (color, opacity) => {
 export const setEquals = (array, array2) => {
   let equals = false;
   if (array.length === array2.length) {
-    equals = array.every((e) => array2.some((e2) => e2.equals(e)));
+    equals = array.every((e) => array2.some((e2) => (typeof e2.equals === 'function' ? e2.equals(e) : e2 === e)));
   }
   return equals;
 };
