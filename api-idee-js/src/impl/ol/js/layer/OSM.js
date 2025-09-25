@@ -260,7 +260,6 @@ class OSM extends Layer {
         });
       } else {
         newSource = new SourceOSM({
-          tileLoadFunction: this.tileLoadFunction,
         });
       }
       this.olLayer.setSource(newSource);
