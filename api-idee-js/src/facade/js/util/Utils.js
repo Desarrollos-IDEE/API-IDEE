@@ -7,6 +7,7 @@ import { get as remoteGet } from 'IDEE/util/Remote';
 import chroma from 'chroma-js';
 import Draggabilly from 'draggabilly';
 import reproj from 'impl/util/reprojection';
+import getImplWMTSCapabilities from 'impl/util/GetCapabilities';
 import { getValue } from '../i18n/language';
 import { DOTS_PER_INCH, INCHES_PER_UNIT } from '../units';
 import * as WKT from '../geom/WKT';
@@ -1845,6 +1846,21 @@ export const getSystem = () => {
   }
 
   return env;
+};
+
+/**
+ * Este método recupera la información descriptiva del servicio WMTS.
+ *
+ * @function
+ * @public
+ * @param {string} url URL del servicio WMTS (debe incluir el parámetro service=WMTS y
+ *  request=GetCapabilities)
+ * @returns {Promise<Object>} Promesa que se resuelve con un objeto que contiene
+ *  las capacidades del servicio WMTS.
+ * @api
+ */
+export const getWMTSCapabilities = (url) => {
+  return getImplWMTSCapabilities(url);
 };
 
 /**
