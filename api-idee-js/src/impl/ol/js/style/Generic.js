@@ -85,6 +85,7 @@ class Generic extends Simple {
 
         if (isDynamic(this.options_.point) === true) {
           img.src = d;
+          img.crossOrigin = 'anonymous';
         } else {
           const getterPoint = GETTER_BY_GEOM.Point;
           const stylesPoint = getterPoint(this.options_, this, this.layer_);
@@ -111,6 +112,7 @@ class Generic extends Simple {
           img.src = d;
           img.width = imgSize;
           img.height = imgSize;
+          img.crossOrigin = 'anonymous';
         } else {
           const getterPolygon = GETTER_BY_GEOM.Polygon;
           const stylesPolygon = getterPolygon(this.options_, this, this.layer_);
@@ -154,6 +156,7 @@ class Generic extends Simple {
           img.src = d;
           img.width = 30;
           img.height = 30;
+          img.crossOrigin = 'anonymous';
         } else {
           const getterLine = GETTER_BY_GEOM.LineString;
           const stylesLine = getterLine(this.options_, this, this.layer_);
