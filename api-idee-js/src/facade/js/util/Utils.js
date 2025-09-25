@@ -280,7 +280,7 @@ export const generateRandom = (prefix, sufix) => {
  * @returns {String} Devuelve los metadatos.
  * @api
  */
-export const getWMSGetCapabilitiesUrl = (serverUrl, version, ticket = false) => {
+export const getWMSGetCapabilitiesUrl = (serverUrl, version, ticket) => {
   let wmsGetCapabilitiesUrl = serverUrl;
 
   // request
@@ -295,9 +295,7 @@ export const getWMSGetCapabilitiesUrl = (serverUrl, version, ticket = false) => 
 
   // PATCH: En api-idee 3 no se manda luego aquí tampoco. Hay servicios que dan error....
   //       version
-  wmsGetCapabilitiesUrl = addParameters(wmsGetCapabilitiesUrl, {
-    version,
-  });
+  wmsGetCapabilitiesUrl = addParameters(wmsGetCapabilitiesUrl, `version=${version}`);
 
   return wmsGetCapabilitiesUrl;
 };
