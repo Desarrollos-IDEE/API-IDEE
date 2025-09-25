@@ -774,7 +774,13 @@ export const rgbToHex = (rgbColor) => {
  * @api
  */
 export const rgbaToHex = (rgbaColor) => {
-  const hexColor = chroma(rgbaColor).hex();
+  let hexColor;
+  // eslint-disable-next-line no-useless-catch
+  try {
+    hexColor = chroma(rgbaColor).hex();
+  } catch (err) {
+    throw err;
+  }
   return hexColor;
 };
 
