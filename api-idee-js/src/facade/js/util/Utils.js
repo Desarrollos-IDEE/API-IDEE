@@ -902,12 +902,12 @@ export const getRgba = (color, opacity) => {
 };
 
 /**
- * Esta función devuelve si dos sets son iguales
+ * Esta función devuelve si dos arrays son iguales independientemente del orden de los elementos.
  * @function
  * @public
- * @param {array} array
- * @param {array} array2
- * @return {bool}
+ * @param {Array} array Primer array a comparar.
+ * @param {Array} array2 Segundo array a comparar.
+ * @return {Boolean}
  * @api
  */
 export const setEquals = (array, array2) => {
