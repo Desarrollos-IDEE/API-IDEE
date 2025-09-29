@@ -13,6 +13,19 @@ import { DOTS_PER_INCH, INCHES_PER_UNIT } from '../units';
 import * as WKT from '../geom/WKT';
 
 /**
+ * Este método obtiene las extensiones de los objetos geográficos especificados
+ *
+ * @function
+ * @param {Array<ol.Feature>} features Objetos geográficos.
+ * @param {String} projectionCode Código de proyección
+ * @returns {Array<ol.Extent>} Extensiones de los objetos geográficos.
+ * @api
+ */
+export const getFeaturesExtent = (features, projectionCode) => {
+  return IDEE.impl.utils.getFeaturesExtent(features, projectionCode);
+};
+
+/**
  * Devuelve verdadero si es valor que se le pasa por
  * parámetros es indefinido.
  * @function
