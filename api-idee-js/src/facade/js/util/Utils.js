@@ -950,6 +950,23 @@ export const getRgba = (color, opacity) => {
 };
 
 /**
+ * Esta función devuelve si dos arrays son iguales independientemente del orden de los elementos.
+ * @function
+ * @public
+ * @param {Array} array Primer array a comparar.
+ * @param {Array} array2 Segundo array a comparar.
+ * @return {Boolean}
+ * @api
+ */
+export const setEquals = (array, array2) => {
+  let equals = false;
+  if (array.length === array2.length) {
+    equals = array.every((e) => array2.some((e2) => (typeof e2.equals === 'function' ? e2.equals(e) : e2 === e)));
+  }
+  return equals;
+};
+
+/**
  * Esta función extiende un objeto.
  *
  * @public
