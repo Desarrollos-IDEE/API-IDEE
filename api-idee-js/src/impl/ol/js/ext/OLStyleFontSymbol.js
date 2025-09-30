@@ -257,7 +257,7 @@ class OLStyleFontSymbol extends OLStyleRegularShape {
    */
   drawPath_(renderOptions, contextParam) {
     const context = contextParam;
-    const s = (2 * this.radius_) + renderOptions.strokeWidth + 1;
+    const s = (2 * this.radius_) + renderOptions.strokeWidth;
     const w = renderOptions.strokeWidth / 2;
     const c = renderOptions.size / 2;
     // Transfo to place the glyph at the right place
