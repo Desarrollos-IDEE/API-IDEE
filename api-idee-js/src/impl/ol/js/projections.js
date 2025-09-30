@@ -552,6 +552,7 @@ const addProjections = (projs, forceDuplicates = false) => {
       });
     });
     addEquivalentProjections(olProjections);
+    projections.push(projection);
   });
   register(proj4);
 };
