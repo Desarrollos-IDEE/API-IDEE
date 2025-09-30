@@ -1158,13 +1158,17 @@ export const replaceNode = (newNode, oldNode) => {
  * @function
  * @public
  * @param {object} obj Valor.
+ * @param {Array<string>} namesToSkip Nombres a omitir.
  * @return {bool} Verdadero si algún valor de objeto es función o "{{*}}".
  * @api
  */
-export const isDynamic = (obj) => {
+export const isDynamic = (obj, namesToSkip = []) => {
   let flag = false;
   if (typeof obj === 'object' && !Array.isArray(obj) && !isNullOrEmpty(obj)) {
-    flag = Object.values(obj).some((val) => isDynamic(val));
+    flag = Object.entries(obj).some(([key, val]) => {
+      if (namesToSkip.includes(key)) return false;
+      return isDynamic(val, namesToSkip);
+    });
   } else if (typeof obj === 'function' || (typeof obj === 'string' && /\{\{.*\}\}/.test(obj))) {
     flag = true;
   }

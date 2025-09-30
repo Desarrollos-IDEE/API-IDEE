@@ -83,7 +83,8 @@ class Generic extends Simple {
         img.width = imgSize;
         img.height = imgSize;
 
-        if (isDynamic(this.options_.point) === true) {
+        const namesToSkip = ['label'];
+        if (isDynamic(this.options_.point, namesToSkip) === true) {
           img.src = d;
           img.crossOrigin = 'anonymous';
         } else {
@@ -108,7 +109,8 @@ class Generic extends Simple {
 
         // img
 
-        if (isDynamic(this.options_.polygon) === true) {
+        const namesToSkip = ['label'];
+        if (isDynamic(this.options_.polygon, namesToSkip) === true) {
           img.src = d;
           img.width = imgSize;
           img.height = imgSize;
@@ -152,7 +154,8 @@ class Generic extends Simple {
         img.onerror = reject;
 
         // img
-        if (isDynamic(this.options_.line) === true) {
+        const namesToSkip = ['label'];
+        if (isDynamic(this.options_.line, namesToSkip) === true) {
           img.src = d;
           img.width = 30;
           img.height = 30;
