@@ -4,7 +4,7 @@
 import MObject from 'IDEE/Object';
 import { get as getRemote } from 'IDEE/util/Remote';
 import Exception from 'IDEE/exception/exception';
-import { isNullOrEmpty } from 'IDEE/util/Utils';
+import { isNullOrEmpty, addParameters, isString } from 'IDEE/util/Utils';
 import { getValue } from 'IDEE/i18n/language';
 
 /**
@@ -82,8 +82,12 @@ class JSONP extends MObject {
     * @api
     */
   loadInternal_(projection) {
+    let url = this.url_;
     return new Promise((success) => {
-      getRemote(this.url_).then((response) => {
+      if (isString(IDEE.config.TICKET)) {
+        url = addParameters(url, { ticket: IDEE.config.TICKET });
+      }
+      getRemote(url).then((response) => {
         if (!isNullOrEmpty(response.text)) {
           const features = this.format_.read(response.text, {
             featureProjection: projection,
