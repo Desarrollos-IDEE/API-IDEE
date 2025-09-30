@@ -18,9 +18,9 @@ test('Capa MVT - tileLoadFunction', async ({ page }) => {
     });
   });
 
-  let mvt;
+  let osm;
   await page.evaluate(() => {
-    mvt = new IDEE.layer.OSM({
+    osm = new IDEE.layer.OSM({
     }, {
     }, {
       tileLoadFunction: (imageTile, src) => {
@@ -29,8 +29,16 @@ test('Capa MVT - tileLoadFunction', async ({ page }) => {
         console.log('tile cargada');
       },
     });
-    mapjs.addLayers([mvt]);
+    window.osm = osm;
   });
-  await page.waitForTimeout(4000);
+  await page.evaluate(() => {
+    return new Promise((resolve) => {
+      window.osm.on(IDEE.evt.ADDED_TO_MAP, () => {
+        resolve();
+      });
+      window.mapjs.addLayers([window.osm]);
+    });
+  });
+  await page.waitForTimeout(2000);
   expect(hasTileLog).toBe(true);
 });

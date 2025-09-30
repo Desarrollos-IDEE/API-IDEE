@@ -260,6 +260,7 @@ class OSM extends Layer {
         });
       } else {
         newSource = new SourceOSM({
+          tileLoadFunction: this.tileLoadFunction,
         });
       }
       this.olLayer.setSource(newSource);
@@ -284,6 +285,7 @@ class OSM extends Layer {
    * Este método establece tileLoadFunction
    *
    * @public
+   * @param {Function} func Función de carga de teselas.
    * @function
    * @api stable
    */
