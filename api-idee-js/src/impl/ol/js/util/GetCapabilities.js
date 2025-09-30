@@ -1,3 +1,6 @@
+/**
+ * @module IDEE/impl/util/GetCapabilities
+ */
 import OLFormatWMTSCapabilities from 'ol/format/WMTSCapabilities';
 import { get as getRemote } from 'IDEE/util/Remote';
 
