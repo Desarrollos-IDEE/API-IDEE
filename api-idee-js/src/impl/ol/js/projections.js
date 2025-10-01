@@ -526,22 +526,26 @@ const projections = [
  *
  * @function
  * @param {Array<Object>} projs Proyecciones a registrar
+ * @param {boolean} [checkDuplicates=true] Verificar duplicados
  * @public
  * @api
  */
-const addProjections = (projs) => {
+const addProjections = (projs, checkDuplicates = true) => {
   let projectionsParam = projs;
   if (!Array.isArray(projectionsParam)) {
     projectionsParam = [projectionsParam];
   }
   // Register and publish projections
   projectionsParam.forEach((projection) => {
-    // Verificar si ya existe una proyección completamente igual
-    const hasDuplicate = projections.some((p) => {
-      return JSON.stringify(p) === JSON.stringify(projection);
-    });
-    if (hasDuplicate) {
-      return;
+    // Verificar si ya existe una proyección completamente igual (solo si se solicita)
+    if (checkDuplicates) {
+      const hasDuplicate = projections.some((p) => {
+        return JSON.stringify(p) === JSON.stringify(projection);
+      });
+      if (hasDuplicate) {
+        return;
+      }
+      projections.push(projection);
     }
     projection.codes.forEach((code) => {
       proj4.defs(code, projection.def);
@@ -557,7 +561,6 @@ const addProjections = (projs) => {
       });
     });
     addEquivalentProjections(olProjections);
-    projections.push(projection);
   });
   register(proj4);
 };
@@ -656,12 +659,11 @@ const setNewProjection = async (projection) => {
     coordRefSys: `http://www.opengis.net/def/crs/EPSG/0/${code}`,
   };
 
-  projections.push(newProjection);
   addProjections([newProjection]);
 };
 
 // register proj4
-addProjections(projections);
+addProjections(projections, false);
 
 /**
  * Este comentario no se verá, es necesario incluir
