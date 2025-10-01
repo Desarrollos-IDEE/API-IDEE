@@ -526,18 +526,23 @@ const projections = [
  *
  * @function
  * @param {Array<Object>} projs Proyecciones a registrar
- * @param {boolean} [forceDuplicates=false] Forzar duplicados
  * @public
  * @api
  */
-const addProjections = (projs, forceDuplicates = false) => {
+const addProjections = (projs) => {
   let projectionsParam = projs;
   if (!Array.isArray(projectionsParam)) {
     projectionsParam = [projectionsParam];
   }
   // Register and publish projections
   projectionsParam.forEach((projection) => {
-    if (!forceDuplicates && projections.some((p) => p.codes[0] === projection.codes[0])) return;
+    // Verificar si ya existe una proyección completamente igual
+    const hasDuplicate = projections.some((p) => {
+      return JSON.stringify(p) === JSON.stringify(projection);
+    });
+    if (hasDuplicate) {
+      return;
+    }
     projection.codes.forEach((code) => {
       proj4.defs(code, projection.def);
     });
@@ -652,11 +657,11 @@ const setNewProjection = async (projection) => {
   };
 
   projections.push(newProjection);
-  addProjections([newProjection], true);
+  addProjections([newProjection]);
 };
 
 // register proj4
-addProjections(projections, true);
+addProjections(projections);
 
 /**
  * Este comentario no se verá, es necesario incluir
