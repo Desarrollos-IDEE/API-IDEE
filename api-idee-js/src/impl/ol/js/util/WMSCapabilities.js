@@ -93,47 +93,49 @@ class GetCapabilities {
   }
 
   /**
-    * Este método calcula la extensión de una capa
-    * específica a partir de su 'GetCapabilities'.
-    *
-    * @function
-    * @param {String} layerName Nombre de la capa.
-    * @return {Array<Number>} Extensión.
-    * @public
-    * @api
-    */
-  getLayerExtent(layerName) {
+   * Este método calcula la extensión de una capa
+   * específica a partir de su 'GetCapabilities'.
+   *
+   * @function
+   * @param {String} layerName Nombre de la capa.
+   * @param {String} projection Código de la proyección para transformar la extensión devuelta en el método
+   * @return {Array<Number>} Extensión.
+   * @public
+   * @api
+   */
+  getLayerExtent(layerName, projection) {
     const layer = this.capabilities_.Capability.Layer;
-    const extent = this.getExtentRecursive_(layer, layerName);
+    const extent = this.getExtentRecursive_(layer, layerName, projection);
     return this.transformExtent(extent);
   }
 
   /**
-    * Este método calcula recursivamente la extensión de
-    * una capa específica a partir de su 'GetCapabilities'.
-    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
-    * @function
-    * @param {Mx.GetCapabilities} layer Lista de capas disponibles en el servicio.
-    * @param {String} layerName Nombre de la capa.
-    * @return {Array<Number>} Extensión.
-    * @public
-    * @api
-    */
-  getExtentRecursive_(layer, layerName) {
+   * Este método calcula recursivamente la extensión de
+   * una capa específica a partir de su 'GetCapabilities'.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @function
+   * @param {Mx.GetCapabilities} layer Lista de capas disponibles en el servicio.
+   * @param {String} layerName Nombre de la capa.
+   * @param { String } tgtProjection Código de la proyección para transformar la extensión devuelta en el método
+   * @return {Array<Number>} Extensión.
+   * @public
+   * @api
+   */
+  getExtentRecursive_(layer, layerName, tgtProjection) {
     let extent = null;
     let i;
     if (!isNullOrEmpty(layer)) {
       // array
       if (isArray(layer)) {
         for (i = 0; i < layer.length && extent === null; i += 1) {
-          extent = this.getExtentRecursive_(layer[i], layerName);
+          extent = this.getExtentRecursive_(layer[i], layerName, tgtProjection);
         }
       } else if (isObject(layer)) {
         // base case
         if (isNullOrEmpty(layerName) || (layer.Name === layerName)) {
+          const projection = tgtProjection || this.projection_.code;
           if (!isNullOrEmpty(layer.BoundingBox)) {
-            const bboxSameProj = layer.BoundingBox
-              .find((bbox) => bbox.crs === this.projection_.code);
+            const bboxSameProj = layer.BoundingBox.find((bbox) => bbox.crs === projection);
             if (!isNullOrEmpty(bboxSameProj)) {
               this.capabilitiesProj = bboxSameProj.crs;
               extent = bboxSameProj.extent;
@@ -155,7 +157,7 @@ class GetCapabilities {
           }
         } else if (!isUndefined(layer.Layer)) {
           // recursive case
-          extent = this.getExtentRecursive_(layer.Layer, layerName);
+          extent = this.getExtentRecursive_(layer.Layer, layerName, tgtProjection);
         }
       }
     }
