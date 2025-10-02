@@ -19,8 +19,8 @@ const mapa = Mmap({
   center: [286050.82659609657, 4152684.6940324996],
   zoom: 6,
   layers: [wms],
-  // wmc: ['WMC*https://componentes.idee.es/estaticos/Datos/WMC/satelite.xml*Satelite', 'WMC*https://componentes.idee.es/estaticos/Datos/WMC/wmc_grupos.xml*Secciones'],
-  // wmcfiles: ['WMC*https://componentes.idee.es/estaticos/Datos/WMC/wmc_grupos.xml*Secciones'],
+  // wmc: [`WMC*${IDEE.config.STATIC_RESOURCES_URL}/Datos/WMC/satelite.xml*Satelite`, `WMC*${IDEE.config.STATIC_RESOURCES_URL}/Datos/WMC/wmc_grupos.xml*Secciones`],
+  // wmcfiles: [`WMC*${IDEE.config.STATIC_RESOURCES_URL}/Datos/WMC/wmc_grupos.xml*Secciones`],
 });
 window.mapa = mapa;
 
@@ -35,13 +35,13 @@ mapa.on(CHANGE_WMC, (capa) => {
 });
 
 const wmc_001 = new WMC({
-  url: 'https://componentes.idee.es/estaticos/Datos/WMC/satelite.xml',
+  url: `${IDEE.config.STATIC_RESOURCES_URL}/Datos/WMC/satelite.xml`,
   name: 'Satelite',
   attribution: {
     name: 'WMC Satelite',
     description: 'Mi WMC 1',
     url: 'https://www.ign.es',
-    contentAttributions: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+    contentAttributions: `${IDEE.config.STATIC_RESOURCES_URL}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml`,
     contentType: 'kml',
   },
 }, {
@@ -52,13 +52,13 @@ window.wmc_001 = wmc_001;
 mapa.addWMC(wmc_001);
 
 const wmc_002 = new WMC({
-  url: 'https://componentes.idee.es/estaticos/Datos/WMC/mapa.xml',
+  url: `${IDEE.config.STATIC_RESOURCES_URL}/Datos/WMC/mapa.xml`,
   name: 'Mapa',
   // attribution: {
   //   name: 'WMC Mapa',
   //   description: 'Mi WMC 2',
   //   url: 'https://www.ign.es',
-  //   contentAttributions: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+  //   contentAttributions: `${IDEE.config.STATIC_RESOURCES_URL}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml`,
   //   contentType: 'kml',
   // },
 }, {
@@ -69,13 +69,13 @@ window.wmc_002 = wmc_002;
 // mapa.addWMC(wmc_002);
 
 const wmc_003 = new WMC({
-  url: 'https://componentes.idee.es/estaticos/Datos/WMC/wmc_grupos.xml',
+  url: `${IDEE.config.STATIC_RESOURCES_URL}/Datos/WMC/wmc_grupos.xml`,
   name: 'Secciones',
   attribution: {
     name: 'WMC Secciones',
     description: 'Mi WMC 3',
     url: 'https://www.ign.es',
-    contentAttributions: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+    contentAttributions: `${IDEE.config.STATIC_RESOURCES_URL}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml`,
     contentType: 'kml',
   },
 }, {

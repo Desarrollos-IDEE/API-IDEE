@@ -114,6 +114,15 @@ params.forEach((param) => {
   IDEE.config('PROXY_POST_URL', `${(location.protocol !== 'file' && location.protocol !== 'file:') ? location.protocol : 'https:'}\${api-idee.proxy_post.url}`);
 
   /**
+   * The static resources URL
+   * @const
+   * @type {string}
+   * @public
+   * @api stable
+   */
+  IDEE.config('STATIC_RESOURCES_URL', '${api-idee.static_resources.url}');
+
+  /**
    * The path to the api-idee theme
    * @const
    * @type {string}

@@ -139,9 +139,9 @@ export default class HelpControl extends IDEE.Control {
         vars: {
           library: `${IDEE.config.API_IDEE_URL}js/print.min.js`,
           headerImages: this.headerImages,
-          downloadPDFimg: 'https://componentes.idee.es/estaticos/imagenes/logos/file-pdf.svg',
-          zoom1: 'https://componentes.idee.es/estaticos/Simbologia/svg/controles_complementos/help/magnify_on.svg',
-          zoom2: 'https://componentes.idee.es/estaticos/Simbologia/svg/controles_complementos/help/magnify_off.svg',
+          downloadPDFimg: `${IDEE.config.STATIC_RESOURCES_URL}/imagenes/logos/file-pdf.svg`,
+          zoom2: `${IDEE.config.STATIC_RESOURCES_URL}/Simbologia/svg/controles_complementos/help/magnify_off.svg`,
+          zoom1: `${IDEE.config.STATIC_RESOURCES_URL}/Simbologia/svg/controles_complementos/help/magnify_on.svg`,
           translations: {
             header: getValue('short_title'),
             pdf: getValue('pdf'),
