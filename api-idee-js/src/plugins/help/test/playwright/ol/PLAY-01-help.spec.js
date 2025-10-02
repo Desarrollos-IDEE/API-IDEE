@@ -2,10 +2,9 @@ import { test, expect } from '@playwright/test';
 
 test('Click help', async ({ page }) => {
   await page.goto('/src/plugins/help/test/playwright/ol/help-ol.html');
-  let mapjs;
   let mp;
   await page.evaluate(() => {
-    mapjs = IDEE.map({
+    window.mapjs = IDEE.map({
       container: 'mapjs',
     });
     mp = new IDEE.plugin.Help({
@@ -23,8 +22,14 @@ test('Click help', async ({ page }) => {
         { title: 'Apartado final', content: '<div><h2 style="text-align: center; color: #fff; background-color: #364b5f; padding: 8px 10px;">Apartado final</h2><div><p>Contenido extra definido por el usuario</p></div></div>' },
       ],
     });
-    mapjs.addPlugin(mp);
   });
+  await page.waitForFunction(() => window.mapjs.isFinished());
+
+  await page.evaluate(() => {
+    window.mapjs.addPlugin(mp);
+  });
+
+  await page.waitForSelector('.m-plugin-help');
   const help = await page.locator('.m-plugin-help').first();
   await expect(help).toBeDefined();
   await expect(help).toHaveClass(/no-collapsible/);

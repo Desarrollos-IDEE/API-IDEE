@@ -55,6 +55,7 @@ class GeoPackage extends MObject {
    */
   constructor(data, options = {}) {
     super({});
+    this.constructorParameters = { data, options };
 
     /**
      * Id de la capa.

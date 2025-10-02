@@ -152,7 +152,10 @@ class WFS {
       describeFeatureParams.outputFormat = this.describeFeatureTypeOutputFormat_;
     }
 
-    const params = addParameters(this.url_, describeFeatureParams);
+    const fixurl = IDEE.config.TICKET
+      ? `${this.url_}ticket=${IDEE.config.TICKET}`
+      : this.url_;
+    const params = addParameters(fixurl, describeFeatureParams);
     const describeFeatureTypeUrl = addParameters(params, this.describeFeatureTypeVendor_);
     const descFTypeOForm = this.describeFeatureTypeOutputFormat_;
     const descrFTypeFormat = new Featuretype(this.name_, descFTypeOForm, this.projection_);

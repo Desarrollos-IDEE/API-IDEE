@@ -205,7 +205,7 @@ export default class DownloadControl extends IDEE.Control {
     const noTextFeatures = this.layer_.getFeatures().filter((feature) => {
       return feature.getStyle() === null || feature.getStyle().get('label') === undefined;
     });
-    newLayer.addFeatures(noTextFeatures);
+    newLayer.addFeatures(noTextFeatures, false, true);
     return newLayer;
   }
 

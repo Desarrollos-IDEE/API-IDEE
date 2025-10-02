@@ -159,7 +159,7 @@ export default class MouseSRSControl extends IDEE.impl.Control {
     IDEE.dialog.info(content.outerHTML, getValue('select_srs'), this.order);
     setTimeout(() => {
       document.querySelector('.m-dialog>div.m-modal>div.m-content').style.minWidth = '260px';
-      const input = document.querySelector('#epsg-selected');
+      const input = document.querySelector('#m-mousesrs-epsg-selected');
       const listElem = document.getElementById('m-mousesrs-srs-selector');
       let isEditable = false;
 
@@ -255,7 +255,7 @@ export default class MouseSRSControl extends IDEE.impl.Control {
   }
 
   changeSRS(map, html) {
-    const select = document.querySelector('#epsg-selected');
+    const select = document.querySelector('#m-mousesrs-epsg-selected');
     this.srs_ = select.value;
     this.label_ = select.value;
     this.facadeMap_.getMapImpl().removeControl(this.mousePositionControl);
