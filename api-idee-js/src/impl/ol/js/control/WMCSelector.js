@@ -24,8 +24,6 @@ class WMCSelector extends Control {
     const select = element.getElementsByTagName('select')[0];
     select.addEventListener('change', (e) => {
       const selectedWMCLayer = map.getWMC(e.target.options[e.target.selectedIndex].text)[0];
-      // eslint-disable-next-line no-console
-      console.log(e.target.options[e.target.selectedIndex].text);
       const zoom = map.getZoom();
       selectedWMCLayer.select();
       map.setZoom(zoom);

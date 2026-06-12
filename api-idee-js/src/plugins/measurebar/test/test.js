@@ -14,6 +14,11 @@ const mp = new MeasureBar({
   tooltip: 'MeasureBar plugin',
   order: 1,
 });
+
+// mp.on(M.evt.ADDED_TO_MAP, () => {
+// 	alert('añadido al mapa')
+// })
+
 map.addPlugin(mp); window.mp = mp;
 
 const mp2 = new IDEE.plugin.Infocoordinates({ position: 'TR', decimalGEOcoord: 4, decimalUTMcoord: 4 }); map.addPlugin(mp2);

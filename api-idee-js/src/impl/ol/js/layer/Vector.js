@@ -8,11 +8,10 @@ import Popup from 'IDEE/Popup';
 import geojsonPopupTemplate from 'templates/geojson_popup';
 import * as EventType from 'IDEE/event/eventtype';
 import Style from 'IDEE/style/Style';
-import StyleCluster from 'IDEE/style/Cluster';
 import { get as getProj } from 'ol/proj';
 import OLLayerVector from 'ol/layer/Vector';
 import OLSourceVector from 'ol/source/Vector';
-// import OLSourceCluster from 'ol/source/Cluster';
+import OLSourceCluster from 'ol/source/Cluster';
 import Layer from './Layer';
 import ImplUtils from '../util/Utils';
 import Feature from '../feature/Feature';
@@ -105,7 +104,6 @@ class Vector extends Layer {
    */
   addTo(map, addLayer = true) {
     this.map = map;
-    this.fire(EventType.ADDED_TO_MAP);
     map.on(EventType.CHANGE_PROJ, this.setProjection_.bind(this), this);
     this.olLayer = new OLLayerVector(this.vendorOptions_);
     this.updateSource_();
@@ -124,6 +122,9 @@ class Vector extends Layer {
 
     if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
     if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
+
+    this.fire(EventType.ADDED_TO_MAP);
+    this.facadeVector_?.fire(EventType.ADDED_TO_MAP);
   }
 
   /**
@@ -308,10 +309,6 @@ class Vector extends Layer {
   removeFeatures(features) {
     this.features_ = this.features_.filter((f) => !(features.includes(f)));
     this.redraw();
-    const style = this.facadeVector_.getStyle();
-    if (style instanceof StyleCluster) {
-      style.refresh();
-    }
   }
 
   /**
@@ -324,13 +321,15 @@ class Vector extends Layer {
   redraw() {
     const olLayer = this.getLayer();
     if (!isNullOrEmpty(olLayer)) {
-      const olSource = olLayer.getSource();
-      // if (olSource instanceof OLSourceCluster) {
-      //   olSource = olSource.getSource();
-      // }
+      let olSource = olLayer.getSource();
+      if (olSource instanceof OLSourceCluster) {
+        olSource = olSource.getSource();
+      }
       // remove all features from ol vector
-      const olFeatures = [...olSource.getFeatures()];
-      olFeatures.forEach(olSource.removeFeature, olSource);
+      const olFeatures = olSource.getFeatures();
+      if (olFeatures.length > 0) {
+        olSource.clear();
+      }
 
       const features = this.facadeVector_.getFeatures();
       olSource.addFeatures(features.map(Feature.facade2Feature));

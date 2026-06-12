@@ -112,7 +112,7 @@ class Base extends MObject {
       }
 
       if (typeof obj === 'function') {
-        const clonedFunction = function (...args) {
+        const clonedFunction = (...args) => {
           return obj.apply(this, args);
         };
 

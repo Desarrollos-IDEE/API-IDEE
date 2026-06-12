@@ -13,7 +13,7 @@ export const geotiff_001 = new GeoTIFF({
   //   name: 'GeoTIFF',
   //   description: 'Mi GeoTIFF',
   //   url: 'https://www.ign.es',
-  //   contentAttributions: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+  //   contentAttributions: `${IDEE.config.STATIC_RESOURCES_URL}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml`,
   //   contentType: 'kml',
   // },
   // projection: 'EPSG:4326',

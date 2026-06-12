@@ -1,0 +1,20 @@
+{
+  "exception": {
+    "nolayersavai": "There are no layers available to apply the transparency effect",
+    "impl": "The implementation used cannot create MagnifyControl controls"
+  },
+  "tooltip": "Magnifier",
+  "title": "Magnifier",
+  "actmagnifier": "Activate magnifier",
+  "zoomlevel": "Zoom level: ",
+  "textHelp": {
+    "squemaTitle": "magnify",
+    "title": "MAGNIFY",
+    "paragraph1": "The magnifier enlarges a circular area of the map over the background cartography (e.g. imagery or basemaps) while the rest of the view stays at normal scale for comparison.",
+    "screenshot1Alt": "Icon of the plugin magnify in the map",
+    "screenshot1Caption": "help-01.png",
+    "screenshot2Alt": "Panel of the magnifier open with zoom level and circular magnifier enlarging a sector of the map",
+    "screenshot2Caption": "help-02.png",
+    "screenshot2Description": "With the panel open and the magnifier active, you will see the magnification level and can move the magnifier over the map: the inside of the circle shows the same area with more detail than the surroundings."
+  }
+}

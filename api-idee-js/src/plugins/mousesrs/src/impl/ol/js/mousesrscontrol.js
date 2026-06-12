@@ -256,8 +256,8 @@ export default class MouseSRSControl extends IDEE.impl.Control {
 
   changeSRS(map, html) {
     const select = document.querySelector('#m-mousesrs-epsg-selected');
-    this.srs_ = select.value;
-    this.label_ = select.value;
+    this.srs_ = select.value.startsWith('EPSG:') ? select.value : `EPSG:${select.value}`;
+    this.label_ = select.value.startsWith('EPSG:') ? select.value : `EPSG:${select.value}`;
     this.facadeMap_.getMapImpl().removeControl(this.mousePositionControl);
     document.querySelector('div.m-api-idee-container div.m-dialog').remove();
     this.renderPlugin(map, html);
@@ -282,7 +282,7 @@ export default class MouseSRSControl extends IDEE.impl.Control {
         srsUnits = newProj.units_;
       } catch (err) {
         this.srs_ = 'EPSG:4326';
-        this.label_ = 'EPSG:4326';
+        this.label_ = this.formatEPSG(this.srs_);
         IDEE.dialog.error(`${getValue('exception.srs')} ${this.srs_}`);
         // eslint-disable-next-line no-underscore-dangle
         srsUnits = ol.proj.get('EPSG:4326').units_;

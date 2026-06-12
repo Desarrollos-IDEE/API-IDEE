@@ -65,7 +65,6 @@ export const getTranslation = (lang) => {
       .esQueryattributes;
     // configuration.translations[lang].querydatabase = pluginsLanguage
     // .querydatabase.esQuerydatabase;
-    configuration.translations[lang].rescale = pluginsLanguage.rescale.esRescale;
     configuration.translations[lang].selectionzoom = pluginsLanguage.selectionzoom.esSelectionzoom;
     configuration.translations[lang].sharemap = pluginsLanguage.sharemap.esSharemap;
     configuration.translations[lang].stylemanager = pluginsLanguage.stylemanager.esStylemanager;
@@ -76,6 +75,13 @@ export const getTranslation = (lang) => {
     configuration.translations[lang].locatorscn = pluginsLanguage.locatorscn.esLocatorscn;
     configuration.translations[lang].vectorsmanagement = pluginsLanguage.vectorsmanagement
       .esVectorsmanagement;
+    configuration.translations[lang].filteredsearch = pluginsLanguage.filteredsearch
+      .esFilteredsearch;
+    configuration.translations[lang].maxextzoom = pluginsLanguage.maxextzoom.esMaxextzoom;
+    configuration.translations[lang].wfstcontrols = pluginsLanguage.wfstcontrols.esWfstcontrols;
+    configuration.translations[lang].mapheader = pluginsLanguage.mapheader.esMapheader;
+    configuration.translations[lang].mapfooter = pluginsLanguage.mapfooter.esMapfooter;
+    configuration.translations[lang].magnify = pluginsLanguage.magnify.esMagnify;
   } else if (lang === 'en') {
     configuration.translations[lang].backimglayer = pluginsLanguage.backimglayer.enBackimglayer;
     configuration.translations[lang].comparators = pluginsLanguage.comparators.enComparators;
@@ -88,9 +94,12 @@ export const getTranslation = (lang) => {
     configuration.translations[lang].layerswitcher = pluginsLanguage.layerswitcher.enLayerswitcher;
     configuration.translations[lang].measurebar = pluginsLanguage.measurebar.enMeasurebar;
     configuration.translations[lang].mousesrs = pluginsLanguage.mousesrs.enMousesrs;
+    configuration.translations[lang].printviewmanagement = pluginsLanguage.printviewmanagement
+      .enPrintviewmanagement;
+    configuration.translations[lang].printviewmanagement = pluginsLanguage.printviewmanagement
+      .enPrintviewmanagement;
     // configuration.translations[lang].querydatabase = pluginsLanguage
     // .querydatabase.enQuerydatabase;
-    configuration.translations[lang].rescale = pluginsLanguage.rescale.enRescale;
     configuration.translations[lang].queryattributes = pluginsLanguage.queryattributes
       .enQueryattributes;
     configuration.translations[lang].selectionzoom = pluginsLanguage.selectionzoom.enSelectionzoom;
@@ -103,6 +112,13 @@ export const getTranslation = (lang) => {
     configuration.translations[lang].locatorscn = pluginsLanguage.locatorscn.enLocatorscn;
     configuration.translations[lang].vectorsmanagement = pluginsLanguage.vectorsmanagement
       .enVectorsmanagement;
+    configuration.translations[lang].filteredsearch = pluginsLanguage.filteredsearch
+      .enFilteredsearch;
+    configuration.translations[lang].maxextzoom = pluginsLanguage.maxextzoom.enMaxextzoom;
+    configuration.translations[lang].wfstcontrols = pluginsLanguage.wfstcontrols.enWfstcontrols;
+    configuration.translations[lang].mapheader = pluginsLanguage.mapheader.enMapheader;
+    configuration.translations[lang].mapfooter = pluginsLanguage.mapfooter.enMapfooter;
+    configuration.translations[lang].magnify = pluginsLanguage.magnify.enMagnify;
   }
   return configuration.translations[lang];
 };

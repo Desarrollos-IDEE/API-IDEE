@@ -62,7 +62,7 @@ map.addLayers(new IDEE.layer.OGCAPIFeatures({
 })); // */
 
 /* / Capa MBTilesVector
-window.fetch('https://componentes.idee.es/estaticos/Datos/mbtiles/countries.mbtiles').then((response) => {
+window.fetch(`${IDEE.config.STATIC_RESOURCES_URL}/Datos/mbtiles/countries.mbtiles`).then((response) => {
   const mbtilesvector = new IDEE.layer.MBTilesVector({
     name: 'mbtiles_vector',
     legend: 'Capa MBTilesVector L',

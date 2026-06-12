@@ -80,14 +80,14 @@ export default class InfocoordinatesControl extends IDEE.impl.Control {
   }
 
   datumCalc(srs) {
-    let datum = 'ETRS89';
-    if (srs.indexOf('3857') > -1) {
-      datum = 'WGS84';
-    } else if (srs.indexOf('4083') > -1) {
-      datum = 'REGCAN95';
-    }
+    return IDEE.impl.ol.js.projections.getSupportedProjs()
+      .find((p) => p.codes.includes(srs))
+      .datum;
+  }
 
-    return datum;
+  isProjGeographic(srs) {
+    return IDEE.impl.ol.js.projections.getSupportedProjs()
+      .find((p) => p.codes.includes(srs)).units === 'd';
   }
 
   readAltitudeFromElevationProcess(coordinates, srcMapa) {

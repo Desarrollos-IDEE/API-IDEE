@@ -14,7 +14,7 @@
    <parent>
       <groupId>es.idee.api</groupId>
       <artifactId>api-idee-parent</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.0</version>
       <relativePath>../api-idee-parent/pom.xml</relativePath>
    </parent>
    <licenses>
@@ -37,6 +37,7 @@
             <filtering>true</filtering>
             <includes>
                <include>**/*.properties</include>
+               <include>**/*.xml</include>
                <include>**/*.json</include>
                <include>**/resourcesPlugins.json</include>
             </includes>
@@ -46,6 +47,20 @@
             <filtering>true</filtering>
             <includes>
                <include>**/*.ftl</include>
+            </includes>
+         </resource>
+         <resource>
+            <directory>src/main/java/es/api_idee/api</directory>
+            <filtering>true</filtering>
+            <includes>
+               <include>**/*.java</include>
+            </includes>
+         </resource>
+         <resource>
+            <directory>src/main/resources/properties</directory>
+            <filtering>true</filtering>
+            <includes>
+               <include>**/*.json</include>
             </includes>
          </resource>
       </resources>
@@ -79,6 +94,17 @@
                         <include>configuration-${project.version}.js</include>
                      </includes>
                   </resource>
+                  <!-- Filtering for webapp files -->
+                  <resource>
+                     <directory>${project.build.directory}/../src/main/webapp</directory>
+                     <filtering>true</filtering>
+                     <includes>
+                        <include>**/*.jsp</include>
+                        <include>**/*.html</include>
+                        <include>**/*.json</include>
+                        <include>js/plugins.js</include>
+                     </includes>
+                  </resource>
                </webResources>
                <archive>
                   <manifestEntries>
@@ -109,34 +135,29 @@
                   </configuration>
                </execution>
             </executions>
-          </plugin>
-          <plugin>
-            	<!-- El uso de este plugin requiere Maven 3 -->
-		<groupId>com.spotify</groupId>
-		<artifactId>docker-maven-plugin</artifactId>
-		<version>0.2.11</version>
-		<configuration>
-			<dockerDirectory>${basedir}/../api-idee-parent/src/main/docker/api-idee</dockerDirectory>
-			<resources>
-				<resource>
-					<targetPath>/</targetPath>
-					<directory>${project.build.directory}</directory>
-					<include>${project.build.finalName}.war</include>
-				</resource>
-			</resources>
-		</configuration>
-	  </plugin>
+         </plugin>
+         <plugin>
+            <!-- El uso de este plugin requiere Maven 3 -->
+            <groupId>com.spotify</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <version>0.2.11</version>
+            <configuration>
+               <dockerDirectory>${basedir}/../api-idee-parent/src/main/docker/api-idee</dockerDirectory>
+               <resources>
+                  <resource>
+                     <targetPath>/</targetPath>
+                     <directory>${project.build.directory}</directory>
+                     <include>${project.build.finalName}.war</include>
+                  </resource>
+               </resources>
+            </configuration>
+         </plugin>
       </plugins>
    </build>
    <dependencies>
       <dependency>
          <groupId>com.sun.jersey</groupId>
          <artifactId>jersey-servlet</artifactId>
-         <version>${jersey.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>com.sun.jersey</groupId>
-         <artifactId>jersey-json</artifactId>
          <version>${jersey.version}</version>
       </dependency>
       <dependency>
@@ -167,22 +188,21 @@
          <artifactId>json</artifactId>
          <version>20140107</version>
       </dependency>
-	  <dependency>
-	  	<groupId>com.sun.mail</groupId>
-		<artifactId>javax.mail</artifactId>
-		<version>1.6.2</version>
-	  </dependency>
-	  <dependency>
-	    <groupId>com.sun.jersey.contribs</groupId>
-	    <artifactId>jersey-multipart</artifactId>
-	    <version>1.19</version>
-	 </dependency>
-	 <dependency>
-		<groupId>org.freemarker</groupId>
-		<artifactId>freemarker</artifactId>
-		<version>2.3.23</version>
-	 </dependency>
-
+      <dependency>
+         <groupId>com.sun.mail</groupId>
+         <artifactId>javax.mail</artifactId>
+         <version>1.6.2</version>
+      </dependency>
+      <dependency>
+         <groupId>com.sun.jersey.contribs</groupId>
+         <artifactId>jersey-multipart</artifactId>
+         <version>1.19</version>
+      </dependency>
+      <dependency>
+         <groupId>org.freemarker</groupId>
+         <artifactId>freemarker</artifactId>
+         <version>2.3.23</version>
+      </dependency>
       <!-- API IGN JS -->
       <dependency>
          <groupId>${project.groupId}</groupId>

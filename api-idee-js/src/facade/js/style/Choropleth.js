@@ -332,9 +332,12 @@ class Choropleth extends StyleComposite {
     if (!isNullOrEmpty(this.layer_)) {
       this.layer_.getFeatures().forEach((f) => {
         try {
-          const value = parseFloat(f.getAttribute(this.attributeName_));
-          if (!Number.isNaN(value)) {
-            values.push(value);
+          // eslint-disable-next-line no-underscore-dangle
+          if (!f.getImpl().isOnlyFeature_) {
+            const value = parseFloat(f.getAttribute(this.attributeName_));
+            if (!Number.isNaN(value)) {
+              values.push(value);
+            }
           }
         } catch (e) {
           // Exception('TODO el atributo no es un número válido');

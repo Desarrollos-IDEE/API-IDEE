@@ -397,6 +397,29 @@ export const parseTicket = (parameter) => {
 };
 
 /**
+ * Esta función analiza un parámetro de rotación en un formato legible.
+ * parámetro a API-IDEE y chequea posibles errores.
+ *
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {string|Mx.parameters.Map} parameter Parámetros.
+ * @returns {Number} Devuelve la rotación.
+ * @api
+ */
+export const parseRotation = (parameter) => {
+  let rotation = parameter;
+
+  if (isString(parameter)) {
+    rotation = getParameterValue('rotation', parameter);
+  } else if (isObject(parameter)) {
+    rotation = parameter.rotation;
+  }
+  return rotation;
+};
+
+/**
  * Esta función analiza un parámetro de "zoomConstrains" en un formato legible.
  * parámetro a API-IDEE y chequea posibles errores.
  *
@@ -420,6 +443,30 @@ export const parseZoomConstrains = (parameter) => {
   }
 
   return zoomConstrains;
+};
+
+/**
+ * Esta función analiza un parámetro de "extentConstrains" en un formato legible.
+ * parámetro a API-IDEE y chequea posibles errores.
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ * @public
+ * @function
+ * @param {string|Mx.parameters.Map} parameter Parámetros.
+ * @returns {Boolean} Devuelve el "extentConstrains".
+ * @api
+ */
+export const parseExtentConstrains = (parameter) => {
+  let extentConstrains;
+
+  if (isString(parameter)) {
+    extentConstrains = getParameterValue('extentConstrains', parameter);
+  } else if (isObject(parameter)) {
+    extentConstrains = parameter.extentConstrains;
+  } else {
+    Exception(`El tipo del parámetro extentConstrains no es válido: ${typeof parameter}`);
+  }
+
+  return extentConstrains;
 };
 
 /**
@@ -524,12 +571,13 @@ export const parseViewExtent = (parameter) => {
 
 /**
  * Esta función analiza un parámetro de "bgColorContainer" en un formato legible.
- * parámetro a API-IDEE y chequea posibles errores. *
- * @param {string|Mx.parameters.Map} parameter Parámetros.
+ * parámetro a API-IDEE y chequea posibles errores.
+ * @param {String|Mx.parameters.Map} parameter Parámetros.
  * @returns {String} Devuelve el "bgColorContainer".
  * @function
+ * @api
  */
-const parseBGColorContainer = (parameter) => {
+export const parseBGColorContainer = (parameter) => {
   let bgColorContainer;
 
   if (isString(parameter)) {
@@ -728,10 +776,24 @@ class Parameters {
 
     /**
      * @public
+     * @type {Number}
+     * @api
+     */
+    this.rotation = parseRotation(userParameters);
+
+    /**
+     * @public
      * @type {Boolean}
      * @api
      */
     this.zoomConstrains = parseZoomConstrains(userParameters);
+
+    /**
+     * @public
+     * @type {Boolean}
+     * @api
+     */
+    this.extentConstrains = parseExtentConstrains(userParameters);
 
     /**
      * @public

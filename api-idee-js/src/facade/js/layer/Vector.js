@@ -524,7 +524,11 @@ class Vector extends LayerBase {
     let legendUrl = this.getImpl().getLegendURL();
     if (legendUrl.indexOf(LayerBase.LEGEND_DEFAULT) !== -1
       && legendUrl.indexOf(LayerBase.LEGEND_ERROR) === -1 && this.style_ instanceof Style) {
-      legendUrl = this.style_.toImage();
+      if (this.style_ instanceof StyleCluster && this.style_.getStyles().length > 0) {
+        legendUrl = this.style_.getStyles()[0].toImage();
+      } else {
+        legendUrl = this.style_.toImage();
+      }
     }
     return legendUrl;
   }
@@ -559,6 +563,14 @@ class Vector extends LayerBase {
    * @api
    */
   getMaxExtent() {
+    let maxExtent = this.userMaxExtent;
+    if (isNullOrEmpty(maxExtent)) {
+      maxExtent = this.map_?.userMaxExtent;
+    }
+    const normalized = maxExtent;
+    if (!isNullOrEmpty(normalized)) {
+      return normalized;
+    }
     return this.getFeaturesExtent();
   }
 
@@ -571,6 +583,14 @@ class Vector extends LayerBase {
    * @api
    */
   calculateMaxExtent() {
+    let maxExtent = this.userMaxExtent;
+    if (isNullOrEmpty(maxExtent)) {
+      maxExtent = this.map_?.userMaxExtent;
+    }
+    const normalized = maxExtent;
+    if (!isNullOrEmpty(normalized)) {
+      return Promise.resolve(normalized);
+    }
     return this.getImpl().getFeaturesExtentPromise(true, this.filter_);
   }
 

@@ -106,9 +106,9 @@
  "countryCode": "es",
  "reverse": false,
  "resultVisibility": true,
- "urlCandidates": "http://www.cartociudad.es/geocoder/api/geocoder/candidatesJsonp",
- "urlFind": "http://www.cartociudad.es/geocoder/api/geocoder/findJsonp",
- "urlReverse": "http://www.cartociudad.es/geocoder/api/geocoder/reverseGeocode",
+ "urlCandidates": "https://www.cartociudad.es/geocoder/api/geocoder/candidatesJsonp",
+ "urlFind": "https://www.cartociudad.es/geocoder/api/geocoder/findJsonp",
+ "urlReverse": "https://www.cartociudad.es/geocoder/api/geocoder/reverseGeocode",
  "requestStreet": "https://www.cartociudad.es/geocoder/api/geocoder/findJsonp?q=Sevilla&type=provincia&tip_via=null&id=41&portal=null&extension=null"
 }</textarea>
         <input type="button" value="Eliminar Plugin" name="eliminar" id="botonEliminar">

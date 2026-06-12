@@ -243,6 +243,42 @@ class MVT extends Vector {
   }
 
   /**
+   * Obtiene el máximo extent de la capa.
+   *
+   * @function
+   * @public
+   * @return {Array<Number>} Devuelve el máximo extent de la capa.
+   * @api
+   */
+  getMaxExtent() {
+    let maxExtent = this.userMaxExtent; // 1
+    if (isNullOrEmpty(maxExtent)) {
+      maxExtent = this.getFeaturesExtent();
+      if (isNullOrEmpty(maxExtent)) {
+        maxExtent = this.map_.userMaxExtent; // 2
+        if (isNullOrEmpty(maxExtent)) {
+          maxExtent = this.map_.getProjection().getExtent(); // 3
+        }
+      }
+    }
+    return maxExtent;
+  }
+
+  /**
+   * Calcula la extensión máxima de la capa.
+   *
+   * @function
+   * @public
+   * @return {Promise<Array<Number>>} Devuelve una promesa con el máximo extent de la capa.
+   * @api
+   */
+  calculateMaxExtent() {
+    return new Promise((resolve) => {
+      resolve(this.getMaxExtent());
+    });
+  }
+
+  /**
    * Modifica el filtro.
    *
    * @function

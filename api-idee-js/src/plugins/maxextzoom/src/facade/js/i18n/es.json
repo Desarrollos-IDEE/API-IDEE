@@ -1,0 +1,15 @@
+{
+  "exception": {
+    "impl": "La implementación usada no puede crear controles MaxExtZoomControl"
+  },
+  "tooltip": "Zoom a la extensión del mapa",
+  "zoommapextend": "Zoom a la extensión del mapa",
+  "textHelp": {
+    "squemaTitle": "maxextzoom",
+    "title": "MAXEXTZOOM",
+    "paragraph1": "Este plugin añade un botón que ajusta la vista del mapa a la extensión máxima definida por la configuración del visor (capas cargadas, WMC o caja por defecto), de un solo clic.",
+    "screenshot1Alt": "Mapa con el control de zoom a extensión visible en la barra del visor",
+    "screenshot1Caption": "help-01.png",
+    "screenshot1Description": "Localice el icono del control (suele mostrarse en una esquina según position); el texto de ayuda o tooltip indica «Zoom a la extensión del mapa»."
+  }
+}

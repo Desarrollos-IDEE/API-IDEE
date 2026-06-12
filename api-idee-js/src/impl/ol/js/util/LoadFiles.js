@@ -25,13 +25,13 @@ import Feature from '../feature/Feature';
  * @api
  */
 class LoadFiles {
-/**
- * Centra el mapa en los features obtenidos
- * @public
- * @function
- * @param {Array<IDEE.Feature>} features array de features
- * @param {IDEE.Map} map mapa donde se realizará el centrado
- */
+  /**
+   * Centra el mapa en los features obtenidos
+   * @public
+   * @function
+   * @param {Array<IDEE.Feature>} features array de features
+   * @param {IDEE.Map} map mapa donde se realizará el centrado
+   */
   static centerFeatures(features, map) {
     if ((features.length === 1) && (features[0].getGeometry().type === 'Point')) {
       const pointView = new View({
@@ -46,6 +46,18 @@ class LoadFiles {
         minResolution: 1,
       });
     }
+  }
+
+  /**
+   * coloca la vista del mapa en una extensión
+   * @param {IDEE.Map} map mapa donde se realizará el centrado
+   * @param {Array<number>} extent extensión del mapa en la que nos fijaremos la vista
+   */
+  static fitMapToExtent(map, extent) {
+    map.getMapImpl().getView().fit(extent, {
+      duration: 500,
+      minResolution: 1,
+    });
   }
 
   /**

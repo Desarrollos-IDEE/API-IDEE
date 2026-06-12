@@ -25,7 +25,6 @@
                     <link href="plugins/infocoordinates/infocoordinates.ol.min.css" rel="stylesheet" />
                     <link href="plugins/measurebar/measurebar.ol.min.css" rel="stylesheet" />
                     <link href="plugins/queryattributes/queryattributes.ol.min.css" rel="stylesheet" />
-                    <link href="plugins/rescale/rescale.ol.min.css" rel="stylesheet" />
                     <link href="plugins/printermap/printermap.ol.min.css" rel="stylesheet" />
                     <link href="plugins/selectionzoom/selectionzoom.ol.min.css" rel="stylesheet" />
                     <link href="plugins/buffer/buffer.ol.min.css" rel="stylesheet" />
@@ -47,7 +46,6 @@
                     <link href="plugins/information/information.ol.min.css" rel="stylesheet" />
                     <link href="plugins/viewhistory/viewhistory.ol.min.css" rel="stylesheet" />
                     <link href="plugins/zoompanel/zoompanel.ol.min.css" rel="stylesheet" />
-                    <link href="plugins/viewmanagement/viewmanagement.ol.min.css" rel="stylesheet" />
                     <link href="plugins/locator/locator.ol.min.css" rel="stylesheet" />
                     <link href="plugins/zoomextent/zoomextent.ol.min.css" rel="stylesheet" />
                     <link href="plugins/attributions/attributions.ol.min.css" rel="stylesheet" />
@@ -252,7 +250,6 @@
                     <script type="text/javascript" src="plugins/infocoordinates/infocoordinates.ol.min.js"></script>
                     <script type="text/javascript" src="plugins/measurebar/measurebar.ol.min.js"></script>
                     <script type="text/javascript" src="plugins/queryattributes/queryattributes.ol.min.js"></script>
-                    <script type="text/javascript" src="plugins/rescale/rescale.ol.min.js"></script>
                     <script type="text/javascript" src="plugins/printermap/printermap.ol.min.js"></script>
                     <script type="text/javascript" src="plugins/selectionzoom/selectionzoom.ol.min.js"></script>
                     <script type="text/javascript" src="plugins/buffer/buffer.ol.min.js"></script>
@@ -274,7 +271,6 @@
                     <script type="text/javascript" src="plugins/information/information.ol.min.js"></script>
                     <script type="text/javascript" src="plugins/viewhistory/viewhistory.ol.min.js"></script>
                     <script type="text/javascript" src="plugins/zoompanel/zoompanel.ol.min.js"></script>
-                    <script type="text/javascript" src="plugins/viewmanagement/viewmanagement.ol.min.js"></script>
                     <script type="text/javascript" src="plugins/locator/locator.ol.min.js"></script>
                     <script type="text/javascript" src="plugins/zoomextent/zoomextent.ol.min.js"></script>
                     <script type="text/javascript" src="plugins/attributions/attributions.ol.min.js"></script>

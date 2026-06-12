@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
+  <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg" height="152" />
 </p>
 <h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.printviewmanagement</small></h1>
 
@@ -16,8 +16,13 @@ Plugin que permite utilizar diferentes herramientas de impresión.
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
 
+Para uso de implementación OpenLayers:
 - **printviewmanagement.ol.min.js**
 - **printviewmanagement.ol.min.css**
+
+Para uso de implementación Cesium:
+- **printviewmanagement.cesium.min.js**
+- **printviewmanagement.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/printviewmanagement/printviewmanagement.ol.min.css" rel="stylesheet" />
@@ -131,9 +136,9 @@ El constructor se inicializa con un JSON con los siguientes atributos:
   - **filterTemplates**: Listado de rutas realtivas o absolutas de las cuales se obtendrán cada una de las plantillas a elegir en el modo de impresión. Por defecto:
   ```JavaScript
   "filterTemplates": [
-    "https://componentes.idee.es/estaticos/plantillas/html/templateConBorde.html",
-    "https://componentes.idee.es/estaticos/plantillas/html/templateConCabezeraYBorde.html",
-    "https://componentes.idee.es/estaticos/plantillas/html/templateConFooterYBorde.html",
+    "https://componentes.idee.es/estaticos/plantillas/html/mapaConMarco.html",
+    "https://componentes.idee.es/estaticos/plantillas/html/mapaConCabeceraYMarco.html",
+    "https://componentes.idee.es/estaticos/plantillas/html/mapaConPieYMarco.html",
     ],
   ```
   - **defaultOpenControl**: Indica el control que aparecerá abierto al inicio. Por defecto: 0.
@@ -322,11 +327,13 @@ URL_API?printviewmanagement=position*collapsed*collapsible*tooltip*isDraggable*g
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.idee.es/api-idee?printviewmanagement=TL*true*true*Imprimir*true***false*false*true
+https://componentes.idee.es/api-idee?printviewmanagement=TR*false*false*imprimir*true*true*true*true*2
 ```
 
 ```
-https://componentes.idee.es/api-idee?printviewmanagement=TL*true*true*Imprimir*true***false*true*true*0
+https://componentes.idee.es/api-idee?printviewmanagement=TL*true*true*Imprimir*true***false*true*true*1
+```
+
 
 ### Ejemplos de uso API-REST en base64
 
@@ -437,9 +444,9 @@ const mp = new IDEE.plugin.PrintViewManagement({
   },
   printermap: {
     filterTemplates: [
-      "https://componentes.idee.es/estaticos/plantillas/html/templateConBorde.html",
-      "https://componentes.idee.es/estaticos/plantillas/html/templateConCabezeraYBorde.html",
-      "https://componentes.idee.es/estaticos/plantillas/html/templateConFooterYBorde.html",
+      "https://componentes.idee.es/estaticos/plantillas/html/mapaConMarco.html",
+      "https://componentes.idee.es/estaticos/plantillas/html/mapaConCabeceraYMarco.html",
+      "https://componentes.idee.es/estaticos/plantillas/html/mapaConPieYMarco.html",
     ],
     showDefaultTemplate: true,
     defaultDpiOptions: [72, 150, 300],

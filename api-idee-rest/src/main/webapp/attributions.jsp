@@ -89,9 +89,9 @@
         <input type="number" id="inputMaxWidth" value="200">
         <div id="divModo">
             <label for="inputUrl">Parámetro url</label>
-            <input type="text" name="url" id="inputUrl" list="urlSug" value="https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml">
+            <input type="text" name="url" id="inputUrl" list="urlSug" value="${api-idee.static_resources.url}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml">
             <datalist id="urlSug">
-                <option value="https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml"></option>
+                <option value="${api-idee.static_resources.url}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml"></option>
             </datalist>
             <label for="selectType">Selector de tipo</label>
             <select name="type" id="selectType">

@@ -1,7 +1,7 @@
 {
   "custom": {
     "titleApp": "API IDEE Core",
-    "versionApp": "1.0.0"
+    "versionApp": "1.1.0"
   },
   "opts": {
     "recurse": true,

@@ -36,14 +36,27 @@
     }
   },
   "metadata": {
-    "name": "measurebar",
-    "description": "Allows measures over map",
-    "text": "Allows measures over map",
-    "version": "2.0.2",
+    "uuid_plugin": "",
+    "uuid_version_plugin": "",
+    "version_ficha_metadatos": "",
+    "name": "Measurebar",
+    "description": "Permite realizar medidas sobre el mapa.",
+    "text": "Permite realizar medidas sobre el mapa.",
+    "version": "1.0.1",
     "date": "September 2019",
     "author": "",
     "org": "IGN",
     "tags": "api-idee,plugin",
-    "icon": "./facade/assets/icons/icons.svg"
+    "icon": "./facade/assets/icons/icons.svg",
+    "buttons": [
+      { "title": "", "description": "", "querySelector": "" },
+      { "title": "", "description": "", "querySelector": "" }
+    ],
+    "dependencies": {
+      "modules": ["", ""],
+      "plugins": [{ "uuid": "", "name": "" }],
+      "services": [{ "name": "", "description": "" }]
+    },
+    "compatibility": ["1"]
   }
 }

@@ -1,0 +1,58 @@
+{
+  "url": {
+    "name": "filteredsearch",
+    "separator": "*"
+  },
+  "constructor": "M.plugin.FilteredSearch",
+  "parameters": [
+    {
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "possibleValues": [
+            "TL",
+            "TR",
+            "BL",
+            "BR"
+          ],
+          "position": 0
+        }
+      ]
+    }
+  ],
+  "files": {
+    "ol": {
+      "scripts": [
+        "filteredsearch.ol.min.js"
+      ],
+      "styles": [
+        "filteredsearch.ol.min.css"
+      ]
+    },
+    "cesium": {
+      "scripts": [
+        "filteredsearch.cesium.min.js"
+      ],
+      "styles": [
+        "filteredsearch.cesium.min.css"
+      ]
+    }
+  },
+  "metadata": {
+    "name": "FilteredSearch",
+    "description": "Búsqueda con filtros",
+    "text": "Permite realizar búsquedas y aplicar diferentes filtros. Da la posibilidad de poder guardar o exportar la consulta",
+    "version": "1.0.0",
+    "date": "Diciembre, 2025",
+    "author": "",
+    "org": "",
+    "tags": "idee,plugin",
+    "icon": "./facade/assets/icons/icons.svg",
+    "centralized": true,
+    "compatibility": [
+      "1"
+    ]
+  }
+}

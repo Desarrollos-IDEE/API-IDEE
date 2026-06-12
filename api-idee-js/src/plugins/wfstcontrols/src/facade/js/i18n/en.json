@@ -1,0 +1,39 @@
+{
+  "exception": {
+    "impl_clear": "The implementation used cannot create ClearFeature controls",
+    "impl_delete": "The implementation used cannot create DeleteFeature controls",
+    "impl_draw": "The implementation used cannot create DrawFeature controls",
+    "impl_edit": "The implementation used cannot create EditAttribute controls",
+    "impl_modify": "The implementation used cannot create ModifyFeature controls",
+    "impl_save": "The implementation used cannot create SaveFeature controls",
+    "WFSlayernotfound": "An error occurred while loading the plugin: No WFS layer found",
+    "errorgeometryparameter": "An error occurred while loading the plugin: The layer geometry could not be assigned automatically, you must do it manually using the geometry parameter.",
+    "errorloadingplugin": "An error occurred while loading the plugin: The layer geometry could not be assigned manually.",
+    "noWFSlayerloaded": "The controls ",
+    "noWFSlayerloaded1": " cannot be added to the map because no WFS layer is loaded",
+    "noloadedWFSlayer": "The layer ",
+    "noloadedWFSlayer1": " is not a loaded WFS layer",
+    "save_element_before": "You must save the element before",
+    "save_element_error": "An error occurred while saving: ",
+    "save_error_unauthorized": "An error occurred while saving: Unauthorized user"
+  },
+  "tooltip": "Editing tools",
+  "clear": "Clear",
+  "delete": "Delete",
+  "draw": "Draw",
+  "save": "Save",
+  "edit": "Edit",
+  "modify": "Modify",
+  "save_element_successfully": "The element has been saved successfully",
+  "save_successfully": "The element has been saved successfully",
+  "textHelp": {
+    "squemaTitle": "wfstcontrols",
+    "title": "WFSTCONTROLS",
+    "paragraph1": "This plugin groups transactional editing actions on a WFS layer loaded in the map: draw, modify or delete features, edit attributes, clear local changes and save to the service (depending on configured controls). It requires a compatible WFS layer and, if needed, a geometry parameter or automatic geometry detection.",
+    "screenshot1Alt": "Icon of wfstcontrols in the map",
+    "screenshot1Caption": "help-01.png",
+    "screenshot2Alt": "Panel detail with draw, modify, save and other editing actions",
+    "screenshot2Caption": "help-02.png",
+    "screenshot2Description": "Use draw or modify on the map, edit attributes if enabled, click Save to send changes to the service or Clear to discard unsaved local edits."
+  }
+}

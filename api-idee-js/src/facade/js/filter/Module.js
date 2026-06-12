@@ -7,6 +7,7 @@ import WKT from '../format/WKT';
 import { isArray, isObject } from '../util/Utils';
 import Vector from '../layer/Vector';
 import Feature from '../feature/Feature';
+import { getValue } from '../i18n/language';
 
 /**
   * Transforma parámetros a geometrías.
@@ -51,20 +52,29 @@ export const parseParamToGeometries = (paramParameter) => {
   */
 const toCQLFilter = (operation, geometries) => {
   let cqlFilter = '';
-  const wktFormat = new WKT();
-  geometries.forEach((value, index) => {
-    if (index !== 0) {
-      // es un OR porque se hace una interseccion completa con todas
-      // las geometries
-      cqlFilter += ' OR ';
+  try {
+    const wktFormat = new WKT();
+    geometries.forEach((value, index) => {
+      if (index !== 0) {
+        // es un OR porque se hace una interseccion completa con todas
+        // las geometries
+        cqlFilter += ' OR ';
+      }
+      const geometry = value;
+      if (geometry.type.toLowerCase() === 'point') {
+        geometry.coordinates.length = 2;
+      }
+      const formatedGeometry = wktFormat.writeFeature(geometry);
+      cqlFilter += `${operation}({{geometryName}}, ${formatedGeometry})`;
+    });
+  } catch (error) {
+    if (error.includes(getValue('exception').wkt_method)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').wkt_toCQL_method);
+    } else {
+      throw error;
     }
-    const geometry = value;
-    if (geometry.type.toLowerCase() === 'point') {
-      geometry.coordinates.length = 2;
-    }
-    const formatedGeometry = wktFormat.writeFeature(geometry);
-    cqlFilter += `${operation}({{geometryName}}, ${formatedGeometry})`;
-  });
+  }
   return cqlFilter;
 };
 

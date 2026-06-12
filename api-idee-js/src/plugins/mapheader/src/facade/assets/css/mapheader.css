@@ -1,0 +1,138 @@
+/** Estilos sobreescritos */
+
+/** Estilos propios*/
+.m-areas
+  > div.m-area.m-top.m-right
+  > div.m-panel.m-mapheader
+  > button.g-cartografia-flecha-abajo::before {
+  content: "\e935" !important;
+}
+.m-areas
+  > div.m-area.m-top.m-right
+  > div.m-panel.m-mapheader
+  > button.g-cartografia-flecha-derecha::before {
+  content: "\e906" !important;
+}
+
+.m-areas > div.m-area.m-top > div.m-panel.m-mapheader {
+  margin-top: 0px !important;
+  margin-right: 0px !important;
+}
+
+.m-areas > div.m-area.m-top.m-right > div.m-panel.m-layerswitcher {
+  display: flex !important;
+  margin-top: 10px !important;
+  margin-right: 10px !important;
+}
+
+.m-areas > div.m-area.m-top.m-right > div.m-panel.m-mapheader.opened {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  margin: 0 !important;
+  border-radius: 0px !important;
+  height: auto;
+  width: 100vw;
+  z-index: 1000;
+  border-bottom: solid 2px !important;
+  box-shadow: none !important;
+  border-color: #71a7d3 !important;
+}
+
+.m-areas > div.m-area.m-top.m-right > div.m-panel.m-mapheader.collapsed {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 90px !important;
+  height: 25px !important;
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 0px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  z-index: 1000;
+}
+
+.m-areas > div.m-area.m-top.m-right > div.m-panel.m-mapheader.collapsed > div.m-panel-controls > div#div-contenedor {
+  display: none !important;
+}
+
+.m-areas > div.m-area.m-top.m-right > div.m-panel.m-mapheader.opened > div.m-panel-controls > div#div-contenedor {
+  display: table !important;
+}
+
+.m-areas > div.m-area.m-top.m-right > div.m-panel.m-mapheader.opened > button {
+  position: absolute;
+  height: 25px !important;
+  width: 90px !important;
+  /* top: 103px !important; */
+  left: 0vw !important;
+  opacity: 1 !important;
+  font-size: 12px !important;
+  border-bottom-left-radius: 0px !important;
+  border-bottom-right-radius: 10px !important;
+  border-top-left-radius: 0px !important;
+  border-top-right-radius: 0px !important;
+  background-image: linear-gradient(#ffffff, #ffffff, #bebebe);
+  border-bottom: solid 2px !important;
+  border-right: solid 2px !important;
+  border-top: none !important;
+  color: #666 !important;
+  box-shadow: 1px 2px 4px rgb(0 0 0 / 20%) !important;
+  border-color: #71a7d3 !important;
+}
+.m-areas
+  > div.m-area.m-top.m-right
+  > div.m-panel.m-mapheader.collapsed
+  > button {
+  height: 25px !important;
+  width: 90px !important;
+  margin: 0 !important;
+  font-size: 12px !important;
+  border-bottom-left-radius: 0px !important;
+  border-bottom-right-radius: 10px !important;
+  border-top-left-radius: 0px !important;
+  border-top-right-radius: 0px !important;
+  background-image: linear-gradient(#ffffff, #ffffff, #bebebe);
+  border-bottom: solid 2px !important;
+  border-right: solid 2px !important;
+  border-top: none !important;
+  color: #666 !important;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 20%), 0 -1px 0 rgb(0 0 0 / 2%);
+  border-color: #71a7d3 !important;
+}
+.m-areas
+  > div.m-area.m-top.m-right
+  > div.m-panel.m-mapheader.opened
+  > div.m-panel-controls
+  > div.m-control.m-container.m-mapheader {
+  width: 100vw !important;
+}
+
+.m-areas > div.m-area > div.m-panel.collapsed > div.m-panel-controls {
+  transition: none !important;
+}
+
+.m-areas > div.m-area > div.m-panel.m-mapheader {
+  display: block !important;
+}
+
+.m-areas > div.m-area.m-bottom.m-right > div.m-panel.m-map-info {
+  height: auto !important;
+  min-height: 30px !important;
+  align-items: center !important;
+}
+
+.m-areas > div.m-area.m-bottom.m-right > div.m-panel.m-map-info > div.m-panel-controls {
+  height: auto !important;
+  min-height: 30px !important;
+  align-items: center !important;
+}
+
+.m-areas > div.m-area.m-bottom.m-right > div.m-panel.m-map-info > div.m-panel-controls > div.m-control.m-scale-container {
+  height: auto !important;
+  min-height: 24px !important;
+  overflow: visible !important;
+  align-items: center !important;
+  box-sizing: content-box !important;
+}

@@ -26,6 +26,7 @@ import Centroid from './Centroid';
 import PointFontSymbol from '../point/FontSymbol';
 import PointIcon from '../point/Icon';
 import PointCircle from '../point/Circle';
+import { useproxy } from '../../../../facade/js/api-idee';
 
 /**
  * @classdesc
@@ -73,11 +74,13 @@ class Point extends Simple {
           // ctx.drawImage(styleImg.getImage(), 0, 0, ctx.canvas.height, ctx.canvas.width);
           if (!isNullOrEmpty(styleImg)) {
             image = styleImg.getSrc();
-            if (!image.startsWith(window.location.origin)) {
-              const proxyImageURL = concatUrlPaths([IDEE.config.PROXY_URL, '/image']);
-              image = addParameters(proxyImageURL, {
-                url: image,
-              });
+            if (useproxy) {
+              if (!image.startsWith(window.location.origin)) {
+                const proxyImageURL = concatUrlPaths([IDEE.config.PROXY_URL, '/image']);
+                image = addParameters(proxyImageURL, {
+                  url: image,
+                });
+              }
             }
           }
         }
@@ -90,7 +93,7 @@ class Point extends Simple {
             }
             styleImg.render();
           }
-          const imageCanvas = styleImg.getImage();
+          const imageCanvas = styleImg.getImage(1);
           if (imageCanvas != null) {
             image = imageCanvas.toDataURL();
           }

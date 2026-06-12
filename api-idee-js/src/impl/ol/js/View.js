@@ -128,18 +128,44 @@ class View extends OLView {
     // updates zoom
     // updates center
     // this.setCenter(this.getCenter());
-    this.applyOptions_({
-      minZoom: this.minZoom_,
-      resolutions,
-      zoomFactor: this.zoomFactor_,
-      minResolution: this.minResolution_,
-      maxResolution: this.maxResolution_,
-      projection: this.projection_,
-      center: this.getCenter(),
-    });
+    this.applyOptions_(
+      this.getUpdatedOptions_({
+        minZoom: this.minZoom_,
+        resolutions,
+        zoomFactor: this.zoomFactor_,
+        minResolution: this.minResolution_,
+        maxResolution: this.maxResolution_,
+        projection: this.projection_,
+        center: this.getCenter(),
+      }),
+    );
     if (!isNullOrEmpty(this.userZoom_)) {
       this.setZoom(this.userZoom_);
     }
+  }
+
+  /**
+   * Este método establece el estado de multiWorld.
+   *
+   * @function
+   * @param {boolean} multiWorld Nuevo estado de multiWorld.
+   * @public
+   * @api
+   */
+  setMultiWorld(multiWorld) {
+    this.applyOptions_(this.getUpdatedOptions_({ multiWorld }));
+  }
+
+  /**
+   * Este método obtiene el estado actual de multiWorld de la instancia del mapa.
+   *
+   * @function
+   * @returns {boolean} Valor actual de multiWorld.
+   * @public
+   * @api
+   */
+  getMultiWorld() {
+    return this.get('multiWorld');
   }
 }
 

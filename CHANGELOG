@@ -1,3 +1,136 @@
+24/10/25 Versión 1.1.0
+- Se añade el método getImageMap para generar la imagen del mapa.
+- Se soluciona problemas con filtros espaciales en Cesium.
+- Se soluciona problema en estilos con patrones en polígonos.
+- No se va a tener en cuenta el label para determinar si un estilo es dinámico o no.
+- Mejora la visualización de leyendas.
+- Se elimina el tipo de capa draw (implementación).
+- Se añade el método enableMouseWheel para controlar la interacción de zoom con la rueda del ratón.
+- Se añaden los métodos get y remove OverlayLayers.
+- Se añaden a utilidades los métodos: removeHTML, replaceNode, classToggle, setEquals, getFeaturesExtent, getWMTSCapabilities, rgbaToHex y rgbToHex.
+- Mejoras sobre el método getWMSGetCapabilitiesUrl de utilidades.
+- Se elimina replace del método loadInternal_ de JSONP.
+- Se desarrolla la implementación en Cesium del control rotate.
+- Se mejora el lanzamiento del evento REMOVED_FROM_MAP en WMS y LayerGroup.
+- Se modifica imagen de dynamicLegend usada en estilos con funciones y se soluciona problemas con estilos genéricos y leyendas con funciones.
+- Se permite añadir nuevas proyecciones con el método addProjections sin tener que ponerlas en forma de array, además se controla el añadido de proyecciones duplicadas.
+- Añadido método hasControl en la clase Map para comprobar si un control está añadido al mapa.
+- Modificado método getMaxExtent de las capas WMS para confirmar que la capa existe antes de aplicarlo.
+- Añadida la función parseRotation a la clase parámetros.
+- En capas MBTilesVectors tileLoadFunction_ pasa a público por lo que ahora se renombra a tileLoadFunction.
+- MBTilesVector hereda de Vector la funcionalidad extract.
+- Se implementa el uso de ticket en WFS.
+- Se añade el método generateRandomStyle a utilidades de estilo.
+- Se configura la URL de recursos estáticos para poder personalizar la URL del despliegue del mismo.
+- Se modifica el desarrollo del método getCentroid de utilidades (implementación).
+- El control location sitúa al usuario y detectará cambios de posición.
+- Soluciona error por el cual el control location no mostraba el punto.
+- Añadido el método addPlugins a la clase Map para permitir añadir un array de plugins.
+- Se elimina código innecesario y se soluciona problema con asignación de estilos en capas MBTilesVector.
+- Añadido método activateBaseLayer en Layer, para que cuando una capa base sea eliminada, se active otra si hay.
+- Se implementa la posibilidad de enviar un callback a getMaxExtent de mbtiles.
+- Soluciona errores en el comportamiento de isVisible en MVT.
+- Se soluciona un error al devolver el legendURL de una capa Vector con estilos cluster composite.
+- Se elimina el método getFeaturesExtentPromise de GeoJSON para que herede de Vector.
+- Añadida configuración para determinar el zoom aplicado al localizar al usuario mediante location.
+- Se añade el método getImageMap para generar la imagen del mapa.
+- Se comprueba si la versión no está definida en el parámetro en getWMSGetCapabilitiesUrl de utils para no incluirla a la URL.
+- Se mejora la seleccion y deseleccion de WMC.
+- Se añade el evento REMOVED_FROM_MAP al método removeUnknowLayers_ de la implementación de mapa.
+- Se implementa el método getTicket en la clase Map para obtener el ticket definido.
+- Se dispara el evento REMOVED_LAYER en la implementación del Mapa pero accediendo a la fachada del mapa.
+- En "Mapa - addUnknownLayers" se modifica "Este método agrega las capas de GeoJSON al mapa." por "Este método agrega las capas de tipo desconocido al mapa."
+- Se crean set/get multiWorld y se solucionan bugs que no persistía correctamente el zoomConstrain del mapa.
+- Se implementa el parámetro overflow para los estilos de label.
+- Se elimina el método getFeaturesExtentPromise de WFS para que lo herede de Vector
+- Se implementa la función setZoomLevels en Mapa para establecer el nivel de zoom junto a las resoluciones correspondientes al nivel.
+- Se inicializa this.ticket_ en la clase Map y se añade al JSDoc.
+- Se modifica el comportamiento de getMaxExtent en WMTS con useCapabilities para que en caso de que el usuario indique maxExtent a la capa devuelva el especificado y no el del capabilities.
+- Mejora la lógica de cálculo de tamaño del canvas en el toImage.
+- Se evita que quede "&" al final de la URL al usar addParameters de Utilidades.
+- Mejoras sobre las plantillas y Handlebars que permite el registro de funciones tanto en núcleo como en plugins.
+- Se añade comprobación de plantilla en el método getKML (impl).
+- Se mejora el posicionamiento de etiquetas en Cesium.
+- Se añade a getLayerExtent y getExtentRecursive_ (WMS) la posibilidad de especificar una proyección de forma opcional.
+- Implementa la lectura de iconos mediante proxy en caso de que no se encuentre en el mismo dominio que la aplicación y tenga el proxy activado para la leyenda en estilos generic de tipo punto.
+- Se sobrescribe el método inview de OL para que se muestren las capas desde el maxResolution especificado por el usuario.. Se comentan los patches optionsFromCapabilities y writePos_ para que funcionen como en OL.
+- Se implementan las capas externas y sus dependencias.
+- Añadido el método privado addUpClass_ para evitar choque con controles wmcselector, scale y scaleline.
+- Se incorporan a API-IDEE los plugins mapheader y mapfooter.
+- Se incorpora test automáticos, se modifica readme y se ajustan librerías en package sobre los siguientes plugins: queryattributes, infocoordinates, modal, vectorsmanagement, incicarto, locator, measurebar, viewmanagement y storymap.
+- Se incorpora test automáticos, se modifica readme y se ajustan librerías en package sobre los siguientes plugins: selectionzoom, contactlink, printviewmanagement, sharemap, information, backimglayer, comparators, timeline y stylemanager.
+- Se incorpora test automáticos, se modifica readme y se ajustan librerías en package sobre los siguientes plugins: basic, help, layerswitcher, locatorscn, mousesrs, overviewmap y stereoscopic.
+- Se modifica el comportamiento del método getMaxExtent de MVT para que devuelva el extent en el siguiente orden: el especificado por el usuario, el de la extensión de los features, el especificado en el mapa o el de la proyección en función del que pueda obtener.
+- Se incorpora el método setToClosestScale a la clase Mapa que permite aplicar una resolución al mapa en función de una escala dada.
+- Se resuelve problema con gestión de evento change cuando se llaman a los métodos redraw, addfeatures y removefeatures.
+- El evento ADDED_TO_MAP de Vector se disparará desde fachada.
+- Se añade el método enablePan para permitir o no arrastrar el mapa, y se incluye enableDrag como método deprecado.
+- Implementa la posibilidad de rotar en mapa en el control rotate usando la bolita como en Mapea. Soluciona problemas de estilo.
+- Soluciona problemas de reproyección en capas MBTiles y WMC.
+- Se incorpora a API-IDEE el plugin filteredsearch.
+- Se añade nuevo tipo de capa Geopackage disponible en Mapea (se incluyen los eventos added_geopackage y added_geopackage_tile).
+- Implementado el parámetro rotación en el constructor de mapa.
+- En el método drawPath_ de OLStyleFontSymbol se elimina un +1 que daba un efecto insignificante.
+- Se incorpora a API-IDEE el plugin wfstcontrols.
+- Refactoriza el añadido de controles para extraer la lógica a un builder. Soluciona problema al añadir controles por duplicado. Soluciona problemas al añadir controles con constructor.
+- Se añade creación de visualizadores mediante peticiones POST.
+- Se soluciona problemas con el parseo de etiquetas CSS en plugin information.
+- Mousesrs: se soluciona problemas de estilos en mapas pequeños.
+- Se soluciona problema con plugin overviewmap en 25830.
+- Se soluciona problema con proxy e iconos en estilos.
+- Se adapta WMC para que indique displayInLayerSwitcher internamente en el primer objeto de WMS.
+- Se soluciona problema con enlace a controles que no existen.
+- Se soluciona problema al obtener la extensión de una capa vector con un solo punto mediante el método getFeaturesExtent.
+- El control location disparará un evento CHANGE en cada cambio de posición.
+- Se soluciona la carga de varias capas bases WMS visibles en un mapa.
+- Se soluciona la vista al cambiar capas bases WMS.
+- Se soluciona problemas con cambio de proyección.
+- Se soluciona problema con el almacenado de altitud en el plugin infocoordinates.
+- Se soluciona la visualización de objetos geográficos de tipo "GeometryCollection".
+- Se implementa multilenguaje en los plugins mapheader, mapfooter, maxextzoom, magnify, filteredsearch y wfstcontrols.
+- Se implementa el método getHelp en los plugins filteredsearch, magnify, mapheader, mapfooter, maxextzoom y wfstcontrols.
+- Se soluciona problema al usar estilo categórico con un estilo genérico e icono sin tener el proxy activado.
+- Se soluciona problema con capas geojson con source GeometryCollection.
+- Se genera en legacy el versionado de 1.0.0 y se modifica la versión del proyecto a la 1.1.0.
+- Se soluciona problema al activar resoluciones automáticas y cargar capa wms sin zoom.
+- Se adaptan los plugins para que muestre el título del índice en minúscula y el del contenido de la ayuda en mayúsculas.
+- Se soluciona problema con parámetro listeners en popup.
+- Se implementa la funcionalidad de listar los plugins de Community Plugins al llamar al servicio https://componentes.idee.es/api-idee/api/actions/resourcesPlugins.
+- Se elimina librería jackson y jersey-json por desuso y se aumenta la versión de log4j.
+- Se soluciona problemas con el control rotate en Cesium.
+- Se aumenta tamaño disponible para mostrar información en attributions.
+- Se resuelve problema con carga de capas WMS con proyección 4230 en el capabilities.
+- Se resuelven vulnerabilidades críticas en las librerías en el proyecto.
+- Se soluciona problema con estilo categoría y toImage.
+- Se soluciona problema con borde blanco del plugin Overviewmap.
+- Se soluciona problema con las capas WMS en versión 1.1.0 y el sistema de referencia.
+- Se soluciona problema con la actualización del valor de IDEE.useproxy.
+- Se incorpora en Cesium el estilo cluster.
+- Se implementa la posibilidad de añadir patrones en estilos en implementación Cesium.
+- Se mejora rendimiento de compilación.
+- Se implementa la posibilidad de añadir iconos con formato GLB/GLTF en Cesium.
+- Se soluciona problemas con coropletas y rango de colores.
+- Se elimina la librería ticket así como sus dependencias y se adapta el proxy para que no la use.
+- Se elimina librería commons-fileupload al no usarse.
+- Se actualizan las librerías log4j y postgresql.
+- Se fija la versión de la librería jackson-mapper-asl.
+- Se eliminan ficheros innecesarios de configuración de log.
+- Se permiten cabeceras Content-Type, content-type o CONTENT-TYPE en la clase Response.
+- Se pueden importar archivos .tif, .tiff y .gpkg y se implementa mejora a la hora de añadir archivos pesados en el plugin LayerSwitcher.
+- Se crean métodos en Utils para la transformación de formato GeoJSON y WKT a WKB, tanto a nivel de feature como de capa.
+- La información recibida de un servicio en formato GeoJSON o KML se proyecta en la proyección estándar de estos formatos, EPSG:4326.
+- Permite la carga de archivos GeoJSON mediante rutas locales, tanto absolutas como relativas.
+- Se permite gestionar la interacción 'snap' dentro de la herramienta 'Edición de geometría' del plugin Vectorsmanagement.
+- La acción 'Área de influencia' del plugin Vectorsmanagement crea una nueva instancia de capa.
+- Modifica la función de carga para todos los servicios teselados para que la solicitud de nuevas tiles se produzca en la frontera x.50.
+- Corrige la carga de nuevos EPSGs en Mousesrs e Infocoordinates y habilita dicha funcionalidad en PrintViewManagement.
+- Restaura el parámetro 'exact' del control Scale.
+- Se cambia la estructura del archivo GeoJSON que toma como entrada el parámetro 'precharged' de LayerSwitcher.
+- Se reconoce el parámetro 'type' del servicio cargado en LayerSwitcher.
+- Permite la creación de grupos anidados de capas en LayerSwitcher.
+- Se implementa funcionalidad de resoluciones automáticas y configuración para activar dicha funcionalidad.
+- Se sube la versión de OpenLayers de la 10.4 a la 10.7.
+
 01/01/25 - Versión 1.0.0
 - Se incluye implementación 3D con Cesium
 - Modificación del contexto API-CNIG a API-IDEE
@@ -48,6 +181,7 @@
 - Se implementa el parámetro styles de WMS en API REST.
 - Se implementa el parámetro sldVersion en WMS tanto por constructor como por API REST.
 - Se implementa en WMTS el parámetro tileLoadFunction en el vendors, ademas de setTileLoadFunction.
+- Se soluciona un error al devolver el legendURL de una capa Vector con estilos cluster composite.
 - En las capas vector, en el addFeatures se espera a que la capa esté cargada en caso de no estarlo aún.
 - Se añaden los métodos setName, setURL y setNamespace en la capa WFS.
 - Se modifica el evento ADDED_TO_MAP de las capas WMTS para que se dispare desde fachada.
@@ -116,5 +250,5 @@
 - Se parametriza los niveles de DPI y los layouts en los que no está permitido el cambio de DPI.
 - Se modifica Punto, Linea, Poligono, Genérico y proporcional para que use isNUllOrEmpty a secas donde procede, y modificado isNullOrEmpty para solucionar un error.
 - Mejoras sobre las plantillas y Handlebars que permite el registro de funciones tanto en núcleo como en extensiones (plugins).
-
+- Se optimiza la eliminacion de todas las features en el redeaw de Vector
 

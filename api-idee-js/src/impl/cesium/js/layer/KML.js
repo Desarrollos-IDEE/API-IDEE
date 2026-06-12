@@ -1,6 +1,7 @@
 /**
  * @module IDEE/impl/layer/KML
  */
+import ClusteredFeature from 'IDEE/feature/Clustered';
 import { compileSync as compileTemplate } from 'IDEE/util/Template';
 import popupKMLTemplate from 'templates/kml_popup';
 import Popup from 'IDEE/Popup';
@@ -172,7 +173,7 @@ class KML extends Vector {
   selectFeatures(features, coord, evt) {
     // TODO: manage multiples features
     const feature = features[0];
-    if (this.extract === true) {
+    if (!(feature instanceof ClusteredFeature) && (this.extract === true)) {
       if (!isNullOrEmpty(feature)) {
         const featureName = feature.getAttribute('name');
         const featureDesc = feature.getAttribute('description');

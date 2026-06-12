@@ -78,18 +78,31 @@ export default class Editioncontrol extends IDEE.impl.Control {
 
       olMap.addInteraction(this.select);
 
-      const { snapToPointer = true, pixelTolerance = 30 } = snap;
-
       this.edit = new ol.interaction.Modify({
         features: this.select.getFeatures(),
-        snapToPointer,
-        pixelTolerance,
+        snapToPointer: snap.snapToPointer,
+        pixelTolerance: snap.pixelTolerance,
       });
-      this.edit.on('modifyend', (evt) => {
+
+      this.edit.on('modifyend', (e) => {
         this.facadeControl.onModify();
       });
       olMap.addInteraction(this.edit);
     }
+  }
+
+  /**
+   * This function updates modify interaction options.
+   * @public
+   * @function
+   * @param {Object} snap - snap options
+   * @api
+   */
+  updateModifyOptions(snap) {
+    // eslint-disable-next-line no-underscore-dangle
+    this.edit.snapToPointer_ = snap.snapToPointer;
+    // eslint-disable-next-line no-underscore-dangle
+    this.edit.pixelTolerance_ = snap.pixelTolerance;
   }
 
   /**

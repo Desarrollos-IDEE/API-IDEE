@@ -45,6 +45,24 @@ const proj4258 = {
 };
 
 /**
+ * EPSG:25830 ETRS89 UTM Huso 30 es una proyección cartográfica en la que se divide
+ * la Tierra en 60 husos de 6 grados de longitud. El huso 30 se extiende desde los 12 grados
+ * al este hasta los 18 grados al este. Esta proyección se basa en el elipsoide ETRS89
+ * y se utiliza comúnmente en Europa y otras partes del mundo.
+ * @type {Object}
+ * @public
+ * @api
+ */
+const proj3042 = {
+  def: '+proj=utm +zone=30 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs',
+  extent: [-729785.83, 3715125.82, 940929.67, 9518470.69],
+  codes: ['EPSG:3042', 'urn:ogc:def:crs:EPSG::3042', 'http://www.opengis.net/gml/srs/epsg.xml#3042'],
+  units: 'm',
+  metersPerUnit: 1,
+  datum: 'GRS80 (ETRS89)',
+};
+
+/**
  * EPSG:3857 es una proyección cartográfica conocida como Pseudo-Mercator
  * que se utiliza comúnmente en aplicaciones web y de mapeo en línea.
  * @type {Object}
@@ -65,6 +83,7 @@ const proj3857 = {
   ],
   units: 'm',
   metersPerUnit: 1,
+  getPointResolution: (resolution, point) => resolution / Math.cosh(point[1] / 6378137),
   datum: 'WGS 84',
   proj: 'Pseudo-Mercator',
   global: true,
@@ -515,6 +534,7 @@ const crs84 = {
  * @api
  */
 const projections = [
+  proj3042,
   proj3857,
   proj4326,
   proj32627,
@@ -547,13 +567,28 @@ const projections = [
  * usando ol/proj (libreria de proyecciones de openlayers).
  *
  * @function
- * @param {Array<Object>} projectionsParam Proyecciones a registrar
+ * @param {Array<Object>} projs Proyecciones a registrar
+ * @param {boolean} [checkDuplicates=true] Verificar duplicados
  * @public
  * @api
  */
-const addProjections = (projectionsParam) => {
+const addProjections = (projs, checkDuplicates = true) => {
+  let projectionsParam = projs;
+  if (!Array.isArray(projectionsParam)) {
+    projectionsParam = [projectionsParam];
+  }
   // Register and publish projections
   projectionsParam.forEach((projection) => {
+    // Verificar si ya existe una proyección completamente igual (solo si se solicita)
+    if (checkDuplicates) {
+      const hasDuplicate = projections.some((p) => {
+        return JSON.stringify(p) === JSON.stringify(projection);
+      });
+      if (hasDuplicate) {
+        return;
+      }
+      projections.push(projection);
+    }
     projection.codes.forEach((code) => {
       proj4.defs(code, projection.def);
     });
@@ -563,6 +598,7 @@ const addProjections = (projectionsParam) => {
         extent: projection.extent,
         units: projection.units,
         metersPerUnit: projection.metersPerUnit,
+        getPointResolution: projection.getPointResolution,
         axisOrientation: projection.axisOrientation,
         global: projection.global,
       });
@@ -644,7 +680,11 @@ const getDefProjection = async (code) => {
  * @api
  */
 const setNewProjection = async (projection) => {
-  const code = getCode(projection);
+  let projName = projection;
+  if (!projection.startsWith('EPSG:')) {
+    projName = `EPSG:${projection}`;
+  }
+  const code = getCode(projName);
   const defProjectionRaw = await getDefProjection(code);
   const defProjection = defProjectionRaw.replace(/\+nadgrids=[^\s]+/, '').trim();
   const url = `https://epsg.io/${code}.wkt2`;
@@ -661,17 +701,16 @@ const setNewProjection = async (projection) => {
     extent: jsonResponse.USAGE.BBOX,
     codes: [`${Object.keys(jsonResponse.ID)[0]}:${jsonResponse.ID[Object.keys(jsonResponse.ID)[0]]}`],
     units: refactorUnits(Object.keys(jsonResponse.AXIS[0].LENGTHUNIT)[0]),
-    datum: jsonResponse.BASEGEOGCRS.DATUM.name,
+    datum: jsonResponse.BASEGEOGCRS.name,
     proj: jsonResponse.name,
     coordRefSys: `http://www.opengis.net/def/crs/EPSG/0/${code}`,
   };
 
-  projections.push(newProjection);
   addProjections([newProjection]);
 };
 
 // register proj4
-addProjections(projections);
+addProjections(projections, false);
 
 /**
  * Este comentario no se verá, es necesario incluir

@@ -39,7 +39,7 @@
     "name": "stylemanager",
     "description": "Gestión del estilo de la simbología de las capas vectoriales del mapa",
     "text": "Plugin para la gestión de la simbología de las capas vectoriales del mapa.",
-    "version": "2.0.2",
+    "version": "1.0.1",
     "date": "Diciembre, 2022",
     "author": "",
     "org": "CNIG",

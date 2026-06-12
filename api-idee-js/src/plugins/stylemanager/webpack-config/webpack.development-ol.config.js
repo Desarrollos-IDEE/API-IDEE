@@ -9,9 +9,10 @@ module.exports = {
   ],
   resolve: {
     alias: {
-      templates: path.resolve(__dirname, '..', 'src', 'templates'),
-      impl: path.resolve(__dirname, '..', 'src', 'impl', 'ol', 'js'),
-      facade: path.resolve(__dirname, '..', 'src', 'facade', 'js'),
+      templates: path.resolve(__dirname, '../src/templates'),
+      assets: path.resolve(__dirname, '../src/facade/assets'),
+      impl: path.resolve(__dirname, '../src/impl/ol/js'),
+      facade: path.resolve(__dirname, '../src/facade/js'),
       fonts: path.resolve(__dirname, '..', 'src', 'facade', 'assets', 'fonts'),
       css: path.resolve(__dirname, '..', 'src', 'facade', 'assets', 'css'),
     },

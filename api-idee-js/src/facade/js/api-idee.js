@@ -72,6 +72,7 @@ export let useproxy = false;
  */
 export const proxy = (enable) => {
   if (typeof enable === 'boolean') {
+    IDEE.useproxy = enable;
     useproxy = enable;
   }
 };
@@ -161,7 +162,7 @@ const quickLayersTMS = (option) => {
             name: 'PNOA-MA',
             description: 'IGN',
             url: 'https://www.ign.es',
-            contentAttributions: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+            contentAttributions: `${IDEE.config.STATIC_RESOURCES_URL}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml`,
             contentType: 'kml',
           },
         }, {
@@ -219,7 +220,7 @@ const baseHIBRIDOLayerGroup = () => {
             name: 'PNOA-MA',
             description: 'IGN',
             url: 'https://www.ign.es',
-            contentAttributions: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+            contentAttributions: `${IDEE.config.STATIC_RESOURCES_URL}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml`,
             contentType: 'kml',
           },
         }, {

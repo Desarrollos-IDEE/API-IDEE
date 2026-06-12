@@ -409,7 +409,7 @@ class Panel extends MObject {
           }
           if (!isNullOrEmpty(this._controlsContainer)) {
             control.on(EventType.ADDED_TO_MAP, this._moveControlView.bind(this), this);
-            this._map.addControls(control);
+            this._map.addControls(control, true);
           }
           control.on(EventType.ACTIVATED, this._manageActivation.bind(this), this);
         }
@@ -615,6 +615,18 @@ class Panel extends MObject {
    */
   isCollapsed() {
     return this._collapsed;
+  }
+
+  /**
+   * Este método establece el estado del panel.
+   *
+   * @public
+   * @function
+   * @param {Boolean} flag Estado del panel.
+   * @api
+   */
+  setCollapsed(flag) {
+    this._collapsed = flag;
   }
 
   /**

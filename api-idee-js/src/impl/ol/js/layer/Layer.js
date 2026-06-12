@@ -430,6 +430,25 @@ class LayerBase extends MObject {
   }
 
   /**
+   * Este método busca si hay capas base y activa la primera de la lista.
+   *
+   * @function
+   * @param {IDEE.Layer} layer capa eliminada
+   * @param {IDEE.Map} facadeMap Fachada del mapa.
+   * @api stable
+   * @expose
+   */
+  activateBaseLayer(layer, facadeMap) {
+    if (layer.isBase === true) {
+      // it was base layer so sets the visibility of the first one
+      const baseLayers = facadeMap.getBaseLayers();
+      if (baseLayers.length > 0) {
+        baseLayers[0].setVisible(true);
+      }
+    }
+  }
+
+  /**
    * Este método obtiene la URL de la leyenda.
    *
    * @function

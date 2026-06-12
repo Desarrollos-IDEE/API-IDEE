@@ -1,0 +1,13 @@
+<div>
+    {{#if queries}}
+        <table>
+            {{#each queries}}
+                <tr>
+                    <td>{{this.query}}</td>
+                </tr>
+            {{/each}}
+        </table>
+    {{else}}
+        <p>{{translations.no_saved_queries}}</p>
+    {{/if}}
+</div>

@@ -1,9 +1,0 @@
-{
-  "tooltip": "Change scale",
-  "insertscale": "Insert scale",
-  "textHelp": {
-    "help1": "The rescale extension changes the zoom level of a viewer to the scale entered by the user.",
-    "help2": "The information relevant to the extension and its possible parameterization is documented in",
-    "help3": "The example of use of its parameters can be checked in"
-  }
-}

@@ -97,7 +97,7 @@ class Response {
       try {
         // it uses DOMParser for html responses
         // google XML parser in other case
-        const contentType = proxyResponse.headers['Content-Type'];
+        const contentType = proxyResponse.headers['Content-Type'] || proxyResponse.headers['CONTENT-TYPE'] || proxyResponse.headers['content-type'];
         if ((typeof DOMParser !== 'undefined') && /text\/html/i.test(contentType)) {
           this.xml = (new DOMParser()).parseFromString(this.text, 'text/html');
         } else if (/xml/i.test(contentType)) { // it avoids responses that aren't xml format

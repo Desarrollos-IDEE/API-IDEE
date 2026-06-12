@@ -1,0 +1,47 @@
+{
+  "url": {
+    "name": "magnify",
+    "separator": "*"
+  },
+  "constructor": "IDEE.plugin.Magnify",
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+      "type": "simple",
+      "name": "position",
+      "position": 0,
+      "possibleValues": ["TL", "TR", "BL", "BR"]
+    }, {
+      "type": "simple",
+      "name": "layers",
+      "position": 1
+    }, {
+      "type": "number",
+      "name": "zoomMax",
+      "position": 2
+    }, {
+      "type": "number",
+      "name": "zoom",
+      "position": 3
+    }]
+  }],
+  "files": {
+    "ol": {
+      "scripts": ["magnify.ol.min.js"],
+      "styles": ["magnify.ol.min.css"]
+    }
+  },
+  "metadata": {
+    "name": "magnify",
+    "description": "Efecto lupa-zoom sobre capas",
+    "text": "Plugin que permite realizar un efecto de zoom o de lupa sobre una o varias capas",
+    "version": "1.0.0",
+    "date": "Diciembre, 2025",
+    "author": "",
+    "org": "",
+    "tags": "idee,plugin",
+    "icon": "./facade/assets/icons/icons.svg",
+    "centralized": true,
+    "compatibility":["1"]
+  }
+}

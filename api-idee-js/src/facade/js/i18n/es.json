@@ -67,8 +67,30 @@
     "title": "Girar al norte",
     "textHelp": {
       "text1": "La herramienta de rotación permite volver a una orientación Norte al visualizador.",
-      "text2": "Para poder girar el mapa en el visualizador, se realiza con la combinación de teclas Shit + Alt + click izquierdo del ratón + mover ratón para girar."
-    }
+      "text2": "Para poder girar el mapa en el visualizador, se realiza con la combinación de teclas Shift + Alt + click izquierdo del ratón + mover ratón para girar."
+    },
+    "titleCesium": "Control de movimiento",
+    "title_help": "Ayuda",
+    "help": {
+      "title": "Control del giroscopio",
+      "title1": "Girar la vista",
+      "text1": "Arrastra el anillo circular exterior para rotar el mapa 360º",
+      "title2": "Inclinar la vista",
+      "text2": "Selecciona el círculo interior y arrastralo lentamente hacia cualquier lado para inclinar y/o girar el mapa.",
+      "text3": "También, si haces doble click vuelves a la vista inicial.",
+      "text4": "Además si bloqueas la tecla CTRL y arrastras sobre el mapa, puedes inclinar o girar el mapa."
+    },
+    "textHelpCesium": {
+      "text1": "Esta herramienta te permite mover y controlar la cámara en un entorno 3D, explorando el mapa desde diferentes ángulos.",
+      "text2": "Para rotar el mapa 360º, haz clic y arrastra el anillo circular exterior alrededor del control.",
+      "text3": "Para inclinar y/o girar el mapa, selecciona el círculo interior y arrástralo en cualquier dirección. También puedes mantener pulsada la tecla CTRL y arrastrar el mapa para lograr el mismo efecto.",
+      "text4": "Haz doble clic en el círculo interior para volver rápidamente a la vista inicial.",
+      "text5": "Si necesitas ayuda, pulsa el botón '?' ubicado a la derecha del control para abrir un panel con instrucciones detalladas."
+    },
+    "close_not_show_help": "Cerrar y no mostrar de nuevo",
+    "image1_description": "Icono girar vista",
+    "image2_description": "Icono inclinar vista",
+    "close_btn": "Cerrar ayuda"
   },
   "mouse": {
     "title": "Coordenadas del puntero"
@@ -120,7 +142,7 @@
     "scaleline_method": "La implementación usada no puede crear controles ScaleLine",
     "wmcselector_method": "La implementación usada no puede crear controles WMCSelector",
     "geojson_method": "La implementación usada no puede crear objetos IDEE.impl.format.GeoJSON",
-    "wkt_method": "La implementación usada no puede creat objetos IDEE.impl.format.WKT",
+    "wkt_method": "La implementación usada no puede crear objetos IDEE.impl.format.WKT",
     "getfeaturesbylayer_method": "La implementación usada no posee el método getFeaturesByLayer",
     "geojsonlayer_method": "La implementación usada no puede crear capas GeoJSON",
     "no_param": "No se ha especificado ningun parámetro",
@@ -225,6 +247,8 @@
     "invalid_resolutions_param": "El formato del parámetro resolutions no es correcto",
     "invalid_zoom_param": "El formato del parámetro zoom no es correcto",
     "invalid_zoomconstrains_param": "El formato del parámetro zoomConstraints no es correcto",
+    "no_extent_constrains": "No ha especificado ningún parámetro extentConstrains",
+    "invalid_extentconstrains_param": "El formato del parámetro extentConstrains no es correcto",
     "min_gt_max": "No puede establecerse un radio mínimo mayor que el máximo.",
     "max_lt_min": "No puede establecerse un radio máximo menor que el mínimo.",
     "no_geojson": "No se ha especificado ningun GeoJSON",
@@ -242,9 +266,10 @@
     "formatError": "La capa [replace1] de tipo [replace2] no soporta FORMAT",
     "file_size": "El fichero seleccionado sobrepasa el máximo de 20 MB permitido.",
     "file_load": "Error al cargar el fichero.",
+    "file_empty": "Error archivo no detectado",
     "no_geoms": "No se han detectado geometrías en este fichero.",
     "file_load_correct": "Error al cargar el fichero. Compruebe que se trata del fichero correcto.",
-    "file_extension": "No se ha insertado una extensión de archivo permitida. Las permitidas son: KML, SHP(.zip), GPX, GML y GeoJSON.",
+    "file_extension": "No se ha insertado una extensión de archivo permitida. Las permitidas son: KML, SHP(.zip), GPX, GML, GeoJSON, GPKG, TIF and TIFF",
     "no_setprojection": "La implementación usada no puede cambiar la proyección del mapa.",
     "no_zoomconstrains": "La implementación usada no puede utilizar el parámetro zoomConstrains.",
     "setZoomConstrains_method": "La implementación usada no posee el método setIntermediateZooms.",
@@ -306,6 +331,10 @@
     "setminzoom_no_apply": "No es posible aplicar el mínimo zoom a la capa WMC.",
     "setmaxzoom_no_apply": "No es posible aplicar el máximo zoom a la capa WMC.",
     "setminscale_no_apply": "No es posible aplicar la mínima escala a la capa WMC.",
-    "setmaxscale_no_apply": "No es posible aplicar la máxima escala a la capa WMC."
+    "setmaxscale_no_apply": "No es posible aplicar la máxima escala a la capa WMC.",
+    "wkt_toCQL_method": "La implementación usada no puede crear el formateador WKT por lo que no incluirá filtros CQL.",
+    "animated_method": "La implementación usada no podrá desactivar ni modificar la animación",
+    "deactivatechangeresolution_method": "La implementación usada no posee el método deactivateChangeResolutionEvent",
+    "enableDrag_deprecated": "El método enableDrag de la clase Map ha quedado obsoleto, se recomienda usar en su lugar enablePan."
   }
 }

@@ -1,0 +1,40 @@
+<div id="m-filteredsearch-initialview">
+    <div id="m-filteredsearch-selects-container">
+        <p class="m-filteredsearch-headers">{{translations.layer}}</p>
+        <select id="m-filteredsearch-layers-select">
+            <option disabled="disabled" id="layers0" selected="selected">{{translations.select_layer}}</option>
+            {{#each layers}}
+                <option name="{{this.name}}">{{this.name}}</option>
+            {{/each}}
+        </select>
+        <p class="m-filteredsearch-headers">{{translations.method}}</p>
+        <select id="m-filteredsearch-method-select">
+            <option disabled="disabled" selected="selected" value="0">{{translations.select_method}}</option>
+            <option value="1">{{translations.new_select}}</option>
+            <option value="2">{{translations.previous_selection}}</option>
+            <option value="3">{{translations.previous_remove}}</option>
+            <option value="4">{{translations.previous_add}}</option>
+        </select>
+    </div>
+
+    <div id="m-filteredsearch-lists-container">
+        <div id="m-filteredsearch-fields">
+            <p class="m-filteredsearch-headers">{{translations.fields}}</p>
+            <!-- Insert here fieldstable.html template. -->
+        </div>
+        <div id="m-filteredsearch-values">
+            <p class="m-filteredsearch-headers">{{translations.values}}</p>
+            <!-- Insert here valuestable.html template. -->
+        </div>
+    </div>
+
+    <div id="m-filteredsearch-operators-container">
+        <p class="m-filteredsearch-headers">{{translations.operators}}</p>
+        <!-- Insert here operator buttons. -->
+    </div>
+
+    <div id="m-filteredsearch-query-container">
+        <p class="m-filteredsearch-headers">{{translations.filter_exp}}</p>
+        <textarea id="m-filteredsearch-textArea" cols="90" rows="5" placeholder="{{translations.placeholder}}"></textarea>
+    </div>
+</div>

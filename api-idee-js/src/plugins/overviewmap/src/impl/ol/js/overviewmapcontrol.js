@@ -253,35 +253,34 @@ export default class OverviewMapControl extends ol.control.OverviewMap {
           this.ovmap_.addLayer(olLayer);
         } else {
           const projection = ol.proj.get(this.facadeMap_.getProjection().code);
-          const projectionExtent = projection.getExtent();
-          const size = ol.extent.getWidth(projectionExtent) / 256;
-          const resolutions = new Array(14);
-          const matrixIds = new Array(14);
-          for (let z = 0; z < 14; z += 1) {
-            // generate resolutions and matrixIds arrays for this WMTS
-            resolutions[z] = size / (2 ** z);
-            matrixIds[z] = z;
-          }
+          const extent = projection.getExtent();
+          const getCapabilitiesUrl = IDEE.utils.getWMTSGetCapabilitiesUrl(parameters[1]);
+          const parser = new ol.format.WMTSCapabilities();
 
-          const layer = new ol.layer.Tile({
-            opacity: 1,
-            source: new ol.source.WMTS({
-              url: parameters[1],
+          IDEE.remote.get(getCapabilitiesUrl).then((response) => {
+            let doc = response.xml;
+            if (doc.getElementsByTagName('ows:Style').length > 0) {
+              const xmlStr = new XMLSerializer().serializeToString(doc);
+              doc = new DOMParser().parseFromString(xmlStr.replaceAll('ows:Style', 'Style'), 'text/xml');
+            }
+            const capabilities = parser.read(doc);
+            const opts = ol.source.WMTS.optionsFromCapabilities(capabilities, {
               layer: parameters[2],
               matrixSet: parameters[3],
-              format: parameters[6],
-              projection,
-              tileGrid: new ol.tilegrid.WMTS({
-                origin: ol.extent.getTopLeft(projectionExtent),
-                resolutions,
-                matrixIds,
-              }),
-              style: 'default',
-              wrapX: true,
-            }),
+              extent,
+            });
+            if (opts) {
+              const layer = new ol.layer.Tile({
+                opacity: 1,
+                source: new ol.source.WMTS({
+                  ...opts,
+                  style: 'default',
+                  wrapX: true,
+                }),
+              });
+              this.ovmap_.addLayer(layer);
+            }
           });
-
-          this.ovmap_.addLayer(layer);
         }
       } else {
         this.ovmap_.addLayer(olLayers[0]);

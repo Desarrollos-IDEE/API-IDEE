@@ -13,6 +13,7 @@ import {
   BillboardGraphics,
   PolylineOutlineMaterialProperty,
   ImageMaterialProperty,
+  ModelGraphics,
 } from 'cesium';
 import {
   getValue,
@@ -44,6 +45,8 @@ class Feature {
 
     this.hasPropertyIcon_ = false;
 
+    this.isOnlyFeature_ = true;
+
     if (!isNullOrEmpty(geojson)) {
       if (isNullOrEmpty(geojson.type)) {
         geojsonVariable.type = 'Feature';
@@ -71,6 +74,9 @@ class Feature {
           if (feature.length > 1) {
             feature.shift();
             this.othersEntities = feature;
+            this.isOnlyFeature_ = false;
+          } else if (feature.length === 1) {
+            this.isOnlyFeature_ = false;
           }
           this.isLoadCesiumF_ = true;
           return this.cesiumFeature_;
@@ -449,8 +455,10 @@ class Feature {
    */
   clearStyle() {
     if (!isNullOrEmpty(this.referenceFacadeLayer)) {
-      if (this.cesiumFeature_.billboard && !this.cesiumFeature_.point) {
+      if ((this.cesiumFeature_.billboard || this.cesiumFeature_.model)
+        && !this.cesiumFeature_.point) {
         this.cesiumFeature_.billboard = undefined;
+        this.cesiumFeature_.model = undefined;
         this.cesiumFeature_.point = new PointGraphics({
           color: Color.WHITE,
           outlineColor: Color.BLACK,
@@ -510,8 +518,10 @@ class Feature {
           opacity = geometry.outlineColor.getValue().alpha;
         } else if (this.cesiumFeature_.billboard) {
           opacity = this.cesiumFeature_.billboard.color.getValue().alpha;
+        } else if (this.cesiumFeature_.model) {
+          opacity = this.cesiumFeature_.model.color.getValue().alpha;
         }
-      } else if (geometry instanceof BillboardGraphics) {
+      } else if (geometry instanceof BillboardGraphics || geometry instanceof ModelGraphics) {
         if (geometry.color) {
           opacity = geometry.color.getValue().alpha;
         }

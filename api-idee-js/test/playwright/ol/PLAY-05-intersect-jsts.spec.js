@@ -35,8 +35,16 @@ test('Capa WMS - tileLoadFunction', async ({ page }) => {
         },
       },
     );
-    window.mapjs.addLayers([wms]);
+    window.wms = wms;
   });
-  await page.waitForTimeout(4000);
+  await page.evaluate(() => {
+    return new Promise((resolve) => {
+      window.wms.on(IDEE.evt.ADDED_TO_MAP, () => {
+        resolve();
+      });
+      window.mapjs.addLayers([window.wms]);
+    });
+  });
+  await page.waitForTimeout(2000);
   expect(hasTileLog).toBe(true);
 });

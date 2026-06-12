@@ -75,7 +75,7 @@
     "name": "selectionzoom",
     "description": "Select geographic options to zoom",
     "text": "It shows different geographic options to zoom on the base layer.",
-    "version": "2.0.2",
+    "version": "1.0.1",
     "date": "3rd September 2019",
     "author": "CNIG",
     "org": "CNIG",

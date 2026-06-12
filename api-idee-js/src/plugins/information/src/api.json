@@ -55,7 +55,7 @@
     "name": "Information",
     "description": "Shows getfeatureinfo onclick when active",
     "text": "On click in a queryable layer shows getfeatureinfo",
-    "version": "2.0.2",
+    "version": "1.0.1",
     "date": "09/12/2019",
     "author": "Guadaltel",
     "org": "CNIG",

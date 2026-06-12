@@ -1,0 +1,15 @@
+{
+  "exception": {
+    "impl": "The implementation used cannot create MaxExtZoomControl controls"
+  },
+  "tooltip": "Zoom to the map extent",
+  "zoommapextend": "Zoom to the map extent",
+  "textHelp": {
+    "squemaTitle": "maxextzoom",
+    "title": "MAXEXTZOOM",
+    "paragraph1": "This plugin adds a button that fits the map view to the maximum extent defined by the viewer (loaded layers, WMC or default bounding box) in a single click.",
+    "screenshot1Alt": "Map with the zoom-to-extent control visible on the viewer toolbar",
+    "screenshot1Caption": "help-01.png",
+    "screenshot1Description": "Find the control icon (usually in a corner depending on position); the tooltip reads “Zoom to the map extent”."
+  }
+}

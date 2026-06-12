@@ -52,6 +52,15 @@ module.exports = {
       },
     },
     rules: [
+      // PATCH: Modify OpenLayers Layer.js inView function
+      {
+        test: /node_modules[/\\]ol[/\\]layer[/\\]Layer\.js$/,
+        loader: 'string-replace-loader',
+        options: {
+          search: 'resolution >= layerState.maxResolution',
+          replace: 'resolution > layerState.maxResolution',
+        },
+      },
       {
         test: /\.js$/,
         exclude: /(node_modules\/(?!ol)|bower_components)/,
@@ -91,8 +100,11 @@ module.exports = {
   optimization: {
     emitOnErrors: false,
     minimizer: [
-      new OptimizeCssAssetsPlugin(),
+      new OptimizeCssAssetsPlugin({
+        parallel: 1,
+      }),
       new TerserPlugin({
+        parallel: 1,
         terserOptions: {
           sourceMap: true,
         },

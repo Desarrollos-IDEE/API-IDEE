@@ -7,6 +7,9 @@ import BasicControl from './basiccontrol';
 import myhelp from '../../templates/myhelp';
 import { getValue } from './i18n/language';
 
+import es from './i18n/es';
+import en from './i18n/en';
+
 export default class Basic extends IDEE.Plugin {
   /**
    * @classdesc
@@ -168,6 +171,21 @@ export default class Basic extends IDEE.Plugin {
    */
   getAPIRestBase64() {
     return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
+  }
+
+  /**
+   * Return plugin language
+   *
+   * @public
+   * @function
+   * @param {string} lang type language
+   * @api stable
+   */
+  static getJSONTranslations(lang) {
+    if (lang === 'en' || lang === 'es') {
+      return (lang === 'en') ? en : es;
+    }
+    return IDEE.language.getTranslation(lang).backimglayer;
   }
 
   /**

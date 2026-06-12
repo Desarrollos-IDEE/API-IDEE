@@ -1,6 +1,6 @@
 {
   "name": "apiidee",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Herramienta para desarrollo de mapas interactivos de forma sencilla",
   "keywords": [
     "map",
@@ -37,6 +37,7 @@
     "jsdoc-plugin-typescript": "2.3.0",
     "mini-css-extract-plugin": "2.7.6",
     "mocha": "10.2.0",
+    "string-replace-loader": "^3.2.0",
     "style-loader": "3.3.3",
     "terser-webpack-plugin": "5.3.9",
     "walk": "2.3.15",
@@ -49,15 +50,15 @@
     "@geoblocks/ol-maplibre-layer": "1.0.3",
     "@handlebars/allow-prototype-access": "1.0.5",
     "@ngageoint/geopackage": "4.2.6",
-    "cesium": "1.133.1",
+    "cesium": "1.134.0",
     "chroma-js": "1.4.1",
     "draggabilly": "3.0.0",
-    "get-image-colors": "4.0.1",
-    "handlebars": "4.7.8",
+    "gdal3.js": "^2.8.1",
+    "handlebars": "4.7.9",
     "jsdoc": "3.6.11",
     "jsts": "2.12.1",
     "maplibre-gl": "4.3.2",
-    "ol": "10.4.0",
+    "ol": "10.7.0",
     "pako": "1.0.11",
     "proj4": "2.15.0",
     "shpjs": "6.1.0",
@@ -94,6 +95,7 @@
     "start:test": "webpack-dev-server --config=webpack-config/webpack.playwright.config.js",
     "start:build": "npm run build && npm run debug:build",
     "test:playwright-ol": "playwright test --config=./playwright-config/playwright-ol.config.js",
+    "test:playwright-ol-slow": "playwright test --config=./playwright-config/playwright-ol-slow.config.js",
     "test:playwright-cesium": "playwright test --config=./playwright-config/playwright-cesium.config.js",
     "test:all": "npm run test:playwright-ol; npm run test:playwright-cesium"
   }

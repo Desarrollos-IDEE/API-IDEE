@@ -3,11 +3,14 @@
  */
 import FacadeOSM from 'IDEE/layer/OSM';
 import * as LayerType from 'IDEE/layer/Type';
-import { isNullOrEmpty, generateResolutionsFromExtent, extend } from 'IDEE/util/Utils';
+import {
+  isUndefined, isNullOrEmpty, generateResolutionsFromExtent, getZDirectionFunction, extend,
+} from 'IDEE/util/Utils';
 import * as EventType from 'IDEE/event/eventtype';
 import OLLayerTile from 'ol/layer/Tile';
 import OLControlAttribution from 'ol/control/Attribution';
 import SourceOSM from 'ol/source/OSM';
+import SourceXYZ from 'ol/source/XYZ';
 import ImplMap from '../Map';
 import Layer from './Layer';
 
@@ -53,6 +56,7 @@ class OSM extends Layer {
    *    ...
    *  })
    * }
+   * tileLoadFunction: <funcion>
    * </code></pre>
    * @api stable
    */
@@ -89,6 +93,16 @@ class OSM extends Layer {
     }
 
     /**
+     * OMS tileLoadFunction. Función de carga de tiles.
+     */
+    this.tileLoadFunction = vendorOptions?.tileLoadFunction;
+
+    /**
+     * OSM zDirection. Función de dirección Z para la carga de teselas.
+     */
+    this.zDirection = vendorOptions?.zDirection || getZDirectionFunction();
+
+    /**
      * OSM zIndex_. Índice de la capa, (+5).
      */
     this.zIndex_ = ImplMap.Z_INDEX[LayerType.OSM];
@@ -119,7 +133,12 @@ class OSM extends Layer {
         }
 
         // updates resolutions and keep the bbox
-        const oldBbox = this.map.getBbox();
+        let oldBbox = this.map.getBbox();
+        // eslint-disable-next-line no-underscore-dangle
+        if (!isNullOrEmpty(this.map.impl_.userBbox_)) {
+          // eslint-disable-next-line no-underscore-dangle
+          oldBbox = this.map.impl_.userBbox_;
+        }
         this.map.getImpl().updateResolutionsFromBaseLayer();
         if (!isNullOrEmpty(oldBbox)) {
           this.map.setBbox(oldBbox);
@@ -243,9 +262,19 @@ class OSM extends Layer {
     }
     if (!isNullOrEmpty(this.olLayer) && isNullOrEmpty(this.vendorOptions_.source)) {
       const extent = this.facadeLayer_.getMaxExtent();
-      const newSource = new SourceOSM({
-        url: this.url,
-      });
+      let newSource = '';
+      if (!isUndefined(this.url)) {
+        newSource = new SourceXYZ({
+          url: this.url,
+          tileLoadFunction: this.tileLoadFunction,
+          zDirection: this.zDirection,
+        });
+      } else {
+        newSource = new SourceOSM({
+          tileLoadFunction: this.tileLoadFunction,
+          zDirection: this.zDirection,
+        });
+      }
       this.olLayer.setSource(newSource);
       this.olLayer.setExtent(extent);
     }
@@ -262,6 +291,18 @@ class OSM extends Layer {
    */
   setFacadeObj(obj) {
     this.facadeLayer_ = obj;
+  }
+
+  /**
+   * Este método establece tileLoadFunction
+   *
+   * @public
+   * @param {Function} func Función de carga de teselas.
+   * @function
+   * @api stable
+   */
+  setTileLoadFunction(func) {
+    this.getLayer().getSource().setTileLoadFunction(func);
   }
 
   /**

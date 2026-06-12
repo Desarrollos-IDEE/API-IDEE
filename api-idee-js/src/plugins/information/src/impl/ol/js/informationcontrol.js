@@ -722,36 +722,61 @@ export default class InformationControl extends IDEE.impl.Control {
   parseCSSInfo(text) {
     let newText = text;
     try {
+      let styleTag = '';
       if (text.indexOf('<style type="text/css">') > -1) {
-        const init = text.split('<style type="text/css">')[0];
-        const style = text.split('<style type="text/css">')[1].split('</style>')[0].trim();
-        const finish = text.split('<style type="text/css">')[1].split('</style>')[1];
-        let newStyle = '';
-        style.split('{').forEach((term) => {
-          if (term.indexOf('}') > -1) {
-            const part1 = term.split('}')[0];
-            let part2 = term.split('}')[1].trim();
-            if (part2.length === 0) {
-              newStyle += `${part1} }`;
-            } else {
-              part2 = part2.split(',').join(', .m-information-content-info .m-information-content-info-body');
-              newStyle += `${part1} } .m-information-content-info .m-information-content-info-body ${part2} {`;
+        styleTag = '<style type="text/css">';
+      } else if (text.indexOf('<style>') > -1) {
+        styleTag = '<style>';
+      }
+
+      if (styleTag !== '') {
+        const parts = text.split(styleTag);
+        const init = parts[0];
+        const restAfterStyle = parts.slice(1).join(styleTag);
+        const subParts = restAfterStyle.split('</style>');
+        const styleContent = subParts[0].trim();
+        const finish = subParts.slice(1).join('</style>');
+        const styleParts = [];
+        const rules = styleContent.split('}');
+        rules.forEach((rule) => {
+          if (rule.trim().length > 0) {
+            const ruleParts = rule.split('{');
+            if (ruleParts.length === 2) {
+              const selectors = ruleParts[0].trim();
+              const properties = ruleParts[1].trim();
+              const prefix = '.m-information-content-info .m-information-content-info-body';
+              const processedSelectors = selectors.split(',').map((s) => {
+                const item = s.trim();
+                if (item.indexOf('.m-information-content-info') === 0 || item.length === 0) {
+                  return item;
+                }
+                return `${prefix} ${item}`;
+              });
+              styleParts.push(`\n ${processedSelectors.join(', ')} {\n  ${properties}\n }`);
             }
-          } else {
-            const newTerm = term.split(',').join(', .m-information-content-info .m-information-content-info-body');
-            newStyle += `.m-information-content-info .m-information-content-info-body ${newTerm} {`;
           }
         });
-
-        newText = `${init} <style type="text/css"> ${newStyle} </style> ${finish}`;
+        const newStyle = styleParts.join('');
+        newText = `${init}${styleTag}${newStyle}\n</style>${finish}`;
       }
-
-      if (newText.indexOf('<link rel="stylesheet"') > -1) {
-        const init = newText.split('<link rel="stylesheet"')[0];
-        const finish = newText.split('<link rel="stylesheet"')[1].split('.css">')[1];
-        newText = init + finish;
+      if (newText.indexOf('<link') > -1) {
+        const linkBlock = newText.split('<link');
+        let resultNoLinks = linkBlock[0];
+        for (let i = 1; i < linkBlock.length; i += 1) {
+          const contentTag = linkBlock[i].split('>')[0];
+          if (contentTag.indexOf('stylesheet') > -1 || contentTag.indexOf('.css') > -1) {
+            const afterClosing = linkBlock[i].split('>');
+            afterClosing.shift();
+            resultNoLinks += afterClosing.join('>');
+          } else {
+            resultNoLinks += `<link${linkBlock[i]}`;
+          }
+        }
+        newText = resultNoLinks;
       }
     } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Error en parseCSSInfo:', err);
       newText = text;
     }
 

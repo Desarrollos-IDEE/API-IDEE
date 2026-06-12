@@ -10,7 +10,7 @@ const mapajs = Mmap({
 });
 window.map = mapajs;
 
-fetch('https://componentes.idee.es/estaticos/Datos/gpkg/rivers.gpkg').then((data) => {
+fetch(`${IDEE.config.STATIC_RESOURCES_URL}/Datos/gpkg/rivers.gpkg`).then((data) => {
   const gpkg2 = new GeoPackage(data);
   const wms_001 = new WMS({
     url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
@@ -32,14 +32,14 @@ fetch('https://componentes.idee.es/estaticos/Datos/gpkg/rivers.gpkg').then((data
   mapajs.addLayers(wms_001);
 });
 
-// fetch('https://componentes.idee.es/estaticos/Datos/gpkg/rivers.gpkg').then((data) => {
+// fetch(`${IDEE.config.STATIC_RESOURCES_URL}/Datos/gpkg/rivers.gpkg`).then((data) => {
 //   const gpkg = new GeoPackage(data, {
 //     rivers_tiles: {
 //       attribution: {
 //         name: 'GeoPackage Tile',
 //         description: 'Description Prueba',
 //         url: 'https://www.ign.es',
-//         contentAttributions: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+//         contentAttributions: `${IDEE.config.STATIC_RESOURCES_URL}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml`,
 //         contentType: 'kml',
 //       },
 //       name: 'Geopackage Raster',
@@ -68,7 +68,7 @@ fetch('https://componentes.idee.es/estaticos/Datos/gpkg/rivers.gpkg').then((data
 //         name: 'GeoPackage Vector',
 //         description: 'Description Prueba',
 //         url: 'https://www.ign.es',
-//         contentAttributions: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+//         contentAttributions: `${IDEE.config.STATIC_RESOURCES_URL}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml`,
 //         contentType: 'kml',
 //       },
 //       //name: 'GeoPackage GeoJSON',

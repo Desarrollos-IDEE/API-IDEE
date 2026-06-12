@@ -132,19 +132,12 @@ const parseBoundingBox = (objLayer, parsedLayerNodes) => {
   const nodeLayer = parsedLayerNodes[objLayer.Name];
   if (!isNullOrEmpty(nodeLayer)) {
     if (isArray(objLayer.BoundingBox)) {
-      let bboxChilds = Array.prototype.map.call(nodeLayer.children, (element) => element);
-      bboxChilds = bboxChilds.filter((element) => ['BoundingBox'].includes(element.tagName));
-
-      objLayer.BoundingBox.forEach((objBbox, index) => {
+      objLayer.BoundingBox.forEach((objBbox) => {
         const objBboxParam = objBbox;
-        if (!objBboxParam.crs) {
-          const bboxNode = bboxChilds[index];
-          if (!isNullOrEmpty(bboxNode)) {
-            const srs = bboxNode.getAttribute('SRS');
-            if (!isNullOrEmpty(srs)) {
-              objBboxParam.crs = srs;
-            }
-          }
+        if (!objBboxParam.crs && objBboxParam.srs) {
+          objBboxParam.crs = objBboxParam.srs;
+        } else if (objBboxParam.crs && !objBboxParam.srs) {
+          objBboxParam.srs = objBboxParam.crs;
         }
       });
     }

@@ -457,7 +457,8 @@ div.m-panel>button {
 }
 
 /*  Info mapa  */
-.m-panel.m-map-info>div.m-panel-controls>div.m-control.m-scale-container {
+.m-panel.m-map-info>div.m-panel-controls>div.m-control.m-scale-container,
+.m-panel.m-map-info>div.m-panel-controls>div.m-control.m-wmcselector-container {
     order: 3;
     border: 2px solid white;
 }
@@ -524,7 +525,7 @@ div.m-panel>button {
 
 .m-wmcselector-container {
     background-color: white !important;
-    padding: 4px 10px 3px 12px !important;
+    padding: 5px 10px 3px 12px !important;
     font-family: 'Muli', 'sans-serif' !important;
     font-size: 12px !important;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02) !important;

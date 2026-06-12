@@ -24,14 +24,74 @@ public class JSBuilder {
 	 * @return the javascript code
 	 */
 	public static String build(Parameters parameters, List<String> plugins) {
+		return build(parameters, plugins, null, null, null);
+	}
+
+	/**
+	 * Generates the code to create a map with the specified parameters, controls,
+	 * plugins, configuration and layers
+	 * 
+	 * @param parameters    parameters specified by the user
+	 * @param plugins       list of plugins
+	 * @param controls      list of controls
+	 * @param layers        list of layers
+	 * @param configuration JSONObject with IDEE.config assignments
+	 * 
+	 * @return the javascript code
+	 */
+	public static String build(Parameters parameters, List<String> plugins, List<String> controls, List<String> layers,
+			JSONObject configuration) {
 		StringBuilder codeJS = new StringBuilder();
+
+		// Add IDEE.config assignments dynamically
+		if (configuration != null && configuration.length() > 0) {
+			java.util.Iterator<String> keys = configuration.keys();
+			while (keys.hasNext()) {
+				String key = keys.next();
+				Object value = configuration.get(key);
+				codeJS.append("IDEE.config.").append(key).append("=");
+
+				if (value instanceof String) {
+					codeJS.append("\"").append(value).append("\"");
+				} else if (value instanceof Boolean || value instanceof Number) {
+					codeJS.append(value);
+				} else if (value instanceof JSONObject || value instanceof JSONArray) {
+					codeJS.append(value.toString());
+				} else {
+					codeJS.append("\"").append(value.toString()).append("\"");
+				}
+
+				codeJS.append(";");
+			}
+		}
 
 		// IDEE.map({..<params>..})
 		codeJS.append("IDEE.map(").append(parameters.toJSON()).append(")");
 
 		// add plugins with .addPlugin(...)
-		for (String plugin : plugins) {
-			addPlugin(codeJS, plugin);
+		if (plugins != null) {
+			for (String plugin : plugins) {
+				addPlugin(codeJS, plugin);
+			}
+		}
+
+		// add controls with .addControls(...)
+		if (controls != null) {
+			for (String control : controls) {
+				addControls(codeJS, control);
+			}
+		}
+
+		// add layers with .addLayers([...])
+		if (layers != null && !layers.isEmpty()) {
+			codeJS.append(".addLayers([");
+			for (int i = 0; i < layers.size(); i++) {
+				if (i > 0) {
+					codeJS.append(",");
+				}
+				codeJS.append(layers.get(i));
+			}
+			codeJS.append("])");
 		}
 
 		wrapCallback(codeJS, parameters.getCallbackFn());
@@ -41,6 +101,10 @@ public class JSBuilder {
 
 	private static void addPlugin(StringBuilder codeJS, String plugin) {
 		codeJS.append(".addPlugin(").append(plugin).append(")");
+	}
+
+	private static void addControls(StringBuilder codeJS, String control) {
+		codeJS.append(".addControls(").append(control).append(")");
 	}
 
 	/**
@@ -226,5 +290,169 @@ public class JSBuilder {
 		}
 
 		return pluginParam;
+	}
+
+	/**
+	 * Creates a plugin from JSON configuration
+	 * 
+	 * @param pluginJson JSON object with plugin configuration
+	 * @return plugin code string
+	 */
+	public static String createPluginFromJSON(JSONObject pluginJson) {
+		StringBuilder pluginBuilder = new StringBuilder();
+
+		String type = pluginJson.optString("type", "");
+		JSONObject params = pluginJson.optJSONObject("params");
+
+		pluginBuilder.append("new IDEE.plugin.").append(type).append("(");
+
+		if (params != null) {
+			pluginBuilder.append(params.toString());
+		} else {
+			pluginBuilder.append("{}");
+		}
+
+		pluginBuilder.append(")");
+
+		return pluginBuilder.toString();
+	}
+
+	/**
+	 * Creates a control from JSON configuration
+	 * 
+	 * @param controlJson JSON object with control configuration
+	 * @return control code string
+	 */
+	public static String createControlFromJSON(JSONObject controlJson) {
+		StringBuilder controlBuilder = new StringBuilder();
+
+		String type = controlJson.optString("type", "");
+		JSONObject params = controlJson.optJSONObject("params");
+
+		// Capitalize first letter of control type
+		String controlClass = type.substring(0, 1).toUpperCase() + type.substring(1);
+
+		controlBuilder.append("new IDEE.control.").append(controlClass).append("(");
+
+		if (params != null) {
+			controlBuilder.append(params.toString());
+		}
+
+		controlBuilder.append(")");
+
+		return controlBuilder.toString();
+	}
+
+	/**
+	 * Creates a layer from JSON configuration
+	 * 
+	 * @param layerJson JSON object with layer configuration
+	 * @return layer code string
+	 */
+	public static String createLayerFromJSON(JSONObject layerJson) {
+		StringBuilder layerBuilder = new StringBuilder();
+
+		String type = layerJson.optString("type", "");
+
+		layerBuilder.append("new IDEE.layer.").append(type).append("(");
+
+		if (layerJson.has("source")) {
+			Object sourceObj = layerJson.get("source");
+
+			if (sourceObj instanceof String) {
+				layerBuilder.append("\"").append(sourceObj).append("\"");
+			} else if (sourceObj instanceof JSONObject) {
+				JSONObject source = (JSONObject) sourceObj;
+
+				if (source.has("params")) {
+					layerBuilder.append(source.getJSONObject("params").toString());
+				}
+
+				if (source.has("options")) {
+					layerBuilder.append(",").append(source.getJSONObject("options").toString());
+				}
+
+				if (source.has("vendorOptions")) {
+					JSONObject vendorOptions = source.getJSONObject("vendorOptions");
+					layerBuilder.append(",{");
+
+					java.util.Iterator<String> keys = vendorOptions.keys();
+					boolean first = true;
+					while (keys.hasNext()) {
+						String key = keys.next();
+						Object value = vendorOptions.get(key);
+
+						if (!first) {
+							layerBuilder.append(",");
+						}
+						first = false;
+
+						layerBuilder.append(key).append(":");
+
+						if (value instanceof String) {
+							String strValue = (String) value;
+							layerBuilder.append(strValue);
+						} else {
+							layerBuilder.append(value.toString());
+						}
+					}
+
+					layerBuilder.append("}");
+				}
+			}
+		}
+
+		layerBuilder.append(")");
+
+		if (layerJson.has("style")) {
+			Object styleObj = layerJson.get("style");
+
+			if (styleObj instanceof String) {
+				layerBuilder.append(".setStyle(").append(styleObj).append(")");
+			} else if (styleObj instanceof JSONObject) {
+				JSONObject style = (JSONObject) styleObj;
+				String styleType = style.optString("type", "");
+
+				layerBuilder.append(".setStyle(new IDEE.style.").append(styleType).append("(");
+
+				if (style.has("params")) {
+					Object paramsObj = style.get("params");
+					if (paramsObj instanceof JSONArray) {
+						JSONArray paramsArray = (JSONArray) paramsObj;
+						layerBuilder.append("[");
+						for (int i = 0; i < paramsArray.length(); i++) {
+							if (i > 0)
+								layerBuilder.append(",");
+							Object param = paramsArray.get(i);
+							if (param instanceof String) {
+								String paramStr = (String) param;
+								if (paramStr.startsWith("M.") || paramStr.startsWith("IDEE.")
+										|| paramStr.contains("(")) {
+									layerBuilder.append(paramStr);
+								} else {
+									layerBuilder.append("\"").append(paramStr).append("\"");
+								}
+							} else if (param instanceof JSONArray) {
+								layerBuilder.append(param.toString());
+							} else {
+								layerBuilder.append(param.toString());
+							}
+						}
+						layerBuilder.append("]");
+					} else {
+						layerBuilder.append(paramsObj.toString());
+					}
+				}
+
+				layerBuilder.append("))");
+			}
+		}
+
+		if (layerJson.has("filter")) {
+			String filter = layerJson.getString("filter");
+			layerBuilder.append(".setFilter(").append(filter).append(")");
+		}
+
+		return layerBuilder.toString();
 	}
 }

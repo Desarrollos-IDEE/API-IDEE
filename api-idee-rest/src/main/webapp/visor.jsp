@@ -15,7 +15,6 @@
     <link href="plugins/attributions/attributions.ol.min.css" rel="stylesheet" />
     <link href="plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
     <link href="plugins/mousesrs/mousesrs.ol.min.css" rel="stylesheet" />
-    <link href="plugins/viewmanagement/viewmanagement.ol.min.css" rel="stylesheet" />
     <link href="plugins/toc/toc.ol.min.css" rel="stylesheet" />
     </link>
     <style type="text/css">
@@ -47,7 +46,6 @@
     <script type="text/javascript" src="js/configuration.js"></script>
     <script type="text/javascript" src="plugins/attributions/attributions.ol.min.js"></script>
     <script type="text/javascript" src="plugins/sharemap/sharemap.ol.min.js"></script>
-    <script type="text/javascript" src="plugins/viewmanagement/viewmanagement.ol.min.js"></script>
     <script type="text/javascript" src="plugins/mousesrs/mousesrs.ol.min.js"></script>
     <script type="text/javascript" src="plugins/toc/toc.ol.min.js"></script>
     <%
@@ -113,8 +111,6 @@
             position: 'BR',
         });
 
-        const pluginViewManagement = new IDEE.plugin.ViewManagement();
-
         const pluginMouseSRS = new IDEE.plugin.MouseSRS({
             srs: 'EPSG:4326',
             label: 'WGS84',
@@ -130,7 +126,6 @@
 
         map.addPlugin(pluginAttributions);
         map.addPlugin(pluginShareMap);
-        map.addPlugin(pluginViewManagement);
         map.addPlugin(pluginMouseSRS);
         map.addPlugin(pluginTOC);
     </script>

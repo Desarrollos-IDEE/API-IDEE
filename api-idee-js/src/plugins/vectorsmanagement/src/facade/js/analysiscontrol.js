@@ -56,6 +56,14 @@ export default class AnalysisControl extends IDEE.Control {
      */
     this.bufferLayer = null;
 
+    /**
+     * Style for buffer layer
+     */
+    this.bufferLayerStyle = new IDEE.style.Polygon({
+      stroke: { color: '#71a7d3' },
+      fill: { color: '#71a7d3', opacity: 0.6 },
+    });
+
     this.destroyLayerBufferFN = this.destroyLayerBuffer.bind(this);
 
     this.map_.on(IDEE.evt.REMOVED_LAYER, this.destroyLayerBufferFN);
@@ -112,23 +120,24 @@ export default class AnalysisControl extends IDEE.Control {
   }
 
   /**
-   * This function adds selection and buffer layers to map.
+   * This function creates a new layer for each analysis operation which returns a geometry.
    * @public
    * @function
-   * @api
+   * @param {String} operationName - name of the analysis operation
+   * @param {Boolean} displayInLayerSwitcher - whether the layer is shown in the layer switcher
+   * @param {IDEE.source.Vector} source - source of the layer
+   * @param {IDEE.style.Style} style - style of the layer
+   * @returns {IDEE.layer.Vector} - created analysis layer
+   * @api stable
    */
-  initializeLayers() {
-    if (!this.bufferLayer) {
-      this.bufferLayer = new IDEE.layer.Vector({
-        extract: false,
-        name: 'bufferLayer',
-      }, { displayInLayerSwitcher: true });
-      this.bufferLayer.setStyle(new IDEE.style.Polygon({
-        stroke: { color: '#71a7d3' },
-        fill: { color: '#71a7d3', opacity: 0.6 },
-      }));
-      this.map_.addLayers(this.bufferLayer);
-    }
+  createAnalysisLayer(operationName, displayInLayerSwitcher, source, style) {
+    const layerNameCode = IDEE.utils.generateRandom(operationName.concat('_'));
+    return new IDEE.layer.Vector({
+      source,
+      extract: false,
+      name: layerNameCode,
+      style,
+    }, { displayInLayerSwitcher });
   }
 
   /**
@@ -318,7 +327,8 @@ export default class AnalysisControl extends IDEE.Control {
       btn.parentElement.insertBefore(btn2, btn);
       // btn es cerrar btn2 es aceptar
       btn2.addEventListener('click', (ev) => {
-        this.initializeLayers();
+        this.bufferLayer = this.createAnalysisLayer('analysisBufferLayer', true, null, this.bufferLayerStyle);
+        this.map_.addLayers(this.bufferLayer);
         this.addBuffer_((distance * unit));
         btn.click();
       });

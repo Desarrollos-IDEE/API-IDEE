@@ -23,15 +23,32 @@
                         </tr>
                         <tr tabindex="0">
                             <td>{{translations.datum}}</td>
-                            <td id="m-infocoordinates-datum" colspan="2">ETRS89</td>
+                            <td id="m-infocoordinates-datum" colspan="2">{{datum}}</td>
                         </tr>
+                        <tbody id="m-infocoordinates-geo-coords" class="noDisplay">
+                            <tr tabindex="0">
+                                <td>{{translations.latitude}}</td>
+                                <td id="m-infocoordinates-latitude" colspan="2">--</td>
+                                <td><button type="button" tabindex="0" class="icon-copy noDisplay" id="m-infocoordinates-copylatlon" title="{{translations.copyLatLon}}"></button></td>
+                            <tr tabindex="0">
+                                <td>{{translations.longitude}}</td>
+                                <td id="m-infocoordinates-longitude" colspan="2">--</td>
+                            </tr>
+                        </tbody>
+                        <tbody id="m-infocoordinates-utm-coords" class="noDisplay">
+                            <tr tabindex="0">
+                                <td>{{translations.coordX}}</td>
+                                <td id="m-infocoordinates-coordX" colspan="2">--</td>
+                                <td><button type="button" tabindex="0" class="icon-copy noDisplay" id="m-infocoordinates-copyxy" title="{{translations.copyxy}}"></button></td>
+                            </tr>
+                            <tr tabindex="0">
+                                <td>{{translations.coordY}}</td>
+                                <td id="m-infocoordinates-coordY" colspan="2">--</td>
+                            </tr>
+                        </tbody>
                         <tr tabindex="0">
-                            <td>{{translations.latitude}}</td>
-                            <td id="m-infocoordinates-latitude" colspan="2">--</td>
-                            <td><button type="button" tabindex="0" class="icon-copy noDisplay" id="m-infocoordinates-copylatlon" title="{{translations.copyLatLon}}"></button></td>
-                        <tr tabindex="0">
-                            <td>{{translations.longitude}}</td>
-                            <td id="m-infocoordinates-longitude" colspan="2">--</td>
+                            <td>{{translations.altitude}}</td>
+                            <td id="m-infocoordinates-altitude" colspan="2">--</td>
                         </tr>
                         <tr tabindex="0">
                             <td></td>
@@ -69,19 +86,6 @@
                                     </ul>
                                 </div>
                             </td>
-                        </tr>
-                        <tr tabindex="0">
-                            <td>{{translations.coordX}}</td>
-                            <td id="m-infocoordinates-coordX" colspan="2">--</td>
-                            <td><button type="button" tabindex="0" class="icon-copy noDisplay" id="m-infocoordinates-copyxy" title="{{translations.copyxy}}"></button></td>
-                        </tr>
-                        <tr tabindex="0">
-                            <td>{{translations.coordY}}</td>
-                            <td id="m-infocoordinates-coordY" colspan="2">--</td>
-                        </tr>
-                        <tr tabindex="0">
-                            <td>{{translations.altitude}}</td>
-                            <td id="m-infocoordinates-altitude" colspan="2">--</td>
                         </tr>
                     </tbody>
                 </table>

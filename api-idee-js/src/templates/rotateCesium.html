@@ -1,0 +1,68 @@
+<div class="m-control m-rotate-container" title="{{title}}" tabindex="{{order}}">
+  <div class="m-rotate-compass">
+    {{#if showHelp}}<button id="m-rotate-help" class="m-rotate-help-button" title="{{title_help}}" tabindex="{{order}}" type="button">?</button>{{/if}}
+    <svg class="m-rotate-background-exterior" width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <mask id="m-rotate-hole">
+          <rect width="50" height="50" fill="white"/>
+          <circle cx="25" cy="25" r="18" fill="black"/>
+        </mask>
+      </defs>
+      <circle cx="25" cy="25" r="25"  mask="url(#m-rotate-hole)"/>
+    </svg>
+    <div class="m-rotate-rotation-maker">
+      <svg class="m-rotate-svgPath-svg" width="50" height="50" viewBox="0 0 50 50">
+        <defs>
+          <mask id="m-rotate-donut-mask">
+            <rect width="50" height="50" fill="white"/>
+            <circle cx="25" cy="25" r="18" fill="black"/>
+          </mask>
+        </defs>
+        <path
+          d="M25,0 A25,25 0 0,1 50,25 L43,25 A18,18 0 0,0 25,7Z"
+          mask="url(#m-rotate-donut-mask)"
+        />
+      </svg>
+    </div>
+    <div class="m-rotate-exterior-svg g-cartografia-exterior" draggable="false"></div>
+    <div id="m-rotate-giroscopio" class="m-rotate-giroscopio-svg g-cartografia-giroscopio" draggable="false"></div>
+  </div>
+  {{#if showHelp}}
+    <div class="m-rotate-help-container">
+      <div class="m-rotate-help-header">
+        <h3 tabindex="{{order}}">{{title_help_container}}</h3>
+        <button class="m-rotate-help-close g-cartografia-cancelar" tabindex="{{order}}" type="button" title="{{close_btn}}"></button>
+      </div>
+      <div class="m-rotate-help-section">
+        <div class="m-rotate-help-option" tabindex="{{order}}">
+          <div>
+            <img class="m-rotate-dot" src="../facade/assets/images/girar-vista.svg" alt="{{image1_description}}">
+          </div>
+          <div>
+            <b>{{title1}}</b>
+            <p>{{text1}}</p>
+          </div>
+        </div>
+        <div class="m-rotate-help-option" tabindex="{{order}}">
+          <div>
+            <img class="m-rotate-dot" src="../facade/assets/images/inclinar-vista.svg" alt="{{image2_description}}">
+          </div>
+          <div>
+            <b>{{title2}}</b>
+            <p>{{text2}}</p>
+            <p>{{text3}}</p>
+          </div>
+        </div>
+        <div class="m-rotate-help-ctrl" tabindex="{{order}}">
+          <div>
+            <span class="m-rotate-key">CTRL</span>
+          </div>
+          <p>{{text4}}</p>
+        </div>
+        <button id="m-rotate-help-not-show-btn" tabindex="{{order}}" type="button">
+          <span class="m-rotate-help-not-show-span">{{close_not_show_help}}</span>
+        </button>
+      </div>
+    </div>
+  {{/if}}
+</div>

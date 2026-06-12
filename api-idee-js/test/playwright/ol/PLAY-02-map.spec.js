@@ -107,4 +107,39 @@ test.describe('IDEE.map', () => {
       expect(currentZoom).toBe(minZoom);
     });
   });
+
+  test.describe('metodos', () => {
+    test.beforeEach(async ({ page }) => {
+      await page.goto('/test/playwright/ol/basic-ol.html');
+      await page.evaluate(() => {
+        window.map = IDEE.map({ container: 'map' });
+      });
+    });
+    test('getOverlayLayers y removeOverlayLayers', async ({ page }) => {
+      const overlayLayersTestResults = await page.evaluate(() => {
+        const geodesia = new IDEE.layer.WFS({
+          url: 'https://www.ign.es/wfs/redes-geodesicas?',
+          legend: 'Red Geodésica Nacional por Técnicas Espaciales (REGENTE)',
+          name: 'RED_REGENTE',
+          geometry: 'POINT',
+          extract: true,
+        });
+
+        return new Promise((resolve) => {
+          geodesia.on(IDEE.evt.LOAD, async () => {
+            const layers = window.map.getOverlayLayers().length;
+            window.map.removeOverlayLayers();
+            resolve([
+              layers,
+              window.map.getOverlayLayers().length,
+            ]);
+          });
+
+          window.map.addLayers(geodesia);
+        });
+      });
+      expect(overlayLayersTestResults[0]).toBe(1);
+      expect(overlayLayersTestResults[1]).toBe(0);
+    });
+  });
 });

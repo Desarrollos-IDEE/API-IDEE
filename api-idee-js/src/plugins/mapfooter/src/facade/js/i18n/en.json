@@ -1,0 +1,20 @@
+{
+  "exception": {
+    "impl": "The implementation used cannot create MapfooterControl controls"
+  },
+  "hidefooter": "Hide footer",
+  "showfooter": "Show footer",
+  "hide": " Hide ",
+  "show": " Show ",
+  "textHelp": {
+    "squemaTitle": "mapfooter",
+    "title": "MAPFOOTER",
+    "paragraph1": "The mapfooter plugin inserts an HTML footer below the viewer (default left bottom panel) with configurable content (htmlCode) and optional styles (cssList), typically for legal notices, links or credits.",
+    "screenshot1Alt": "Viewer with footer collapsed; the map uses the full lower height",
+    "screenshot1Caption": "help-01.png",
+    "screenshot1Description": "Example with the footer collapsed: the map reaches the bottom edge and the panel button allows it to be shown again (“Show footer”).",
+    "screenshot2Alt": "Viewer with footer expanded showing the configured HTML",
+    "screenshot2Caption": "help-02.png",
+    "screenshot2Description": "With the footer expanded, configured HTML and styles appear. Use “Hide footer” to free vertical space for the map. The open parameter can load the footer already expanded."
+  }
+}

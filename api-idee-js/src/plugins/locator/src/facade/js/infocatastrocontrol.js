@@ -644,7 +644,7 @@ export default class InfoCatastroControl extends IDEE.Control {
       style = {
         radius: 5,
         icon: {
-          src: 'https://componentes.idee.es/estaticos/Simbologia/svg/marcadores/marker.svg',
+          src: `${IDEE.config.STATIC_RESOURCES_URL}/Simbologia/svg/marcadores/marker.svg`,
           scale: 1.4,
           fill: {
             color: '#71a7d3',
@@ -660,14 +660,14 @@ export default class InfoCatastroControl extends IDEE.Control {
       style = {
         radius: 5,
         icon: {
-          src: 'https://componentes.idee.es/estaticos/Simbologia/svg/marcadores/pinign.svg',
+          src: `${IDEE.config.STATIC_RESOURCES_URL}/Simbologia/svg/marcadores/pinign.svg`,
         },
       };
     } else if (this.pointStyle === 'pinMorado') {
       style = {
         radius: 5,
         icon: {
-          src: 'https://componentes.idee.es/estaticos/Simbologia/svg/marcadores/m-pin-24.svg',
+          src: `${IDEE.config.STATIC_RESOURCES_URL}/Simbologia/svg/marcadores/m-pin-24.svg`,
         },
       };
     }

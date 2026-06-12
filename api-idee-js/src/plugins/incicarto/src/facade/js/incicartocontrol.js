@@ -754,7 +754,7 @@ export default class IncicartoControl extends IDEE.Control {
   }
 
   createContentEmail(emailSubject, theme, destinatary = this.themes
-    .find((item) => item.idTheme === theme).emailTheme) {
+    .find((item) => `${item.idTheme}` === `${theme}`).emailTheme) {
     const emailName = document.querySelector('#person-notify').value;
     const emailUser = document.querySelector('#email-notify').value;
     const errDescription = document.querySelector('#err-description').value;

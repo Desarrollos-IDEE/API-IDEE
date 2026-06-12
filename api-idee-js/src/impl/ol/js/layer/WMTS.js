@@ -2,10 +2,11 @@
  * @module IDEE/impl/layer/WMTS
  */
 import {
-  isNull, isArray, isNullOrEmpty, addParameters, getWMTSGetCapabilitiesUrl, getResolutionFromScale,
-  extend,
+  isNull, isArray, isNullOrEmpty, addParameters, getWMTSGetCapabilitiesUrl, getZDirectionFunction,
+  getResolutionFromScale, extend,
 } from 'IDEE/util/Utils';
-import { default as OLSourceWMTS } from 'ol/source/WMTS';
+import { default as OLSourceWMTS, optionsFromCapabilities } from 'ol/source/WMTS';
+// import { optionsFromCapabilities } from 'patches';
 import OLFormatWMTSCapabilities from 'ol/format/WMTSCapabilities';
 import OLTileGridWMTS from 'ol/tilegrid/WMTS';
 import { getBottomLeft, getTopLeft, getWidth } from 'ol/extent';
@@ -13,7 +14,6 @@ import { get as getRemote } from 'IDEE/util/Remote';
 import * as EventType from 'IDEE/event/eventtype';
 import { get as getProj } from 'ol/proj';
 import OLLayerTile from 'ol/layer/Tile';
-import { optionsFromCapabilities } from 'patches';
 import LayerBase from './Layer';
 import getLayerExtent from '../util/wmtscapabilities';
 /**
@@ -84,11 +84,18 @@ class WMTS extends LayerBase {
     this.getCapabilitiesPromise_ = null;
 
     /**
-     * WMS tileLoadFunction. Función de carga de tiles.
+     * WMTS tileLoadFunction. Función de carga de tiles.
      * @private
      * @type {Function}
      */
     this.tileLoadFunction = vendorOptions?.tileLoadFunction;
+
+    /**
+     * WMTS zDirection. Función de dirección Z.
+     * @private
+     * @type {Function}
+     */
+    this.zDirection = vendorOptions?.zDirection || getZDirectionFunction();
 
     /**
      * WMTS minZoom. Minimum zoom applicable to the layer.
@@ -177,8 +184,11 @@ class WMTS extends LayerBase {
   getWGS84BoundingBoxCapabilities_(capabilities) {
     const contents = capabilities.Contents;
     const defaultExtent = this.map.getMaxExtent();
+    const layerExtent = this.options.maxExtent;
 
-    if (!isNull(contents)) {
+    if (!isNullOrEmpty(layerExtent)) {
+      this.maxExtent = layerExtent;
+    } else if (!isNull(contents)) {
       this.maxExtent = getLayerExtent(contents, this.name, this.map
         .getProjection().code, defaultExtent);
     }
@@ -230,6 +240,7 @@ class WMTS extends LayerBase {
           }),
           extent,
           tileLoadFunction: this.tileLoadFunction,
+          zDirection: this.zDirection,
         });
         this.olLayer.setSource(newSource);
       });
@@ -246,7 +257,7 @@ class WMTS extends LayerBase {
   setVisible(visibility) {
     this.visibility = visibility;
     // if this layer is base then it hides all base layers
-    if ((visibility === true) && (this.isBase === true)) {
+    if ((visibility === true) && (this.isBase !== false) && !this.isVisible()) {
       // hides all base layers
       this.map.getBaseLayers()
         .filter((layer) => !layer.equals(this.facadeLayer_) && layer.isVisible())
@@ -258,9 +269,10 @@ class WMTS extends LayerBase {
       }
 
       // updates resolutions and keep the zoom
-      const oldBbox = this.map.getBbox();
-      if (!isNullOrEmpty(oldBbox)) {
-        this.map.setBbox(oldBbox, { nearest: true });
+      const oldZoom = this.map.getZoom();
+      // this.map.getImpl().updateResolutionsFromBaseLayer();
+      if (!isNullOrEmpty(oldZoom)) {
+        this.map.setZoom(oldZoom);
       }
     } else if (!isNullOrEmpty(this.olLayer)) {
       this.olLayer.setVisible(visibility);
@@ -287,6 +299,7 @@ class WMTS extends LayerBase {
           extent,
           crossOrigin: this.crossOrigin,
           tileLoadFunction: this.tileLoadFunction,
+          zDirection: this.zDirection,
         }, true);
         wmtsSource = new OLSourceWMTS(options);
       }
@@ -352,6 +365,7 @@ class WMTS extends LayerBase {
           projection: getProj(this.map.getProjection().code),
           tileGrid,
           tileLoadFunction: this.tileLoadFunction,
+          zDirection: this.zDirection,
         });
       }
       this.facadeLayer_.setFormat(format);

@@ -10,8 +10,13 @@ Plugin de línea del tiempo.
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
 
+Para uso de implementación OpenLayers:
 - **timeline.ol.min.js**
 - **timeline.ol.min.css**
+
+Para uso de implementación Cesium:
+- **timeline.cesium.min.js**
+- **modtimelineal.cesium.min.css**
 
 
 ```html
@@ -56,6 +61,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
   ```javascript
     const mp = new IDEE.plugin.Timeline({
     position: 'TL',
+    timelineType: 'absoluteSimple',
     intervals: [
       ["NACIONAL 1981-1986", "1986", "WMS*NACIONAL_1981-1986*https://www.ign.es/wms/pnoa-historico*NACIONAL_1981-1986"],
       ["OLISTAT", "1998", "WMS*OLISTAT*https://www.ign.es/wms/pnoa-historico*OLISTAT"],

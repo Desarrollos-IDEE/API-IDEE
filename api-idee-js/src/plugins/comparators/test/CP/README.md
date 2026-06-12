@@ -8,7 +8,6 @@
 
 * CP-002 - Parámetro controls y plugins.
     * [X] Se comprueba que se carga con todos los plugins.
-        - [X] viewmanagement.
         - [] timeline.
         - [X] stylemanager.
         - [X] queryattributes.

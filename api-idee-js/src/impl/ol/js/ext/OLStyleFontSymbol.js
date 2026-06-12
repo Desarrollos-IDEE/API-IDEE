@@ -53,6 +53,7 @@ class OLStyleFontSymbol extends OLStyleRegularShape {
     this.pixelRatio_ = window.devicePixelRatio;
     this.color_ = options.color;
     this.fontSize_ = options.fontSize || 1;
+    this.fontStyle_ = options.fontStyle || '';
     this.stroke_ = options.stroke;
     this.fill_ = options.fill;
     this.radius_ = (options.radius * this.pixelRatio_) - strokeWidth;
@@ -247,6 +248,46 @@ class OLStyleFontSymbol extends OLStyleRegularShape {
   }
 
   /**
+   * Devuelve el elemento de imagen o canvas.
+   * @param {number} pixelRatio Ratio de píxeles.
+   * @return {HTMLCanvasElement} Elemento de imagen o canvas.
+   * @api
+   */
+  getImage(pixelratio = 1) {
+    // get canvas
+    const canvas = super.getImage(pixelratio);
+
+    let strokeStyle;
+    let strokeWidth = 0;
+
+    if (this.stroke_) {
+      strokeStyle = colorAsString(this.stroke_.getColor());
+      strokeWidth = this.stroke_.getWidth();
+    }
+
+    /** @type {OLStyleFontSymbol.RenderOptions} */
+    const renderOptions = {
+      strokeStyle,
+      strokeWidth,
+      size: canvas.width / pixelratio,
+    };
+
+    // draw the circle on the canvas
+    const context = (canvas.getContext('2d'));
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    this.drawMarker_(renderOptions, context, 0, 0, pixelratio);
+
+    // Set anchor / displacement
+    if (!this.getDisplacement) {
+      const a = this.getAnchor();
+      a[0] = canvas.width / 2 - this.offset_[0];
+      a[1] = canvas.width / 2 - this.offset_[1];
+    }
+
+    return canvas;
+  }
+
+  /**
    * Dibuja el símbolo.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
@@ -257,7 +298,7 @@ class OLStyleFontSymbol extends OLStyleRegularShape {
    */
   drawPath_(renderOptions, contextParam) {
     const context = contextParam;
-    const s = (2 * this.radius_) + renderOptions.strokeWidth + 1;
+    const s = (2 * this.radius_) + renderOptions.strokeWidth;
     const w = renderOptions.strokeWidth / 2;
     const c = renderOptions.size / 2;
     // Transfo to place the glyph at the right place
@@ -383,8 +424,7 @@ class OLStyleFontSymbol extends OLStyleRegularShape {
    * @param {number} y El origen para el símbolo (y).
    * @api
    */
-  drawMarker_(renderOptions, contextParam, x, y) {
-    const context = contextParam;
+  drawMarker_(renderOptions, context, x, y, pixelratio) {
     let fcolor = this.fill_ ? this.fill_.getColor() : '#000';
     let scolor = this.stroke_ ? this.stroke_.getColor() : '#000';
     if (this.form_ === 'none' && this.stroke_ && this.fill_) {
@@ -392,12 +432,12 @@ class OLStyleFontSymbol extends OLStyleRegularShape {
       fcolor = this.stroke_.getColor();
     }
     // reset transform
-    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.setTransform(pixelratio, 0, 0, pixelratio, 0, 0);
 
     // then move to (x, y)
     context.translate(x, y);
 
-    const tr = this.drawPath_(renderOptions, context);
+    const tr = this.drawPath_(renderOptions, context, pixelratio);
 
     if (this.fill_) {
       if (this.gradient_ && this.form_ !== 'none') {

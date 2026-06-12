@@ -39,6 +39,8 @@ test.describe('IDEE.Popup', () => {
       const id = popup.getId();
       return id;
     });
+    await page.waitForSelector('.m-popup');
+
     const popup = await page.locator('.m-popup');
     await expect(popup).toHaveId(idPopup);
   });

@@ -32,8 +32,13 @@
       String[] cssfiles = PluginsManager.getCSSFiles(parameterMap);
       for (int i = 0; i < cssfiles.length; i++) {
          String cssfile = cssfiles[i];
+         // Si es una URL absoluta (http:// o https://), usarla directamente
+         // Si no, usar la ruta relativa con el prefijo "plugins/"
+         String href = (cssfile.startsWith("http://") || cssfile.startsWith("https://")) 
+                       ? cssfile 
+                       : "plugins/" + cssfile;
     %>
-    <link type="text/css" rel="stylesheet" href="plugins/<%=cssfile%>">
+    <link type="text/css" rel="stylesheet" href="<%=href%>">
     </link>
     <%
       } %>
@@ -48,8 +53,13 @@
       String[] jsfiles = PluginsManager.getJSFiles(parameterMap);
       for (int i = 0; i < jsfiles.length; i++) {
          String jsfile = jsfiles[i];
+         // Si es una URL absoluta (http:// o https://), usarla directamente
+         // Si no, usar la ruta relativa con el prefijo "plugins/"
+         String src = (jsfile.startsWith("http://") || jsfile.startsWith("https://")) 
+                      ? jsfile 
+                      : "plugins/" + jsfile;
    %>
-    <script type="text/javascript" src="plugins/<%=jsfile%>"></script>
+    <script type="text/javascript" src="<%=src%>"></script>
 
     <%  }
    %>

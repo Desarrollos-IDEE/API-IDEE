@@ -72,6 +72,15 @@ class WMC extends LayerBase {
     // checks if the name is auto-generated
     if (!isNullOrEmpty(this.url) && isNullOrEmpty(this.name)) {
       this.generateName_();
+    } else if (isNullOrEmpty(this.url) && !isNullOrEmpty(this.name)) {
+      // checks if it is predefined context
+      const predefinedIdx = IDEE.config.predefinedWMC.predefinedNames.indexOf(this.name);
+      if (predefinedIdx === -1) {
+        Exception(`El contexto predefinido '${this.name}'no existe`);
+      } else {
+        this.url = IDEE.config.predefinedWMC.urls[predefinedIdx];
+        this.name = IDEE.config.predefinedWMC.names[predefinedIdx];
+      }
     }
 
     /**

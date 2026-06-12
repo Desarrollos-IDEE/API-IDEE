@@ -135,7 +135,9 @@ class GetCapabilities {
         }
       } else if (isObject(layer)) {
         // base case
-        if (isNullOrEmpty(layerName) || (layer.Name === layerName)) {
+        if (isNullOrEmpty(layerName) || (layer.Name === layerName)
+          || (isString(layer.Name) && isString(layerName)
+            && layer.Name.toLowerCase() === layerName.toLowerCase())) {
           if (!isNullOrEmpty(layer.BoundingBox)) {
             const bboxSameProj = layer.BoundingBox
               .find((bbox) => bbox.crs === this.projection_.code);

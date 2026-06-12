@@ -1,5 +1,5 @@
 <div class="m-control m-wmcselector-container g-cartografia-mapa" title="{{title}}">
-    <select class="m-wmcselector-select">
+    <select class="m-wmcselector-select" aria-label="Plugin wmc selector" tabindex="100">
         {{#each layers}}
             <option {{#if selected}}selected {{/if}}value="{{url}}">{{name}}</option>
         {{/each}}

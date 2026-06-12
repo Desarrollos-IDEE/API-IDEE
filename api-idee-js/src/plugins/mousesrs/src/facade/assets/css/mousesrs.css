@@ -6,13 +6,13 @@
     white-space: nowrap;
     order: 4;
     background-color: rgb(113, 167, 211) !important;
-    margin-right: 10px;
-    margin-bottom: 10px;
     position: absolute;
-    left: calc(50vw - 100px);
-    top: calc(100vh - 35px);
+    left: 50%;
     display: flex;
     border: 2px solid white;
+    bottom: 9px;
+    transform: translateX(-50%);
+    margin: 0;
 }
 
 .m-control.m-container.m-mousesrs-container .m-mouse-srs {

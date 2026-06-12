@@ -347,7 +347,7 @@ const generic_002 = new IDEE.layer.GenericVector({}, {}, new ol.layer.Vector({
 map.addLayers(generic_002); window.generic_002 = generic_002; // */
 
 /* / Capa MBTiles fetch
-window.fetch('https://componentes.idee.es/estaticos/Datos/mbtiles/cabrera.mbtiles').then((response) => {
+window.fetch(`${IDEE.config.STATIC_RESOURCES_URL}/Datos/mbtiles/cabrera.mbtiles`).then((response) => {
   if (response.status != 404) {
     const mbtile1 = new IDEE.layer.MBTiles({
       name: 'mbtiles', legend: 'Capa MBTiles L',
@@ -374,7 +374,7 @@ const mbtile2 = new IDEE.layer.MBTiles({
 map.addLayers(mbtile2); window.mbtile2 = mbtile2; // */
 
 /* / Capa MBTilesVector fetch
-window.fetch('https://componentes.idee.es/estaticos/Datos/mbtiles/countries.mbtiles').then((response) => {
+window.fetch(`${IDEE.config.STATIC_RESOURCES_URL}/Datos/mbtiles/countries.mbtiles`).then((response) => {
   if (response.status != 404) {
     const mbtilesvector = new IDEE.layer.MBTilesVector({
       name: 'mbtiles_vector',

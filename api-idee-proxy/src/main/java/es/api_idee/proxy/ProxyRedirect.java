@@ -50,12 +50,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.net.URLDecoder;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -87,9 +89,6 @@ import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
-
-import es.guadaltel.framework.ticket.Ticket;
-import es.guadaltel.framework.ticket.TicketFactory;
 
 // PATCH import org.apache.log4j.PropertyConfigurator;
 @SuppressWarnings("serial")
@@ -141,7 +140,8 @@ public class ProxyRedirect extends HttpServlet {
 				HttpGet httpget = null;
 
         try {
-          httpget = new HttpGet(url);
+          String decodedUrl = URLDecoder.decode(url,"UTF-8");
+          httpget = new HttpGet(decodedUrl);
           httpget.setConfig(RequestConfig.custom().setMaxRedirects(numMaxRedirects).build());
 
           HttpResponse httpResponse = client.execute(httpget);
@@ -253,7 +253,8 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
               }
             }
               HttpClient client = clientBuilder.build();
-              httppost = new HttpPost(serverUrl);
+              String decodedUrl = URLDecoder.decode(serverUrl,"UTF-8");
+              httppost = new HttpPost(decodedUrl);
 
               // PATH_apiideeDITA_SECURITY - AP
               // PATCH_TICKET_MJM-20112405-POST
@@ -271,15 +272,8 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
                   if (ticketParameter != null) {
                     ticketParameter = ticketParameter.trim();
                     if (!ticketParameter.isEmpty()) {
-                      Ticket ticket = TicketFactory.createInstance();
                       try {
-                        Map<String, String> props = ticket.getProperties(ticketParameter);
-                        user = props.get("user");
-                        pass = props.get("pass");
-                        String userAndPass = user + ":" + pass;
-                        String encodedLogin = new String(org.apache.commons.codec.binary.Base64
-                          .encodeBase64(userAndPass.getBytes()));
-                        httppost.addHeader(AUTHORIZATION, "Basic " + encodedLogin);
+                    	httppost.addHeader("Authorization", "Bearer " + ticketParameter);
                       } catch (Exception e) {
                         log.info("-------------------------------------------");
                         log.info("EXCEPCTION THROWED BY PROXYREDIRECT CLASS");
@@ -409,12 +403,13 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
             httppost.releaseConnection();
           }
         } else {
-          HttpPost pm = new HttpPost(serverUrl);
           String outputBody;
           HttpClient client = null;
           HttpResponse pmResp = null;
+          HttpPost pm = null;
           
           try {
+            pm = new HttpPost(URLDecoder.decode(serverUrl, "UTF-8"));
             outputBody = inputStreamAsString(request.getInputStream());
             StringEntity requestEntity = new StringEntity(outputBody, "application/json", "UTF-8");
             pm.setEntity(requestEntity);
@@ -443,7 +438,9 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
           } catch (IOException e) {
             log.error("Error al tratar el contenido de la peticion: " + e.getMessage(), e);
           } finally {
-            pm.releaseConnection();
+            if (pm != null) {
+              pm.releaseConnection();
+            }
           }
         }
       } else {

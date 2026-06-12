@@ -15,7 +15,6 @@ import FormatImplGeoJSON from '../format/GeoJSON';
 import FormatGML from '../format/GML';
 import LoaderWFS from '../loader/WFS';
 import Vector from './Vector';
-import ImplUtils from '../util/Utils';
 
 /**
  * @classdesc
@@ -203,32 +202,6 @@ class WFS extends Vector {
         }
       });
     }
-  }
-
-  /**
-   * Este método devuelve la extensión de todas los objetos geográficos
-   * o discrimina por el filtro, asíncrono.
-   *
-   * @function
-   * @param {boolean} skipFilter Indica si se salta el filtro.
-   * @param {IDEE.Filter} filter Filtro para ejecutar.
-   * @return {Array<number>} Alcance de los objetos geográficos.
-   * @api stable
-   */
-  getFeaturesExtentPromise(skipFilter, filter) {
-    return new Promise((resolve) => {
-      const codeProj = this.map.getProjection().code;
-      if (this.isLoaded() === true) {
-        const features = this.getFeatures(skipFilter, filter);
-        const extent = ImplUtils.getFeaturesExtent(features, codeProj);
-        resolve(extent);
-      } else {
-        this.requestFeatures_().then((features) => {
-          const extent = ImplUtils.getFeaturesExtent(features, codeProj);
-          resolve(extent);
-        });
-      }
-    });
   }
 
   /**

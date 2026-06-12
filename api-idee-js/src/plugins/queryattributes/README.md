@@ -11,8 +11,13 @@ Plugin que permite aplicar filtros sobre las capas de un mapa y visualizar de fo
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
 
+Para uso de implementación OpenLayers:
 - **queryattributes.ol.min.js**
 - **queryattributes.ol.min.css**
+
+Para uso de implementación Cesium:
+- **queryattributes.cesium.min.js**
+- **queryattributes.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/queryattributes/queryattributes.ol.min.css" rel="stylesheet" />

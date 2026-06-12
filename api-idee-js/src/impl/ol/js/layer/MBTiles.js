@@ -1,7 +1,9 @@
 /**
  * @module IDEE/impl/layer/MBTiles
  */
-import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
+import {
+  isNullOrEmpty, isFunction, extend, getZDirectionFunction,
+} from 'IDEE/util/Utils';
 import { get as getProj, transformExtent } from 'ol/proj';
 import OLLayerTile from 'ol/layer/Tile';
 import TileGrid from 'ol/tilegrid/TileGrid';
@@ -110,6 +112,11 @@ class MBTiles extends Layer {
     this.tileLoadFunction = userParameters.tileLoadFunction || null;
 
     /**
+     * MBTiles zDirection: Función de dirección Z para la carga de teselas.
+     */
+    this.zDirection = userParameters.zDirection || getZDirectionFunction();
+
+    /**
      * MBTiles url: Url del fichero o servicio que genera el MBTiles.
      */
     this.url_ = userParameters.url;
@@ -206,12 +213,20 @@ class MBTiles extends Layer {
 
   /**
    * Devuelve la extensión de la capa.
+   *
+   * @function
+   * @param {Function} callbackFn Función que se ejecuta cuando se obtiene la extensión.
    * @returns {Array} Devuelve la extensión de la capa.
+   * @api
    */
-  getMaxExtent() {
+  getMaxExtent(callbackFn) {
     const extent = this.maxExtent_ || this.getExtentFromProvider();
     if (!extent) {
       this.maxExtent_ = this.map.getExtent();
+    }
+
+    if (isFunction(callbackFn)) {
+      callbackFn(this.maxExtent_);
     }
     return this.maxExtent_;
   }
@@ -238,8 +253,7 @@ class MBTiles extends Layer {
    */
   addTo(map, addLayer = true) {
     this.map = map;
-    const { code } = this.map.getProjection();
-    const projection = getProj(code);
+    const projection = getProj('EPSG:3857');
     const extent = projection.getExtent();
     this.olLayer = new OLLayerTile(extend({
       visible: this.visibility,
@@ -258,11 +272,10 @@ class MBTiles extends Layer {
           }
           const resolutions = generateResolutions(extent, DEFAULT_TILE_SIZE, this.maxZoomLevel_);
           this.getExtentFromProvider().then((reprojectedExtent) => {
-            this.maxExtent_ = this.maxExtent_ || reprojectedExtent || extent;
             this.createLayer({
               tileProvider,
               resolutions,
-              extent: this.maxExtent_,
+              extent: this.maxExtent_ || reprojectedExtent || extent,
               sourceExtent: extent,
               projection,
             });
@@ -318,6 +331,7 @@ class MBTiles extends Layer {
           origin: getBottomLeft(opts.sourceExtent),
           resolutions: opts.resolutions,
         }),
+        zDirection: this.zDirection,
       });
     }
     this.olLayer.setSource(source);

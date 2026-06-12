@@ -61,6 +61,8 @@ class ScaleLine extends OLControlScaleLine {
     super(vendorOptions);
 
     this.facadeMap_ = null;
+
+    this.keyEvent_ = null;
   }
 
   /**

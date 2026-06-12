@@ -1,9 +1,9 @@
 /**
  * @module IDEE/impl/handler/Feature
  */
-// import ClusteredFeature from 'IDEE/feature/Clustered';
-// import Cluster from 'IDEE/style/Cluster';
-import { isNullOrEmpty } from 'IDEE/util/Utils';
+import ClusteredFeature from 'IDEE/feature/Clustered';
+import Cluster from 'IDEE/style/Cluster';
+import { isNullOrEmpty, isArray } from 'IDEE/util/Utils';
 // import RenderFeature from 'ol/render/Feature';
 import {
   Cesium3DTilePointFeature,
@@ -12,9 +12,6 @@ import {
   ScreenSpaceEventType,
 } from 'cesium';
 import FeatureFacade from 'IDEE/feature/Feature';
-
-// import AnimatedCluster from '../layer/AnimatedCluster';
-// import RenderFeatureImpl from '../feature/RenderFeature';
 // import RenderFeatureImpl from '../feature/RenderFeature';
 import FeatureImpl from '../feature/Feature';
 import ImplUtils from '../util/Utils';
@@ -108,29 +105,56 @@ class Feature {
         if (userMaxExtent && !this.handleFeatureInExtent(userMaxExtent, evt.pixel)) {
           return;
         }
-        if (feature.id && feature.id.entityCollection.owner === cesiumLayer) {
-          // if ((layerFrom instanceof AnimatedCluster)
-          //  && !isNullOrEmpty(feature.get('features'))) {
-          //   const clusteredFeatures = feature.get('features')
-          // .map((f) => getFacadeFeature(f, layer));
-          //   if (clusteredFeatures.length === 1) {
-          //     features.push(clusteredFeatures[0]);
-          //   } else {
-          //     let styleCluster = layer.getStyle();
-          //     if (!(styleCluster instanceof Cluster)) {
-          //       styleCluster = styleCluster.getStyles()
-          // .find((style) => style instanceof Cluster);
-          //     }
-          //     features.push(new ClusteredFeature(clusteredFeatures, {
-          //       ranges: styleCluster.getRanges(),
-          //       hoverInteraction: styleCluster.getOptions().hoverInteraction,
-          //       maxFeaturesToSelect: styleCluster.getOptions().maxFeaturesToSelect,
-          //       distance: styleCluster.getOptions().distance,
-          //     }));
-          //   }
-          // } else
-          if (!feature.id.properties || !feature.id.properties.hasProperty('selectclusterlink')) {
-            features.push(getFacadeFeature(feature.id, layer));
+
+        const auxstyle = layer.getStyle();
+        if (!isNullOrEmpty(cesiumLayer.clustering) && cesiumLayer.clustering.enabled
+          && (auxstyle.getOptions().selectInteraction || auxstyle.getOptions().hoverInteraction)
+          && !isNullOrEmpty(feature.id) && isArray(feature.id)) {
+          const clusteredFeatures = feature.id.map((f) => getFacadeFeature(f, layer));
+          if (clusteredFeatures.length === 1) {
+            const cf0 = clusteredFeatures[0];
+            if (!features.some((f) => (f && typeof f.equals === 'function' ? f.equals(cf0) : false))) {
+              features.push(cf0);
+            }
+          } else {
+            let styleCluster = layer.getStyle();
+            if (!(styleCluster instanceof Cluster)) {
+              styleCluster = styleCluster.getStyles().find((style) => style instanceof Cluster);
+            }
+            features.push(new ClusteredFeature(clusteredFeatures, {
+              ranges: styleCluster.getRanges(),
+              hoverInteraction: styleCluster.getOptions().hoverInteraction,
+              maxFeaturesToSelect: styleCluster.getOptions().maxFeaturesToSelect,
+              distance: styleCluster.getOptions().distance,
+            }));
+          }
+        } else if (feature.id && !isNullOrEmpty(feature.id.entityCollection)) {
+          const owner = feature.id.entityCollection.owner;
+          // Si la entidad pertenece a la capa Cluster
+          if (owner === cesiumLayer) {
+            if (!feature.id.properties || !feature.id.properties.hasProperty('selectclusterlink')) {
+              const mf = getFacadeFeature(feature.id, layer);
+              if (!isNullOrEmpty(mf)) {
+                if (!features.some((f) => (f && typeof f.equals === 'function' ? f.equals(mf) : false))) {
+                  features.push(mf);
+                }
+              }
+            }
+          } else {
+            // Si la entidad pertenece a la capa Cluster overlay obtiene el feature original via _id
+            // eslint-disable-next-line no-underscore-dangle
+            const originalId = feature.id._id || (feature.id.properties && feature.id.properties.hasProperty && feature.id.properties.hasProperty('originalId') && feature.id.properties.getValue('originalId'));
+            if (originalId) {
+              try {
+                const orig = layer.getFeatureById(originalId);
+                if (!isNullOrEmpty(orig) && !features.some((f) => (f && typeof f.equals === 'function' ? f.equals(orig) : false))) {
+                  features.push(orig);
+                }
+              } catch (e) {
+                // eslint-disable-next-line no-console
+                console.warn();
+              }
+            }
           }
         } else if ((feature instanceof Cesium3DTileFeature
           || feature instanceof Cesium3DTilePointFeature)

@@ -17,6 +17,7 @@ import {
   VerticalOrigin,
   Cartesian2,
   HeightReference,
+  ModelGraphics,
 } from 'cesium';
 import proj4 from 'proj4';
 import ImplUtils from '../util/Utils';
@@ -152,7 +153,8 @@ class GeoJSON {
   writeGeometryObject(geometry) {
     let object = {};
 
-    if (geometry instanceof PointGraphics || geometry instanceof BillboardGraphics) {
+    if (geometry instanceof PointGraphics || geometry instanceof BillboardGraphics
+      || geometry instanceof ModelGraphics) {
       const cartographic = Cartographic.fromCartesian(geometry.coordinates);
       object = {
         type: 'Point',

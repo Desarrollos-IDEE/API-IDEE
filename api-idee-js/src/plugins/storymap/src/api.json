@@ -57,12 +57,12 @@
   },
   "metadata": {
     "name": "StoryMap",
-    "description": "Table of contents of the map. Pretty design version",
-    "text": "Tabla de contenidos de fototeca. Consulta cobertura de vuelo sobre la vista",
-    "version": "2.0.2",
-    "date": "18/11/2019",
-    "author": "Guadaltel",
-    "org": "CNIG",
+    "description": "Plugin que muestra una historia en forma de carrusel. ",
+    "text": "Plugin que muestra una historia en forma de carrusel. ",
+    "version": "1.0.1",
+    "date": "08/01/2026",
+    "author": "",
+    "org": "",
     "tags": "api-idee,plugin",
     "icon": "./facade/assets/icons/icons.svg"
   }
