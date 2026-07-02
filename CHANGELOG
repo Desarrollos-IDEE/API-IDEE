@@ -1,4 +1,4 @@
-24/10/25 Versión 1.1.0
+01/07/26 Versión 1.1.0
 - Se añade el método getImageMap para generar la imagen del mapa.
 - Se soluciona problemas con filtros espaciales en Cesium.
 - Se soluciona problema en estilos con patrones en polígonos.
