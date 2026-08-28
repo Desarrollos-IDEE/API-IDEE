@@ -12,7 +12,7 @@
    <parent>
       <groupId>es.idee.api</groupId>
       <artifactId>api-idee-parent</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.0</version>
       <relativePath>../api-idee-parent/pom.xml</relativePath>
    </parent>
    <licenses>
@@ -36,6 +36,7 @@
             <filtering>true</filtering>
             <includes>
                <include>**/*.properties</include>
+               <include>**/*.xml</include>
             </includes>
          </resource>
       </resources>
@@ -83,7 +84,7 @@
       <dependency>
          <groupId>org.postgresql</groupId>
          <artifactId>postgresql</artifactId>
-         <version>42.2.23</version>
+         <version>42.2.28</version>
       </dependency>
       <!-- PostGIS -->
       <dependency>
@@ -97,11 +98,18 @@
          <artifactId>hibernate-spatial</artifactId>
          <version>5.6.1.Final</version>
       </dependency>
-      <!-- log4j -->
+      <!-- Log4j 2 (SLF4J usado en código enlaza con log4j-slf4j-impl) -->
       <dependency>
-         <groupId>log4j</groupId>
-         <artifactId>log4j</artifactId>
-         <version>1.2.17</version>
+         <groupId>org.apache.logging.log4j</groupId>
+         <artifactId>log4j-api</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.logging.log4j</groupId>
+         <artifactId>log4j-core</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.logging.log4j</groupId>
+         <artifactId>log4j-slf4j-impl</artifactId>
       </dependency>
 		<dependency>
 		    <groupId>commons-codec</groupId>

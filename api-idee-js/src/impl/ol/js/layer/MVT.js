@@ -4,13 +4,17 @@
  */
 import OLSourceVectorTile from 'ol/source/VectorTile';
 import OLLayerVectorTile from 'ol/layer/VectorTile';
-import { isNullOrEmpty, extend, isObject } from 'IDEE/util/Utils';
+import {
+  isNullOrEmpty, extend, isObject, getZDirectionFunction,
+} from 'IDEE/util/Utils';
 import * as EventType from 'IDEE/event/eventtype';
 import TileEventType from 'ol/source/TileEventType';
 import TileState from 'ol/TileState';
 import MVTFormatter from 'ol/format/MVT';
 import Feature from 'ol/Feature';
+import { get as getProj, equivalent } from 'ol/proj';
 import RenderFeature from 'ol/render/Feature';
+import { createXYZ } from 'ol/tilegrid';
 import { mode } from 'IDEE/layer/MVT';
 import Vector from './Vector';
 import ImplUtils from '../util/Utils';
@@ -99,7 +103,11 @@ class MVT extends Vector {
     /**
      * MVT visibility_. Indica si la capa es visible.
      */
-    this.visibility_ = parameters.visibility !== false;
+    if (parameters.visibility === undefined) {
+      this.visibility_ = parameters.isBase !== true;
+    } else {
+      this.visibility_ = parameters.visibility;
+    }
 
     /**
      * MVT tileLoadFunction. Función de carga de tiles.
@@ -107,6 +115,17 @@ class MVT extends Vector {
      * @type {Function}
      */
     this.tileLoadFunction = vendorOptions?.tileLoadFunction;
+
+    /**
+     * MVT tileSize_. Tamaño de la tesela, por defecto 256.
+     */
+    this.tileSize_ = typeof parameters.tileSize === 'number' ? parameters.tileSize : 256;
+
+    /** MVT zDirection. Función de dirección Z para la carga de teselas.
+     * @private
+     * @type {Function}
+     */
+    this.zDirection = vendorOptions?.zDirection || getZDirectionFunction();
 
     /**
      * MVT layers_. Otras capas.
@@ -128,6 +147,42 @@ class MVT extends Vector {
   }
 
   /**
+   * Este método establece la visibilidad de esta capa.
+   *
+   * @function
+   * @param {Boolean} visibility Verdadero es visible, falso si no.
+   * @api stable
+   */
+  setVisible(visibility) {
+    this.visibility = visibility;
+    if (this.inRange() === true) {
+      // if this layer is base then it hides all base layers
+      if ((visibility === true) && (this.isBase === true)) {
+        // hides all base layers
+        this.map.getBaseLayers().forEach((layer) => {
+          if (!layer.equals(this) && layer.isVisible()) {
+            layer.setVisible(false);
+          }
+        });
+
+        // set this layer visible
+        if (!isNullOrEmpty(this.olLayer)) {
+          this.olLayer.setVisible(visibility);
+        }
+
+        // updates resolutions and keep the bbox
+        const oldBbox = this.map.getBbox();
+        this.map.getImpl().updateResolutionsFromBaseLayer();
+        if (!isNullOrEmpty(oldBbox)) {
+          this.map.setBbox(oldBbox);
+        }
+      } else if (!isNullOrEmpty(this.olLayer)) {
+        this.olLayer.setVisible(visibility);
+      }
+    }
+  }
+
+  /**
    * Este metodo añade la capa al mapa.
    *
    * @public
@@ -137,6 +192,8 @@ class MVT extends Vector {
    */
   addTo(map, addLayer = true) {
     this.map = map;
+    const mapProjection = getProj(map.getProjection().code);
+    const projection = getProj(this.projection_);
 
     if (this.layers_ !== undefined) {
       this.formater_ = new MVTFormatter({
@@ -149,15 +206,28 @@ class MVT extends Vector {
       });
     }
 
-    const extent = this.maxExtent_ || this.facadeVector_.getMaxExtent();
+    const extent = this.facadeVector_.getMaxExtent();
     const ticket = IDEE.config.TICKET;
     const url = isNullOrEmpty(ticket) ? this.url : `${this.url}?ticket=${ticket}`;
+
+    const tileGrid = createXYZ({
+      extent: projection.getExtent(),
+      tileSize: this.getTileSize(),
+    });
+
+    if (!equivalent(projection, mapProjection)) {
+      const scaleFactor = (mapProjection.getMetersPerUnit() || 1) ** 2;
+      const originalGetZ = tileGrid.getZForResolution.bind(tileGrid);
+      tileGrid.getZForResolution = (res, dir) => originalGetZ(res * scaleFactor, dir);
+    }
 
     const source = new OLSourceVectorTile({
       format: this.formater_,
       url,
-      projection: this.projection_,
+      projection,
       tileLoadFunction: this.tileLoadFunction,
+      tileGrid,
+      zDirection: this.zDirection,
     });
 
     // register events in order to fire the LOAD event
@@ -328,16 +398,16 @@ class MVT extends Vector {
   getFeaturesExtentPromise(skipFilter, filter) {
     return new Promise((resolve) => {
       const codeProj = this.map.getProjection().code;
-      if (this.isLoaded() === true) {
-        const features = this.getFeatures(skipFilter, filter);
-        const extent = ImplUtils.getFeaturesExtent(features, codeProj);
-        resolve(extent);
-      } else {
-        this.requestFeatures_().then((features) => {
-          const extent = ImplUtils.getFeaturesExtent(features, codeProj);
-          resolve(extent);
-        });
-      }
+      // if (this.isLoaded() === true) {
+      const features = this.getFeatures(skipFilter, filter);
+      const extent = ImplUtils.getFeaturesExtent(features, codeProj);
+      resolve(extent);
+      // } else {
+      //   this.requestFeatures_().then((features) => {
+      //     const extent = ImplUtils.getFeaturesExtent(features, codeProj);
+      //     resolve(extent);
+      //   });
+      // }
     });
   }
 
@@ -351,6 +421,18 @@ class MVT extends Vector {
    */
   getProjection() {
     return this.projection_;
+  }
+
+  /**
+   * Deuvuelve el tamaño de la tesela de la capa.
+   *
+   * @public
+   * @function
+   * @returns {Number} Tamaño de la tesela.
+   * @api stable
+   */
+  getTileSize() {
+    return this.tileSize_;
   }
 
   /**

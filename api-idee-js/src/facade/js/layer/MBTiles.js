@@ -100,6 +100,7 @@ class MBTiles extends LayerBase {
 
     // calls the super constructor
     super(parameters, impl);
+    this.constructorParameters = { userParameters, options, vendorOptions };
 
     /**
      * MBTiles name: Nombre de la capa.
@@ -146,10 +147,14 @@ class MBTiles extends LayerBase {
 
   /**
    * Devuelve la extensión de la capa.
+   *
+   * @function
+   * @param {Function} callbackFn Función que se ejecuta cuando se obtiene la extensión.
    * @returns {Array} Devuelve la extensión de la capa.
+   * @api
    */
-  getMaxExtent() {
-    return this.getImpl().getMaxExtent();
+  getMaxExtent(callbackFn) {
+    return this.getImpl().getMaxExtent(callbackFn);
   }
 
   /**

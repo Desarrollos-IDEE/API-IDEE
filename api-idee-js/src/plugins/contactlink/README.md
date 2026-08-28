@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
+  <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg" height="152" />
 </p>
 <h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.ContactLink</small></h1>
 
@@ -10,9 +10,13 @@ Provee de enlaces a sitios, redes sociales y correo institucionales.
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
-
+Para uso de implementación OpenLayers:
 - **contactlink.ol.min.js**
 - **contactlink.ol.min.css**
+
+Para uso de implementación Cesium:
+- **contactlink.cesium.min.js**
+- **contactlink.cesium.min.css**
 
 
 ```html
@@ -49,7 +53,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 - **facebook**: Indica la url al Facebook del CNIG. Por defecto: 'https://www.facebook.com/IGNSpain/'
 - **pinterest**: Indica la url al Pinterest del CNIG. Por defecto: 'https://www.pinterest.es/IGNSpain/'
 - **youtube**: Indica la url al Youtube del CNIG. Por defecto: 'https://www.youtube.com/user/IGNSpain'
-- **mail**: Indica la url para escribir correo al CNIG. Por defecto: 'mailto:ign@fomento.es'
+- **mail**: Indica la url para escribir correo al CNIG. Por defecto: 'mailto:consulta@cnig.es'
 - **tooltip**. Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información). Por defecto: 'Enlaces y contacto IGN'
 
 # API-REST
@@ -141,7 +145,7 @@ URL_API?contactlink=position*collapsed*collapsible*tooltip*descargascnig*pnoa*vi
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.idee.es/api-idee/?contactlink=TR*true*true*Enlaces*http%3A%2F%2Fcentrodedescargas.cnig.es%2FCentroDescargas%2Findex.jsp*https%3A%2F%2Fwww.ign.es%2Fweb%2Fcomparador_pnoa%2Findex.html*https%3A%2F%2Fwww.ign.es%2F3D-Stereo%2F*https%3A%2F%2Ffototeca.cnig.es%2F*https%3A%2F%2Ftwitter.com%2FIGNSpain*https%3A%2F%2Fwww.instagram.com%2Fignspain%2F*https%3A%2F%2Fwww.facebook.com%2FIGNSpain%2F*https%3A%2F%2Fwww.pinterest.es%2FIGNSpain%2F*https%3A%2F%2Fwww.youtube.com%2Fuser%2FIGNSpain*mailto:ign@fomento.es
+https://componentes.idee.es/api-idee/?contactlink=TR*true*true*Enlaces*http%3A%2F%2Fcentrodedescargas.cnig.es%2FCentroDescargas%2Findex.jsp*https%3A%2F%2Fwww.ign.es%2Fweb%2Fcomparador_pnoa%2Findex.html*https%3A%2F%2Fwww.ign.es%2F3D-Stereo%2F*https%3A%2F%2Ffototeca.cnig.es%2F*https%3A%2F%2Ftwitter.com%2FIGNSpain*https%3A%2F%2Fwww.instagram.com%2Fignspain%2F*https%3A%2F%2Fwww.facebook.com%2FIGNSpain%2F*https%3A%2F%2Fwww.pinterest.es%2FIGNSpain%2F*https%3A%2F%2Fwww.youtube.com%2Fuser%2FIGNSpain*mailto:consulta@cnig.es
 ```
 
 ```
@@ -163,12 +167,12 @@ Ejemplo del constructor:
   facebook:"https://www.facebook.com/IGNSpain/",
   pinterest:"https://www.pinterest.es/IGNSpain/",
   youtube:"https://www.youtube.com/user/IGNSpain",
-  mail:"mailto:ign@fomento.es",
+  mail:"mailto:consulta@cnig.es",
   tooltip:"Contacta con nosotros"
 }
 ```
 ```
-https://componentes.idee.es/api-idee/?contactlink=base64=eyJwb3NpdGlvbiI6IlRMIiwiZGVzY2FyZ2FzY25pZyI6Imh0dHA6Ly9jZW50cm9kZWRlc2Nhcmdhcy5jbmlnLmVzL0NlbnRyb0Rlc2Nhcmdhcy9pbmRleC5qc3AiLCJwbm9hIjoiaHR0cHM6Ly93d3cuaWduLmVzL3dlYi9jb21wYXJhZG9yX3Bub2EvaW5kZXguaHRtbCIsInZpc3VhbGl6YWRvcjNkIjoiaHR0cHM6Ly93d3cuaWduLmVzLzNELVN0ZXJlby8iLCJmb3RvdGVjYSI6Imh0dHBzOi8vZm90b3RlY2EuY25pZy5lcy8iLCJ0d2l0dGVyIjoiaHR0cHM6Ly90d2l0dGVyLmNvbS9JR05TcGFpbiIsImluc3RhZ3JhbSI6Imh0dHBzOi8vd3d3Lmluc3RhZ3JhbS5jb20vaWduc3BhaW4vIiwiZmFjZWJvb2siOiJodHRwczovL3d3dy5mYWNlYm9vay5jb20vSUdOU3BhaW4vIiwicGludGVyZXN0IjoiaHR0cHM6Ly93d3cucGludGVyZXN0LmVzL0lHTlNwYWluLyIsInlvdXR1YmUiOiJodHRwczovL3d3dy55b3V0dWJlLmNvbS91c2VyL0lHTlNwYWluIiwibWFpbCI6Im1haWx0bzppZ25AZm9tZW50by5lcyIsInRvb2x0aXAiOiJDb250YWN0YSBjb24gbm9zb3Ryb3MifQ==
+https://componentes.idee.es/api-idee/?contactlink=base64=eyJwb3NpdGlvbiI6IlRMIiwiZGVzY2FyZ2FzY25pZyI6Imh0dHA6Ly9jZW50cm9kZWRlc2Nhcmdhcy5jbmlnLmVzL0NlbnRyb0Rlc2Nhcmdhcy9pbmRleC5qc3AiLCJwbm9hIjoiaHR0cHM6Ly93d3cuaWduLmVzL3dlYi9jb21wYXJhZG9yX3Bub2EvaW5kZXguaHRtbCIsInZpc3VhbGl6YWRvcjNkIjoiaHR0cHM6Ly93d3cuaWduLmVzLzNELVN0ZXJlby8iLCJmb3RvdGVjYSI6Imh0dHBzOi8vZm90b3RlY2EuY25pZy5lcy8iLCJ0d2l0dGVyIjoiaHR0cHM6Ly90d2l0dGVyLmNvbS9JR05TcGFpbiIsImluc3RhZ3JhbSI6Imh0dHBzOi8vd3d3Lmluc3RhZ3JhbS5jb20vaWduc3BhaW4vIiwiZmFjZWJvb2siOiJodHRwczovL3d3dy5mYWNlYm9vay5jb20vSUdOU3BhaW4vIiwicGludGVyZXN0IjoiaHR0cHM6Ly93d3cucGludGVyZXN0LmVzL0lHTlNwYWluLyIsInlvdXR1YmUiOiJodHRwczovL3d3dy55b3V0dWJlLmNvbS91c2VyL0lHTlNwYWluIiwibWFpbCI6Im1haWx0bzpjb25zdWx0YUBjbmlnLmVzIiwidG9vbHRpcCI6IkNvbnRhY3RhIGNvbiBub3NvdHJvcyJ9
 ```
 
 
@@ -186,7 +190,7 @@ const mp = new ContactLink({
   facebook: 'https://www.facebook.com/IGNSpain/',
   pinterest: 'https://www.pinterest.es/IGNSpain/',
   youtube: 'https://www.youtube.com/user/IGNSpain',
-  mail: 'mailto:ign@fomento.es',
+  mail: 'mailto:consulta@cnig.es',
 });
 
 map.addPlugin(mp);

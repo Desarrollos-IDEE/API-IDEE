@@ -73,7 +73,7 @@
                 name: 'Capa WMS',
                 description: 'Descripción WMS',
                 url: 'https://www.ign.es',
-                contentAttributions: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+                contentAttributions: '${api-idee.static_resources.url}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
                 contentType: 'kml',
             },
         }, {});

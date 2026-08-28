@@ -1,0 +1,62 @@
+{
+  "url": {
+    "name": "mapfooter",
+    "separator": "*"
+  },
+  "constructor": "IDEE.plugin.Mapfooter",
+  "parameters": [
+    {
+      "type": "object",
+      "properties": [
+        {
+          "type": "boolean",
+          "name": "open",
+          "position": 0
+        },
+        {
+          "type": "simple",
+          "name": "htmlCode",
+          "position": 1
+        },
+        {
+          "type": "simple",
+          "name": "cssList",
+          "position": 2
+        }
+      ]
+    }
+  ],
+  "files": {
+    "ol": {
+      "scripts": [
+        "mapfooter.ol.min.js"
+      ],
+      "styles": [
+        "mapfooter.ol.min.css"
+      ]
+    },
+    "cesium": {
+      "scripts": [
+        "mapfooter.cesium.min.js"
+      ],
+      "styles": [
+        "mapfooter.cesium.min.css"
+      ]
+    }
+  },
+  "metadata": {
+    "uuid_plugin": "",
+    "uuid_version_plugin": "",
+    "version_ficha_metadatos": "",
+    "name": "Mapfooter",
+    "description": "Generador de Pie de Mapa",
+    "text": "Se crea un pie de página para el mapa",
+    "version": "1.0.0",
+    "date": "Diciembre, 2025",
+    "author": "",
+    "org": "",
+    "tags": "idee,plugin",
+    "icon": "./facade/assets/icons/icons.svg",
+    "compatibility": ["1.0.0"]
+  }
+}

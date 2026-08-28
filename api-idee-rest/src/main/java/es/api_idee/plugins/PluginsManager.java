@@ -2,6 +2,10 @@ package es.api_idee.plugins;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -11,12 +15,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -34,9 +40,21 @@ public abstract class PluginsManager {
 	private static Map<String, PluginAPI> availablePlugins;
 
 	private static final Logger log = Logger.getLogger(PluginsManager.class);
+	
+	private static String EXTERNAL_PLUGINS_BASE_URL;
+	
+	// Lista de plugins externos disponibles
+	private static java.util.Set<String> AVAILABLE_EXTERNAL_PLUGINS;
 
 	public static Collection<PluginAPI> getAllPlugins() {
-		return availablePlugins.values();
+		// Filtrar solo los plugins internos (no externos)
+		List<PluginAPI> internalPlugins = new LinkedList<PluginAPI>();
+		for (PluginAPI plugin : availablePlugins.values()) {
+			if (!plugin.isExternal()) {
+				internalPlugins.add(plugin);
+			}
+		}
+		return internalPlugins;
 	}
 
 	public static List<String> getPlugins(MultivaluedMap<String, String> queryParams) {
@@ -45,6 +63,10 @@ public abstract class PluginsManager {
 			// searchs plugins by name
 			for (String paramName : queryParams.keySet()) {
 				PluginAPI plugin = availablePlugins.get(paramName);
+				if (plugin == null) {
+					// Intentar cargar plugin externo
+					plugin = loadExternalPlugin(paramName);
+				}
 				if (plugin != null) {
 					String paramValue = queryParams.getFirst(paramName);
 					String pluginStr = JSBuilder.createPlugin(plugin, paramValue);
@@ -57,6 +79,10 @@ public abstract class PluginsManager {
 				String[] pluginNames = pluginsParam.split(",");
 				for (String pluginName : pluginNames) {
 					PluginAPI plugin = availablePlugins.get(pluginName);
+					if (plugin == null) {
+						// Intentar cargar plugin externo
+						plugin = loadExternalPlugin(pluginName);
+					}
 					if (plugin != null) {
 						String pluginStr = JSBuilder.createPlugin(plugin);
 						plugins.add(pluginStr);
@@ -73,6 +99,10 @@ public abstract class PluginsManager {
 			// searchs plugins by name
 			for (String paramName : queryParams.keySet()) {
 				PluginAPI plugin = availablePlugins.get(paramName);
+				if (plugin == null) {
+					// Intentar cargar plugin externo
+					plugin = loadExternalPlugin(paramName);
+				}
 				if (plugin != null) {
 					pluginsAPI.add(plugin);
 				}
@@ -83,6 +113,10 @@ public abstract class PluginsManager {
 				String[] pluginNames = pluginsParam.split(",");
 				for (String pluginName : pluginNames) {
 					PluginAPI plugin = availablePlugins.get(pluginName);
+					if (plugin == null) {
+						// Intentar cargar plugin externo
+						plugin = loadExternalPlugin(pluginName);
+					}
 					if (plugin != null) {
 						pluginsAPI.add(plugin);
 					}
@@ -98,6 +132,10 @@ public abstract class PluginsManager {
 		// searchs plugins by name
 		for (String paramName : queryParams.keySet()) {
 			PluginAPI plugin = availablePlugins.get(paramName);
+			if (plugin == null) {
+				// Intentar cargar plugin externo solo si no es un parámetro del sistema
+				plugin = loadExternalPlugin(paramName);
+			}
 			if (plugin != null) {
 				jsfiles.addAll(plugin.getJSFiles(impl));
 			}
@@ -109,6 +147,10 @@ public abstract class PluginsManager {
 			String[] pluginNames = pluginsParam.split(",");
 			for (String pluginName : pluginNames) {
 				PluginAPI plugin = availablePlugins.get(pluginName);
+				if (plugin == null) {
+					// Intentar cargar plugin externo
+					plugin = loadExternalPlugin(pluginName);
+				}
 				if (plugin != null) {
 					jsfiles.addAll(plugin.getJSFiles(impl));
 				}
@@ -123,6 +165,10 @@ public abstract class PluginsManager {
 		// searchs plugins by name
 		for (String paramName : queryParams.keySet()) {
 			PluginAPI plugin = availablePlugins.get(paramName);
+			if (plugin == null) {
+				// Intentar cargar plugin externo solo si no es un parámetro del sistema
+				plugin = loadExternalPlugin(paramName);
+			}
 			if (plugin != null) {
 				cssfiles.addAll(plugin.getCSSFiles(impl));
 			}
@@ -134,6 +180,10 @@ public abstract class PluginsManager {
 			String[] pluginNames = pluginsParam.split(",");
 			for (String pluginName : pluginNames) {
 				PluginAPI plugin = availablePlugins.get(pluginName);
+				if (plugin == null) {
+					// Intentar cargar plugin externo
+					plugin = loadExternalPlugin(pluginName);
+				}
 				if (plugin != null) {
 					cssfiles.addAll(plugin.getCSSFiles(impl));
 				}
@@ -154,7 +204,7 @@ public abstract class PluginsManager {
 						String relativeFile = pluginsDir.relativize(file.toPath()).toString();
 						if (FilenameUtils.getBaseName(relativeFile).equalsIgnoreCase("api")) {
 							try {
-								PluginAPI plugin = readPluginFromApi(file);
+								PluginAPI plugin = readPluginFromApi(file, null);
 								availablePlugins.put(plugin.getName(), plugin);
 								break;
 							} catch (IOException e) {
@@ -169,9 +219,15 @@ public abstract class PluginsManager {
 		}
 	}
 
-	private static PluginAPI readPluginFromApi(File apiJSONFile) throws IOException, InvalidAPIException {
+	private static PluginAPI readPluginFromApi(File apiJSONFile, JSONObject apiJSONContent) throws IOException, InvalidAPIException {
 		PluginAPI pluginAPI = null;
-		JSONObject apiJSON = readApiJSONFile(apiJSONFile);
+		JSONObject apiJSON = null;
+		if (apiJSONFile != null) {
+			apiJSON = readApiJSONFile(apiJSONFile);
+		} else {
+			apiJSON = apiJSONContent;
+		}
+				
 		List<PluginAPIParam> parameters = new LinkedList<PluginAPIParam>();
 
 		String name = readStringProperty("url.name", apiJSON);
@@ -193,6 +249,9 @@ public abstract class PluginsManager {
 
 		pluginAPI = new PluginAPI(name, separator, constructor, parameters);
 
+		// Determinar si es externo
+		boolean isExternal = apiJSONContent != null;
+
 		if (apiJSON.has("files") && !apiJSON.isNull("files") && apiJSON.get("files") instanceof JSONObject) {
 			JSONObject files = apiJSON.getJSONObject("files");
 			@SuppressWarnings("unchecked")
@@ -204,12 +263,24 @@ public abstract class PluginsManager {
 				List<String> styles = readJSONArray("files.".concat(impl).concat(".styles"), apiJSON);
 				if (scripts != null) {
 					for (String script : scripts) {
-						pluginAPI.addJSFile(impl, pluginAPI.getName().concat(File.separator).concat(script));
+						if (isExternal) {
+							String externalUrlJS = EXTERNAL_PLUGINS_BASE_URL + "/plugins/" + pluginAPI.getName() + "/dist/" + script;
+							pluginAPI.addJSFile(impl, externalUrlJS);
+						} else {
+							// Para plugins locales, guardar con la ruta completa
+							pluginAPI.addJSFile(impl, pluginAPI.getName().concat(File.separator).concat(script));
+						}
 					}
 				}
 				if (styles != null) {
 					for (String style : styles) {
-						pluginAPI.addCSSFile(impl, pluginAPI.getName().concat(File.separator).concat(style));
+						if (isExternal) {
+							String externalUrlCSS = EXTERNAL_PLUGINS_BASE_URL + "/plugins/" + pluginAPI.getName() + "/dist/" + style;
+							pluginAPI.addCSSFile(impl, externalUrlCSS);
+						} else {
+							// Para plugins locales, guardar con la ruta completa
+							pluginAPI.addCSSFile(impl, pluginAPI.getName().concat(File.separator).concat(style));
+						}
 					}
 				}
 			}
@@ -256,7 +327,6 @@ public abstract class PluginsManager {
 	private static PluginAPIParam readPluginParameter(JSONObject parameterJSON) {
 		PluginAPIParam pluginParam = null;
 		String value = null;
-		Integer intValue = null;
 		String name = null;
 		int position = -1;
 		List<PluginAPIParam> properties = new LinkedList<PluginAPIParam>();
@@ -340,9 +410,147 @@ public abstract class PluginsManager {
 		apiJSON = new JSONObject(apijson);
 		return apiJSON;
 	}
-
+	
+	/**
+	 * Intenta cargar un plugin desde la URL externa
+	 * @param pluginName nombre del plugin
+	 * @return PluginAPI si se encuentra, null en caso contrario
+	 */
+	private static PluginAPI loadExternalPlugin(String pluginName) {
+		if (availablePlugins == null) {
+			return null;
+		}
+		
+		// Si ya está cargado, devolverlo
+		PluginAPI plugin = availablePlugins.get(pluginName);
+		if (plugin != null) {
+			return plugin;
+		}
+		
+		// Verificar si el plugin está en la lista de plugins externos disponibles
+		if (pluginName == null || !AVAILABLE_EXTERNAL_PLUGINS.contains(pluginName.toLowerCase())) {
+			return null;
+		}
+		
+		// Intentar cargar desde URL externa
+		String apiUrl = EXTERNAL_PLUGINS_BASE_URL + "/plugins/" + pluginName + "/dist/api.json";
+		try {
+			// Descargar el JSON desde la URL
+			URL url = new URL(apiUrl);
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("GET");
+			connection.setConnectTimeout(5000);
+			connection.setReadTimeout(5000);
+			
+			InputStream inputStream = connection.getInputStream();
+			String jsonContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
+			JSONObject jsonResponse = new JSONObject(jsonContent);
+			
+			// Usar readPluginFromApi con el archivo temporal
+			plugin = readPluginFromApi(null, jsonResponse);
+			plugin.setExternalBaseUrl(EXTERNAL_PLUGINS_BASE_URL + "/plugins");
+			// Guardar en el mapa para futuras referencias
+			availablePlugins.put(pluginName, plugin);
+			return plugin;
+		} catch (IOException e) {
+			log.debug("No se pudo cargar plugin externo '" + pluginName + "' desde " + apiUrl + ": " + e.getMessage());
+		} catch (InvalidAPIException e) {
+			log.error("API JSON inválido para plugin externo '" + pluginName + "'", e);
+		} catch (Exception e) {
+			log.error("Error al cargar plugin externo '" + pluginName + "'", e);
+		}
+		return null;
+	}
+	
+	/**
+	 * Lee la lista de plugins externos disponibles desde la URL
+	 * @return Set con los nombres de los plugins no obsoletos
+	 */
+	private static java.util.Set<String> loadAvailableExternalPlugins() {
+		java.util.Set<String> plugins = new java.util.HashSet<String>();
+		try {
+			// Leer la URL base de plugins externos desde el archivo de configuración
+			ResourceBundle configProperties = ResourceBundle.getBundle("configuration");
+			EXTERNAL_PLUGINS_BASE_URL = configProperties.getString("plugins.external.base.url");
+			
+			// Cargar la lista de plugins externos disponibles desde la URL
+			String pluginsListUrl = EXTERNAL_PLUGINS_BASE_URL + "/data/plugins.json";
+			URL url = new URL(pluginsListUrl);
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("GET");
+			connection.setConnectTimeout(5000);
+			connection.setReadTimeout(5000);
+			
+			try (InputStream inputStream = connection.getInputStream()) {
+				String jsonContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
+				// El JSON es un array directamente
+				JSONArray pluginsArray = new JSONArray(jsonContent);
+				for (int i = 0; i < pluginsArray.length(); i++) {
+					JSONObject pluginObj = pluginsArray.getJSONObject(i);
+					// Solo agregar plugins que no estén obsoletos
+					if (!pluginObj.getBoolean("obsolete")) {
+						if (pluginObj.has("name")) {
+							String pluginName = pluginObj.getString("name");
+							// Guardar en minúsculas para comparaciones case-insensitive
+							plugins.add(pluginName.toLowerCase());
+						}
+					}
+				}
+			} finally {
+				connection.disconnect();
+			}
+			log.info("Lista de plugins externos cargada correctamente. Total: " + plugins.size() + " plugins.");
+		} catch (Exception e) {
+			log.warn("No se pudieron cargar plugins externos. La lista está vacía.");
+		}
+		AVAILABLE_EXTERNAL_PLUGINS = plugins;
+		return plugins;
+	}
+	
+	/**
+	 * Recarga la lista de plugins externos disponibles desde el repositorio remoto.
+	 * También limpia los plugins externos previamente cargados del mapa de availablePlugins.
+	 * @return número de plugins externos disponibles después de la recarga
+	 */
+	public static int reloadExternalPlugins() {
+		log.info("Recargando lista de plugins externos...");
+		
+		// Guardar los nombres de plugins externos actualmente cargados
+		java.util.Set<String> previousExternalPlugins = AVAILABLE_EXTERNAL_PLUGINS != null 
+			? new java.util.HashSet<>(AVAILABLE_EXTERNAL_PLUGINS) 
+			: new java.util.HashSet<>();
+		
+		// Recargar la lista desde el repositorio remoto
+		java.util.Set<String> newPlugins = loadAvailableExternalPlugins();
+		
+		// Eliminar del mapa los plugins externos que ya estaban cargados
+		// para forzar que se recarguen con la nueva configuración si se solicitan
+		if (availablePlugins != null) {
+			for (String pluginName : previousExternalPlugins) {
+				PluginAPI plugin = availablePlugins.get(pluginName);
+				if (plugin != null && plugin.getExternalBaseUrl() != null) {
+					availablePlugins.remove(pluginName);
+					log.debug("Plugin externo eliminado del caché: " + pluginName);
+				}
+			}
+		}
+		
+		return newPlugins.size();
+	}
+	
+	/**
+	 * Devuelve la lista de plugins externos disponibles
+	 * @return Set con los nombres de los plugins externos disponibles
+	 */
+	public static java.util.Set<String> getAvailableExternalPlugins() {
+		return AVAILABLE_EXTERNAL_PLUGINS != null 
+			? java.util.Collections.unmodifiableSet(AVAILABLE_EXTERNAL_PLUGINS) 
+			: java.util.Collections.emptySet();
+	}
+	
 	public static void init(ServletContext context) {
 		if (availablePlugins == null) {
+			loadAvailableExternalPlugins();
 			pluginsDir = Paths.get(context.getRealPath("plugins"));
 			readPlugins();
 			WatchPluginDir.watch(pluginsDir);

@@ -50,7 +50,7 @@ module.exports = {
           },
           'css-loader',
         ],
-        exclude: [/node_modules\/(?!ol)/],
+        exclude: [/node_modules/],
       },
       {
         test: /\.(woff|woff2|eot|ttf|svg)$/,
@@ -68,6 +68,7 @@ module.exports = {
     }),
   ],
   devServer: {
+    // https: true,
     hot: true,
     // open: true,
     port: 6123,

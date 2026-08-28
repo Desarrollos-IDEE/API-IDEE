@@ -53,9 +53,9 @@
   },
   "metadata": {
     "name": "Modal",
-    "description": "Shows a information panel.",
-    "text": "Opens a window with information.",
-    "version": "2.0.2",
+    "description": "Plugin que muestra información en un modal",
+    "text": "Plugin que muestra información en un modal.",
+    "version": "1.0.1",
     "date": "1st June 2020",
     "author": "CNIG",
     "org": "CNIG",

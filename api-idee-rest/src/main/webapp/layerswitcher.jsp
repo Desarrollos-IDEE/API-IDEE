@@ -152,6 +152,135 @@
         });
         map.addPlugin(mp2);
 
+        const PRECHARGED = {
+            groups: [{
+                'Cartografía': {
+                'Mapas': {
+                    'type': 'WMTS',
+                    'url': 'https://www.ign.es/wmts/mapa-raster?',
+                },
+                'Callejero': {
+                    'type': 'WMTS',
+                    'url': 'https://www.ign.es/wmts/ign-base?',
+                },
+                'Primera edición MTN y Minutas de 1910-1970': {
+                    'type': 'WMTS',
+                    'url': 'https://www.ign.es/wmts/primera-edicion-mtn?',
+                },
+                'Planimetrías (1870 y 1950)': {
+                    'type': 'WMS',
+                    'url': 'https://www.ign.es/wms/minutas-cartograficas?',
+                },
+                'Planos de Madrid (1622 - 1960)': {
+                    'type': 'WMTS',
+                    'url': 'https://www.ign.es/wmts/planos?',
+                },
+                'Hojas kilométricas (Madrid - 1860)': {
+                    'type': 'WMS',
+                    'url': 'https://www.ign.es/wms/hojas-kilometricas?',
+                },
+                'Cuadrículas Mapa Topográfico Nacional': {
+                    'type': 'WMS',
+                    'url': 'https://www.ign.es/wms-inspire/cuadriculas?',
+                },
+                },
+                'Imagenes': {
+                'Ortofotos': {
+                    'Máxima actualidad PNOA': {
+                    'type': 'WMTS',
+                    'url': 'https://www.ign.es/wmts/pnoa-ma?',
+                    },
+                    'Históricas y PNOA anual': {
+                    'type': 'WMS',
+                    'url': 'https://www.ign.es/wms/pnoa-historico?',
+                    },
+                    'PNOA Provisionales': {
+                    'type': 'WMS',
+                    'url': 'https://wms-pnoa.idee.es/pnoa-provisionales?',
+                    },
+                },
+                'Mosaicos de satélite': {
+                    'type': 'WMS',
+                    'url': 'https://wms-satelites-historicos.idee.es/satelites-historicos?',
+                },
+                'Fototeca (Consulta de fotogramas históricos y PNOA)': {
+                    'type': 'WMS',
+                    'url': 'https://wms-fototeca.idee.es/fototeca?',
+                },
+                },
+                'Información geográfica de referencia y temática': {
+                'Catastro': {
+                    'type': 'WMS',
+                    'url': 'https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?',
+                },
+                'Unidades administrativas': {
+                    'type': 'WMS',
+                    'url': ' https://www.ign.es/wms-inspire/unidades-administrativas?',
+                },
+                'Nombres geográficos (Nomenclátor Geográfico Básico NGBE)': {
+                    'type': 'WMS',
+                    'url': 'https://www.ign.es/wms-inspire/ngbe?',
+                },
+                'Redes de transporte': {
+                    'type': 'WMS',
+                    'url': 'https://servicios.idee.es/wms-inspire/transportes?',
+                },
+                'Hidrografía': {
+                    'type': 'WMS',
+                    'url': 'https://servicios.idee.es/wms-inspire/hidrografia?',
+                },
+                'Direcciones y códigos postales': {
+                    'type': 'WMS',
+                    'url': 'https://www.cartociudad.es/wms-inspire/direcciones-ccpp?',
+                },
+                'Ocupación del suelo': {
+                    'Actual (Corine y SIOSE)': {
+                    'type': 'WMTS',
+                    'url': 'https://servicios.idee.es/wmts/ocupacion-suelo?',
+                    },
+                    'Histórico (Corine y SIOSE)': {
+                    'type': 'WMS',
+                    'url': 'https://servicios.idee.es/wms-inspire/ocupacion-suelo-historico?',
+                    },
+                    'Copernicus Land Monitoring Service': {
+                    'type': 'WMS',
+                    'url': 'https://servicios.idee.es/wms/copernicus-landservice-spain?',
+                    },
+                },
+                'Información sísmica (terremotos)': {
+                    'type': 'WMS',
+                    'url': 'https://www.ign.es/wms-inspire/geofisica?',
+                },
+                'Red de vigilancia volcánica': {
+                    'type': 'WMS',
+                    'url': 'https://wms-volcanologia.ign.es/volcanologia?',
+                },
+                'Redes geodésicas': {
+                    'type': 'WMS',
+                    'url': 'https://www.ign.es/wms-inspire/redes-geodesicas?',
+                },
+                },
+                'Modelos digitales de elevaciones': {
+                'Modelo Digital de Superficies (Sombreado superficies y consulta de elevaciones edificios y vegetación)': {
+                    'type': 'WMTS',
+                    'url': 'https://wmts-mapa-lidar.idee.es/lidar?',
+                },
+                'Modelo Digital del Terreno (Sombreado terreno y consulta de altitudes)': {
+                    'type': 'WMTS',
+                    'url': 'https://servicios.idee.es/wmts/mdt?',
+                    'white_list': ['EL.ElevationGridCoverage'],
+                },
+                'Curvas de nivel y puntos acotados': {
+                    'type': 'WMS',
+                    'url': 'https://servicios.idee.es/wms-inspire/mdt?',
+                    'white_list': ['EL.ContourLine', 'EL.SpotElevation'],
+                },
+                },
+            },
+
+            ],
+        };
+
         const capaGeoJSON = new IDEE.layer.GeoJSON({
             name: 'Capa GeoJSON',
             url: 'http://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json',
@@ -205,6 +334,53 @@
             map.removePlugins(mp);
         });
 
+        /**
+         * Convierte el nuevo formato de objetos anidados al formato antiguo de arrays
+         * para mantener compatibilidad con la plantilla addservices.html
+         */
+        function transformPrecharged(obj) {
+            if (!obj) return obj;
+
+            const finalGroups = [];
+            const rawGroups = (Array.isArray(obj.groups) && obj.groups.length > 0) ? obj.groups[0] : {};
+
+            Object.keys(rawGroups).forEach(categoryName => {
+                const categoryContent = rawGroups[categoryName];
+                const servicesList = [];
+
+                const processNode = (node) => {
+                    Object.keys(node).forEach(key => {
+                        const item = node[key];
+                        
+                        if (item && typeof item === 'object' && item.url) {
+                            servicesList.push({
+                                name: key,
+                                type: item.type,
+                                url: item.url,
+                                white_list: item.white_list
+                            });
+                        } 
+                        else if (item && typeof item === 'object') {
+                            processNode(item);
+                        }
+                    });
+                };
+
+                processNode(categoryContent);
+
+                if (servicesList.length > 0) {
+                    finalGroups.push({
+                        name: categoryName,
+                        services: servicesList
+                    });
+                }
+            });
+
+            return {
+                services: obj.services || [],
+                groups: finalGroups
+            };
+        }
 
         function cambiarTest() {
             let objeto = {};
@@ -218,7 +394,16 @@
             objeto.isDraggable = (selectDraggable.options[selectDraggable.selectedIndex].value == 'true');
             objeto.isMoveLayers = (selectMoveLayer.options[selectMoveLayer.selectedIndex].value == 'true');
             objeto.modeSelectLayers = selectModeSelectLayers.options[selectModeSelectLayers.selectedIndex].value;
-            inputPrecharged.value !== "" ? objeto.precharged = inputPrecharged.value : objeto.precharged = "";
+            // inputPrecharged.value !== "" ? objeto.precharged = inputPrecharged.value : objeto.precharged = "";
+            if (inputPrecharged.value.trim() !== "") {
+                try {
+                    objeto.precharged = JSON.parse(inputPrecharged.value);
+                } catch (e) {
+                    objeto.precharged = inputPrecharged.value;
+                }
+            } else {
+                objeto.precharged = transformPrecharged(PRECHARGED); 
+            }
             objeto.http = (selectHttp.options[selectHttp.selectedIndex].value == 'true');
             objeto.https = (selectHttps.options[selectHttps.selectedIndex].value == 'true');
             objeto.showCatalog = (selectShowCatalog.options[selectShowCatalog.selectedIndex].value == 'true');

@@ -134,6 +134,7 @@ class WMTS extends LayerBase {
 
     // calls the super constructor.
     super(parameters, impl);
+    this.constructorParameters = { userParameters, options, vendorOptions };
 
     /**
      * WMTS matrixSet: "MatrixSet" definido por los metadatos del servicio.

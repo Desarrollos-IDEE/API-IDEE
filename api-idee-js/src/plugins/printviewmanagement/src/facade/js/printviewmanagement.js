@@ -145,9 +145,9 @@ export default class PrintViewManagement extends IDEE.Plugin {
     if (printermap === true) {
       this.printermap = {
         filterTemplates: [
-          'https://componentes.idee.es/estaticos/plantillas/html/templateConBorde.html',
-          'https://componentes.idee.es/estaticos/plantillas/html/templateConCabezeraYBorde.html',
-          'https://componentes.idee.es/estaticos/plantillas/html/templateConFooterYBorde.html',
+          `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/mapaConMarco.html`,
+          `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/mapaConCabeceraYMarco.html`,
+          `${IDEE.config.STATIC_RESOURCES_URL}/plantillas/html/mapaConPieYMarco.html`,
         ],
         showDefaultTemplate: true,
         defaultDpiOptions: [72, 150, 300],
@@ -171,9 +171,9 @@ export default class PrintViewManagement extends IDEE.Plugin {
     /**
      * Indicates if you want to use proxy in requests
      * @private
-     * @type {Boolean}
+     * @type {Boolean|String}
      */
-    this.useProxy = IDEE.utils.isUndefined(options.useProxy) ? false : options.useProxy;
+    this.useProxy = IDEE.utils.isUndefined(options.useProxy) ? IDEE.useproxy : options.useProxy;
 
     /**
      * Stores the proxy state at plugin load time

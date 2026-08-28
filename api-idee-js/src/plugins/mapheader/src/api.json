@@ -1,0 +1,64 @@
+{
+  "url": {
+    "name": "mapheader",
+    "separator": "*"
+  },
+  "constructor": "IDEE.plugin.Mapheader",
+  "parameters": [
+    {
+      "type": "object",
+      "properties": [
+        {
+          "type": "boolean",
+          "name": "open",
+          "position": 0
+        },
+        {
+          "type": "simple",
+          "name": "htmlCode",
+          "position": 1
+        },
+        {
+          "type": "simple",
+          "name": "cssList",
+          "position": 2
+        }
+      ]
+    }
+  ],
+  "files": {
+    "ol": {
+      "scripts": [
+        "mapheader.ol.min.js"
+      ],
+      "styles": [
+        "mapheader.ol.min.css"
+      ]
+    },
+    "cesium": {
+      "scripts": [
+        "mapheader.cesium.min.js"
+      ],
+      "styles": [
+        "mapheader.cesium.min.css"
+      ]
+    }
+  },
+  "metadata": {
+    "uuid_plugin": "",
+    "uuid_version_plugin": "",
+    "version_ficha_metadatos": "",
+    "name": "Mapheader",
+    "description": "Permite la generación automática de cabecera de pagina.",
+    "text": "Permite la generación automática de cabecera de pagina.",
+    "version": "1.0.0",
+    "date": "Diciembre 2025",
+    "author": "",
+    "org": "",
+    "tags": "idee,plugin",
+    "icon": "./facade/assets/icons/icons.svg",
+    "compatibility": [
+      "1.0.0"
+    ]
+  }
+}

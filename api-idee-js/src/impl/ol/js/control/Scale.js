@@ -7,6 +7,7 @@ import { getValue } from 'IDEE/i18n/language';
 import * as Dialog from 'IDEE/dialog';
 import Exception from 'IDEE/exception/exception';
 import Control from './Control';
+import { isBoolean } from '../../../../facade/js/util/Utils';
 
 /**
  * Formate un número pasado por parámetro.
@@ -27,19 +28,21 @@ export const formatLongNumber = (num) => {
  * @public
  * @function
  * @param {HTMLElement} container HTML contenedor del control.
- * @param {Number} map Mapa.
+ * @param {Object} map Mapa.
+ * @param {Boolean} exactEscale Devuelve la escala exacta o aproximada.
  * @api stable
  */
-const updateElement = (container, map) => {
-  const containerVariable = container;
+const updateElement = (container, map, exactEscale) => {
   const view = map.getMapImpl().getView();
   const resolution = view.getResolution();
-  const dpi = IDEE.config.DPI;
-  const num = Utils.getScaleForResolution(resolution, view, dpi);
 
-  if (!isNullOrEmpty(num)) {
-    containerVariable.innerHTML = formatLongNumber(num);
+  const scale = Utils.getScaleForResolution(resolution, view, IDEE.config.DPI_OGC, exactEscale);
+
+  if (!isNullOrEmpty(scale)) {
+    // eslint-disable-next-line no-param-reassign
+    container.innerHTML = formatLongNumber(scale);
   }
+
   const elem = document.querySelector('#m-level-number');
   if (elem !== null) {
     elem.innerHTML = map.getZoom().toFixed(2);
@@ -65,6 +68,7 @@ class Scale extends Control {
    */
   constructor(options = {}) {
     super();
+    this.exactScale = isBoolean(options.exactScale) ? options.exactScale : false;
     this.facadeMap_ = null;
   }
 
@@ -157,9 +161,9 @@ class Scale extends Control {
             this.scaleContainer_.textContent = scaleText;
             const view = this.facadeMap_.getMapImpl().getView();
             const resolution = Utils.getCurrentScale(
-              this.facadeMap_.getMapImpl().getView(),
+              view,
               scaleText,
-              IDEE.config.DPI,
+              IDEE.config.DPI_OGC,
             );
             view.animate({
               center: view.getCenter(),
@@ -187,7 +191,7 @@ class Scale extends Control {
   renderCB(mapEvent) {
     const frameState = mapEvent.frameState;
     if (!isNullOrEmpty(frameState)) {
-      updateElement(this.scaleContainer_, this.facadeMap_);
+      updateElement(this.scaleContainer_, this.facadeMap_, this.exactScale);
     }
   }
 

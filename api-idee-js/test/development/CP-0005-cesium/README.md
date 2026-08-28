@@ -35,4 +35,23 @@ CP-006
     [] Example #2: Capa GenericVector con estilos de líneas mediante setStyle.
     [] Example #3: Capa GenericVector con estilos de puntos en el constructor de la capa.
     [] Example #4: Capa GenericVector con estilos genéricos mediante setStyle.
+   
+CP-007
+    [] Example #1: Capa GeoJSON de puntos con icono en formato GLB.
     
+CP-008
+    [] Example #1: Capa WFS con estilo Cluster.
+
+CP-009
+    [] Example #1: Patrones en polígonos.
+    [] Example #2: Patrones con imágenes en polígonos.
+    [] Example #3: Patrones en líneas.
+    [] Example #4: Patrones con imágenes en líneas.
+
+CP-010
+    [] Example #1: Etiquetas en puntos 2D
+    [] Example #2: Etiquetas en puntos 3D 
+    [] Example #3: Etiquetas en polígonos 2D
+    [] Example #4: Etiquetas en polígonos 3D
+    [] Example #5: Etiquetas en líneas 2D
+    [] Example #6: Etiquetas en líneas 3D

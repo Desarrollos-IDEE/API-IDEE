@@ -1,0 +1,20 @@
+{
+  "exception": {
+    "impl": "La implementación usada no puede crear controles MapfooterControl"
+  },
+  "hidefooter": "Ocultar pie de página",
+  "showfooter": "Mostrar pie de página",
+  "hide": " Ocultar ",
+  "show": " Mostrar ",
+  "textHelp": {
+    "squemaTitle": "mapfooter",
+    "title": "MAPFOOTER",
+    "paragraph1": "El plugin mapfooter inserta un pie HTML bajo el visor (panel inferior izquierdo por defecto) con contenido configurable (htmlCode) y hojas de estilo opcionales (cssList), habitual para avisos legales, enlaces o créditos.",
+    "screenshot1Alt": "Visor con el pie de página plegado; el mapa aprovecha la altura inferior",
+    "screenshot1Caption": "help-01.png",
+    "screenshot1Description": "Ejemplo con el pie retraído: el área cartográfica llega al borde inferior y el botón del panel permite mostrarlo de nuevo («Mostrar pie de página»).",
+    "screenshot2Alt": "Visor con el pie de página desplegado mostrando el HTML configurado",
+    "screenshot2Caption": "help-02.png",
+    "screenshot2Description": "Con el pie desplegado se muestra el contenido HTML y estilos configurados. Use «Ocultar pie de página» para ocultar el pie de página."
+  }
+}

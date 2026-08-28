@@ -1,5 +1,8 @@
 package es.api_idee.api;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.servlet.ServletContext;
@@ -62,6 +65,8 @@ public class ActionsWS {
 		actions.put("/version");
 		actions.put("/projection");
 		actions.put("/plugins");
+		actions.put("/plugins/external");
+		actions.put("/plugins/external/reload");
 		actions.put("/resourcesPlugins");
 		actions.put("/versions");
 		actions.put("/resources/svg");
@@ -135,7 +140,6 @@ public class ActionsWS {
 
 		JSONObject projectionJSON = new JSONObject();
 		projectionJSON.put("code", projection[0]);
-		projectionJSON.put("units", projection[1]);
 
 		return JSBuilder.wrapCallback(projectionJSON, callbackFn);
 	}
@@ -158,6 +162,49 @@ public class ActionsWS {
 		}
 
 		return JSBuilder.wrapCallback(pluginsJSON, callbackFn);
+	}
+
+	/**
+	 * Returns the list of available external plugins
+	 * 
+	 * @param callbackFn the name of the javascript function to execute as callback
+	 * 
+	 * @return the javascript code with external plugins info
+	 */
+	@GET
+	@Path("/plugins/external")
+	public String showAvailableExternalPlugins(@QueryParam("callback") String callbackFn) {
+		JSONArray pluginsJSON = new JSONArray();
+
+		PluginsManager.init(context);
+		for (String pluginName : PluginsManager.getAvailableExternalPlugins()) {
+			pluginsJSON.put(pluginName);
+		}
+
+		return JSBuilder.wrapCallback(pluginsJSON, callbackFn);
+	}
+
+	/**
+	 * Reloads the list of available external plugins from the remote repository.
+	 * This endpoint forces a refresh of the external plugins list.
+	 * 
+	 * @param callbackFn the name of the javascript function to execute as callback
+	 * 
+	 * @return the javascript code with the reload result
+	 */
+	@GET
+	@Path("/plugins/external/reload")
+	public String reloadExternalPlugins(@QueryParam("callback") String callbackFn) {
+		PluginsManager.init(context);
+
+		int count = PluginsManager.reloadExternalPlugins();
+
+		JSONObject result = new JSONObject();
+		result.put("success", true);
+		result.put("message", "Lista de plugins externos recargada correctamente");
+		result.put("count", count);
+
+		return JSBuilder.wrapCallback(result, callbackFn);
 	}
 
 	/**
@@ -185,7 +232,7 @@ public class ActionsWS {
 	 * Provides SVG collections
 	 * 
 	 * @param callbackFn the name of the javascript function to execute as callback
-	 * @param name name collection
+	 * @param name       name collection
 	 * 
 	 * @return the javascript code
 	 */
@@ -194,7 +241,8 @@ public class ActionsWS {
 	public String resourceSVG(@QueryParam("callback") String callbackFn, @QueryParam("name") String name) {
 		JSONObject result = new JSONObject();
 		try {
-			String file = new String(Files.readAllBytes(Paths.get(context.getRealPath("/WEB-INF/classes/resources_svg.json"))));
+			String file = new String(
+					Files.readAllBytes(Paths.get(context.getRealPath("/WEB-INF/classes/resources_svg.json"))));
 
 			JSONArray allCollectionsSVG = (JSONArray) new JSONObject(file).get("collections");
 			JSONObject collectionSVG = null;
@@ -234,7 +282,7 @@ public class ActionsWS {
 	 * Provides GeoData collections
 	 * 
 	 * @param callbackFn the name of the javascript function to execute as callback
-	 * @param name name of the collection
+	 * @param name       name of the collection
 	 * 
 	 * @return the javascript code
 	 */
@@ -243,7 +291,8 @@ public class ActionsWS {
 	public String resourceGeoData(@QueryParam("callback") String callbackFn, @QueryParam("name") String name) {
 		JSONObject result = new JSONObject();
 		try {
-			String file = new String(Files.readAllBytes(Paths.get(context.getRealPath("/WEB-INF/classes/resources_geodata.json"))));
+			String file = new String(
+					Files.readAllBytes(Paths.get(context.getRealPath("/WEB-INF/classes/resources_geodata.json"))));
 
 			JSONArray allCollectionsGeoData = (JSONArray) new JSONObject(file).get("collections");
 			JSONObject collectionGeoData = null;
@@ -283,10 +332,11 @@ public class ActionsWS {
 	 * Provides the JS and CSS resources of the plugins for each version of API_IDEE
 	 * 
 	 * @param callbackFn the name of the javascript function to execute as callback
-	 * @param name plugin name to filter
-	 * @param version version number API_IDEE to filter
-	 * @param type file type to filter 'css' or 'js', only used when both name and version are not null.
-	 * While 'api-idee' shows version this plugin is attached to.
+	 * @param name       plugin name to filter
+	 * @param version    version number API_IDEE to filter
+	 * @param type       file type to filter 'css' or 'js', only used when both name
+	 *                   and version are not null.
+	 *                   While 'api-idee' shows version this plugin is attached to.
 	 * 
 	 * @return the resources available for the plugins
 	 */
@@ -301,15 +351,45 @@ public class ActionsWS {
 		Response response = null;
 
 		try {
-			String file = new String(Files.readAllBytes(Paths.get(context.getRealPath("/WEB-INF/classes/resourcesPlugins.json"))));
-			JSONArray allPlugins = (JSONArray) new JSONObject(file).get("plugins");
+			String file = new String(
+					Files.readAllBytes(Paths.get(context.getRealPath("/WEB-INF/classes/resourcesPlugins.json"))));
+			String fileExt = null;
+			try {
+				String urlBase = configProperties.getString("plugins.external.base.url");
+				URL url = new URL(urlBase + "/data/resourcesPlugins.json");
+				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+				conn.setRequestMethod("GET");
+
+				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+				StringBuilder res = new StringBuilder();
+				String line;
+				while ((line = br.readLine()) != null) {
+					res.append(line);
+				}
+				fileExt = res.toString();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			JSONArray intPlugins = (JSONArray) new JSONObject(file).get("plugins");
+			JSONArray extPlugins1 = (JSONArray) new JSONObject(fileExt).get("plugins");
+			List<JSONObject> allPlugins = new ArrayList<>();
+			for (int i = 0; i < extPlugins1.length(); i++) {
+				allPlugins.add(extPlugins1.getJSONObject(i));
+			}
+			for (int i = 0; i < intPlugins.length(); i++) {
+				allPlugins.add(intPlugins.getJSONObject(i));
+			}
+			allPlugins.sort(Comparator.comparing(o -> o.getString("name")));
+
 			JSONArray arrayResults = new JSONArray();
 			JSONObject plugin = null;
 
 			Boolean showAllPlugins = name == null;
 			Boolean showAllVersions = version == null;
 
-			for (int i = 0; i < allPlugins.length(); i++) {
+			for (int i = 0; i < allPlugins.size(); i++) {
 				plugin = (JSONObject) allPlugins.get(i);
 				String namePlugin = (String) plugin.get("name");
 				boolean findPlugin = !showAllPlugins && name.equals(namePlugin);
@@ -318,6 +398,7 @@ public class ActionsWS {
 					JSONArray versions = (JSONArray) plugin.get("versions");
 					JSONObject aux = new JSONObject();
 					aux.put("name", namePlugin);
+					aux.put("obsolete", (String)plugin.get("obsolete"));
 					JSONArray links = new JSONArray();
 
 					for (int j = 0; j < versions.length(); j++) {
@@ -333,6 +414,7 @@ public class ActionsWS {
 					}
 					aux.put("resources", links);
 					arrayResults.put(aux);
+					
 					if (findPlugin) {
 						break;
 					}
@@ -340,10 +422,11 @@ public class ActionsWS {
 			}
 
 			if (name != null && version != null && type != null) {
-				// Expected "api-idee,css,js" types from api-idee-rest/src/main/resources/properties/resourcesPlugins.json
+				// Expected "api-idee,css,js" types from
+				// api-idee-rest/src/main/resources/properties/resourcesPlugins.json
 				String resourceType = (String) (((JSONArray) arrayResults
-					.getJSONObject(0).get("resources")).getJSONObject(0))
-					.get(type); // Values of Type that are not "js", "css" or "api-idee" cause "not found error"
+						.getJSONObject(0).get("resources")).getJSONObject(0))
+						.get(type); // Values of Type that are not "js", "css" or "api-idee" cause "not found error"
 				if (type.equals("api-idee")) {
 					// Avoid type "api-idee" version being interpreted as protocol
 					response = Response.ok(resourceType, MediaType.TEXT_HTML).build();
@@ -376,7 +459,7 @@ public class ActionsWS {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			response = Response.status(400).entity("An error has occurred " +e.toString()).build();
+			response = Response.status(400).entity("An error has occurred " + e.toString()).build();
 		}
 
 		return response;
@@ -392,10 +475,11 @@ public class ActionsWS {
 	 */
 	@GET
 	@Path("/versions")
-	public String showVersions (@QueryParam("callback") String callbackFn) {
+	public String showVersions(@QueryParam("callback") String callbackFn) {
 		JSONObject versionsJSON = new JSONObject();
 
-		// "versions" from api-idee-rest/.../configuration.properties of "versions.names" from api-idee-parent/.../*.properties
+		// "versions" from api-idee-rest/.../configuration.properties of
+		// "versions.names" from api-idee-parent/.../*.properties
 		String[] versions = configProperties.getString("versions").split(",");
 
 		// URLs to tiles

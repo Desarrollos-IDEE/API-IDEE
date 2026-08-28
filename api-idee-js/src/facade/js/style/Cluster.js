@@ -25,7 +25,7 @@ class Cluster extends Composite {
    * @param {object} options Parámetros de los estilos del "cluster".
    * - ranges: Matriz de objetos con el valor mínimo, el máximo y un IDEE.style.Point.
    * - animated: Indica si se quiere animación o no al desplegar
-   * el "cluster".
+   * el "cluster". No disponible para Cesium.
    * - hoverInteraction: Indica si se quiere mostrar el polígono que
    * engloba los elementos al situarse sobre el "cluster".
    * - selectInteraction: Indica si se quiere que al pinchar en un "cluster"
@@ -38,8 +38,8 @@ class Cluster extends Composite {
    * - label: Estilo opcional de la etiqueta de número de elementos de
    * todos los rangos, si se muestra.
    * @param {object} optsVendor Opciones que se pasarán a la librería base.
-   * - animationDuration: Duración de la animación.
-   * - animationMethod: Método que realiza la animación.
+   * - animationDuration: Duración de la animación. No disponible para Cesium.
+   * - animationMethod: Método que realiza la animación. No disponible para Cesium.
    * - distanceSelectFeatures: Distancia de selección de los objetos geográficos.
    * - convexHullStyle: Estilo de casco convexo.
    * @api

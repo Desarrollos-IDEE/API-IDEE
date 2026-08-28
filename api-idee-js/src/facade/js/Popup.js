@@ -240,6 +240,7 @@ class Popup extends Base {
     if (IDEE.config.MOVE_MAP_EXTRACT) {
       this.getImpl().setAnimationView();
     }
+    this.update();
     this.fire(EventType.POPUP_ADDED, [this]);
     map.fire(EventType.POPUP_ADDED, [this]);
   }

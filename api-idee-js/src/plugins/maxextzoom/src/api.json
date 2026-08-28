@@ -1,0 +1,52 @@
+{
+  "url": {
+    "name": "maxextzoom",
+    "separator": "*"
+  },
+  "constructor": "IDEE.plugin.MaxExtZoom",
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+      "type": "simple",
+      "name": "position",
+      "position": 0,
+      "possibleValues": [
+        "TL",
+        "TR",
+        "BL",
+        "BR"
+      ]
+    }]
+  }],
+  "files": {
+    "ol": {
+      "scripts": [
+        "maxextzoom.ol.min.js"
+      ],
+      "styles": [
+        "maxextzoom.ol.min.css"
+      ]
+    },
+    "cesium": {
+      "scripts": [
+        "maxextzoom.cesium.min.js"
+      ],
+      "styles": [
+        "maxextzoom.cesium.min.css"
+      ]
+    }
+  },
+  "metadata": {
+    "name": "MaxExtZoom",
+    "description": "Zoom a la extensión del mapa",
+    "text": "Permite realizar un zoom a la extensión del mapa ",
+    "version": "1.0.0",
+    "date": "Diciembre, 2025",
+    "author": "",
+    "org": "",
+    "tags": "idee,plugin",
+    "icon": "./facade/assets/icons/icons.svg",
+    "centralized": true,
+    "compatibility": ["1"]
+  }
+}

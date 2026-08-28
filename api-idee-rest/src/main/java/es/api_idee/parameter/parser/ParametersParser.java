@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 
 import es.api_idee.parameter.Parameters;
 
@@ -110,5 +111,49 @@ public abstract class ParametersParser {
          library = implParam[0].trim().replace("\"", "").replace("'", "");
       }
       return library;
+   }
+   
+   /**
+    * Parses parameters from a JSON object
+    * 
+    * @param jsonBody the JSON body as string
+    * @return Parameters object with map configuration
+    */
+   public static Parameters parseFromJSON (String jsonBody) {
+      Parameters parameters = new Parameters();
+      
+      try {
+         JSONObject json = new JSONObject(jsonBody);
+         
+         if (json.has("map")) {
+            JSONObject mapConfig = json.getJSONObject("map");
+            
+            if (!mapConfig.has("container")) {
+               mapConfig.put("container", "map");
+            }
+            
+            java.util.Iterator<String> keys = mapConfig.keys();
+            while (keys.hasNext()) {
+               String key = keys.next();
+               Object value = mapConfig.get(key);
+               
+               if (key.equals("center") && value instanceof JSONObject) {
+                  JSONObject centerObj = (JSONObject) value;
+                  String centerStr = centerObj.getString("x") + "," + centerObj.getString("y");
+                  parameters.addValue(key, centerStr);
+               } else {
+                  parameters.addValue(key, value);
+               }
+            }
+         }
+         
+         if (json.has("metadata")) {
+            JSONObject metadata = json.getJSONObject("metadata");
+            parameters.addValue("metadata", metadata);
+         }
+      } catch (Exception e) {
+         e.printStackTrace();
+      }
+      return parameters;
    }
 }

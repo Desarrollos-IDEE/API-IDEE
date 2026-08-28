@@ -122,6 +122,7 @@ class GenericVector extends Vector {
 
     // calls the super constructor
     super(params, options, undefined, impl);
+    this.constructorParameters = { userParameters, options, vendorOptions };
 
     if (!isNullOrEmpty(impl) && isFunction(impl.setFacadeObj)) {
       impl.setFacadeObj(this);

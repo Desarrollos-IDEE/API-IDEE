@@ -116,6 +116,7 @@ class TMS extends LayerBase {
     const impl = new TMSImpl(parameters, optionsVars, vendorOptions);
     // calls the super constructor
     super(parameters, impl);
+    this.constructorParameters = { userParameters, options, vendorOptions };
 
     /**
      * TMS url: URL del servicio TMS.

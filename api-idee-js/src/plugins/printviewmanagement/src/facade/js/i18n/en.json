@@ -74,7 +74,7 @@
   "invalidTemplateName": "A template with the same name already exists.",
   "invalidTemplateContent": "A template with the same content already exists.",
   "selectUploadedTemplate": "Select uploaded template",
-  "defaultTemplate": "Default template",
+  "defaultTemplate": "Full map",
   "invalidFileType": "Please select a valid HTML or TXT file",
   "customizeTemplate": "customize and print screen",
   "mapElements": "Map elements",

@@ -12,6 +12,7 @@ import {
 import geojsonPopupTemplate from 'templates/geojson_popup';
 import Vector from './Vector';
 import ImplMap from '../Map';
+import ImplUtils from '../util/Utils';
 import Feature from '../feature/Feature';
 
 /**
@@ -184,6 +185,31 @@ class GenericVector extends Vector {
       this.fnAddFeatures_ = this.addFeaturesToFacade.bind(this);
       source.on('featuresloadend', this.fnAddFeatures_);
     }
+  }
+
+  /**
+   * Este método devuelve la extensión de todos los objetos geográficos
+   * o discrimina por el filtro, asíncrono.
+   * En GenericVector no existe una petición única `requestFeatures_` (depende
+   * del `ol/source` proporcionado), así que se calcula a partir de las
+   * features actualmente disponibles en el cliente.
+   *
+   * @function
+   * @param {boolean} skipFilter Indica si se salta el filtro.
+   * @param {IDEE.Filter} filter Filtro para ejecutar.
+   * @return {Array<number>} Alcance de los objetos geográficos.
+   * @api stable
+   */
+  getFeaturesExtentPromise(skipFilter, filter) {
+    return new Promise((resolve) => {
+      const codeProj = this.map.getProjection().code;
+      const features = this.getFeatures(skipFilter, filter);
+      let extent = ImplUtils.getFeaturesExtent(features, codeProj);
+      if (isNullOrEmpty(extent) && !isNullOrEmpty(this.maxExtent)) {
+        extent = this.maxExtent;
+      }
+      resolve(extent);
+    });
   }
 
   addFeaturesToFacade() {

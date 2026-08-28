@@ -14,6 +14,7 @@ public class PluginAPI {
    private List<PluginAPIParam> parameters;
    private Map<String, List<String>> jsFiles;
    private Map<String, List<String>> cssFiles;
+   private String externalBaseUrl;
    
    public PluginAPI(String name, String separator, String constructor, List<PluginAPIParam> parameters) {
       this.name = name;
@@ -24,6 +25,19 @@ public class PluginAPI {
       }
       this.jsFiles = new HashMap<String, List<String>>();
       this.cssFiles = new HashMap<String, List<String>>();
+      this.externalBaseUrl = null;
+   }
+   
+   public boolean isExternal() {
+      return externalBaseUrl != null && !externalBaseUrl.isEmpty();
+   }
+   
+   public String getExternalBaseUrl() {
+      return externalBaseUrl;
+   }
+   
+   public void setExternalBaseUrl(String externalBaseUrl) {
+      this.externalBaseUrl = externalBaseUrl;
    }
    
    public void addJSFile(String impl, String jsfile) {

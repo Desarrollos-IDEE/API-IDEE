@@ -95,13 +95,13 @@
   },
   "metadata": {
     "name": "comparators",
-    "description": "This plugin allows to compare layers.",
-    "text": "This plugin allows to compare layers.",
-    "version": "3.0.2",
-    "date": "19th July 2023",
-    "author": "CNIG",
+    "description": "Herramienta de comparación.",
+    "text": "Herramienta de comparación.",
+    "version": "1.0.1",
+    "date": "02th January 2026",
+    "author": "",
     "org": "CNIG",
-    "tags": "api-idee,plugin",
+    "tags": "plugin",
     "icon": "./facade/assets/icons/icons.svg"
   }
 }

@@ -7,7 +7,7 @@ import MeasureClear from './measureclear';
 import { getValue } from './i18n/language';
 import '../assets/css/measurebar';
 import myhelp from '../../templates/myhelp';
-
+import api from '../../api';
 import es from './i18n/es';
 import en from './i18n/en';
 
@@ -104,6 +104,13 @@ export default class MeasureBar extends IDEE.Plugin {
      * @type {object}
      */
     this.options = options;
+
+    /**
+     * Metadata
+     * @privates
+     * @type {number}
+     */
+    this.metadata_ = api.metadata;
   }
 
   /**
@@ -137,6 +144,14 @@ export default class MeasureBar extends IDEE.Plugin {
 
     this.controls_.push(this.measureLength_, this.measureArea_, this.measureClear_);
 
+    this.measureLength_.on(IDEE.evt.ADDED_TO_MAP, () => {
+      this.measureArea_.on(IDEE.evt.ADDED_TO_MAP, () => {
+        this.measureClear_.on(IDEE.evt.ADDED_TO_MAP, () => {
+          this.fire(IDEE.evt.ADDED_TO_MAP);
+        });
+      });
+    });
+
     this.panel_ = new IDEE.ui.Panel('MeasureBar', {
       collapsed: this.collapsed_,
       collapsible: this.collapsible_,
@@ -160,6 +175,17 @@ export default class MeasureBar extends IDEE.Plugin {
    */
   get name() {
     return 'measurebar';
+  }
+
+  /**
+   * This function gets metadata plugin
+   *
+   * @public
+   * @function
+   * @api stable
+   */
+  getMetadata() {
+    return this.metadata_;
   }
 
   /**

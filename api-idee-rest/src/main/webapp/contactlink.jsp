@@ -94,7 +94,7 @@
         <label for="inputMail">Parámetro mail</label>
         <input type="text" name="mail" id="inputMail" list="mailSug">
           <datalist id="mailSug">
-           <option value="mailto:ign@fomento.es"></option>
+           <option value="mailto:consulta@cnig.es"></option>
           </datalist>
 
      	<label for="selectCollapsed">Parámetro de collapsed</label>

@@ -1,6 +1,7 @@
 /**
  * @module IDEE/impl/layer/GenericVector
  */
+import ClusteredFeature from 'IDEE/feature/Clustered';
 import * as EventType from 'IDEE/event/eventtype';
 import { compileSync as compileTemplate } from 'IDEE/util/Template';
 import Popup from 'IDEE/Popup';
@@ -214,7 +215,7 @@ class GenericVector extends Vector {
    */
   selectFeatures(features, coord, evt) {
     const feature = features[0];
-    if (this.extract === true) {
+    if (!(feature instanceof ClusteredFeature) && (this.extract === true)) {
       this.unselectFeatures();
       if (!isNullOrEmpty(feature)) {
         const htmlAsText = compileTemplate(geojsonPopupTemplate, {

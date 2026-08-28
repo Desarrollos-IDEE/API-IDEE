@@ -1,0 +1,78 @@
+/* Estilos de ejemplo para el plugin Mapheader - API-IDEE */
+
+.mapheader-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%);
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.mapheader-brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.mapheader-logo {
+  height: 45px;
+  transition: transform 0.2s ease;
+}
+
+.mapheader-logo:hover {
+  transform: scale(1.05);
+}
+
+.mapheader-title h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.mapheader-title p {
+  margin: 2px 0 0 0;
+  font-size: 12px;
+  opacity: 0.85;
+  font-weight: 300;
+}
+
+.mapheader-nav {
+  display: flex;
+  gap: 24px;
+}
+
+.mapheader-nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.mapheader-nav a:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .mapheader-container {
+    flex-direction: column;
+    gap: 12px;
+    padding: 10px 16px;
+  }
+
+  .mapheader-nav {
+    gap: 12px;
+  }
+
+  .mapheader-title h1 {
+    font-size: 16px;
+  }
+}
+
+

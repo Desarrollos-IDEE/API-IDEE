@@ -1,0 +1,170 @@
+.g-plugin-filteredsearch-filter:before {
+    font-family: 'g-plugin-filteredsearch';
+    content: "\e5000";
+}
+
+.m-areas>div.m-area>div.filtered-search-panel.opened>button.m-panel-btn.opened-left {
+    position: absolute;
+    right: -2.53rem;
+    left: unset !important;
+}
+
+.m-control.m-container.m-filteredsearch {
+    background-color: rgb(255, 255, 255) !important;
+    width: 100%;
+}
+
+
+/* .filtered-search-panel */
+#m-filteredsearch-options-container {
+    background-color: white !important;
+    margin: auto !important;
+    max-height: 500px !important;
+    max-width: 550px !important;
+    overflow: auto !important;
+    padding: 10px;
+    position: relative;
+    width: 100%;
+}
+
+
+.filtered-search-panel.collapsed {
+    height: 40px !important;
+    width: 40px !important;
+}
+
+.filtered-search-panel.collapsed .m-panel-btn {
+    background-color: white;
+}
+
+.m-area.m-bottom.m-right>.filtered-search-panel.opened,
+.m-area.m-bottom.m-left>.filtered-search-panel.opened {
+    width: 550px !important;
+}
+
+.filtered-search-panel.opened #m-filteredsearch-query-container>textarea {
+    margin: auto;
+    width: 520px;
+}
+
+.filtered-search-panel.opened .m-panel-btn {
+    background-color: #fff !important;
+    color: #71a7d3 !important;
+    left: -40px;
+    position: absolute;
+}
+
+.m-panel-btn.g-plugin-filteredsearch-filter {
+    font-family: 'g-plugin-filteredsearch' !important;
+}
+
+/* Titles */
+.filtered-search-panel div.filtered-search-title {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    /* fallback if grab cursor is unsupported */
+    background-color: #71a7d3 !important;
+    color: white;
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+    font-size: 15px;
+    font-weight: bold;
+    height: 39px;
+    line-height: 40px;
+    text-align: center;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.m-filteredsearch-headers {
+    font-weight: bold;
+}
+
+#m-filteredsearch-selects-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px 10px;
+    margin: auto;
+    width: 100%;
+}
+
+#m-filteredsearch-selects-container>.m-filteredsearch-headers {
+    margin: 0;
+    white-space: nowrap;
+}
+
+#m-filteredsearch-selects-container select {
+    background-color: white;
+    border: 1px solid silver;
+    color: grey;
+    padding: 5px;
+}
+
+#m-filteredsearch-layers-select {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#m-filteredsearch-method-select {
+    max-width: 180px;
+}
+
+#m-filteredsearch-initialview>div {
+    padding-top: 10px;
+}
+
+#m-filteredsearch-operators-container {
+    clear: both;
+}
+
+/* Attribute lists */
+
+#m-filteredsearch-lists-container {
+    max-height: 500px !important;
+    overflow: auto !important;
+}
+
+#m-filteredsearch-lists-container>div {
+    float: left;
+    width: 50%;
+}
+
+/* Query */
+
+#m-filteredsearch-query-container>textarea {
+    border: 1px solid silver;
+    width: 95%;
+}
+
+/* Buttons */
+
+#m-filteredsearch-options-buttons {
+    padding: 5px;
+}
+
+#m-filteredsearch-options-buttons>button,
+#m-filteredsearch-operators-container>button,
+#m-filteredsearch-lists-container #m-attributetable-tfoot>button {
+    background-color: white;
+    border: 1px solid silver;
+    border-radius: 3px;
+    clear: both;
+    color: grey;
+    margin: 3px;
+    padding: 5px;
+}
+
+#m-filteredsearch-operators-container>button,
+#m-filteredsearch-lists-container #m-attributetable-tfoot>button {
+    background-color: rgb(238, 236, 236);
+    padding: 4px 8px;
+}
+
+/* #m-filteredsearch-lists-container td.focus, */
+#m-filteredsearch-options-container td.focus {
+    background-color: silver;
+    color: white;
+    padding: 2px;
+}

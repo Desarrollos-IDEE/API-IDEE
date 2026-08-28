@@ -1,0 +1,119 @@
+/**
+ * @module IDEE/control/ClearFeature
+ */
+import ClearFeatureImpl from '../../impl/ol/js/clearfeature';
+import ClearFeatureHTML from '../../templates/clearfeature.html';
+import { getValue } from './i18n/language';
+
+export default class ClearFeature extends IDEE.Control {
+  /**
+   * @classdesc
+   * Main constructor of the class. Creates a ClearFeature
+   * control to clean deleted, created and modified unsaved features.
+   *
+   * @constructor
+   * @param {IDEE.layer.WFS} layer - Layer for use in control
+   * @extends {IDEE.Control}
+   * @api stable
+   */
+  constructor(layer) {
+    // implementation of this control
+    const impl = new ClearFeatureImpl(layer);
+
+    // calls the super constructor
+    super(impl, ClearFeature.NAME);
+
+    if (IDEE.utils.isUndefined(ClearFeatureImpl)) {
+      IDEE.exception(getValue('exception.impl_clear'));
+    }
+  }
+
+  /**
+   * This function creates the view to the specified map
+   *
+   * @public
+   * @function
+   * @param {IDEE.Map} map - Map to add the control
+   * @returns {HTMLElement} html response
+   * @api stable
+   */
+  createView(map) {
+    return IDEE.template.compileSync(ClearFeatureHTML, {
+      jsonp: true,
+      vars: {
+        translations: {
+          clear: getValue('clear'),
+        },
+      },
+    });
+  }
+
+  /**
+   * This function adds the click event to the button
+   *
+   * @public
+   * @function
+   * @param {HTMLElement} element - HTML control
+   * @api stable
+   * @export
+   */
+  manageActivation(element) {
+    const activationBtn = element.querySelector('button#m-button-clearfeature');
+    activationBtn.addEventListener('click', this.clear_.bind(this));
+  }
+
+  /**
+   * This function checks if an object is equals to this control
+   *
+   * @function
+   * @api stable
+   * @param {*} obj - Object to compare
+   * @returns {boolean} equals - Returns if they are equal or not
+   */
+  equals(obj) {
+    const equals = (obj instanceof ClearFeature);
+    return equals;
+  }
+
+  /**
+   * This function clean deleted, created and modified unsaved features
+   *
+   * @private
+   * @function
+   * @param {goog.events.BrowserEvent} evt - Event
+   */
+  clear_(evt) {
+    evt.preventDefault();
+    this.getImpl().clear();
+  }
+
+  /**
+   * This function set layer for clear
+   *
+   * @public
+   * @function
+   * @param {IDEE.layer.WFS} layer - Layer
+   * @api stable
+   */
+  setLayer(layer) {
+    this.getImpl().setLayer(layer);
+  }
+}
+
+/**
+ * Name for this controls
+ * @const
+ * @type {string}
+ * @public
+ * @api stable
+ */
+ClearFeature.NAME = 'clearfeature';
+
+/**
+ * Template for this controls - button
+ * @const
+ * @type {string}
+ * @public
+ * @api stable
+ */
+ClearFeature.TEMPLATE = 'clearfeature.html';

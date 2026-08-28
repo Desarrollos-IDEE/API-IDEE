@@ -67,7 +67,7 @@ export default class LayerswitcherControl extends IDEE.Control {
   constructor(options = {}) {
     if (IDEE.utils.isUndefined(LayerswitcherImplControl)
       || (IDEE.utils.isObject(LayerswitcherImplControl)
-      && IDEE.utils.isNullOrEmpty(Object.keys(LayerswitcherImplControl)))) {
+        && IDEE.utils.isNullOrEmpty(Object.keys(LayerswitcherImplControl)))) {
       IDEE.exception(getValue('exception.impl'));
     }
 
@@ -205,7 +205,7 @@ export default class LayerswitcherControl extends IDEE.Control {
 
     map.on(IDEE.evt.ADDED_LAYER, (layers) => {
       if (this.modeSelectLayers === 'radio'
-      && this.isCheckedLayerRadio === true) {
+        && this.isCheckedLayerRadio === true) {
         layers.forEach((layer) => {
           if (layer.isBase === false && layer.displayInLayerSwitcher) {
             if (layer instanceof IDEE.layer.LayerGroup) {
@@ -270,7 +270,8 @@ export default class LayerswitcherControl extends IDEE.Control {
           const isTransparent = (layer.transparent === true);
           const displayInLayerSwitcher = (layer.displayInLayerSwitcher === true);
           const isLayerGroup = (layer instanceof IDEE.layer.LayerGroup);
-          return isTransparent && displayInLayerSwitcher && !isLayerGroup;
+          const isNotWMC = (layer.type !== IDEE.layer.type.WMC);
+          return isTransparent && displayInLayerSwitcher && !isLayerGroup && isNotWMC;
         });
 
         const overlayLayersPromise = Promise
@@ -324,8 +325,11 @@ export default class LayerswitcherControl extends IDEE.Control {
       && !IDEE.utils.isNullOrEmpty(layer.capabilitiesMetadata.abstract);
 
     return new Promise((success) => {
-      let hasStyles = (hasMetadata && layer.capabilitiesMetadata.style.length > 1)
-        || (layer instanceof IDEE.layer.Vector && !IDEE.utils.isNullOrEmpty(layer.predefinedStyles)
+      let hasStyles = (hasMetadata
+        && layer.capabilitiesMetadata.style !== undefined
+        && layer.capabilitiesMetadata.style.length > 1)
+        || (layer instanceof IDEE.layer.Vector
+          && !IDEE.utils.isNullOrEmpty(layer.predefinedStyles)
           && layer.predefinedStyles.length > 1);
       if (layer.type === 'KML') {
         if (layer.options === null) {
@@ -421,9 +425,10 @@ export default class LayerswitcherControl extends IDEE.Control {
 
   // Esta función renderiza la plantilla
   async render() {
-    const listLayer = document.getElementById('m-layerswitcher-content').childElementCount;
+    const contentElement = this.template_.querySelector('#m-layerswitcher-content');
+    const listLayer = contentElement.childElementCount;
 
-    if (listLayer === 0) {
+    if (listLayer === 0 || this.statusShowHideAllLayers === undefined) {
       this.statusShowHideAllLayers = this.map_.getLayers().find((layer) => {
         if (layer.isBase === false && layer.displayInLayerSwitcher) {
           // RANGE ¿?
@@ -1159,150 +1164,234 @@ export default class LayerswitcherControl extends IDEE.Control {
           } else if (url.indexOf('{z}/{x}/{y}') >= 0) {
             this.printLayerModal(url, 'xyz');
           } else {
-            const promise = new Promise((success, reject) => {
-              const id = setTimeout(() => reject(), 15000);
-              // IDEE.proxy(this.useProxy);
-              IDEE.remote.get(IDEE.utils.getWMTSGetCapabilitiesUrl(url)).then((response) => {
+            const urlLower = url.toLowerCase();
+            const isWFSPath = urlLower.endsWith('/wfs') || urlLower.includes('service=wfs');
+            const isWMSPath = urlLower.endsWith('/wms') || urlLower.includes('service=wms');
+
+            const promise2 = (isWFSPath) ? Promise.resolve({ text: '' }) : new Promise((success, reject) => {
+              const id = setTimeout(() => success({ text: '' }), 15000);
+              IDEE.remote.get(IDEE.utils.getWMSGetCapabilitiesUrl(url, '1.3.0')).then((response2) => {
                 clearTimeout(id);
-                success(response);
-              });
-              // IDEE.proxy(this.statusProxy);
+                success(response2);
+              }).catch(() => { clearTimeout(id); success({ text: '' }); });
+            });
+            const promisewfs = (isWMSPath) ? Promise.resolve({ text: '' }) : new Promise((success, reject) => {
+              const id = setTimeout(() => success({ text: '' }), 15000);
+              let urlAux = url;
+              urlAux = IDEE.utils.addParameters(url, 'request=GetCapabilities');
+              urlAux = IDEE.utils.addParameters(urlAux, 'service=WFS');
+              urlAux = IDEE.utils.addParameters(urlAux, { version: '1.3.0' });
+
+              IDEE.remote.get(urlAux).then((responsewfs) => {
+                clearTimeout(id);
+                success(responsewfs);
+              }).catch(() => { clearTimeout(id); success({ text: '' }); });
             });
 
-            promise.then((response) => {
-              if (response.text && !IDEE.utils.isNullOrEmpty(response.text) && response.text.indexOf('<TileMatrixSetLink>') >= 0 && response.text.indexOf('Operation name="GetTile"') >= 0) {
-                const getCapabilitiesParser = new IDEE.impl.format.WMTSCapabilities();
-                const getCapabilities = getCapabilitiesParser.read(response.xml);
-                this.serviceCapabilities = getCapabilities.capabilities || {};
-                const layers = IDEE.impl.util.wmtscapabilities.getLayers(
-                  getCapabilities.capabilities,
-                  url,
-                  this.map_.getProjection().code,
-                );
-                this.capabilities = this.filterResults(layers);
-                this.showResults();
-              } else {
-                const promise2 = new Promise((success, reject) => {
-                  const id = setTimeout(() => reject(), 15000);
-                  // IDEE.proxy(this.useProxy);
-                  IDEE.remote.get(IDEE.utils.getWMSGetCapabilitiesUrl(url, '1.3.0')).then((response2) => {
-                    clearTimeout(id);
-                    success(response2);
-                  });
-                  // IDEE.proxy(this.statusProxy);
-                });
-                const promisewfs = new Promise((success, reject) => {
-                  const id = setTimeout(() => reject(), 15000);
-                  let urlAux = url;
-                  urlAux = IDEE.utils.addParameters(url, 'request=GetCapabilities');
-                  urlAux = IDEE.utils.addParameters(urlAux, 'service=WFS');
+            const promisewmts = (isWFSPath || isWMSPath) ? Promise.resolve({ text: '' }) : new Promise((success) => {
+              const id = setTimeout(() => success({ text: '' }), 15000); // En vez de reject, éxito vacío
+              let urlAux = url;
+              urlAux = IDEE.utils.addParameters(url, 'request=GetCapabilities');
+              urlAux = IDEE.utils.addParameters(urlAux, 'service=WMTS');
 
-                  urlAux = IDEE.utils.addParameters(urlAux, {
-                    version: '1.3.0',
-                  });
-                  // IDEE.proxy(this.useProxy);
-                  IDEE.remote.get(urlAux).then((responsewfs) => {
-                    clearTimeout(id);
-                    success(responsewfs);
-                  });
-                  // IDEE.proxy(this.statusProxy);
-                });
-                Promise.all([promise2, promisewfs]).then((response2) => {
-                  let wms = false;
-                  let wfs = false;
+              IDEE.remote.get(urlAux).then((responsewmts) => {
+                clearTimeout(id);
+                success(responsewmts);
+              }).catch(() => { clearTimeout(id); success({ text: '' }); });
+            });
 
-                  if (!IDEE.utils.isNullOrEmpty(response2[0].text) && response2[0].text.indexOf('<TileMatrixSetLink>') === -1 && response2[0].text.indexOf('<GetMap>') >= 0) {
-                    wms = true;
-                  }
+            Promise.all([promise2, promisewfs, promisewmts]).then((responses) => {
+              let wms = false;
+              let wfs = false;
+              let wmts = false;
 
-                  if (!IDEE.utils.isNullOrEmpty(response2[1].text) && response2[1].text.indexOf('<TileMatrixSetLink>') === -1 && response2[1].text.indexOf('Operation name="GetFeature"') >= 0) {
-                    wfs = true;
-                  }
+              const responseWMS = responses[0];
+              const responseWFS = responses[1];
+              const responseWMTS = responses[2];
 
-                  if (wms || wfs) {
-                    try {
-                      // WMS
-                      if (wms) {
-                        const getCapabilitiesParser = new IDEE.impl.format.WMSCapabilities();
-                        const getCapabilities = getCapabilitiesParser.read(response2[0].xml || new DOMParser().parseFromString(response2[0].text, 'text/xml'));
-                        this.serviceCapabilities = getCapabilities.Service || {};
-                        const getCapabilitiesUtils = new IDEE.impl.GetCapabilities(
-                          getCapabilities,
-                          url,
-                          this.map_.getProjection().code,
-                        );
-                        this.capabilities = this.filterResults(getCapabilitiesUtils.getLayers());
-                        this.capabilities.forEach((layer) => {
-                          try {
-                            this.getParents(getCapabilities, layer);
-                          } catch (err) { /* Continue */ }
-                        });
-                      }
-                      // WFS
-                      let wfsDatas;
-                      if (wfs) {
-                        wfsDatas = this.readWFSCapabilities(response2[1]);
-                      }
-                      this.showResults(wfsDatas);
-                    } catch (error) {
-                      IDEE.dialog.error(getValue('exception.capabilities'), undefined, this.order);
-                      this.removeLoading();
+              const hasWmtsTag = (res) => res && !IDEE.utils.isNullOrEmpty(res.text)
+                && (res.text.toLowerCase().indexOf('<tilematrixset>') >= 0
+                || res.text.toLowerCase().indexOf('<tilematrixsetlink>') >= 0
+                || res.text.toLowerCase().indexOf('wmts_capabilities') >= 0);
+
+              const hasWmsTag = (res) => res && !IDEE.utils.isNullOrEmpty(res.text)
+                && (res.text.toLowerCase().indexOf('getmap') >= 0
+                || res.text.toLowerCase().indexOf('wms_capabilities') >= 0
+                || res.text.toLowerCase().indexOf('wmt_ms_capabilities') >= 0);
+
+              const hasWfsTag = (res) => res && !IDEE.utils.isNullOrEmpty(res.text)
+                && (res.text.toLowerCase().indexOf('name="getfeature"') >= 0
+                || res.text.toLowerCase().indexOf('wfs_capabilities') >= 0);
+
+              if (hasWmtsTag(responseWMTS) || hasWmtsTag(responseWMS)) {
+                wmts = true;
+              } else if (!wmts && hasWmsTag(responseWMS)) {
+                wms = true;
+              } else if (!wmts && hasWfsTag(responseWFS)) {
+                wfs = true;
+              }
+
+              if (wms || wfs || wmts) {
+                try {
+                  // WMTS
+                  if (wmts) {
+                    const validRes = hasWmtsTag(responseWMTS) ? responseWMTS : responseWMS;
+                    const getCapabilitiesParser = new IDEE.impl.format.WMTSCapabilities();
+
+                    // Leer el objeto bruto que devuelve el parser
+                    const parsedData = getCapabilitiesParser.read(validRes.xml || new DOMParser().parseFromString(validRes.text, 'text/xml'));
+
+                    const getCapabilities = parsedData.capabilities || parsedData;
+                    const serviceIdentification = getCapabilities.ServiceIdentification
+                      || getCapabilities.serviceIdentification;
+                    this.serviceCapabilities = serviceIdentification || {};
+
+                    const layers = [];
+
+                    // Buscar los Contents y las Layers
+                    const contents = getCapabilities.Contents
+                      || getCapabilities.contents || getCapabilities;
+                    let layerList = contents.Layer || contents.layer || contents.layers;
+
+                    // Si el servidor devuelve una sola capa, se convierte en array
+                    if (layerList && !Array.isArray(layerList)) {
+                      layerList = [layerList];
                     }
-                  } else {
-                    this.checkIfOGCAPIFeatures(url).then((reponseIsJson) => {
-                      if (reponseIsJson === true) {
-                        this.checkIfOGCAPICollection(url).then((responseIsOGC) => {
-                          if (responseIsOGC) {
-                            this.printOGCModal(url);
-                          } else {
-                            IDEE.dialog.error(getValue('exception.ogcfeatures'), undefined, this.order);
-                            this.removeLoading();
+
+                    if (layerList && layerList.length > 0) {
+                      layerList.forEach((layerInfo) => {
+                        // Extracción segura
+                        const identifier = layerInfo.Identifier || layerInfo.identifier || `layer_${Math.random()}`;
+                        const title = layerInfo.Title || layerInfo.title || identifier;
+                        const abstract = layerInfo.Abstract || layerInfo.abstract || '';
+
+                        // Rescatar el sistema de coordenadas
+                        let matrixSet = 'EPSG:3857';
+                        const links = layerInfo.TileMatrixSetLink || layerInfo.tileMatrixSetLink;
+                        if (links && links.length > 0) {
+                          const projMap = [this.map_.getProjection().code];
+                          if (projMap[0] === 'EPSG:3857') {
+                            projMap.push('GoogleMapsCompatible');
                           }
-                        });
-                      } else {
-                        // IDEE.proxy(this.useProxy);
-                        const extension = url.includes('.') ? url.substring(url.lastIndexOf('.') + 1, url.length) : '';
-                        if (['zip', 'gpx', 'gml'].includes(extension)) {
-                          this.openFileFromUrl(url, extension);
-                        } else {
-                          IDEE.remote.get(url).then((response3) => {
-                            // GEOJSON
-                            if (IDEE.utils.isNullOrEmpty(response3.text)) {
-                              IDEE.remote.get(searchInput.value.trim()).then((response4) => {
-                                if (!IDEE.utils.isNullOrEmpty(response4.text) && response4.text.replaceAll('\r\n', '').replaceAll(' ', '').indexOf('"type":"FeatureCollection"') >= 0) {
-                                  this.printLayerModal(searchInput.value.trim(), 'geojson');
-                                } else {
-                                  IDEE.dialog.error(getValue('exception.capabilities'), undefined, this.order);
-                                  this.removeLoading();
-                                }
-                              });
-                            } else if (response3.text.replaceAll('\r\n', '').replaceAll(' ', '').indexOf('"type":"FeatureCollection"') >= 0) {
-                              this.printLayerModal(url, 'geojson');
-                            } else if (response3.text.indexOf('<kml ') >= 0) {
-                              const parser = new DOMParser();
-                              const xmlDoc = parser.parseFromString(response3.text, 'text/xml');
-                              const folders = xmlDoc.getElementsByTagName('Folder');
-                              let cont = -1;
-                              const names = Array.from(folders).map((folder) => {
-                                cont += 1;
-                                const name = folder.querySelector(':scope > name') ? folder.querySelector(':scope > name').textContent.trim() : `Layer__${cont}`;
-                                return { name };
-                              });
-                              this.printLayerModal(url, 'kml', names);
-                            }
-                          });
+                          const link = links.find((lnk) => projMap.includes(lnk.TileMatrixSet));
+                          if (link) {
+                            matrixSet = link.TileMatrixSet || link.tileMatrixSet || matrixSet;
+                          }
                         }
-                        // IDEE.proxy(this.statusProxy);
-                      }
-                    });
-                    // IDEE.proxy(this.statusProxy);
+
+                        // Rescatar el formato de imagen
+                        let format = 'image/png';
+                        const formats = layerInfo.Format || layerInfo.format;
+                        if (formats && formats.length > 0) {
+                          format = formats[0];
+                        }
+
+                        // Construir la capa WMTS
+                        const wmtsLayer = new IDEE.layer.WMTS({
+                          url,
+                          name: identifier,
+                          legend: title,
+                          matrixSet,
+                          format,
+                        });
+
+                        // Forzar metadatos
+                        wmtsLayer.capabilitiesMetadata = {
+                          abstract,
+                          attribution: getCapabilities.ServiceProvider
+                            || getCapabilities.serviceProvider
+                            || {},
+                        };
+
+                        layers.push(wmtsLayer);
+                      });
+                    } else {
+                      // eslint-disable-next-line no-console
+                      console.error('No se encontró la estructura de capas WMTS:', getCapabilities);
+                    }
+
+                    // Pasar las capas por la lista blanca/filtros y se asignan
+                    this.capabilities = this.filterResults(layers);
                   }
-                }).catch((eerror) => {
+
+                  // WMS
+                  if (wms) {
+                    const getCapabilitiesParser = new IDEE.impl.format.WMSCapabilities();
+                    const getCapabilities = getCapabilitiesParser.read(responseWMS.xml || new DOMParser().parseFromString(responseWMS.text, 'text/xml'));
+
+                    this.serviceCapabilities = getCapabilities.Service || {};
+                    const getCapabilitiesUtils = new IDEE.impl.GetCapabilities(
+                      getCapabilities,
+                      url,
+                      this.map_.getProjection().code,
+                    );
+                    this.capabilities = this.filterResults(getCapabilitiesUtils.getLayers());
+                    this.capabilities.forEach((layer) => {
+                      try {
+                        this.getParents(getCapabilities, layer);
+                      } catch (err) { /* Continue */ }
+                    });
+                  }
+                  // WFS
+                  let wfsDatas;
+                  if (wfs) {
+                    wfsDatas = this.readWFSCapabilities(responseWFS);
+                  }
+                  this.showResults(wfsDatas);
+                } catch (error) {
                   IDEE.dialog.error(getValue('exception.capabilities'), undefined, this.order);
                   this.removeLoading();
+                }
+              } else {
+                this.checkIfOGCAPIFeatures(url).then((reponseIsJson) => {
+                  if (reponseIsJson === true) {
+                    this.checkIfOGCAPICollection(url).then((responseIsOGC) => {
+                      if (responseIsOGC) {
+                        this.printOGCModal(url);
+                      } else {
+                        IDEE.dialog.error(getValue('exception.ogcfeatures'), undefined, this.order);
+                        this.removeLoading();
+                      }
+                    });
+                  } else {
+                    // IDEE.proxy(this.useProxy);
+                    const extension = url.includes('.') ? url.substring(url.lastIndexOf('.') + 1, url.length) : '';
+                    if (['zip', 'gpx', 'gml'].includes(extension)) {
+                      this.openFileFromUrl(url, extension);
+                    } else {
+                      IDEE.remote.get(url).then((response3) => {
+                        // GEOJSON
+                        if (IDEE.utils.isNullOrEmpty(response3.text)) {
+                          IDEE.remote.get(searchInput.value.trim()).then((response4) => {
+                            if (!IDEE.utils.isNullOrEmpty(response4.text) && response4.text.replaceAll('\r\n', '').replaceAll(' ', '').indexOf('"type":"FeatureCollection"') >= 0) {
+                              this.printLayerModal(searchInput.value.trim(), 'geojson');
+                            } else {
+                              IDEE.dialog.error(getValue('exception.capabilities'), undefined, this.order);
+                              this.removeLoading();
+                            }
+                          });
+                        } else if (response3.text.replaceAll('\r\n', '').replaceAll(' ', '').indexOf('"type":"FeatureCollection"') >= 0) {
+                          this.printLayerModal(url, 'geojson');
+                        } else if (response3.text.indexOf('<kml ') >= 0) {
+                          const parser = new DOMParser();
+                          const xmlDoc = parser.parseFromString(response3.text, 'text/xml');
+                          const folders = xmlDoc.getElementsByTagName('Folder');
+                          let cont = -1;
+                          const names = Array.from(folders).map((folder) => {
+                            cont += 1;
+                            const name = folder.querySelector(':scope > name') ? folder.querySelector(':scope > name').textContent.trim() : `Layer__${cont}`;
+                            return { name };
+                          });
+                          this.printLayerModal(url, 'kml', names);
+                        }
+                      });
+                    }
+                    // IDEE.proxy(this.statusProxy);
+                  }
                 });
+                // IDEE.proxy(this.statusProxy);
               }
-            }).catch((err) => {
+            }).catch((eerror) => {
               IDEE.dialog.error(getValue('exception.capabilities'), undefined, this.order);
               this.removeLoading();
             });
@@ -1328,11 +1417,17 @@ export default class LayerswitcherControl extends IDEE.Control {
 
   // Permite añadir servicios
   openAddServices() {
-    const precharged = this.precharged;
+    let precharged = this.precharged;
+
+    if (precharged && precharged.groups && !Array.isArray(precharged.groups[0].services)) {
+      precharged = this.normalizePrecharged(precharged);
+      this.precharged = precharged;
+    }
+
     const hasPrecharged = (precharged.groups !== undefined && precharged.groups.length > 0)
       || (precharged.services !== undefined && precharged.services.length > 0);
     const codsiActive = this.codsiActive;
-    const accept = '.kml, .zip, .gpx, .geojson, .gml, .json';
+    const accept = ['.kml', '.zip', '.gpx', '.geojson', '.gml', '.json', '.gpkg', '.tif', '.tiff'];
     const addServices = IDEE.template.compileSync(addServicesTemplate, {
       jsonp: true,
       parseToHtml: false,
@@ -1381,6 +1476,42 @@ export default class LayerswitcherControl extends IDEE.Control {
     focusModal('#m-layerswitcher-addservices-search-input');
   }
 
+  normalizePrecharged(obj) {
+    const finalGroups = [];
+    const rawGroups = (Array.isArray(obj.groups) && obj.groups.length > 0)
+      ? obj.groups[0] : obj.groups;
+    Object.keys(rawGroups).forEach((categoryName) => {
+      const categoryContent = rawGroups[categoryName];
+      const servicesList = [];
+
+      const processNode = (node) => {
+        Object.keys(node).forEach((key) => {
+          const item = node[key];
+          if (item && typeof item === 'object' && item.url) {
+            servicesList.push({
+              name: key,
+              type: item.type,
+              url: item.url,
+              white_list: item.white_list,
+            });
+          } else if (item && typeof item === 'object') {
+            processNode(item);
+          }
+        });
+      };
+
+      processNode(categoryContent);
+      if (servicesList.length > 0) {
+        finalGroups.push({ name: categoryName, services: servicesList });
+      }
+    });
+
+    return {
+      services: obj.services || [],
+      groups: finalGroups,
+    };
+  }
+
   changeClodeButtonModal() {
     // Elements
     const button = document.querySelector(BT_CLOSE_MODAL);
@@ -1424,7 +1555,9 @@ export default class LayerswitcherControl extends IDEE.Control {
   }
 
   changeFile(inputFile) {
-    IDEE.loadFiles.addFileToMap(this.map_, inputFile.files[0]);
+    /** @type {File} */
+    const file = inputFile.files[0];
+    IDEE.loadFiles.addFileToMap(this.map_, file);
     inputFile.value = '';
     const buttonClose = document.querySelector('div.m-dialog.info div.m-button > button');
     buttonClose.click();
@@ -1433,7 +1566,13 @@ export default class LayerswitcherControl extends IDEE.Control {
   openFileFromUrl(url, extension) {
     if (IDEE.utils.isUrl(url)) {
       const fileName = url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'));
-      if (['zip', 'kml', 'gpx', 'geojson', 'gml', 'json'].includes(extension) > -1) {
+      if (['tif', 'tiff'].includes(extension)) {
+        IDEE.loadFiles.loadGeotiffLayer(
+          this.map_,
+          url,
+          fileName,
+        );
+      } else if (['zip', 'kml', 'gpx', 'geojson', 'gml', 'json', 'gpkg'].includes(extension)) {
         if (extension === 'zip') {
           this.downloadShp(url, fileName);
         } else {
@@ -1656,8 +1795,8 @@ export default class LayerswitcherControl extends IDEE.Control {
         allServices.forEach((service) => {
           if (service.type === layer.type && this.checkUrls(service.url, layer.url)) {
             if (service.white_list !== undefined && service.white_list.length > 0
-                && service.white_list.indexOf(layer.name) > -1
-                && layerNames.indexOf(layer.name) === -1) {
+              && service.white_list.indexOf(layer.name) > -1
+              && layerNames.indexOf(layer.name) === -1) {
               layers.push(layer);
               layerNames.push(layer.name);
             } else if (service.white_list === undefined && layerNames.indexOf(layer.name) === -1) {
@@ -1677,18 +1816,18 @@ export default class LayerswitcherControl extends IDEE.Control {
     } else if (this.precharged.groups !== undefined && this.precharged.groups.length > 0) {
       this.precharged.groups.forEach((group) => {
         if (group.services !== undefined && group.services.length > 0
-            && group.name === this.filterName) {
+          && group.name === this.filterName) {
           allLayers.forEach((layer) => {
             let insideService = false;
             group.services.forEach((service) => {
               if (service.type === layer.type && this.checkUrls(service.url, layer.url)) {
                 if (service.white_list !== undefined && service.white_list.length > 0
-                    && service.white_list.indexOf(layer.name) > -1
-                    && layerNames.indexOf(layer.name) === -1) {
+                  && service.white_list.indexOf(layer.name) > -1
+                  && layerNames.indexOf(layer.name) === -1) {
                   layers.push(layer);
                   layerNames.push(layer.name);
                 } else if (service.white_list === undefined
-                    && layerNames.indexOf(layer.name) === -1) {
+                  && layerNames.indexOf(layer.name) === -1) {
                   layers.push(layer);
                   layerNames.push(layer.name);
                 }
@@ -2042,7 +2181,7 @@ export default class LayerswitcherControl extends IDEE.Control {
             this.capabilities[j].options.origen = this.capabilities[j].type;
             const legendUrl = this.capabilities[j].getLegendURL();
             const meta = this.capabilities[j].capabilitiesMetadata;
-            if ((legendUrl.indexOf('GetLegendGraphic') > -1 || legendUrl.indexOf('https://componentes.idee.es/estaticos/imagenes/leyenda/legend-default.png') > -1) && meta !== undefined && meta.style.length > 0) {
+            if ((legendUrl.indexOf('GetLegendGraphic') > -1 || legendUrl.indexOf(`${IDEE.config.STATIC_RESOURCES_URL}/imagenes/leyenda/legend-default.png`) > -1) && meta !== undefined && meta.style !== undefined && meta.style.length > 0) {
               if (meta.style[0].LegendURL !== undefined && meta.style[0].LegendURL.length > 0) {
                 const style = meta.style[0].LegendURL[0].OnlineResource;
                 if (style !== undefined && style !== null) {
@@ -2054,7 +2193,7 @@ export default class LayerswitcherControl extends IDEE.Control {
                 if (meta.style !== undefined && meta.style.length > 0) {
                   meta.style.forEach((s) => {
                     if (s.isDefault === true && s.LegendURL !== undefined
-                        && s.LegendURL.length > 0) {
+                      && s.LegendURL.length > 0) {
                       const urlDefaultStyle = s.LegendURL[0].href;
                       this.capabilities[j].setLegendURL(urlDefaultStyle);
                     }

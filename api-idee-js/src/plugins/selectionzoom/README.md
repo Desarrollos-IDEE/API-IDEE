@@ -6,8 +6,13 @@ Plugin que permite la elección del área geográfica de la capa de fondo. Exist
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
 
+Para uso de implementación OpenLayers:
 - **selectionzoom.ol.min.js**
 - **selectionzoom.ol.min.css**
+
+Para uso de implementación Cesium:
+- **selectionzoom.cesium.min.js**
+- **selectionzoom.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/selectionzoom/selectionzoom.ol.min.css" rel="stylesheet" />

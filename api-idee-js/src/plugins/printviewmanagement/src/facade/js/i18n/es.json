@@ -74,7 +74,7 @@
   "invalidTemplateName": "Ya existe una plantilla con el mismo nombre.",
   "invalidTemplateContent": "Ya existe una plantilla con el mismo contenido.",
   "selectUploadedTemplate": "Seleccionar plantilla cargada",
-  "defaultTemplate": "Plantilla por defecto",
+  "defaultTemplate": "Mapa completo",
   "invalidFileType": "Por favor, seleccione un archivo HTML o TXT válido",
   "customizeTemplate": "Personalizar e imprimir pantalla",
   "mapElements": "Elementos del mapa",

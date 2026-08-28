@@ -1,9 +1,0 @@
-{
-  "tooltip": "Cambiar escala",
-  "insertscale": "Introducir escala",
-  "textHelp": {
-    "help1": "La extensión de re-escalar cambia el nivel de zoom de un visualizador a la escala introducida por el usuario.",
-    "help2": "La información relevante a la extensión y su posible parametrización está documentada en",
-    "help3": "El ejemplo de uso de sus parámetros puede comprobarse en"
-  }
-}

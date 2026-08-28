@@ -106,7 +106,7 @@ class GeoJSON extends OLFormatGeoJSON {
     }
     const properties = feature.getProperties();
     delete properties[feature.getGeometryName()];
-    if (!isNullOrEmpty(properties)) {
+    if (!isNullOrEmpty(properties) || Object.keys(properties).length >= 0) {
       object.properties = properties;
     } else {
       object.properties = null;

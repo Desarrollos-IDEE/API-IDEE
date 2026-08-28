@@ -37,6 +37,8 @@ class Control {
   addTo(map, element) {
     this.facadeMap_ = map;
     this.element = element;
+    // eslint-disable-next-line no-underscore-dangle
+    map.getMapImpl()._element.prepend(this.element);
   }
 
   /**
@@ -49,6 +51,12 @@ class Control {
    * @export
    */
   destroy() {
+    if (this.element.parentElement
+      // eslint-disable-next-line no-underscore-dangle
+      && this.element.parentElement === this.facadeMap_.getMapImpl()._element) {
+      // eslint-disable-next-line no-underscore-dangle
+      this.facadeMap_.getMapImpl()._element.removeChild(this.element);
+    }
     this.facadeMap_ = null;
   }
 

@@ -5,10 +5,10 @@ const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopywebpackPlugin = require('copy-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
-const webpack = require('webpack');
 
 const PJSON_PATH = path.resolve(__dirname, '..', 'package.json');
 const pjson = require(PJSON_PATH);
+const webpack = require('webpack');
 
 module.exports = {
   mode: 'production',
@@ -32,7 +32,7 @@ module.exports = {
       fs: false,
       path: false,
       crypto: false,
-      "assert": require.resolve("assert/"),
+      "assert": false,
     },
   },
   module: {
@@ -69,8 +69,11 @@ module.exports = {
   optimization: {
     emitOnErrors: false,
     minimizer: [
-      new OptimizeCssAssetsPlugin(),
+      new OptimizeCssAssetsPlugin({
+        parallel: 1,
+      }),
       new TerserPlugin({
+        parallel: 1,
         terserOptions: {
           sourceMap: true,
         },

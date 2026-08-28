@@ -12,7 +12,7 @@ const mapjs = map({
 
 window.mapjs = mapjs;
 
-fetch('https://componentes.idee.es/estaticos/Datos/mbtiles/cabrera.mbtiles').then((response) => {
+fetch(`${IDEE.config.STATIC_RESOURCES_URL}/Datos/mbtiles/cabrera.mbtiles`).then((response) => {
   const mbtile = new MBTiles({
     name: 'mbtiles',
     legend: 'Cabrera',
@@ -44,7 +44,7 @@ fetch('https://componentes.idee.es/estaticos/Datos/mbtiles/cabrera.mbtiles').the
 // // mapjs.addLayers('WFST*CapaWFS*http://geostematicos-sigc.juntadeandalucia.es/geoserver/sepim/ows*sepim:campamentos*POINT***eyJwYXJhbWV0ZXJzIjpbeyJpY29uIjp7ImZvcm0iOiJDSVJDTEUiLCJjbGFzcyI6ImctY2FydG9ncmFmaWEtYmFuZGVyYSIsImZvbnRzaXplIjowLjUsInJhZGl1cyI6MTUsImZpbGwiOiJ3aGl0ZSJ9LCJyYWRpdXMiOjV9XSwiZGVzZXJpYWxpemVkTWV0aG9kIjoiKChzZXJpYWxpemVkUGFyYW1ldGVycykgPT4gTS5zdHlsZS5TaW1wbGUuZGVzZXJpYWxpemUoc2VyaWFsaXplZFBhcmFtZXRlcnMsICdNLnN0eWxlLlBvaW50JykpIn0');
 // window.mapjs = mapjs;
 
-// fetch('https://componentes.idee.es/estaticos/Datos/mbtiles/countries.mbtiles').then((response) => {
+// fetch(`${IDEE.config.STATIC_RESOURCES_URL}/Datos/mbtiles/countries.mbtiles`).then((response) => {
 //   const mbtile = new MBTilesVector({
 //     name: 'mbtiles_vector',
 //     legend: 'Countries',
@@ -56,7 +56,7 @@ fetch('https://componentes.idee.es/estaticos/Datos/mbtiles/cabrera.mbtiles').the
 //   throw e
 // });
 
-// // fetch('https://componentes.idee.es/estaticos/Datos/mbtiles/cabrera.mbtiles').then((response) => {
+// // fetch(`${IDEE.config.STATIC_RESOURCES_URL}/Datos/mbtiles/cabrera.mbtiles`).then((response) => {
 // //   const mbtile = new MBTiles({
 // //     name: 'mbtiles',
 // //     legend: 'Cabrera',

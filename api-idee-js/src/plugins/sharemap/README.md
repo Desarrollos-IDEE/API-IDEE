@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
+  <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg" height="152" />
 </p>
 <h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.ShareMap</small></h1>
 
@@ -11,9 +11,13 @@ Plugin que permite copiar la url del mapa actual visualizado. Exporta la informa
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
-
+Para uso de implementación OpenLayers:
 - **sharemap.ol.min.js**
 - **sharemap.ol.min.css**
+
+Para uso de implementación Cesium:
+- **sharemap.cesium.min.js**
+- **sharemap.cesium.min.css**
 
 
 ```html

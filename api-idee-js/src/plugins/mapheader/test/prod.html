@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="mapea" content="yes">
+    <title>Mapheader Production TEST</title>
+    <link href="https://componentes-desarrollo.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
+    <link href="../dist/mapheader.ol.min.css" rel="stylesheet" />
+    <link href="https://componentes.idee.es/api-idee/plugins/help/help.ol.min.css" rel="stylesheet" />
+    <style rel="stylesheet">
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="mapjs" class="container"></div>
+    <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/apiidee.ol.min.js"></script>
+    <script type="text/javascript" src="https://componentes-desarrollo.idee.es/api-idee/js/configuration.js"></script>
+    <script type="text/javascript" src="../dist/mapheader.ol.min.js"></script>
+    <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/help/help.ol.min.js"></script>
+    <script type="text/javascript">
+        const map = IDEE.map({
+            container: 'mapjs',
+        });
+        const config = {
+            open: true,
+            htmlCode: `
+            <header>
+            <div id="header-pc">
+            <div class="col-12">
+                <div class="col-3 marginTop20px">
+                <a href="https://www.ign.es" target="_blank" title="Instituto Geográfico Nacional y O. A. Centro Nacional de Información Geográfica">
+                <img src="https://centrodedescargas.cnig.es/CentroDescargas/imgCdD/escudoInstitucional.png" alt="Instituto Geográfico Nacional y O. A. Centro Nacional de Información Geográfica" class="img-fluid imgMinisterio "></a>
+                </div>
+                <div class="col-6 col-m-12 marginTop20px">
+                <div class="col-12 txtCenter"><a href="https://centrodedescargas.cnig.es/CentroDescargas/home" class="txtSupCdDCabenlace" title="Centro de Descargas">Centro de Descargas</a></div>
+                <div class="marginTop10px col-12 colorVerdeClaro   txtCenter paddingBottom10px ">Instituto Geográfico Nacional</div>
+                <div class="col-12 colorVerdeClaro   txtCenter  ">Organismo Autónomo Centro Nacional de Información Geográfica</div>
+                </div>
+            </div>
+            </div>  
+            </div>  
+            </header>
+            `,
+            cssList: [
+                'https://centrodedescargas.cnig.es/CentroDescargas/css/estilos-css-cnig-2024.css',
+            ],
+        };
+        const mp = new IDEE.plugin.Mapheader(config);
+        map.addPlugin(mp);
+        map.addPlugin(new IDEE.plugin.Help({}));
+    </script>
+</body>
+
+</html>

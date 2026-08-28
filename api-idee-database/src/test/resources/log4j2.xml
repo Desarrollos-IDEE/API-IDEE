@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Configuración de tests: consola (equivalente al antiguo log4j.xml de test). -->
+<Configuration status="WARN">
+	<Appenders>
+		<Console name="console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%-5p %c{1} - %m%n"/>
+		</Console>
+	</Appenders>
+	<Loggers>
+		<Root level="info">
+			<AppenderRef ref="console"/>
+		</Root>
+	</Loggers>
+</Configuration>

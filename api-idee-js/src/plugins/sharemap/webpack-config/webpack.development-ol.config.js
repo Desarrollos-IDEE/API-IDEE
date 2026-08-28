@@ -11,6 +11,7 @@ module.exports = {
     alias: {
       templates: path.resolve(__dirname, '../src/templates'),
       assets: path.resolve(__dirname, '../src/facade/assets'),
+      // impl: path.resolve(__dirname, '../src/impl/ol/js'),
       facade: path.resolve(__dirname, '../src/facade/js'),
     },
     extensions: ['.wasm', '.mjs', '.js', '.json', '.css', '.hbs', '.html', '.svg'],

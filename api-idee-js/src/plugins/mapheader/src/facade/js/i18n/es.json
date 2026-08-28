@@ -1,0 +1,20 @@
+{
+  "exception": {
+    "impl": "La implementación usada no puede crear controles MapheaderControl"
+  },
+  "hideheader": "Ocultar cabecera de página",
+  "showheader": "Mostrar cabecera de página",
+  "hide": " Ocultar ",
+  "show": " Mostrar ",
+  "textHelp": {
+    "squemaTitle": "mapheader",
+    "title": "MAPHEADER",
+    "paragraph1": "El plugin mapheader inserta una franja superior sobre el visor con contenido HTML configurable: logotipos institucionales, título, subtítulos y enlaces, habitual en portales de descargas o visores corporativos.",
+    "screenshot1Alt": "Mapa sin franja de cabecera institucional; controles estándar del visor visibles",
+    "screenshot1Caption": "help-01.png",
+    "screenshot1Description": "Ejemplo con la cabecera plegada: el área cartográfica llega al borde superior y aparece la acción para mostrarla.",
+    "screenshot2Alt": "Mismo visor con cabecera azul oscura, logotipos, título centrado y botón para ocultar la cabecera",
+    "screenshot2Caption": "help-02.png",
+    "screenshot2Description": "Con la cabecera desplegada se muestran los elementos configurados. Use «Ocultar» para volver a la vista solo mapa."
+  }
+}

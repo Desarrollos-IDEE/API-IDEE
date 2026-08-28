@@ -113,6 +113,7 @@ class GenericRaster extends LayerBase {
 
     // calls the super constructor
     super(params, impl);
+    this.constructorParameters = { userParameters, options, vendorOptions };
 
     // Los minZoom y minZoom anteriormente se configuraban en "super", por "params".
     /**

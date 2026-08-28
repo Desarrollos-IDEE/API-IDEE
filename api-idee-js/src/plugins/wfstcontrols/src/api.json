@@ -1,0 +1,89 @@
+{
+  "url": {
+    "name": "wfstcontrols",
+    "separator": ","
+  },
+  "constructor": "IDEE.plugin.WFSTControls",
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+      "type": "simple",
+      "name": "position",
+      "possibleValues": ["TL", "TR", "BL", "BR"],
+      "value": "TL"
+    },{
+      "type": "simple",
+      "name": "features",
+      "value": "drawfeature,modifyfeature,deletefeature,editattribute"
+    },{
+      "type": "simple",
+      "name": "layername"
+    },{
+      "type": "simple",
+      "name": "geometry",
+      "possibleValues": [
+        "POINT",
+        "LINE",
+        "POLYGON",
+        "MPOINT",
+        "MLINE",
+        "MPOLYGON"
+      ]
+    },{
+      "type": "object",
+      "name": "proxy",
+      "properties": [{
+        "type": "boolean",
+        "name": "status",
+        "value": "true"
+      },{
+        "type": "boolean",
+        "name": "disable",
+        "value": "false"
+      }]
+      }
+    ]
+  }],
+  "files": {
+    "ol": {
+      "scripts": [
+        "wfstcontrols.ol.min.js"
+      ],
+      "styles": [
+        "wfstcontrols.ol.min.css"
+      ]
+    },
+    "cesium": {
+      "scripts": [
+        "wfstcontrols.cesium.min.js"
+      ],
+      "styles": [
+        "wfstcontrols.cesium.min.css"
+      ]
+    }
+  },
+  "metadata": {
+    "uuid_plugin": "",
+    "uuid_version_plugin": "",
+    "version_ficha_metadatos": "",
+    "name": "WFSTControls",
+    "description": "Tool for editing WFST layers.",
+    "text": "",
+    "version": "1.0.0",
+    "date": "14/01/2026",
+    "author": "Junta de Andalucía",
+    "org": "Junta de Andalucía",
+    "tags": "mapea,plugin",
+    "icon": "./facade/assets/icons/icons.svg",
+    "buttons": [
+      { "title": "", "description": "", "querySelector": "" },
+      { "title": "", "description": "", "querySelector": "" }
+    ],
+    "dependencies": {
+      "modules": ["", ""],
+      "plugins": [{ "uuid": "", "name": "" }],
+      "services": [{ "name": "", "description": "" }]
+    },
+    "compatibility": ["1"]
+  }
+}

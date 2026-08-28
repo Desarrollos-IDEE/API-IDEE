@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
+  <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg" height="152" />
 </p>
 <h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.Locatorscn</small></h1>
 
@@ -15,9 +15,13 @@ https://github.com/pelias/api
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
-
+Para uso de implementación OpenLayers:
 - **locatorscn.ol.min.js**
 - **locatorscn.ol.min.css**
+
+Para uso de implementación Cesium:
+- **locatorscn.cesium.min.js**
+- **locatorscn.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/locatorscn/locatorscn.ol.min.css" rel="stylesheet" />

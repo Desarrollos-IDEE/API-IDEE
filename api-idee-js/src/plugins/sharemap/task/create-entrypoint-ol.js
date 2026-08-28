@@ -24,7 +24,9 @@ const getAbsolutePath = (fileNames, fullPath) => {
 };
 
 const facadeFiles = fs.readdirSync(FACADE_PATH);
+// const implFiles = fs.readdirSync(IMPL_PATH);
 getAbsolutePath(facadeFiles, FACADE_PATH);
+// getAbsolutePath(implFiles, IMPL_PATH);
 
 files.forEach((file) => {
   const match = fs.readFileSync(file, 'utf8').match(/@module.*/);

@@ -323,8 +323,10 @@ export const projection = (projectionParameter) => {
   // string
   if (isString(projectionParameter)) {
     const baseProjection = projectionParameter.split(/\*/)[0].trim();
+    const units = projectionParameter.split(/\*/)[1]?.trim();
     if (/^(EPSG:)?\d+$/i.test(baseProjection)) {
       projectionVar.code = baseProjection;
+      projectionVar.units = units;
     } else {
       Exception(`El formato del parámetro projection no es correcto. </br>Se usará la proyección por defecto: ${IDEE.config.DEFAULT_PROJ}`);
     }
@@ -333,8 +335,10 @@ export const projection = (projectionParameter) => {
     // y max
     if (!isNull(projectionParameter.code)) {
       const baseProjection = projectionParameter.code.split(/\*/)[0].trim();
+      const units = projectionParameter.code.split(/\*/)[1]?.trim();
       if (/^(EPSG:)?\d+$/i.test(baseProjection)) {
         projectionVar.code = baseProjection;
+        projectionVar.units = units;
       } else {
         Exception(`El formato del parámetro projection no es correcto. </br>Se usará la proyección por defecto: ${IDEE.config.DEFAULT_PROJ}`);
       }
@@ -365,9 +369,9 @@ export const resolutions = (resolutionsParam) => {
   let resolutionsVar = [];
 
   // checks if the param is null or empty
-  if (isNullOrEmpty(resolutionsParameter)) {
-    Exception(getValue('exception').no_resolutions);
-  }
+  // if (isNullOrEmpty(resolutionsParameter)) {
+  //   Exception(getValue('exception').no_resolutions);
+  // }
 
   // string
   if (isString(resolutionsParameter)) {
@@ -474,6 +478,83 @@ export const zoomConstrains = (enableIntermediateZooms) => {
   }
 
   return intermediateZoomVar === 1;
+};
+
+/**
+ * Analiza el parámetro de extent constrains del usuario especificado
+ * en un booleano o cadena de texto.
+ *
+ * @param {Boolean|String} enableExtentConstrains Parámetro de extent constrains especificado.
+ * @returns {Boolean} extent constrains activos o inactivos
+ * @public
+ * @function
+ * @api
+ * @throws {IDEE.exception} Si el parámetro no es especificado o de tipo no soportado.
+ */
+export const extentConstrains = (enableExtentConstrains) => {
+  let extentConstrainsVar;
+
+  if (isNullOrEmpty(enableExtentConstrains)) {
+    Exception(getValue('exception').no_extent_constrains);
+  }
+
+  switch (typeof enableExtentConstrains) {
+    case 'boolean':
+      extentConstrainsVar = enableExtentConstrains;
+      break;
+
+    case 'string':
+      const lowerCaseParameter = enableExtentConstrains.toLowerCase();
+
+      if (lowerCaseParameter === 'true' || lowerCaseParameter === 'false') {
+        extentConstrainsVar = lowerCaseParameter === 'true';
+      } else {
+        Exception(getValue('exception').invalid_extentconstrains_param);
+      }
+      break;
+
+    default:
+      Exception(getValue('exception').invalid_extentconstrains_param);
+  }
+
+  return extentConstrainsVar;
+};
+
+/**
+ * Analiza el parámetro multiWorld del usuario especificado
+ * en un booleano o cadena de texto.
+ *
+ * @param {Boolean|String} multiWorldParam Parámetro multiWorld especificado.
+ * @returns {Boolean} Devuelve true si multiWorld está activo, false en caso contrario.
+ * @public
+ * @function
+ * @api
+ * @throws {IDEE.exception} Si el parámetro no es especificado o de tipo no soportado.
+ */
+export const multiWorld = (multiWorldParam) => {
+  let multiWorldVar;
+
+  // checks if the param is null or empty
+  if (isNullOrEmpty(multiWorldParam)) {
+    Exception(getValue('exception').no_multiworld);
+  }
+
+  // boolean
+  if (typeof multiWorldParam === 'boolean') {
+    multiWorldVar = multiWorldParam ? 1 : 0;
+  // object
+  } else {
+    const lowerCaseParameter = multiWorldParam.toLowerCase();
+
+    if (lowerCaseParameter === 'true' || lowerCaseParameter === 'false') {
+      multiWorldVar = lowerCaseParameter === 'true' ? 1 : 0;
+    } else {
+      // unknown
+      Exception(getValue('exception').invalid_multiworld_param);
+    }
+  }
+
+  return multiWorldVar === 1;
 };
 
 /**
@@ -1337,6 +1418,26 @@ export const getLegendGeoJSON = (parameter) => {
 };
 
 /**
+ * Analiza el parámetro para obtener el nombre de la capa GeoJSON.
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {string|Mx.parameters.GeoJSON} parameter Parámetro para obtener
+ * la leyenda de la capa GeoJSON.
+ * @returns {string} Leyenda de la capa.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
+ * @api
+ */
+export const getNameGeoJSON = (parameter) => {
+  let name;
+  if (isObject(parameter) && !isNullOrEmpty(parameter.name)) {
+    name = parameter.name.trim();
+  }
+  return name;
+};
+
+/**
  * Analiza el parámetro para obtener la URL del servicio GeoJSON.
  * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
  *
@@ -1502,7 +1603,7 @@ export const geojson = (userParameters) => {
     layerObj.type = LayerType.GeoJSON;
 
     // gets the name
-    layerObj.name = getLegendGeoJSON(userParam);
+    layerObj.name = getNameGeoJSON(userParam) || getLegendGeoJSON(userParam);
 
     // get the legend
     layerObj.legend = getLegendGeoJSON(userParam);
@@ -4563,7 +4664,7 @@ const osm = (userParameters) => {
   if (!isString(params)) {
     return {
       ...params,
-      type: 'osm',
+      type: 'OSM',
     };
   }
 

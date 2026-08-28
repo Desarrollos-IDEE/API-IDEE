@@ -212,7 +212,7 @@ const generateLayersTable = () => {
   // Capa KML
   const kml1 = {
     name: 'capaKML',
-    url: 'https://componentes.idee.es/estaticos/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml',
+    url: `${IDEE.config.STATIC_RESOURCES_URL}/Datos/reconocimientos/WMTS_PNOA_20170220/atribucionPNOA_Url.kml`,
     extract: true,
     visibility: true,
     ...applyParam1, // minZoom, maxZoom // NEVER USED

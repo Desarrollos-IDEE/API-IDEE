@@ -22,9 +22,9 @@ const mp = new Locator({
     countryCode: 'es',
     reverse: true, // Añadir o no la opción de escoger punto del mapa en el buscado
     resultVisibility: true,
-    // urlCandidates: 'http://www.cartociudad.es/geocoder/api/geocoder/candidatesJsonp',
-    // urlFind: 'http://www.cartociudad.es/geocoder/api/geocoder/findJsonp',
-    urlReverse: 'http://www.cartociudad.es/geocoder/api/geocoder/reverseGeocode',
+    // urlCandidates: 'https://www.cartociudad.es/geocoder/api/geocoder/candidatesJsonp',
+    // urlFind: 'https://www.cartociudad.es/geocoder/api/geocoder/findJsonp',
+    urlReverse: 'https://www.cartociudad.es/geocoder/api/geocoder/reverseGeocode',
     // geocoderCoords: [-5.741757, 41.512058], // Muestra popup con información de este punto, desaparece instantáneamente si esta "requestStreet" puesto.
     // requestStreet: 'https://www.cartociudad.es/geocoder/api/geocoder/findJsonp?q=Sevilla&type=provincia&tip_via=null&id=41&portal=null&extension=null',
   },

@@ -1,31 +1,8 @@
 <p align="center">
-  <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
+  <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg" height="152" />
 </p>
 <h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.Comparators</small></h1>
 
-<p align="center">
-  <a title="MIT License" href="LICENSE">
-    <img src="https://img.shields.io/badge/license-EUPL-blue.svg">
-  </a>
-  <a title="Node version" href="https://nodejs.org/es">
-    <img src="https://img.shields.io/badge/node-v14.16-blue">
-  </a>
-  <a title="NPM version" href="https://www.npmjs.com/package/npm">
-    <img src="https://img.shields.io/badge/npm-v6.14-blue">
-  </a>
-  <a title="Language" href="https://www.w3schools.com/html/" target="_blank">
-    <img src="https://img.shields.io/static/v1?label=Lang&message=HTML&color=maroon">
-  </a>
-  <a title="Language" href="https://www.w3schools.com/js/" target="_blank">
-    <img src="https://img.shields.io/static/v1?label=Lang&message=Javascript&color=maroon">
-  </a>
-  <a title="Language" href="https://www.w3schools.com/css/" target="_blank">
-    <img src="https://img.shields.io/static/v1?label=Lang&message=CSS3&color=maroon">
-  </a>
-
-  <br />
-  <br />
-</p>
 
 ## Descripción 👷
 
@@ -40,8 +17,14 @@ Los modos de comparación son: Cortina, "spy eye" y modo espejo.
 
 ## Dependencias 👷
 
-- comparators.ol.min.js
-- comparators.ol.min.css
+Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
+Para uso de implementación OpenLayers:
+- **comparators.ol.min.js**
+- **comparators.ol.min.css**
+
+Para uso de implementación Cesium:
+- **comparators.cesium.min.js**
+- **comparators.cesium.min.css**
 
 
 ```html
@@ -460,7 +443,7 @@ Ejemplo de constructor:
 }
 ```
 ```
-https://componentes.idee.es/api-idee?comparators=base64=ewogIHBvc2l0aW9uOiAnVEwnLAogIGNvbGxhcHNlZDogZmFsc2UsCiAgY29sbGFwc2libGU6IHRydWUsCiAgaXNEcmFnZ2FibGU6IHRydWUsCiAgdG9vbHRpcDogJ1BsdWdpbiBDb21wYXJhdG9ycycsCiAgZGVmYXVsdENvbXBhcmVNb2RlOiAnbWlycm9yJywKICBsaXN0TGF5ZXJzOiBbCiAgICAnV01TKkxhbmRzYXQgNSBUTSAxOTk2LiBDb2xvciBuYXR1cmFsKmh0dHBzOi8vd21zLXNhdGVsaXRlcy1oaXN0b3JpY29zLmlkZWUuZXMvc2F0ZWxpdGVzLWhpc3Rvcmljb3MqTEFORFNBVDUuMTk5Nl8zMjEtNTQzKnRydWUnLAogICAgJ1dNUypMYW5kc2F0IDUgVE0gMTk5Ni4gRmFsc28gY29sb3IgaW5mcmFycm9qbypodHRwczovL3dtcy1zYXRlbGl0ZXMtaGlzdG9yaWNvcy5pZGVlLmVzL3NhdGVsaXRlcy1oaXN0b3JpY29zKkxBTkRTQVQ1LjE5OTZfNDMyKnRydWUnLAogICAgJ1dNUypMYW5kc2F0IDUgVE0gMTk5MS4gQ29sb3IgbmF0dXJhbCpodHRwczovL3dtcy1zYXRlbGl0ZXMtaGlzdG9yaWNvcy5pZGVlLmVzL3NhdGVsaXRlcy1oaXN0b3JpY29zKkxBTkRTQVQ1LjE5OTFfMzIxLTU0Myp0cnVlJywKICAgICdXTVMqTGFuZHNhdCA1IFRNIDE5OTEuIEZhbHNvIGNvbG9yIGluZnJhcnJvam8qaHR0cHM6Ly93bXMtc2F0ZWxpdGVzLWhpc3Rvcmljb3MuaWRlZS5lcy9zYXRlbGl0ZXMtaGlzdG9yaWNvcypMQU5EU0FUNS4xOTkxXzQzMip0cnVlJywKICAgICdXTVMqTGFuZHNhdCA1IFRNIDE5ODYuIENvbG9yIG5hdHVyYWwqaHR0cHM6Ly93bXMtc2F0ZWxpdGVzLWhpc3Rvcmljb3MuaWRlZS5lcy9zYXRlbGl0ZXMtaGlzdG9yaWNvcypMQU5EU0FUNS4xOTg2XzMyMS01NDMqdHJ1ZScsCiAgXSwKICBlbmFibGVkS2V5RnVuY3Rpb25zOiB0cnVlLAogIGx5cnNNaXJyb3JNaW5aaW5kZXg6IDEwLAogIHRyYW5zcGFyZW5jeVBhcmFtczogewogICAgcmFkaXVzOiAxMDAsCiAgICBtYXhSYWRpdXM6IDEwMCwKICAgIG1pblJhZGl1czogMTAsCiAgICB0b29sdGlwOiAndG9vbHRpcFRyYW5zcGFyZW5jeScsCiAgfSwKICBseXJjb21wYXJlUGFyYW1zOiB7CiAgICBzdGF0aWNEaXZpc2lvbjogMSwKICAgIGRlZmF1bHRMeXJBOiAxLAogICAgZGVmYXVsdEx5ckI6IDIsCiAgICBkZWZhdWx0THlyQzogMywKICAgIGRlZmF1bHRMeXJEOiAwLAogICAgb3BhY2l0eVZhbDogMTAwLAogICAgdG9vbHRpcDogJ3Rvb2x0aXBMeXJDb21wYXJlJywKICAgIGRlZmF1bHRDb21wYXJlVml6OiAxLAogIH0sCiAgbWlycm9ycGFuZWxQYXJhbXM6IHsKICAgIHNob3dDdXJzb3JzOiB0cnVlLAogICAgcHJpbmNpcGFsTWFwOiB0cnVlLAogICAgZW5hYmxlZENvbnRyb2xzUGx1Z2luczogewogICAgICBtYXAyOiB7CiAgICAgICAgY29uc3Ryb2xzOiBbJ3NjYWxlJ10sCiAgICAgICAgRnVsbFRPQzogewogICAgICAgICAgcG9zaXRpb246ICdUTCcsCiAgICAgICAgfSwKICAgICAgfSwKICAgIH0sCiAgICBlbmFibGVkRGlzcGxheUluTGF5ZXJTd2l0Y2hlcjogdHJ1ZSwKICAgIGRlZmF1bHRDb21wYXJlVml6OiAyLAogICAgbW9kZVZpelR5cGVzOiBbMCwgMl0sCiAgICB0b29sdGlwOiAndG9vbHRpcE1pcnJvcicsCiAgfSwKfQ==
+https://componentes.idee.es/api-idee?comparators=base64=eyJwb3NpdGlvbiI6IlRMIiwiY29sbGFwc2VkIjpmYWxzZSwiY29sbGFwc2libGUiOnRydWUsImlzRHJhZ2dhYmxlIjp0cnVlLCJ0b29sdGlwIjoiUGx1Z2luIENvbXBhcmF0b3JzIiwiZGVmYXVsdENvbXBhcmVNb2RlIjoibWlycm9yIiwiZW5hYmxlZERpc3BsYXlJbkxheWVyU3dpdGNoZXIiOnRydWUsImxpc3RMYXllcnMiOlsiV01TKkxhbmRzYXQgNSBUTSAxOTk2LiBDb2xvciBuYXR1cmFsKmh0dHBzOi8vd21zLXNhdGVsaXRlcy1oaXN0b3JpY29zLmlkZWUuZXMvc2F0ZWxpdGVzLWhpc3Rvcmljb3MqTEFORFNBVDUuMTk5Nl8zMjEtNTQzKnRydWUiLCJXTVMqTGFuZHNhdCA1IFRNIDE5OTYuIEZhbHNvIGNvbG9yIGluZnJhcnJvam8qaHR0cHM6Ly93bXMtc2F0ZWxpdGVzLWhpc3Rvcmljb3MuaWRlZS5lcy9zYXRlbGl0ZXMtaGlzdG9yaWNvcypMQU5EU0FUNS4xOTk2XzQzMip0cnVlIiwiV01TKkxhbmRzYXQgNSBUTSAxOTkxLiBDb2xvciBuYXR1cmFsKmh0dHBzOi8vd21zLXNhdGVsaXRlcy1oaXN0b3JpY29zLmlkZWUuZXMvc2F0ZWxpdGVzLWhpc3Rvcmljb3MqTEFORFNBVDUuMTk5MV8zMjEtNTQzKnRydWUiLCJXTVMqTGFuZHNhdCA1IFRNIDE5OTEuIEZhbHNvIGNvbG9yIGluZnJhcnJvam8qaHR0cHM6Ly93bXMtc2F0ZWxpdGVzLWhpc3Rvcmljb3MuaWRlZS5lcy9zYXRlbGl0ZXMtaGlzdG9yaWNvcypMQU5EU0FUNS4xOTkxXzQzMip0cnVlIiwiV01TKkxhbmRzYXQgNSBUTSAxOTg2LiBDb2xvciBuYXR1cmFsKmh0dHBzOi8vd21zLXNhdGVsaXRlcy1oaXN0b3JpY29zLmlkZWUuZXMvc2F0ZWxpdGVzLWhpc3Rvcmljb3MqTEFORFNBVDUuMTk4Nl8zMjEtNTQzKnRydWUiXSwiZW5hYmxlZEtleUZ1bmN0aW9ucyI6dHJ1ZSwidHJhbnNwYXJlbmN5UGFyYW1zIjp7InJhZGl1cyI6MTAwLCJtYXhSYWRpdXMiOjEwMCwibWluUmFkaXVzIjoxMCwidG9vbHRpcCI6InRvb2x0aXBUcmFuc3BhcmVuY3kifSwibHlyY29tcGFyZVBhcmFtcyI6eyJzdGF0aWNEaXZpc2lvbiI6MSwiZGVmYXVsdEx5ckEiOjAsImRlZmF1bHRMeXJCIjoxLCJkZWZhdWx0THlyQyI6MiwiZGVmYXVsdEx5ckQiOjMsIm9wYWNpdHlWYWwiOjEwMCwidG9vbHRpcCI6InRvb2x0aXBMeXJDb21wYXJlIiwiZGVmYXVsdENvbXBhcmVWaXoiOjF9LCJtaXJyb3JwYW5lbFBhcmFtcyI6eyJzaG93Q3Vyc29ycyI6dHJ1ZSwicHJpbmNpcGFsTWFwIjp0cnVlLCJlbmFibGVkQ29udHJvbHNQbHVnaW5zIjp7Im1hcDIiOnsiY29udHJvbHMiOlsic2NhbGUiXX19LCJkZWZhdWx0Q29tcGFyZVZpeiI6MiwibW9kZVZpelR5cGVzIjpbMCwyXSwidG9vbHRpcCI6InRvb2x0aXBNaXJyb3IifSwid2luZG93c3luY1BhcmFtcyI6eyJjb250cm9scyI6WyJzY2FsZSJdfX0=
 ```
 
 

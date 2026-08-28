@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
+  <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg" height="152" />
 </p>
 <h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.OverviewMap</small></h1>
 
@@ -11,9 +11,13 @@ Plugin que muestra una previsualización de la zona donde está centrado el mapa
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
-
+Para uso de implementación OpenLayers:
 - **overviewmap.ol.min.js**
 - **overviewmap.ol.min.css**
+
+Para uso de implementación Cesium:
+- **overviewmap.cesium.min.js**
+- **overviewmap.cesium.min.css**
 
 
 ```html

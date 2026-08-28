@@ -7,6 +7,7 @@ import { isUndefined, isNullOrEmpty } from 'IDEE/util/Utils';
 import FacadeFeature from 'IDEE/feature/Feature';
 import Exception from 'IDEE/exception/exception';
 import { getValue } from 'IDEE/i18n/language';
+import { get as getProj } from 'ol/proj';
 
 /**
  * @classdesc
@@ -181,7 +182,7 @@ class KML extends MObject {
            Fix: While the KML URL was being resolved the map projection
            might have been changed therefore the projection is readed again
          */
-        const lastProjection = this.map_.getProjection().code;
+        const lastProjection = getProj('EPSG:4326');
         if (!isNullOrEmpty(response.text)) {
           const features = this.format_.readCustomFeatures(response.text, {
             featureProjection: lastProjection,
@@ -198,6 +199,13 @@ class KML extends MObject {
               properties: olFeature.getProperties(),
             });
             feature.getImpl().getFeature().setStyle(olFeature.getStyle());
+            feature.getImpl()
+              .getFeature()
+              .getGeometry()
+              .transform(
+                lastProjection,
+                this.map_.getProjection().code,
+              );
             return feature;
           });
 

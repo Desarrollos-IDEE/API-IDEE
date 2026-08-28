@@ -15,6 +15,7 @@
     <link href="plugins/stylemanager/stylemanager.ol.min.css" rel="stylesheet" />
     <link href="plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
     <link href="plugins/vectors/vectors.ol.min.css" rel="stylesheet" />
+    <link href="plugins/layerswitcher/layerswitcher.ol.min.css" rel="stylesheet" />
     <style type="text/css">
         html,
         body {
@@ -76,6 +77,7 @@
     <script type="text/javascript" src="plugins/stylemanager/stylemanager.ol.min.js"></script>
     <script type="text/javascript" src="plugins/sharemap/sharemap.ol.min.js"></script>
     <script type="text/javascript" src="plugins/vectors/vectors.ol.min.js"></script>
+    <script type="text/javascript" src="plugins/layerswitcher/layerswitcher.ol.min.js"></script>
     <%
             String[] jsfiles = PluginsManager.getJSFiles(parameterMap);
             for (int i = 0; i < jsfiles.length; i++) {
@@ -94,26 +96,26 @@
             container: 'mapjs',
         });
         const points = new IDEE.layer.WFS({
-            url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/sepim/ows?',
-            namespace: 'sepim',
-            name: 'campamentos',
-            legend: 'Campamentos',
-            geometry: 'POINT',
+            url: 'https://www.ign.es/wfs/redes-geodesicas',
+            name: 'RED_REGENTE',
+            legend: 'RED_REGENTE',
+            geometry: 'MPOINT',
         });
         map.addLayers(points);
 
 
         const polygons = new IDEE.layer.WFS({
-            url: 'http://geostematicos-sigc.juntadeandalucia.es/geoserver/tematicos/ows?',
-            namespace: 'tematicos',
-            name: 'Provincias',
-            legend: 'Provincias',
+            url: "https://hcsigc.juntadeandalucia.es/geoserver/wfs?",
+            namespace: "IECA",
+            name: "sigc_provincias_1724753768757",
+            legend: "Provincias",
             geometry: 'MPOLYGON',
         });
         map.addLayers(polygons);
 
         const allgeoms = new IDEE.layer.GeoJSON({
             name: "allgeoms",
+            legend: 'geometrias',
             source: {
                 "type": "FeatureCollection",
                 "features": [{
@@ -262,6 +264,9 @@
 
         const vectors = new IDEE.plugin.Vectors({});
         map.addPlugin(vectors);
+
+        const layerswitcher = new IDEE.plugin.Layerswitcher({});
+        map.addPlugin(layerswitcher);
     </script>
 </body>
 

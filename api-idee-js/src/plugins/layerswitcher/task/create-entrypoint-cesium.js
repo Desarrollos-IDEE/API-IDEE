@@ -1,9 +1,9 @@
 const path = require('path');
 const fs = require('fs-extra');
-
 const SRC_PATH = path.resolve(__dirname, '..', 'src');
 const DIST_PATH = path.resolve(__dirname, '..', 'dist');
 const FACADE_PATH = path.resolve(SRC_PATH, 'facade', 'js');
+const IMPL_PATH = path.resolve(SRC_PATH, 'impl', 'cesium', 'js');
 
 const files = [];
 const namespaces = [];
@@ -24,7 +24,9 @@ const getAbsolutePath = (fileNames, fullPath) => {
 };
 
 const facadeFiles = fs.readdirSync(FACADE_PATH);
+const implFiles = fs.readdirSync(IMPL_PATH);
 getAbsolutePath(facadeFiles, FACADE_PATH);
+getAbsolutePath(implFiles, IMPL_PATH);
 
 files.forEach((file) => {
   const match = fs.readFileSync(file, 'utf8').match(/@module.*/);

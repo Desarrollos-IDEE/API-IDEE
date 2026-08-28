@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="https://www.ign.es/resources/viewer/images/logoApiCnig0.5.png" height="152" />
+  <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg" height="152" />
 </p>
 <h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.StyleManager</small></h1>
 
@@ -29,9 +29,13 @@ En dispositivos móviles, la interfaz se adaptará para ocupar la pantalla compl
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
+Para uso de implementación OpenLayers:
+- **stylemanager.ol.min.js**
+- **stylemanager.ol.min.css**
 
-- **stylemanager.ol.js**
-- **stylemanager.min.css**
+Para uso de implementación Cesium:
+- **stylemanager.cesium.min.js**
+- **stylemanager.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/stylemanager/stylemanager.ol.min.css" rel="stylesheet" />
@@ -106,12 +110,9 @@ URL_API?stylemanager=position*collapsed*collapsible*tooltip
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.idee.es/api-idee/?stylemanager=TR*true*true*tooltip&layers=TMS*TMSBaseIGN*https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/%7Bz%7D/%7Bx%7D/%7B-y%7D.jpeg*true*false*17,KML*Delegaciones%20IGN*https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml*true*true
+https://componentes.idee.es/api-idee/??layers=WFS*Campamentos*https://hcsigc.juntadeandalucia.es/geoserver/IECA/wfs?*sigc_campamentos_1724753464727*MPOINT,OSM&stylemanager=TR*true*true*gestor%20de%20estilos
 ```
 
-```
-https://componentes.idee.es/api-idee/?stylemanager=TR&layers=TMS*TMSBaseIGN*https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/%7Bz%7D/%7Bx%7D/%7B-y%7D.jpeg*true*false*17,KML*Delegaciones%20IGN*https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml*true*true
-```
 
 ### Ejemplos de uso API-REST en base64
 

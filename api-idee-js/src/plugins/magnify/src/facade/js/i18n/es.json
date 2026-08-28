@@ -1,0 +1,20 @@
+{
+  "exception": {
+    "nolayersavai": "No existen capas disponibles para aplicar el efecto transparencia",
+    "impl": "La implementación usada no puede crear controles MagnifyControl"
+  },
+  "tooltip": "Lupa",
+  "title": "Lupa",
+  "actmagnifier": "Activar lupa",
+  "zoomlevel": "Nivel de zoom: ",
+  "textHelp": {
+    "squemaTitle": "magnify",
+    "title": "MAGNIFY",
+    "paragraph1": "La lupa amplía una zona circular del mapa sobre la cartografía de fondo, manteniendo el resto del visor a escala normal para comparar el detalle.",
+    "screenshot1Alt": "Icono del plugin magnify en el mapa",
+    "screenshot1Caption": "help-01.png",
+    "screenshot2Alt": "Panel de la lupa abierto con nivel de zoom y lupa circular ampliando un sector del mapa",
+    "screenshot2Caption": "help-02.png",
+    "screenshot2Description": "Con el panel abierto y la lupa activa, verá el nivel de magnificación y podrá mover la lente sobre el mapa: el interior del círculo muestra la misma zona con mayor detalle que el entorno."
+  }
+}

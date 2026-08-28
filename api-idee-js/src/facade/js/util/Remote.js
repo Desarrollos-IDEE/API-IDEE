@@ -45,12 +45,15 @@ export const method = {
  * @param {String} jsonpHandlerName Nombre del identificador.
  * @api
  */
-const createScriptTag = (proxyUrl, jsonpHandlerName) => {
+export const createScriptTag = (proxyUrl, jsonpHandlerName, callback) => {
   const scriptTag = document.createElement('script');
   scriptTag.type = 'text/javascript';
   scriptTag.id = jsonpHandlerName;
   scriptTag.src = proxyUrl;
   scriptTag.setAttribute('async', '');
+  scriptTag.onload = () => {
+    if (callback) callback();
+  };
   window.document.body.appendChild(scriptTag);
 };
 
@@ -145,20 +148,48 @@ const jsonp = (urlVar, data, options) => {
 };
 
 /**
+ * Detecta si un error es de tipo CORS
+ *
+ * @function
+ * @param {Object} xhr Objeto XMLHttpRequest.
+ * @returns {Boolean} Verdadero si es error CORS.
+ * @api
+ */
+const isCorsError = (xhr) => {
+  // Error CORS típicamente tiene status 0 y no hay respuesta
+  // También puede ocurrir cuando hay un error de red sin status
+  return (xhr.status === 0 && xhr.responseText === '')
+      || (xhr.status === 0 && !xhr.responseURL);
+};
+
+/**
  * Petición AJAX.
  *
  * @function
  * @param {String} urlVar URL.
  * @param {String} dataVar Parámetros.
  * @param {Object} methodType Tipo de petición.
- * @param {Object} useProxy Verdadero para usar el proxy.
- * @returns {String} Devuelve la respuesta.
+ * @param {Boolean|String} useProxy true proxy siempre, 'conditional' si hay error CORS, false nunca
+ * @returns {Promise} Devuelve la respuesta.
  * @api
  */
 const ajax = (urlVar, dataVar, methodType, useProxy) => {
   let url = urlVar;
   let data = dataVar;
-  if ((useProxy !== false) && (useproxy === true)) {
+
+  let shouldUseProxy = false;
+  if (useProxy === true) {
+    shouldUseProxy = true;
+  } else if (useProxy === 'conditional') {
+    // Para modo condicional, primero intentamos sin proxy
+    shouldUseProxy = false;
+  } else if (useProxy === false) {
+    shouldUseProxy = false;
+  } else if (useProxy === null || useProxy === undefined) {
+    shouldUseProxy = useproxy === true;
+  }
+
+  if (shouldUseProxy) {
     url = manageProxy(url, methodType);
   }
 
@@ -182,7 +213,76 @@ const ajax = (urlVar, dataVar, methodType, useProxy) => {
       if (xhr.readyState === 4) {
         const response = new Response();
         response.parseXmlHttp(xhr);
-        success(response);
+
+        // Si es modo condicional y hay error CORS, reintentar con proxy
+        if (useProxy === 'conditional' && !shouldUseProxy && isCorsError(xhr)) {
+          let proxyUrl = urlVar;
+          if (isObject(dataVar)) {
+            if (methodType === method.GET) {
+              proxyUrl = addParameters(proxyUrl, dataVar);
+            }
+          }
+          proxyUrl = manageProxy(proxyUrl, methodType);
+
+          let proxyXhr;
+          if (window.XMLHttpRequest) {
+            proxyXhr = new XMLHttpRequest();
+          } else if (window.ActiveXObject) {
+            proxyXhr = new ActiveXObject('Microsoft.XMLHTTP');
+          }
+          proxyXhr.onreadystatechange = () => {
+            if (proxyXhr.readyState === 4) {
+              const proxyResponse = new Response();
+              proxyResponse.parseXmlHttp(proxyXhr);
+              success(proxyResponse);
+            }
+          };
+          proxyXhr.open(methodType, proxyUrl, true);
+          if (methodType === method.POST && isObject(dataVar)) {
+            proxyXhr.send(JSON.stringify(dataVar));
+          } else {
+            proxyXhr.send(dataVar);
+          }
+        } else {
+          success(response);
+        }
+      }
+    };
+    xhr.onerror = () => {
+      // Si es modo condicional y hay error de red, reintentar con proxy
+      if (useProxy === 'conditional' && !shouldUseProxy) {
+        let proxyUrl = urlVar;
+        if (isObject(dataVar)) {
+          if (methodType === method.GET) {
+            proxyUrl = addParameters(proxyUrl, dataVar);
+          }
+        }
+        proxyUrl = manageProxy(proxyUrl, methodType);
+
+        let proxyXhr;
+        if (window.XMLHttpRequest) {
+          proxyXhr = new XMLHttpRequest();
+        } else if (window.ActiveXObject) {
+          proxyXhr = new ActiveXObject('Microsoft.XMLHTTP');
+        }
+        proxyXhr.onreadystatechange = () => {
+          if (proxyXhr.readyState === 4) {
+            const proxyResponse = new Response();
+            proxyResponse.parseXmlHttp(proxyXhr);
+            success(proxyResponse);
+          }
+        };
+        proxyXhr.onerror = () => {
+          fail(new Error('Request failed even with proxy'));
+        };
+        proxyXhr.open(methodType, proxyUrl, true);
+        if (methodType === method.POST && isObject(dataVar)) {
+          proxyXhr.send(JSON.stringify(dataVar));
+        } else {
+          proxyXhr.send(dataVar);
+        }
+      } else {
+        fail(new Error('Request failed'));
       }
     };
     xhr.open(methodType, url, true);
@@ -212,13 +312,21 @@ export const get = (url, data, options) => {
     newUrl = newUrl.substring(newUrl, indexTicket) + newUrl.substring(endTicket, newUrl.length);
   }
 
-  const useProxy = ((isNullOrEmpty(options) || (options.jsonp !== false))
-    && useproxy !== false);
+  let useProxyValue = null;
+  if (!isNullOrEmpty(options) && 'useProxy' in options) {
+    useProxyValue = options.useProxy;
+  } else {
+    useProxyValue = useproxy;
+  }
 
-  if (useProxy === true) {
+  const useJsonp = useProxyValue === true
+    && (isNullOrEmpty(options) || options.jsonp !== false)
+    && useProxyValue !== 'conditional';
+
+  if (useJsonp) {
     req = jsonp(newUrl, data, options);
   } else {
-    req = ajax(newUrl, data, method.GET, false);
+    req = ajax(newUrl, data, method.GET, useProxyValue);
   }
 
   return req;
@@ -237,7 +345,13 @@ export const get = (url, data, options) => {
  * @api
  */
 export const post = (url, data, options) => {
-  return ajax(url, data, method.POST);
+  let useProxyValue = null;
+  if (!isNullOrEmpty(options) && 'useProxy' in options) {
+    useProxyValue = options.useProxy;
+  } else {
+    useProxyValue = useproxy;
+  }
+  return ajax(url, data, method.POST, useProxyValue);
 };
 
 /**

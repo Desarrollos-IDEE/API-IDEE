@@ -106,6 +106,7 @@ class GeoTIFF extends LayerBase {
     const impl = new GeoTIFFImpl(optionsVar, vendorOptions);
     // calls the super constructor
     super(parameters, impl);
+    this.constructorParameters = { userParameters, options, vendorOptions };
 
     /**
      * GeoTIFF legend: Nombre asociado en el árbol de contenido, si usamos uno.

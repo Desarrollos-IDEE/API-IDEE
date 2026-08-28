@@ -1,0 +1,7 @@
+{
+  "name": "tap-stub-strxml",
+  "version": "1.0.0",
+  "description": "Stub: strxml@0.0.0 lists tap as a runtime dependency but never requires it; only tests use tap.",
+  "main": "index.js",
+  "license": "ISC"
+}

@@ -1,7 +1,9 @@
 /**
  * @module IDEE/impl/layer/WMC
  */
-import { isNullOrEmpty, isFunction } from 'IDEE/util/Utils';
+import {
+  isNullOrEmpty, isFunction,
+} from 'IDEE/util/Utils';
 import { get as getRemote } from 'IDEE/util/Remote';
 import * as EventType from 'IDEE/event/eventtype';
 import { getValue } from 'IDEE/i18n/language';
@@ -149,13 +151,19 @@ class WMC extends Layer {
         });
       });
       this.loadContextPromise.then((context) => {
-        // set projection with the wmc
         if (this.map.defaultProj) {
           const olproj = getProj(context.projection);
-          this.map.setProjection(`${olproj.getCode()}*${olproj.getUnits()}`, true);
+          this.map.setProjection(`${olproj.getCode()}*${olproj.getUnits()}`, false);
         }
         // load layers
         this.loadLayers(context);
+
+        // eslint-disable-next-line no-underscore-dangle
+        const userCenter = this.map.userCenter_;
+        if (!isNullOrEmpty(userCenter)) {
+          this.map.getImpl().setCenter(userCenter);
+        }
+
         this.map.fire(EventType.CHANGE_WMC, this);
       });
     }

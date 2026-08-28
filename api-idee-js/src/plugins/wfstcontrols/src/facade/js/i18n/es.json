@@ -1,0 +1,39 @@
+{
+  "exception": {
+    "impl_clear": "La implementación usada no puede crear controles ClearFeature",
+    "impl_delete": "La implementación usada no puede crear controles DeleteFeature",
+    "impl_draw": "La implementación usada no puede crear controles DrawFeature",
+    "impl_edit": "La implementación usada no puede crear controles EditAttribute",
+    "impl_modify": "La implementación usada no puede crear controles ModifyFeature",
+    "impl_save": "La implementación usada no puede crear controles SaveFeature",
+    "WFSlayernotfound": "Ha ocurrido un error al cargar el plugin: No se ha encontrado una capa WFS",
+    "errorgeometryparameter": "Ha ocurrido un error al cargar el plugin: No se ha podido asignar la geometría de la capa de forma automática, debe hacerlo de forma manual usando el parámetro geometry.",
+    "errorloadingplugin": "Ha ocurrido un error al cargar el plugin: No se ha podido asignar la geometría de la capa de forma manual.",
+    "noWFSlayerloaded": "Los controles ",
+    "noWFSlayerloaded1": " no se pueden añadir al mapa porque no existe una capa WFS cargada",
+    "noloadedWFSlayer": "La capa ",
+    "noloadedWFSlayer1": " no es una capa WFS cargada",
+    "save_element_before": "Debe guardar el elemento previamente",
+    "save_element_error": "Ha ocurrido un error al guardar: ",
+    "save_error_unauthorized": "Ha ocurrido un error al guardar: Usuario no autorizado"
+  },
+  "tooltip": "Herramientas de edición",
+  "clear": "Limpiar",
+  "delete": "Eliminar",
+  "draw": "Dibujar",
+  "save": "Guardar",
+  "edit": "Editar",
+  "modify": "Modificar",
+  "save_element_successfully": "Se ha guardado correctamente el elemento",
+  "save_successfully": "Se ha guardado correctamente",
+  "textHelp": {
+    "squemaTitle": "wfstcontrols",
+    "title": "WFSTCONTROLS",
+    "paragraph1": "Este plugin agrupa acciones de edición transaccional sobre una capa WFS cargada en el mapa: dibujar, modificar o eliminar geometrías, editar atributos, limpiar cambios locales y guardar en el servicio (según los controles configurados). Requiere capa WFS compatible y, si aplica, parámetro geometry o detección automática de tipo.",
+    "screenshot1Alt": "Icono de wfstcontrols en el mapa",
+    "screenshot1Caption": "help-01.png",
+    "screenshot2Alt": "Detalle del panel con dibujar, modificar, guardar y otras acciones de edición",
+    "screenshot2Caption": "help-02.png",
+    "screenshot2Description": "Use dibujar o modificar sobre el mapa, edite atributos si está activo, pulse Guardar para enviar los cambios al servicio o Limpiar para descartar ediciones locales no guardadas."
+  }
+}

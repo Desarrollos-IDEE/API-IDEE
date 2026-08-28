@@ -1,6 +1,6 @@
 {
   "name": "QueryAttributes",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "keywords": [
     "map",
@@ -20,16 +20,16 @@
     "prebuild:cesium": "node task/create-entrypoint-cesium.js",
     "build": "webpack --config=webpack-config/webpack.production-ol.config.js && webpack --config=webpack-config/webpack.production-cesium.config.js",
     "test-build": "npm run build && live-server --open=test/prod.html",
+    "test:playwright-ol": "playwright test /queryattributes/test/playwright/ol/* --config=../../../playwright-config/playwright-ol.config.js",
+    "test:all": "npm run test:playwright-ol",
     "check": "eslint ./src",
     "fix": "eslint --fix ./src"
   },
   "author": "",
   "devDependencies": {
-    "@babel/core": "^7.0.0-beta.51",
-    "@babel/plugin-proposal-export-default-from": "^7.0.0-beta.51",
-    "@babel/preset-env": "^7.0.0-beta.51",
     "assert": "^2.1.0",
-    "async": "2.1.4",
+    "@babel/core": "^7.0.0-beta.51",
+    "@babel/preset-env": "^7.14.8",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.0-beta.4",
     "copy-webpack-plugin": "11.0.0",
@@ -38,21 +38,21 @@
     "eslint": "8.51.0",
     "eslint-config-airbnb": "19.0.4",
     "eslint-plugin-import": "2.28.1",
-    "eslint-plugin-jsx-a11y": "^6.7.1",
-    "eslint-plugin-react": "^7.7.0",
+    "eslint-plugin-jsx-a11y": "6.10.2",
+    "eslint-plugin-react": "7.37.4",
     "eslint-webpack-plugin": "^4.0.1",
     "fs-extra": "11.2.0",
     "handlebars": "^4.1.2",
     "html-loader": "^0.5.5",
     "live-server": "^1.2.1",
     "mini-css-extract-plugin": "2.7.6",
-    "process": "^0.11.10",
+    "slash": "^3.0.0",
     "style-loader": "3.3.3",
     "terser-webpack-plugin": "5.3.9",
+    "process": "^0.11.10",
     "webpack": "5.88.2",
     "webpack-cli": "5.1.4",
-    "webpack-dev-server": "4.15.1",
-    "slash": "^3.0.0"
+    "webpack-dev-server": "4.15.1"
   },
   "dependencies": {
     "shp-write": "^0.3.2",
@@ -60,6 +60,12 @@
   },
   "overrides": {
     "webpack": "5.88.2",
-    "eslint": "8.51.0"
+    "eslint": "8.51.0",
+    "tokml": {
+      "minimist": "1.2.8"
+    },
+    "strxml": {
+      "tap": "file:vendor/tap-stub"
+    }
   }
 }

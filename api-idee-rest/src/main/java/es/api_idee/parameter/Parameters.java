@@ -124,6 +124,12 @@ public class Parameters {
       }
    }
    
+   public void addValue (String key, Object value) {
+      if (key != null && value != null) {
+         parameters.put(key, value);
+      }
+   }
+   
    public JSONObject toJSON () {
       return parameters;
    }

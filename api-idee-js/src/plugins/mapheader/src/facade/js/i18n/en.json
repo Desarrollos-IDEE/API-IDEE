@@ -1,0 +1,20 @@
+{
+  "exception": {
+    "impl": "The implementation used cannot create MapheaderControl controls"
+  },
+  "hideheader": "Hide header",
+  "showheader": "Show header",
+  "hide": " Hide ",
+  "show": " Show ",
+  "textHelp": {
+    "squemaTitle": "mapheader",
+    "title": "MAPHEADER",
+    "paragraph1": "The mapheader plugin adds a top strip above the viewer with configurable HTML content: institutional logos, title, subtitles and links, typical of download portals or corporate maps.",
+    "screenshot1Alt": "Map without institutional header strip; standard viewer controls visible",
+    "screenshot1Caption": "help-01.png",
+    "screenshot1Description": "Example with the header collapsed: the map reaches the top edge and the action to show it again is available.",
+    "screenshot2Alt": "Same viewer with dark blue header, logos, centred title and button to hide the header",
+    "screenshot2Caption": "help-02.png",
+    "screenshot2Description": "With the header expanded, configured elements (branding, title, texts) appear. Use “Hide” to return to map-only view."
+  }
+}

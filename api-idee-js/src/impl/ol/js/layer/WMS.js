@@ -4,8 +4,17 @@
  */
 import OLSourceImageWMS from 'ol/source/ImageWMS';
 import {
-  isNull, isArray, isNullOrEmpty, addParameters, getWMSGetCapabilitiesUrl, fillResolutions,
-  getResolutionFromScale, generateResolutionsFromExtent, extend,
+  isNull,
+  isArray,
+  isObject,
+  isNullOrEmpty,
+  addParameters,
+  getWMSGetCapabilitiesUrl,
+  getZDirectionFunction,
+  fillResolutions,
+  getResolutionFromScale,
+  generateResolutionsFromExtent,
+  extend,
 } from 'IDEE/util/Utils';
 import FacadeLayerBase from 'IDEE/layer/Layer';
 import * as LayerType from 'IDEE/layer/Type';
@@ -116,6 +125,13 @@ class WMS extends LayerBase {
      * @type {Function}
      */
     this.tileLoadFunction = vendorOptions?.tileLoadFunction;
+
+    /**
+     * WMS zDirection. Función de dirección Z para la carga de teselas.
+     * @private
+     * @type {Function}
+     */
+    this.zDirection = vendorOptions?.zDirection || getZDirectionFunction();
 
     /**
      * WMS extentPromise. Extensión de la capa, promesa.
@@ -277,7 +293,7 @@ class WMS extends LayerBase {
   setVisible(visibility) {
     this.visibility = visibility;
     // if this layer is base then it hides all base layers
-    if ((visibility === true) && (this.isBase !== false)) {
+    if ((visibility === true) && (this.isBase !== false) && !this.isVisible()) {
       // hides all base layers
       this.map.getBaseLayers()
         .filter((layer) => !layer.equals(this.facadeLayer_) && layer.isVisible())
@@ -289,9 +305,10 @@ class WMS extends LayerBase {
       }
 
       // updates resolutions and keep the zoom
-      const oldBbox = this.map.getBbox();
-      if (!isNullOrEmpty(oldBbox)) {
-        this.map.setBbox(oldBbox);
+      const oldZoom = this.map.getZoom();
+      // this.map.getImpl().updateResolutionsFromBaseLayer();
+      if (!isNullOrEmpty(oldZoom)) {
+        this.map.setZoom(oldZoom);
       }
     } else if (!isNullOrEmpty(this.olLayer)) {
       this.olLayer.setVisible(visibility);
@@ -454,7 +471,16 @@ class WMS extends LayerBase {
    */
   addSingleLayer_(capabilities) {
     const selff = this;
-    let extent = this.facadeLayer_.userMaxExtent;
+    let extent = null;
+    if (!isNullOrEmpty(this.facadeLayer_.userMaxExtent)) {
+      extent = this.facadeLayer_.userMaxExtent;
+    } else if (!isNullOrEmpty(this.options.wmcMaxExtent)) {
+      extent = this.options.wmcMaxExtent;
+    } else {
+      extent = this.options.wmcGlobalMaxExtent;
+    }
+    this.maxExtent_ = extent;
+    if (!isNullOrEmpty(extent)) this.setMaxExtent(extent);
 
     if (capabilities) {
       const capabilitiesLayer = capabilities.capabilities.Capability.Layer.Layer;
@@ -472,6 +498,30 @@ class WMS extends LayerBase {
       if (isNullOrEmpty(extent)) {
         extent = this.facadeLayer_.calculateMaxExtentWithCapabilities(capabilities);
         this.facadeLayer_.maxExtent_ = extent;
+      }
+    }
+
+    if (isNullOrEmpty(extent)) {
+      if (!isNullOrEmpty(this.map.userMaxExtent)) {
+        extent = this.map.userMaxExtent;
+      } else {
+        const userBbox = this.map.getImpl().userBbox_;
+        if (!isNullOrEmpty(userBbox)) {
+          if (isArray(userBbox)) {
+            extent = userBbox;
+          } else if (isObject(userBbox)) {
+            extent = [
+              userBbox.x.min,
+              userBbox.y.min,
+              userBbox.x.max,
+              userBbox.y.max,
+            ];
+          }
+        }
+      }
+      if (!isNullOrEmpty(extent)) {
+        this.maxExtent_ = extent;
+        this.setMaxExtent(extent);
       }
     }
 
@@ -641,6 +691,7 @@ class WMS extends LayerBase {
       const opacity = this.opacity_;
       const zIndex = this.zIndex_;
       const tileLoadFunction = this.tileLoadFunction;
+      const zDirection = this.zDirection;
       if (this.tiled === true) {
         const tileGrid = (this.useCapabilities)
           ? new OLTileGrid({ resolutions, extent, origin: getBottomLeft(extent) })
@@ -656,6 +707,7 @@ class WMS extends LayerBase {
           opacity,
           zIndex,
           tileLoadFunction,
+          zDirection,
         });
       } else {
         olSource = new ImageWMS({
@@ -761,16 +813,19 @@ class WMS extends LayerBase {
     // maxExtentPromise.then((maxExtent) => {
     const minResolution = this.options.minResolution;
     const maxResolution = this.options.maxResolution;
-    this.getLayer().setExtent(maxExtent);
-    if (this.tiled === true) {
-      let resolutions = this.map.getResolutions();
-      if (isNullOrEmpty(resolutions) && !isNullOrEmpty(this.resolutions_)) {
-        resolutions = this.resolutions_;
-      }
-      // gets the tileGrid
-      if (!isNullOrEmpty(resolutions)) {
-        const source = this.createOLSource_(resolutions, minResolution, maxResolution, maxExtent);
-        this.olLayer.setSource(source);
+    const layer = this.getLayer();
+    if (!isNullOrEmpty(layer)) {
+      layer.setExtent(maxExtent);
+      if (this.tiled === true) {
+        let resolutions = this.map.getResolutions();
+        if (isNullOrEmpty(resolutions) && !isNullOrEmpty(this.resolutions_)) {
+          resolutions = this.resolutions_;
+        }
+        // gets the tileGrid
+        if (!isNullOrEmpty(resolutions)) {
+          const source = this.createOLSource_(resolutions, minResolution, maxResolution, maxExtent);
+          this.olLayer.setSource(source);
+        }
       }
     }
     // });
@@ -1009,7 +1064,7 @@ class WMS extends LayerBase {
    */
   refresh() {
     const olLayer = this.getLayer();
-    if (!isNullOrEmpty(olLayer)) {
+    if (!isNullOrEmpty(olLayer) && !isNullOrEmpty(olLayer.getSource())) {
       olLayer.getSource().changed();
     }
   }
@@ -1025,8 +1080,9 @@ class WMS extends LayerBase {
    */
   getExtentFromCapabilities(capabilities) {
     const name = this.facadeLayer_.name;
-    const extent = capabilities.getLayerExtent(name) ? capabilities.getLayerExtent(name) : [];
-    return extent;
+    const projection = this.map.getProjection().code;
+    const extent = capabilities.getLayerExtent(name, projection);
+    return extent || [];
   }
 
   /**

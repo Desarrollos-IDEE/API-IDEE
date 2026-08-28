@@ -149,6 +149,8 @@
   "scale": "Scale",
   "move": "Move",
   "attributes": "Attributes",
+  "snapToPointer": "Snap to pointer",
+  "pixelTolerance": "Pixel tolerance",
   "delete": "Delete geometry",
   "newcolumn": "New column",
   "layerName": "Name",

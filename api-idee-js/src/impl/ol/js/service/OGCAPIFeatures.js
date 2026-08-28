@@ -208,18 +208,19 @@ class OGCAPIFeatures {
       // srsname: projection.getCode(),
     };
     let fUrl;
+    let pathUrl = this.url_;
 
     if (!isNullOrEmpty(this.name_)) {
-      this.url_ = `${this.url_}${this.name_}/items`;
+      pathUrl = `${pathUrl}${this.name_}/items`;
     }
     if (!isNullOrEmpty(this.format_)) {
       getFeatureParams.f = this.format_;
     }
     if (!isNullOrEmpty(this.id_)) {
-      this.url_ = `${this.url_}/${this.id_}?`;
-      fUrl = addParameters(addParameters(this.url_, getFeatureParams), this.getFeatureVendor_);
+      pathUrl = `${pathUrl}/${this.id_}?`;
+      fUrl = addParameters(addParameters(pathUrl, getFeatureParams), this.getFeatureVendor_);
     } else {
-      this.url_ = `${this.url_}?`;
+      pathUrl = `${pathUrl}?`;
       if (!isNullOrEmpty(this.limit_)) {
         getFeatureParams.limit = this.limit_;
       }
@@ -230,7 +231,7 @@ class OGCAPIFeatures {
         getFeatureParams.bbox = this.bbox_;
       }
 
-      fUrl = addParameters(addParameters(this.url_, getFeatureParams), this.getFeatureVendor_);
+      fUrl = addParameters(addParameters(pathUrl, getFeatureParams), this.getFeatureVendor_);
 
       if (!isNullOrEmpty(this.cql_)) {
         getFeatureParams.filter = this.cql_;

@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
+import java.net.URLDecoder;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.DefaultValue;
@@ -39,8 +40,6 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 
-import es.guadaltel.framework.ticket.Ticket;
-import es.guadaltel.framework.ticket.TicketFactory;
 import es.api_idee.bean.ProxyResponse;
 import es.api_idee.builder.JSBuilder;
 import es.api_idee.exception.InvalidResponseException;
@@ -60,7 +59,7 @@ public class Proxy {
 	public ServletContext context_ = null;
 	private static ResourceBundle configProperties = ResourceBundle.getBundle("configuration");
 	private static final String THEME_URL = configProperties.getString("api-idee.theme.url");
-	private static final String LEGEND_ERROR = "https://componentes.idee.es/estaticos/imagenes/leyenda/legend-error.png";
+  private static final String LEGEND_ERROR = "${api-idee.static_resources.url}/imagenes/leyenda/legend-error.png";
 	private static final int IMAGE_MAX_BYTE_SIZE = Integer.parseInt(configProperties.getString("max.image.size"));
 
   // Log4J
@@ -187,21 +186,15 @@ public class Proxy {
 		}
 
 		HttpClient client = clientBuilder.build();
-		HttpGet httpget = new HttpGet(url);
+		String decodedUrl = URLDecoder.decode(url, "UTF-8");
+		HttpGet httpget = new HttpGet(decodedUrl);
 
 		// sets ticket if the user specified one
 		if (ticketParameter != null) {
 			ticketParameter = ticketParameter.trim();
 			if (!ticketParameter.isEmpty()) {
-				Ticket ticket = TicketFactory.createInstance();
 				try {
-					Map<String, String> props = ticket.getProperties(ticketParameter);
-					String user = props.get("user");
-					String pass = props.get("pass");
-					String userAndPass = user + ":" + pass;
-					String encodedLogin = new String(
-							org.apache.commons.codec.binary.Base64.encodeBase64(userAndPass.getBytes()));
-					httpget.setHeader(AUTHORIZATION, "Basic " + encodedLogin);
+					httpget.setHeader("Authorization", "Bearer " + ticketParameter);
 				} catch (Exception e) {
 					System.out.println("-------------------------------------------");
 					System.out.println("EXCEPCTION THROWED BY PROXYREDIRECT CLASS");

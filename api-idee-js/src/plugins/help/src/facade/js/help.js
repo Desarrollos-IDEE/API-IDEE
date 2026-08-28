@@ -63,7 +63,7 @@ export default class Help extends IDEE.Plugin {
      * @private
      * @type {Array}
      */
-    this.headerImages_ = header.images ? header.images : ['https://componentes.idee.es/estaticos/imagenes/logos/logo_ge.svg', 'https://componentes.idee.es/estaticos/imagenes/logos/ign.svg'];
+    this.headerImages_ = header.images ? header.images : [`${IDEE.config.STATIC_RESOURCES_URL}/imagenes/logos/logo_ge.svg`, `${IDEE.config.STATIC_RESOURCES_URL}/imagenes/logos/ign.svg`];
 
     /**
      * Título

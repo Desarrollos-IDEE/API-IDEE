@@ -158,6 +158,23 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     font-size: 1.2em;
 }
 
+#edition-container > div {
+    padding: 10px;
+    font-size: 1em;
+}
+
+#edition-container .edition-container-snap-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#edition-container .edition-container-snap-options div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 #m-point-coordinates label {
     width: 78px;
     display: inline-block;
@@ -1078,7 +1095,8 @@ div#popup-box {
     font-weight: bold;
 }
 
-#options-content input[type=number]{
+#options-content input[type=number],
+#edition-container div input[type=number] {
  width: 50px;
 }
 

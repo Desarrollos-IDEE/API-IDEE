@@ -30,12 +30,15 @@ const searchStates = async searchText =>{
 const outputHTMLTailWind = matches =>{
   if (matches.length > 0){
 
+    const pluginName = match.name;
+    const pluginDescription = match.description;
+
     const html = matches.map( match => `
       <div class="bg-blue-100 rounded overflow-hidden shadow-md relative hover:shadow-lg">
         <img src="${match.image}" class="w-full h-32 object-cover">
         <div class="m-4">
-          <span class="font-bold">${match.name}</span>
-          <p>${match.description}</p>
+          <span class="font-bold">${pluginName}</span>
+          <p>${pluginDescription}</p>
           <div class="flex justify-center md:justify-end">
             <a  href="./json/codigosngbe" target="_blank" 
                 class="bg-blue-300 rounded-full mt-3 py-2 px-3 uppercase text-xs font-bold cursor-pointer tracking-wider border-primary hover:bg-blue-400">Consulta</a>
@@ -59,21 +62,25 @@ const outputHTMLBootstrap = matches =>{
     let htmlObsolete = '';
 
     matches.forEach(match => {
+      const pluginName = match.name;
+      const pluginDescription = match.description;
+      const pluginVersion = match.version;
+
       const plugin = `
       <div class="col" style="padding-bottom:15px;">
         <div class="card shadow-sm h-100" style="background-color: rgba(240, 128, 128,0.15);">
           <!--<img class="img-fluid" src="${match.image}">-->
           <h4 class="text-primary text-center pt-2">${match.plugin}</h4>
           <div class="card-body">
-            <h5 class="card-title">${match.name}</h5>
-            <p class="card-text" style="min-height:100px;">${match.description}</p>
+            <h5 class="card-title">${pluginName}</h5>
+            <p class="card-text" style="min-height:100px;">${pluginDescription}</p>
             <div class="d-flex justify-content-between align-items-center">
               <div class="btn-group">
-                <a href="${match.url_es}" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/spain-flag.svg"></a>
-                <a href="${match.url_en}" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/uk-flag.svg"></a>
-                <a href="${match.url_git}" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="https://componentes.idee.es/estaticos/imagenes/logos/logo-github.svg"></a>
+                <a href="${match.url_es}" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="${api-idee.static_resources.url}/imagenes/logos/spain-flag.svg"></a>
+                <a href="${match.url_en}" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="${api-idee.static_resources.url}/imagenes/logos/uk-flag.svg"></a>
+                <a href="${match.url_git}" class="btn btn-sm btn-outline-secondary" role="button" target="_blank" data-bs-toggle="button"><img style="width:24px;" src="${api-idee.static_resources.url}/imagenes/logos/logo-github.svg"></a>
               </div>
-              <small class="text-muted">${match.version}</small>
+              <small class="text-muted">${pluginVersion}</small>
             </div>
           </div>
         </div>

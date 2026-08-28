@@ -6,7 +6,7 @@ import RenderFeatureImpl from 'impl/feature/RenderFeature';
 import Vector from './Vector';
 import * as LayerType from './Type';
 import {
-  isUndefined, isNullOrEmpty, isString, normalize, isObject,
+  isUndefined, isNullOrEmpty, isObject,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import { getValue } from '../i18n/language';
@@ -111,6 +111,7 @@ class MBTilesVector extends Vector {
     }
     const impl = new MBTilesVectorImpl(parameters, optionsVar, vendorOptions);
     super(parameters, options, undefined, impl);
+    this.constructorParameters = { userParameters, options, vendorOptions };
 
     /**
      * MBTilesVector minZoom: Límite del zoom mínimo.
@@ -125,12 +126,6 @@ class MBTilesVector extends Vector {
      * @type {Number}
      */
     this.maxZoom = optionsVar.maxZoom || Number.POSITIVE_INFINITY;
-
-    /**
-     * MBTilesVector extract: Activa la consulta al hacer clic sobre un objeto geográfico,
-     * por defecto verdadero.
-     */
-    this.extract = parameters.extract === undefined ? true : parameters.extract;
   }
 
   /**
@@ -191,42 +186,6 @@ class MBTilesVector extends Vector {
   getFeatures() {
     const features = this.getImpl().getFeatures();
     return features.map((olFeature) => RenderFeatureImpl.feature2Facade(olFeature));
-  }
-
-  /**
-   * Devuelve el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica,
-   * por defecto verdadero.
-   *
-   * @function
-   * @getter
-   * @returns {Boolean} Valor de la propiedad "extract".
-   * @api
-   */
-  get extract() {
-    return this.getImpl().extract;
-  }
-
-  /**
-   * Sobrescribe el valor de la propiedad "extract". La propiedad "extract" tiene la
-   * siguiente función: Activa la consulta al hacer clic en la característica,
-   * por defecto verdadero.
-   *
-   * @function
-   * @setter
-   * @param {Boolean} newExtract Nuevo valor para sobreescribir la propiedad "extract".
-   * @api
-   */
-  set extract(newExtract) {
-    if (!isNullOrEmpty(newExtract)) {
-      if (isString(newExtract)) {
-        this.getImpl().extract = (normalize(newExtract) === 'true');
-      } else {
-        this.getImpl().extract = newExtract;
-      }
-    } else {
-      this.getImpl().extract = true;
-    }
   }
 
   /**

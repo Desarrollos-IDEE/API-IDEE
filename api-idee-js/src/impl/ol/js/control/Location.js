@@ -2,7 +2,8 @@
  * @module IDEE/impl/control/Location
  */
 
-import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
+import { isNullOrEmpty, extend, setEquals } from 'IDEE/util/Utils';
+import * as EventType from 'IDEE/event/eventtype';
 // import * as Dialog from 'IDEE/dialog';
 // import { getValue } from 'IDEE/i18n/language';
 import { get as getProj } from 'ol/proj';
@@ -92,6 +93,20 @@ class Location extends Control {
     this.activated_ = false;
 
     /**
+     * Referencia a la fachada del control (IDEE.control.Location).
+     * @private
+     * @type {Object|null}
+     */
+    this.facadeObj_ = null;
+
+    /**
+     * Última coordenada emitida.
+     * @private
+     * @type {Object|null}
+     */
+    this.lastCoord_ = [];
+
+    /**
      * Objeto geográfico de la posición.
      * @private
      * @type {OLFeature}
@@ -99,6 +114,18 @@ class Location extends Control {
     this.positionFeature_ = Feature.feature2Facade(new OLFeature({
       style: Location.POSITION_STYLE,
     }));
+  }
+
+  /**
+   * Asocia la fachada del control para poder emitir eventos.
+   *
+   * @public
+   * @function
+   * @param {IDEE.control.Location} obj Fachada del control.
+   * @api stable
+   */
+  setFacadeObj(obj) {
+    this.facadeObj_ = obj;
   }
 
   /**
@@ -125,7 +152,7 @@ class Location extends Control {
         const accuracyGeom = evt.target.get(evt.key);
         this.accuracyFeature_.getImpl().getFeature().setGeometry(accuracyGeom);
       });
-      this.geolocation_.once('change:position', (evt) => {
+      this.geolocation_.on('change:position', (evt) => {
         const newCoord = evt.target.get(evt.key);
         const newPosition = isNullOrEmpty(newCoord)
           ? null
@@ -139,6 +166,13 @@ class Location extends Control {
         this.element.classList.add('m-located');
 
         this.geolocation_.setTracking(this.tracking_);
+
+        if (!isNullOrEmpty(this.facadeObj_)) {
+          if (!setEquals(newCoord, this.lastCoord_)) {
+            this.facadeObj_.fire(EventType.CHANGE, [newCoord]);
+            this.lastCoord_ = newCoord;
+          }
+        }
       });
       // this.geolocation_.on('error', (evt) => {
       //   this.element.classList.remove('m-locating');
@@ -147,8 +181,8 @@ class Location extends Control {
     }
 
     this.geolocation_.setTracking(true);
-    this.facadeMap_.drawFeatures([this.accuracyFeature_]);
-    // this.facadeMap_.drawFeatures([this.accuracyFeature_, this.positionFeature_]);
+    // this.facadeMap_.drawFeatures([this.accuracyFeature_]);
+    this.facadeMap_.drawFeatures([this.accuracyFeature_, this.positionFeature_]);
   }
 
   /**
@@ -235,6 +269,10 @@ Location.POSITION_STYLE = new OLStyle({
  * @public
  * @api stable
  */
-Location.ZOOM = 16; // 12;
+Object.defineProperty(Location, 'ZOOM', {
+  get() {
+    return IDEE.config.ZOOM_LOCATION;
+  },
+});
 
 export default Location;

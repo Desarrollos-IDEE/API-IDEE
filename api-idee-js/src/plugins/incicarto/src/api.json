@@ -53,9 +53,9 @@
   },
   "metadata": {
     "name": "Incicarto",
-    "description": "Geometry drawing",
-    "text": "Geometry management and downloading",
-    "version": "2.0.2",
+    "description": "Plugin para dar de alta incidencias.",
+    "text": "Plugin para dar de alta incidencias.",
+    "version": "1.0.1",
     "date": "May 2020",
     "author": "",
     "org": "",

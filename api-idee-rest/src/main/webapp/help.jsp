@@ -23,7 +23,6 @@
     <link href="plugins/selectionzoom/selectionzoom.ol.min.css" rel="stylesheet" />
     <link href="plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
     <link href="plugins/modal/modal.ol.min.css" rel="stylesheet" />
-    <link href="plugins/rescale/rescale.ol.min.css" rel="stylesheet" />
     <link href="plugins/comparators/comparators.ol.min.css" rel="stylesheet" />
     <link href="plugins/storymap/storymap.ol.min.css" rel="stylesheet" />
     <link href="plugins/locator/locator.ol.min.css" rel="stylesheet" />
@@ -32,7 +31,6 @@
     <link href="plugins/incicarto/incicarto.ol.min.css" rel="stylesheet" />
     <link href="plugins/timeline/timeline.ol.min.css" rel="stylesheet" />
     <link href="plugins/queryattributes/queryattributes.ol.min.css" rel="stylesheet" />
-    <link href="plugins/viewmanagement/viewmanagement.ol.min.css" rel="stylesheet" />
     <link href="plugins/printviewmanagement/printviewmanagement.ol.min.css" rel="stylesheet" />
     </link>
     <style type="text/css">
@@ -161,7 +159,6 @@
     <script type="text/javascript" src="plugins/selectionzoom/selectionzoom.ol.min.js"></script>
     <script type="text/javascript" src="plugins/sharemap/sharemap.ol.min.js"></script>
     <script type="text/javascript" src="plugins/modal/modal.ol.min.js"></script>
-    <script type="text/javascript" src="plugins/rescale/rescale.ol.min.js"></script>
     <script type="text/javascript" src="plugins/comparators/comparators.ol.min.js"></script>
     <script type="text/javascript" src="plugins/storymap/storymap.ol.min.js"></script>
     <script type="text/javascript" src="plugins/locator/locator.ol.min.js"></script>
@@ -170,7 +167,6 @@
     <script type="text/javascript" src="plugins/incicarto/incicarto.ol.min.js"></script>
     <script type="text/javascript" src="plugins/timeline/timeline.ol.min.js"></script>
     <script type="text/javascript" src="plugins/queryattributes/queryattributes.ol.min.js"></script>
-    <script type="text/javascript" src="plugins/viewmanagement/viewmanagement.ol.min.js"></script>
     <script type="text/javascript" src="plugins/printviewmanagement/printviewmanagement.ol.min.js"></script>
     <%
       String[] jsfiles = PluginsManager.getJSFiles(parameterMap);
@@ -229,9 +225,6 @@
 
         let mp11 = new IDEE.plugin.Modal({});
         map.addPlugin(mp11);
-
-        let mp12 = new IDEE.plugin.Rescale({});
-        map.addPlugin(mp12);
 
         let mp13 = new IDEE.plugin.Comparators({});
         map.addPlugin(mp13);
@@ -358,9 +351,6 @@
 
         let mp20 = new IDEE.plugin.QueryAttributes({});
         map.addPlugin(mp20);
-
-        let mp21 = new IDEE.plugin.ViewManagement({});
-        map.addPlugin(mp21);
 
         let mp22 = new IDEE.plugin.PrintViewManagement({});
         map.addPlugin(mp22);

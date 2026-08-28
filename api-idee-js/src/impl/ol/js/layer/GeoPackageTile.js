@@ -2,7 +2,7 @@
  * @module IDEE/impl/layer/GeoPackageTile
  */
 import {
-  isNullOrEmpty,
+  isNullOrEmpty, getZDirectionFunction,
 } from 'IDEE/util/Utils';
 import { DEFAULT_WHITE_TILE } from 'IDEE/provider/Tile';
 import * as EventType from 'IDEE/event/eventtype';
@@ -65,6 +65,11 @@ class GeoPackageTile extends Layer {
      * Función de carga de tiles.
      */
     this.tileLoadFunction = userParameters.tileLoadFunction || null;
+
+    /**
+     * Función de dirección Z para la carga de teselas.
+     */
+    this.zDirection = userParameters.zDirection || getZDirectionFunction();
 
     /**
       * Máxima extensión de la capa.
@@ -130,12 +135,7 @@ class GeoPackageTile extends Layer {
         this.olLayer.setVisible(visibility);
       }
 
-      // updates resolutions and keep the bbox
-      const oldZoom = this.map.getZoom();
       this.map.getImpl().updateResolutionsFromBaseLayer();
-      if (!isNullOrEmpty(oldZoom)) {
-        this.map.setZoom(oldZoom);
-      }
     } else if (!isNullOrEmpty(this.olLayer)) {
       this.olLayer.setVisible(visibility);
     }
@@ -174,6 +174,7 @@ class GeoPackageTile extends Layer {
         projection,
         tileUrlFunction: (coord) => `{${coord[2]}},{${coord[0]}},{${coord[1]}}`,
         tileLoadFunction: (tile) => tileLoadFn(tile, this),
+        zDirection: this.zDirection,
       }),
     });
 

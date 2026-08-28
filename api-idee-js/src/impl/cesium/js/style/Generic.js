@@ -12,6 +12,7 @@ import {
   BillboardGraphics,
   Color,
   Entity,
+  ModelGraphics,
   PolylineOutlineMaterialProperty,
 } from 'cesium';
 import Simple from './Simple';
@@ -321,7 +322,7 @@ class Generic extends Simple {
    */
   getRadius_(image) {
     let r;
-    if (image instanceof BillboardGraphics) {
+    if (image instanceof BillboardGraphics || image instanceof ModelGraphics) {
       if (image.type === 'Image') {
         r = 25;
       } else if (image.type === 'PointFontSymbol') {

@@ -52,9 +52,9 @@
   },
   "metadata": {
     "name": "Infocoordinates",
-    "description": "Show coordinates points when clicked on map",
-    "text": "Show coordinates points when clicked on map. Change its SRC and format decimal or DMS",
-    "version": "2.0.2",
+    "description": "Mostrar puntos de coordenadas al hacer clic en el mapa",
+    "text": "Mostrar puntos de coordenadas al hacer clic en el mapa. Cambiar su origen y formato decimal o DMS.",
+    "version": "1.0.1",
     "date": "May, 2020",
     "author": "",
     "org": "",

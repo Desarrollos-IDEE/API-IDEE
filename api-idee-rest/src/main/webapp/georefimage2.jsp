@@ -167,7 +167,7 @@
           layerOpts: [
             {
               id: 'raster',
-              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/raster.png',
+              preview: '${api-idee.static_resources.url}/imagenes/pre_visualizacion/raster.png',
               title: 'Mapa',
               layers: [
                 new IDEE.layer.WMTS({
@@ -185,7 +185,7 @@
             },
             {
               id: 'imagen',
-              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/image.png',
+              preview: '${api-idee.static_resources.url}/imagenes/pre_visualizacion/image.png',
               title: 'Imagen',
               layers: [
                 new IDEE.layer.XYZ({
@@ -215,7 +215,7 @@
             },
             {
               id: 'mapa',
-              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/mapa.png',
+              preview: '${api-idee.static_resources.url}/imagenes/pre_visualizacion/mapa.png',
               title: 'Callejero',
               layers: [
                 new IDEE.layer.WMTS({
@@ -234,7 +234,7 @@
             {
               id: 'hibrido',
               title: 'Híbrido',
-              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/hibrido.png',
+              preview: '${api-idee.static_resources.url}/imagenes/pre_visualizacion/hibrido.png',
               layers: [
                 new IDEE.layer.XYZ({
                   url: 'https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg',
@@ -274,7 +274,7 @@
             },
             {
               id: 'lidar',
-              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/lidar.png',
+              preview: '${api-idee.static_resources.url}/imagenes/pre_visualizacion/lidar.png',
               title: 'LiDAR',
               layers: [
                 new IDEE.layer.WMTS({
@@ -292,7 +292,7 @@
             },
             {
               id: 'ocupacion-suelo',
-              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/ocupacion_suelo.png',
+              preview: '${api-idee.static_resources.url}/imagenes/pre_visualizacion/ocupacion_suelo.png',
               title: 'Ocupación',
               layers: [
                 new IDEE.layer.WMTS({
@@ -310,7 +310,7 @@
             },
             {
               id: 'historicos',
-              preview: 'https://componentes.idee.es/estaticos/imagenes/pre_visualizacion/historicos.png',
+              preview: '${api-idee.static_resources.url}/imagenes/pre_visualizacion/historicos.png',
               title: 'Históricos',
               layers: [
                 new IDEE.layer.WMTS({

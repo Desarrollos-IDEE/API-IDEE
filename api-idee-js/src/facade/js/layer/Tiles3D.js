@@ -88,6 +88,7 @@ class Tiles3D extends LayerBase {
     const impl = new Tiles3DImpl(userParameters, optionsVar, vendorOptions);
     // Calls the super constructor.
     super(parameters, impl);
+    this.constructorParameters = { userParameters, options, vendorOptions };
 
     /**
      * Tiles3D maxextent: Extensión de visualización

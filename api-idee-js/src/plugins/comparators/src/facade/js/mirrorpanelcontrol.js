@@ -667,13 +667,16 @@ export default class MirrorpanelControl extends IDEE.Control {
 
     // ? No es "ninguna capa" muestra la capa.
     if (value !== 'void') {
-      const someSaveLayers = this.comparatorsControls.saveLayers.find((l) => value.includes(`*${l}*`));
-      const layerFind = this.mapL[map].getLayers().find((l) => l.name === someSaveLayers);
+      const layerName = getNameString(value);
+      const layerFind = this.mapL[map].getLayers().find((l) => l.name === layerName);
 
       if (layerFind) {
         layerFind.setVisible(true);
       } else {
         this.mapL[map].addLayers(value);
+      }
+      if (layerName && !this.comparatorsControls.saveLayers.includes(layerName)) {
+        this.comparatorsControls.saveLayers.push(layerName);
       }
       this.layerSelected[map] = value;
     }

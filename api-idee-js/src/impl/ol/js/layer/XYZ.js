@@ -1,7 +1,7 @@
 /**
  * @module IDEE/impl/layer/XYZ
  */
-import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
+import { isNullOrEmpty, extend, getZDirectionFunction } from 'IDEE/util/Utils';
 import OLTileLayer from 'ol/layer/Tile';
 import { get as getProj } from 'ol/proj';
 import XYZSource from 'ol/source/XYZ';
@@ -121,6 +121,12 @@ class XYZ extends Layer {
     this.tileGridMaxZoom = userParameters.tileGridMaxZoom;
 
     /**
+     * XYZ zDirection.
+     * Función de dirección Z para la carga de teselas.
+     */
+    this.zDirection = vendorOptions?.zDirection || getZDirectionFunction();
+
+    /**
      * XYZ displayInLayerSwitcher:
      * Mostrar en el selector de capas.
      */
@@ -149,12 +155,7 @@ class XYZ extends Layer {
         this.olLayer.setVisible(visibility);
       }
 
-      // updates resolutions and keep the zoom
-      const oldZoom = this.map.getZoom();
       this.map.getImpl().updateResolutionsFromBaseLayer();
-      if (!isNullOrEmpty(oldZoom)) {
-        this.map.setZoom(oldZoom);
-      }
     } else if (!isNullOrEmpty(this.olLayer)) {
       this.olLayer.setVisible(visibility);
     }
@@ -188,10 +189,11 @@ class XYZ extends Layer {
     let source = this.vendorOptions_.source;
     if (isNullOrEmpty(source)) {
       source = new XYZSource({
-        projection: this.map.getProjection().code,
+        projection,
         url: this.url,
         tileSize: this.getTileSize(),
         crossOrigin: this.crossOrigin,
+        zDirection: this.zDirection,
       });
     }
     this.olLayer.setSource(source);

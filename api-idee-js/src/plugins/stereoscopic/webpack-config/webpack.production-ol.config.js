@@ -1,13 +1,14 @@
 const path = require('path');
 const OptimizeCssAssetsPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
+// const GenerateVersionPlugin = require('./GenerateVersionPlugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopywebpackPlugin = require('copy-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
-// const GenerateVersionPlugin = require('./GenerateVersionPlugin');
 
 const PJSON_PATH = path.resolve(__dirname, '..', 'package.json');
 const pjson = require(PJSON_PATH);
+const webpack = require('webpack');
 
 module.exports = {
   mode: 'production',
@@ -27,6 +28,11 @@ module.exports = {
       facade: path.resolve(__dirname, '../src/facade/js'),
     },
     extensions: ['.wasm', '.mjs', '.js', '.json', '.css', '.hbs', '.html'],
+    fallback: {
+      fs: false,
+      path: false,
+      crypto: false,
+    },
   },
   module: {
     rules: [
@@ -48,11 +54,9 @@ module.exports = {
       {
         test: /\.css$/,
         loader: MiniCssExtractPlugin.loader,
-        exclude: /node_modules/,
       }, {
         test: /\.css$/,
         loader: 'css-loader',
-        exclude: /node_modules/,
       },
       {
         test: /\.(woff|woff2|eot|ttf|svg)$/,
@@ -64,8 +68,11 @@ module.exports = {
   optimization: {
     emitOnErrors: false,
     minimizer: [
-      new OptimizeCssAssetsPlugin(),
+      new OptimizeCssAssetsPlugin({
+        parallel: 1,
+      }),
       new TerserPlugin({
+        parallel: 1,
         terserOptions: {
           sourceMap: true,
         },
@@ -77,6 +84,9 @@ module.exports = {
     //   version: pjson.version,
     //   regex: /([A-Za-z]+)(\..*)/,
     // }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+    }),
     new MiniCssExtractPlugin({
       filename: '[name].css',
     }),
@@ -90,14 +100,11 @@ module.exports = {
         {
           from: 'src/api.json',
           to: 'api.json',
-        }, {
-          from: 'TR3-pack',
-          to: 'TR3-pack',
         },
-        {
-          from: 'src/assets/docStereo.pdf',
-          to: 'images',
-        },
+        // {
+        //   from: 'src/facade/assets/images',
+        //   to: 'images',
+        // },
       ],
     }),
   ],

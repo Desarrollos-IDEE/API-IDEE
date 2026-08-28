@@ -35,7 +35,6 @@
     <link href="plugins/overviewmap/overviewmap.ol.min.css" rel="stylesheet" />
     <link href="plugins/predefinedzoom/predefinedzoom.ol.min.css" rel="stylesheet" />
     <link href="plugins/printermap/printermap.ol.min.css" rel="stylesheet" />
-    <link href="plugins/rescale/rescale.ol.min.css" rel="stylesheet" />
     <link href="plugins/selectiondraw/selectiondraw.ol.min.css" rel="stylesheet" />
     <link href="plugins/viewhistory/viewhistory.ol.min.css" rel="stylesheet" />
     <link href="plugins/transparency/transparency.ol.min.css" rel="stylesheet" />
@@ -92,7 +91,6 @@
     <script type="text/javascript" src="plugins/overviewmap/overviewmap.ol.min.js"></script>
     <script type="text/javascript" src="plugins/predefinedzoom/predefinedzoom.ol.min.js"></script>
     <script type="text/javascript" src="plugins/printermap/printermap.ol.min.js"></script>
-    <script type="text/javascript" src="plugins/rescale/rescale.ol.min.js"></script>
     <script type="text/javascript" src="plugins/selectiondraw/selectiondraw.ol.min.js"></script>
     <script type="text/javascript" src="plugins/viewhistory/viewhistory.ol.min.js"></script>
     <script type="text/javascript" src="plugins/transparency/transparency.ol.min.js"></script>
@@ -445,12 +443,6 @@
             position: 'TR',
         });
 
-        const mp35 = new IDEE.plugin.Rescale({
-            collapsible: true,
-            collapsed: true,
-            position: 'BL',
-        });
-
         const mp36 = new IDEE.plugin.SelectionDraw({
             projection: 'EPSG:4326'
         });
@@ -488,7 +480,6 @@
         map.addPlugin(mp32);
         map.addPlugin(mp33);
         map.addPlugin(mp34);
-        map.addPlugin(mp35);
         map.addPlugin(mp36);
         map.addPlugin(mp37);
         map.addPlugin(mp38);

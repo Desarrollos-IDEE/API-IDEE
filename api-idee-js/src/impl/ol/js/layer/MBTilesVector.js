@@ -2,7 +2,9 @@
 /**
  * @module IDEE/impl/layer/MBTilesVector
  */
-import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
+import {
+  isNullOrEmpty, extend, isObject, getZDirectionFunction,
+} from 'IDEE/util/Utils';
 import { get as getProj, transformExtent } from 'ol/proj';
 // import { inflate } from 'pako';
 // import OLLayerTile from 'ol/layer/Tile';
@@ -14,8 +16,10 @@ import TileProvider from 'IDEE/provider/Tile';
 import * as EventType from 'IDEE/event/eventtype';
 import MVT from 'ol/format/MVT';
 import { getValue } from 'IDEE/i18n/language';
+import TileState from 'ol/TileState';
 // import Feature from 'ol/Feature';
 import ImplMap from '../Map';
+import ImplUtils from '../util/Utils';
 import Vector from './Vector';
 
 /**
@@ -115,6 +119,11 @@ class MBTilesVector extends Vector {
     this.tileLoadFunction = userParameters.tileLoadFunction || null;
 
     /**
+     * MBTilesVector zDirection. Función de dirección Z para la carga de teselas.
+     */
+    this.zDirection = userParameters.zDirection || getZDirectionFunction();
+
+    /**
      * MBTilesVector url: Url del fichero o servicio que genera el MBTilesVector.
      */
     this.url_ = userParameters.url;
@@ -123,11 +132,6 @@ class MBTilesVector extends Vector {
      * MBTilesVector source: Fuente de la capa.
      */
     this.source_ = userParameters.source;
-
-    /**
-     * MBTilesVector style: Define el estilo de la capa.
-     */
-    this.style_ = userParameters.style;
 
     /**
      * MBTilesVector tileSize: Tamaño de la tesela vectorial, por defecto 256.
@@ -158,6 +162,12 @@ class MBTilesVector extends Vector {
      * MBTilesVector visibility: Visibilidad de la capa.
      */
     this.visibility = userParameters.visibility === false ? userParameters.visibility : true;
+
+    /**
+     * MBTilesVector fireLoad_.
+     * Controla el disparo del evento LOAD
+     */
+    this.fireLoad_ = false;
   }
 
   /**
@@ -186,7 +196,7 @@ class MBTilesVector extends Vector {
   addTo(map, addLayer = true) {
     this.map = map;
     const { code } = this.map.getProjection();
-    const projection = getProj(code);
+    const projection = getProj('EPSG:3857');
     const extent = projection.getExtent();
     this.olLayer = new OLLayerVectorTile(extend({
       visible: this.visibility,
@@ -297,6 +307,7 @@ class MBTilesVector extends Vector {
         origin: getBottomLeft(opts.sourceExtent),
         resolutions: opts.resolutions,
       }),
+      zDirection: this.zDirection,
     }));
 
     this.olLayer.setExtent(this.maxExtent_ || opts.sourceExtent);
@@ -475,13 +486,18 @@ class MBTilesVector extends Vector {
    *
    * @function
    * @public
+   * @param {boolean} skipFilter Indica si el filtro es de tipo "skip".
+   * @param {IDEE.Filter} filter Filtro que se ejecutará.
    * @returns {Array<IDEE.Feature>} Todos los objetos geográficos.
    * @api
    */
-  getFeatures() {
+  getFeatures(skipFilter, filter) {
     let features = [];
     if (this.olLayer) {
       const olSource = this.olLayer.getSource();
+      if (isNullOrEmpty(olSource) || isNullOrEmpty(olSource.sourceTiles_)) {
+        return features;
+      }
       const tileCache = Object.values(olSource.sourceTiles_);
       if (tileCache.length === 0) {
         return features;
@@ -501,6 +517,31 @@ class MBTilesVector extends Vector {
   }
 
   /**
+   * Este método devuelve la extensión de todos los objetos geográficos
+   * o discrimina por el filtro, asíncrono.
+   * Las capas MBTiles vectoriales no exponen `requestFeatures_` (no hay una
+   * petición remota única como en WFS); se calcula a partir de las teselas
+   * cargadas en el cliente, igual que MVT.
+   *
+   * @function
+   * @param {boolean} skipFilter Indica si se salta el filtro.
+   * @param {IDEE.Filter} filter Filtro para ejecutar.
+   * @return {Array<number>} Alcance de los objetos geográficos.
+   * @api stable
+   */
+  getFeaturesExtentPromise(skipFilter, filter) {
+    return new Promise((resolve) => {
+      const codeProj = this.map.getProjection().code;
+      const features = this.getFeatures(skipFilter, filter);
+      let extent = ImplUtils.getFeaturesExtent(features, codeProj);
+      if (isNullOrEmpty(extent) && !isNullOrEmpty(this.maxExtent_)) {
+        extent = this.maxExtent_;
+      }
+      resolve(extent);
+    });
+  }
+
+  /**
    * Este método comprueba si están todas las teselas
    * vectoriales cargadas.
    *
@@ -514,20 +555,27 @@ class MBTilesVector extends Vector {
   checkAllTilesLoaded_(evt) {
     const currTileCoord = evt.tile.getTileCoord();
     // eslint-disable-next-line no-underscore-dangle
-    const tileImages = this.olLayer.getSource().sourceTiles_;
+    let tileImages = this.olLayer.getSource().sourceTiles_;
+    if (isObject(tileImages)) {
+      tileImages = Object.values(tileImages);
+    }
     if (Array.isArray(tileImages)) {
-      const loaded = tileImages.some((tile) => {
+      const loaded = tileImages.every((tile) => {
         const tileCoord = tile.getTileCoord();
         const tileState = tile.getState();
         const sameTile = (currTileCoord[0] === tileCoord[0]
           && currTileCoord[1] === tileCoord[1]
           && currTileCoord[2] === tileCoord[2]);
-        const tileLoaded = sameTile || (tileState !== 1);
+        const tileLoaded = sameTile || (tileState !== TileState.LOADING);
         return tileLoaded;
       });
       if (loaded && !this.loaded_) {
         this.loaded_ = true;
+        this.facadeLayer_.fire(EventType.LOAD_ALL_TILES);
+      }
+      if (this.fireLoad_ === false) {
         this.facadeLayer_.fire(EventType.LOAD);
+        this.fireLoad_ = true;
       }
     }
   }

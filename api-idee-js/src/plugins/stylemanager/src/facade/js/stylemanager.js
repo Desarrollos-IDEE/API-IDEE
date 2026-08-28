@@ -2,8 +2,8 @@
 /**
  * @module IDEE/plugin/StyleManager
  */
-import 'css/stylemanager';
-import 'css/font-awesome.min';
+import 'css/stylemanager.css';
+import 'css/font-awesome.min.css';
 import 'templates/categorystyles';
 import StyleManagerControl from './stylemanagerControl';
 import { ColorPickerPolyfill } from './utils/colorpicker';

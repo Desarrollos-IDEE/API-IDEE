@@ -3,7 +3,7 @@
  */
 import WKTImpl from 'impl/format/WKT';
 import Base from '../Base';
-import { isUndefined } from '../util/Utils';
+import { isUndefined, isObject, isNullOrEmpty } from '../util/Utils';
 import Exception from '../exception/exception';
 import { getValue } from '../i18n/language';
 
@@ -25,11 +25,12 @@ class WKT extends Base {
    * @api
    */
   constructor(options = {}) {
-    const impl = new WKTImpl(options);
-    super(impl);
-    if (isUndefined(WKTImpl)) {
+    if (isUndefined(WKTImpl) || (isObject(WKTImpl)
+      && isNullOrEmpty(Object.keys(WKTImpl)))) {
       Exception(getValue('exception').wkt_method);
     }
+    const impl = new WKTImpl(options);
+    super(impl);
   }
 
   /**

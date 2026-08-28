@@ -62,12 +62,12 @@
     {
         "name": "Parámetros capa MBTiles",
         "description": "Parámetros de la capa MBTiles",
-        "url": "/api-idee/?layers=OSM,MBTiles*IslaCabrera*https://componentes.idee.es/estaticos/Datos/mbtiles/cabrera.mbtiles*cabrera*true*true&center=328154.9072092024,4746614.8701052265&zoom=12"
+        "url": "/api-idee/?layers=OSM,MBTiles*IslaCabrera*${api-idee.static_resources.url}/Datos/mbtiles/cabrera.mbtiles*cabrera*true*true&center=328154.9072092024,4746614.8701052265&zoom=12"
     },
     {
         "name": "Parámetros capa MBTilesVector",
         "description": "Parámetros de la capa MBTilesVector",
-        "url": "/api-idee/?layers=OSM,MBTilesVector*countries*https://componentes.idee.es/estaticos/Datos/mbtiles/countries.mbtiles*countries*true*true"
+        "url": "/api-idee/?layers=OSM,MBTilesVector*countries*${api-idee.static_resources.url}/Datos/mbtiles/countries.mbtiles*countries*true*true"
     },
     {
         "name": "Parámetros capa MapLibre",

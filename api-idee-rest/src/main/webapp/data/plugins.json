@@ -35,7 +35,7 @@
   {
     "name": "comparators",
     "plugin": "[comparators]",
-    "version": "v1.0",
+    "version": "v1.0.1",
     "url_es": "comparators.jsp?language=es",
     "url_en": "comparators.jsp?language=en",
     "url_git": "https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/comparators",
@@ -75,6 +75,17 @@
     "image": "img/api-logo.png",
     "description": "Permite gestionar y cargar wms y wmts y configurar opacidad, estilos, visibilidad y consulta de metadatos, además de facilitar la carga de servicios preconfigurados.",
     "obsolete": true
+  },
+  {
+    "name": "filteredsearch",
+    "plugin": "[filteredsearch]",
+    "version": "v1.0",
+    "url_es": "filteredsearch.jsp?language=es",
+    "url_en": "filteredsearch.jsp?language=en",
+    "url_git": "https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/filteredsearch",
+    "image": "img/api-logo.png",
+    "description": "Plugin que permite aplicar filtros sobre las capas de un mapa y visualizar de forma gráfica las features que cumplen los filtros. Permite guardar consultas, combinarlas y exportar los resultados de estas.",
+    "obsolete": false
   },
   {
     "name": "geometrydraw",
@@ -134,7 +145,7 @@
   {
     "name": "incicarto",
     "plugin": "[incicarto]",
-    "version": "v1.0",
+    "version": "v1.0.1",
     "url_es": "incicarto.jsp?language=es",
     "url_en": "incicarto.jsp?language=en",
     "url_git": "https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/incicarto",
@@ -220,6 +231,50 @@
     "obsolete": true
   },
   {
+    "name": "magnify",
+    "plugin": "[magnify]",
+    "version": "v1.0",
+    "url_es": "magnify.jsp?language=es",
+    "url_en": "magnify.jsp?language=en",
+    "url_git": "https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/magnify",
+    "image": "img/api-logo.png",
+    "description": "Plugin que permite realizar un efecto de zoom o de lupa sobre una o varias capas.",
+    "obsolete": false
+  },
+  {
+    "name": "mapheader",
+    "plugin": "[mapheader]",
+    "version": "v1.0",
+    "url_es": "mapheader.jsp?language=es",
+    "url_en": "mapheader.jsp?language=en",
+    "url_git": "https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/mapheader",
+    "image": "img/api-logo.png",
+    "description": "Plugin que permite mostrar un encabezado en el mapa.",
+    "obsolete": false
+  },
+  {
+    "name": "mapfooter",
+    "plugin": "[mapfooter]",
+    "version": "v1.0",
+    "url_es": "mapfooter.jsp?language=es",
+    "url_en": "mapfooter.jsp?language=en",
+    "url_git": "https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/mapfooter",
+    "image": "img/api-logo.png",
+    "description": "Plugin que permite mostrar un pie de página en el mapa.",
+    "obsolete": false
+  },
+  {
+    "name": "maxextzoom",
+    "plugin": "[maxextzoom]",
+    "version": "v1.0",
+    "url_es": "maxextzoom.jsp?language=es",
+    "url_en": "maxextzoom.jsp?language=en",
+    "url_git": "https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/maxextzoom",
+    "image": "img/api-logo.png",
+    "description": "Plugin que permite realizar un zoom a la extensión del mapa.",
+    "obsolete": false
+  },
+  {
     "name": "measurebar",
     "plugin": "[measurebar]",
     "version": "v1.0",
@@ -244,7 +299,7 @@
   {
     "name": "modal",
     "plugin": "[modal]",
-    "version": "v1.0",
+    "version": "v1.0.1",
     "url_es": "modal.jsp?language=es",
     "url_en": "modal.jsp?language=en",
     "url_git": "https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/modal",
@@ -330,17 +385,6 @@
     "obsolete": false
   },
   {
-    "name": "rescale",
-    "plugin": "[rescale]",
-    "version": "v1.0",
-    "url_es": "rescale.jsp?language=es",
-    "url_en": "rescale.jsp?language=en",
-    "url_git": "https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/rescale",
-    "image": "img/api-logo.png",
-    "description": "Hace zoom a la escala elegida.",
-    "obsolete": true
-  },
-  {
     "name": "selectiondraw",
     "plugin": "[selectiondraw]",
     "version": "v1.0",
@@ -376,7 +420,7 @@
   {
     "name": "storymap",
     "plugin": "[storymap]",
-    "version": "v1.0",
+    "version": "v1.0.1",
     "url_es": "storymap.jsp?language=es",
     "url_en": "storymap.jsp?language=en",
     "url_git": "https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/storymap",
@@ -475,12 +519,23 @@
   {
     "name": "viewmanagement",
     "plugin": "[viewmanagement]",
-    "version": "v1.0",
+    "version": "v1.0.1",
     "url_es": "viewmanagement.jsp?language=es",
     "url_en": "viewmanagement.jsp?language=en",
     "url_git": "https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/viewmanagement",
     "image": "img/api-logo.png",
     "description": "Plugin que permite utilizar diferentes herramientas de zoom.",
+    "obsolete": false
+  },
+  {
+    "name": "wfstcontrols",
+    "plugin": "[wfstcontrols]",
+    "version": "v1.0.1",
+    "url_es": "wfstcontrols.jsp?language=es",
+    "url_en": "wfstcontrols.jsp?language=en",
+    "url_git": "https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/wfstcontrols",
+    "image": "img/api-logo.png",
+    "description": "Plugin para la gestión de la edición de capas WFS-T.",
     "obsolete": false
   },
   {

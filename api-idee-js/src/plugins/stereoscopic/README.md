@@ -1,15 +1,36 @@
-# IDEE.plugin.Stereoscopic
+
+<p align="center">
+  <img src="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg" height="152" />
+</p>
+<h1 align="center"><strong>API IDEE</strong> <small>🔌 IDEE.plugin.Stereoscopic</small></h1>
+
+# Descripción
 
 Plugin que muestra una vista 3D, incluye vistas por anaglifos y orbitación 3D.
 
 # Dependencias
 
-- stereoscopic.ol.min.js
-- stereoscopic.ol.min.css
+Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
+Para uso de implementación OpenLayers:
+- **stereoscopic.ol.min.js**
+- **stereoscopic.ol.min.css**
+
+Para uso de implementación Cesium:
+- **stereoscopic.cesium.min.js**
+- **stereoscopic.cesium.min.css**
 
 ```html
  <link href="https://componentes.idee.es/api-idee/plugins/stereoscopic/stereoscopic.ol.min.css" rel="stylesheet" />
  <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/stereoscopic/stereoscopic.ol.min.js"></script>
+```
+
+# Uso del histórico de versiones
+
+Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
+Ejemplo:
+```html
+ <link href="https://componentes.idee.es/api-idee/plugins/stereoscopic/stereoscopic-1.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/stereoscopic/stereoscopic-1.0.0.ol.min.js"></script>
 ```
 
 # Parámetros

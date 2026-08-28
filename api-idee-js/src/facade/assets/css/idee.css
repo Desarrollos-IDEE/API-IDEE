@@ -323,7 +323,7 @@ div.m-control button[class^=g-cartografia-],
 }
 
 .m-areas>div.m-area>div.m-panel.opened.m-location,
-.m-areas>div.m-area>div.m-panel.opened.m-rotate,
+/* .m-areas>div.m-area>div.m-panel.opened.m-rotate, */
 .m-areas>div.m-area>div.m-panel.opened.m-geosearchbylocation {
     background-color: #71A7D3 !important;
 }

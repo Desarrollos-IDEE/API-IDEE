@@ -125,6 +125,7 @@ class WFS extends Vector {
 
     // calls the super constructor
     super(parameters, optionsVar, undefined, impl);
+    this.constructorParameters = { userParams, options, vendorOpts };
 
     /**
      * WFS namespace: Espacio de trabajo asociado con la capa.

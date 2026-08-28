@@ -143,54 +143,54 @@ const geoJSON = new IDEE.layer.GeoJSON({
 const terremotosText = 'WMS*Eventos sísmicos*https://www.ign.es/wms-inspire/geofisica*NZ.ObservedEvent'; // Al ser definido con string, crea este layer automáticamente cada vez que se usa.
 // const terremotosText = new IDEE.layer.WMS('WMS*Eventos sísmicos*https://www.ign.es/wms-inspire/geofisica*NZ.ObservedEvent');
 // map.addLayers([geoJSON]);
-const pluginTimeline = new Timeline({
-  position: 'TR', // 'TL' | 'TR' | 'BR' | 'BL'
-  intervals: [
-    {
-      id: '1',
-      init: '1900-05-12T23:39:58.767Z',
-      end: '1986-05-29T20:22:26.001Z',
-      layer: geoJSON,
-      grupo: 'vectorWMS_GRUPO',
-      attributeParam: 'fecha_fecha',
-    },
-    {
-      id: '2',
-      init: '1918-05-12T23:39:58.767Z',
-      end: '1951-01-16T12:47:07.530Z',
-      layer: terremotosText, // Al usarse en varias instancias se tiene que hacer con String para no dar error de reemplazo de id del mismo objeto.
-      grupo: 'vectorWMS_GRUPO',
-      attributeParam: 'date',
-    },
-    {
-      id: '3',
-      init: '1900-05-12T23:39:58.767Z',
-      end: '1421412427530',
-      layer: terremotosText,
-      attributeParam: 'date',
-      // equalsTimeLine: true // Por defecto es false, pero si se pone a true, el input de inicio "#a" ahora se quita cuando se escoge esta capa, impidiendo modificado de valor de inicio de "timelineType:'relative'".
-    },
-    {
-      id: '4',
-      init: '1910-05-12T23:39:58.767Z',
-      end: 1421412427530,
-      layer: terremotosText, // Vuelve a crear este mismo layer pero con id 4, aunque el "2" y "3" ya existen, ya que son diferentes copias.
-      attributeParam: 'date',
-    },
-  ],
-  // intervals: undefined, // interumpe funcionamiento
-  // intervals: [], // getAPIRest() "timeline=TR*!!!¡¡*!false*!1"
-  animation: false, // No hace nada con timelineType: 'absolute' | 'relative'
-  speed: 1,
-  // tooltip: 'TEST TOOLTIP Timeline',
-  speedDate: 2,
-  paramsDate: 'yr', // 'sec' | 'min' | 'hrs' | 'day' | 'mos' | 'yr'
-  stepValue: 5,
-  sizeWidthDinamic: 'sizeWidthDinamic_medium', // '' | 'sizeWidthDinamic_medium' | 'sizeWidthDinamic_big'
-  formatMove: 'discrete', // 'discrete'(Al mover el slider con el play, solo mueve el final) | 'continuous' (Mueve también el inicial pero solo si no es "timelineType: 'absolute'")
-  formatValue: 'exponential', // 'logarithmic' | 'exponential' | 'linear'/false
-  timelineType: 'absolute', // 'absolute'(SOLO FIN) | 'relative'(INICIO y FIN) | 'absoluteSimple'(Otro aspecto, ver en "pluginTimeline" de abajo) | false/undefined/others
-}); // */
+// const pluginTimeline = new Timeline({
+//   position: 'TR', // 'TL' | 'TR' | 'BR' | 'BL'
+//   intervals: [
+//     {
+//       id: '1',
+//       init: '1900-05-12T23:39:58.767Z',
+//       end: '1986-05-29T20:22:26.001Z',
+//       layer: geoJSON,
+//       grupo: 'vectorWMS_GRUPO',
+//       attributeParam: 'fecha_fecha',
+//     },
+//     {
+//       id: '2',
+//       init: '1918-05-12T23:39:58.767Z',
+//       end: '1951-01-16T12:47:07.530Z',
+//       layer: terremotosText, // Al usarse en varias instancias se tiene que hacer con String para no dar error de reemplazo de id del mismo objeto.
+//       grupo: 'vectorWMS_GRUPO',
+//       attributeParam: 'date',
+//     },
+//     {
+//       id: '3',
+//       init: '1900-05-12T23:39:58.767Z',
+//       end: '1421412427530',
+//       layer: terremotosText,
+//       attributeParam: 'date',
+//       // equalsTimeLine: true // Por defecto es false, pero si se pone a true, el input de inicio "#a" ahora se quita cuando se escoge esta capa, impidiendo modificado de valor de inicio de "timelineType:'relative'".
+//     },
+//     {
+//       id: '4',
+//       init: '1910-05-12T23:39:58.767Z',
+//       end: 1421412427530,
+//       layer: terremotosText, // Vuelve a crear este mismo layer pero con id 4, aunque el "2" y "3" ya existen, ya que son diferentes copias.
+//       attributeParam: 'date',
+//     },
+//   ],
+//   // intervals: undefined, // interumpe funcionamiento
+//   // intervals: [], // getAPIRest() "timeline=TR*!!!¡¡*!false*!1"
+//   animation: false, // No hace nada con timelineType: 'absolute' | 'relative'
+//   speed: 1,
+//   // tooltip: 'TEST TOOLTIP Timeline',
+//   speedDate: 2,
+//   paramsDate: 'yr', // 'sec' | 'min' | 'hrs' | 'day' | 'mos' | 'yr'
+//   stepValue: 5,
+//   sizeWidthDinamic: 'sizeWidthDinamic_medium', // '' | 'sizeWidthDinamic_medium' | 'sizeWidthDinamic_big'
+//   formatMove: 'discrete', // 'discrete'(Al mover el slider con el play, solo mueve el final) | 'continuous' (Mueve también el inicial pero solo si no es "timelineType: 'absolute'")
+//   formatValue: 'exponential', // 'logarithmic' | 'exponential' | 'linear'/false
+//   timelineType: 'absolute', // 'absolute'(SOLO FIN) | 'relative'(INICIO y FIN) | 'absoluteSimple'(Otro aspecto, ver en "pluginTimeline" de abajo) | false/undefined/others
+// }); // */
 
 /* / Origin format del plugin parte de "absoluteSimple"
 const intervals = '[["NACIONAL 1981-1986","1986","WMS*NACIONAL_1981-1986*https://www.ign.es/wms/pnoa-historico*NACIONAL_1981-1986"],["OLISTAT","1998","WMS*OLISTAT*https://www.ign.es/wms/pnoa-historico*OLISTAT"],["SIGPAC","2003","WMS*SIGPAC*https://www.ign.es/wms/pnoa-historico*SIGPAC"],["PNOA 2004","2004","WMS*pnoa2004*https://www.ign.es/wms/pnoa-historico*pnoa2004"],["PNOA 2005","2005","WMS*pnoa2005*https://www.ign.es/wms/pnoa-historico*pnoa2005"],["PNOA 2006","2006","WMS*pnoa2006*https://www.ign.es/wms/pnoa-historico*pnoa2006"],["PNOA 2010","2010","WMS*pnoa2010*https://www.ign.es/wms/pnoa-historico*pnoa2010"]]';
@@ -200,5 +200,19 @@ const pluginTimeline = new Timeline({
   timelineType: 'absoluteSimple', // OBLIGATORIO
   animation: false, // Activa o desactiva el botón de play, solamente en "absoluteSimple"
 }); // */
+
+const pluginTimeline = new Timeline({
+  position: 'TL',
+  timelineType: 'absoluteSimple',
+  intervals: [
+    ["NACIONAL 1981-1986", "1986", "WMS*NACIONAL_1981-1986*https://www.ign.es/wms/pnoa-historico*NACIONAL_1981-1986"],
+    ["OLISTAT", "1998", "WMS*OLISTAT*https://www.ign.es/wms/pnoa-historico*OLISTAT"],
+    ["SIGPAC", "2003", "WMS*SIGPAC*https://www.ign.es/wms/pnoa-historico*SIGPAC"],
+    ["PNOA 2004", "2004", "WMS*pnoa2004*https://www.ign.es/wms/pnoa-historico*pnoa2004"],
+    ["PNOA 2005", "2005", "WMS*pnoa2005*https://www.ign.es/wms/pnoa-historico*pnoa2005"],
+    ["PNOA 2006", "2006", "WMS*pnoa2006*https://www.ign.es/wms/pnoa-historico*pnoa2006"],
+    ["PNOA 2010", "2010", "WMS*pnoa2010*https://www.ign.es/wms/pnoa-historico*pnoa2010"]
+  ],
+});
 
 map.addPlugin(pluginTimeline); window.mp = pluginTimeline;
