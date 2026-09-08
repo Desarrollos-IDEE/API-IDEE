@@ -1,4 +1,11 @@
-01/07/26 Versión 1.1.0
+30/09/2026 - Versión 1.2.0
+-	Se soluciona el problema de añadir capas WMTS mediante Layerswitcher.
+-	Layerswitcher: se eliminan servicios repetidos o en desuso (ie: Copernicus Land Monitoring).
+-	Se soluciona el problema de la medición en el plugin VectorsManagement.
+-	Se incorpora la gestión de secciones en el Layerswitcher.
+-	Se soluciona problema con peticiones al proxy con url con espacio.
+
+01/07/26 - Versión 1.1.0
 - Se añade el método getImageMap para generar la imagen del mapa.
 - Se soluciona problemas con filtros espaciales en Cesium.
 - Se soluciona problema en estilos con patrones en polígonos.
