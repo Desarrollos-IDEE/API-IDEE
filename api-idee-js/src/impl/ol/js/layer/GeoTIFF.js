@@ -421,6 +421,26 @@ class GeoTIFF extends LayerBase {
   }
 
   /**
+   * Obtiene los valores del ráster en un píxel de pantalla.
+   * Usa ol.layer.WebGLTile#getData.
+   *
+   * @public
+   * @function
+   * @param {Array<number>} pixel Coordenadas de píxel [x, y] del mapa.
+   * @returns {Uint8ClampedArray|Uint8Array|Float32Array|DataView|null}
+   * @api stable
+   */
+  getData(pixel) {
+    if (!this.olLayer || typeof this.olLayer.getData !== 'function') {
+      return null;
+    }
+    if (isNullOrEmpty(pixel) || !Array.isArray(pixel) || pixel.length < 2) {
+      return null;
+    }
+    return this.olLayer.getData(pixel);
+  }
+
+  /**
    * Este método crea la fuente ol para esta instancia.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public

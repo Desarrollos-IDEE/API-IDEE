@@ -44,12 +44,13 @@ El constructor se inicializa con un JSON con los siguientes atributos:
   - 'BR': (bottom right) - Abajo a la derecha.
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). 
-- **tooltip**. Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información). 
+- **tooltip**. Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información).
+- **calcHistogramUrl**. URL del servicio WPS `calcHistogram` usado para calcular histogramas y estadísticas. Por defecto: `https://mantenimiento-cnig-wps.desarrollo.guadaltel.es/processes/calcHistogram/execution`.
 
 # API-REST
 
 ```javascript
-URL_API?rastermanagement=position*collapsed*collapsible*tooltip
+URL_API?rastermanagement=position*collapsed*collapsible*tooltip*calcHistogramUrl
 ```
 
 <table>
@@ -76,6 +77,11 @@ URL_API?rastermanagement=position*collapsed*collapsible*tooltip
   <tr>
     <td>tooltip</td>
     <td>Valor a usar para mostrar en el tooltip del plugin</td>
+    <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
+  <tr>
+    <td>calcHistogramUrl</td>
+    <td>URL del servicio WPS calcHistogram</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
 </table>
@@ -109,6 +115,7 @@ https://componentes.idee.es/api-idee/?rastermanagement=base64=eyJwb3Np
 ```javascript
 const mp = new RasterManagement({
   position: 'TR',
+  calcHistogramUrl: 'https://mantenimiento-cnig-wps.desarrollo.guadaltel.es/processes/calcHistogram/execution',
 });
 
 map.addPlugin(mp);

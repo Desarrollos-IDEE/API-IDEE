@@ -44,16 +44,17 @@
     "html-loader": "^0.5.5",
     "live-server": "^1.2.1",
     "mini-css-extract-plugin": "2.7.6",
+    "process": "^0.11.10",
     "slash": "^3.0.0",
     "style-loader": "3.3.3",
     "terser-webpack-plugin": "5.3.9",
-    "process": "^0.11.10",
     "webpack": "5.88.2",
     "webpack-cli": "5.1.4",
     "webpack-dev-server": "4.15.1"
   },
   "dependencies": {
-    "@babel/compat-data": "^7.14.7"
+    "@babel/compat-data": "^7.14.7",
+    "chart.js": "^4.5.1"
   },
   "overrides": {
     "webpack": "5.88.2",

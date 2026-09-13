@@ -294,6 +294,25 @@ class GeoTIFF extends LayerBase {
   }
 
   /**
+   * Obtiene los valores del ráster en un píxel de pantalla.
+   * Delega en la implementación (OpenLayers WebGLTile#getData).
+   *
+   * @function
+   * @public
+   * @param {Array<number>} pixel Coordenadas de píxel [x, y] del mapa.
+   * @returns {Uint8ClampedArray|Uint8Array|Float32Array|DataView|null}
+   * Datos por banda en ese píxel, o null si no hay dato.
+   * @api
+   */
+  getData(pixel) {
+    const impl = this.getImpl();
+    if (!impl || typeof impl.getData !== 'function') {
+      return null;
+    }
+    return impl.getData(pixel);
+  }
+
+  /**
    * Devuelve las opciones de la capa.
    *
    * @function

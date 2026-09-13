@@ -10,6 +10,7 @@ import myhelp from '../../templates/myhelp';
 
 import es from './i18n/es';
 import en from './i18n/en';
+import { CALC_HISTOGRAM_WPS_URL } from './util/calchistogramservice';
 
 export default class RasterManagement extends IDEE.Plugin {
   /**
@@ -98,6 +99,16 @@ export default class RasterManagement extends IDEE.Plugin {
     this.order = options.order >= -1 ? options.order : null;
 
     /**
+     * URL del servicio WPS calcHistogram
+     * @public
+     * @type {string}
+     */
+    this.calcHistogramUrl = CALC_HISTOGRAM_WPS_URL;
+    if (!IDEE.utils.isNullOrEmpty(options.calcHistogramUrl)) {
+      this.calcHistogramUrl = options.calcHistogramUrl;
+    }
+
+    /**
      * Plugin parameters
      * @public
      * @type {object}
@@ -130,6 +141,8 @@ export default class RasterManagement extends IDEE.Plugin {
    */
   addTo(map) {
     this.control_ = new RasterManagementControl({
+      order: this.order,
+      calcHistogramUrl: this.calcHistogramUrl,
     });
     this.controls_.push(this.control_);
     this.map_ = map;
@@ -175,7 +188,7 @@ export default class RasterManagement extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.collapsible}*${this.tooltip_}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.collapsible}*${this.tooltip_}*${this.calcHistogramUrl}`;
   }
 
   /**
