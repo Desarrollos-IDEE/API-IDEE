@@ -782,6 +782,34 @@
     background-color: #fff;
 }
 
+.m-rastermanagement-histogram-point-values {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.m-rastermanagement-histogram-point-value {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.m-rastermanagement-histogram-point-value-number {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.m-rastermanagement-histogram-point-value-label {
+    margin-top: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: #71a7d3;
+}
+
 .m-rastermanagement-histogram-chart-wrap {
     margin-bottom: 8px;
 }

@@ -91,6 +91,13 @@ export default class HistogramControl {
     this.geom_ = null;
 
     /**
+     * Feature de punto dibujado (muestreo local).
+     * @private
+     * @type {IDEE.Feature|null}
+     */
+    this.pointFeature_ = null;
+
+    /**
      * Capa vectorial temporal de dibujo.
      * @private
      * @type {IDEE.layer.Vector|null}
@@ -121,11 +128,13 @@ export default class HistogramControl {
         histogramChart: getValue('histogramChart'),
         histogramScope: getValue('histogramScope'),
         histogramScopeFull: getValue('histogramScopeFull'),
+        histogramDrawPoint: getValue('histogramDrawPoint'),
         histogramDrawPolygon: getValue('histogramDrawPolygon'),
         histogramDrawLine: getValue('histogramDrawLine'),
         histogramClearGeom: getValue('histogramClearGeom'),
         histogramDistance: getValue('histogramDistance'),
         histogramDistancePlaceholder: getValue('histogramDistancePlaceholder'),
+        histogramPointValues: getValue('histogramPointValues'),
         band: getValue('band'),
         descriptiveStats: getValue('descriptiveStats'),
         statPixels: getValue('statPixels'),
@@ -213,6 +222,11 @@ export default class HistogramControl {
       return;
     }
 
+    if (this.geomMode_ === 'point') {
+      this.loadPointValues_();
+      return;
+    }
+
     const requestOptions = {};
     if (!IDEE.utils.isNullOrEmpty(this.geom_)) {
       requestOptions.geom = this.geom_;
@@ -250,6 +264,7 @@ export default class HistogramControl {
         this.bandHistograms_ = bandHistograms;
         this.populateBandSelector_();
         this.showState_('content');
+        this.showPointResult_(false);
         this.renderSelectedBandStats_();
       })
       .catch((err) => {
@@ -344,6 +359,10 @@ export default class HistogramControl {
       this.clearGeometry_(false);
       return;
     }
+    if (mode === 'point') {
+      this.startDrawing_('Point');
+      return;
+    }
     if (mode === 'polygon') {
       this.startDrawing_('Polygon');
       return;
@@ -420,12 +439,124 @@ export default class HistogramControl {
         const facadeFeature = IDEE.impl.Feature.olFeature2Facade(evt.feature);
         this.drawLayer_.clear();
         this.drawLayer_.addFeatures([facadeFeature]);
+        this.pointFeature_ = facadeFeature;
         this.geom_ = this.drawLayer_.toGeoJSON();
         this.stopDrawing_();
       }, 0);
     });
 
     olMap.addInteraction(this.drawInteraction_);
+  }
+
+  /**
+   * Obtiene los valores del ráster en el punto dibujado con getData.
+   *
+   * @private
+   * @function
+   */
+  loadPointValues_() {
+    const layer = this.parentControl_.selectedLayer;
+    if (!layer || typeof layer.getData !== 'function') {
+      this.showError_(getValue('histogramDrawUnavailable'));
+      return;
+    }
+
+    const map = this.parentControl_.map;
+    const olMap = map.getMapImpl();
+    if (!olMap || typeof olMap.getPixelFromCoordinate !== 'function') {
+      this.showError_(getValue('histogramDrawUnavailable'));
+      return;
+    }
+
+    let feature = this.pointFeature_;
+    if (!feature && this.drawLayer_) {
+      const features = this.drawLayer_.getFeatures();
+      if (features.length > 0) {
+        feature = features[0];
+        this.pointFeature_ = feature;
+      }
+    }
+    if (!feature) {
+      this.showError_(getValue('histogramNeedGeom'));
+      return;
+    }
+
+    const geometry = feature.getGeometry();
+    if (!geometry || geometry.type !== 'Point' || !geometry.coordinates) {
+      this.showError_(getValue('histogramNeedGeom'));
+      return;
+    }
+
+    const pixel = olMap.getPixelFromCoordinate(geometry.coordinates);
+    const data = layer.getData(pixel);
+    if (!data || data.length === 0) {
+      this.showError_(getValue('histogramPointNoData'));
+      return;
+    }
+
+    const values = [];
+    const attributes = {};
+    for (let i = 0; i < data.length; i += 1) {
+      const bandValue = data[i];
+      values.push(bandValue);
+      attributes[`band_${i + 1}`] = bandValue;
+    }
+    feature.setAttributes(attributes);
+
+    this.destroyChart_();
+    this.bandHistograms_ = [];
+    this.renderPointValues_(values);
+    this.showState_('content');
+    this.showPointResult_(true);
+  }
+
+  /**
+   * Muestra u oculta el resultado de punto frente al histograma.
+   *
+   * @private
+   * @function
+   * @param {boolean} isPointResult true para mostrar valores de punto.
+   */
+  showPointResult_(isPointResult) {
+    const pointResult = this.root_.querySelector('#m-rastermanagement-histogram-point-result');
+    const chartSection = this.root_.querySelector('#m-rastermanagement-histogram-chart-section');
+    const bandRow = this.root_.querySelector('#m-rastermanagement-histogram-band-row');
+    if (isPointResult) {
+      pointResult.classList.remove('hidden');
+      chartSection.classList.add('hidden');
+      bandRow.classList.add('hidden');
+      return;
+    }
+    pointResult.classList.add('hidden');
+    chartSection.classList.remove('hidden');
+  }
+
+  /**
+   * Pinta los valores de banda del punto muestreado.
+   *
+   * @private
+   * @function
+   * @param {Array<number>} values Valores por banda.
+   */
+  renderPointValues_(values) {
+    const container = this.root_.querySelector('#m-rastermanagement-histogram-point-values');
+    container.innerHTML = '';
+    for (let i = 0; i < values.length; i += 1) {
+      const item = document.createElement('div');
+      item.className = 'm-rastermanagement-histogram-point-value';
+
+      const numberEl = document.createElement('span');
+      numberEl.className = 'm-rastermanagement-histogram-point-value-number';
+      numberEl.innerText = this.formatNumber_(values[i], 2);
+
+      const labelEl = document.createElement('span');
+      labelEl.className = 'm-rastermanagement-histogram-point-value-label';
+      labelEl.innerText = `${getValue('histogramPointBand')} ${i + 1}`;
+
+      item.appendChild(numberEl);
+      item.appendChild(labelEl);
+      container.appendChild(item);
+    }
   }
 
   /**
@@ -473,6 +604,7 @@ export default class HistogramControl {
   clearGeometry_(resetMode) {
     this.stopDrawing_();
     this.geom_ = null;
+    this.pointFeature_ = null;
     if (this.drawLayer_) {
       this.drawLayer_.clear();
     }
