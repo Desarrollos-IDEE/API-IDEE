@@ -572,6 +572,7 @@ export default class HistogramControl {
     this.drawLayer_ = new IDEE.layer.Vector({
       name: 'rastermanagement_histogram_geom',
       legend: 'Histogram geometry',
+      extract: false,
     });
     this.drawLayer_.displayInLayerSwitcher = false;
     this.parentControl_.map.addLayers(this.drawLayer_);
