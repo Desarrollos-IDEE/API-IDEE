@@ -1126,6 +1126,11 @@ export default class WFSTControls extends IDEE.Plugin {
    * @api stable
    */
   getHelp() {
+    // eslint-disable-next-line global-require, import/no-dynamic-require
+    const imageHelp01 = require(`assets/images/${this.getMetadata().version}/help-01.png`);
+    // eslint-disable-next-line global-require, import/no-dynamic-require
+    const imageHelp02 = require(`assets/images/${this.getMetadata().version}/help-02.png`);
+
     return {
       title:
         getValue(
@@ -1147,8 +1152,8 @@ export default class WFSTControls extends IDEE.Plugin {
                   iconUrl:
                       'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_editarGeo.svg',
 
-                  urlImages:
-                      `${IDEE.config.API_IDEE_URL}plugins/wfstcontrols/images/`,
+                  imageHelp01,
+                  imageHelp02,
 
                   translations: {
                     paragraph1:
