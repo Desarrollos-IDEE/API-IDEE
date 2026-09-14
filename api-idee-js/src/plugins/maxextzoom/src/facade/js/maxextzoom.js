@@ -180,13 +180,16 @@ export default class MaxExtZoom extends IDEE.Plugin {
    * @api
    */
   getHelp() {
+    // eslint-disable-next-line global-require, import/no-dynamic-require
+    const imageHelp01 = require(`assets/images/${this.getMetadata().version}/help-01.png`);
+
     return {
       title: getValue('textHelp.squemaTitle'),
       content: new Promise((resolve) => {
         const html = IDEE.template.compileSync(myhelp, {
           vars: {
             title: getValue('textHelp.title'),
-            urlImages: `${IDEE.config.API_IDEE_URL}plugins/maxextzoom/images/`,
+            imageHelp01,
             translations: {
               paragraph1: getValue('textHelp.paragraph1'),
               screenshot1Alt: getValue('textHelp.screenshot1Alt'),
