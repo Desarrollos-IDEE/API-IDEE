@@ -15,10 +15,10 @@
   border-radius: 0 !important;
   height: 105px;
   width: 100vw;
-  border-top: solid 2px #71a7d3 !important;
+  border-top: solid 2px var(--idee-color-primary) !important;
   box-shadow: none !important;
   padding: 10px 0 0 !important;
-  background-color: #fff;
+  background-color: var(--idee-color-white);
   z-index: 1000;
   display: flex !important;
   flex-direction: column !important;
@@ -63,14 +63,14 @@
   border-bottom-right-radius: 0 !important;
   border-top-left-radius: 0 !important;
   border-top-right-radius: 10px !important;
-  background-image: linear-gradient(#bebebe, #ffffff, #ffffff) !important;
-  background-color: #fff !important;
-  border-top: solid 2px #71a7d3 !important;
-  border-right: solid 2px #71a7d3 !important;
+  background-image: linear-gradient(var(--idee-color-neutral-40), var(--idee-color-white), var(--idee-color-white)) !important;
+  background-color: var(--idee-color-white) !important;
+  border-top: solid 2px var(--idee-color-primary) !important;
+  border-right: solid 2px var(--idee-color-primary) !important;
   border-bottom: none !important;
   border-left: none !important;
-  color: #666 !important;
-  box-shadow: 1px -2px 4px rgb(0 0 0 / 20%) !important;
+  color: var(--idee-color-neutral-60) !important;
+  box-shadow: 1px -2px 4px color-mix(in srgb, var(--idee-color-black) 20%, transparent) !important;
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
@@ -170,7 +170,7 @@
 .m-mapfooter-container {
   width: 100% !important;
   box-sizing: border-box !important;
-  color: #555 !important;
+  color: var(--idee-color-neutral-70) !important;
   text-align: center !important;
   font-size: 0.9em !important;
   line-height: 1.35 !important;
