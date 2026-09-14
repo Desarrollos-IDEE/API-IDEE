@@ -1,4 +1,4 @@
-24/10/25 Versión 1.1.0
+01/07/26 Versión 1.1.0
 - Se añade el método getImageMap para generar la imagen del mapa.
 - Se soluciona problemas con filtros espaciales en Cesium.
 - Se soluciona problema en estilos con patrones en polígonos.
@@ -115,6 +115,7 @@
 - Se actualizan las librerías log4j y postgresql.
 - Se fija la versión de la librería jackson-mapper-asl.
 - Se eliminan ficheros innecesarios de configuración de log.
+- Se permiten cabeceras Content-Type, content-type o CONTENT-TYPE en la clase Response.
 - Se pueden importar archivos .tif, .tiff y .gpkg y se implementa mejora a la hora de añadir archivos pesados en el plugin LayerSwitcher.
 - Se crean métodos en Utils para la transformación de formato GeoJSON y WKT a WKB, tanto a nivel de feature como de capa.
 - La información recibida de un servicio en formato GeoJSON o KML se proyecta en la proyección estándar de estos formatos, EPSG:4326.

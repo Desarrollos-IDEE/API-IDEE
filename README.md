@@ -33,7 +33,7 @@ Se ha creado una [Wiki](https://github.com/Desarrollos-IDEE/API-IDEE/wiki/1.3.-P
 
 - EdgeHTML 12+
 - Mozilla Firefox 45+
-- Goole Chrome 49+
+- Google Chrome 49+
 
 ## Dispositivos móviles y SO soportados
 
@@ -43,7 +43,7 @@ Se ha creado una [Wiki](https://github.com/Desarrollos-IDEE/API-IDEE/wiki/1.3.-P
 ## Versiones de librerías base
 
 <ul>
-<li><a target="_blank" href="https://openlayers.org/en/v10.4.0/apidoc/">OpenLayers v10.4.0</a></li>
+<li><a target="_blank" href="https://openlayers.org/en/v10.7.0/apidoc/">OpenLayers v10.7.0</a></li>
 <li><a target="_blank" href="https://cesium.com/learn/cesiumjs/ref-doc/">Cesium v1.118.0</a></li>
 </ul>
 

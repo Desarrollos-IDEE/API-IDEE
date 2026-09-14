@@ -119,11 +119,11 @@ test.describe('IDEE.Utils', () => {
     // Utils - dynamicLegend / getFeaturesExtent / getCentroid
     const legendAndExtentCheck = await page.evaluate(() => {
       const capa = new IDEE.layer.WFS({
-        name: 'reservas_biosfera',
-        namespace: 'reservas_biosfera',
+        name: 'g11_08_Zepim',
+        namespace: 'DERA_g11_patrimonio',
         legend: 'Reservas biosferas',
         geometry: 'POLYGON',
-        url: 'https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_WFS_Patrimonio_Natural?',
+        url: 'https://www.ideandalucia.es/services/DERA_g11_patrimonio/wfs',
         version: '1.1.0',
       });
 
@@ -157,9 +157,9 @@ test.describe('IDEE.Utils', () => {
     expect.soft(legendAndExtentCheck[0]).toBe('https://componentes.idee.es/estaticos/imagenes/leyenda/dynamic_legend.png');
     // getFeaturesExtent
     expect.soft(legendAndExtentCheck[1]).toStrictEqual(
-      [-788218.6946264381, 4136175.969672982, -207373.0608899173, 4652267.961161624],
+      [-427410.07388496, 4274039.30967046, -181038.88826674, 4491084.25601262],
     );
     // getCentroid
-    expect.soft(legendAndExtentCheck[2]).toStrictEqual([-552149.7463648957, 4398504.551029887]);
+    expect.soft(legendAndExtentCheck[2]).toStrictEqual([-233125.858430835, 4422136.37435694]);
   });
 });
