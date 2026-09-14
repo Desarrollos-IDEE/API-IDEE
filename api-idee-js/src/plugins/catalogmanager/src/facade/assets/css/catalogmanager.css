@@ -16,6 +16,7 @@
     width: 25vw;
     background-color: white !important;
     box-shadow: 0 2px 4px rgb(0 0 0 / 20%), 0 -1px 0 rgb(0 0 0 / 2%);
+    color: #000;
 }
 
 div.m-area.m-left .m-plugin-catalogmanager.opened #div-contenedor {
@@ -66,7 +67,7 @@ div.m-area.m-right .m-plugin-catalogmanager.opened #div-contenedor {
 
 .m-control.m-container.m-catalogmanager>header .title {
     background-color: #f4f4f4;
-    color: #6c6c6c !important;
+    color: #000 !important;
     font-family: 'Muli', 'sans-serif' !important;
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
     font-size: 15px;
@@ -123,19 +124,37 @@ div.m-area.m-right .m-plugin-catalogmanager.opened #div-contenedor {
     margin-bottom: 0.5rem;
 }
 
+#m-catalogmanager-filters-temporal input {
+    width: 100%;
+    min-width: 7rem;
+    box-sizing: border-box;
+}
+
+.flatpickr-calendar {
+    z-index: 10000 !important;
+}
+
 #m-catalogmanager-filters-temporal-predefined {
     margin-top: 0.5rem;
 }
 
 .m-catalogmanager-actions button,
 #m-catalogmanager-filters-temporal-predefined button,
-#m-catalogmanager-filters-spatial-predefined button,
 .m-catalogmanager-items-buttons button,
 .m-catalogmanager-collections-order-button {
     background-color: white;
     color: #71a7d3;
     border: 1px solid #71a7d3;
     padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    margin-top: 0.25rem;
+}
+
+#m-catalogmanager-filters-spatial-predefined button {
+    background-color: white;
+    color: #71a7d3;
+    border: 1px solid #71a7d3;
+    padding: 0.25rem 0.5rem;
     border-radius: 0.25rem;
     margin-top: 0.25rem;
 }
@@ -292,18 +311,14 @@ ul.m-catalogmanager-ulcatalogs li {
     min-width: fit-content;
 }
 
-ul.m-catalogmanager-ulcatalogs li .icon-rss:before {
-    color: #148aeb;
-}
-
-ul.m-catalogmanager-ulcatalogs span.icon-lock {
+ul.m-catalogmanager-ulcatalogs span.g-cartografia-catalog-lock {
     color: #fba300;
     background-color: #fbe3b6;
     padding: 0.15rem 0.25rem;
     border-radius: 1rem;
 }
 
-ul.m-catalogmanager-ulcatalogs span.icon-lock-open {
+ul.m-catalogmanager-ulcatalogs span.g-cartografia-catalog-lock-open {
     color: #27d400;
     background-color: #baffaa;
     padding: 0.15rem 0.25rem;
@@ -647,7 +662,7 @@ h3.m-catalogmanager-section-title>span.m-catalogmanager-icon {
     /* justify-content: space-between; */
     align-items: center;
     font-size: 12px;
-    color: #6c6c6c;
+    color: #000;
     margin-bottom: 0.5rem;
 }
 
@@ -671,7 +686,15 @@ h3.m-catalogmanager-section-title>span.m-catalogmanager-icon {
     height: 4px;
     transform: translateY(-50%);
     border-radius: 2px;
-    background: #fff;
+    background: linear-gradient(
+        to right,
+        #fff 0%,
+        #fff var(--cc-min, 0%),
+        #71a7d3 var(--cc-min, 0%),
+        #71a7d3 var(--cc-max, 100%),
+        #fff var(--cc-max, 100%),
+        #fff 100%
+    );
     border: 1px solid #d1d5db;
     box-sizing: border-box;
     pointer-events: none;

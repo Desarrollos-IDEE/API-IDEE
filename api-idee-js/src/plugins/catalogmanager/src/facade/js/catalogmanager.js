@@ -1,6 +1,7 @@
 /**
  * @module IDEE/plugin/Catalogmanager
  */
+import 'flatpickr/dist/flatpickr.min.css';
 import '../assets/css/catalogmanager';
 import '../assets/css/fonts';
 import CatalogmanagerControl from './catalogmanagercontrol';
@@ -132,7 +133,7 @@ export default class Catalogmanager extends IDEE.Plugin {
       collapsed: this.collapsed,
       position: IDEE.ui.position[this.position],
       className: this.className,
-      collapsedButtonClass: 'icon-server',
+      collapsedButtonClass: 'g-cartografia-catalog-server',
       tooltip: this.tooltip_,
       order: this.order,
     });

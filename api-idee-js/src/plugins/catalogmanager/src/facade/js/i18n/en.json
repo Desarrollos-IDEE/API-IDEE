@@ -36,8 +36,8 @@
     },
     "temporal": {
       "title": "Temporal filter",
-      "start": "From",
-      "end": "To",
+      "start": "Acquisition date from",
+      "end": "Acquisition date to",
       "last30days": "Last 30 days",
       "last3months": "Last 3 months",
       "lastyear": "Last year",
@@ -134,6 +134,12 @@
   "next": "Next",
   "pagination": "Page {0} of {1}",
   "unknown": "Unknown",
+  "sort": {
+    "nameUp": "Sort by name ascending",
+    "nameDown": "Sort by name descending",
+    "dateUp": "Sort by date ascending",
+    "dateDown": "Sort by date descending"
+  },
   "masiveDownload": {
     "title": "Download selection",
     "itemsDownloadMsg": "You have a download in progress of {{numItems}} items from the collection {{collectionName}}",

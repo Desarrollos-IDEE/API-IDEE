@@ -36,8 +36,8 @@
     },
     "temporal": {
       "title": "Filtro temporal",
-      "start": "Desde",
-      "end": "Hasta",
+      "start": "Fecha de adquisición desde",
+      "end": "Fecha de adquisición hasta",
       "last30days": "Últimos 30 días",
       "last3months": "Últimos 3 meses",
       "lastyear": "Último año",
@@ -134,6 +134,12 @@
   "next": "Siguiente",
   "pagination": "Página {0} de {1}",
   "unknown": "Desconocido",
+  "sort": {
+    "nameUp": "Ordenar por nombre ascendente",
+    "nameDown": "Ordenar por nombre descendente",
+    "dateUp": "Ordenar por fecha ascendente",
+    "dateDown": "Ordenar por fecha descendente"
+  },
   "masiveDownload": {
     "title": "Descargar selección",
     "imagesDownloadMsg": "Tienes una descarga en curso de imágenes de {{numItems}} elementos de la colección {{collectionName}}",

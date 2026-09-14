@@ -3,6 +3,8 @@
  */
 
 import CatalogmanagerImplControl from 'impl/catalogmanagercontrol';
+import flatpickr from 'flatpickr';
+import { Spanish } from 'flatpickr/dist/l10n/es';
 import template from 'templates/catalogmanager';
 import addCatalogTemplate from 'templates/addcatalog';
 import loginTemplate from 'templates/login';
@@ -237,6 +239,27 @@ export default class CatalogmanagerControl extends IDEE.Control {
     this.advancedFilterState_ = null;
 
     /**
+     * Temporizador de debounce para actualizar ítems al mover el mapa
+     * @private
+     * @type {number|null}
+     */
+    this.moveMapTimer_ = null;
+
+    /**
+     * Retardo (ms) sin movimiento antes de llamar a updateItems
+     * @private
+     * @type {number}
+     */
+    this.moveMapDelay_ = 500;
+
+    /**
+     * Handler de MOVE del mapa con contexto fijado
+     * @private
+     * @type {Function}
+     */
+    this.onMoveMapBound_ = this.onMoveMap.bind(this);
+
+    /**
      * Estilo aplicado a la huella del ítem enfocado en el mapa
      * @private
      * @type {IDEE.style.Generic}
@@ -261,6 +284,20 @@ export default class CatalogmanagerControl extends IDEE.Control {
       pageSize: 10,
       totalItems: 0,
     };
+
+    /**
+     * Instancias Flatpickr de los campos temporales
+     * @private
+     * @type {Object<string, flatpickr.Instance>|null}
+     */
+    this.flatpickrInstances_ = null;
+
+    /**
+     * Indica si los cambios de Flatpickr deben refrescar los ítems
+     * @private
+     * @type {boolean}
+     */
+    this.temporalFilterEventsActive_ = false;
   }
 
   /**
@@ -275,6 +312,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
   createView(map) {
     this.map_ = map;
     this.getImpl().createAllInteractions(map, this);
+    this.updateItemsEvent_ = this.updateItems.bind(this, true);
     const yesterday = new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0];
     const accept = ['.kml', '.zip', '.gpx', '.geojson', '.gml', '.json'];
     return new Promise((success, fail) => {
@@ -308,6 +346,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
 
       this.template_ = html;
       this.addEvents();
+      this.initTemporalFlatpickr();
       this.addPredefinedCatalogs();
       success(html);
     });
@@ -351,7 +390,8 @@ export default class CatalogmanagerControl extends IDEE.Control {
     this.template_.querySelector('#m-catalogmanager-filters-temporal-predefined').addEventListener('click', (evt) => this.setTemporalFilter(evt));
     this.template_.querySelector('#m-catalogmanager-filters-spatial-predefined').addEventListener('click', (evt) => this.toggleSpatialFilter(evt));
     this.template_.querySelector('#m-catalogmanager-file-input').addEventListener('change', (evt) => this.uploadFile(evt));
-    this.template_.querySelector('#m-catalogmanager-updatecatalog').addEventListener('click', this.updateItems.bind(this, true));
+    // this.template_.querySelector('#m-catalogmanager-updatecatalog')
+    // .addEventListener('click', this.updateItemsEvent_);
     this.template_.querySelector('#m-catalogmanager-extra-actions-content #m-catalogmanager-download').addEventListener('click', this.masiveDownload.bind(this));
     this.template_.querySelector('#m-catalogmanager-extra-actions-content #m-catalogmanager-delete').addEventListener('click', this.clearSelection.bind(this));
     this.template_.querySelector('#m-catalogmanager-filters-tabs').addEventListener('click', (evt) => this.toggleTabs(evt));
@@ -462,12 +502,12 @@ export default class CatalogmanagerControl extends IDEE.Control {
    */
   toggleIcon(elem) {
     const iconElement = elem.querySelector('.m-catalogmanager-icon');
-    if (iconElement.classList.contains('icon-down-open')) {
-      iconElement.classList.remove('icon-down-open');
-      iconElement.classList.add('icon-up-open');
+    if (iconElement.classList.contains('g-cartografia-catalog-down-open')) {
+      iconElement.classList.remove('g-cartografia-catalog-down-open');
+      iconElement.classList.add('g-cartografia-catalog-up-open');
     } else {
-      iconElement.classList.remove('icon-up-open');
-      iconElement.classList.add('icon-down-open');
+      iconElement.classList.remove('g-cartografia-catalog-up-open');
+      iconElement.classList.add('g-cartografia-catalog-down-open');
     }
   }
 
@@ -576,14 +616,102 @@ export default class CatalogmanagerControl extends IDEE.Control {
       delete this.commonFilters_.datetime;
       this.resetFilterTag('temporal_start');
       this.resetFilterTag('temporal_end');
+      this.toggleTemporalFilterEvent(false);
     } else {
       const activeBtn = btn.parentElement.querySelector('.active');
       if (activeBtn) {
         activeBtn.classList.remove('active');
+      } else {
+        this.toggleTemporalFilterEvent(true);
       }
       btn.classList.add('active');
       const filterType = btn.id;
       this.setTemporalFilterByType(filterType);
+    }
+  }
+
+  /**
+   * Activa o desactiva la actualización de ítems al cerrar Flatpickr
+   *
+   * @private
+   * @function
+   * @param {boolean} activate Si se deben escuchar los cambios temporales
+   */
+  toggleTemporalFilterEvent(activate) {
+    this.temporalFilterEventsActive_ = activate;
+  }
+
+  /**
+   * Inicializa Flatpickr en los campos de fecha y hora del filtro temporal.
+   * La actualización de ítems se dispara solo al cerrar el picker (`onClose`).
+   *
+   * @private
+   * @function
+   */
+  initTemporalFlatpickr() {
+    const startDateInput = this.template_.querySelector('#m-catalogmanager-filters-temporal-start');
+    const startTimeInput = this.template_.querySelector('#m-catalogmanager-filters-temporal-start-time');
+    const endDateInput = this.template_.querySelector('#m-catalogmanager-filters-temporal-end');
+    const endTimeInput = this.template_.querySelector('#m-catalogmanager-filters-temporal-end-time');
+    const locale = (typeof IDEE.language.getLang === 'function' && IDEE.language.getLang() === 'en')
+      ? 'default'
+      : Spanish;
+    const onClose = () => {
+      if (this.temporalFilterEventsActive_) {
+        this.updateItems(true);
+      }
+    };
+    const commonOptions = {
+      allowInput: true,
+      disableMobile: true,
+      locale,
+      onClose,
+    };
+
+    this.flatpickrInstances_ = {
+      startDate: flatpickr(startDateInput, {
+        ...commonOptions,
+        dateFormat: 'd/m/Y',
+        defaultDate: startDateInput.value || undefined,
+      }),
+      startTime: flatpickr(startTimeInput, {
+        ...commonOptions,
+        enableTime: true,
+        noCalendar: true,
+        enableSeconds: true,
+        time_24hr: true,
+        dateFormat: 'H:i:S',
+        defaultDate: startTimeInput.value || undefined,
+      }),
+      endDate: flatpickr(endDateInput, {
+        ...commonOptions,
+        dateFormat: 'd/m/Y',
+        defaultDate: endDateInput.value || undefined,
+      }),
+      endTime: flatpickr(endTimeInput, {
+        ...commonOptions,
+        enableTime: true,
+        noCalendar: true,
+        enableSeconds: true,
+        time_24hr: true,
+        dateFormat: 'H:i:S',
+        defaultDate: endTimeInput.value || undefined,
+      }),
+    };
+  }
+
+  /**
+   * Sincroniza el valor de un campo Flatpickr sin disparar onChange/onClose.
+   *
+   * @private
+   * @function
+   * @param {string} key Clave de la instancia (`startDate`, `startTime`, `endDate`, `endTime`)
+   * @param {string} value Valor a establecer
+   */
+  setTemporalFlatpickrValue(key, value) {
+    const instance = this.flatpickrInstances_ && this.flatpickrInstances_[key];
+    if (instance && value) {
+      instance.setDate(value, false);
     }
   }
 
@@ -676,22 +804,18 @@ export default class CatalogmanagerControl extends IDEE.Control {
    * @param {string} [endTime] Hora de fin (HH:mm:ss)
    */
   addTemporalCommonFilter(startDate, startTime, endDate, endTime) {
-    const startDateInput = this.template_.querySelector('#m-catalogmanager-filters-temporal-start');
-    const startTimeInput = this.template_.querySelector('#m-catalogmanager-filters-temporal-start-time');
-    const endDateInput = this.template_.querySelector('#m-catalogmanager-filters-temporal-end');
-    const endTimeInput = this.template_.querySelector('#m-catalogmanager-filters-temporal-end-time');
     if (startTime && endTime) {
       this.commonFilters_.datetime = `${startDate}T${startTime}Z/${endDate}T${endTime}Z`;
-      startDateInput.value = startDate;
-      startTimeInput.value = startTime;
-      endDateInput.value = endDate;
-      endTimeInput.value = endTime;
+      this.setTemporalFlatpickrValue('startDate', startDate);
+      this.setTemporalFlatpickrValue('startTime', startTime);
+      this.setTemporalFlatpickrValue('endDate', endDate);
+      this.setTemporalFlatpickrValue('endTime', endTime);
       this.addFilterTag(`${getValue('filtersTypes.temporal.start')}: ${startDate}T${startTime}Z`, 'temporal_start');
       this.addFilterTag(`${getValue('filtersTypes.temporal.end')}: ${endDate}T${endTime}Z`, 'temporal_end');
     } else {
       this.commonFilters_.datetime = `${startDate}/${endDate}`;
-      startDateInput.value = startDate;
-      endDateInput.value = endDate;
+      this.setTemporalFlatpickrValue('startDate', startDate);
+      this.setTemporalFlatpickrValue('endDate', endDate);
       this.addFilterTag(`${getValue('filtersTypes.temporal.start')}: ${startDate}`, 'temporal_start');
       this.addFilterTag(`${getValue('filtersTypes.temporal.end')}: ${endDate}`, 'temporal_end');
     }
@@ -711,20 +835,47 @@ export default class CatalogmanagerControl extends IDEE.Control {
     const btn = evt.target.tagName === 'SPAN' ? evt.target.parentElement : evt.target;
 
     this.getImpl().deactivateAllInteractions();
-    this.resetFilterTag('spatial');
     this.removeBoxExtent();
+    const filterType = btn.id;
     if (btn.classList.contains('active')) {
-      btn.classList.remove('active');
-      delete this.commonFilters_.bbox;
+      this.resetFilterTag('spatial');
+      if (filterType === 'view') {
+        this.disableMoveMapEvent();
+      }
     } else {
       const activeBtn = btn.parentElement.querySelector('.active');
       if (activeBtn) {
         activeBtn.classList.remove('active');
+        if (activeBtn.id === 'view') {
+          this.disableMoveMapEvent();
+        }
       }
-      // btn.classList.add('active');
-      const filterType = btn.id;
+      this.resetFilterTag('spatial');
+      if (filterType === 'view') {
+        btn.classList.add('active');
+        this.map_.on(IDEE.evt.MOVE, this.onMoveMapBound_);
+      }
       this.setSpatialFilterByType(filterType);
     }
+  }
+
+  disableMoveMapEvent() {
+    this.map_.un(IDEE.evt.MOVE, this.onMoveMapBound_);
+    clearTimeout(this.moveMapTimer_);
+    this.moveMapTimer_ = null;
+  }
+
+  /**
+   * Actualiza los ítems con debounce al mover el mapa (filtro espacial por vista)
+   *
+   * @private
+   * @function
+   */
+  onMoveMap() {
+    clearTimeout(this.moveMapTimer_);
+    this.moveMapTimer_ = setTimeout(() => {
+      this.updateItems(true);
+    }, this.moveMapDelay_);
   }
 
   /**
@@ -908,15 +1059,17 @@ export default class CatalogmanagerControl extends IDEE.Control {
       const filterContainer = this.template_.querySelector(`#m-catalogmanager-filters-${tagType}-predefined`);
       const activeFilter = filterContainer.querySelector('.active');
       if (activeFilter) {
+        activeFilter.classList.remove('active');
         if (tagType === 'temporal') {
-          activeFilter.classList.remove('active');
           this.updateTemporalFilterByTag(type);
         } else if (tagType === 'spatial') {
-          activeFilter.click();
-          if (this.boxLayer_) {
+          if (this.boxLayer_) { // Filtro espacial por extensión dibujada o fichero subido
             this.map_.removeLayers(this.boxLayer_);
             this.boxLayer_ = null;
+          } else { // Filtro espacial por vista
+            this.disableMoveMapEvent();
           }
+          delete this.commonFilters_.bbox;
         }
       }
     } else if (tagType === 'collection') {
@@ -1232,13 +1385,8 @@ export default class CatalogmanagerControl extends IDEE.Control {
 
     const percentMin = (min / rangeMax) * 100;
     const percentMax = (max / rangeMax) * 100;
-    track.style.background = `linear-gradient(to right,
-      #fff 0%,
-      #fff ${percentMin}%,
-      #71a7d3 ${percentMin}%,
-      #71a7d3 ${percentMax}%,
-      #fff ${percentMax}%,
-      #fff 100%)`;
+    track.style.setProperty('--cc-min', `${percentMin}%`);
+    track.style.setProperty('--cc-max', `${percentMax}%`);
 
     if (valuesLabel) {
       valuesLabel.textContent = `${min}% – ${max}%`;
@@ -1986,7 +2134,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
       sunElevationValue,
       cloudCover: cloudCoverValue >= 0,
       cloudCoverValue,
-      processingLevel: item.properties.processing_level || getValue('unknown'),
+      processingLevel: item.properties['processing:level'] || getValue('unknown'),
       translations: getValue('itemMetadata'),
     };
     const metadataTemplate = IDEE.template.compileSync(itemMetadataTemplate, {
@@ -2161,6 +2309,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
           footprint: getValue('footprint'),
           metadata: getValue('metadata'),
           advancedFilters: getValue('advancedFilters'),
+          sort: getValue('sort'),
         },
       },
     });
@@ -2345,9 +2494,10 @@ export default class CatalogmanagerControl extends IDEE.Control {
     const collection = catalog.collections[collectionIndex];
     let promise = null;
     const bbox = this.commonFilters_.bbox || null;
+    const datetime = this.commonFilters_.datetime || null;
     if (collection.advancedFilter) {
       promise = catalog.obj
-        .getFilteredItemsAdvanced(collection.id, collection.advancedFilter, bbox);
+        .getFilteredItemsAdvanced(collection.id, collection.advancedFilter, bbox, datetime);
     } else if (!IDEE.utils.isNullOrEmpty(this.commonFilters_)) {
       promise = catalog.obj.getFilteredItems(collection.id, this.commonFilters_);
     } else {
@@ -2619,33 +2769,44 @@ export default class CatalogmanagerControl extends IDEE.Control {
    * @param {Object} coll Objeto colección interno
    */
   drawImageTiff(image, cat, coll, item) {
-    const catalog = cat;
+    // const catalog = cat;
     const collection = coll;
     const styleSpec = this.resolveStyleSpec(image);
     const style = this.buildRasterStyle(styleSpec);
     const geotiff = new IDEE.layer.GeoTIFF({
       url: image.href,
-      name: `${item.id} - ${image.title}`,
-      legend: `${item.id} - ${image.title}`,
+      name: image.title,
+      legend: image.title,
     }, {
       convertToRGB: false,
       normalize: IDEE.utils.isNullOrEmpty(styleSpec.indice),
       style,
     });
-    if (!catalog.layerGroup) {
+    /* if (!catalog.layerGroup) {
       catalog.layerGroup = new IDEE.layer.LayerGroup({
         name: catalog.title,
         legend: catalog.title,
       });
       this.map_.addLayerGroups(catalog.layerGroup);
-    }
+    } */
     if (!collection.layerGroup) {
       collection.layerGroup = new IDEE.layer.LayerGroup({
-        name: collection.title,
+        name: collection.id,
         legend: collection.title,
       });
-      catalog.layerGroup.addLayers(collection.layerGroup);
+      // catalog.layerGroup.addLayers(collection.layerGroup);
+      this.map_.addLayerGroups(collection.layerGroup);
     }
+    let itemLayer = collection.layerGroup.getLayers()
+      .find((l) => l.type === 'LayerGroup' && l.name === item.id);
+    if (!itemLayer) {
+      itemLayer = new IDEE.layer.LayerGroup({
+        name: item.id,
+        legend: item.title,
+      });
+      collection.layerGroup.addLayers(itemLayer);
+    }
+
     const oldLayer = collection.layerGroup.getLayers()
       .find((layer) => layer.legend === geotiff.getLegend());
     if (oldLayer) {
@@ -2654,7 +2815,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
     /* geotiff.on('load', () => {
       this.map_.setBbox(geotiff.getMaxExtent());
     }); */
-    collection.layerGroup.addLayers(geotiff);
+    itemLayer.addLayers(geotiff);
   }
 
   /**
@@ -2668,29 +2829,14 @@ export default class CatalogmanagerControl extends IDEE.Control {
    */
   previewItems(catalogIndex, collectionIndex, items) {
     const catalog = this.catalogs_[catalogIndex];
-    if (!catalog.layerGroup) {
+    /* if (!catalog.layerGroup) {
       catalog.layerGroup = new IDEE.layer.LayerGroup({
         name: catalog.title,
         legend: catalog.title,
       });
       this.map_.addLayerGroups(catalog.layerGroup);
-    }
-    const collection = catalog.collections[collectionIndex];
-    /* let promise = null;
-    if (collection.links && this.linksHaveRel(collection.links, 'self')) {
-      promise = catalog.obj.getItemsByLinks(collection.links, 'self');
-    } else if (collection.advancedFilter) {
-      promise = catalog.obj.getFilteredItemsAdvanced(
-        collection.id,
-        collection.advancedFilter,
-        this.commonFilters_.bbox,
-        this.commonFilters_.datetime,
-      );
-    } else if (!IDEE.utils.isNullOrEmpty(this.commonFilters_)) {
-      promise = catalog.obj.getFilteredItems(collection.id, this.commonFilters_);
-    } else {
-      promise = catalog.obj.getItems(collection.id, 10);
     } */
+    const collection = catalog.collections[collectionIndex];
 
     if (items.features.length === 0) {
       IDEE.dialog.info(getValue('exception').no_results);
@@ -2698,16 +2844,18 @@ export default class CatalogmanagerControl extends IDEE.Control {
     if (!collection.layerGroup) {
       // Puede perderse la asignación del layerGroup al cambiar de colección,
       // por lo que se debe buscar el layerGroup anterior y se asigna de nuevo
-      const previousGroup = catalog.layerGroup.getLayers()
-        .find((layer) => layer.legend === collection.title);
+      // const previousGroup = catalog.layerGroup.getLayers()
+      const previousGroup = this.map_.getLayerGroup()
+        .find((l) => l.name === collection.id);
       if (previousGroup) {
         collection.layerGroup = previousGroup;
       } else {
         collection.layerGroup = new IDEE.layer.LayerGroup({
-          name: collection.title,
+          name: collection.id,
           legend: collection.title,
         });
-        catalog.layerGroup.addLayers(collection.layerGroup);
+        // catalog.layerGroup.addLayers(collection.layerGroup);
+        this.map_.addLayerGroups(collection.layerGroup);
       }
     }
     this.hideFootprintLayers();
@@ -2755,10 +2903,12 @@ export default class CatalogmanagerControl extends IDEE.Control {
    * @function
    */
   updateItems(updateFilters = false) {
+    console.log('Actualizando elementos');
     if (this.selectedCatalogIndex_ === -1 || this.selectedCollectionIndex_ === -1) {
       return;
     }
     if (updateFilters) {
+      console.log('Actualizando filtros');
       this.updateBboxFilter();
       this.updateTemporalFilter();
     }
@@ -3530,7 +3680,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
       }
       const url = `${catalog.obj.authUrl.substring(0, catalog.obj.authUrl.lastIndexOf('/'))}/collection-view`;
       IDEE.remote.post(url, body, { headers }).then((response) => {
-        console.log(response);
+        // console.log(response);
       }).catch((error) => {
         console.error(error);
       });

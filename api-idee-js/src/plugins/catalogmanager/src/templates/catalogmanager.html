@@ -5,7 +5,7 @@
     <section id="m-catalogmanager-actions-content" class="m-catalogmanager-content">
         <div class="m-catalogmanager-actions">
             {{#if addCatalogEnabled}}
-                <button id="m-catalogmanager-addcatalog" title="{{translations.addCatalog}}"><span class="icon-plus"></span></button>
+                <button id="m-catalogmanager-addcatalog" title="{{translations.addCatalog}}"><span class="g-cartografia-catalog-mas"></span></button>
             {{/if}}
         </div>
     </section>
@@ -16,41 +16,45 @@
     <div id="m-catalogmanager-tabs-contents">
         <div id="m-catalogmanager-filters-tab-content">
             <section id="m-catalogmanager-filters-content" class="m-catalogmanager-content">
-                <div class="m-catalogmanager-actions">
-                    <button id="m-catalogmanager-updatecatalog" title="{{translations.update}}"><span class="icon-arrows-cw"></span></button>
-                </div>
+                <!--<div class="m-catalogmanager-actions">
+                    <button id="m-catalogmanager-updatecatalog" title="{{translations.update}}"><span class="g-cartografia-catalog-arrows-cw"></span></button>
+                </div>-->
                 <div class="m-catalogmanager-filters-tags"></div>
                 <div id="m-catalogmanager-filters-catalogs"></div>
                 <div id="m-catalogmanager-filters-temporal">
-                    <h3 class="m-catalogmanager-section-title">{{translations.filtersTypes.temporal.title}} <span class="icon-up-open m-catalogmanager-icon"></span></h3>
+                    <h3 class="m-catalogmanager-section-title">{{translations.filtersTypes.temporal.title}} <span class="g-cartografia-catalog-up-open m-catalogmanager-icon"></span></h3>
                     <div id="m-catalogmanager-filters-temporal-content">
                         <table>
                             <tr>
-                                <td><label for="m-catalogmanager-filters-temporal-start">{{translations.filtersTypes.temporal.start}}</label></td>
-                                <td><input type="date" id="m-catalogmanager-filters-temporal-start" value="{{startDate}}"></td>
-                                <td><input type="time" id="m-catalogmanager-filters-temporal-start-time" value="{{startTime}}"></td>
+                                <td><label for="m-catalogmanager-filters-temporal-start">{{translations.filtersTypes.temporal.start}}:</label></td>
                             </tr>
                             <tr>
-                                <td><label for="m-catalogmanager-filters-temporal-end">{{translations.filtersTypes.temporal.end}}</label></td>
-                                <td><input type="date" id="m-catalogmanager-filters-temporal-end" value="{{endDate}}"></td>
-                                <td><input type="time" id="m-catalogmanager-filters-temporal-end-time" value="{{endTime}}"></td>
+                                <td><input type="text" id="m-catalogmanager-filters-temporal-start" value="{{startDate}}" placeholder="DD/MM/YYYY" autocomplete="off"></td>
+                                <td><input type="text" id="m-catalogmanager-filters-temporal-start-time" value="{{startTime}}" placeholder="HH:mm:ss" autocomplete="off"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="m-catalogmanager-filters-temporal-end">{{translations.filtersTypes.temporal.end}}:</label></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" id="m-catalogmanager-filters-temporal-end" value="{{endDate}}" placeholder="DD/MM/YYYY" autocomplete="off"></td>
+                                <td><input type="text" id="m-catalogmanager-filters-temporal-end-time" value="{{endTime}}" placeholder="HH:mm:ss" autocomplete="off"></td>
                             </tr>
                         </table>
                         <div id="m-catalogmanager-filters-temporal-predefined">
-                            <button id="last30days" class="m-catalogmanager-filters-temporal-predefined-button">{{translations.filtersTypes.temporal.last30days}}</button>
-                            <button id="last3months" class="m-catalogmanager-filters-temporal-predefined-button">{{translations.filtersTypes.temporal.last3months}}</button>
-                            <button id="lastyear" class="m-catalogmanager-filters-temporal-predefined-button">{{translations.filtersTypes.temporal.lastyear}}</button>
-                            <button id="range" class="m-catalogmanager-filters-temporal-predefined-button">{{translations.filtersTypes.temporal.range}}</button>
+                            <button id="last30days" class="m-catalogmanager-filters-temporal-predefined-button" title="{{translations.filtersTypes.temporal.last30days}}">{{translations.filtersTypes.temporal.last30days}}</button>
+                            <button id="last3months" class="m-catalogmanager-filters-temporal-predefined-button" title="{{translations.filtersTypes.temporal.last3months}}">{{translations.filtersTypes.temporal.last3months}}</button>
+                            <button id="lastyear" class="m-catalogmanager-filters-temporal-predefined-button" title="{{translations.filtersTypes.temporal.lastyear}}">{{translations.filtersTypes.temporal.lastyear}}</button>
+                            <button id="range" class="m-catalogmanager-filters-temporal-predefined-button" title="{{translations.filtersTypes.temporal.range}}">{{translations.filtersTypes.temporal.range}}</button>
                         </div>
                     </div>
                 </div>
                 <div id="m-catalogmanager-filters-spatial">
-                    <h3 class="m-catalogmanager-section-title">{{translations.filtersTypes.spatial.title}} <span class="icon-up-open m-catalogmanager-icon"></span></h3>
+                    <h3 class="m-catalogmanager-section-title">{{translations.filtersTypes.spatial.title}} <span class="g-cartografia-catalog-up-open m-catalogmanager-icon"></span></h3>
                     <div id="m-catalogmanager-filters-spatial-content">
                         <div id="m-catalogmanager-filters-spatial-predefined">
-                            <button id="view" class="m-catalogmanager-filters-spatial-predefined-button" title="{{translations.filtersTypes.spatial.view}}"><span class="icon-videocam"></span></button>
-                            <button id="extent" class="m-catalogmanager-filters-spatial-predefined-button" title="{{translations.filtersTypes.spatial.extent}}"><span class="icon-edit"></span></button>
-                            <button id="referenced" class="m-catalogmanager-filters-spatial-predefined-button" title="{{translations.filtersTypes.spatial.referenced}}"><span class="icon-upload"></span></button>
+                            <button id="view" class="m-catalogmanager-filters-spatial-predefined-button" title="{{translations.filtersTypes.spatial.view}}"><span class="g-cartografia-catalog-videocam"></span></button>
+                            <button id="extent" class="m-catalogmanager-filters-spatial-predefined-button" title="{{translations.filtersTypes.spatial.extent}}"><span class="g-cartografia-catalog-edit"></span></button>
+                            <button id="referenced" class="m-catalogmanager-filters-spatial-predefined-button" title="{{translations.filtersTypes.spatial.referenced}}"><span class="g-cartografia-catalog-upload"></span></button>
                             <input tabindex="0" type="file" id="m-catalogmanager-file-input" accept="{{accept}}" style="display: none;">
                         </div>
                         <div id="m-catalogmanager-filters-spatial-help">
@@ -60,7 +64,7 @@
                     </div>
                 </div>
                 <div id="m-catalogmanager-filters-collections">
-                    <h3 class="m-catalogmanager-section-title">{{translations.filtersTypes.collections}} <span class="icon-up-open m-catalogmanager-icon"></span></h3>
+                    <h3 class="m-catalogmanager-section-title">{{translations.filtersTypes.collections}} <span class="g-cartografia-catalog-up-open m-catalogmanager-icon"></span></h3>
                     <div id="m-catalogmanager-filters-collections-content"></div>
                 </div>
                 <div id="m-catalogmanager-filters-cloud-cover"></div>
@@ -72,8 +76,8 @@
             <section id="m-catalogmanager-results-content" class="m-catalogmanager-content"></section>
             <section id="m-catalogmanager-extra-actions-content" class="m-catalogmanager-content hidden">
                 <div class="m-catalogmanager-actions">
-                    <button id="m-catalogmanager-download" title="{{translations.masiveDownload}}"><span class="icon-download"></span></button>
-                    <button id="m-catalogmanager-delete" title="{{translations.clearSelection}}"><span class="icon-trash-empty"></span></button>
+                    <button id="m-catalogmanager-download" title="{{translations.masiveDownload}}"><span class="g-cartografia-catalog-download"></span></button>
+                    <button id="m-catalogmanager-delete" title="{{translations.clearSelection}}"><span class="g-cartografia-catalog-trash-empty"></span></button>
                 </div>
             </section>
             <section id="m-catalogmanager-no-results-content" class="m-catalogmanager-content">

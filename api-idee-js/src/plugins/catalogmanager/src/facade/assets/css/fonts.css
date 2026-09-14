@@ -1,4 +1,4 @@
-[class^="icon-"]:before, [class*=" icon-"]:before {
+[class^="g-cartografia-catalog-"]:before, [class*=" g-cartografia-catalog-"]:before {
     content: '' !important;
     display: inline-block;
     margin: auto;
@@ -13,93 +13,97 @@
     mask-repeat: no-repeat;
 }
 
-.icon-plus:before {
+.g-cartografia-catalog-mas:before {
 	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_mas.svg');
 	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_mas.svg');
 }
-.icon-lock:before {
+.g-cartografia-catalog-lock:before {
 	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_candado_cerrado.svg');
 	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_candado_cerrado.svg');
 }
-.icon-lock-open:before {
+.g-cartografia-catalog-lock-open:before {
 	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_candado.svg');
 	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_candado.svg');
 }
-.icon-download:before {
+.g-cartografia-catalog-download:before {
 	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_descargasContactlink.svg');
 	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_descargasContactlink.svg');
 }
-.icon-upload:before {
+.g-cartografia-catalog-edit:before {
+	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_selectionzoom.svg');
+	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_selectionzoom.svg');
+	width: 24px;
+}
+.g-cartografia-catalog-videocam:before {
+	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_uiView.svg');
+	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_uiView.svg');
+	width: 24px;
+}
+.g-cartografia-catalog-upload:before {
 	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_subirArchivo.svg');
 	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_subirArchivo.svg');
+	width: 24px;
 }
-.icon-eye:before {
+.g-cartografia-catalog-eye:before {
 	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ojo.svg');
 	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ojo.svg');
 }
-.icon-arrows-cw:before {
+.g-cartografia-catalog-arrows-cw:before {
 	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_actualizar.svg');
 	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_actualizar.svg');
 }
-.icon-picture:before {
+.g-cartografia-catalog-picture:before {
 	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_fototeca.svg');
 	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_fototeca.svg');
 }
-.icon-edit:before {
-	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_selectionzoom.svg');
-	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_selectionzoom.svg');
-}
-.icon-videocam:before {
-	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_uiView.svg');
-	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_uiView.svg');
-}
-.icon-trash-empty:before {
+.g-cartografia-catalog-trash-empty:before {
 	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_papelera.svg');
 	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_papelera.svg');
 }
-.icon-info:before {
+.g-cartografia-catalog-info:before {
 	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_info.svg');
 	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_info.svg');
 }
-.icon-server:before {
+.g-cartografia-catalog-server:before {
 	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_stac.svg');
 	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_stac.svg');
+	width: 20px;
 }
-.icon-down-open:before {
+.g-cartografia-catalog-down-open:before {
 	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_chevron.svg');
 	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_chevron.svg');
 }
-.icon-up-open:before {
+.g-cartografia-catalog-up-open:before {
 	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_chevron.svg');
 	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_chevron.svg');
 	transform: rotate(180deg);
 }
-.icon-right-big:before {
+.g-cartografia-catalog-right-big:before {
 	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lineaFlujo.svg');
 	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lineaFlujo.svg');
 }
-.icon-left-big:before {
+.g-cartografia-catalog-left-big:before {
 	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lineaFlujo.svg');
 	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lineaFlujo.svg');
 	transform: rotate(180deg);
 }
-.icon-sort-name-up:before {
+.g-cartografia-catalog-sort-name-up:before {
     -webkit-mask-image: url('../icons/icn_catalog-sort-name-up.svg');
     mask-image: url('../icons/icn_catalog-sort-name-up.svg');
 }
-.icon-sort-name-down:before  {
+.g-cartografia-catalog-sort-name-down:before  {
     -webkit-mask-image: url('../icons/icn_catalog-sort-name-down.svg');
     mask-image: url('../icons/icn_catalog-sort-name-down.svg');
 }
-.icon-sort-alt-up:before {
+.g-cartografia-catalog-sort-alt-up:before {
     -webkit-mask-image: url('../icons/icn_catalog-sort-alt-up.svg');
     mask-image: url('../icons/icn_catalog-sort-alt-up.svg');
 }
-.icon-sort-alt-down:before {
+.g-cartografia-catalog-sort-alt-down:before {
     -webkit-mask-image: url('../icons/icn_catalog-sort-alt-down.svg');
     mask-image: url('../icons/icn_catalog-sort-alt-down.svg');
 }
-.icon-calendar:before {
+.g-cartografia-catalog-calendar:before {
     -webkit-mask-image: url('../icons/icn_catalog-calendar.svg');
     mask-image: url('../icons/icn_catalog-calendar.svg');
 }
