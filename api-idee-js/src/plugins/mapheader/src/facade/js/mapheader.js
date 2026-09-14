@@ -185,13 +185,19 @@ export default class Mapheader extends IDEE.Plugin {
   }
 
   getHelp() {
+    // eslint-disable-next-line global-require, import/no-dynamic-require
+    const imageHelp01 = require(`assets/images/${this.getMetadata().version}/help-01.png`);
+    // eslint-disable-next-line global-require, import/no-dynamic-require
+    const imageHelp02 = require(`assets/images/${this.getMetadata().version}/help-02.png`);
+
     return {
       title: getValue('textHelp.squemaTitle'),
       content: new Promise((resolve) => {
         const html = IDEE.template.compileSync(myhelp, {
           vars: {
             title: getValue('textHelp.title'),
-            urlImages: `${IDEE.config.API_IDEE_URL}plugins/mapheader/images/`,
+            imageHelp01,
+            imageHelp02,
             translations: {
               paragraph1: getValue('textHelp.paragraph1'),
               screenshot1Alt: getValue('textHelp.screenshot1Alt'),
