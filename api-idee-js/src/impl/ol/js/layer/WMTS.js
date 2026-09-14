@@ -373,8 +373,10 @@ class WMTS extends LayerBase {
 
       // keeps z-index values before ol resets
       const zIndex = this.zIndex_;
-      this.map.getMapImpl().addLayer(this.olLayer);
-      this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
+      if (this.addLayerToMap_) {
+        this.map.getMapImpl().addLayer(this.olLayer);
+        this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
+      }
 
       setTimeout(() => {
         this.olLayer.setMaxZoom(this.maxZoom);
