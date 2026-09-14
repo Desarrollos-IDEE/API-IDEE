@@ -24,9 +24,9 @@ Para uso de implementación Cesium:
 Existe un histórico de versiones de todos los plugins en el directorio `legacy/` de cada plugin. 
 Es recomendable fijar las versiones para evitar errores inesperados.
 
-Ejemplo con el plugin Magnify, implementación OpenLayers y versión 1.0.0:
-- **magnify-1.0.0.ol.min.css**
-- **magnify-1.0.0.ol.min.js**
+Ejemplo con el plugin Magnify, implementación OpenLayers y versión 2.0.0:
+- **magnify-2.0.0.ol.min.css**
+- **magnify-2.0.0.ol.min.js**
 
 ## Parámetros
 
@@ -34,17 +34,19 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 
 - **layers**. String que contiene el nombre de las capas que se quieren seleccionar del mapa. A estas capas se les aplicará el filtro de lupa. Si este campo está vacío, el efecto lupa se aplicará a todas las capas.
 - **position**. Indica la posición donde se mostrará el plugin.
-  - 'TL':top left
-  - 'TR':top right (default)
-  - 'BL':bottom left
-  - 'BR':bottom right
+  - `left`
+  - `right` (default)
+  - Compatibilidad legacy: `TL`/`BL` → `left`, `TR`/`BR` → `right`
+- **collapsed**. Indica si el panel arranca colapsado (default `true`)
+- **order**. Orden del botón en el contenedor de herramientas
+- **tooltip**. Texto del tooltip del botón
 - **zoom**. campo numérico que define el zoom inicial. (Valor por defecto 1)
 - **zoomMax**. campo numérico que define el nivel maximo de zoom. (Valor por defecto 10)
 
 # API-REST
 
 ```javascript
-URL_API?magnify=position*layers*zoomMax*zoom
+URL_API?magnify=position*collapsed*order*tooltip*layers*zoomMax*zoom
 ```
 
 <table>
@@ -55,7 +57,22 @@ URL_API?magnify=position*layers*zoomMax*zoom
     </tr>
     <tr>
         <td>position</td>
-        <td>TR/TL/BR/BL</td>
+        <td>left/right (legacy TL/TR/BL/BR)</td>
+        <td>Base64 ✔️ | Separador ✔️</td>
+    </tr>
+    <tr>
+        <td>collapsed</td>
+        <td>true/false</td>
+        <td>Base64 ✔️ | Separador ✔️</td>
+    </tr>
+    <tr>
+        <td>order</td>
+        <td>número de orden</td>
+        <td>Base64 ✔️ | Separador ✔️</td>
+    </tr>
+    <tr>
+        <td>tooltip</td>
+        <td>texto del tooltip</td>
         <td>Base64 ✔️ | Separador ✔️</td>
     </tr>
      <tr>
@@ -65,7 +82,7 @@ URL_API?magnify=position*layers*zoomMax*zoom
     </tr>
     <tr>
         <td>zoomMax</td>
-        <td>nivel maximo de zoomt</td>
+        <td>nivel maximo de zoom</td>
         <td>Base64 ✔️ | Separador ✔️</td>
     </tr>
          <tr>
@@ -77,7 +94,7 @@ URL_API?magnify=position*layers*zoomMax*zoom
 
 ### Ejemplos de uso API-REST
 ```
-https://componentes.idee.es/api-idee?magnify=position*layers*zoomMax*zoom
+https://componentes.idee.es/api-idee?magnify=position*collapsed*order*tooltip*layers*zoomMax*zoom
 ```
 
 ```

@@ -1,40 +1,11 @@
- /** Estilos sobreescritos */
-div.m-panel.m-plugin-magnify>button.m-panel-btn.g-cartografia-zoom-extension {
-     font-size: 50px;
- }
-
- .m-areas>div.m-area>div.m-plugin-magnify.collapsed>button.m-panel-btn {
-     background-color: white;
-     font-size: 25px;
- }
-
-
- /** Estilos propios */
- div.m-panel.m-plugin-magnify.opened>.g-cartografia-flecha-izquierda {
-     color: #e8f5e9;
- }
-
+ /** Estilos propios del contenido del panel */
  .m-plugin-magnify.collapsed {
      height: 40px;
  }
 
- .m-areas>div.m-area>div.m-plugin-magnify.opened>button.m-panel-btn {
-     position: absolute;
-     left: -2.53rem;
-     background-color: white;
-     color: #71a7d3 !important;
- }
-
- .m-areas>div.m-area>div.m-plugin-magnify.opened>button.m-panel-btn.opened-left {
-     left: unset !important;
-     position: absolute;
-     right: -2.53rem;
-     background-color: white;
-     color: #71a7d3 !important;
- }
-
  .m-magnify-container {
-     width: 200px;
+     width: 100%;
+     box-sizing: border-box;
  }
 
  .m-magnify-panel {
@@ -49,25 +20,38 @@ div.m-panel.m-plugin-magnify>button.m-panel-btn.g-cartografia-zoom-extension {
  }
 
  .m-magnify-container .big-buttom {
-     font-size: 32px;
-     background: none;
+     width: 32px;
+     height: 32px;
+     padding: 0;
+     background-color: #404040;
      border: none;
      cursor: pointer;
      opacity: .75;
      transition: all .25s ease;
-     color: #404040;
      outline: none;
+     -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_zoom_recuad.svg');
+     mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_zoom_recuad.svg');
+     -webkit-mask-repeat: no-repeat;
+     mask-repeat: no-repeat;
+     -webkit-mask-position: center;
+     mask-position: center;
+     -webkit-mask-size: contain;
+     mask-size: contain;
  }
 
  .m-magnify-container .big-buttom:hover {
-     color: #71a7d3;
+     background-color: #71a7d3;
+     opacity: 1;
  }
 
  .m-magnify-container .big-buttom.buttom-pressed {
-     color: #71a7d3;
+     background-color: #71a7d3;
+     opacity: 1;
  }
 
  .m-magnify-container>div.title {
+     width: 100%;
+     box-sizing: border-box;
      line-height: 40px;
      text-align: center;
      height: 39px;

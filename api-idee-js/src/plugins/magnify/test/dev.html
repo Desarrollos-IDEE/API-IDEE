@@ -1,32 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="api-idee" content="yes">
     <title>Magnify TEST</title>
     <link href="https://componentes-beta.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
-    <link href="https://componentes.idee.es/api-idee/plugins/help/help.ol.min.css" rel="stylesheet" />
-    <style rel="stylesheet">
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-        }
-    </style>
-
 </head>
 
 <body>
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form">
+            <div>
+                <label for="selectPosition" title="Posición del plugin sobre el mapa. Por defecto: right">Posición "position"</label>
+                <select name="position" id="selectPosition">
+                    <option value="left">left — barra lateral izquierda</option>
+                    <option value="right" selected="selected">right — barra lateral derecha</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectCollapsed" title="Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true">Colapsado "collapsed"</label>
+                <select name="collapsed" id="selectCollapsed">
+                    <option value="true" selected="selected">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputOrder" title="Define en qué posición del panel debe aparecer en el conjunto de controles o plugins">Orden entre controles / plugins "order"</label>
+                <input type="number" name="order" id="inputOrder" value="0">
+            </div>
+            <div>
+                <label for="inputTooltip" title="Texto que se muestra al dejar el ratón encima del plugin. Por defecto: Magnify">Título de la herramienta "tooltip"</label>
+                <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="Magnify">
+                <datalist id="tooltipSug">
+                    <option value="Magnify"></option>
+                    <option value="Lupa"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="inputLayers" title="Capas sobre las que aplica el efecto lupa (nombres separados por coma)">Capas "layers"</label>
+                <input type="text" name="layers" id="inputLayers" list="layersSug" value="OI.OrthoimageCoverage,potencial-solar">
+                <datalist id="layersSug">
+                    <option value="OI.OrthoimageCoverage,potencial-solar"></option>
+                    <option value="OI.OrthoimageCoverage"></option>
+                </datalist>
+            </div>
+            <div>
+                <label for="inputZoomMax" title="Zoom máximo de la lupa">Zoom máximo "zoomMax"</label>
+                <input type="number" name="zoomMax" id="inputZoomMax" value="19">
+            </div>
+            <div>
+                <label for="inputZoom" title="Factor de zoom de la lupa">Zoom "zoom"</label>
+                <input type="number" name="zoom" id="inputZoom" value="5">
+            </div>
+            <input type="hidden" id="buttonAPI" value="API Rest" />
+        </div>
+        <div class="m-test-buttons">
+            <button name="eliminar" class="m-test-button" id="removeButton">Eliminar Plugin</button>
+        </div>
+    </div>
     <div id="mapjs" class="container"></div>
     <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/js/apiidee.ol.min.js"></script>
     <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/js/configuration.js"></script>
-    <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/help/help.ol.min.js"></script>
     <script type="text/javascript" src="/main.js"></script>
-
 </body>
 
 </html>
