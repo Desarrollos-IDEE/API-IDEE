@@ -868,6 +868,10 @@ export default class HistogramControl {
    */
   setStatValue_(statId, value, decimals) {
     const statEl = this.root_.querySelector(`#m-rastermanagement-histogram-stat-${statId}`);
+    if (!IDEE.utils.isNumber(value) || Number.isNaN(value)) {
+      statEl.innerText = '-';
+      return;
+    }
     statEl.innerText = this.formatNumber_(value, decimals);
   }
 
