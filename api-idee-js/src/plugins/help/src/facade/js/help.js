@@ -200,12 +200,15 @@ export default class Help extends IDEE.Plugin {
    * @api
    */
   getHelp() {
+    // eslint-disable-next-line global-require, import/no-dynamic-require
+    const imageHelp01 = require(`assets/images/${this.getMetadata().version}/help1.png`);
+
     return {
       title: this.name,
       content: new Promise((success) => {
         const html = IDEE.template.compileSync(myhelp, {
           vars: {
-            urlImages: `${IDEE.config.API_IDEE_URL}plugins/help/images/`,
+            imageHelp01,
             translations: {
               help1: getValue('textHelp.help1'),
               help2: getValue('textHelp.help2'),
