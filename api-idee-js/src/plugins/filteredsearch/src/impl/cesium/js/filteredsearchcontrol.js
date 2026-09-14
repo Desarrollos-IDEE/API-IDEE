@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/FilteredSearchControl
+ * @module IDEE/impl/control/FilteredSearchControl
  */

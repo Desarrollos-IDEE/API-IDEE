@@ -1,5 +1,5 @@
 /**
- * @module M/control/FilteredSearchControl
+ * @module IDEE/control/FilteredSearchControl
  */
 
 import FilteredSearchImplControl from 'impl/filteredsearchcontrol';
@@ -21,13 +21,14 @@ export default class FilteredSearchControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api stable
    */
-  constructor(values) {
-    if (IDEE.utils.isUndefined(FilteredSearchImplControl)) {
+  constructor(values = {}) {
+    if (IDEE.utils.isUndefined(FilteredSearchImplControl)
+      || (IDEE.utils.isObject(FilteredSearchImplControl)
+        && IDEE.utils.isNullOrEmpty(Object.keys(FilteredSearchImplControl)))) {
       IDEE.exception(getValue('exception.impl'));
     }
     const impl = new FilteredSearchImplControl();
-    super(impl, 'FilteredSearch');
-    this.pluginOnLeft = values.pluginOnLeft;
+    super(FilteredSearchControl.NAME, impl);
     /**
      * Filtering query (written in sql style)
      * @public
@@ -128,19 +129,6 @@ export default class FilteredSearchControl extends IDEE.Control {
     this.map = map;
     return new Promise((success, fail) => {
       this.createInitialView(map);
-
-      // Desplazar open button
-      if (this.pluginOnLeft) {
-        document.querySelector('.m-panel.filtered-search-panel').querySelector('.m-panel-btn.g-plugin-filteredsearch-filter').addEventListener('click', (evt) => {
-          let buttonOpened = document.querySelector('.m-panel.filtered-search-panel.opened');
-          if (buttonOpened !== null) {
-            buttonOpened = buttonOpened.querySelector('.m-panel-btn.g-cartografia-flecha-izquierda');
-          }
-          if (buttonOpened && this.pluginOnLeft) {
-            buttonOpened.classList.add('opened-left');
-          }
-        });
-      }
 
       const html = IDEE.template.compileSync(template, {
         vars: {
@@ -1081,7 +1069,7 @@ export default class FilteredSearchControl extends IDEE.Control {
    * @api
    */
   cleanSearch() {
-    document.querySelector('.filtered-search-panel').querySelector('textarea').value = '';
+    document.querySelector('#plugin-panel-filteredsearch textarea').value = '';
     document.querySelector('#m-filteredsearch-method-select').value = getValue('select_method');
     this.selectionMethod = '';
     this.sqlQuery = '';
@@ -1098,6 +1086,13 @@ export default class FilteredSearchControl extends IDEE.Control {
    * @api
    */
   showTableViewPage(pages) {
+    if (!pages || pages.length === 0) {
+      return;
+    }
+    if (this.resultsPage < 0 || this.resultsPage >= pages.length) {
+      this.resultsPage = 0;
+    }
+
     // empty results table
     this.filterResults.querySelector('#queryresults').innerHTML = '';
 
@@ -1114,17 +1109,17 @@ export default class FilteredSearchControl extends IDEE.Control {
     this.filterResults.querySelector('#paginationbuttons>#pageNumBtn').innerHTML = `${this.resultsPage + 1} de ${pages.length}`;
 
     // Show every result on a new table row
-    const currentPageFeatures = pages[this.resultsPage];
+    const currentPageFeatures = pages[this.resultsPage] || [];
     currentPageFeatures.forEach((filteredFeature) => {
       newLine = document.createElement('tr');
       const filteredAttributes = filteredFeature.getAttributes();
       Object.keys(filteredAttributes).forEach((key) => {
         const newCell = document.createElement('td');
-        // Commented code in case table field needs to show table
-        // const htmlContent = document.createElement('div');
-        // htmlContent.innerHTML = filteredAttributes[key];
-        // newCell.appendChild(htmlContent);
-        const txt = document.createTextNode(filteredAttributes[key].toString());
+        const txt = document.createTextNode(
+          filteredAttributes[key] !== undefined && filteredAttributes[key] !== null
+            ? filteredAttributes[key].toString()
+            : '',
+        );
         newCell.appendChild(txt);
         newLine.appendChild(newCell);
       });
@@ -1139,19 +1134,23 @@ export default class FilteredSearchControl extends IDEE.Control {
    * @api
    */
   saveResultsOnTable() {
+    // Regenera la plantilla por si se vació en una consulta anterior sin resultados
+    this.filterResults = IDEE.template.compileSync(seeResults);
+    this.resultsPage = 0;
+
     if (this.layer_.getFeatures().length > 0) {
       // Divide filter results into pages & show current page
       const pages = this.divideList(this.layer_.getFeatures());
       this.showTableViewPage(pages);
 
-      // Page turning
+      // Page turning (listeners nuevos; plantilla recién creada)
       this.filterResults.querySelectorAll('#paginationbuttons>button').forEach((btn) => {
         btn.addEventListener('click', (e) => {
           if (e.target.id === 'prevBtn') {
-            this.resultsPage = this.resultsPage > 0 ? this.resultsPage -= 1 : this.resultsPage;
+            this.resultsPage = this.resultsPage > 0 ? this.resultsPage - 1 : this.resultsPage;
           } else {
             this.resultsPage = this.resultsPage < pages.length - 1
-              ? this.resultsPage += 1 : this.resultsPage;
+              ? this.resultsPage + 1 : this.resultsPage;
           }
           this.showTableViewPage(pages);
         });
@@ -1170,7 +1169,7 @@ export default class FilteredSearchControl extends IDEE.Control {
    * @api
    */
   operatorClick(e, btn) {
-    const txtarea = document.querySelector('.filtered-search-panel').querySelector('textarea');
+    const txtarea = document.querySelector('#plugin-panel-filteredsearch textarea');
     switch (btn.innerHTML) {
       case '()':
         if (this.parenthesesClick === 0) {
@@ -1241,7 +1240,7 @@ export default class FilteredSearchControl extends IDEE.Control {
       // clears previous query
       this.oldFilter = this.mapeaFilterQuery;
       this.oldLayer = this.layer_;
-      document.querySelector('.filtered-search-panel').querySelector('textarea').value = '';
+      document.querySelector('#plugin-panel-filteredsearch textarea').value = '';
       this.sqlQuery = '';
       this.mapeaFilterQuery = null;
 
@@ -1306,7 +1305,7 @@ export default class FilteredSearchControl extends IDEE.Control {
         values.push(element[fieldIndex]);
       });
       cell.addEventListener('click', (e) => {
-        const txtarea = document.querySelector('.filtered-search-panel').querySelector('textarea');
+        const txtarea = document.querySelector('#plugin-panel-filteredsearch textarea');
         txtarea.value += e.target.innerHTML;
         this.sqlQuery += e.target.innerHTML;
         this.selectField(values);
@@ -1419,7 +1418,7 @@ export default class FilteredSearchControl extends IDEE.Control {
       document.querySelector('#m-filteredsearch-values').appendChild(this.valuesTemplate);
       document.querySelector('#m-filteredsearch-values').querySelectorAll('td').forEach((cell) => {
         cell.addEventListener('click', (e) => {
-          const txtarea = document.querySelector('.filtered-search-panel').querySelector('textarea');
+          const txtarea = document.querySelector('#plugin-panel-filteredsearch textarea');
           txtarea.value += e.target.innerHTML;
           this.sqlQuery += e.target.innerHTML;
           Array.prototype.forEach.call(
@@ -1475,7 +1474,7 @@ export default class FilteredSearchControl extends IDEE.Control {
    * @api
    */
   selectValue(e) {
-    const txtarea = document.querySelector('.filtered-search-panel').querySelector('textarea');
+    const txtarea = document.querySelector('#plugin-panel-filteredsearch textarea');
     txtarea.value += e.currentTarget.innerHTML;
     this.sqlQuery += e.currentTarget.innerHTML;
     Array.prototype.forEach.call(
@@ -1540,3 +1539,5 @@ export default class FilteredSearchControl extends IDEE.Control {
     return control instanceof FilteredSearchControl;
   }
 }
+
+FilteredSearchControl.NAME = 'FilteredSearch';

@@ -1,8 +1,7 @@
 /**
- * @module M/plugin/FilteredSearch
+ * @module IDEE/plugin/FilteredSearch
  */
 import 'assets/css/filteredsearch';
-import 'assets/css/fonts';
 import api from '../../api';
 import myhelp from '../../templates/myhelp.html';
 import FilteredSearchControl from './filteredsearchcontrol';
@@ -10,47 +9,81 @@ import en from './i18n/en';
 import es from './i18n/es';
 import { getValue } from './i18n/language';
 
+const POSITION_LEGACY = {
+  TL: 'left',
+  BL: 'left',
+  TR: 'right',
+  BR: 'right',
+};
+
+/**
+ * Normaliza posiciones legacy TL/TR/BL/BR a left/right (API v2).
+ * @param {string} position
+ * @returns {string}
+ */
+const normalizePosition = (position) => {
+  if (!position) {
+    return 'right';
+  }
+  return POSITION_LEGACY[position] || position;
+};
+
 export default class FilteredSearch extends IDEE.Plugin {
   /**
    * @classdesc
-   * Main facade plugin object. This class creates a plugin
-   * object which has an implementation Object
+   * Plugin de búsqueda filtrada sobre capas vectoriales.
    *
    * @constructor
    * @extends {IDEE.Plugin}
-   * @param {Object} impl implementation object
+   * @param {Object} options opciones del plugin
    * @api stable
    */
   constructor(options = {}) {
-    super();
-    /**
-     * Facade of the map
-     * @private
-     * @type {IDEE.Map}
-     */
-    this.map_ = null;
+    super('filteredsearch', {
+      position: normalizePosition(options.position),
+      tooltip: options.tooltip || getValue('tooltip'),
+      order: options.order,
+      svgPath: options.svgPath || `${IDEE.config.API_IDEE_URL}plugins/filteredsearch/images/icon.svg`,
+    });
 
     /**
-     * Array of controls
-     * @private
-     * @type {Array<IDEE.Control>}
+     * Plugin options
+     * @public
+     * @type {Object}
      */
-    this.controls_ = [];
+    this.options = options;
 
     /**
-     * Position of the plugin on browser window
-     * @private
-     * @type {Enum}
-     * Possible values: 'TL', 'TR', 'BR', 'BL'
+     * Plugin name
+     * @public
+     * @type {string}
      */
-    this.position_ = options.position || 'TR';
+    this.name = 'filteredsearch';
+
+    /**
+     * Indicates if the plugin is collapsed on entry
+     * @public
+     * @type {boolean}
+     */
+    this.collapsed = options.collapsed !== undefined ? options.collapsed : true;
 
     /**
      * Metadata from api.json
-     * @private
+     * @public
      * @type {Object}
      */
-    this.metadata_ = api.metadata;
+    this.metadata = api.metadata;
+
+    /**
+     * Separator for API REST params
+     * @public
+     * @type {string}
+     */
+    this.separatorApiJson = api.url.separator;
+
+    // Panel más ancho: el contenido (consultas/listas) necesita ~550px
+    this.minPanelWidth = options.minPanelWidth || 360;
+    this.maxPanelWidth = options.maxPanelWidth || 550;
   }
 
   /**
@@ -77,29 +110,38 @@ export default class FilteredSearch extends IDEE.Plugin {
    * @api stable
    */
   addTo(map) {
-    const pluginOnLeft = !!(['TL', 'BL'].includes(this.position_));
+    this.map = map;
 
-    const values = {
-      pluginOnLeft,
-    };
-
-    this.control_ = new FilteredSearchControl(values);
-    this.controls_.push(this.control_);
-    this.map_ = map;
-
-    // Dependiendo de dónde se muestre el plugin, mostrará una flecha u otra.
-    const collapsedButton = 'g-plugin-filteredsearch-filter';
-
-    // panel para agregar control - no obligatorio
-    this.panel_ = new IDEE.ui.panels.PluginSidePanel('panelFilteredSearch', {
-      className: 'filtered-search-panel',
-      collapsible: true,
-      position: IDEE.ui.position[this.position_],
-      collapsedButtonClass: collapsedButton,
-      tooltip: getValue('tooltip'),
+    this.button = new IDEE.ui.buttons.SidePanelButton(this.name, {
+      position: this.position,
+      tooltip: this.tooltip,
+      svgPath: this.svgPath,
+      order: this.order,
     });
-    this.panel_.addControls(this.controls_);
-    map.addPanels(this.panel_);
+    map.addButtons(this.button);
+
+    this.panel = new IDEE.ui.panels.PluginSidePanel(this.name, {
+      collapsed: this.collapsed,
+      position: this.position,
+      minWidth: this.minPanelWidth,
+      maxWidth: this.maxPanelWidth,
+      className: 'm-plugin-filteredsearch filtered-search-panel',
+      tooltip: this.tooltip,
+      order: this.order,
+    });
+
+    this.control = new FilteredSearchControl();
+    this.controls = [this.control];
+
+    this.control.on(IDEE.evt.ADDED_TO_MAP, () => {
+      this.fire(IDEE.evt.ADDED_TO_MAP);
+    });
+
+    this.panel.addControls(this.controls);
+    this.button.panel = this.panel;
+    this.panel.button = this.button;
+
+    map.addPanels(this.panel);
   }
 
   /**
@@ -109,8 +151,68 @@ export default class FilteredSearch extends IDEE.Plugin {
    * @api
    */
   destroy() {
-    this.map_.removeControls(this.controls_);
-    [this.map_, this.control_, this.controls_, this.panel_] = [null, null, null, null];
+    if (this.map) {
+      if (this.button) {
+        this.map.removeButton(this.button);
+      }
+      if (this.panel) {
+        this.map.removePanel(this.panel);
+      }
+      if (this.controls && this.controls.length > 0) {
+        this.map.removeControls(this.controls);
+      }
+    }
+    this.map = null;
+    this.button = null;
+    this.panel = null;
+    this.control = null;
+    this.controls = [];
+  }
+
+  /**
+   * This function return the controls of plugin
+   *
+   * @public
+   * @function
+   * @api stable
+   */
+  getControls() {
+    return this.controls;
+  }
+
+  /**
+   * Comprueba si el plugin recibido es instancia de FilteredSearch
+   *
+   * @public
+   * @function
+   * @param {IDEE.Plugin} plugin Plugin a comparar
+   * @returns {boolean}
+   * @api
+   */
+  equals(plugin) {
+    return plugin instanceof FilteredSearch;
+  }
+
+  /**
+   * Get the API REST Parameters of the plugin
+   *
+   * @function
+   * @public
+   * @api
+   */
+  getAPIRest() {
+    return `${this.name}=${this.position}${this.separatorApiJson}${this.collapsed}${this.separatorApiJson}${this.order}${this.separatorApiJson}${this.tooltip}`;
+  }
+
+  /**
+   * Gets the API REST Parameters in base64 of the plugin
+   *
+   * @function
+   * @public
+   * @api
+   */
+  getAPIRestBase64() {
+    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   /**
@@ -121,15 +223,7 @@ export default class FilteredSearch extends IDEE.Plugin {
    * @api stable
    */
   getMetadata() {
-    return this.metadata_;
-  }
-
-  /**
-   * @getter
-   * @public
-   */
-  get name() {
-    return 'filteredsearch';
+    return this.metadata;
   }
 
   /**

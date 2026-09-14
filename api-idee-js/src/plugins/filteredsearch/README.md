@@ -38,16 +38,15 @@ Ejemplo:
 
 El constructor se inicializa con un JSON con los siguientes atributos:
 
-- **position**. Indica la posición donde se mostrará el plugin
-    - 'TL':top left
-    - 'TR':top right (default)
-    - 'BL':bottom left
-    - 'BR':bottom right
+- **position**. Indica la posición donde se mostrará el plugin (`left` / `right`). Valores legacy `TL`/`TR`/`BL`/`BR` se normalizan a left/right.
+- **collapsed**. Indica si el plugin viene colapsado de entrada (por defecto: `true`).
+- **order**. Orden del control/plugin en el panel.
+- **tooltip**. Texto al pasar el ratón sobre el botón.
 
 # API-REST
 
 ```javascript
-URL_API?filteredsearch=position
+URL_API?filteredsearch=position*collapsed*order*tooltip
 ```
 
 <table>
@@ -58,18 +57,29 @@ URL_API?filteredsearch=position
     </tr>
     <tr>
         <td>position</td>
-        <td>TR/TL/BR/BL</td>
+        <td>left / right (también TL/TR/BL/BR legacy)</td>
+        <td>Base64 ✔️ | Separador ✔️</td>
+    </tr>
+    <tr>
+        <td>collapsed</td>
+        <td>true / false</td>
+        <td>Base64 ✔️ | Separador ✔️</td>
+    </tr>
+    <tr>
+        <td>order</td>
+        <td>número</td>
+        <td>Base64 ✔️ | Separador ✔️</td>
+    </tr>
+    <tr>
+        <td>tooltip</td>
+        <td>texto</td>
         <td>Base64 ✔️ | Separador ✔️</td>
     </tr>
 </table>
 
 ### Ejemplos de uso API-REST
 ```
-https://componentes.idee.es/api-idee?filteredsearch=position
-```
-
-```
-https://componentes.idee.es/api-idee?filteredsearch=BR&layers=OSM,WFS*RED_REGENTE*https://www.ign.es/wfs/redes-geodesicas?*RED_REGENTE*POINT
+https://componentes.idee.es/api-idee?filteredsearch=right*true*0*Búsqueda filtrada
 ```
 
 ### Ejemplo de uso API-REST en base64

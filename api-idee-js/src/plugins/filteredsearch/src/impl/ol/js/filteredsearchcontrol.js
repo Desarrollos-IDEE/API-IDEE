@@ -1,5 +1,5 @@
 /**
- * @module M/impl/control/FilteredSearchControl
+ * @module IDEE/impl/control/FilteredSearchControl
  */
 export default class FilteredSearchControl extends IDEE.impl.Control {
   /**
@@ -12,7 +12,17 @@ export default class FilteredSearchControl extends IDEE.impl.Control {
    * @api stable
    */
   addTo(map, html) {
-    // obtengo la interacción por defecto del dblclick para manejarla
     super.addTo(map, html);
+  }
+
+  /**
+   * This function destroys this control, cleaning the HTML and unregistering all events
+   *
+   * @public
+   * @function
+   * @api stable
+   */
+  destroy() {
+    this.facadeMap_ = null;
   }
 }

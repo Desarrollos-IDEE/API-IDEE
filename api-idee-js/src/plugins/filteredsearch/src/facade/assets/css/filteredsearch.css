@@ -1,21 +1,8 @@
-.g-plugin-filteredsearch-filter:before {
-    font-family: 'g-plugin-filteredsearch';
-    content: "\e5000";
-}
-
-.m-areas>div.m-area>div.filtered-search-panel.opened>button.m-panel-btn.opened-left {
-    position: absolute;
-    right: -2.53rem;
-    left: unset !important;
-}
-
 .m-control.m-container.m-filteredsearch {
     background-color: rgb(255, 255, 255) !important;
     width: 100%;
 }
 
-
-/* .filtered-search-panel */
 #m-filteredsearch-options-container {
     background-color: white !important;
     margin: auto !important;
@@ -25,48 +12,15 @@
     padding: 10px;
     position: relative;
     width: 100%;
-}
-
-
-.filtered-search-panel.collapsed {
-    height: 40px !important;
-    width: 40px !important;
-}
-
-.filtered-search-panel.collapsed .m-panel-btn {
-    background-color: white;
-}
-
-.m-area.m-bottom.m-right>.filtered-search-panel.opened,
-.m-area.m-bottom.m-left>.filtered-search-panel.opened {
-    width: 550px !important;
-}
-
-.filtered-search-panel.opened #m-filteredsearch-query-container>textarea {
-    margin: auto;
-    width: 520px;
-}
-
-.filtered-search-panel.opened .m-panel-btn {
-    background-color: #fff !important;
-    color: #71a7d3 !important;
-    left: -40px;
-    position: absolute;
-}
-
-.m-panel-btn.g-plugin-filteredsearch-filter {
-    font-family: 'g-plugin-filteredsearch' !important;
+    box-sizing: border-box;
 }
 
 /* Titles */
-.filtered-search-panel div.filtered-search-title {
+.m-plugin-filteredsearch div.filtered-search-title,
+.filtered-search-title {
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-    /* fallback if grab cursor is unsupported */
     background-color: #71a7d3 !important;
     color: white;
-    cursor: grab;
-    cursor: -moz-grab;
-    cursor: -webkit-grab;
     font-size: 15px;
     font-weight: bold;
     height: 39px;
@@ -74,6 +28,8 @@
     text-align: center;
     padding-left: 20px;
     padding-right: 20px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .m-filteredsearch-headers {
@@ -162,7 +118,6 @@
     padding: 4px 8px;
 }
 
-/* #m-filteredsearch-lists-container td.focus, */
 #m-filteredsearch-options-container td.focus {
     background-color: silver;
     color: white;

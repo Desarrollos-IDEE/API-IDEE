@@ -3,7 +3,7 @@
     "name": "filteredsearch",
     "separator": "*"
   },
-  "constructor": "M.plugin.FilteredSearch",
+  "constructor": "IDEE.plugin.FilteredSearch",
   "parameters": [
     {
       "type": "object",
@@ -12,12 +12,25 @@
           "type": "simple",
           "name": "position",
           "possibleValues": [
-            "TL",
-            "TR",
-            "BL",
-            "BR"
+            "left",
+            "right"
           ],
           "position": 0
+        },
+        {
+          "type": "boolean",
+          "name": "collapsed",
+          "position": 1
+        },
+        {
+          "type": "number",
+          "name": "order",
+          "position": 2
+        },
+        {
+          "type": "simple",
+          "name": "tooltip",
+          "position": 3
         }
       ]
     }
@@ -41,18 +54,18 @@
     }
   },
   "metadata": {
-    "name": "FilteredSearch",
+    "name": "filteredsearch",
     "description": "Búsqueda con filtros",
     "text": "Permite realizar búsquedas y aplicar diferentes filtros. Da la posibilidad de poder guardar o exportar la consulta",
-    "version": "1.0.0",
-    "date": "Diciembre, 2025",
-    "author": "",
-    "org": "",
-    "tags": "idee,plugin",
-    "icon": "./facade/assets/icons/icons.svg",
+    "version": "2.0.0",
+    "date": "Septiembre, 2026",
+    "author": "API-IDEE",
+    "org": "Instituto Geográfico Nacional",
+    "tags": "api-idee,IDEE,plugin",
+    "icon": "./facade/assets/images/icon.svg",
     "centralized": true,
     "compatibility": [
-      "1"
+      "2"
     ]
   }
 }
