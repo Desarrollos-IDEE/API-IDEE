@@ -1,11 +1,11 @@
 /** Estilos sobreescritos */
 .m-control.activated>button {
-    color: rgb(255, 0, 0) !important;
+    color: var(--idee-color-danger) !important;
 }
 
 .m-maxextzoom button#m-maxextzoom-button {
     border-radius: 20px;
-    border: 2px solid white;
-    background-color: #71a7d3 !important;
-    color: #ffffff !important;
+    border: 2px solid var(--idee-color-white);
+    background-color: var(--idee-color-primary) !important;
+    color: var(--idee-color-white) !important;
 }
