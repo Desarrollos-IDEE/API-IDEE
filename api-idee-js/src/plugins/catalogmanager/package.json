@@ -55,5 +55,8 @@
   "overrides": {
     "webpack": "5.88.2",
     "eslint": "8.51.0"
+  },
+  "dependencies": {
+    "flatpickr": "^4.6.13"
   }
 }
