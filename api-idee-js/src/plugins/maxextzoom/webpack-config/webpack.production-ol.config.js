@@ -63,6 +63,14 @@ module.exports = {
         exclude: /node_modules/,
         type: 'asset/inline',
       },
+      {
+        test: /\.(png|svg)$/i,
+        exclude: /node_modules/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'images/[name][ext]',
+        },
+      },
     ],
   },
   optimization: {
@@ -100,10 +108,11 @@ module.exports = {
         {
           from: 'src/api.json',
           to: 'api.json',
-        }, {
-          from: 'src/facade/assets/images',
-          to: 'images',
         },
+        // {
+        //   from: 'src/facade/assets/images',
+        //   to: 'images',
+        // },
       ],
     }),
   ],
