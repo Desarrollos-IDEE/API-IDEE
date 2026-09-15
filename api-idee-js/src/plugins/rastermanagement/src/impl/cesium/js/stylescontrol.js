@@ -1,6 +1,10 @@
 /**
  * @module IDEE/impl/control/StylesControl
  */
+
+/**
+ * Implementación Cesium del control de estilos (sin muestreo de viewport).
+ */
 export default class StylesControl extends IDEE.impl.Control {
   /**
    * @param {IDEE.Map} map Mapa asociado
@@ -31,5 +35,35 @@ export default class StylesControl extends IDEE.impl.Control {
    */
   destroy() {
     this.facadeMap_ = null;
+  }
+
+  /**
+   * @public
+   * @function
+   * @returns {null}
+   * @api
+   */
+  getViewportSize() {
+    return null;
+  }
+
+  /**
+   * @public
+   * @function
+   * @returns {boolean}
+   * @api
+   */
+  hasLayerDataAtCenter() {
+    return false;
+  }
+
+  /**
+   * @public
+   * @function
+   * @returns {Promise<void>}
+   * @api
+   */
+  waitForViewportRasterReady() {
+    return Promise.resolve();
   }
 }

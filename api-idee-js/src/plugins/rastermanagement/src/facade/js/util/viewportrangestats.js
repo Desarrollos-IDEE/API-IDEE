@@ -325,7 +325,7 @@ export function constrainRangeToMode(range, mode, normalize) {
  *
  * @param {object} params Parámetros.
  * @param {object} params.layer Capa con getData(pixel).
- * @param {object} params.olMap Mapa OpenLayers.
+ * @param {Array<number>} params.viewportSize Tamaño [width, height] del viewport.
  * @param {string} params.mode Modo: monoband | mean | ndvi | ndwi | nbr.
  * @param {number|Array<number>} params.bands Banda(s) 1-based.
  * @param {number|null} [params.nodata] Valor nodata.
@@ -338,7 +338,7 @@ export function constrainRangeToMode(range, mode, normalize) {
 export function sampleViewportRange(params) {
   const {
     layer,
-    olMap,
+    viewportSize,
     mode,
     bands,
     nodata = null,
@@ -351,17 +351,12 @@ export function sampleViewportRange(params) {
   if (!layer || typeof layer.getData !== 'function') {
     return null;
   }
-  if (!olMap || typeof olMap.getSize !== 'function') {
+  if (!viewportSize || viewportSize.length < 2 || viewportSize[0] <= 0 || viewportSize[1] <= 0) {
     return null;
   }
 
-  const size = olMap.getSize();
-  if (!size || size.length < 2 || size[0] <= 0 || size[1] <= 0) {
-    return null;
-  }
-
-  const width = size[0];
-  const height = size[1];
+  const width = viewportSize[0];
+  const height = viewportSize[1];
   const step = Math.max(1, sampleStep);
   const values = [];
 

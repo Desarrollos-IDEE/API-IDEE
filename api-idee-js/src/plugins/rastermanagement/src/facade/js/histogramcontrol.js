@@ -8,6 +8,7 @@ import {
   Legend,
 } from 'chart.js';
 import template from 'templates/histograms';
+import HistogramControlImpl from 'impl/histogramcontrol';
 import { getValue } from './i18n/language';
 import {
   computeBandStats,
@@ -105,11 +106,11 @@ export default class HistogramControl {
     this.drawLayer_ = null;
 
     /**
-     * Interacción de dibujo OpenLayers.
+     * Implementación específica de la librería de mapas.
      * @private
-     * @type {ol.interaction.Draw|null}
+     * @type {IDEE.impl.control.HistogramControl}
      */
-    this.drawInteraction_ = null;
+    this.impl_ = new HistogramControlImpl();
   }
 
   /**
@@ -414,7 +415,7 @@ export default class HistogramControl {
    * @param {string} type Polygon | LineString
    */
   startDrawing_(type) {
-    if (typeof ol === 'undefined' || !ol.interaction || !ol.interaction.Draw) {
+    if (!this.impl_.isDrawAvailable()) {
       this.showError_(getValue('histogramDrawUnavailable'));
       this.setGeomMode_('full');
       return;
@@ -425,31 +426,17 @@ export default class HistogramControl {
     this.stopDrawing_();
 
     const map = this.parentControl_.map;
-    const olMap = map.getMapImpl();
-    const olLayer = this.drawLayer_.getImpl().getLayer();
-    const source = olLayer.getSource();
-
-    this.drawInteraction_ = new ol.interaction.Draw({
-      source,
-      type,
+    this.impl_.startDraw(map, this.drawLayer_, type, (facadeFeature) => {
+      this.drawLayer_.clear();
+      this.drawLayer_.addFeatures([facadeFeature]);
+      this.pointFeature_ = facadeFeature;
+      this.geom_ = this.drawLayer_.toGeoJSON();
+      this.stopDrawing_();
     });
-
-    this.drawInteraction_.on('drawend', (evt) => {
-      window.setTimeout(() => {
-        const facadeFeature = IDEE.impl.Feature.olFeature2Facade(evt.feature);
-        this.drawLayer_.clear();
-        this.drawLayer_.addFeatures([facadeFeature]);
-        this.pointFeature_ = facadeFeature;
-        this.geom_ = this.drawLayer_.toGeoJSON();
-        this.stopDrawing_();
-      }, 0);
-    });
-
-    olMap.addInteraction(this.drawInteraction_);
   }
 
   /**
-   * Obtiene los valores del ráster en el punto dibujado con getData.
+   * Obtiene los valores del ráster en el punto dibujado.
    *
    * @private
    * @function
@@ -462,12 +449,6 @@ export default class HistogramControl {
     }
 
     const map = this.parentControl_.map;
-    const olMap = map.getMapImpl();
-    if (!olMap || typeof olMap.getPixelFromCoordinate !== 'function') {
-      this.showError_(getValue('histogramDrawUnavailable'));
-      return;
-    }
-
     let feature = this.pointFeature_;
     if (!feature && this.drawLayer_) {
       const features = this.drawLayer_.getFeatures();
@@ -487,8 +468,7 @@ export default class HistogramControl {
       return;
     }
 
-    const pixel = olMap.getPixelFromCoordinate(geometry.coordinates);
-    const data = layer.getData(pixel);
+    const data = this.impl_.getRasterDataAtCoordinate(map, layer, geometry.coordinates);
     if (!data || data.length === 0) {
       this.showError_(getValue('histogramPointNoData'));
       return;
@@ -585,14 +565,8 @@ export default class HistogramControl {
    * @function
    */
   stopDrawing_() {
-    if (!this.drawInteraction_) {
-      return;
-    }
     const map = this.parentControl_.map;
-    if (map) {
-      map.getMapImpl().removeInteraction(this.drawInteraction_);
-    }
-    this.drawInteraction_ = null;
+    this.impl_.stopDraw(map);
   }
 
   /**

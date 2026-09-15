@@ -843,106 +843,6 @@ export default class StylesControl extends IDEE.Control {
   }
 
   /**
-   * Comprueba si hay algún dato ráster muestreable en el centro del mapa.
-   *
-   * @private
-   * @function
-   * @param {IDEE.layer.GeoTIFF} layer Capa.
-   * @param {object} olMap Mapa OpenLayers.
-   * @returns {boolean}
-   */
-  hasViewportRasterSample_(layer, olMap) {
-    if (!layer || typeof layer.getData !== 'function' || !olMap) {
-      return false;
-    }
-    const size = olMap.getSize();
-    if (!size || size.length < 2 || size[0] <= 0 || size[1] <= 0) {
-      return false;
-    }
-    const data = layer.getData([
-      Math.floor(size[0] / 2),
-      Math.floor(size[1] / 2),
-    ]);
-    if (!data || data.length === 0) {
-      return false;
-    }
-    return true;
-  }
-
-  /**
-   * Espera a que el ráster esté renderizado en la vista tras el zoom.
-   *
-   * @private
-   * @function
-   * @param {IDEE.layer.GeoTIFF} layer Capa.
-   * @param {object} olMap Mapa OpenLayers.
-   * @returns {Promise<void>}
-   */
-  waitForViewportRasterReady_(layer, olMap) {
-    return new Promise((resolve) => {
-      let settled = false;
-      let pollId = null;
-      let timeoutId = null;
-
-      const finish = () => {
-        if (settled) {
-          return;
-        }
-        settled = true;
-        if (pollId !== null) {
-          clearInterval(pollId);
-        }
-        if (timeoutId !== null) {
-          clearTimeout(timeoutId);
-        }
-        resolve();
-      };
-
-      const tryReady = () => {
-        if (this.hasViewportRasterSample_(layer, olMap)) {
-          finish();
-          return true;
-        }
-        return false;
-      };
-
-      if (tryReady()) {
-        return;
-      }
-
-      const startPolling = () => {
-        if (settled) {
-          return;
-        }
-        let attempts = 0;
-        pollId = setInterval(() => {
-          attempts += 1;
-          if (tryReady() || attempts >= 40) {
-            finish();
-          }
-        }, 100);
-      };
-
-      if (typeof olMap.once === 'function') {
-        olMap.once('rendercomplete', () => {
-          if (tryReady()) {
-            return;
-          }
-          startPolling();
-        });
-      } else {
-        startPolling();
-      }
-
-      if (typeof olMap.render === 'function') {
-        olMap.render();
-      }
-
-      timeoutId = setTimeout(finish, 10000);
-    });
-  }
-
-  /**
    * Activa o desactiva los botones de ajuste min/max.
    *
    * @private
@@ -989,12 +889,11 @@ export default class StylesControl extends IDEE.Control {
       return;
     }
 
-    const map = this.map;
-    let olMap = null;
-    if (map && typeof map.getMapImpl === 'function') {
-      olMap = map.getMapImpl();
-    }
-    if (!olMap || typeof this.selectedLayer.getData !== 'function') {
+    const impl = this.getImpl();
+    if (!impl
+      || typeof impl.getViewportSize !== 'function'
+      || typeof impl.waitForViewportRasterReady !== 'function'
+      || typeof this.selectedLayer.getData !== 'function') {
       IDEE.toast.warning(getValue('exception.fitMinMaxUnavailable'), null, 6000);
       return;
     }
@@ -1011,12 +910,18 @@ export default class StylesControl extends IDEE.Control {
         return;
       }
 
-      await this.waitForViewportRasterReady_(this.selectedLayer, olMap);
+      await impl.waitForViewportRasterReady(this.selectedLayer);
+
+      const viewportSize = impl.getViewportSize();
+      if (!viewportSize) {
+        IDEE.toast.warning(getValue('exception.fitMinMaxUnavailable'), null, 6000);
+        return;
+      }
 
       const normalize = this.isSelectedLayerNormalized_();
       const range = sampleViewportRange({
         layer: this.selectedLayer,
-        olMap,
+        viewportSize,
         mode: sampleConfig.mode,
         bands: sampleConfig.bands,
         nodata: this.getFormNodata_(mode),
