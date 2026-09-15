@@ -11,11 +11,12 @@
     "squemaTitle": "mapfooter",
     "title": "MAPFOOTER",
     "paragraph1": "El plugin mapfooter inserta un pie HTML bajo el visor (posición down por defecto) con contenido configurable (htmlCode) y hojas de estilo opcionales (cssList), habitual para avisos legales, enlaces o créditos.",
+    "paragraph2": "Use Mostrar/Ocultar para plegar o desplegar el pie. Configure htmlCode y cssList para personalizar el contenido y el estilo. No usa SidePanel: es un CollapsiblePanel de pie, como mapheader/attributions.",
     "screenshot1Alt": "Visor con el pie de página plegado; el mapa aprovecha la altura inferior",
     "screenshot1Caption": "help-01.png",
     "screenshot1Description": "Ejemplo con el pie retraído: el área cartográfica llega al borde inferior y el botón del panel permite mostrarlo de nuevo («Mostrar pie de página»).",
     "screenshot2Alt": "Visor con el pie de página desplegado mostrando el HTML configurado",
     "screenshot2Caption": "help-02.png",
-    "screenshot2Description": "Con el pie desplegado se muestra el contenido HTML y estilos configurados. Use «Ocultar pie de página» para ocultar el pie de página."
+    "screenshot2Description": "Con el pie desplegado se muestra el contenido HTML y estilos configurados. Use «Ocultar pie de página» para liberar espacio vertical para el mapa."
   }
 }

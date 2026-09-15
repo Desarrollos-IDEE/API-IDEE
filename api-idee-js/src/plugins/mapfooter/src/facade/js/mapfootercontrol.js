@@ -48,6 +48,7 @@ class MapfooterControl extends IDEE.Control {
    * @api
    */
   createView(map) {
+    this.map_ = map;
     this.map = map;
     return new Promise((success) => {
       const html = IDEE.template.compileSync(template, this.templateVars);
@@ -129,7 +130,7 @@ class MapfooterControl extends IDEE.Control {
       text.className = 'm-mapfooter-btn-text';
       text.textContent = label;
       const icon = document.createElement('span');
-      icon.className = 'm-mapfooter-btn-icon';
+      icon.className = 'm-mapfooter-btn-icon g-cartografia-btn-mapfooter-chevron';
       icon.setAttribute('aria-hidden', 'true');
       inner.append(text, icon);
       btn.append(inner);

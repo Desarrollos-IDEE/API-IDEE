@@ -1,3 +1,40 @@
+/*************************************************
+   ICONOS PROPIOS MAPFOOTER
+*************************************************/
+
+[class^='g-cartografia-btn-mapfooter-'],
+[class*=' g-cartografia-btn-mapfooter-'] {
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  color: inherit;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[class^='g-cartografia-btn-mapfooter-']::before,
+[class*=' g-cartografia-btn-mapfooter-']::before {
+  content: '' !important;
+  display: inline-block;
+  box-sizing: border-box;
+  width: 11px;
+  min-width: 11px;
+  height: 11px;
+  min-height: 11px;
+  aspect-ratio: 1;
+  background-color: currentColor;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  vertical-align: middle;
+}
+
 .m-control-panel.m-plugin-mapfooter {
   margin: 0 !important;
   z-index: 1000;
@@ -119,19 +156,20 @@
 }
 
 .m-mapfooter-btn-icon {
-  display: block !important;
+  display: inline-flex !important;
   flex: 0 0 11px !important;
   width: 11px !important;
   height: 11px !important;
-  background-color: currentColor !important;
-  -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_chevron.svg') !important;
-  mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_chevron.svg') !important;
-  -webkit-mask-position: center !important;
-  mask-position: center !important;
-  -webkit-mask-size: contain !important;
-  mask-size: contain !important;
-  -webkit-mask-repeat: no-repeat !important;
-  mask-repeat: no-repeat !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: inherit !important;
+}
+
+.m-mapfooter-btn-icon::before {
+  width: 11px !important;
+  min-width: 11px !important;
+  height: 11px !important;
+  min-height: 11px !important;
 }
 
 .m-control-panel.m-plugin-mapfooter.collapsed .m-mapfooter-btn-icon {

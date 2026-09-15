@@ -52,8 +52,8 @@
   },
   "metadata": {
     "name": "Mapfooter",
-    "description": "Generador de Pie de Mapa",
-    "text": "Se crea un pie de página HTML colapsable para el mapa",
+    "description": "Pie HTML colapsable bajo el mapa (CollapsiblePanel)",
+    "text": "Añade un pie de página HTML colapsable al mapa mediante CollapsiblePanel (API-IDEE v2). No usa SidePanel.",
     "version": "2.0.0",
     "date": "Septiembre, 2026",
     "author": "API-IDEE",

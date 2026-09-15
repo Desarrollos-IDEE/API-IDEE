@@ -1,20 +1,23 @@
 /**
  * @module IDEE/plugin/Mapfooter
  */
-import 'assets/css/mapfooter';
 import api from '../../api';
 import myhelp from '../../templates/myhelp.html';
+import '../assets/css/fonts';
+import '../assets/css/mapfooter';
 import ca from './i18n/ca';
 import en from './i18n/en';
 import es from './i18n/es';
 import { getValue } from './i18n/language';
 import MapfooterControl from './mapfootercontrol';
 
+/**
+ * @classdesc
+ * Plugin de pie HTML colapsable bajo el mapa (CollapsiblePanel, API-IDEE v2).
+ * No usa SidePanel: es un overlay de pie, como mapheader/attributions.
+ */
 export default class Mapfooter extends IDEE.Plugin {
   /**
-   * @classdesc
-   * Plugin de pie HTML colapsable bajo el mapa.
-   *
    * @constructor
    * @extends {IDEE.Plugin}
    * @param {Object} options opciones del plugin
@@ -86,7 +89,7 @@ export default class Mapfooter extends IDEE.Plugin {
      * @private
      * @type {string}
      */
-    this.collapsedButtonClass = 'g-cartografia-flecha-arriba';
+    this.collapsedButtonClass = 'g-cartografia-btn-mapfooter-chevron';
     if (!IDEE.utils.isNullOrEmpty(options.collapsedButtonClass)) {
       this.collapsedButtonClass = options.collapsedButtonClass;
     }
@@ -96,7 +99,7 @@ export default class Mapfooter extends IDEE.Plugin {
      * @private
      * @type {string}
      */
-    this.openedButtonClass = 'g-cartografia-flecha-abajo';
+    this.openedButtonClass = 'g-cartografia-btn-mapfooter-chevron';
     if (!IDEE.utils.isNullOrEmpty(options.openedButtonClass)) {
       this.openedButtonClass = options.openedButtonClass;
     }
@@ -156,6 +159,8 @@ export default class Mapfooter extends IDEE.Plugin {
       collapsed: this.collapsed,
       collapsible: this.collapsible,
       position: this.position,
+      minWidth: this.minPanelWidth,
+      maxWidth: this.maxPanelWidth,
       className: this.className,
       tooltip: this.tooltip,
       order: this.order,
@@ -167,16 +172,18 @@ export default class Mapfooter extends IDEE.Plugin {
     this.panel.addControls(this.controls);
     map.addControlPanels(this.panel);
 
-    // ADDED_TO_MAP del panel se dispara de forma síncrona en addControlPanels;
-    // hay que enlazar después (suscribirse antes llega tarde).
+    this.control.on(IDEE.evt.ADDED_TO_MAP, () => {
+      this.fire(IDEE.evt.ADDED_TO_MAP);
+    });
+
+    this.panel.on(IDEE.evt.ADDED_TO_MAP, (html) => {
+      IDEE.utils.enableTouchScroll(html);
+    });
+
     if (this.panel.element) {
       IDEE.utils.enableTouchScroll(this.panel.element);
     }
     this.control.bindPanelEvents(this.panel);
-
-    this.control.on(IDEE.evt.ADDED_TO_MAP, () => {
-      this.fire(IDEE.evt.ADDED_TO_MAP);
-    });
   }
 
   /**
@@ -319,6 +326,7 @@ export default class Mapfooter extends IDEE.Plugin {
             imageHelp02,
             translations: {
               paragraph1: getValue('textHelp.paragraph1'),
+              paragraph2: getValue('textHelp.paragraph2'),
               screenshot1Alt: getValue('textHelp.screenshot1Alt'),
               screenshot1Caption: getValue('textHelp.screenshot1Caption'),
               screenshot1Description: getValue(
