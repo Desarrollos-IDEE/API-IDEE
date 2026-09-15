@@ -7,7 +7,8 @@
   "textHelp": {
     "squemaTitle": "maxextzoom",
     "title": "MAXEXTZOOM",
-    "paragraph1": "Aquest plugin afegeix un botó que ajusta la vista del mapa a l'extensió màxima definida per la configuració del visor (capas carregades, WMC o caixa per defecte), d'un sol clic.",
+    "paragraph1": "Aquest plugin afegeix un botó que ajusta la vista del mapa a l'extensió màxima definida per la configuració del visor (capes carregades, WMC o caixa per defecte), d'un sol clic.",
+    "paragraph2": "No obre panell lateral: és un Control one-shot amb icona COTA (icn_overview). Prem el botó per recentrar i enquadrar l'extensió màxima.",
     "screenshot1Alt": "Mapa amb el control de zoom a extensió visible a la barra del visor",
     "screenshot1Caption": "help-01.png",
     "screenshot1Description": "Localitzeu la icona del control (s'acostuma a mostrar a una cantonada segons position); el text d'ajuda o tooltip indica «Zoom a l'extensió del mapa»."

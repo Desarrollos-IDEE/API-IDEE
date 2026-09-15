@@ -1,11 +1,9 @@
-/** Estilos sobreescritos */
-.m-control.activated>button {
-    color: var(--idee-color-danger) !important;
-}
-
-.m-maxextzoom button#m-maxextzoom-button {
-    border-radius: 20px;
-    border: 2px solid var(--idee-color-white);
-    background-color: var(--idee-color-primary) !important;
-    color: var(--idee-color-white) !important;
+/* Botón one-shot MaxExtZoom (OverviewMapButton / m-control-button) */
+.m-control-button.m-maxextzoom,
+button.m-overviewmap-button.m-maxextzoom,
+.m-maxextzoom.m-control-button {
+  border-radius: 20px;
+  border: 2px solid var(--idee-color-white);
+  background-color: var(--idee-color-primary) !important;
+  color: var(--idee-color-white) !important;
 }

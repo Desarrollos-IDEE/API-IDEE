@@ -4,18 +4,21 @@
 import 'assets/css/maxextzoom';
 import api from '../../api';
 import myhelp from '../../templates/myhelp.html';
+import ca from './i18n/ca';
 import en from './i18n/en';
 import es from './i18n/es';
 import { getValue } from './i18n/language';
 import MaxExtZoomControl from './maxextzoomcontrol';
 
-const SVG_PATH = 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_overview_white.svg';
+const DEFAULT_SVG = 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_overview.svg';
 
+/**
+ * @classdesc
+ * Botón one-shot que ajusta la vista a la extensión máxima del mapa (API-IDEE v2).
+ * No usa SidePanel ni CollapsiblePanel: es un Control con OverviewMapButton.
+ */
 export default class MaxExtZoom extends IDEE.Plugin {
   /**
-   * @classdesc
-   * Plugin de botón one-shot que ajusta la vista a la extensión máxima del mapa.
-   *
    * @constructor
    * @extends {IDEE.Plugin}
    * @param {Object} options opciones del plugin
@@ -26,6 +29,7 @@ export default class MaxExtZoom extends IDEE.Plugin {
       position: options.position || 'left',
       tooltip: options.tooltip || getValue('tooltip'),
       order: options.order,
+      svgPath: options.svgPath || DEFAULT_SVG,
     });
 
     /**
@@ -48,6 +52,13 @@ export default class MaxExtZoom extends IDEE.Plugin {
      * @type {Array<IDEE.Control>}
      */
     this.controls = [];
+
+    /**
+     * Icono COTA del botón
+     * @private
+     * @type {string}
+     */
+    this.svgPath = options.svgPath || DEFAULT_SVG;
 
     /**
      * Metadata from api.json
@@ -73,7 +84,7 @@ export default class MaxExtZoom extends IDEE.Plugin {
       tooltip: this.tooltip,
       position: this.position,
       order: this.order,
-      svgPath: SVG_PATH,
+      svgPath: this.svgPath,
     });
     this.controls = [this.control];
 
@@ -92,8 +103,14 @@ export default class MaxExtZoom extends IDEE.Plugin {
    * @api stable
    */
   destroy() {
-    if (this.map && this.controls.length > 0) {
-      this.map.removeControls(this.controls);
+    if (this.map) {
+      if (this.control) {
+        this.control.deactivate();
+        this.control.destroy();
+      }
+      if (this.controls.length > 0) {
+        this.map.removeControls(this.controls);
+      }
     }
     this.map = null;
     this.control = null;
@@ -166,8 +183,14 @@ export default class MaxExtZoom extends IDEE.Plugin {
    * @api stable
    */
   static getJSONTranslations(lang) {
-    if (lang === 'en' || lang === 'es') {
-      return (lang === 'en') ? en : es;
+    if (lang === 'en' || lang === 'es' || lang === 'ca') {
+      if (lang === 'en') {
+        return en;
+      }
+      if (lang === 'ca') {
+        return ca;
+      }
+      return es;
     }
     return IDEE.language.getTranslation(lang).maxextzoom;
   }
@@ -192,6 +215,7 @@ export default class MaxExtZoom extends IDEE.Plugin {
             imageHelp01,
             translations: {
               paragraph1: getValue('textHelp.paragraph1'),
+              paragraph2: getValue('textHelp.paragraph2'),
               screenshot1Alt: getValue('textHelp.screenshot1Alt'),
               screenshot1Caption: getValue('textHelp.screenshot1Caption'),
               screenshot1Description: getValue(

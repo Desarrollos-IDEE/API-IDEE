@@ -12,6 +12,7 @@ export default class MaxExtZoomControl extends IDEE.impl.Control {
    * @api stable
    */
   addTo(map, html) {
+    this.facadeMap_ = map;
     this.map = map;
     this.element = html;
     super.addTo(map, html);
@@ -25,6 +26,7 @@ export default class MaxExtZoomControl extends IDEE.impl.Control {
    * @api stable
    */
   destroy() {
+    this.facadeMap_ = null;
     this.map = null;
     this.element = null;
   }

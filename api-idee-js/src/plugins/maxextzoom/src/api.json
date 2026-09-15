@@ -32,12 +32,20 @@
   ],
   "files": {
     "ol": {
-      "scripts": ["maxextzoom.ol.min.js"],
-      "styles": ["maxextzoom.ol.min.css"]
+      "scripts": [
+        "maxextzoom.ol.min.js"
+      ],
+      "styles": [
+        "maxextzoom.ol.min.css"
+      ]
     },
     "cesium": {
-      "scripts": ["maxextzoom.cesium.min.js"],
-      "styles": ["maxextzoom.cesium.min.css"]
+      "scripts": [
+        "maxextzoom.cesium.min.js"
+      ],
+      "styles": [
+        "maxextzoom.cesium.min.css"
+      ]
     }
   },
   "metadata": {
@@ -51,6 +59,8 @@
     "tags": "api-idee,IDEE,plugin",
     "icon": "https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_overview.svg",
     "centralized": true,
-    "compatibility": ["2"]
+    "compatibility": [
+      "2"
+    ]
   }
 }

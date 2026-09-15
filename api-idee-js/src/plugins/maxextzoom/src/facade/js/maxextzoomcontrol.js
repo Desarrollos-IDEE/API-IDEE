@@ -4,11 +4,12 @@
 import MaxExtZoomImplControl from 'impl/maxextzoomcontrol';
 import { getValue } from './i18n/language';
 
+/**
+ * @classdesc
+ * Control one-shot: al pulsar ajusta la vista a la extensión máxima.
+ */
 class MaxExtZoomControl extends IDEE.Control {
   /**
-   * @classdesc
-   * Control one-shot: al pulsar ajusta la vista a la extensión máxima.
-   *
    * @constructor
    * @extends {IDEE.Control}
    * @param {Object} options control options
@@ -59,6 +60,18 @@ class MaxExtZoomControl extends IDEE.Control {
    */
   equals(control) {
     return control instanceof MaxExtZoomControl;
+  }
+
+  /**
+   * Limpia el control
+   *
+   * @public
+   * @function
+   * @api
+   */
+  destroy() {
+    this.activationBtn = null;
+    super.destroy();
   }
 }
 
