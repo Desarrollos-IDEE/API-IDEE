@@ -6,33 +6,28 @@
   "constructor": "IDEE.plugin.FilteredSearch",
   "parameters": [
     {
-      "type": "object",
-      "properties": [
-        {
-          "type": "simple",
-          "name": "position",
-          "possibleValues": [
-            "left",
-            "right"
-          ],
-          "position": 0
-        },
-        {
-          "type": "boolean",
-          "name": "collapsed",
-          "position": 1
-        },
-        {
-          "type": "number",
-          "name": "order",
-          "position": 2
-        },
-        {
-          "type": "simple",
-          "name": "tooltip",
-          "position": 3
-        }
+      "type": "simple",
+      "name": "position",
+      "position": 0,
+      "possibleValues": [
+        "left",
+        "right"
       ]
+    },
+    {
+      "type": "boolean",
+      "name": "collapsed",
+      "position": 1
+    },
+    {
+      "type": "number",
+      "name": "order",
+      "position": 2
+    },
+    {
+      "type": "string",
+      "name": "tooltip",
+      "position": 3
     }
   ],
   "files": {
@@ -54,15 +49,15 @@
     }
   },
   "metadata": {
-    "name": "filteredsearch",
+    "name": "FilteredSearch",
     "description": "Búsqueda con filtros",
-    "text": "Permite realizar búsquedas y aplicar diferentes filtros. Da la posibilidad de poder guardar o exportar la consulta",
+    "text": "Permite realizar búsquedas y aplicar diferentes filtros con SidePanel (API-IDEE v2)",
     "version": "2.0.0",
     "date": "Septiembre, 2026",
     "author": "API-IDEE",
     "org": "Instituto Geográfico Nacional",
     "tags": "api-idee,IDEE,plugin",
-    "icon": "./facade/assets/images/icon.svg",
+    "icon": "https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lupa.svg",
     "centralized": true,
     "compatibility": [
       "2"

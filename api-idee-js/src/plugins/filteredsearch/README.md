@@ -30,18 +30,18 @@ Para uso de implementación Cesium:
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.idee.es/api-idee/plugins/filteredsearch/filteredsearch-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/filteredsearch/filteredsearch-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/filteredsearch/filteredsearch-2.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/filteredsearch/filteredsearch-2.0.0.ol.min.js"></script>
 ```
 
 ## Parámetros
 
-El constructor se inicializa con un JSON con los siguientes atributos:
-
-- **position**. Indica la posición donde se mostrará el plugin (`left` / `right`). Valores legacy `TL`/`TR`/`BL`/`BR` se normalizan a left/right.
-- **collapsed**. Indica si el plugin viene colapsado de entrada (por defecto: `true`).
-- **order**. Orden del control/plugin en el panel.
-- **tooltip**. Texto al pasar el ratón sobre el botón.
+| Parámetro | Tipo | Por defecto | Descripción |
+| ----------- | ------ | ------------- | ------------- |
+| `position` | `left` \| `right` | `right` | Barra de herramientas donde se muestra el botón del plugin |
+| `collapsed` | `boolean` | `true` | Indica si el panel aparece colapsado al inicio |
+| `order` | `number` | — | Orden del botón/panel entre controles y plugins |
+| `tooltip` | `string` | `Búsqueda por filtros` | Texto al pasar el ratón sobre el botón |
 
 # API-REST
 
@@ -49,33 +49,12 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 URL_API?filteredsearch=position*collapsed*order*tooltip
 ```
 
-<table>
-    <tr>
-        <th>Parámetros</th>
-        <th>Opciones/Descripción</th>
-        <th>Disponibilidad</th>
-    </tr>
-    <tr>
-        <td>position</td>
-        <td>left / right (también TL/TR/BL/BR legacy)</td>
-        <td>Base64 ✔️ | Separador ✔️</td>
-    </tr>
-    <tr>
-        <td>collapsed</td>
-        <td>true / false</td>
-        <td>Base64 ✔️ | Separador ✔️</td>
-    </tr>
-    <tr>
-        <td>order</td>
-        <td>número</td>
-        <td>Base64 ✔️ | Separador ✔️</td>
-    </tr>
-    <tr>
-        <td>tooltip</td>
-        <td>texto</td>
-        <td>Base64 ✔️ | Separador ✔️</td>
-    </tr>
-</table>
+| Parámetros | Opciones/Descripción | Disponibilidad |
+| --- | --- | --- |
+| position | left / right | Base64 ✔️ \| Separador ✔️ |
+| collapsed | true / false | Base64 ✔️ \| Separador ✔️ |
+| order | número | Base64 ✔️ \| Separador ✔️ |
+| tooltip | texto | Base64 ✔️ \| Separador ✔️ |
 
 ### Ejemplos de uso API-REST
 ```
@@ -84,35 +63,30 @@ https://componentes.idee.es/api-idee?filteredsearch=right*true*0*Búsqueda filtr
 
 ### Ejemplo de uso API-REST en base64
 
-Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad IDEE.utils.encodeBase64.
-Ejemplo:
 ```javascript
-IDEE.utils.encodeBase64(obj_params);
+IDEE.utils.encodeBase64({
+  position: 'right',
+  collapsed: true,
+  order: 0,
+  tooltip: 'Búsqueda filtrada',
+});
 ```
 
-Ejemplo de constructor:
-```javascript
-{
-  position: 'BR',
-}
-```
-```
-https://componentes.idee.es/api-idee?filteredsearch=base64=eyJwb3NpdGlvbiI6IkJSIn0=&layers=OSM,WFS*RED_REGENTE*https://www.ign.es/wfs/redes-geodesicas?*RED_REGENTE*POINT
-```
-
-    
 ## Ejemplos de uso
 
 ```javascript
-   const map = IDEE.map({
-     container: 'map'
-   });
+const map = IDEE.map({
+  container: 'map'
+});
 
-   const mp = new IDEE.plugin.FilteredSearch({
-        position: 'TR',
-   });
+const mp = new IDEE.plugin.FilteredSearch({
+  position: 'right',
+  collapsed: true,
+  order: 0,
+  tooltip: 'Búsqueda filtrada',
+});
 
-   map.addPlugin(mp);
+map.addPlugin(mp);
 ```
 
 # 👨‍💻 Desarrollo
@@ -126,8 +100,6 @@ Para el stack de desarrollo de este componente se ha utilizado
 
 
 ### 🐑 Clonar el repositorio / *Cloning repository*
-
-Para descargar el repositorio en otro equipo lo clonamos:
 
 ```bash
 git clone [URL del repositorio]
@@ -151,12 +123,12 @@ npm run start:cesium
 ```any
 /
 ├── src 📦                  # Código fuente
-├── legacy 📁               # Histórico de versiones
 ├── task 📁                 # EndPoints
 ├── test 📁                 # Testing
 ├── webpack-config 📁       # Webpack configs
 └── ...
 ```
+
 ## 📌 Metodologías y pautas de desarrollo / *Methodologies and Guidelines*
 
 Metodologías y herramientas usadas en el proyecto para garantizar el Quality Assurance Code (QAC)
@@ -175,5 +147,5 @@ $npm i -g npm-check-updates
 $ncu
 ```
 
-## Tabla de compatibilidad de versiones   
+## Tabla de compatibilidad de versiones
 [Consulta el api resourcePlugin](https://componentes.idee.es/api-idee/api/actions/resourcesPlugins?name=filteredsearch)

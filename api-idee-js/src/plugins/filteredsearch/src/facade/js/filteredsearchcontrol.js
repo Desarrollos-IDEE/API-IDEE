@@ -21,14 +21,14 @@ export default class FilteredSearchControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api stable
    */
-  constructor(values = {}) {
+  constructor(options = {}) {
     if (IDEE.utils.isUndefined(FilteredSearchImplControl)
       || (IDEE.utils.isObject(FilteredSearchImplControl)
         && IDEE.utils.isNullOrEmpty(Object.keys(FilteredSearchImplControl)))) {
       IDEE.exception(getValue('exception.impl'));
     }
     const impl = new FilteredSearchImplControl();
-    super(FilteredSearchControl.NAME, impl);
+    super(FilteredSearchControl.NAME, impl, options);
     /**
      * Filtering query (written in sql style)
      * @public
@@ -126,6 +126,7 @@ export default class FilteredSearchControl extends IDEE.Control {
    * @api stable
    */
   createView(map) {
+    this.map_ = map;
     this.map = map;
     return new Promise((success, fail) => {
       this.createInitialView(map);

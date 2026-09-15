@@ -73,3 +73,9 @@ removeButton.addEventListener('click', removePlugin);
 });
 
 updatePlugin();
+
+try {
+  map.addPlugin(new IDEE.plugin.Help({}));
+} catch (err) {
+  console.error(err);
+}

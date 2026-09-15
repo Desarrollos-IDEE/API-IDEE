@@ -1,0 +1,4 @@
+.g-cartografia-btn-filteredsearch-search::before {
+  -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lupa.svg');
+  mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lupa.svg');
+}

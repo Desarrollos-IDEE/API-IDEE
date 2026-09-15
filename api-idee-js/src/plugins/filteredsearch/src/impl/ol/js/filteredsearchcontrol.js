@@ -12,6 +12,8 @@ export default class FilteredSearchControl extends IDEE.impl.Control {
    * @api stable
    */
   addTo(map, html) {
+    this.facadeMap_ = map;
+    this.element = html;
     super.addTo(map, html);
   }
 
