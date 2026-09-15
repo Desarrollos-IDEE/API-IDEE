@@ -12,8 +12,9 @@ export default class MapheaderControl extends IDEE.impl.Control {
    * @api stable
    */
   addTo(map, html) {
-    this.map = map;
+    this.facadeMap_ = map;
     this.element = html;
+    this.map = map;
     super.addTo(map, html);
   }
 
@@ -25,6 +26,7 @@ export default class MapheaderControl extends IDEE.impl.Control {
    * @api stable
    */
   destroy() {
+    this.facadeMap_ = null;
     this.map = null;
     this.element = null;
   }

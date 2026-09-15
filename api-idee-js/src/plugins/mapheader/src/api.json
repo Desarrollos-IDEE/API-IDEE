@@ -42,18 +42,26 @@
   ],
   "files": {
     "ol": {
-      "scripts": ["mapheader.ol.min.js"],
-      "styles": ["mapheader.ol.min.css"]
+      "scripts": [
+        "mapheader.ol.min.js"
+      ],
+      "styles": [
+        "mapheader.ol.min.css"
+      ]
     },
     "cesium": {
-      "scripts": ["mapheader.cesium.min.js"],
-      "styles": ["mapheader.cesium.min.css"]
+      "scripts": [
+        "mapheader.cesium.min.js"
+      ],
+      "styles": [
+        "mapheader.cesium.min.css"
+      ]
     }
   },
   "metadata": {
     "name": "Mapheader",
     "description": "Generador de Cabecera de Mapa",
-    "text": "Se crea una cabecera HTML colapsable para el mapa",
+    "text": "Cabecera HTML colapsable sobre el mapa con CollapsiblePanel (API-IDEE v2)",
     "version": "2.0.0",
     "date": "Septiembre, 2026",
     "author": "API-IDEE",
@@ -61,6 +69,8 @@
     "tags": "api-idee,IDEE,plugin",
     "icon": "https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_info.svg",
     "centralized": true,
-    "compatibility": ["2"]
+    "compatibility": [
+      "2"
+    ]
   }
 }

@@ -40,6 +40,7 @@ class MapheaderControl extends IDEE.Control {
   }
 
   createView(map) {
+    this.map_ = map;
     this.map = map;
     return new Promise((success) => {
       const html = IDEE.template.compileSync(template, this.templateVars);
@@ -151,7 +152,7 @@ class MapheaderControl extends IDEE.Control {
       text.className = 'm-mapheader-btn-text';
       text.textContent = label;
       const icon = document.createElement('span');
-      icon.className = 'm-mapheader-btn-icon';
+      icon.className = 'm-mapheader-btn-icon g-cartografia-btn-mapheader-chevron';
       icon.setAttribute('aria-hidden', 'true');
       inner.append(text, icon);
       btn.append(inner);

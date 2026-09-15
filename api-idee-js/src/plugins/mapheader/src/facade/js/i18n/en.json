@@ -11,6 +11,7 @@
     "squemaTitle": "mapheader",
     "title": "MAPHEADER",
     "paragraph1": "The mapheader plugin adds a top strip above the viewer with configurable HTML content: institutional logos, title, subtitles and links, typical of download portals or corporate maps.",
+    "paragraph2": "Use Show/Hide to collapse or expand the header. Configure htmlCode and cssList to customize content and style.",
     "screenshot1Alt": "Map without institutional header strip; standard viewer controls visible",
     "screenshot1Caption": "help-01.png",
     "screenshot1Description": "Example with the header collapsed: the map reaches the top edge and the action to show it again is available.",
