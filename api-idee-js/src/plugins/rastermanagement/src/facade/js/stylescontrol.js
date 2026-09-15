@@ -5,6 +5,7 @@
 import StylesControlImpl from 'impl/stylescontrol';
 import template from '../../templates/styles';
 import { getValue } from './i18n/language';
+import { sampleViewportRange } from './util/viewportrangestats';
 
 const FILTER_DEFAULTS = {
   saturation: 0,
@@ -75,6 +76,7 @@ export default class StylesControl extends IDEE.Control {
     this.activated_ = false;
     this.bandRolesRequestId_ = 0;
     this.updatingRampStops_ = false;
+    this.fittingMinMax_ = false;
   }
 
   get html() {
@@ -139,6 +141,8 @@ export default class StylesControl extends IDEE.Control {
       bandSwir: getValue('bandSwir'),
       min: getValue('min'),
       max: getValue('max'),
+      fitMinMax: getValue('fitMinMax'),
+      fitMinMaxHint: getValue('fitMinMaxHint'),
       ramp: getValue('ramp'),
       interpolation: getValue('interpolation'),
       interpolationLinear: getValue('interpolationLinear'),
@@ -314,6 +318,8 @@ export default class StylesControl extends IDEE.Control {
       });
       minInput.addEventListener('change', () => this.onIndexRampMinMaxChange(index));
       maxInput.addEventListener('change', () => this.onIndexRampMinMaxChange(index));
+      const fitMinMaxBtn = html.querySelector(`#m-rastermanagement-${index}-fit-minmax`);
+      fitMinMaxBtn.addEventListener('click', () => this.fitMinMaxFromViewport(index));
       this.updateIndexRampRemoveButtons(index);
       this.updateIndexRampValueLabels(index);
     });
@@ -344,6 +350,8 @@ export default class StylesControl extends IDEE.Control {
       });
       minInput.addEventListener('change', () => this.onIndexRampMinMaxChange(mode));
       maxInput.addEventListener('change', () => this.onIndexRampMinMaxChange(mode));
+      const fitMinMaxBtn = html.querySelector(`#m-rastermanagement-${mode}-fit-minmax`);
+      fitMinMaxBtn.addEventListener('click', () => this.fitMinMaxFromViewport(mode));
       this.updateIndexRampRemoveButtons(mode);
       this.updateIndexRampValueLabels(mode);
     });
@@ -672,6 +680,391 @@ export default class StylesControl extends IDEE.Control {
     this.updateIndexRampValueLabels(index);
     if (this.selectedLayer) {
       this.applyStyle();
+    }
+  }
+
+  /**
+   * Lee el nodata del formulario del modo/índice indicado.
+   *
+   * @private
+   * @function
+   * @param {string} mode Identificador del modo o índice.
+   * @returns {number|null}
+   */
+  getFormNodata_(mode) {
+    const nodataInput = this.html.querySelector(`#m-rastermanagement-${mode}-nodata`);
+    if (!nodataInput || nodataInput.value === '') {
+      return null;
+    }
+    const nodata = parseFloat(nodataInput.value);
+    if (Number.isNaN(nodata)) {
+      return null;
+    }
+    return nodata;
+  }
+
+  /**
+   * Obtiene bandas y modo de muestreo desde el formulario activo.
+   *
+   * @private
+   * @function
+   * @param {string} mode Identificador del modo o índice.
+   * @returns {{ mode: string, bands: number|Array<number> }|null}
+   */
+  getViewportSampleConfig_(mode) {
+    if (mode === 'monoband') {
+      const band = parseInt(this.html.querySelector('#m-rastermanagement-monoband-band').value, 10);
+      if (Number.isNaN(band) || band < 1) {
+        IDEE.toast.warning(getValue('exception.invalidRampBands'), null, 6000);
+        return null;
+      }
+      return { mode: 'monoband', bands: band };
+    }
+
+    if (mode === 'mean') {
+      const bandInputs = this.html.querySelectorAll('#m-rastermanagement-mean-bands .m-rastermanagement-mean-band');
+      const meanBands = [];
+      let hasInvalidBand = false;
+      bandInputs.forEach((input) => {
+        const band = parseInt(input.value, 10);
+        if (Number.isNaN(band) || band < 1) {
+          hasInvalidBand = true;
+          return;
+        }
+        meanBands.push(band);
+      });
+      if (hasInvalidBand || meanBands.length < 2) {
+        IDEE.toast.warning(getValue('exception.invalidMeanBands'), null, 6000);
+        return null;
+      }
+      return { mode: 'mean', bands: meanBands };
+    }
+
+    if (SPECTRAL_INDICES.indexOf(mode) !== -1) {
+      const bandIds = INDEX_BAND_IDS[mode];
+      const band1 = parseInt(this.html.querySelector(`#m-rastermanagement-${mode}-${bandIds[0]}`).value, 10);
+      const band2 = parseInt(this.html.querySelector(`#m-rastermanagement-${mode}-${bandIds[1]}`).value, 10);
+      if (Number.isNaN(band1) || Number.isNaN(band2) || band1 < 1 || band2 < 1) {
+        IDEE.toast.warning(getValue('exception.invalidIndexBands'), null, 6000);
+        return null;
+      }
+      return { mode, bands: [band1, band2] };
+    }
+
+    return null;
+  }
+
+  /**
+   * Indica si la capa seleccionada normaliza los datos a 0–1.
+   *
+   * @private
+   * @function
+   * @returns {boolean}
+   */
+  isSelectedLayerNormalized_() {
+    const layer = this.selectedLayer;
+    if (!layer) {
+      return true;
+    }
+    if (typeof layer.getImpl === 'function') {
+      const impl = layer.getImpl();
+      if (impl && typeof impl.normalize === 'boolean') {
+        return impl.normalize;
+      }
+    }
+    if (layer.options && typeof layer.options.normalize === 'boolean') {
+      return layer.options.normalize;
+    }
+    return true;
+  }
+
+  /**
+   * Espera a que la capa GeoTIFF esté cargada (metadatos / fuente).
+   *
+   * @private
+   * @function
+   * @param {IDEE.layer.GeoTIFF} layer Capa seleccionada.
+   * @returns {Promise<void>}
+   */
+  waitForLayerLoaded_(layer) {
+    return new Promise((resolve) => {
+      if (!layer) {
+        resolve();
+        return;
+      }
+      if (typeof layer.getImpl === 'function') {
+        const impl = layer.getImpl();
+        if (impl && typeof impl.isLoaded === 'function' && impl.isLoaded()) {
+          resolve();
+          return;
+        }
+      }
+      let settled = false;
+      const finish = () => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        resolve();
+      };
+      if (typeof layer.once === 'function') {
+        layer.once('load', finish);
+      }
+      setTimeout(finish, 10000);
+    });
+  }
+
+  /**
+   * Hace zoom a la extensión máxima de la capa seleccionada.
+   *
+   * @private
+   * @function
+   * @param {IDEE.layer.GeoTIFF} layer Capa seleccionada.
+   * @returns {boolean} true si se pudo aplicar el zoom.
+   */
+  zoomToLayerExtent_(layer) {
+    let extent = null;
+    try {
+      extent = layer.getMaxExtent();
+    } catch (err) {
+      console.error(err); // eslint-disable-line no-console
+      return false;
+    }
+    if (IDEE.utils.isNullOrEmpty(extent)) {
+      return false;
+    }
+    try {
+      this.map.setBbox(extent);
+      return true;
+    } catch (err) {
+      console.error(err); // eslint-disable-line no-console
+      return false;
+    }
+  }
+
+  /**
+   * Comprueba si hay algún dato ráster muestreable en el centro del mapa.
+   *
+   * @private
+   * @function
+   * @param {IDEE.layer.GeoTIFF} layer Capa.
+   * @param {object} olMap Mapa OpenLayers.
+   * @returns {boolean}
+   */
+  hasViewportRasterSample_(layer, olMap) {
+    if (!layer || typeof layer.getData !== 'function' || !olMap) {
+      return false;
+    }
+    const size = olMap.getSize();
+    if (!size || size.length < 2 || size[0] <= 0 || size[1] <= 0) {
+      return false;
+    }
+    const data = layer.getData([
+      Math.floor(size[0] / 2),
+      Math.floor(size[1] / 2),
+    ]);
+    if (!data || data.length === 0) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Espera a que el ráster esté renderizado en la vista tras el zoom.
+   *
+   * @private
+   * @function
+   * @param {IDEE.layer.GeoTIFF} layer Capa.
+   * @param {object} olMap Mapa OpenLayers.
+   * @returns {Promise<void>}
+   */
+  waitForViewportRasterReady_(layer, olMap) {
+    return new Promise((resolve) => {
+      let settled = false;
+      let pollId = null;
+      let timeoutId = null;
+
+      const finish = () => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        if (pollId !== null) {
+          clearInterval(pollId);
+        }
+        if (timeoutId !== null) {
+          clearTimeout(timeoutId);
+        }
+        resolve();
+      };
+
+      const tryReady = () => {
+        if (this.hasViewportRasterSample_(layer, olMap)) {
+          finish();
+          return true;
+        }
+        return false;
+      };
+
+      if (tryReady()) {
+        return;
+      }
+
+      const startPolling = () => {
+        if (settled) {
+          return;
+        }
+        let attempts = 0;
+        pollId = setInterval(() => {
+          attempts += 1;
+          if (tryReady() || attempts >= 40) {
+            finish();
+          }
+        }, 100);
+      };
+
+      if (typeof olMap.once === 'function') {
+        olMap.once('rendercomplete', () => {
+          if (tryReady()) {
+            return;
+          }
+          startPolling();
+        });
+      } else {
+        startPolling();
+      }
+
+      if (typeof olMap.render === 'function') {
+        olMap.render();
+      }
+
+      timeoutId = setTimeout(finish, 10000);
+    });
+  }
+
+  /**
+   * Activa o desactiva los botones de ajuste min/max.
+   *
+   * @private
+   * @function
+   * @param {boolean} disabled true para deshabilitar.
+   * @param {string} [label] Texto opcional del botón.
+   */
+  setFitMinMaxButtonsState_(disabled, label) {
+    if (!this.html) {
+      return;
+    }
+    const nodes = this.html.querySelectorAll('.m-rastermanagement-fit-minmax');
+    for (let i = 0; i < nodes.length; i += 1) {
+      if (disabled) {
+        nodes[i].setAttribute('disabled', '');
+      } else {
+        nodes[i].removeAttribute('disabled');
+      }
+      if (!IDEE.utils.isNullOrEmpty(label)) {
+        nodes[i].innerText = label;
+      }
+    }
+  }
+
+  /**
+   * Estima min/max muestreando la vista actual y actualiza el formulario.
+   * Antes hace zoom a la extensión de la imagen y espera a que esté cargada.
+   *
+   * @private
+   * @function
+   * @param {string} mode Identificador del modo o índice.
+   */
+  async fitMinMaxFromViewport(mode) {
+    if (this.fittingMinMax_) {
+      return;
+    }
+    if (!this.selectedLayer) {
+      IDEE.toast.warning(getValue('exception.selectLayer'), null, 6000);
+      return;
+    }
+
+    const sampleConfig = this.getViewportSampleConfig_(mode);
+    if (!sampleConfig) {
+      return;
+    }
+
+    const map = this.map;
+    let olMap = null;
+    if (map && typeof map.getMapImpl === 'function') {
+      olMap = map.getMapImpl();
+    }
+    if (!olMap || typeof this.selectedLayer.getData !== 'function') {
+      IDEE.toast.warning(getValue('exception.fitMinMaxUnavailable'), null, 6000);
+      return;
+    }
+
+    this.fittingMinMax_ = true;
+    this.setFitMinMaxButtonsState_(true, getValue('fitMinMaxLoading'));
+
+    try {
+      await this.waitForLayerLoaded_(this.selectedLayer);
+
+      const zoomed = this.zoomToLayerExtent_(this.selectedLayer);
+      if (!zoomed) {
+        IDEE.toast.warning(getValue('exception.fitMinMaxNoExtent'), null, 6000);
+        return;
+      }
+
+      await this.waitForViewportRasterReady_(this.selectedLayer, olMap);
+
+      const normalize = this.isSelectedLayerNormalized_();
+      const range = sampleViewportRange({
+        layer: this.selectedLayer,
+        olMap,
+        mode: sampleConfig.mode,
+        bands: sampleConfig.bands,
+        nodata: this.getFormNodata_(mode),
+        normalize,
+      });
+
+      if (!range) {
+        IDEE.toast.warning(getValue('exception.fitMinMaxNoData'), null, 6000);
+        return;
+      }
+
+      let { min, max } = range;
+      if (min === max) {
+        const delta = Math.max(Math.abs(min) * 0.01, 0.0001);
+        min -= delta;
+        max += delta;
+        const isIndex = sampleConfig.mode === 'ndvi'
+          || sampleConfig.mode === 'ndwi'
+          || sampleConfig.mode === 'nbr';
+        if (isIndex) {
+          if (min < -1) {
+            min = -1;
+          }
+          if (max > 1) {
+            max = 1;
+          }
+        } else if (normalize) {
+          if (min < 0) {
+            min = 0;
+          }
+          if (max > 1) {
+            max = 1;
+          }
+        }
+      }
+
+      this.updatingRampStops_ = true;
+      this.html.querySelector(`#m-rastermanagement-${mode}-min`).value = this.formatRampStopValue(min);
+      this.html.querySelector(`#m-rastermanagement-${mode}-max`).value = this.formatRampStopValue(max);
+      this.updatingRampStops_ = false;
+      this.updateIndexRampValueLabels(mode);
+      this.applyStyle();
+    } catch (err) {
+      console.error(err); // eslint-disable-line no-console
+      IDEE.toast.warning(getValue('exception.fitMinMaxNoData'), null, 6000);
+    } finally {
+      this.fittingMinMax_ = false;
+      this.setFitMinMaxButtonsState_(false, getValue('fitMinMax'));
     }
   }
 

@@ -11,7 +11,10 @@
     "invalidRampStops": "Ramp values must be numeric and ascending",
     "invalidRgbBands": "RGB bands must be integers greater than or equal to 0, and at least one greater than 0",
     "invalidBasicBand": "The band must be an integer greater than or equal to 1",
-    "invalidBasicOptions": "Set nodata and/or change a filter from its default value"
+    "invalidBasicOptions": "Set nodata and/or change a filter from its default value",
+    "fitMinMaxNoData": "No visible raster data in the current view to estimate the range",
+    "fitMinMaxUnavailable": "Cannot sample the layer on this map",
+    "fitMinMaxNoExtent": "Could not get the image extent"
   },
   "textHelp": {
     "help1": "Txt 1"
@@ -102,6 +105,9 @@
   "bandSwirTooltip": "Short-wave infrared",
   "min": "Minimum",
   "max": "Maximum",
+  "fitMinMax": "Fit to image",
+  "fitMinMaxLoading": "Fitting…",
+  "fitMinMaxHint": "Zooms to the image, waits for it to load and estimates minimum and maximum (2–98 percentiles)",
   "ramp": "Color ramp",
   "rampStop": "Ramp value",
   "interpolation": "Interpolation",

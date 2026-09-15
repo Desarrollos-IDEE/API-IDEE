@@ -10,27 +10,33 @@ const map = IDEE.map({
  });
 window.map = map;
 
-// map.addLayers(new IDEE.layer.GeoTIFF({
-//   url: 'https://e84-earth-search-sentinel-data.s3.us-west-2.amazonaws.com/sentinel-2-pre-c1-l2a/21/N/YC/2022/12/S2B_T21NYC_20221205T140704_L2A/B04.tif',
-//   name: 'Sentinel TCI',
-//   legend: 'Sentinel-2 color verdadero',
-// }, {
-//   normalize: true,
-//   nodata: 0,
-//   style: new IDEE.style.Raster({
-//     bands: [1,0,0],
-//     // nodata: 0,
-//     gamma: 2
-//   }),
-// }));
-
 map.addLayers(new IDEE.layer.GeoTIFF({
-  url: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/36/Q/WD/2020/7/S2A_36QWD_20200701_0_L2A/TCI.tif',
+  url: 'http://localhost:6123/test/imagen.tif',
   name: 'Sentinel TCI',
-  legend: 'Sentinel-2 multibandamultibandamultibandamultibandamultibandamultibandamultibandamultibandamultibandamultibandamultibandamultibandamultibandamultibanda',
+  legend: 'Sentinel-2 color verdadero',
 }, {
   normalize: true,
+  nodata: 0,
+  style: new IDEE.style.Raster({
+    bands: [1,0,0],
+    // nodata: 0,
+    gamma: 2
+  }),
 }));
+
+// map.addLayers(new IDEE.layer.GeoTIFF({
+//   url: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/36/Q/WD/2020/7/S2A_36QWD_20200701_0_L2A/TCI.tif',
+//   name: 'Sentinel TCI',
+//   legend: 'Sentinel-2 multibandamultibandamultibandamultibandamultibandamultibandamultibandamultibandamultibandamultibandamultibandamultibandamultibandamultibanda',
+// }, {
+//   normalize: true,
+//   style: new IDEE.style.Raster({
+//     bands: 1,
+//     min: 0.2,
+//     max: 1,
+//     ramp: ['#000080', '#0000ff', '#00ff00', '#ffff00', '#ff0000'],
+//   }),
+// }));
 
 // map.addLayers(new IDEE.layer.GeoTIFF({
 //   url: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/36/Q/WD/2020/7/S2A_36QWD_20200701_0_L2A/TCI.tif',

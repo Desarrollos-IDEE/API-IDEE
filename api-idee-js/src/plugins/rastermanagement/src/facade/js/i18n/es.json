@@ -11,7 +11,10 @@
     "invalidRampStops": "Los valores de la rampa deben ser numéricos y crecientes",
     "invalidRgbBands": "Las bandas RGB deben ser enteros mayores o iguales que 0, y al menos una mayor que 0",
     "invalidBasicBand": "La banda debe ser un entero mayor o igual que 1",
-    "invalidBasicOptions": "Indique nodata y/o cambie algún filtro respecto a los valores por defecto"
+    "invalidBasicOptions": "Indique nodata y/o cambie algún filtro respecto a los valores por defecto",
+    "fitMinMaxNoData": "No hay datos ráster visibles en la vista actual para estimar el rango",
+    "fitMinMaxUnavailable": "No se puede muestrear la capa en este mapa",
+    "fitMinMaxNoExtent": "No se ha podido obtener la extensión de la imagen"
   },
   "textHelp": {
     "help1": "Txt 1"
@@ -102,6 +105,9 @@
   "bandSwirTooltip": "Infrarrojo de onda corta",
   "min": "Mínimo",
   "max": "Máximo",
+  "fitMinMax": "Ajustar a la imagen",
+  "fitMinMaxLoading": "Ajustando…",
+  "fitMinMaxHint": "Hace zoom a la imagen, espera a que cargue y estima mínimo y máximo (percentiles 2–98)",
   "ramp": "Rampa de color",
   "rampStop": "Valor de la rampa",
   "interpolation": "Interpolación",

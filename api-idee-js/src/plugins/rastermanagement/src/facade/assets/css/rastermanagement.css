@@ -277,6 +277,39 @@
     gap: 16px;
 }
 
+.m-rastermanagement-minmax-actions {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.m-rastermanagement-fit-minmax {
+    margin: 0;
+    padding: 8px 12px;
+    font-family: 'Muli', 'sans-serif';
+    font-size: 13px;
+    font-weight: bold;
+    color: #404040;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.m-rastermanagement-fit-minmax:hover {
+    border-color: #71a7d3;
+    color: #71a7d3;
+}
+
+.m-rastermanagement-fit-minmax:focus {
+    outline: 2px solid #71a7d3;
+    outline-offset: 1px;
+}
+
+.m-rastermanagement-fit-minmax:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
 .m-rastermanagement-rgb-hint {
     margin: 4px 0 0;
     font-size: 12px;
