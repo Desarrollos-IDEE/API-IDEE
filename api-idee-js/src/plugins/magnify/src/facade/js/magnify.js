@@ -1,9 +1,10 @@
 /**
  * @module IDEE/plugin/Magnify
  */
-import 'assets/css/magnify';
 import api from '../../api';
 import myhelp from '../../templates/myhelp.html';
+import '../assets/css/fonts';
+import '../assets/css/magnify';
 import en from './i18n/en';
 import es from './i18n/es';
 import { getValue } from './i18n/language';
@@ -30,11 +31,12 @@ const normalizePosition = (position) => {
   return POSITION_LEGACY[position] || position;
 };
 
+/**
+ * @classdesc
+ * Plugin de efecto lupa/zoom con SidePanelButton + PluginSidePanel (API-IDEE v2).
+ */
 export default class Magnify extends IDEE.Plugin {
   /**
-   * @classdesc
-   * Plugin de efecto lupa/zoom sobre una o varias capas.
-   *
    * @constructor
    * @extends {IDEE.Plugin}
    * @param {Object} options opciones del plugin
@@ -42,45 +44,56 @@ export default class Magnify extends IDEE.Plugin {
    */
   constructor(options = {}) {
     super('magnify', {
-      position: normalizePosition(options.position),
+      position: normalizePosition(options.position) || 'right',
       tooltip: options.tooltip || getValue('tooltip'),
       order: options.order,
-      svgPath: options.svgPath || SVG_PATH,
     });
 
     /**
      * Plugin options
-     * @public
+     * @private
      * @type {Object}
      */
     this.options = options;
 
     /**
-     * Plugin name
-     * @public
-     * @type {string}
+     * Facade of the map
+     * @private
+     * @type {IDEE.Map}
      */
-    this.name = 'magnify';
+    this.map = null;
 
     /**
-     * Indicates if the plugin is collapsed on entry
-     * @public
+     * Array of controls
+     * @private
+     * @type {Array<IDEE.Control>}
+     */
+    this.controls = [];
+
+    /**
+     * CSS class name for the panel
+     * @private
+     * @type {string}
+     */
+    this.className = 'm-plugin-magnify';
+
+    /**
+     * Option to allow the plugin to be initially collapsed
+     * @private
      * @type {boolean}
      */
-    this.collapsed = options.collapsed !== undefined ? options.collapsed : true;
+    this.collapsed = true;
+    if (IDEE.utils.isBoolean(options.collapsed)) {
+      this.collapsed = options.collapsed;
+    }
 
     /**
      * Metadata from api.json
-     * @public
+     * @private
      * @type {Object}
      */
     this.metadata = api.metadata;
 
-    /**
-     * Separator for API REST params
-     * @public
-     * @type {string}
-     */
     this.separatorApiJson = api.url.separator;
 
     /**
@@ -121,11 +134,20 @@ export default class Magnify extends IDEE.Plugin {
    */
   addTo(map) {
     this.map = map;
+    this.control = new MagnifyControl({
+      layers: this.layers,
+      zoom: this.zoom,
+      zoomMax: this.zoomMax,
+      tooltip: this.tooltip,
+      position: this.position,
+      order: this.order,
+    });
+    this.controls = [this.control];
 
     this.button = new IDEE.ui.buttons.SidePanelButton(this.name, {
       position: this.position,
       tooltip: this.tooltip,
-      svgPath: this.svgPath,
+      svgPath: SVG_PATH,
       order: this.order,
     });
     map.addButtons(this.button);
@@ -135,25 +157,20 @@ export default class Magnify extends IDEE.Plugin {
       position: this.position,
       minWidth: this.minPanelWidth,
       maxWidth: this.maxPanelWidth,
-      className: 'm-plugin-magnify',
+      className: this.className,
       tooltip: this.tooltip,
       order: this.order,
     });
 
-    this.control = new MagnifyControl({
-      layers: this.layers,
-      zoom: this.zoom,
-      zoomMax: this.zoomMax,
-    });
-    this.controls = [this.control];
+    this.control.setPanel(this.panel);
 
     this.control.on(IDEE.evt.ADDED_TO_MAP, () => {
       this.fire(IDEE.evt.ADDED_TO_MAP);
     });
 
-    this.panel.addControls(this.controls);
-    this.button.panel = this.panel;
-    this.panel.button = this.button;
+    this.panel.on(IDEE.evt.ADDED_TO_MAP, (html) => {
+      IDEE.utils.enableTouchScroll(html);
+    });
 
     this.panel.on(IDEE.evt.SHOW, () => {
       if (map.getLayers().length === 0) {
@@ -162,6 +179,9 @@ export default class Magnify extends IDEE.Plugin {
       }
     });
 
+    this.panel.addControls(this.controls);
+    this.button.panel = this.panel;
+    this.panel.button = this.button;
     map.addPanels(this.panel);
   }
 
@@ -177,21 +197,24 @@ export default class Magnify extends IDEE.Plugin {
       this.control.getImpl().removeEffects();
     }
     if (this.map) {
+      if (this.control) {
+        this.control.setPanel(null);
+      }
       if (this.button) {
         this.map.removeButton(this.button);
       }
       if (this.panel) {
         this.map.removePanel(this.panel);
       }
-      if (this.controls && this.controls.length > 0) {
+      if (this.controls.length > 0) {
         this.map.removeControls(this.controls);
       }
     }
     this.map = null;
-    this.button = null;
-    this.panel = null;
     this.control = null;
     this.controls = [];
+    this.panel = null;
+    this.button = null;
   }
 
   /**
@@ -203,6 +226,18 @@ export default class Magnify extends IDEE.Plugin {
    */
   getControls() {
     return this.controls;
+  }
+
+  /**
+   * Devuelve el panel del plugin
+   *
+   * @public
+   * @function
+   * @returns {IDEE.ui.panels.PluginSidePanel}
+   * @api
+   */
+  getPanel() {
+    return this.panel;
   }
 
   /**
@@ -279,7 +314,6 @@ export default class Magnify extends IDEE.Plugin {
     const imageHelp01 = require(`assets/images/${this.getMetadata().version}/help-01.png`);
     // eslint-disable-next-line global-require, import/no-dynamic-require
     const imageHelp02 = require(`assets/images/${this.getMetadata().version}/help-02.png`);
-    // eslint-disable-next-line global-require, import/no-dynamic-require
 
     return {
       title: getValue('textHelp.squemaTitle'),
@@ -291,6 +325,7 @@ export default class Magnify extends IDEE.Plugin {
             imageHelp02,
             translations: {
               paragraph1: getValue('textHelp.paragraph1'),
+              paragraph2: getValue('textHelp.paragraph2'),
               screenshot1Alt: getValue('textHelp.screenshot1Alt'),
               screenshot1Caption: getValue('textHelp.screenshot1Caption'),
               screenshot2Alt: getValue('textHelp.screenshot2Alt'),

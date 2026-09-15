@@ -4,53 +4,69 @@
     "separator": "*"
   },
   "constructor": "IDEE.plugin.Magnify",
-  "parameters": [{
-    "type": "object",
-    "properties": [{
+  "parameters": [
+    {
       "type": "simple",
       "name": "position",
       "position": 0,
-      "possibleValues": ["left", "right"]
-    }, {
+      "possibleValues": [
+        "left",
+        "right"
+      ]
+    },
+    {
       "type": "boolean",
       "name": "collapsed",
       "position": 1
-    }, {
+    },
+    {
       "type": "number",
       "name": "order",
       "position": 2
-    }, {
-      "type": "simple",
+    },
+    {
+      "type": "string",
       "name": "tooltip",
       "position": 3
-    }, {
-      "type": "simple",
+    },
+    {
+      "type": "string",
       "name": "layers",
       "position": 4
-    }, {
+    },
+    {
       "type": "number",
       "name": "zoomMax",
       "position": 5
-    }, {
+    },
+    {
       "type": "number",
       "name": "zoom",
       "position": 6
-    }]
-  }],
+    }
+  ],
   "files": {
     "ol": {
-      "scripts": ["magnify.ol.min.js"],
-      "styles": ["magnify.ol.min.css"]
+      "scripts": [
+        "magnify.ol.min.js"
+      ],
+      "styles": [
+        "magnify.ol.min.css"
+      ]
     },
     "cesium": {
-      "scripts": ["magnify.cesium.min.js"],
-      "styles": ["magnify.cesium.min.css"]
+      "scripts": [
+        "magnify.cesium.min.js"
+      ],
+      "styles": [
+        "magnify.cesium.min.css"
+      ]
     }
   },
   "metadata": {
-    "name": "magnify",
+    "name": "Magnify",
     "description": "Efecto lupa-zoom sobre capas",
-    "text": "Plugin que permite realizar un efecto de zoom o de lupa sobre una o varias capas",
+    "text": "Plugin que permite realizar un efecto de zoom o de lupa sobre una o varias capas con SidePanel (API-IDEE v2)",
     "version": "2.0.0",
     "date": "Septiembre, 2026",
     "author": "API-IDEE",
@@ -58,6 +74,8 @@
     "tags": "api-idee,IDEE,plugin",
     "icon": "https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_zoom_recuad.svg",
     "centralized": true,
-    "compatibility": ["2"]
+    "compatibility": [
+      "2"
+    ]
   }
 }

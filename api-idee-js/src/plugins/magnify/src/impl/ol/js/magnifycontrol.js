@@ -14,6 +14,8 @@ export default class MagnifyControl extends IDEE.impl.Control {
    * @api stable
    */
   addTo(map, html) {
+    this.facadeMap_ = map;
+    this.element = html;
     this.map = map;
     this.olMap = map.getMapImpl();
     this.zoom = null;
@@ -78,6 +80,7 @@ export default class MagnifyControl extends IDEE.impl.Control {
    */
   destroy() {
     this.removeEffects();
+    this.facadeMap_ = null;
     this.map = null;
     this.olMap = null;
   }

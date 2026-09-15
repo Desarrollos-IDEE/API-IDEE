@@ -8,8 +8,8 @@ Plugin que permite realizar un efecto de zoom o de lupa sobre una o varias capas
 
 ![Imagen1](./img/magnify.png)
 
-
 # Dependencias
+
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
 Para uso de implementación OpenLayers:
 - **magnify.ol.min.js**
@@ -21,7 +21,7 @@ Para uso de implementación Cesium:
 
 # Uso del histórico de versiones
 
-Existe un histórico de versiones de todos los plugins en el directorio `legacy/` de cada plugin. 
+Existe un histórico de versiones de todos los plugins en el directorio `legacy/` de cada plugin.
 Es recomendable fijar las versiones para evitar errores inesperados.
 
 Ejemplo con el plugin Magnify, implementación OpenLayers y versión 2.0.0:
@@ -30,18 +30,15 @@ Ejemplo con el plugin Magnify, implementación OpenLayers y versión 2.0.0:
 
 ## Parámetros
 
-El constructor se inicializa con un JSON con los siguientes atributos:
-
-- **layers**. String que contiene el nombre de las capas que se quieren seleccionar del mapa. A estas capas se les aplicará el filtro de lupa. Si este campo está vacío, el efecto lupa se aplicará a todas las capas.
-- **position**. Indica la posición donde se mostrará el plugin.
-  - `left`
-  - `right` (default)
-  - Compatibilidad legacy: `TL`/`BL` → `left`, `TR`/`BR` → `right`
-- **collapsed**. Indica si el panel arranca colapsado (default `true`)
-- **order**. Orden del botón en el contenedor de herramientas
-- **tooltip**. Texto del tooltip del botón
-- **zoom**. campo numérico que define el zoom inicial. (Valor por defecto 1)
-- **zoomMax**. campo numérico que define el nivel maximo de zoom. (Valor por defecto 10)
+| Parámetro | Tipo | Por defecto | Descripción |
+| ----------- | ------ | ------------- | ------------- |
+| `position` | `left` \| `right` | `right` | Barra de herramientas donde se muestra el botón del plugin |
+| `collapsed` | `boolean` | `true` | Indica si el panel aparece colapsado al inicio |
+| `order` | `number` | — | Orden del botón/panel entre controles y plugins |
+| `tooltip` | `string` | `Lupa` | Texto al pasar el ratón sobre el botón |
+| `layers` | `string` | — | Nombres de capas separados por comas. Si está vacío, aplica a capas base / disponibles |
+| `zoom` | `number` | `1` | Zoom inicial de la lupa |
+| `zoomMax` | `number` | `10` | Nivel máximo de zoom |
 
 # API-REST
 
@@ -49,118 +46,55 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 URL_API?magnify=position*collapsed*order*tooltip*layers*zoomMax*zoom
 ```
 
-<table>
-    <tr>
-        <th>Parámetros</th>
-        <th>Opciones/Descripción</th>
-        <th>Disponibilidad</th>
-    </tr>
-    <tr>
-        <td>position</td>
-        <td>left/right (legacy TL/TR/BL/BR)</td>
-        <td>Base64 ✔️ | Separador ✔️</td>
-    </tr>
-    <tr>
-        <td>collapsed</td>
-        <td>true/false</td>
-        <td>Base64 ✔️ | Separador ✔️</td>
-    </tr>
-    <tr>
-        <td>order</td>
-        <td>número de orden</td>
-        <td>Base64 ✔️ | Separador ✔️</td>
-    </tr>
-    <tr>
-        <td>tooltip</td>
-        <td>texto del tooltip</td>
-        <td>Base64 ✔️ | Separador ✔️</td>
-    </tr>
-     <tr>
-        <td>layers</td>
-        <td>Cadena con nombres de URL separados por comas</td>
-        <td>Base64 ✔️ | Separador ✔️</td>
-    </tr>
-    <tr>
-        <td>zoomMax</td>
-        <td>nivel maximo de zoom</td>
-        <td>Base64 ✔️ | Separador ✔️</td>
-    </tr>
-         <tr>
-        <td>zoom</td>
-        <td>zoom inicial</td>
-        <td>Base64 ✔️ | Separador ✔️</td>
-    </tr>
-</table>
+| Parámetros | Opciones/Descripción | Disponibilidad |
+| --- | --- | --- |
+| position | left/right | Base64 ✔️ \| Separador ✔️ |
+| collapsed | true/false | Base64 ✔️ \| Separador ✔️ |
+| order | número | Base64 ✔️ \| Separador ✔️ |
+| tooltip | texto | Base64 ✔️ \| Separador ✔️ |
+| layers | nombres separados por comas | Base64 ✔️ \| Separador ✔️ |
+| zoomMax | nivel máximo | Base64 ✔️ \| Separador ✔️ |
+| zoom | zoom inicial | Base64 ✔️ \| Separador ✔️ |
 
 ### Ejemplos de uso API-REST
-```
-https://componentes.idee.es/api-idee?magnify=position*collapsed*order*tooltip*layers*zoomMax*zoom
-```
 
 ```
-https://componentes.idee.es/api-idee?layers=OSM,WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*EPSG:25830*imagen*true*image/jpeg&projection=EPSG:25830&magnify=TL*OI.OrthoimageCoverage*16*5&bbox=-2595076.7019215897,3568596.502104186,2066485.2270033162,4625706.608821015
+https://componentes.idee.es/api-idee?layers=OSM,WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*EPSG:25830*imagen*true*image/jpeg&projection=EPSG:25830&magnify=right*true*0*Lupa*OI.OrthoimageCoverage*16*5
 ```
 
 ### Ejemplo de uso API-REST en base64
 
-Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad IDEE.utils.encodeBase64.
-Ejemplo:
 ```javascript
-IDEE.utils.encodeBase64(obj_params);
-```
-
-Ejemplo de constructor:
-```javascript
-{
-  position: 'TL',
+IDEE.utils.encodeBase64({
+  position: 'right',
+  collapsed: true,
+  order: 0,
+  tooltip: 'Lupa',
   zoomMax: 19,
   zoom: 5,
-  layers: 'OI.OrthoimageCoverage'
-}
+  layers: 'OI.OrthoimageCoverage',
+});
 ```
 
-```
-https://componentes.idee.es/api-idee?layers=OSM,WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*EPSG:25830*imagen*true*image/jpeg&projection=EPSG:25830&magnify=base64=eyJwb3NpdGlvbiI6IlRMIiwiem9vbU1heCI6MTksInpvb20iOjUsImxheWVycyI6Ik9JLk9ydGhvaW1hZ2VDb3ZlcmFnZSJ9&bbox=-2595076.7019215897,3568596.502104186,2066485.2270033162,4625706.608821015
-```
+## Ejemplos de uso
 
-
-# Ejemplos de uso
-
-## Ejemplo 1
 ```javascript
+const map = IDEE.map({
+  container: 'map',
+});
+
 const mp = new IDEE.plugin.Magnify({
-  position: 'TL',
+  position: 'right',
+  collapsed: true,
+  order: 0,
+  tooltip: 'Lupa',
   zoomMax: 19,
   zoom: 5,
+  layers: 'OI.OrthoimageCoverage',
 });
 
 map.addPlugin(mp);
 ```
-
-## Ejemplo 2
-```javascript
-const mp = new IDEE.plugin.Magnify({
-  position: 'TL',
-  zoomMax: 19,
-  zoom: 5,
-  layers: 'provincias,fondo
-});
-
-map.addPlugin(mp);
-```
-
-## Ejemplo 3
-```javascript
-const map = M.map({
-  container: 'map'
-});
-
-const mp = new M.plugin.Magnify({});
-
-map.addPlugin(mp);
-```
-
-
 
 # 👨‍💻 Desarrollo
 
@@ -170,7 +104,6 @@ Para el stack de desarrollo de este componente se ha utilizado
 * NPM Versión: 8.19.4 o superior
 
 ## 📐 Configuración del stack de desarrollo / *Work setup*
-
 
 ### 🐑 Clonar el repositorio / *Cloning repository*
 
@@ -222,5 +155,5 @@ $npm i -g npm-check-updates
 $ncu
 ```
 
-## Tabla de compatibilidad de versiones   
+## Tabla de compatibilidad de versiones
 [Consulta el api resourcePlugin](https://componentes.idee.es/api-idee/api/actions/resourcesPlugins?name=magnify)

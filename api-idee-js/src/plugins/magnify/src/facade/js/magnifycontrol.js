@@ -15,18 +15,18 @@ export default class MagnifyControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api stable
    */
-  constructor(values = {}) {
+  constructor(options = {}) {
     if (IDEE.utils.isUndefined(MagnifyImplControl)
       || (IDEE.utils.isObject(MagnifyImplControl)
         && IDEE.utils.isNullOrEmpty(Object.keys(MagnifyImplControl)))) {
       IDEE.exception(getValue('exception.impl'));
     }
     const impl = new MagnifyImplControl();
-    super(MagnifyControl.NAME, impl);
+    super(MagnifyControl.NAME, impl, options);
 
-    this.arrayListNames = values.layers || '';
-    this.zoom = values.zoom;
-    this.zoomMax = values.zoomMax;
+    this.arrayListNames = options.layers || '';
+    this.zoom = options.zoom;
+    this.zoomMax = options.zoomMax;
   }
 
   /**
@@ -38,6 +38,7 @@ export default class MagnifyControl extends IDEE.Control {
    * @api stable
    */
   createView(map) {
+    this.map_ = map;
     this.map = map;
     return new Promise((success) => {
       const zoomMax = this.zoomMax;

@@ -1,0 +1,4 @@
+.g-cartografia-btn-magnify-zoom::before {
+  -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_zoom_recuad.svg');
+  mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_zoom_recuad.svg');
+}
