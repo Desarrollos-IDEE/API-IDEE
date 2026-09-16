@@ -3,7 +3,7 @@
  */
 import { post, get } from '../util/Remote';
 import Base from '../Base';
-import { getValue } from '../i18n/language';
+import { getValue, getLang } from '../i18n/language';
 import { error as showError } from '../dialog';
 
 /**
@@ -242,7 +242,7 @@ class Catalog extends Base {
       });
     }
     return new Promise((success, fail) => {
-      const body = this.token ? { accessToken: this.token } : null;
+      const body = this.token ? { accessToken: this.token, lang: getLang() } : null;
       post(`${this.collectionsUrl}`, body, { headers: { 'Content-Type': 'application/json' } }).then((response) => {
         if (response.code === 401 || response.code === 403) {
           this.refreshTokenAuth().then(() => {

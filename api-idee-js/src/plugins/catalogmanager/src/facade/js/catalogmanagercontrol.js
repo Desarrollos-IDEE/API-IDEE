@@ -2830,7 +2830,11 @@ export default class CatalogmanagerControl extends IDEE.Control {
     /* geotiff.on('load', () => {
       this.map_.setBbox(geotiff.getMaxExtent());
     }); */
-    itemLayer.addLayers(geotiff);
+    const oldGeotiff = itemLayer.getLayers()
+      .find((l) => l.name === geotiff.name);
+    if (!oldGeotiff) {
+      itemLayer.addLayers(geotiff);
+    }
   }
 
   /**
