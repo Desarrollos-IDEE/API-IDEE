@@ -575,6 +575,19 @@ export default class CatalogmanagerControl extends IDEE.Control {
         child.classList.remove('hidden');
       }
     }
+    this.toggleMapMoveEvent(tab.id);
+  }
+
+  toggleMapMoveEvent(tabId) {
+    const filterViewBtn = this.template_.querySelector('button#view');
+    if (!filterViewBtn.classList.contains('active')) {
+      return;
+    }
+    if (tabId.includes('results')) {
+      this.map_.un(IDEE.evt.MOVE, this.onMoveMapBound_);
+    } else {
+      this.map_.on(IDEE.evt.MOVE, this.onMoveMapBound_);
+    }
   }
 
   /**
@@ -2773,13 +2786,15 @@ export default class CatalogmanagerControl extends IDEE.Control {
     const collection = coll;
     const styleSpec = this.resolveStyleSpec(image);
     const style = this.buildRasterStyle(styleSpec);
+    const normalize = IDEE.utils.isNullOrEmpty(styleSpec.indice);
+    const convertToRGB = styleSpec.convertToRGB;
     const geotiff = new IDEE.layer.GeoTIFF({
       url: image.href,
       name: image.title,
       legend: image.title,
     }, {
-      convertToRGB: false,
-      normalize: IDEE.utils.isNullOrEmpty(styleSpec.indice),
+      convertToRGB,
+      normalize,
       style,
     });
     /* if (!catalog.layerGroup) {
@@ -3197,19 +3212,25 @@ export default class CatalogmanagerControl extends IDEE.Control {
    * @returns {{bands: {r: number, g: number, b: number}}|null} Índices de banda o null
    */
   resolveStyleSpec(asset) {
-    const spec = { bands: [1, 1, 1] };
+    const spec = {
+      bands: [1, 1, 1],
+      convertToRGB: false,
+    };
     if (asset.title.includes('NDVI')) {
       spec.indice = 'NDVI';
     } else if (asset.title.includes('NDWI')) {
       spec.indice = 'NDWI';
     } else if (asset.title.includes('NBR')) {
       spec.indice = 'NBR';
+    } else {
+      spec.bands = [1, 2, 3];
+      spec.convertToRGB = true;
     }
     const eoBands = this.getAssetBands(asset);
     if (!Array.isArray(eoBands) || eoBands.length === 0) {
       return spec;
     }
-
+    spec.convertToRGB = false;
     // RGB Monobanda
     if (eoBands.length === 1) {
       const commonName = eoBands[0].common_name?.toLowerCase();
@@ -3260,32 +3281,6 @@ export default class CatalogmanagerControl extends IDEE.Control {
         if (bandIndex !== -1) {
           bandIndex += 1;
         }
-      }
-      if (bandIndex !== -1) {
-        reorderedBands.push(bandIndex);
-      } else {
-        reorderedBands.push(index + 1);
-      }
-    });
-    return reorderedBands;
-  }
-
-  /**
-   * Reordena los índices de banda alternativamente según band_display_order
-   *
-   * @private
-   * @function
-   * @param {Array<Object>} eoBands Bandas espectrales del asset
-   * @param {Array<string>} bandDisplayOrder Orden de visualización definido en el asset
-   * @returns {Array<number>} Índices de banda reordenados (base 1)
-   */
-  reorderBandsAlt(eoBands, bandDisplayOrder) {
-    const reorderedBands = [];
-    eoBands.forEach((band, index) => {
-      let bandIndex = -1;
-      bandIndex = bandDisplayOrder.findIndex((b) => b.toLowerCase() === band.name.toLowerCase());
-      if (bandIndex !== -1) {
-        bandIndex += 1;
       }
       if (bandIndex !== -1) {
         reorderedBands.push(bandIndex);
