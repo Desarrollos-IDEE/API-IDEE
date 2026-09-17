@@ -11,6 +11,7 @@ import myhelp from '../../templates/myhelp';
 import es from './i18n/es';
 import en from './i18n/en';
 import { CALC_HISTOGRAM_WPS_URL } from './util/calchistogramservice';
+import { RASTER_CALCULATOR_WPS_URL } from './util/rastercalculatorservice';
 
 export default class RasterManagement extends IDEE.Plugin {
   /**
@@ -76,7 +77,7 @@ export default class RasterManagement extends IDEE.Plugin {
      * @private
      * @type {string}
      */
-    this.tooltip_ = options.tooltip || getValue('tooltip');
+    this.tooltip_ = options.tooltip || getValue('title');
 
     /**
      * Collapsed attribute
@@ -106,6 +107,16 @@ export default class RasterManagement extends IDEE.Plugin {
     this.calcHistogramUrl = CALC_HISTOGRAM_WPS_URL;
     if (!IDEE.utils.isNullOrEmpty(options.calcHistogramUrl)) {
       this.calcHistogramUrl = options.calcHistogramUrl;
+    }
+
+    /**
+     * URL del servicio WPS rasterCalculator
+     * @public
+     * @type {string}
+     */
+    this.rasterCalculatorUrl = RASTER_CALCULATOR_WPS_URL;
+    if (!IDEE.utils.isNullOrEmpty(options.rasterCalculatorUrl)) {
+      this.rasterCalculatorUrl = options.rasterCalculatorUrl;
     }
 
     /**
@@ -143,6 +154,7 @@ export default class RasterManagement extends IDEE.Plugin {
     this.control_ = new RasterManagementControl({
       order: this.order,
       calcHistogramUrl: this.calcHistogramUrl,
+      rasterCalculatorUrl: this.rasterCalculatorUrl,
     });
     this.controls_.push(this.control_);
     this.map_ = map;
@@ -188,7 +200,7 @@ export default class RasterManagement extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.collapsible}*${this.tooltip_}*${this.calcHistogramUrl}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.collapsible}*${this.tooltip_}*${this.calcHistogramUrl}*${this.rasterCalculatorUrl}`;
   }
 
   /**

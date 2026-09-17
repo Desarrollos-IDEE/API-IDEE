@@ -11,18 +11,33 @@ const map = IDEE.map({
 window.map = map;
 
 map.addLayers(new IDEE.layer.GeoTIFF({
-  url: 'http://localhost:6123/test/imagen.tif',
+  url: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/36/Q/WD/2020/7/S2A_36QWD_20200701_0_L2A/TCI.tif',
   name: 'Sentinel TCI',
-  legend: 'Sentinel-2 color verdadero',
 }, {
-  normalize: true,
-  nodata: 0,
-  style: new IDEE.style.Raster({
-    bands: [1,0,0],
-    // nodata: 0,
-    gamma: 2
-  }),
 }));
+
+// map.addLayers(new IDEE.layer.GeoTIFF({
+//   // url: 'https://mantenimiento-cnig-wps.desarrollo.guadaltel.es/jobs/e0b8b536-b202-11f1-8e09-8ad8591c4530/results',
+//     url: 'http://localhost:6123/test/results.tiff',
+//   name: 'Sentinel TCI',
+// }, {
+//   normalize: true,
+//   nodata: 0,
+// }));
+
+// map.addLayers(new IDEE.layer.GeoTIFF({
+//   url: 'http://localhost:6123/test/imagen.tif',
+//   name: 'Sentinel TCI',
+//   legend: 'Sentinel-2 color verdadero',
+// }, {
+//   normalize: true,
+//   nodata: 0,
+//   style: new IDEE.style.Raster({
+//     bands: [1,0,0],
+//     // nodata: 0,
+//     gamma: 2
+//   }),
+// }));
 
 // map.addLayers(new IDEE.layer.GeoTIFF({
 //   url: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/36/Q/WD/2020/7/S2A_36QWD_20200701_0_L2A/TCI.tif',

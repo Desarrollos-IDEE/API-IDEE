@@ -697,6 +697,107 @@
     margin: 0;
 }
 
+.m-rastermanagement-calculator-hint,
+.m-rastermanagement-calculator-syntax {
+    font-family: 'Muli', 'sans-serif';
+    font-size: 12px;
+    color: #666;
+    margin: 0 0 10px;
+    line-height: 1.4;
+}
+
+.m-rastermanagement-calculator-section {
+    margin-bottom: 12px;
+}
+
+.m-rastermanagement-calculator-ops {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.m-rastermanagement-calculator-op {
+    padding: 4px 10px;
+    font-family: 'Muli', 'sans-serif';
+    font-size: 11px;
+    color: #404040;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.m-rastermanagement-calculator-op:hover,
+.m-rastermanagement-calculator-op.active {
+    background-color: #71a7d3;
+    color: #fff;
+    border-color: #71a7d3;
+}
+
+.m-rastermanagement-calculator-params {
+    margin-bottom: 12px;
+}
+
+.m-rastermanagement-calculator-expression-control textarea {
+    width: 100%;
+    min-height: 72px;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: #404040;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px;
+    resize: vertical;
+}
+
+.m-rastermanagement-calculator-actions {
+    margin-top: 12px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.m-rastermanagement-calculator-run,
+.m-rastermanagement-calculator-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 8px 20px;
+    font-family: 'Muli', 'sans-serif';
+    font-size: 13px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #71a7d3;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.m-rastermanagement-calculator-run:hover,
+.m-rastermanagement-calculator-cancel:hover {
+    background-color: #5a8fb8;
+}
+
+.m-rastermanagement-calculator-run:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.m-rastermanagement-calculator-loading-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.m-rastermanagement-calculator-error {
+    margin-top: 10px;
+    color: #b00020;
+}
+
 .m-rastermanagement-histogram-message {
     margin: 0;
 }

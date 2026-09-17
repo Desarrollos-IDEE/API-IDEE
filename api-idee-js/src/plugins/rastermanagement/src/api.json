@@ -27,6 +27,10 @@
       "type": "simple",
       "name": "calcHistogramUrl",
       "position": 4
+    }, {
+      "type": "simple",
+      "name": "rasterCalculatorUrl",
+      "position": 5
     }]
   }],
   "files": {

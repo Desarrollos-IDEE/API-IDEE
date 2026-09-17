@@ -124,7 +124,7 @@ export default class HistogramControl {
       vars: {
         selectLayerHint: getValue('histogramSelectLayer'),
         histogramCalculate: getValue('histogramCalculate'),
-        histogramCancel: getValue('histogramCancel'),
+        cancel: getValue('cancel'),
         histogramLoading: getValue('histogramLoading'),
         histogramChart: getValue('histogramChart'),
         histogramScope: getValue('histogramScope'),
@@ -139,9 +139,9 @@ export default class HistogramControl {
         band: getValue('band'),
         descriptiveStats: getValue('descriptiveStats'),
         statPixels: getValue('statPixels'),
-        statMin: getValue('statMin'),
-        statMax: getValue('statMax'),
-        statMean: getValue('statMean'),
+        min: getValue('min'),
+        max: getValue('max'),
+        bandsMean: getValue('bandsMean'),
         statMedian: getValue('statMedian'),
         statStdDev: getValue('statStdDev'),
         statPercentile25: getValue('statPercentile25'),
@@ -214,7 +214,7 @@ export default class HistogramControl {
 
     const urlRaster = layer.url;
     if (IDEE.utils.isNullOrEmpty(urlRaster)) {
-      this.showError_(getValue('histogramNoUrl'));
+      this.showError_(getValue('layerNoUrl'));
       return;
     }
 
@@ -531,7 +531,7 @@ export default class HistogramControl {
 
       const labelEl = document.createElement('span');
       labelEl.className = 'm-rastermanagement-histogram-point-value-label';
-      labelEl.innerText = `${getValue('histogramPointBand')} ${i + 1}`;
+      labelEl.innerText = `${getValue('band')} ${i + 1}`;
 
       item.appendChild(numberEl);
       item.appendChild(labelEl);
