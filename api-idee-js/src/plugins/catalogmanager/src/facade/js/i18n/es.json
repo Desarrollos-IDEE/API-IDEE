@@ -100,7 +100,9 @@
     "description": "Descripción",
     "summaries": "Datos adicionales",
     "platforms": "Plataformas",
-    "instruments": "Instrumentos"
+    "instruments": "Instrumentos",
+    "providers": "Proveedores",
+    "project": "Proyecto"
   },
   "tooltip": "Gestor STAC",
   "title": "Gestor STAC",
@@ -165,7 +167,9 @@
     "placeholder": "Ej: eo:cloud_cover < 20 and datetime >= '2024-01-01T00:00:00Z'",
     "return": "Volver",
     "apply": "Aplicar",
+    "applyTitle": "Aplicar filtro avanzado",
     "clear": "Limpiar",
+    "clearTitle": "Limpiar filtro avanzado",
     "of": "de",
     "type": "Tipo",
     "types": {

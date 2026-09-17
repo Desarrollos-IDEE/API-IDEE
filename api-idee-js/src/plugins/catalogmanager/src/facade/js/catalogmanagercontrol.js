@@ -2140,14 +2140,14 @@ export default class CatalogmanagerControl extends IDEE.Control {
       datetime: item.properties.datetime,
       provider: item.properties.provider || getValue('unknown'),
       extent: item.bbox.join(', '),
-      crs: 'EPSG:4326',
+      crs: item.properties['proj:code'],
       platform: item.properties.platform || getValue('unknown'),
       instruments: item.properties.instruments.join(', '),
       sunElevation: sunElevationValue >= 0,
       sunElevationValue,
       cloudCover: cloudCoverValue >= 0,
       cloudCoverValue,
-      processingLevel: item.properties['processing:level'] || getValue('unknown'),
+      processingLevel: item.properties['processing:level'] || item.properties.processing_level || getValue('unknown'),
       translations: getValue('itemMetadata'),
     };
     const metadataTemplate = IDEE.template.compileSync(itemMetadataTemplate, {
@@ -2386,13 +2386,18 @@ export default class CatalogmanagerControl extends IDEE.Control {
    */
   getJsonCollections(collections, catalogIndex) {
     return collections.map((collection, index) => {
+      const project = collection['gneis:project'];
       const metadata = {
         extent: collection.extent,
         license: collection.license,
         summaries: collection.summaries,
         description: collection.description,
         stacVersion: collection.stac_version,
+        providers: collection.providers,
       };
+      if (project) {
+        metadata.project = project.path.map((p) => p.title).join(', ');
+      }
       if (metadata.extent?.spatial?.bbox) {
         metadata.extent.spatial.bbox = metadata.extent.spatial.bbox.map((bbox) => bbox.join(', ')).join(' / ');
       }

@@ -100,7 +100,9 @@
     "description": "Description",
     "summaries": "Additional data",
     "platforms": "Platforms",
-    "instruments": "Instruments"
+    "instruments": "Instruments",
+    "providers": "Providers",
+    "project": "Project"
   },
   "tooltip": "STAC manager",
   "title": "STAC manager",
@@ -165,7 +167,9 @@
     "placeholder": "E.g. eo:cloud_cover < 20 and datetime >= '2024-01-01T00:00:00Z'",
     "return": "Back",
     "apply": "Apply",
+    "applyTitle": "Apply advanced filter",
     "clear": "Clear",
+    "clearTitle": "Clear advanced filter",
     "of": "of",
     "type": "Type",
     "types": {

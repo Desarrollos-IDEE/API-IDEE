@@ -5,6 +5,7 @@
             <label>{{translations.description}}: </label><span>{{metadata.description}}</span><br>
             <label>{{translations.license}}: </label><span>{{metadata.license}}</span><br>
             <label>{{translations.stacVersion}}: </label><span>{{metadata.stacVersion}}</span><br>
+            <label>{{translations.project}}: </label><span>{{metadata.project}}</span><br>
         </div>
         <div class="m-catalogmanager-metadata-section">
             <h3>{{translations.coverage}}</h3>
@@ -15,6 +16,10 @@
             <h3>{{translations.summaries}}</h3>
             <label>{{translations.platforms}}: </label><span>{{metadata.summaries.platform}}</span><br>
             <label>{{translations.instruments}}: </label><span>{{metadata.summaries.instruments}}</span><br>
+            <label>{{translations.providers}}: </label><br>
+                {{#each metadata.providers}}
+                    <a href="{{this.url}}" target="_blank">{{this.name}}</a><br>
+                {{/each}}
         </div>
     </div>
 </div>
