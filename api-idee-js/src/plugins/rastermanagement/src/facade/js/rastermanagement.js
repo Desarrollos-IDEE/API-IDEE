@@ -120,6 +120,13 @@ export default class RasterManagement extends IDEE.Plugin {
     }
 
     /**
+     * Indica si se muestra la sección de Geoprocesos
+     * @public
+     * @type {boolean}
+     */
+    this.showGeoprocesses = options.showGeoprocesses === true;
+
+    /**
      * Plugin parameters
      * @public
      * @type {object}
@@ -155,6 +162,7 @@ export default class RasterManagement extends IDEE.Plugin {
       order: this.order,
       calcHistogramUrl: this.calcHistogramUrl,
       rasterCalculatorUrl: this.rasterCalculatorUrl,
+      showGeoprocesses: this.showGeoprocesses,
     });
     this.controls_.push(this.control_);
     this.map_ = map;
@@ -200,7 +208,7 @@ export default class RasterManagement extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.collapsible}*${this.tooltip_}*${this.calcHistogramUrl}*${this.rasterCalculatorUrl}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.collapsible}*${this.tooltip_}*${this.calcHistogramUrl}*${this.rasterCalculatorUrl}*${this.showGeoprocesses}`;
   }
 
   /**

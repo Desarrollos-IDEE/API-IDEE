@@ -49,6 +49,13 @@ export default class RasterManagementControl extends IDEE.Control {
     this.rasterCalculatorUrl = values.rasterCalculatorUrl;
 
     /**
+     * Indica si se muestra la sección de Geoprocesos
+     * @public
+     * @type {boolean}
+     */
+    this.showGeoprocesses = values.showGeoprocesses === true;
+
+    /**
      * Capas GeoTIFF disponibles en el selector
      * @private
      * @type { Array<{value: string, text: string}> }
@@ -121,13 +128,16 @@ export default class RasterManagementControl extends IDEE.Control {
           apply: getValue('apply'),
           clearStyle: getValue('clearStyle'),
           copyStyle: getValue('copyStyle'),
+          showGeoprocesses: this.showGeoprocesses,
         },
       });
       this.accessibilityTab(html);
       this.html = html;
       this.addStylesControl(html);
-      this.addGeoprocessControl(html);
-      this.addSectionEvents(html);
+      if (this.showGeoprocesses) {
+        this.addGeoprocessControl(html);
+        this.addSectionEvents(html);
+      }
       this.addLayerSelectorEvents(html);
       this.stylesControl_.active(html);
       this.refreshLayers();

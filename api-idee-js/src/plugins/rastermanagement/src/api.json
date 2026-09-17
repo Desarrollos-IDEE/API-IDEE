@@ -31,6 +31,10 @@
       "type": "simple",
       "name": "rasterCalculatorUrl",
       "position": 5
+    }, {
+      "type": "boolean",
+      "name": "showGeoprocesses",
+      "position": 6
     }]
   }],
   "files": {

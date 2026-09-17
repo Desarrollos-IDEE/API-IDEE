@@ -91,7 +91,8 @@ const mp = new RasterManagement({
   position: 'TR', // TR, BR, TL, BL
   collapsed: false,
   collapsible: true,
-  tooltip: 'Gestor de estilos ráster',
+  tooltip: 'Gestión de capas ráster',
+  showGeoprocesses: false,
   // order: 1, //
 });
 window.mp = mp;
