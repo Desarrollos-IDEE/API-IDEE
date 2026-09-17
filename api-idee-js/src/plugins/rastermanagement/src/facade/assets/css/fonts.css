@@ -1,7 +1,8 @@
 .g-cartografia-raster-style::before,
 .g-cartografia-raster-apply::before,
 .g-cartografia-raster-reset::before,
-.g-cartografia-raster-copy::before {
+.g-cartografia-raster-copy::before,
+.g-cartografia-raster-download::before {
     content: '' !important;
     display: block;
     margin: auto;
@@ -34,4 +35,9 @@
 .g-cartografia-raster-copy::before {
 	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_copy.svg');
 	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_copy.svg');
+}
+
+.g-cartografia-raster-download::before {
+	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_descarga.svg');
+	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_descarga.svg');
 }

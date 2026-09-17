@@ -12,13 +12,24 @@ import {
 export default class CalculatorControl {
   /**
    * @param {IDEE.control.RasterManagementControl} parentControl Control principal.
+   * @param {Function} [onResultReady] Callback al generar un GeoTIFF de resultado.
    */
-  constructor(parentControl) {
+  constructor(parentControl, onResultReady) {
     /**
      * @private
      * @type {IDEE.control.RasterManagementControl}
      */
     this.parentControl_ = parentControl;
+
+    /**
+     * Notifica al panel de descargas cuando hay un resultado.
+     * @private
+     * @type {Function|null}
+     */
+    this.onResultReady_ = null;
+    if (typeof onResultReady === 'function') {
+      this.onResultReady_ = onResultReady;
+    }
 
     /**
      * @private
@@ -82,7 +93,6 @@ export default class CalculatorControl {
         expressionPlaceholder: getValue('expressionPlaceholder'),
         expressionSyntax: getValue('expressionSyntax'),
         outputName: getValue('outputName'),
-        defaultOutputName: getValue('defaultOutputName'),
         calculate: getValue('calculate'),
         cancel: getValue('cancel'),
         loading: getValue('calculatorLoading'),
@@ -93,6 +103,7 @@ export default class CalculatorControl {
     container.appendChild(content);
     this.root_ = content;
     this.addEvents_();
+    this.setDefaultOutputName_();
     this.loadIfVisible();
   }
 
@@ -167,6 +178,7 @@ export default class CalculatorControl {
     this.activeOperation_ = operation;
     this.renderOperationParams_(operation);
     this.setActiveOpButton_(button);
+    this.setDefaultOutputName_();
 
     const bandValues = this.getBandValuesFromForm_(operation);
     const expression = resolvePredefinedExpression(operation, bandValues);
@@ -309,7 +321,8 @@ export default class CalculatorControl {
     }
 
     if (!outputName) {
-      outputName = getValue('defaultOutputName');
+      outputName = this.buildDefaultOutputName_();
+      outputInput.value = outputName;
     }
 
     this.cancelPendingRequest_();
@@ -333,6 +346,10 @@ export default class CalculatorControl {
         this.isLoading_ = false;
         this.activeRequest_ = null;
         this.addResultLayer_(result.resultsUrl, outputName);
+        if (this.onResultReady_) {
+          this.onResultReady_(result.resultsUrl, outputName);
+        }
+        this.setDefaultOutputName_();
         this.showState_('idle');
         IDEE.toast.success(getValue('calculatorSuccess'), null, 6000);
       })
@@ -358,6 +375,56 @@ export default class CalculatorControl {
         }
         this.showError_(message);
       });
+  }
+
+  /**
+   * Prefijo del nombre de salida según la operación activa.
+   *
+   * @private
+   * @function
+   * @returns {string}
+   */
+  getOutputPrefix_() {
+    if (this.activeOperation_ && !IDEE.utils.isNullOrEmpty(this.activeOperation_.id)) {
+      return this.activeOperation_.id;
+    }
+    return 'calc';
+  }
+
+  /**
+   * Construye un nombre de salida por defecto: operación + fecha/hora.
+   * Ejemplo: ndvi_20260317_213645
+   *
+   * @private
+   * @function
+   * @returns {string}
+   */
+  buildDefaultOutputName_() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    return `${this.getOutputPrefix_()}_${year}${month}${day}_${hours}${minutes}${seconds}`;
+  }
+
+  /**
+   * Escribe en el campo el nombre de salida por defecto (sigue siendo editable).
+   *
+   * @private
+   * @function
+   */
+  setDefaultOutputName_() {
+    if (!this.root_) {
+      return;
+    }
+    const outputInput = this.root_.querySelector('#m-rastermanagement-calculator-output');
+    if (!outputInput) {
+      return;
+    }
+    outputInput.value = this.buildDefaultOutputName_();
   }
 
   /**

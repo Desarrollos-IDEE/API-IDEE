@@ -6,6 +6,7 @@ import GeoprocessControlImpl from 'impl/geoprocesscontrol';
 import template from '../../templates/geoprocess';
 import HistogramControl from './histogramcontrol';
 import CalculatorControl from './calculatorcontrol';
+import DownloadsControl from './downloadscontrol';
 import { getValue } from './i18n/language';
 
 export default class GeoprocessControl extends IDEE.Control {
@@ -26,7 +27,11 @@ export default class GeoprocessControl extends IDEE.Control {
     this.template_ = null;
     this.activated_ = false;
     this.histogramControl_ = new HistogramControl(parentControl);
-    this.calculatorControl_ = new CalculatorControl(parentControl);
+    this.downloadsControl_ = new DownloadsControl(parentControl);
+    this.calculatorControl_ = new CalculatorControl(
+      parentControl,
+      (resultsUrl, outputName) => this.downloadsControl_.addDownload(resultsUrl, outputName),
+    );
   }
 
   get html() {
@@ -42,6 +47,7 @@ export default class GeoprocessControl extends IDEE.Control {
       geoprocessSection: getValue('geoprocessSection'),
       histograms: getValue('histograms'),
       rasterCalculator: getValue('rasterCalculator'),
+      downloads: getValue('downloads'),
     };
   }
 
@@ -60,6 +66,7 @@ export default class GeoprocessControl extends IDEE.Control {
       this.template_ = content;
       this.histogramControl_.init(html);
       this.calculatorControl_.init(html);
+      this.downloadsControl_.init(html);
       this.addGeoprocessTabEvents(html);
       this.activated_ = true;
     }
@@ -99,6 +106,10 @@ export default class GeoprocessControl extends IDEE.Control {
     }
     if (this.calculatorControl_) {
       this.calculatorControl_ = null;
+    }
+    if (this.downloadsControl_) {
+      this.downloadsControl_.destroy();
+      this.downloadsControl_ = null;
     }
   }
 

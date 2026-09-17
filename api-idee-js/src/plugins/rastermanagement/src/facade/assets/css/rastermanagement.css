@@ -689,8 +689,51 @@
 }
 
 #m-rastermanagement-histograms-container,
-#m-rastermanagement-calculator-container {
+#m-rastermanagement-calculator-container,
+#m-rastermanagement-downloads-container {
     padding: 12px;
+}
+
+.m-rastermanagement-downloads-message {
+    margin: 0;
+}
+
+.m-rastermanagement-downloads-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 280px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.m-rastermanagement-downloads-item {
+    margin: 0 0 8px;
+}
+
+.m-rastermanagement-downloads-item:last-child {
+    margin-bottom: 0;
+}
+
+.m-rastermanagement-downloads-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #71a7d3;
+    text-decoration: underline;
+    word-break: break-all;
+}
+
+.m-rastermanagement-downloads-link.g-cartografia-raster-download::before {
+    display: inline-block;
+    margin: 0;
+    width: 16px;
+    flex-shrink: 0;
+}
+
+.m-rastermanagement-downloads-link:hover,
+.m-rastermanagement-downloads-link:focus {
+    color: #4a8fc4;
 }
 
 .m-rastermanagement-calculator-message {
