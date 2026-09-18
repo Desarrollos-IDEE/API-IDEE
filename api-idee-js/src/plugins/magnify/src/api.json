@@ -4,31 +4,47 @@
     "separator": "*"
   },
   "constructor": "IDEE.plugin.Magnify",
-  "parameters": [{
-    "type": "object",
-    "properties": [{
-      "type": "simple",
-      "name": "position",
-      "position": 0,
-      "possibleValues": ["TL", "TR", "BL", "BR"]
-    }, {
-      "type": "simple",
-      "name": "layers",
-      "position": 1
-    }, {
-      "type": "number",
-      "name": "zoomMax",
-      "position": 2
-    }, {
-      "type": "number",
-      "name": "zoom",
-      "position": 3
-    }]
-  }],
+  "parameters": [
+    {
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "position": 0,
+          "possibleValues": [
+            "TL",
+            "TR",
+            "BL",
+            "BR"
+          ]
+        },
+        {
+          "type": "simple",
+          "name": "layers",
+          "position": 1
+        },
+        {
+          "type": "number",
+          "name": "zoomMax",
+          "position": 2
+        },
+        {
+          "type": "number",
+          "name": "zoom",
+          "position": 3
+        }
+      ]
+    }
+  ],
   "files": {
     "ol": {
-      "scripts": ["magnify.ol.min.js"],
-      "styles": ["magnify.ol.min.css"]
+      "scripts": [
+        "magnify.ol.min.js"
+      ],
+      "styles": [
+        "magnify.ol.min.css"
+      ]
     }
   },
   "metadata": {
@@ -37,11 +53,15 @@
     "text": "Plugin que permite realizar un efecto de zoom o de lupa sobre una o varias capas",
     "version": "1.0.0",
     "date": "Diciembre, 2025",
-    "author": "",
-    "org": "",
+    "author": "IDEE",
+    "org": "IDEE",
+    "homepage": " https://www.idee.es",
+    "funding": "Desarrollo financiado por los nodos participantes en el Grupo Técnico de Trabajo Desarrollos IDEE",
     "tags": "idee,plugin",
     "icon": "./facade/assets/icons/icons.svg",
     "centralized": true,
-    "compatibility":["1"]
+    "compatibility": [
+      "1"
+    ]
   }
 }

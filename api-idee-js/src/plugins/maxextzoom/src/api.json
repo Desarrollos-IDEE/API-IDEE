@@ -4,20 +4,24 @@
     "separator": "*"
   },
   "constructor": "IDEE.plugin.MaxExtZoom",
-  "parameters": [{
-    "type": "object",
-    "properties": [{
-      "type": "simple",
-      "name": "position",
-      "position": 0,
-      "possibleValues": [
-        "TL",
-        "TR",
-        "BL",
-        "BR"
+  "parameters": [
+    {
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "position": 0,
+          "possibleValues": [
+            "TL",
+            "TR",
+            "BL",
+            "BR"
+          ]
+        }
       ]
-    }]
-  }],
+    }
+  ],
   "files": {
     "ol": {
       "scripts": [
@@ -42,11 +46,15 @@
     "text": "Permite realizar un zoom a la extensión del mapa ",
     "version": "1.0.0",
     "date": "Diciembre, 2025",
-    "author": "",
-    "org": "",
+    "author": "IDEE",
+    "org": "IDEE",
+    "homepage": " https://www.idee.es",
+    "funding": "Desarrollo financiado por los nodos participantes en el Grupo Técnico de Trabajo Desarrollos IDEE",
     "tags": "idee,plugin",
     "icon": "./facade/assets/icons/icons.svg",
     "centralized": true,
-    "compatibility": ["1"]
+    "compatibility": [
+      "1"
+    ]
   }
 }

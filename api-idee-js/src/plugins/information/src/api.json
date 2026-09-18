@@ -4,35 +4,49 @@
     "separator": "*"
   },
   "constructor": "IDEE.plugin.Information",
-  "parameters": [{
-    "type": "object",
-    "properties": [{
-      "type": "simple",
-      "name": "position",
-      "position": 0,
-      "possibleValues": ["TL", "TR", "BR", "BL"]
-    }, {
-      "type": "simple",
-      "name": "tooltip",
-      "position": 1
-    }, {
-      "type": "simple",
-      "name": "format",
-      "position": 2
-    }, {
-      "type": "Number",
-      "name": "featureCount",
-      "position": 3
-    }, {
-      "type": "Number",
-      "name": "buffer",
-      "position": 4
-    }, {
-      "type": "simple",
-      "name": "opened",
-      "position": 5
-    }]
-  }],
+  "parameters": [
+    {
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "position": 0,
+          "possibleValues": [
+            "TL",
+            "TR",
+            "BR",
+            "BL"
+          ]
+        },
+        {
+          "type": "simple",
+          "name": "tooltip",
+          "position": 1
+        },
+        {
+          "type": "simple",
+          "name": "format",
+          "position": 2
+        },
+        {
+          "type": "Number",
+          "name": "featureCount",
+          "position": 3
+        },
+        {
+          "type": "Number",
+          "name": "buffer",
+          "position": 4
+        },
+        {
+          "type": "simple",
+          "name": "opened",
+          "position": 5
+        }
+      ]
+    }
+  ],
   "files": {
     "ol": {
       "scripts": [
@@ -57,8 +71,10 @@
     "text": "On click in a queryable layer shows getfeatureinfo",
     "version": "1.0.1",
     "date": "09/12/2019",
-    "author": "Guadaltel",
-    "org": "CNIG",
+    "author": "IDEE",
+    "org": "IDEE",
+    "homepage": " https://www.idee.es",
+    "funding": "Desarrollo financiado por los nodos participantes en el Grupo Técnico de Trabajo Desarrollos IDEE",
     "tags": "api-idee,plugin",
     "icon": "./facade/assets/icons/icon.svg"
   }

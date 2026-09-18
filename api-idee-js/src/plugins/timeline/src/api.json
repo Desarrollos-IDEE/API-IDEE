@@ -4,45 +4,65 @@
     "separator": "*!"
   },
   "constructor": "IDEE.plugin.Timeline",
-  "parameters": [{
-    "type": "object",
-    "properties": [{
-        "type": "simple",
-        "name": "position",
-        "possibleValues": ["TL", "TR", "BL", "BR"],
-        "position": 0
-      },
-      {
-        "type": "simple",
-        "name": "intervals",
-        "position": 1
-      },
-      {
-        "type": "boolean",
-        "name": "animation",
-        "position": 2
-      },
-      {
-        "type": "simple",
-        "name": "speed",
-        "position": 3
-      },
-      {
-        "type": "simple",
-        "name": "timelineType",
-        "possibleValues": ["absoluteSimple", "absolute", "relative"],
-        "position": 4
-      }
-    ]
-  }],
+  "parameters": [
+    {
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "possibleValues": [
+            "TL",
+            "TR",
+            "BL",
+            "BR"
+          ],
+          "position": 0
+        },
+        {
+          "type": "simple",
+          "name": "intervals",
+          "position": 1
+        },
+        {
+          "type": "boolean",
+          "name": "animation",
+          "position": 2
+        },
+        {
+          "type": "simple",
+          "name": "speed",
+          "position": 3
+        },
+        {
+          "type": "simple",
+          "name": "timelineType",
+          "possibleValues": [
+            "absoluteSimple",
+            "absolute",
+            "relative"
+          ],
+          "position": 4
+        }
+      ]
+    }
+  ],
   "files": {
     "ol": {
-      "scripts": ["timeline.ol.min.js"],
-      "styles": ["timeline.ol.min.css"]
+      "scripts": [
+        "timeline.ol.min.js"
+      ],
+      "styles": [
+        "timeline.ol.min.css"
+      ]
     },
     "cesium": {
-      "scripts": ["timeline.cesium.min.js"],
-      "styles": ["timeline.cesium.min.css"]
+      "scripts": [
+        "timeline.cesium.min.js"
+      ],
+      "styles": [
+        "timeline.cesium.min.css"
+      ]
     }
   },
   "metadata": {
@@ -51,8 +71,10 @@
     "text": "Plugin que permite mostrar la progresión del tiempo sobre un mapa",
     "version": "1.0.1",
     "date": "Junio, 2020",
-    "author": "",
-    "org": "CNIG",
+    "author": "IDEE",
+    "org": "IDEE",
+    "homepage": " https://www.idee.es",
+    "funding": "Desarrollo financiado por los nodos participantes en el Grupo Técnico de Trabajo Desarrollos IDEE",
     "tags": "api-idee,plugin",
     "icon": "./facade/assets/icons/icons.svg",
     "centralized": true

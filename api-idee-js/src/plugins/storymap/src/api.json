@@ -4,55 +4,65 @@
     "separator": "*"
   },
   "constructor": "IDEE.plugin.StoryMap",
-  "parameters": [{
-    "type": "object",
-    "properties": [
-      {
-      "type": "simple",
-      "name": "position",
-      "position": 0,
-      "possibleValues": [
-        "TL",
-        "TR",
-        "BR",
-        "BL"
+  "parameters": [
+    {
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "position": 0,
+          "possibleValues": [
+            "TL",
+            "TR",
+            "BR",
+            "BL"
+          ]
+        },
+        {
+          "type": "boolean",
+          "name": "collapsed",
+          "position": 1
+        },
+        {
+          "type": "boolean",
+          "name": "collapsible",
+          "position": 2
+        },
+        {
+          "type": "simple",
+          "name": "tooltip",
+          "position": 3
+        },
+        {
+          "type": "simple",
+          "name": "delay",
+          "position": 4
+        },
+        {
+          "type": "boolean",
+          "name": "isDraggable",
+          "position": 5
+        }
       ]
-    },
-    {
-      "type": "boolean",
-      "name": "collapsed",
-      "position": 1
-    },
-    {
-      "type": "boolean",
-      "name": "collapsible",
-      "position": 2
-    },
-    {
-      "type": "simple",
-      "name": "tooltip",
-      "position": 3
-    },
-    {
-      "type": "simple",
-      "name": "delay",
-      "position": 4
-    },
-    {
-      "type": "boolean",
-      "name": "isDraggable",
-      "position": 5
     }
-  ]
-  }],
+  ],
   "files": {
     "ol": {
-      "scripts": ["storymap.ol.min.js"],
-      "styles": ["storymap.ol.min.css"]
+      "scripts": [
+        "storymap.ol.min.js"
+      ],
+      "styles": [
+        "storymap.ol.min.css"
+      ]
     },
     "cesium": {
-      "scripts": ["storymap.cesium.min.js"],
-      "styles": ["storymap.cesium.min.css"]
+      "scripts": [
+        "storymap.cesium.min.js"
+      ],
+      "styles": [
+        "storymap.cesium.min.css"
+      ]
     }
   },
   "metadata": {
@@ -61,8 +71,10 @@
     "text": "Plugin que muestra una historia en forma de carrusel. ",
     "version": "1.0.1",
     "date": "08/01/2026",
-    "author": "",
-    "org": "",
+    "author": "IDEE",
+    "org": "IDEE",
+    "homepage": " https://www.idee.es",
+    "funding": "Desarrollo financiado por los nodos participantes en el Grupo Técnico de Trabajo Desarrollos IDEE",
     "tags": "api-idee,plugin",
     "icon": "./facade/assets/icons/icons.svg"
   }

@@ -86,8 +86,10 @@
     "text": "It offers different zoom tools.",
     "version": "1.0.1",
     "date": "27th April 2023",
-    "author": "CNIG",
-    "org": "CNIG",
+    "author": "IDEE",
+    "org": "IDEE",
+    "homepage": " https://www.idee.es",
+    "funding": "Desarrollo financiado por los nodos participantes en el Grupo Técnico de Trabajo Desarrollos IDEE",
     "tags": "api-idee,plugin",
     "icon": "./facade/assets/icons/icons.svg"
   }
