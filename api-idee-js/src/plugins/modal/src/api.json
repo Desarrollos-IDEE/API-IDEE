@@ -4,35 +4,49 @@
     "separator": "*"
   },
   "constructor": "IDEE.plugin.Modal",
-  "parameters": [{
-    "type": "object",
-    "properties": [{
-      "type": "simple",
-      "name": "position",
-      "position": 0,
-      "possibleValues": ["TL", "TR", "BR", "BL"]
-    }, {
-      "type": "boolean",
-      "name": "collapsed",
-      "position": 1
-    }, {
-      "type": "boolean",
-      "name": "collapsible",
-      "position": 2
-    }, {
-      "type": "simple",
-      "name": "tooltip",
-      "position": 3
-    }, {
-      "type": "simple",
-      "name": "url_es",
-      "position": 4
-    }, {
-      "type": "simple",
-      "name": "url_en",
-      "position": 5
-    }]
-  }],
+  "parameters": [
+    {
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "position": 0,
+          "possibleValues": [
+            "TL",
+            "TR",
+            "BR",
+            "BL"
+          ]
+        },
+        {
+          "type": "boolean",
+          "name": "collapsed",
+          "position": 1
+        },
+        {
+          "type": "boolean",
+          "name": "collapsible",
+          "position": 2
+        },
+        {
+          "type": "simple",
+          "name": "tooltip",
+          "position": 3
+        },
+        {
+          "type": "simple",
+          "name": "url_es",
+          "position": 4
+        },
+        {
+          "type": "simple",
+          "name": "url_en",
+          "position": 5
+        }
+      ]
+    }
+  ],
   "files": {
     "ol": {
       "scripts": [
@@ -57,8 +71,10 @@
     "text": "Plugin que muestra información en un modal.",
     "version": "1.0.1",
     "date": "1st June 2020",
-    "author": "CNIG",
-    "org": "CNIG",
+    "author": "IDEE",
+    "org": "IDEE",
+    "homepage": " https://www.idee.es",
+    "funding": "Desarrollo financiado por los nodos participantes en el Grupo Técnico de Trabajo Desarrollos IDEE",
     "tags": "api-idee,plugin",
     "icon": "./facade/assets/icons/icons.svg"
   }

@@ -4,39 +4,60 @@
     "separator": "*"
   },
   "constructor": "IDEE.plugin.Basic",
-  "parameters": [{
-    "type": "object",
-    "properties": [{
-      "type": "simple",
-      "name": "position",
-      "possibleValues": ["TL", "TR", "BL", "BR"],
-      "position": 0
-    }, {
-      "type": "boolean",
-      "name": "collapsed",
-      "position": 1
-    }, {
-      "type": "boolean",
-      "name": "collapsible",
-      "position": 2
-    }, {
-      "type": "simple",
-      "name": "tooltip",
-      "position": 3
-    }, {
-      "type": "boolean",
-      "name": "isDraggable",
-      "position": 4
-    }]
-  }],
+  "parameters": [
+    {
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "possibleValues": [
+            "TL",
+            "TR",
+            "BL",
+            "BR"
+          ],
+          "position": 0
+        },
+        {
+          "type": "boolean",
+          "name": "collapsed",
+          "position": 1
+        },
+        {
+          "type": "boolean",
+          "name": "collapsible",
+          "position": 2
+        },
+        {
+          "type": "simple",
+          "name": "tooltip",
+          "position": 3
+        },
+        {
+          "type": "boolean",
+          "name": "isDraggable",
+          "position": 4
+        }
+      ]
+    }
+  ],
   "files": {
     "ol": {
-      "scripts": ["basic.ol.min.js"],
-      "styles": ["basic.ol.min.css"]
+      "scripts": [
+        "basic.ol.min.js"
+      ],
+      "styles": [
+        "basic.ol.min.css"
+      ]
     },
     "cesium": {
-      "scripts": ["basic.cesium.min.js"],
-      "styles": ["basic.cesium.min.css"]
+      "scripts": [
+        "basic.cesium.min.js"
+      ],
+      "styles": [
+        "basic.cesium.min.css"
+      ]
     }
   },
   "metadata": {
@@ -45,8 +66,10 @@
     "text": "Plantilla de plugin básico",
     "version": "1.0.1",
     "date": "Agosto 2024",
-    "author": "Guadaltel",
-    "org": "",
+    "author": "IDEE",
+    "org": "IDEE",
+    "homepage": " https://www.idee.es",
+    "funding": "Desarrollo financiado por los nodos participantes en el Grupo Técnico de Trabajo Desarrollos IDEE",
     "tags": "cnig,plugin",
     "icon": "./facade/assets/icons/icons.svg"
   }

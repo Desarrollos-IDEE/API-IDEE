@@ -4,43 +4,65 @@
     "separator": "*"
   },
   "constructor": "IDEE.plugin.QueryAttributes",
-  "parameters": [{
-    "type": "object",
-    "properties": [{
-      "type": "simple",
-      "name": "position",
-      "position": 0,
-      "possibleValues": ["TL", "TR", "BL", "BR"]
-    }, {
-      "type": "boolean",
-      "name": "collapsed",
-      "position": 1
-    }, {
-      "type": "boolean",
-      "name": "collapsible",
-      "position": 2
-    }, {
-      "type": "simple",
-      "name": "tooltip",
-      "position": 3
-    }, {
-      "type": "boolean",
-      "name": "filters",
-      "position": 4
-    }, {
-      "type": "boolean",
-      "name": "refreshBBOXFilterOnPanning",
-      "position": 5
-    }]
-  }],
+  "parameters": [
+    {
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "position": 0,
+          "possibleValues": [
+            "TL",
+            "TR",
+            "BL",
+            "BR"
+          ]
+        },
+        {
+          "type": "boolean",
+          "name": "collapsed",
+          "position": 1
+        },
+        {
+          "type": "boolean",
+          "name": "collapsible",
+          "position": 2
+        },
+        {
+          "type": "simple",
+          "name": "tooltip",
+          "position": 3
+        },
+        {
+          "type": "boolean",
+          "name": "filters",
+          "position": 4
+        },
+        {
+          "type": "boolean",
+          "name": "refreshBBOXFilterOnPanning",
+          "position": 5
+        }
+      ]
+    }
+  ],
   "files": {
     "ol": {
-      "scripts": ["queryattributes.ol.min.js"],
-      "styles": ["queryattributes.ol.min.css"]
+      "scripts": [
+        "queryattributes.ol.min.js"
+      ],
+      "styles": [
+        "queryattributes.ol.min.css"
+      ]
     },
     "cesium": {
-      "scripts": ["queryattributes.cesium.min.js"],
-      "styles": ["queryattributes.cesium.min.css"]
+      "scripts": [
+        "queryattributes.cesium.min.js"
+      ],
+      "styles": [
+        "queryattributes.cesium.min.css"
+      ]
     }
   },
   "metadata": {
@@ -49,8 +71,10 @@
     "text": "Permite realizar búsquedas y aplicar diferentes filtros. Da la posibilidad de poder exportar la consulta",
     "version": "1.0.1",
     "date": "Abril, 2020",
-    "author": "",
-    "org": "Guadaltel",
+    "author": "IDEE",
+    "org": "IDEE",
+    "homepage": " https://www.idee.es",
+    "funding": "Desarrollo financiado por los nodos participantes en el Grupo Técnico de Trabajo Desarrollos IDEE",
     "tags": "api-idee,plugin",
     "centralized": true
   }

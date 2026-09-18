@@ -4,46 +4,64 @@
     "separator": "*!"
   },
   "constructor": "IDEE.plugin.OverviewMap",
-  "parameters": [{
-    "type": "object",
-    "properties": [{
-      "type": "simple",
-      "name": "position",
-      "position": 0
-    }, {
-      "type": "boolean",
-      "name": "collapsed",
-      "position": 1
-    }, {
-      "type": "boolean",
-      "name": "collapsible",
-      "position": 2
-    }, {
-      "type": "simple",
-      "name": "tooltip",
-      "position": 3
-    }, {
-      "type": "boolean",
-      "name": "fixed",
-      "position": 4
-    }, {
-      "type": "simple",
-      "name": "zoom",
-      "position": 5
-    }, {
-      "type": "simple",
-      "name": "baseLayer",
-      "position": 6
-    }]
-  }],
+  "parameters": [
+    {
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "position": 0
+        },
+        {
+          "type": "boolean",
+          "name": "collapsed",
+          "position": 1
+        },
+        {
+          "type": "boolean",
+          "name": "collapsible",
+          "position": 2
+        },
+        {
+          "type": "simple",
+          "name": "tooltip",
+          "position": 3
+        },
+        {
+          "type": "boolean",
+          "name": "fixed",
+          "position": 4
+        },
+        {
+          "type": "simple",
+          "name": "zoom",
+          "position": 5
+        },
+        {
+          "type": "simple",
+          "name": "baseLayer",
+          "position": 6
+        }
+      ]
+    }
+  ],
   "files": {
     "ol": {
-      "scripts": ["overviewmap.ol.min.js"],
-      "styles": ["overviewmap.ol.min.css"]
+      "scripts": [
+        "overviewmap.ol.min.js"
+      ],
+      "styles": [
+        "overviewmap.ol.min.css"
+      ]
     },
     "cesium": {
-      "scripts": ["overviewmap.cesium.min.js"],
-      "styles": ["overviewmap.cesium.min.css"]
+      "scripts": [
+        "overviewmap.cesium.min.js"
+      ],
+      "styles": [
+        "overviewmap.cesium.min.css"
+      ]
     }
   },
   "metadata": {
@@ -52,8 +70,10 @@
     "text": "Shows preview of area where map is zoomed.",
     "version": "1.0.1",
     "date": "",
-    "author": "",
-    "org": "",
+    "author": "IDEE",
+    "org": "IDEE",
+    "homepage": " https://www.idee.es",
+    "funding": "Desarrollo financiado por los nodos participantes en el Grupo Técnico de Trabajo Desarrollos IDEE",
     "tags": "api-idee,plugin",
     "icon": "./facade/assets/icons/icons.svg"
   }

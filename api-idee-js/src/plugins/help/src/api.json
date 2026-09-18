@@ -50,8 +50,10 @@
     "description": "Shows help for plugins added to the map",
     "version": "1.0.1",
     "date": "15/02/24",
-    "author": "Guadaltel",
-    "org": "CNIG",
+    "author": "IDEE",
+    "org": "IDEE",
+    "homepage": " https://www.idee.es",
+    "funding": "Desarrollo financiado por los nodos participantes en el Grupo Técnico de Trabajo Desarrollos IDEE",
     "tags": "plugin"
   }
 }

@@ -4,46 +4,61 @@
     "separator": ","
   },
   "constructor": "IDEE.plugin.WFSTControls",
-  "parameters": [{
-    "type": "object",
-    "properties": [{
-      "type": "simple",
-      "name": "position",
-      "possibleValues": ["TL", "TR", "BL", "BR"],
-      "value": "TL"
-    },{
-      "type": "simple",
-      "name": "features",
-      "value": "drawfeature,modifyfeature,deletefeature,editattribute"
-    },{
-      "type": "simple",
-      "name": "layername"
-    },{
-      "type": "simple",
-      "name": "geometry",
-      "possibleValues": [
-        "POINT",
-        "LINE",
-        "POLYGON",
-        "MPOINT",
-        "MLINE",
-        "MPOLYGON"
-      ]
-    },{
+  "parameters": [
+    {
       "type": "object",
-      "name": "proxy",
-      "properties": [{
-        "type": "boolean",
-        "name": "status",
-        "value": "true"
-      },{
-        "type": "boolean",
-        "name": "disable",
-        "value": "false"
-      }]
-      }
-    ]
-  }],
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "possibleValues": [
+            "TL",
+            "TR",
+            "BL",
+            "BR"
+          ],
+          "value": "TL"
+        },
+        {
+          "type": "simple",
+          "name": "features",
+          "value": "drawfeature,modifyfeature,deletefeature,editattribute"
+        },
+        {
+          "type": "simple",
+          "name": "layername"
+        },
+        {
+          "type": "simple",
+          "name": "geometry",
+          "possibleValues": [
+            "POINT",
+            "LINE",
+            "POLYGON",
+            "MPOINT",
+            "MLINE",
+            "MPOLYGON"
+          ]
+        },
+        {
+          "type": "object",
+          "name": "proxy",
+          "properties": [
+            {
+              "type": "boolean",
+              "name": "status",
+              "value": "true"
+            },
+            {
+              "type": "boolean",
+              "name": "disable",
+              "value": "false"
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "files": {
     "ol": {
       "scripts": [
@@ -71,19 +86,44 @@
     "text": "",
     "version": "1.0.0",
     "date": "14/01/2026",
-    "author": "Junta de Andalucía",
-    "org": "Junta de Andalucía",
+    "author": "IDEE",
+    "org": "IDEE",
+    "homepage": " https://www.idee.es",
+    "funding": "Desarrollo financiado por los nodos participantes en el Grupo Técnico de Trabajo Desarrollos IDEE",
     "tags": "mapea,plugin",
     "icon": "./facade/assets/icons/icons.svg",
     "buttons": [
-      { "title": "", "description": "", "querySelector": "" },
-      { "title": "", "description": "", "querySelector": "" }
+      {
+        "title": "",
+        "description": "",
+        "querySelector": ""
+      },
+      {
+        "title": "",
+        "description": "",
+        "querySelector": ""
+      }
     ],
     "dependencies": {
-      "modules": ["", ""],
-      "plugins": [{ "uuid": "", "name": "" }],
-      "services": [{ "name": "", "description": "" }]
+      "modules": [
+        "",
+        ""
+      ],
+      "plugins": [
+        {
+          "uuid": "",
+          "name": ""
+        }
+      ],
+      "services": [
+        {
+          "name": "",
+          "description": ""
+        }
+      ]
     },
-    "compatibility": ["1"]
+    "compatibility": [
+      "1"
+    ]
   }
 }

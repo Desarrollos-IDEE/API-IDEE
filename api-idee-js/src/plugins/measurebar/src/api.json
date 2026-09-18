@@ -4,35 +4,55 @@
     "separator": "*"
   },
   "constructor": "IDEE.plugin.MeasureBar",
-  "parameters": [{
-    "type": "object",
-    "properties": [{
-      "type": "simple",
-      "name": "position",
-      "position": 0,
-      "possibleValues": ["TL", "TR", "BR", "BL"]
-    }, {
-      "type": "boolean",
-      "name": "collapsed",
-      "position": 1
-    }, {
-      "type": "boolean",
-      "name": "collapsible",
-      "position": 2
-    }, {
-      "type": "simple",
-      "name": "tooltip",
-      "position": 3
-    }]
-  }],
+  "parameters": [
+    {
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "position": 0,
+          "possibleValues": [
+            "TL",
+            "TR",
+            "BR",
+            "BL"
+          ]
+        },
+        {
+          "type": "boolean",
+          "name": "collapsed",
+          "position": 1
+        },
+        {
+          "type": "boolean",
+          "name": "collapsible",
+          "position": 2
+        },
+        {
+          "type": "simple",
+          "name": "tooltip",
+          "position": 3
+        }
+      ]
+    }
+  ],
   "files": {
     "ol": {
-      "scripts": ["measurebar.ol.min.js"],
-      "styles": ["measurebar.ol.min.css"]
+      "scripts": [
+        "measurebar.ol.min.js"
+      ],
+      "styles": [
+        "measurebar.ol.min.css"
+      ]
     },
     "cesium": {
-      "scripts": ["measurebar.cesium.min.js"],
-      "styles": ["measurebar.cesium.min.css"]
+      "scripts": [
+        "measurebar.cesium.min.js"
+      ],
+      "styles": [
+        "measurebar.cesium.min.css"
+      ]
     }
   },
   "metadata": {
@@ -44,19 +64,44 @@
     "text": "Permite realizar medidas sobre el mapa.",
     "version": "1.0.1",
     "date": "September 2019",
-    "author": "",
-    "org": "IGN",
+    "author": "IDEE",
+    "org": "IDEE",
+    "homepage": " https://www.idee.es",
+    "funding": "Desarrollo financiado por los nodos participantes en el Grupo Técnico de Trabajo Desarrollos IDEE",
     "tags": "api-idee,plugin",
     "icon": "./facade/assets/icons/icons.svg",
     "buttons": [
-      { "title": "", "description": "", "querySelector": "" },
-      { "title": "", "description": "", "querySelector": "" }
+      {
+        "title": "",
+        "description": "",
+        "querySelector": ""
+      },
+      {
+        "title": "",
+        "description": "",
+        "querySelector": ""
+      }
     ],
     "dependencies": {
-      "modules": ["", ""],
-      "plugins": [{ "uuid": "", "name": "" }],
-      "services": [{ "name": "", "description": "" }]
+      "modules": [
+        "",
+        ""
+      ],
+      "plugins": [
+        {
+          "uuid": "",
+          "name": ""
+        }
+      ],
+      "services": [
+        {
+          "name": "",
+          "description": ""
+        }
+      ]
     },
-    "compatibility": ["1"]
+    "compatibility": [
+      "1"
+    ]
   }
 }

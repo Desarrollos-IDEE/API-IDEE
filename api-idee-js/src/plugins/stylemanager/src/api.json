@@ -4,35 +4,55 @@
     "separator": "*"
   },
   "constructor": "IDEE.plugin.StyleManager",
-  "parameters": [{
-    "type": "object",
-    "properties": [{
-      "type": "simple",
-      "name": "position",
-      "position": 0,
-      "possibleValues": ["TL", "TR", "BL", "BR"]
-    }, {
-      "type": "boolean",
-      "name": "collapsed",
-      "position": 1
-    }, {
-      "type": "boolean",
-      "name": "collapsible",
-      "position": 2
-    }, {
-      "type": "simple",
-      "name": "tooltip",
-      "position": 3
-    }]
-  }],
+  "parameters": [
+    {
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "position": 0,
+          "possibleValues": [
+            "TL",
+            "TR",
+            "BL",
+            "BR"
+          ]
+        },
+        {
+          "type": "boolean",
+          "name": "collapsed",
+          "position": 1
+        },
+        {
+          "type": "boolean",
+          "name": "collapsible",
+          "position": 2
+        },
+        {
+          "type": "simple",
+          "name": "tooltip",
+          "position": 3
+        }
+      ]
+    }
+  ],
   "files": {
     "ol": {
-      "scripts": ["stylemanager.ol.min.js"],
-      "styles": ["stylemanager.ol.min.css"]
+      "scripts": [
+        "stylemanager.ol.min.js"
+      ],
+      "styles": [
+        "stylemanager.ol.min.css"
+      ]
     },
     "cesium": {
-      "scripts": ["stylemanager.cesium.min.js"],
-      "styles": ["stylemanager.ol.min.css"]
+      "scripts": [
+        "stylemanager.cesium.min.js"
+      ],
+      "styles": [
+        "stylemanager.ol.min.css"
+      ]
     }
   },
   "metadata": {
@@ -41,8 +61,10 @@
     "text": "Plugin para la gestión de la simbología de las capas vectoriales del mapa.",
     "version": "1.0.1",
     "date": "Diciembre, 2022",
-    "author": "",
-    "org": "CNIG",
+    "author": "IDEE",
+    "org": "IDEE",
+    "homepage": " https://www.idee.es",
+    "funding": "Desarrollo financiado por los nodos participantes en el Grupo Técnico de Trabajo Desarrollos IDEE",
     "tags": "cnig,plugin",
     "icon": "./facade/assets/icons/icons.svg"
   }
