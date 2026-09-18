@@ -49,7 +49,8 @@ export const addTranslation = (lang, json) => {
 export const getTranslation = (lang) => {
   if (lang === 'es') {
     configuration.translations[lang].backimglayer = pluginsLanguage.backimglayer.esBackimglayer;
-    configuration.translations[lang].catalogmanager = pluginsLanguage.catalogmanager.esCatalogmanager;
+    configuration.translations[lang].catalogmanager =
+      pluginsLanguage.catalogmanager.esCatalogmanager;
     configuration.translations[lang].comparators = pluginsLanguage.comparators.esComparators;
     configuration.translations[lang].contactlink = pluginsLanguage.contactlink.esContactlink;
     configuration.translations[lang].help = pluginsLanguage.help.esHelp;
@@ -64,7 +65,8 @@ export const getTranslation = (lang) => {
       .esPrintviewmanagement;
     configuration.translations[lang].queryattributes = pluginsLanguage.queryattributes
       .esQueryattributes;
-    configuration.translations[lang].rastermanagement = pluginsLanguage.rastermanagement.esRastermanagement;
+    configuration.translations[lang].rastermanagement =
+      pluginsLanguage.rastermanagement.esRastermanagement;
     // configuration.translations[lang].querydatabase = pluginsLanguage
     // .querydatabase.esQuerydatabase;
     configuration.translations[lang].selectionzoom = pluginsLanguage.selectionzoom.esSelectionzoom;
@@ -86,7 +88,8 @@ export const getTranslation = (lang) => {
     configuration.translations[lang].magnify = pluginsLanguage.magnify.esMagnify;
   } else if (lang === 'en') {
     configuration.translations[lang].backimglayer = pluginsLanguage.backimglayer.enBackimglayer;
-    configuration.translations[lang].catalogmanager = pluginsLanguage.catalogmanager.enCatalogmanager;
+    configuration.translations[lang].catalogmanager =
+      pluginsLanguage.catalogmanager.enCatalogmanager;
     configuration.translations[lang].comparators = pluginsLanguage.comparators.enComparators;
     configuration.translations[lang].contactlink = pluginsLanguage.contactlink.enContactlink;
     configuration.translations[lang].help = pluginsLanguage.help.enHelp;
@@ -105,7 +108,8 @@ export const getTranslation = (lang) => {
     // .querydatabase.enQuerydatabase;
     configuration.translations[lang].queryattributes = pluginsLanguage.queryattributes
       .enQueryattributes;
-    configuration.translations[lang].rastermanagement = pluginsLanguage.rastermanagement.enRastermanagement;
+    configuration.translations[lang].rastermanagement =
+      pluginsLanguage.rastermanagement.enRastermanagement;
     configuration.translations[lang].selectionzoom = pluginsLanguage.selectionzoom.enSelectionzoom;
     configuration.translations[lang].sharemap = pluginsLanguage.sharemap.enSharemap;
     configuration.translations[lang].stylemanager = pluginsLanguage.stylemanager.enStylemanager;
