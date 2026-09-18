@@ -4,43 +4,65 @@
     "separator": "*"
   },
   "constructor": "IDEE.plugin.Catalogmanager",
-  "parameters": [{
-    "type": "object",
-    "properties": [{
-      "type": "simple",
-      "name": "position",
-      "possibleValues": ["TL", "TR", "BL", "BR"],
-      "position": 0
-    }, {
-      "type": "boolean",
-      "name": "collapsed",
-      "position": 1
-    }, {
-      "type": "boolean",
-      "name": "collapsible",
-      "position": 2
-    }, {
-      "type": "simple",
-      "name": "tooltip",
-      "position": 3
-    }, {
-      "type": "boolean",
-      "name": "isDraggable",
-      "position": 4
-    }, {
-      "type": "array",
-      "name": "predefinedCatalogs",
-      "position": 5
-    }]
-  }],
+  "parameters": [
+    {
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "possibleValues": [
+            "TL",
+            "TR",
+            "BL",
+            "BR"
+          ],
+          "position": 0
+        },
+        {
+          "type": "boolean",
+          "name": "collapsed",
+          "position": 1
+        },
+        {
+          "type": "boolean",
+          "name": "collapsible",
+          "position": 2
+        },
+        {
+          "type": "simple",
+          "name": "tooltip",
+          "position": 3
+        },
+        {
+          "type": "boolean",
+          "name": "isDraggable",
+          "position": 4
+        },
+        {
+          "type": "array",
+          "name": "predefinedCatalogs",
+          "position": 5
+        }
+      ]
+    }
+  ],
   "files": {
     "ol": {
-      "scripts": ["catalogmanager.ol.min.js"],
-      "styles": ["catalogmanager.ol.min.css"]
+      "scripts": [
+        "catalogmanager.ol.min.js"
+      ],
+      "styles": [
+        "catalogmanager.ol.min.css"
+      ]
     },
     "cesium": {
-      "scripts": ["catalogmanager.cesium.min.js"],
-      "styles": ["catalogmanager.cesium.min.css"]
+      "scripts": [
+        "catalogmanager.cesium.min.js"
+      ],
+      "styles": [
+        "catalogmanager.cesium.min.css"
+      ]
     }
   },
   "metadata": {
@@ -49,8 +71,10 @@
     "text": "Plugin para la gestión de catálogos STAC",
     "version": "1.0.0",
     "date": "Junio 2026",
-    "author": "Guadaltel",
-    "org": "",
+    "author": "IDEE",
+    "org": "IDEE",
+    "homepage": " https://www.idee.es",
+    "funding": "Desarrollo financiado por los nodos participantes en el Grupo Técnico de Trabajo Desarrollos IDEE",
     "tags": "cnig,plugin",
     "icon": "./facade/assets/icons/icons.svg"
   }
