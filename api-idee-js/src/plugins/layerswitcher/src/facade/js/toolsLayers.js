@@ -356,11 +356,13 @@ export const selectDefaultRange = (radioButtons, map) => {
 const changeLayerConfig = (layer, otherStyles) => {
   const styleSelected = document.querySelector('#m-layerswitcher-style-select').value;
   if (styleSelected !== '') {
-    if (layer instanceof IDEE.layer.Vector) {
+    const usesPredefinedStyles = !IDEE.utils.isNullOrEmpty(layer.predefinedStyles)
+      && (layer instanceof IDEE.layer.Vector || layer instanceof IDEE.layer.GeoTIFF);
+    if (usesPredefinedStyles) {
       if (!IDEE.utils.isNullOrEmpty(otherStyles)) {
         const filtered = otherStyles[styleSelected];
         layer.clearStyle();
-        if (styleSelected === 0) {
+        if (layer instanceof IDEE.layer.Vector && styleSelected === '0') {
           layer.setStyle();
         } else {
           layer.setStyle(filtered);
@@ -401,7 +403,8 @@ export const styleLayers = (layer, order, evt) => {
       otherStyles = layer.capabilitiesMetadata.style;
     }
 
-    if (layer instanceof IDEE.layer.Vector) {
+    if (!IDEE.utils.isNullOrEmpty(layer.predefinedStyles)
+      && (layer instanceof IDEE.layer.Vector || layer instanceof IDEE.layer.GeoTIFF)) {
       otherStyles = layer.predefinedStyles;
       isVectorLayer = true;
     }

@@ -15,6 +15,59 @@ import LayerBase from './Layer';
 import ImplUtils from '../util/Utils';
 
 /**
+ * Valores habituales de COMMON_NAME (STAC) → rol canónico usado por la API.
+ * @constant
+ * @type {Object<string, string>}
+ */
+const COMMON_NAME_ROLES = {
+  red: 'red',
+  green: 'green',
+  blue: 'blue',
+  nir: 'nir',
+  nir08: 'nir',
+  nir09: 'nir',
+  swir: 'swir',
+  swir16: 'swir',
+  swir22: 'swir',
+};
+
+/**
+ * Resuelve el rol canónico a partir de COMMON_NAME.
+ *
+ * @param {Object|null} metadata Metadatos GDAL de la muestra
+ * @returns {string|null}
+ */
+function roleFromCommonName(metadata) {
+  if (!metadata || !metadata.COMMON_NAME) {
+    return null;
+  }
+  const key = String(metadata.COMMON_NAME).trim().toLowerCase();
+  if (COMMON_NAME_ROLES[key]) {
+    return COMMON_NAME_ROLES[key];
+  }
+  return null;
+}
+
+/**
+ * Obtiene la imagen GeoTIFF de mayor resolución disponible en la source OL
+ *
+ * @param {ol.source.GeoTIFF} source Fuente OpenLayers
+ * @returns {Object|null} GeoTIFFImage
+ */
+function getFullResolutionImage(source) {
+  if (!source || !source.sourceImagery_ || !source.sourceImagery_[0]) {
+    return null;
+  }
+  const images = source.sourceImagery_[0];
+  for (let i = images.length - 1; i >= 0; i -= 1) {
+    if (images[i]) {
+      return images[i];
+    }
+  }
+  return null;
+}
+
+/**
  * @classdesc
  * El formato ráster GeoTIFF aprovecha un formato de archivo independiente de plataforma (TIFF)
  * maduro añadiendo metadatos necesarios para describir y utilizar datos de imágenes geográficas.
@@ -56,6 +109,7 @@ class GeoTIFF extends LayerBase {
    * - minResolution: Resolución mínima.
    * - maxResolution: Resolución máxima.
    * - style: Estilo de las bandas.
+   * - predefinedStyles: Estilos predefinidos para la capa.
    * - visibility: Verdadero si la capa es visible, falso si queremos que no lo sea.
    *   En este caso la capa sería detectado por los plugins de tablas de contenidos
    *   y aparecería como no visible.
@@ -170,6 +224,11 @@ class GeoTIFF extends LayerBase {
     this.maxZoom = options.maxZoom || Number.POSITIVE_INFINITY;
 
     this.blob = options.blob;
+
+    /**
+     * GeoTIFF loaded_. Indica si la capa está cargada.
+     */
+    this.loaded_ = false;
   }
 
   /**
@@ -254,7 +313,6 @@ class GeoTIFF extends LayerBase {
       opacity: this.opacity_,
       source,
       extent: this.maxExtent_,
-      style: this.style,
       minResolution: this.options.minResolution,
       maxResolution: this.options.maxResolution,
     }, this.vendorOptions_, true);
@@ -275,6 +333,9 @@ class GeoTIFF extends LayerBase {
     // activates animation for base layers or animated parameters
     this.olLayer.setMaxZoom(this.maxZoom);
     this.olLayer.setMinZoom(this.minZoom);
+
+    this.loaded_ = true;
+    this.facadeLayer_.fire(EventType.LOAD);
   }
 
   /**
@@ -301,6 +362,82 @@ class GeoTIFF extends LayerBase {
   */
   getMaxResolution() {
     return this.options.maxResolution;
+  }
+
+  /**
+   * Obtiene roles espectrales solo desde COMMON_NAME de metadatos GDAL.
+   * Si el GeoTIFF no declara COMMON_NAME, devuelve null.
+   * Ejemplo: `{ red: 1, green: 2, blue: 3, nir: 4, swir: 5 }`.
+   *
+   * @public
+   * @function
+   * @returns {Promise<Object<string, number>|null>}
+   * @api stable
+   */
+  getBandRoles() {
+    if (this.bandRoles_) {
+      return Promise.resolve(this.bandRoles_);
+    }
+
+    if (!this.olLayer || !this.olLayer.getSource) {
+      return Promise.resolve(null);
+    }
+
+    const source = this.olLayer.getSource();
+    if (!source || !source.getView) {
+      return Promise.resolve(null);
+    }
+
+    return source.getView()
+      .then(() => {
+        const image = getFullResolutionImage(source);
+        if (!image || typeof image.getSamplesPerPixel !== 'function'
+          || typeof image.getGDALMetadata !== 'function') {
+          return null;
+        }
+
+        const sampleCount = image.getSamplesPerPixel();
+        const roles = {};
+
+        for (let sample = 0; sample < sampleCount; sample += 1) {
+          const role = roleFromCommonName(image.getGDALMetadata(sample));
+          if (role && roles[role] === undefined) {
+            roles[role] = sample + 1;
+          }
+        }
+
+        if (Object.keys(roles).length === 0) {
+          return null;
+        }
+
+        this.bandRoles_ = roles;
+        return roles;
+      })
+      .catch((err) => {
+        // eslint-disable-next-line no-console
+        console.error(err);
+        return null;
+      });
+  }
+
+  /**
+   * Obtiene los valores del ráster en un píxel de pantalla.
+   * Usa ol.layer.WebGLTile#getData.
+   *
+   * @public
+   * @function
+   * @param {Array<number>} pixel Coordenadas de píxel [x, y] del mapa.
+   * @returns {Uint8ClampedArray|Uint8Array|Float32Array|DataView|null}
+   * @api stable
+   */
+  getData(pixel) {
+    if (!this.olLayer || typeof this.olLayer.getData !== 'function') {
+      return null;
+    }
+    if (isNullOrEmpty(pixel) || !Array.isArray(pixel) || pixel.length < 2) {
+      return null;
+    }
+    return this.olLayer.getData(pixel);
   }
 
   /**
@@ -455,6 +592,17 @@ class GeoTIFF extends LayerBase {
   }
 
   /**
+   * Devuelve si la capa está cargada o no.
+   *
+   * @function
+   * @returns {Boolean} Verdadero cargada, falso si no.
+   * @api stable
+   */
+  isLoaded() {
+    return this.loaded_;
+  }
+
+  /**
    * Este método establece la clase de fachada GeoTIFF.
    * La fachada se refiere a
    * un patrón estructural como una capa de abstracción con un patrón de diseño.
@@ -481,6 +629,7 @@ class GeoTIFF extends LayerBase {
       olMap.removeLayer(this.olLayer);
       this.olLayer = null;
     }
+    this.bandRoles_ = null;
     this.map = null;
   }
 

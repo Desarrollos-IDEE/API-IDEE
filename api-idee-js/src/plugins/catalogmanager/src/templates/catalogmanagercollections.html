@@ -1,0 +1,27 @@
+<div class="m-catalogmanager-collections-container">
+    <div class="m-catalogmanager-collections-order">
+        <button id="sort-name-up" class="m-catalogmanager-collections-order-button" title="{{translations.sort.nameUp}}">
+            <span class="g-cartografia-catalog-sort-name-up"></span>
+        </button>
+        <button id="sort-name-down" class="m-catalogmanager-collections-order-button" title="{{translations.sort.nameDown}}">
+            <span class="g-cartografia-catalog-sort-name-down"></span>
+        </button>
+        <button id="sort-date-up" class="m-catalogmanager-collections-order-button" title="{{translations.sort.dateUp}}">
+            <span class="g-cartografia-catalog-calendar"></span><span class="g-cartografia-catalog-sort-alt-up"></span>
+        </button>
+        <button id="sort-date-down" class="m-catalogmanager-collections-order-button" title="{{translations.sort.dateDown}}">
+            <span class="g-cartografia-catalog-calendar"></span><span class="g-cartografia-catalog-sort-alt-down"></span>
+        </button>
+    </div>
+    <div class="m-catalogmanager-collections-list">
+        {{#each collections}}
+            <div class="m-catalogmanager-sectionPanel">
+                <div class="m-catalogmanager-title-collection {{#if selected}}active{{/if}}" 
+                    data-collection-id="{{id}}" data-catalog-index="{{catalogIndex}}"
+                    data-collection-index="{{index}}" title="{{title}}">
+                    {{title}}
+                </div>
+            </div>
+        {{/each}}
+    </div>
+</div>

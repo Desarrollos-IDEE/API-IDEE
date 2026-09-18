@@ -385,6 +385,17 @@
     "obsolete": false
   },
   {
+    "name": "rastermanagement",
+    "plugin": "[rastermanagement]",
+    "version": "v1.0.0",
+    "url_es": "rastermanagement.jsp?language=es",
+    "url_en": "rastermanagement.jsp?language=en",
+    "url_git": "https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-js/src/plugins/rastermanagement",
+    "image": "img/api-logo.png",
+    "description": "Plugin de gestión de estilos y geoprocesos de capas ráster (GeoTIFF).",
+    "obsolete": false
+  },
+  {
     "name": "selectiondraw",
     "plugin": "[selectiondraw]",
     "version": "v1.0",

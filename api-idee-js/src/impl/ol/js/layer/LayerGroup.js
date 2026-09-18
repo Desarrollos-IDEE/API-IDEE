@@ -306,6 +306,7 @@ class LayerGroup extends Layer {
         }
 
         this.layersCollection.push(impl.getLayer());
+        this.facadeLayer_?.fire(EventType.ADDED_TO_LAYERGROUP, [layer, this.facadeLayer_]);
         return Promise.resolve(layer);
       }
     } else {

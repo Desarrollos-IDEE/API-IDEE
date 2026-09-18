@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="idee" content="yes">
+
+    <title>PRUEBA DESARROLLO STAC CATALOG</title>
+    <style rel="stylesheet">
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        font-family: Poppins, sans-serif;
+      }
+
+      #map {
+        height: 50%;
+      }
+
+      #map>.ol-viewport {
+        height: 100% !important;
+      }
+
+      #panel {
+        height: 25%;
+        overflow: auto;
+        padding: 0.75rem 1rem;
+        background: #fff;
+        border-top: 1px solid #ccc;
+      }
+
+      #panel fieldset {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin: 0 0 0.75rem;
+        padding: 0.5rem 0.75rem;
+      }
+
+      #panel legend {
+        font-size: 13px;
+        font-weight: 600;
+        padding: 0 0.25rem;
+      }
+
+      .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        align-items: center;
+      }
+
+      .form-row label {
+        font-size: 12px;
+        min-width: 90px;
+      }
+
+      .form-row input,
+      .form-row select,
+      .form-row textarea {
+        flex: 1;
+        min-width: 180px;
+        font-size: 12px;
+        padding: 0.25rem 0.5rem;
+      }
+
+      .form-row input[type="checkbox"] {
+        width: auto;
+        max-width: 100px;
+      }
+
+      .form-row textarea {
+        min-height: 48px;
+        font-family: monospace;
+      }
+
+      .buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .buttons button {
+        font-size: 12px;
+        padding: 0.35rem 0.75rem;
+        cursor: pointer;
+      }
+
+      #results {
+        height: 30%;
+        overflow: auto;
+        padding: 1rem;
+        font-family: monospace;
+        font-size: 12px;
+        background: #f5f5f5;
+        border-top: 1px solid #ccc;
+        white-space: pre-wrap;
+        margin: 0;
+      }
+
+      .makidentist:before {
+        content: '\e814';
+        color: 'red'
+      }
+    </style>
+
+  </head>
+
+  <body>
+    <div id="map" class="map"></div>
+
+    <div id="panel">
+      <fieldset>
+        <legend>Configuración</legend>
+        <div class="form-row">
+          <label for="catalog-url">URL catálogo</label>
+          <input id="catalog-url" type="text" value="http://localhost:8090">
+        </div>
+        <div class="form-row">
+          <label for="public">público</label>
+          <input id="public" type="checkbox" value="true">
+          <label for="auth-url">URL autenticación</label>
+          <input id="auth-url" type="text" value="https://gneis.desarrollo.guadaltel.es/o/custom-auth/token">
+        </div>
+        <div class="form-row">
+          <label for="collections-url">URL colecciones</label>
+          <input id="collections-url" type="text" value="https://gneis.desarrollo.guadaltel.es/o/custom-auth/collections">
+        </div>
+        <div class="form-row">
+          <label for="token-user">usuario</label>
+          <input id="token-user" type="text" placeholder="usuario">
+          <label for="token-password">password</label>
+          <input id="token-password" type="password" placeholder="password">
+        </div>
+        <div class="form-row">
+          <label for="collection-id">collectionId</label>
+          <input id="collection-id" type="text" placeholder="vhr-image-2024">
+          <label for="item-id">itemId</label>
+          <input id="item-id" type="text" placeholder="ID del item">
+          <label for="query-limit">limit</label>
+          <input id="query-limit" type="number" min="1" value="10">
+        </div>
+        <div class="form-row">
+          <label for="query-filters">filtros Simples</label>
+          <textarea id="query-filters">{"bbox": [-7.6135011512544875, 36.17836200171388, -2.5775999112598895, 37.337668433004296 ], "datetime": "2024-03-01T00:00:00Z/2024-05-31T23:59:59Z"}</textarea>
+        </div>
+        <div class="form-row">
+          <label for="filter-format">formato filtro</label>
+          <select id="filter-format">
+            <option value="stac-query">stac-query</option>
+            <option value="cql-json">cql-json</option>
+            <option value="cql2-json">cql2-json</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="filter-body">filtro Avanzado</label>
+          <textarea id="filter-body">{"datetime": {"lt": "2024-03-15T00:00:00Z"}}</textarea>
+        </div>
+        <div class="form-row">          
+          <label for="spatial-filter">Filtrar por vista</label>
+          <input id="spatial-filter" type="checkbox" value="false">
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Funciones Catalog</legend>
+        <div class="buttons">
+          <button type="button" id="btn-constructor">constructor(userParameters)</button>
+          <button type="button" id="btn-authenticate">authenticate(username, password)</button>
+          <button type="button" id="btn-getCollections">getCollections()</button>
+          <button type="button" id="btn-getQueryableFields">getQueryableFields(collectionId)</button>
+          <button type="button" id="btn-getItems">getItems(collectionId, limit = 10)</button>
+          <button type="button" id="btn-getItem">getItem(collectionId, itemId)</button>
+          <button type="button" id="btn-getFilteredItems">getFilteredItems(collectionId, filters) </button>
+          <button type="button" id="btn-getItemsByLinks">getItemsByLinks(links, rel)</button>
+          <button type="button" id="btn-getFilteredItemsAdvanced">getFilteredItemsAdvanced(collectionId, filter, bbox, datetime)</button>
+          <button type="button" id="btn-getFilteredItemsAdvancedByLinks">getFilteredItemsAdvancedByLinks(links, rel)</button>
+          <button type="button" id="btn-clear">Limpiar resultados</button>
+        </div>
+      </fieldset>
+    </div>
+
+    <pre id="results">Pulsa un botón para ejecutar una función de Catalog.</pre>
+    <script src="/config.js" charset="utf-8"></script>
+    <script src="/stac-catalog.js" charset="utf-8"></script>
+  </body>
+
+</html>

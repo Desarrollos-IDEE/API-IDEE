@@ -1,0 +1,49 @@
+<div id="m-catalogmanager-advanced-filters"
+    data-catalog-index="{{catalogIndex}}" data-collection-index="{{collectionIndex}}">
+
+    <h3 class="m-catalogmanager-section-title">{{translations.title}} <span class="g-cartografia-catalog-up-open m-catalogmanager-icon"></span></h3>
+    <div id="m-catalogmanager-advanced-filters-content">
+        <div id="m-catalogmanager-options-container">
+            <div id="m-catalogmanager-advanced-filters-tabs">
+                <div id="advanced-filter-tab-assistant" class="m-catalogmanager-tab active">{{translations.assistant}}</div>
+                <div id="advanced-filter-tab-query" class="m-catalogmanager-tab">{{translations.manualQuery}}</div>
+            </div>
+            <div id="advanced-filter-assistant-container" class="advanced-filter-container">
+                <div class="m-catalogmanager-lists-container">
+                    <div class="m-catalogmanager-fields">
+                        <p class="m-catalogmanager-headers">{{translations.fields}}</p>
+                    </div>
+                    <div class="m-catalogmanager-type">
+                        <p class="m-catalogmanager-headers">{{translations.type}}</p>
+                    </div>
+                </div>
+
+                <div id="m-catalogmanager-operators-container">
+                    <p class="m-catalogmanager-headers">{{translations.operators}}</p>
+                    {{#each operators}}
+                        <button class="m-catalogmanager-operator-button">{{this}}</button>
+                    {{/each}}
+                </div>
+
+                <div id="m-catalogmanager-query-container">
+                    <p class="m-catalogmanager-headers">{{translations.filter_exp}}</p>
+                    <textarea id="m-catalogmanager-assistant-body" class="m-catalogmanager-textArea" cols="90" rows="5" placeholder="{{translations.placeholder}}"></textarea>
+                </div>
+            </div>
+            <div id="advanced-filter-query-container" class="advanced-filter-container hidden">
+                <label>{{translations.queryType}}</label>
+                <select id="m-catalogmanager-query-type">
+                    <option value="stac-query">STAC Query</option>
+                    <option value="cql-json">CQL JSON</option>
+                    <option value="cql2-json">CQL2 JSON</option>
+                </select>
+                <label>{{translations.stacQuery}}</label>
+                <textarea id="m-catalogmanager-query-body" class="m-catalogmanager-textArea" cols="90" rows="5" placeholder="{{translations.manualPlaceholder}}"></textarea>
+            </div>
+        </div>
+        <div id="m-catalogmanager-options-buttons">
+            <button id="aplicar-btn" title="{{translations.applyTitle}}">{{translations.apply}}</button>
+            <button id="limpiar-filtro-btn" title="{{translations.clearTitle}}">{{translations.clear}}</button>
+        </div>
+    </div>
+</div>

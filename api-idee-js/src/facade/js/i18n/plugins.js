@@ -8,6 +8,10 @@
 import esBackimglayer from '../../../plugins/backimglayer/src/facade/js/i18n/es';
 import enBackimglayer from '../../../plugins/backimglayer/src/facade/js/i18n/en';
 
+// Catalogmanager
+import esCatalogmanager from '../../../plugins/catalogmanager/src/facade/js/i18n/es';
+import enCatalogmanager from '../../../plugins/catalogmanager/src/facade/js/i18n/en';
+
 // Comparators
 import esComparators from '../../../plugins/comparators/src/facade/js/i18n/es';
 import enComparators from '../../../plugins/comparators/src/facade/js/i18n/en';
@@ -72,6 +76,10 @@ import enPrintviewmanagement from '../../../plugins/printviewmanagement/src/faca
 import esQueryattributes from '../../../plugins/queryattributes/src/facade/js/i18n/es';
 import enQueryattributes from '../../../plugins/queryattributes/src/facade/js/i18n/en';
 
+// Rastermanagement
+import esRastermanagement from '../../../plugins/rastermanagement/src/facade/js/i18n/es';
+import enRastermanagement from '../../../plugins/rastermanagement/src/facade/js/i18n/en';
+
 // Querydatabase
 // import esQuerydatabase from '../../../plugins/querydatabase/src/facade/js/i18n/es';
 // import enQuerydatabase from '../../../plugins/querydatabase/src/facade/js/i18n/en';
@@ -128,6 +136,10 @@ const pluginsLanguage = {
   backimglayer: {
     esBackimglayer,
     enBackimglayer,
+  },
+  catalogmanager: {
+    esCatalogmanager,
+    enCatalogmanager,
   },
   comparators: {
     esComparators,
@@ -192,6 +204,10 @@ const pluginsLanguage = {
   queryattributes: {
     esQueryattributes,
     enQueryattributes,
+  },
+  rastermanagement: {
+    esRastermanagement,
+    enRastermanagement,
   },
   /*
   querydatabase: {

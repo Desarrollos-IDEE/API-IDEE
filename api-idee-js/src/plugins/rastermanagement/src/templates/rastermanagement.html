@@ -1,0 +1,28 @@
+<div id="div-contenedor-m-rastermanagement" class="m-control m-container m-rastermanagement">
+    <!-- TITLE -->
+    <div tabindex="0" role="heading" class="title" aria-label="{{title}}">{{title}}</div>
+    <div class="m-rastermanagement-layer-selector">
+        <div class="m-rastermanagement-layer-select">
+            <button type="button" tabindex="0" id="m-rastermanagement-selectionlayer-btn" class="m-rastermanagement-layer-select-btn" title="{{selectLayer}}" aria-label="{{selectLayer}}">
+                <span id="m-rastermanagement-selectionlayer-label">{{selectLayerDefault}}...</span>
+            </button>
+            <ul id="m-rastermanagement-selectionlayer-list" class="m-rastermanagement-layer-select-list hidden"></ul>
+            <select id="m-rastermanagement-selectionlayer" class="hidden" tabindex="-1" aria-hidden="true">
+                <option value="" selected disabled>{{selectLayerDefault}}...</option>
+            </select>
+        </div>
+        <button type="button" tabindex="0" id="m-rastermanagement-apply" class="g-cartografia-raster-apply hidden" title="{{apply}}" aria-label="{{apply}}"></button>
+        <button type="button" tabindex="0" id="m-rastermanagement-clear" class="g-cartografia-raster-reset hidden" title="{{clearStyle}}" aria-label="{{clearStyle}}"></button>
+        <button type="button" tabindex="0" id="m-rastermanagement-copy" class="g-cartografia-raster-copy hidden" title="{{copyStyle}}" aria-label="{{copyStyle}}"></button>
+    </div>
+    <div id="m-rastermanagement-sections" class="{{^showGeoprocesses}}hidden{{/showGeoprocesses}}" role="tablist" aria-label="{{sections}}">
+        <div id="m-rastermanagement-styles-section-tab" class="m-rastermanagement-section-tab active" role="tab" tabindex="0" aria-selected="true" aria-controls="m-rastermanagement-styles-section">{{stylesSection}}</div>
+        {{#if showGeoprocesses}}
+        <div id="m-rastermanagement-geoprocess-section-tab" class="m-rastermanagement-section-tab" role="tab" tabindex="0" aria-selected="false" aria-controls="m-rastermanagement-geoprocess-section">{{geoprocessSection}}</div>
+        {{/if}}
+    </div>
+    <div id="m-rastermanagement-styles-section" class="m-rastermanagement-section-content" role="tabpanel" aria-labelledby="m-rastermanagement-styles-section-tab"></div>
+    {{#if showGeoprocesses}}
+    <div id="m-rastermanagement-geoprocess-section" class="m-rastermanagement-section-content hidden" role="tabpanel" aria-labelledby="m-rastermanagement-geoprocess-section-tab"></div>
+    {{/if}}
+</div>

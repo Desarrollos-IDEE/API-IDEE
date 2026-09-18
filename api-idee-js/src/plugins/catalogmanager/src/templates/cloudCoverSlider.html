@@ -1,0 +1,26 @@
+<div id="m-catalogmanager-cloudcover-filters">
+    <h3 class="m-catalogmanager-section-title">{{translations.title}} <span class="g-cartografia-catalog-up-open m-catalogmanager-icon"></span></h3>
+    <div id="m-catalogmanager-cloudcover-filters-content">
+        <div id="m-catalogmanager-cloudcover-slider" class="m-catalogmanager-cloudcover-slider"
+            data-min="0" data-max="100">
+            <label class="m-catalogmanager-cloudcover-slider-label" for="m-catalogmanager-cloudcover-min">
+                <span id="m-catalogmanager-cloudcover-values" class="m-catalogmanager-cloudcover-slider-values">
+                    {{minValue}}% – {{maxValue}}%
+                </span>
+            </label>
+            <div class="m-catalogmanager-dual-range">
+                <div class="m-catalogmanager-dual-range-track" aria-hidden="true"></div>
+                <input type="range"
+                    id="m-catalogmanager-cloudcover-min"
+                    class="m-catalogmanager-dual-range-input m-catalogmanager-dual-range-min"
+                    min="0" max="100" step="1" value="{{minValue}}"
+                    aria-label="{{translations.cloudCoverMin}}">
+                <input type="range"
+                    id="m-catalogmanager-cloudcover-max"
+                    class="m-catalogmanager-dual-range-input m-catalogmanager-dual-range-max"
+                    min="0" max="100" step="1" value="{{maxValue}}"
+                    aria-label="{{translations.cloudCoverMax}}">
+            </div>
+        </div>
+    </div>
+</div>

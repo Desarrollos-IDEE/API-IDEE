@@ -1,0 +1,35 @@
+<div class="m-catalogmanager-addcatalog">
+    <div class="m-catalogmanager-add-panel">
+        <div class="form-container">
+            <div class="form-row">
+                <label for="title">{{translations.cat_title}}</label>
+                <input id="title" type="text">
+            </div>
+            <div class="form-row">
+                <label for="catalog-url">{{translations.cat_url}}</label>
+                <input id="catalog-url" type="text">
+              </div>
+              <div class="form-row">
+                <label for="cat-public">{{translations.cat_public}}</label>
+                <input id="cat-public" type="checkbox" checked>
+            </div>
+            <div class="form-row form-container private-data hidden">
+                <div class="form-row">
+                    <label for="auth-url">{{translations.cat_auth_url}}</label>
+                    <input id="auth-url" type="text">
+                    <label for="collections-url">{{translations.cat_collections_url}}</label>
+                    <input id="collections-url" type="text">
+                </div>
+                <div class="form-row">
+                    <label for="user">{{translations.cat_user}}</label>
+                    <input id="user" type="text" placeholder="usuario">
+                    <label for="password">{{translations.cat_password}}</label>
+                    <input id="password" type="password" placeholder="password">
+                </div>
+            </div>
+            <div class="form-row">
+                <button id="add-catalog">{{translations.add}}</button>
+            </div>
+        </div>
+    </div>
+</div>

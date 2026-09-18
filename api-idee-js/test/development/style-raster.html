@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="idee" content="yes">
+
+  <title>PRUEBA ESTILO RÁSTER</title>
+  <style rel="stylesheet">
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+
+    #legend {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    #legend.hidden {
+      display: none;
+    }
+
+    #legend img {
+      display: block;
+      margin-top: 6px;
+      max-width: 200px;
+      height: auto;
+    }
+
+    #raster-panel {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 280px;
+      max-height: calc(100vh - 20px);
+      overflow-y: auto;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 12px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    #raster-panel h3 {
+      margin: 0 0 10px;
+      font-size: 14px;
+    }
+
+    #raster-panel fieldset {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin: 0 0 10px;
+      padding: 8px 10px;
+    }
+
+    #raster-panel legend {
+      font-weight: bold;
+      padding: 0 4px;
+    }
+
+    #raster-panel label {
+      display: block;
+      margin: 6px 0;
+    }
+
+    #raster-panel label.inline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #raster-panel input[type="range"] {
+      flex: 1;
+    }
+
+    #raster-panel input[type="number"],
+    #raster-panel select {
+      width: 70px;
+    }
+
+    #raster-panel select#formula,
+    #raster-panel select#style-mode {
+      width: auto;
+      flex: 1;
+      min-width: 140px;
+    }
+
+    #raster-panel input[type="text"]#bands-input {
+      flex: 1;
+      min-width: 120px;
+      width: auto;
+    }
+
+    #raster-panel textarea#serialized-style {
+      width: 100%;
+      min-height: 72px;
+      box-sizing: border-box;
+      font-family: monospace;
+      font-size: 11px;
+      resize: vertical;
+    }
+
+    #raster-panel .serialize-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    #raster-panel .field-hint {
+      margin: 4px 0 0;
+      font-size: 11px;
+      color: #666;
+    }
+
+    #raster-panel .ramp-presets {
+      margin-bottom: 6px;
+    }
+
+    #raster-panel .ramp-presets button.active {
+      background: #dbeafe;
+      border-color: #2563eb;
+    }
+
+    #raster-panel .ramp-colors {
+      display: flex;
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    #raster-panel .ramp-colors input[type="color"] {
+      width: 44px;
+      height: 28px;
+      padding: 0;
+      border: 1px solid #ccc;
+      cursor: pointer;
+    }
+
+    #raster-panel .value-label {
+      display: inline-block;
+      min-width: 36px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #raster-panel .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    #raster-panel button {
+      flex: 1;
+      padding: 6px 10px;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #f5f5f5;
+    }
+
+    #raster-panel input:disabled,
+    #raster-panel select:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: #f0f0f0;
+    }
+
+    #raster-panel label.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #raster-panel .hidden {
+      display: none;
+    }
+
+    #status {
+      margin-top: 8px;
+      font-size: 11px;
+      color: #555;
+      font-style: italic;
+    }
+  </style>
+
+</head>
+
+<body>
+  <div id="map" class="map"></div>
+
+  <div id="legend" class="hidden">
+    <strong id="legend-title">Rampa de colores</strong>
+    <img id="legend-img" alt="Leyenda de la rampa de colores">
+  </div>
+
+  <div id="raster-panel">
+    <h3>IDEE.style.Raster</h3>
+
+    <label class="inline">
+      Modo
+      <select id="style-mode">
+        <option value="ramp" selected>Rampa de colores</option>
+        <option value="filters">Solo filtros WebGL</option>
+      </select>
+    </label>
+    <p class="field-hint">Rampa: simbología por valores. Filtros: ajustes sobre el color nativo.</p>
+
+    <div id="ramp-options">
+    <fieldset>
+      <legend>formula</legend>
+      <label class="inline">
+        Valor
+        <select id="formula">
+          <option value="" selected>Ninguna (banda / media)</option>
+          <option value="ndvi">NDVI (nir − red) / (nir + red)</option>
+          <option value="ndwi">NDWI (green − nir) / (green + nir)</option>
+          <option value="nbr">NBR (nir − swir) / (nir + swir)</option>
+        </select>
+      </label>
+      <p class="field-hint" id="formula-hint">Sin fórmula: una banda o media. NDVI [nir, red]; NDWI [green, nir]; NBR [nir, swir].</p>
+    </fieldset>
+
+    <fieldset>
+      <legend>bands</legend>
+      <label class="inline">
+        Valor
+        <input type="text" id="bands-input" value="1, 2, 3" placeholder="1 o 1, 2, 3">
+      </label>
+      <p class="field-hint" id="bands-hint">Un número para una banda; varios separados por coma para media.</p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Rango</legend>
+      <label class="inline">
+        Min
+        <input type="number" id="min" step="any" value="0">
+      </label>
+      <label class="inline">
+        Max
+        <input type="number" id="max" step="any" value="1">
+      </label>
+      <p class="field-hint" id="range-hint">Rango de datos de la rampa (0–1 con normalize; índices típico −1…1).</p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Rampa de colores</legend>
+      <div class="ramp-presets actions">
+        <button type="button" class="ramp-preset-btn" data-ramp-size="2">2 colores</button>
+        <button type="button" class="ramp-preset-btn" data-ramp-size="3">3 colores</button>
+        <button type="button" class="ramp-preset-btn active" data-ramp-size="5">5 colores</button>
+      </div>
+      <div id="ramp-colors" class="ramp-colors"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Interpolación</legend>
+      <label class="inline">
+        Tipo
+        <select id="interpolation">
+          <option value="linear" selected>linear</option>
+          <option value="exponential">exponential</option>
+        </select>
+      </label>
+      <label class="inline" id="interpolation-base-row">
+        Base
+        <input type="number" id="interpolationBase" min="0.01" max="10" step="0.01" value="2" disabled>
+      </label>
+      <p class="field-hint">Base solo aplica con interpolación exponential.</p>
+    </fieldset>
+    </div>
+
+    <fieldset>
+      <legend>Avanzado</legend>
+      <label class="inline">
+        Gamma
+        <input type="number" id="gamma" min="0" step="any" value="1">
+      </label>
+      <p class="field-hint">Rango OpenLayers: 0 o mayor. Valor 1 = sin corrección.</p>
+      <label class="inline">
+        Saturación
+        <input type="range" id="saturation" min="-1" max="1" step="0.01" value="0">
+        <span id="saturation-value" class="value-label">0</span>
+      </label>
+      <p class="field-hint">Rango OpenLayers: -1 a 1. 0 = sin cambio, -1 = escala de grises.</p>
+      <label class="inline">
+        Exposición
+        <input type="range" id="exposure" min="-1" max="1" step="0.01" value="0">
+        <span id="exposure-value" class="value-label">0</span>
+      </label>
+      <p class="field-hint">Rango OpenLayers: -1 a 1. 0 = sin cambio. Ajusta la exposición sobre el color de la capa.</p>
+      <label class="inline">
+        Contraste
+        <input type="range" id="contrast" min="-1" max="1" step="0.01" value="0">
+        <span id="contrast-value" class="value-label">0</span>
+      </label>
+      <p class="field-hint">Rango OpenLayers: -1 a 1. 0 = sin cambio. Ajusta el contraste sobre el color de la capa.</p>
+      <label class="inline">
+        Brillo
+        <input type="range" id="brightness" min="-1" max="1" step="0.01" value="0">
+        <span id="brightness-value" class="value-label">0</span>
+      </label>
+      <p class="field-hint">Rango OpenLayers: -1 a 1. 0 = sin cambio. Ajusta el brillo sobre el color de la capa.</p>
+      <label class="inline">
+        Nodata
+        <input type="number" id="nodata" step="any" placeholder="sin nodata">
+      </label>
+      <p class="field-hint">Vacío: no se añade al estilo. Con valor (p. ej. 0): esos píxeles serán transparentes.</p>
+    </fieldset>
+
+    <div class="actions">
+      <button type="button" id="reset-btn">Restablecer</button>
+      <button type="button" id="copy-serialized-btn">Copiar serializado</button>
+    </div>
+
+    <fieldset>
+      <legend>Serialización</legend>
+      <label>
+        Estilo serializado (serialize)
+        <textarea id="serialized-style" placeholder="Cadena base64 de style.serialize()"></textarea>
+      </label>
+      <div class="serialize-actions">
+        <button type="button" id="apply-serialized-btn">Aplicar serializado</button>
+      </div>
+      <p class="field-hint">Usa style.serialize() → base64. Al aplicar se deserializa con setStyle(string).</p>
+    </fieldset>
+
+    <p id="status">Esperando cambio de estilo...</p>
+  </div>
+
+  <script src="/config.js" charset="utf-8"></script>
+  <script src="/style-raster.js" charset="utf-8"></script>
+</body>
+
+</html>

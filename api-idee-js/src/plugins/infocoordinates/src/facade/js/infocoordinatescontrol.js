@@ -146,9 +146,30 @@ export default class InfocoordinatesControl extends IDEE.Control {
     const input = html.querySelector('#m-infocoordinates-epsg-selected');
     const selector = html.querySelector('#m-infocoordinates-srs-selector');
     let isEditable = false;
+    let keepOpenOnBlur = false;
 
     input.setAttribute('readonly', 'readonly');
     input.value = this.selectedProjection;
+
+    // Evita el blur del input al elegir opción o usar la barra de scroll.
+    // Sin esto, el blur cierra la lista al interactuar con el scrollbar.
+    selector.addEventListener('mousedown', (event) => {
+      event.preventDefault();
+    });
+
+    // Fallback: en algunos navegadores el mousedown de la scrollbar no llega al <ul>.
+    document.addEventListener('pointerdown', (event) => {
+      if (selector.style.display === 'none'
+        || window.getComputedStyle(selector).display === 'none') {
+        keepOpenOnBlur = false;
+        return;
+      }
+      const rect = selector.getBoundingClientRect();
+      keepOpenOnBlur = event.clientX >= rect.left
+        && event.clientX <= rect.right
+        && event.clientY >= rect.top
+        && event.clientY <= rect.bottom;
+    }, true);
 
     input.addEventListener('focus', () => {
       if (!isEditable) {
@@ -175,6 +196,14 @@ export default class InfocoordinatesControl extends IDEE.Control {
     });
 
     input.addEventListener('blur', () => {
+      if (keepOpenOnBlur) {
+        keepOpenOnBlur = false;
+        window.requestAnimationFrame(() => {
+          selector.style.display = 'block';
+          input.focus({ preventScroll: true });
+        });
+        return;
+      }
       selector.style.display = 'none';
       isEditable = false;
       if (!input.hasAttribute('readonly')) {
