@@ -20,7 +20,14 @@
     "calculatorTimeout": "El cálculo ráster ha superado el tiempo de espera"
   },
   "textHelp": {
-    "help1": "Txt 1"
+    "help1": "La extensión de gestión de capas ráster permite editar el estilo de visualización de capas GeoTIFF cargadas en el mapa.",
+    "help2": "En la parte superior seleccione la capa GeoTIFF. Los botones aplicar, quitar estilo y copiar estilo serializado actúan sobre la capa elegida.",
+    "help3": "La sección Estilos reúne rampas de color, índices espectrales (NDVI, NDWI, NBR), combinaciones RGB y el modo básico con filtros de imagen.",
+    "help4": "En rampas de color puede usarse monobanda, media de varias bandas o índices predefinidos. Configure mínimo, máximo, rampa, interpolación y valor no data.",
+    "help5": "El botón «Ajustar a la imagen» hace zoom a la extensión de la capa, espera a que cargue y estima mínimo y máximo (percentiles 2–98) en la vista visible.",
+    "help6": "Las combinaciones RGB permiten color verdadero o falso asignando números de banda a rojo, verde y azul/NIR (0 apaga un canal).",
+    "help7": "Los filtros de saturación, gamma, brillo, contraste y exposición, así como el modo básico, permiten afinar la visualización junto al estilo elegido.",
+    "help8": "Pulse Aplicar para actualizar el mapa. Quitar estilo restaura la capa y copiar estilo serializado guarda la definición en el portapapeles."
   },
   "title": "Gestión de capas ráster",
   "sections": "Secciones",

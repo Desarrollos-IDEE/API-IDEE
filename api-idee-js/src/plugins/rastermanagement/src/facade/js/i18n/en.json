@@ -20,7 +20,14 @@
     "calculatorTimeout": "The raster calculation timed out"
   },
   "textHelp": {
-    "help1": "Txt 1"
+    "help1": "The raster layer management extension lets you edit the display style of GeoTIFF layers loaded on the map.",
+    "help2": "At the top, select the GeoTIFF layer. Apply, clear style and copy serialized style act on the chosen layer.",
+    "help3": "The Styles section includes color ramps, spectral indices (NDVI, NDWI, NBR), RGB combinations and basic mode with image filters.",
+    "help4": "With color ramps you can use monoband, mean of several bands or predefined indices. Set minimum, maximum, ramp, interpolation and no data.",
+    "help5": "Fit to image zooms to the layer extent, waits for it to load and estimates minimum and maximum (2–98 percentiles) in the visible view.",
+    "help6": "RGB combinations support true or false color by assigning band numbers to red, green and blue/NIR (0 turns a channel off).",
+    "help7": "Saturation, gamma, brightness, contrast and exposure filters, plus basic mode, fine-tune the display together with the chosen style.",
+    "help8": "Click Apply to update the map. Clear style restores the layer; copy serialized style saves the definition to the clipboard."
   },
   "title": "Raster layer management",
   "sections": "Sections",

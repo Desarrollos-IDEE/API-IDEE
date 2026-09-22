@@ -18,8 +18,8 @@
 }
 
 .g-cartografia-raster-style::before {
-	-webkit-mask-image: url('../icons/icn_raster-style.svg');
-	mask-image: url('../icons/icn_raster-style.svg');
+	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_raster_estilo.svg');
+	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_raster_estilo.svg');
 }
 
 .g-cartografia-raster-apply::before {

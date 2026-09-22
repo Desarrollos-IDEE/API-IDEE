@@ -12,6 +12,7 @@ import es from './i18n/es';
 import en from './i18n/en';
 import { CALC_HISTOGRAM_WPS_URL } from './util/calchistogramservice';
 import { RASTER_CALCULATOR_WPS_URL } from './util/rastercalculatorservice';
+import getRasterManagementHelpImagesUrl from './util/helpimagesurl';
 
 export default class RasterManagement extends IDEE.Plugin {
   /**
@@ -246,9 +247,16 @@ export default class RasterManagement extends IDEE.Plugin {
       content: new Promise((success) => {
         const html = IDEE.template.compileSync(myhelp, {
           vars: {
-            urlImages: `${IDEE.config.API_IDEE_URL}plugins/rastermanagement/images/`,
+            urlImages: getRasterManagementHelpImagesUrl(),
             translations: {
               help1: getValue('textHelp.help1'),
+              help2: getValue('textHelp.help2'),
+              help3: getValue('textHelp.help3'),
+              help4: getValue('textHelp.help4'),
+              help5: getValue('textHelp.help5'),
+              help6: getValue('textHelp.help6'),
+              help7: getValue('textHelp.help7'),
+              help8: getValue('textHelp.help8'),
             },
           },
         });
