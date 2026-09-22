@@ -82,8 +82,8 @@
   padding: 0 !important;
 }
 
-.m-control-panel.m-plugin-mapheader.opened>button.m-control-panel-btn,
-.m-control-panel.m-plugin-mapheader.collapsed>button.m-control-panel-btn {
+.m-control-panel.m-plugin-mapheader.opened:not(.no-collapsible)>button.m-control-panel-btn,
+.m-control-panel.m-plugin-mapheader.collapsed:not(.no-collapsible)>button.m-control-panel-btn {
   position: absolute !important;
   left: 0 !important;
   height: 25px !important;
@@ -120,13 +120,18 @@
   transition: none !important;
 }
 
+.m-control-panel.m-plugin-mapheader.no-collapsible>button.m-control-panel-btn,
+.m-control-panel.m-plugin-mapheader.no-collapsible>button.m-overviewmap-button {
+  display: none !important;
+}
+
 /* Pestaña bajo la cabecera abierta */
-.m-control-panel.m-plugin-mapheader.opened>button.m-control-panel-btn {
+.m-control-panel.m-plugin-mapheader.opened:not(.no-collapsible)>button.m-control-panel-btn {
   top: 100% !important;
   bottom: auto !important;
 }
 
-.m-control-panel.m-plugin-mapheader.collapsed>button.m-control-panel-btn {
+.m-control-panel.m-plugin-mapheader.collapsed:not(.no-collapsible)>button.m-control-panel-btn {
   top: 0 !important;
   bottom: auto !important;
 }
