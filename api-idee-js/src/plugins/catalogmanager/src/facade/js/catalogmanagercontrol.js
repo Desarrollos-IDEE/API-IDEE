@@ -1973,6 +1973,10 @@ export default class CatalogmanagerControl extends IDEE.Control {
     this.syncCloudCoverSliderStyle();
   }
 
+  formatNumber(number) {
+    return new Intl.NumberFormat('en-US').format(number).replace(/,/g, '\u00a0');
+  }
+
   /**
    * Renderiza la lista de ítems de una colección en el DOM
    *
@@ -2003,12 +2007,12 @@ export default class CatalogmanagerControl extends IDEE.Control {
           previous: getValue('previous'),
           next: getValue('next'),
           download: getValue('imageActions.downloadCollection'),
-          pagination: getValue('pagination').replace('{0}', this.pagination_.currentPage).replace('{1}', this.pagination_.totalPages),
+          pagination: getValue('pagination').replace('{0}', this.pagination_.currentPage).replace('{1}', this.formatNumber(this.pagination_.totalPages)),
         },
       },
     });
     const resultsTab = this.template_.querySelector('#m-catalogmanager-results-tab');
-    resultsTab.innerHTML = `${getValue('resultsTab')} (${items.numberMatched})`;
+    resultsTab.innerHTML = `${getValue('resultsTab')} (${this.formatNumber(items.numberMatched)})`;
     container.innerHTML = html.outerHTML;
     container.classList.remove('empty', 'hidden');
     const extraActionsContent = this.template_.querySelector('#m-catalogmanager-extra-actions-content');

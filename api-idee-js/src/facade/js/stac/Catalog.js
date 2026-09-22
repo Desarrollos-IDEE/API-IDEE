@@ -242,7 +242,10 @@ class Catalog extends Base {
       });
     }
     return new Promise((success, fail) => {
-      const body = this.token ? { accessToken: this.token, lang: getLang() } : null;
+      const body = { lang: getLang() };
+      if (this.token) {
+        body.accessToken = this.token;
+      }
       post(`${this.collectionsUrl}`, body, { headers: { 'Content-Type': 'application/json' } }).then((response) => {
         if (response.code === 401 || response.code === 403) {
           this.refreshTokenAuth().then(() => {
