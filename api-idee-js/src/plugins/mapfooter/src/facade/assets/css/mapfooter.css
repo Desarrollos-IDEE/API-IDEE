@@ -79,8 +79,8 @@
   padding: 0 !important;
 }
 
-.m-control-panel.m-plugin-mapfooter.opened>button.m-control-panel-btn,
-.m-control-panel.m-plugin-mapfooter.collapsed>button.m-control-panel-btn {
+.m-control-panel.m-plugin-mapfooter.opened:not(.no-collapsible)>button.m-control-panel-btn,
+.m-control-panel.m-plugin-mapfooter.collapsed:not(.no-collapsible)>button.m-control-panel-btn {
   position: absolute !important;
   left: 0 !important;
   height: 25px !important;
@@ -117,12 +117,17 @@
   transition: none !important;
 }
 
-.m-control-panel.m-plugin-mapfooter.opened>button.m-control-panel-btn {
+.m-control-panel.m-plugin-mapfooter.no-collapsible>button.m-control-panel-btn,
+.m-control-panel.m-plugin-mapfooter.no-collapsible>button.m-overviewmap-button {
+  display: none !important;
+}
+
+.m-control-panel.m-plugin-mapfooter.opened:not(.no-collapsible)>button.m-control-panel-btn {
   bottom: 100% !important;
   top: auto !important;
 }
 
-.m-control-panel.m-plugin-mapfooter.collapsed>button.m-control-panel-btn {
+.m-control-panel.m-plugin-mapfooter.collapsed:not(.no-collapsible)>button.m-control-panel-btn {
   bottom: 0 !important;
   top: auto !important;
 }

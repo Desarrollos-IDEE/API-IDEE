@@ -79,9 +79,13 @@ export default class Mapfooter extends IDEE.Plugin {
      * @private
      * @type {boolean}
      */
-    this.collapsible = options.collapsible;
-    if (this.collapsible === undefined) {
+    this.collapsible = true;
+    if (IDEE.utils.isBoolean(options.collapsible)) {
+      this.collapsible = options.collapsible;
+    } else if (options.collapsible === 'true') {
       this.collapsible = true;
+    } else if (options.collapsible === 'false') {
+      this.collapsible = false;
     }
 
     /**
