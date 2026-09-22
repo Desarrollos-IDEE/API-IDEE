@@ -182,6 +182,13 @@ export default class PrinterMapControl extends IDEE.Control {
      * @type {Boolean}
      */
     this.showDefaultTemplate = showDefaultTemplate || false;
+
+    /**
+     * Indica si el control está en proceso de activación (carga de plantillas)
+     * @private
+     * @type {Boolean}
+     */
+    this.isActivating_ = false;
   }
 
   /**
@@ -196,44 +203,58 @@ export default class PrinterMapControl extends IDEE.Control {
     this.html_ = html;
     const button = this.html_.querySelector(ID_PRINTERMAP_BUTTON);
 
-    const template = IDEE.template.compileSync(printermapHTML, {
-      jsonp: true,
-      vars: {
-        formats: this.outputFormats_,
-        translations: {
-          tooltip: getValue('tooltip'),
-          title: getValue('title'),
-          description: getValue('description'),
-          layout: getValue('layout'),
-          format: getValue('format'),
-          projection: getValue('projection'),
-          delete: getValue('delete'),
-          download: getValue('download'),
-          nameTitle: getValue('title_map'),
-          maintain_view: getValue('maintain_view'),
-          customizeTemplate: getValue('customizeTemplate'),
-          uploadTemplate: getValue('uploadTemplate'),
-          selectUploadedTemplate: getValue('selectUploadedTemplate'),
+    // Segundo clic: desactivar sin recargar plantillas (evita errores de duplicados)
+    if (button.classList.contains('activated')) {
+      this.deactive();
+      button.classList.remove('activated');
+      return;
+    }
+
+    // Evita doble activación mientras se cargan las plantillas
+    if (this.isActivating_) {
+      return;
+    }
+
+    this.isActivating_ = true;
+
+    try {
+      const template = IDEE.template.compileSync(printermapHTML, {
+        jsonp: true,
+        vars: {
+          formats: this.outputFormats_,
+          translations: {
+            tooltip: getValue('tooltip'),
+            title: getValue('title'),
+            description: getValue('description'),
+            layout: getValue('layout'),
+            format: getValue('format'),
+            projection: getValue('projection'),
+            delete: getValue('delete'),
+            download: getValue('download'),
+            nameTitle: getValue('title_map'),
+            maintain_view: getValue('maintain_view'),
+            customizeTemplate: getValue('customizeTemplate'),
+            uploadTemplate: getValue('uploadTemplate'),
+            selectUploadedTemplate: getValue('selectUploadedTemplate'),
+          },
         },
-      },
-    });
+      });
 
-    this.accessibilityTab(template);
+      this.accessibilityTab(template);
 
-    this.template_ = template;
+      this.template_ = template;
 
-    this.addEvents(template);
+      this.addEvents(template);
 
-    if (this.filterTemplates.length > 0) {
-      await this.loadFilterTemplates();
-    }
+      if (this.filterTemplates.length > 0) {
+        await this.loadFilterTemplates();
+      }
 
-    if (!button.classList.contains('activated')) {
       this.html_.querySelector(ID_PRINTERMAP_CONTROL).appendChild(template);
-    } else {
-      document.querySelector('.m-printermap-container').remove();
+      button.classList.add('activated');
+    } finally {
+      this.isActivating_ = false;
     }
-    button.classList.toggle('activated');
   }
 
   /**

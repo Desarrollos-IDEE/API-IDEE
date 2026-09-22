@@ -86,6 +86,7 @@
   "vertical": "Vertical",
   "horizontal": "Horizontal",
   "scale": "Escala",
+  "scaleBar": "barra de escala",
   "dpi": "DPI (puntos por pulgadas)",
   "defaultText": "Introduzca texto",
   "select_srs": "Seleccione un sistema de referencia",

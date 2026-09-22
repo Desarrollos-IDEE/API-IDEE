@@ -11,6 +11,8 @@ const ID_TEMPLATE_SCALE = '#template-scale';
 const ID_TEMPLATE_DPI = '#template-dpi';
 const ID_TEMPLATE_INPUT_SRS = '#epsg-selected';
 const ID_TEMPLATE_SRS_SELECTOR = '#m-customize-template-srs-selector';
+const ID_SHOW_SCALEBAR = '#m-show-scalebar';
+const SCALE_LINE_CONTROL_NAME = 'scaleline';
 const ID_MAP_CONTAINER_TEMPLATE = '#imagen-mascara';
 const MAP_CONTAINER_TEMPLATE = 'imagen-mascara';
 const CLASS_MAP_CONTAINER = '.m-customize-template-right';
@@ -171,6 +173,20 @@ export default class TemplateCustomizer extends IDEE.Control {
     this.scale = null;
 
     /**
+     * Indica si se incluye la barra de escala en la previsualización y la impresión
+     * @private
+     * @type {Boolean}
+     */
+    this.showScaleBar_ = true;
+
+    /**
+     * Evita recalcular coordenadas del borde durante el export (tamaños DPI incorrectos)
+     * @private
+     * @type {Boolean}
+     */
+    this.isExporting_ = false;
+
+    /**
      * Conjunto de elementos principales que tiene la plantilla
      * @private
      * @type {Array<Object>}
@@ -234,6 +250,7 @@ export default class TemplateCustomizer extends IDEE.Control {
           horizontal: getValue('horizontal'),
           layout: getValue('layout'),
           scale: getValue('scale'),
+          scaleBar: getValue('scaleBar'),
           epsg: getValue('projection'),
           select_srs: getValue('select_srs'),
           choose_create_epsg: getValue('choose_create_epsg'),
@@ -344,6 +361,7 @@ export default class TemplateCustomizer extends IDEE.Control {
     this.setupMapOrientationControl(ID_TEMPLATE_ORIENTATION);
     this.setupLayoutControl(ID_TEMPLATE_LAYOUT);
     this.setupScaleControl(ID_TEMPLATE_SCALE);
+    this.setupScaleBarControl(ID_SHOW_SCALEBAR);
     this.setupDpiControl(ID_TEMPLATE_DPI);
     this.setupInputSelectorControl(ID_TEMPLATE_INPUT_SRS, ID_TEMPLATE_SRS_SELECTOR);
   }
@@ -423,6 +441,9 @@ export default class TemplateCustomizer extends IDEE.Control {
    * Actualiza las coordenadas en el elemento texto-libre si está activo
    */
   updateDataTemplate() {
+    if (this.isExporting_) {
+      return;
+    }
     const epsgTemplate = this.getDescriptionElements().epsgTemplate;
     const dateTemplate = this.getDescriptionElements().dateTemplate;
     const coordElements = this.getBorderCoordinates();
@@ -482,19 +503,45 @@ export default class TemplateCustomizer extends IDEE.Control {
   }
 
   /**
-   * Actualiza las coordenadas del borde del mapa en grados, minutos y segundos
-   * Este método se puede personalizar para actualizar otros elementos de borde según sea necesario.
+   * Actualiza las coordenadas del borde del mapa.
+   * Sin borde: esquinas del viewport del mapa.
+   * Con borde: esquinas del marco exterior (interior-container).
    * @param {Object} coordElementsObject Objeto que contiene los elementos de coordenadas del borde
    */
   updateBorderCoordinates(coordElementsObject) {
     const coordElements = coordElementsObject;
-    const extent = this.previewMap.getMapImpl().getView().calculateExtent();
-    const mapProjection = this.previewMap.getMapImpl().getView().getProjection().getCode();
-    let transformedExtent = extent;
-    if (mapProjection !== 'EPSG:4326') {
-      transformedExtent = this.getImpl().transformExtent(extent, mapProjection, 'EPSG:4326');
+    const map = this.previewMap.getMapImpl();
+    const view = map.getView();
+    let extent = view.calculateExtent(map.getSize());
+    if (this.borderElement_) {
+      extent = this.expandExtentToBorderFrame(extent);
     }
-    const [minLon, minLat, maxLon, maxLat] = transformedExtent;
+
+    const mapProjection = view.getProjection().getCode();
+    let minLon;
+    let minLat;
+    let maxLon;
+    let maxLat;
+    if (mapProjection === 'EPSG:4326') {
+      [minLon, minLat, maxLon, maxLat] = extent;
+    } else {
+      const corners = [
+        [extent[0], extent[1]],
+        [extent[0], extent[3]],
+        [extent[2], extent[1]],
+        [extent[2], extent[3]],
+      ];
+      const transformed = corners.map((corner) => {
+        return this.getImpl().transformCoordinates(corner, mapProjection, 'EPSG:4326');
+      });
+      const lons = transformed.map((corner) => corner[0]);
+      const lats = transformed.map((corner) => corner[1]);
+      minLon = Math.min(...lons);
+      maxLon = Math.max(...lons);
+      minLat = Math.min(...lats);
+      maxLat = Math.max(...lats);
+    }
+
     coordElements['top-left-coord'].textContent = this.toDMS(maxLat);
     coordElements['top-right-coord'].textContent = this.toDMS(maxLat);
     coordElements['left-top-coord'].textContent = this.toDMS(minLon);
@@ -506,17 +553,82 @@ export default class TemplateCustomizer extends IDEE.Control {
   }
 
   /**
-   * Convierte coordenadas decimales a grados, minutos y segundos (DMS)
+   * Expande el extent del mapa hasta las esquinas del marco de borde.
+   * Usa el viewport OL y compensa el CSS transform: scale del preview.
+   * @param {Array<number>} mapExtent Extent del viewport [minX, minY, maxX, maxY]
+   * @returns {Array<number>} Extent ampliado al interior-container
+   */
+  expandExtentToBorderFrame(mapExtent) {
+    const map = this.previewMap.getMapImpl();
+    const borderEl = this.borderElement_;
+    if (!borderEl) {
+      return mapExtent;
+    }
+    const viewport = map.getViewport();
+    if (!viewport) {
+      return mapExtent;
+    }
+    const mapSize = map.getSize();
+    if (!mapSize || mapSize[0] <= 0 || mapSize[1] <= 0) {
+      return mapExtent;
+    }
+
+    const mapRect = viewport.getBoundingClientRect();
+    const borderRect = borderEl.getBoundingClientRect();
+    if (mapRect.width <= 0 || mapRect.height <= 0) {
+      return mapExtent;
+    }
+
+    // getBoundingClientRect está afectado por transform:scale; map.getSize() no.
+    const scaleX = mapSize[0] / mapRect.width;
+    const scaleY = mapSize[1] / mapRect.height;
+    const leftPx = (borderRect.left - mapRect.left) * scaleX;
+    const topPx = (borderRect.top - mapRect.top) * scaleY;
+    const rightPx = (borderRect.right - mapRect.left) * scaleX;
+    const bottomPx = (borderRect.bottom - mapRect.top) * scaleY;
+
+    const topLeft = map.getCoordinateFromPixel([leftPx, topPx]);
+    const topRight = map.getCoordinateFromPixel([rightPx, topPx]);
+    const bottomLeft = map.getCoordinateFromPixel([leftPx, bottomPx]);
+    const bottomRight = map.getCoordinateFromPixel([rightPx, bottomPx]);
+    if (!topLeft || !topRight || !bottomLeft || !bottomRight) {
+      return mapExtent;
+    }
+
+    const xs = [topLeft[0], topRight[0], bottomLeft[0], bottomRight[0]];
+    const ys = [topLeft[1], topRight[1], bottomLeft[1], bottomRight[1]];
+    return [
+      Math.min(...xs),
+      Math.min(...ys),
+      Math.max(...xs),
+      Math.max(...ys),
+    ];
+  }
+
+  /**
+   * Convierte coordenadas decimales a grados, minutos y segundos (DMS).
+   * Redondea segundos para reducir el error sistemático del truncado.
    * @param {Number} coord Coordenada
    * @returns {String} Coordenadas en formato DMS
    */
   toDMS(coord) {
+    const sign = coord < 0 ? '-' : '';
     const absolute = Math.abs(coord);
     const degrees = Math.floor(absolute);
     const minutesNotTruncated = (absolute - degrees) * 60;
     const minutes = Math.floor(minutesNotTruncated);
-    const seconds = Math.floor((minutesNotTruncated - minutes) * 60);
-    return `${degrees}º${minutes}'${seconds}"`;
+    let seconds = Math.round((minutesNotTruncated - minutes) * 60);
+    let finalDegrees = degrees;
+    let finalMinutes = minutes;
+    if (seconds === 60) {
+      seconds = 0;
+      finalMinutes += 1;
+    }
+    if (finalMinutes === 60) {
+      finalMinutes = 0;
+      finalDegrees += 1;
+    }
+    return `${sign}${finalDegrees}º${finalMinutes}'${seconds}"`;
   }
 
   /**
@@ -565,6 +677,7 @@ export default class TemplateCustomizer extends IDEE.Control {
           this.templateElementsContainer_.appendChild(borderElement);
         }
         this.borderElement_ = borderElement;
+        this.previewMap.getMapImpl().updateSize();
         const coordElements = this.getBorderCoordinates();
         this.updateBorderCoordinates(coordElements);
       }
@@ -643,6 +756,11 @@ export default class TemplateCustomizer extends IDEE.Control {
 
         this.templateElementsContainer_.removeChild(element);
         this.borderElement_ = null;
+        this.previewMap.getMapImpl().updateSize();
+        const coordElements = this.getBorderCoordinates();
+        if (Object.values(coordElements).every((el) => el !== null)) {
+          this.updateBorderCoordinates(coordElements);
+        }
       } else {
         this.templateElementsContainer_.removeChild(element);
 
@@ -755,6 +873,48 @@ export default class TemplateCustomizer extends IDEE.Control {
   }
 
   /**
+   * Configura el checkbox para incluir o no la barra de escala en la impresión
+   * y en la previsualización.
+   * @param {string} checkboxId Selector del checkbox
+   */
+  setupScaleBarControl(checkboxId) {
+    const checkbox = document.querySelector(checkboxId);
+    if (!checkbox) {
+      return;
+    }
+    this.showScaleBar_ = checkbox.checked;
+    this.setPreviewScaleBarVisible(this.showScaleBar_);
+    checkbox.addEventListener('change', (e) => {
+      this.showScaleBar_ = e.target.checked;
+      this.setPreviewScaleBarVisible(this.showScaleBar_);
+    });
+  }
+
+  /**
+   * Muestra u oculta el ScaleLine del mapa de previsualización.
+   * @param {boolean} visible Si true, añade la barra; si false, la elimina
+   */
+  setPreviewScaleBarVisible(visible) {
+    if (!this.previewMap) {
+      return;
+    }
+    const hasScaleLine = this.previewMap.hasControl(SCALE_LINE_CONTROL_NAME);
+    if (visible) {
+      if (!hasScaleLine) {
+        this.previewMap.addControls(new IDEE.control.ScaleLine({
+          bar: true,
+          steps: 4,
+          dpi: LAYOUT_DPI,
+        }));
+      }
+      return;
+    }
+    if (hasScaleLine) {
+      this.previewMap.removeControls(SCALE_LINE_CONTROL_NAME);
+    }
+  }
+
+  /**
    * Maneja el evento de cambio de escala al escribir en el campo de entrada
    * @param {*} e - Evento de cambio en el campo de entrada de escala
    */
@@ -771,19 +931,15 @@ export default class TemplateCustomizer extends IDEE.Control {
 
   /**
    * Zooms the map to a specific scale (respecto al papel / LAYOUT_DPI).
+   * Usa la inversa de getScaleForResolution para no desfasar la escala ~x1000.
    * @param {*} scale - La escala a la que se desea hacer zoom
    */
   zoomToScale(scale) {
     if (!scale || Number.isNaN(scale)) return;
 
     const view = this.previewMap.getMapImpl().getView();
-    const center = view.getCenter();
-    const pointResolution = this.getImpl().getPointResolution(
-      view.getProjection(),
-      LAYOUT_DPI,
-      center,
-    );
-    view.setResolution(scale / pointResolution);
+    const resolution = IDEE.impl.utils.getCurrentScale(view, `${scale}`, LAYOUT_DPI);
+    view.setResolution(resolution);
 
     const scaleElement = document.querySelector(ID_TEMPLATE_SCALE);
     if (scaleElement) {
@@ -1268,6 +1424,8 @@ export default class TemplateCustomizer extends IDEE.Control {
     const center = view.getCenter();
     const printDpi = Number(this.dpi);
 
+    this.isExporting_ = true;
+
     const mapContainer = document.querySelector(CLASS_MAP_CONTAINER);
     let originalTransform = '';
     if (mapContainer) {
@@ -1280,6 +1438,20 @@ export default class TemplateCustomizer extends IDEE.Control {
 
     const maskImageContainer = document.querySelector(`#${MAP_CONTAINER_TEMPLATE}`);
     map.updateSize();
+
+    // Forzar layout a escala 1 antes de medir el marco del borde
+    if (mapContainer) {
+      mapContainer.getBoundingClientRect();
+    }
+    if (this.borderElement_) {
+      this.borderElement_.getBoundingClientRect();
+    }
+
+    // Coordenadas del borde con layout a escala 1 (antes del setSize DPI)
+    const coordElements = this.getBorderCoordinates();
+    if (Object.values(coordElements).every((el) => el !== null)) {
+      this.updateBorderCoordinates(coordElements);
+    }
 
     let baseWidth = originalSize[0];
     let baseHeight = originalSize[1];
@@ -1301,6 +1473,7 @@ export default class TemplateCustomizer extends IDEE.Control {
       if (mapContainer) {
         mapContainer.style.transform = originalTransform;
       }
+      this.isExporting_ = false;
     };
 
     map.once('rendercomplete', async () => {
@@ -1342,7 +1515,9 @@ export default class TemplateCustomizer extends IDEE.Control {
 
         context.setTransform(1, 0, 0, 1, 0, 0);
         context.globalAlpha = 1;
-        this.drawExportScaleBar(context, map, newWidth, newHeight);
+        if (this.showScaleBar_) {
+          this.drawExportScaleBar(context, map, newWidth, newHeight);
+        }
 
         // Quitar el viewport del DOM y poner la imagen; layout sigue al 100%
         if (maskImageContainer) {
