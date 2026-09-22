@@ -208,7 +208,28 @@ export default class CatalogmanagerControl extends IDEE.Control {
      * @private
      * @type {Array<string>}
      */
-    this.operators_ = ['=', '<', '>', '<=', '>=', '<>', 'and'];
+    this.operators_ = [{
+      text: '=',
+      title: getValue('operators.='),
+    }, {
+      text: '<>',
+      title: getValue('operators.<>'),
+    }, {
+      text: '<',
+      title: getValue('operators.<'),
+    }, {
+      text: '<=',
+      title: getValue('operators.<='),
+    }, {
+      text: '>',
+      title: getValue('operators.>'),
+    }, {
+      text: '>=',
+      title: getValue('operators.>='),
+    }, {
+      text: 'and',
+      title: getValue('operators.and'),
+    }];
 
     /**
      * Mapeo de operadores SQL a operadores de consulta STAC
@@ -313,7 +334,9 @@ export default class CatalogmanagerControl extends IDEE.Control {
     this.map_ = map;
     this.getImpl().createAllInteractions(map, this);
     this.updateItemsEvent_ = this.updateItems.bind(this, true);
-    const yesterday = new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0];
+    const yesterdayDate = new Date();
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterday = this.formatLocalDate(yesterdayDate);
     const accept = ['.kml', '.zip', '.gpx', '.geojson', '.gml', '.json'];
     return new Promise((success, fail) => {
       const html = IDEE.template.compileSync(template, {
@@ -719,17 +742,18 @@ export default class CatalogmanagerControl extends IDEE.Control {
    * @private
    * @function
    * @param {string} key Clave de la instancia (`startDate`, `startTime`, `endDate`, `endTime`)
-   * @param {string} value Valor a establecer
+   * @param {string} value Valor a establecer (DD/MM/YYYY o HH:mm:ss)
    */
   setTemporalFlatpickrValue(key, value) {
     const instance = this.flatpickrInstances_ && this.flatpickrInstances_[key];
     if (instance && value) {
-      instance.setDate(value, false);
+      const parseFormat = key.endsWith('Time') ? 'H:i:S' : 'd/m/Y';
+      instance.setDate(value, false, parseFormat);
     }
   }
 
   /**
-   * Formatea una fecha en hora local (YYYY-MM-DD).
+   * Formatea una fecha en hora local (DD/MM/YYYY).
    *
    * @private
    * @param {Date} date Fecha a formatear
@@ -737,7 +761,23 @@ export default class CatalogmanagerControl extends IDEE.Control {
    */
   formatLocalDate(date) {
     const pad = (value) => String(value).padStart(2, '0');
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+    return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`;
+  }
+
+  /**
+   * Convierte una fecha DD/MM/YYYY a formato ISO (YYYY-MM-DD) para el filtro STAC.
+   *
+   * @private
+   * @param {string} dateStr Fecha en formato DD/MM/YYYY
+   * @returns {string} Fecha en formato YYYY-MM-DD
+   */
+  toIsoDate(dateStr) {
+    if (!dateStr || dateStr.indexOf('/') === -1) {
+      return dateStr;
+    }
+    const [day, month, year] = dateStr.split('/');
+    const pad = (value) => String(value).padStart(2, '0');
+    return `${year}-${pad(month)}-${pad(day)}`;
   }
 
   /**
@@ -811,22 +851,24 @@ export default class CatalogmanagerControl extends IDEE.Control {
    *
    * @private
    * @function
-   * @param {string} startDate Fecha de inicio (YYYY-MM-DD)
+   * @param {string} startDate Fecha de inicio (DD/MM/YYYY)
    * @param {string} [startTime] Hora de inicio (HH:mm:ss)
-   * @param {string} endDate Fecha de fin (YYYY-MM-DD)
+   * @param {string} endDate Fecha de fin (DD/MM/YYYY)
    * @param {string} [endTime] Hora de fin (HH:mm:ss)
    */
   addTemporalCommonFilter(startDate, startTime, endDate, endTime) {
+    const startIso = this.toIsoDate(startDate);
+    const endIso = this.toIsoDate(endDate);
     if (startTime && endTime) {
-      this.commonFilters_.datetime = `${startDate}T${startTime}Z/${endDate}T${endTime}Z`;
+      this.commonFilters_.datetime = `${startIso}T${startTime}Z/${endIso}T${endTime}Z`;
       this.setTemporalFlatpickrValue('startDate', startDate);
       this.setTemporalFlatpickrValue('startTime', startTime);
       this.setTemporalFlatpickrValue('endDate', endDate);
       this.setTemporalFlatpickrValue('endTime', endTime);
-      this.addFilterTag(`${getValue('filtersTypes.temporal.start')}: ${startDate}T${startTime}Z`, 'temporal_start');
-      this.addFilterTag(`${getValue('filtersTypes.temporal.end')}: ${endDate}T${endTime}Z`, 'temporal_end');
+      this.addFilterTag(`${getValue('filtersTypes.temporal.start')}: ${startDate} ${startTime}`, 'temporal_start');
+      this.addFilterTag(`${getValue('filtersTypes.temporal.end')}: ${endDate} ${endTime}`, 'temporal_end');
     } else {
-      this.commonFilters_.datetime = `${startDate}/${endDate}`;
+      this.commonFilters_.datetime = `${startIso}/${endIso}`;
       this.setTemporalFlatpickrValue('startDate', startDate);
       this.setTemporalFlatpickrValue('endDate', endDate);
       this.addFilterTag(`${getValue('filtersTypes.temporal.start')}: ${startDate}`, 'temporal_start');
@@ -1073,17 +1115,17 @@ export default class CatalogmanagerControl extends IDEE.Control {
       const activeFilter = filterContainer.querySelector('.active');
       if (activeFilter) {
         activeFilter.classList.remove('active');
-        if (tagType === 'temporal') {
-          this.updateTemporalFilterByTag(type);
-        } else if (tagType === 'spatial') {
-          if (this.boxLayer_) { // Filtro espacial por extensión dibujada o fichero subido
-            this.map_.removeLayers(this.boxLayer_);
-            this.boxLayer_ = null;
-          } else { // Filtro espacial por vista
-            this.disableMoveMapEvent();
-          }
-          delete this.commonFilters_.bbox;
+      }
+      if (tagType === 'temporal') {
+        this.updateTemporalFilterByTag(type);
+      } else if (tagType === 'spatial') {
+        if (this.boxLayer_) { // Filtro espacial por extensión dibujada o fichero subido
+          this.map_.removeLayers(this.boxLayer_);
+          this.boxLayer_ = null;
+        } else { // Filtro espacial por vista
+          this.disableMoveMapEvent();
         }
+        delete this.commonFilters_.bbox;
       }
     } else if (tagType === 'collection') {
       const collectionsContainer = this.template_.querySelector('.m-catalogmanager-collections-list');
@@ -1417,7 +1459,13 @@ export default class CatalogmanagerControl extends IDEE.Control {
     const fields = state.fieldsPages[state.currentFieldsPage] || [];
     state.fieldsTemplate = IDEE.template.compileSync(fieldsTableTemplate, {
       jsonp: true,
-      vars: { fields },
+      vars: {
+        fields,
+        translations: {
+          previous: getValue('previous'),
+          next: getValue('next'),
+        },
+      },
     });
     const totalPages = state.fieldsPages.length || 1;
     state.fieldsTemplate.querySelector('#pageNumBtn').innerHTML = `${state.currentFieldsPage + 1} ${getValue('advancedFilter.of')} ${totalPages}`;
@@ -2138,9 +2186,8 @@ export default class CatalogmanagerControl extends IDEE.Control {
       id: item.id,
       collectionId: collection.id,
       datetime: item.properties.datetime,
-      provider: item.properties.provider || getValue('unknown'),
       extent: item.bbox.join(', '),
-      crs: item.properties['proj:code'],
+      crs: item.properties['proj:code'] || item.properties['proj:epsg'],
       platform: item.properties.platform || getValue('unknown'),
       instruments: item.properties.instruments.join(', '),
       sunElevation: sunElevationValue >= 0,

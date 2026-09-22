@@ -16,9 +16,9 @@
             <h3>{{translations.summaries}}</h3>
             <label>{{translations.platforms}}: </label><span>{{metadata.summaries.platform}}</span><br>
             <label>{{translations.instruments}}: </label><span>{{metadata.summaries.instruments}}</span><br>
-            <label>{{translations.providers}}: </label><br>
+            <label>{{translations.providers}}: </label>
                 {{#each metadata.providers}}
-                    <a href="{{this.url}}" target="_blank">{{this.name}}</a><br>
+                    <a href="{{this.url}}" target="_blank">{{this.name}}</a>{{#unless @last}}, {{/unless}}
                 {{/each}}
         </div>
     </div>

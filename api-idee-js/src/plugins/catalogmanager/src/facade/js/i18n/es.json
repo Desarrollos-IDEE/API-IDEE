@@ -183,5 +183,14 @@
     "invalidQuery": "La expresión de filtro no es válida.",
     "applyError": "No se pudo aplicar el filtro avanzado.",
     "loadError": "No se pudieron cargar los campos consultables de la colección."
+  },
+  "operators": {
+    "=": "Igual a",
+    "<>": "Distinto de",
+    "<": "Menor que",
+    "<=": "Menor o igual que",
+    ">": "Mayor que",
+    ">=": "Mayor o igual que",
+    "and": "Y"
   }
 }

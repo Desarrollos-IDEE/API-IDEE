@@ -88,22 +88,22 @@
 	transform: rotate(180deg);
 }
 .g-cartografia-catalog-sort-name-up:before {
-    -webkit-mask-image: url('../icons/icn_catalog-sort-name-up.svg');
-    mask-image: url('../icons/icn_catalog-sort-name-up.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_orden_az.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_orden_az.svg');
 }
 .g-cartografia-catalog-sort-name-down:before  {
-    -webkit-mask-image: url('../icons/icn_catalog-sort-name-down.svg');
-    mask-image: url('../icons/icn_catalog-sort-name-down.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_orden_za.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_orden_za.svg');
 }
 .g-cartografia-catalog-sort-alt-up:before {
-    -webkit-mask-image: url('../icons/icn_catalog-sort-alt-up.svg');
-    mask-image: url('../icons/icn_catalog-sort-alt-up.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_orden_ascendente.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_orden_ascendente.svg');
 }
 .g-cartografia-catalog-sort-alt-down:before {
-    -webkit-mask-image: url('../icons/icn_catalog-sort-alt-down.svg');
-    mask-image: url('../icons/icn_catalog-sort-alt-down.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_orden_descendente.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_orden_descendente.svg');
 }
 .g-cartografia-catalog-calendar:before {
-    -webkit-mask-image: url('../icons/icn_catalog-calendar.svg');
-    mask-image: url('../icons/icn_catalog-calendar.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_calendario.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_calendario.svg');
 }

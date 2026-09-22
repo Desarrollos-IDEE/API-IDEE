@@ -183,5 +183,14 @@
     "invalidQuery": "The filter expression is not valid.",
     "applyError": "Could not apply the advanced filter.",
     "loadError": "Could not load queryable fields for the collection."
+  },
+  "operators": {
+    "=": "Equal to",
+    "<>": "Not equal to",
+    "<": "Less than",
+    "<=": "Less than or equal to",
+    ">": "Greater than",
+    ">=": "Greater than or equal to",
+    "and": "And"
   }
 }
