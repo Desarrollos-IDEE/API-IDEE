@@ -14,9 +14,10 @@ const suelo = new IDEE.layer.WMTS({
 
 const map = IDEE.map({
   container: 'mapjs',
-  minZoom: 4, maxZoom: 20, zoom: 9,
+  // minZoom: 4, maxZoom: 20, zoom: 9,
   // layers: [suelo],
-  center: [-467062, 4683459],
+  // center: [-467062, 4683459],
+  bbox: [-643342.6650657187, 4465029.9973054305, -642191.954241315, 4465658.543126833],
 });
 window.map = map;
 
@@ -28,7 +29,7 @@ const capaGeoJSON = new IDEE.layer.GeoJSON({
   name: 'Capa GeoJSON', legend: 'Capa GeoJSON',
   extract: true,
 });
-map.addLayers(capaGeoJSON); window.capaGeoJSON = capaGeoJSON; // */
+// map.addLayers(capaGeoJSON); window.capaGeoJSON = capaGeoJSON; // */
 
 // Capa WFS
 const capaWFS = new IDEE.layer.WFS({
@@ -37,7 +38,7 @@ const capaWFS = new IDEE.layer.WFS({
   namespace: 'sepim',
   geometry: 'MPOINT',
 });
-map.addLayers(capaWFS); window.capaWFS = capaWFS; // */
+// map.addLayers(capaWFS); window.capaWFS = capaWFS; // */
 
 /* / Capa OSM
 const capaOSM = new IDEE.layer.OSM({
@@ -54,7 +55,7 @@ const capaKML = new IDEE.layer.KML({
   name: 'Capa KML', legend: 'Capa KML',
   extract: true,
 }, { crossOrigin: 'anonymous' });
-map.addLayers(capaKML); window.capaKML = capaKML; // */
+// map.addLayers(capaKML); window.capaKML = capaKML; // */
 
 /* / Capa KML1
 const capaKML1 = new IDEE.layer.KML({
@@ -165,7 +166,7 @@ const geotiff = new IDEE.layer.GeoTIFF({
   convertToRGB: 'auto',
   nodata: 0,
 });
-map.addLayers(geotiff); window.geotiff = geotiff; // */
+// map.addLayers(geotiff); window.geotiff = geotiff; // */
 
 /* / Capa MapLibre 1
 const mapLibre1 = new IDEE.layer.MapLibre({
@@ -232,3 +233,23 @@ const mp = new PrintViewManagement({
   order: 1,
 });
 map.addPlugin(mp); window.mp = mp;
+
+const mpInfocoordinates = new IDEE.plugin.Infocoordinates({
+  position: 'TR',
+  collapsed: true,
+  collapsible: true,
+  tooltip: 'Información de coordenadas',
+  decimalGEOcoord: 12,
+  decimalUTMcoord: 12,
+  helpUrl: 'https://www.ign.es/',
+  outputDownloadFormat: 'txt',
+});
+map.addPlugin(mpInfocoordinates); window.mpInfocoordinates = mpInfocoordinates;
+
+const mpMousesrs = new IDEE.plugin.MouseSRS({
+  position: 'TR',
+  collapsed: true,
+  collapsible: true,
+  tooltip: 'Mousesrs',
+});
+map.addPlugin(mpMousesrs); window.mpMousesrs = mpMousesrs;

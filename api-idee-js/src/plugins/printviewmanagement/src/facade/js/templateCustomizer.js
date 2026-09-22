@@ -11,11 +11,19 @@ const ID_TEMPLATE_SCALE = '#template-scale';
 const ID_TEMPLATE_DPI = '#template-dpi';
 const ID_TEMPLATE_INPUT_SRS = '#epsg-selected';
 const ID_TEMPLATE_SRS_SELECTOR = '#m-customize-template-srs-selector';
+const ID_SHOW_SCALEBAR = '#m-show-scalebar';
+const SCALE_LINE_CONTROL_NAME = 'scaleline';
 const ID_MAP_CONTAINER_TEMPLATE = '#imagen-mascara';
 const MAP_CONTAINER_TEMPLATE = 'imagen-mascara';
 const CLASS_MAP_CONTAINER = '.m-customize-template-right';
 const MAP_CONTAINER = 'm-customize-template-right';
 const ID_CONTAINER_DEFAULT_TEMPLATE = '#api-idee-template-container';
+/**
+ * DPI de maquetación papel↔CSS en applyLayout (px = mm * LAYOUT_DPI / 25.4).
+ * Debe usarse para escala numérica y ScaleLine del preview/PDF.
+ * No usar DPI_OGC (~90.7): provoca ~6-7% de error en papel.
+ */
+const LAYOUT_DPI = 96;
 
 export default class TemplateCustomizer extends IDEE.Control {
   /**
@@ -165,6 +173,20 @@ export default class TemplateCustomizer extends IDEE.Control {
     this.scale = null;
 
     /**
+     * Indica si se incluye la barra de escala en la previsualización y la impresión
+     * @private
+     * @type {Boolean}
+     */
+    this.showScaleBar_ = true;
+
+    /**
+     * Evita recalcular coordenadas del borde durante el export (tamaños DPI incorrectos)
+     * @private
+     * @type {Boolean}
+     */
+    this.isExporting_ = false;
+
+    /**
      * Conjunto de elementos principales que tiene la plantilla
      * @private
      * @type {Array<Object>}
@@ -228,6 +250,7 @@ export default class TemplateCustomizer extends IDEE.Control {
           horizontal: getValue('horizontal'),
           layout: getValue('layout'),
           scale: getValue('scale'),
+          scaleBar: getValue('scaleBar'),
           epsg: getValue('projection'),
           select_srs: getValue('select_srs'),
           choose_create_epsg: getValue('choose_create_epsg'),
@@ -338,6 +361,7 @@ export default class TemplateCustomizer extends IDEE.Control {
     this.setupMapOrientationControl(ID_TEMPLATE_ORIENTATION);
     this.setupLayoutControl(ID_TEMPLATE_LAYOUT);
     this.setupScaleControl(ID_TEMPLATE_SCALE);
+    this.setupScaleBarControl(ID_SHOW_SCALEBAR);
     this.setupDpiControl(ID_TEMPLATE_DPI);
     this.setupInputSelectorControl(ID_TEMPLATE_INPUT_SRS, ID_TEMPLATE_SRS_SELECTOR);
   }
@@ -354,6 +378,12 @@ export default class TemplateCustomizer extends IDEE.Control {
       container: containerId,
       zoom: this.map.getImpl().getZoom(),
       center: Object.values(this.map.getImpl().getCenter()),
+      projection: this.map.getProjection().code,
+      controls: [new IDEE.control.ScaleLine({
+        bar: true,
+        steps: 4,
+        dpi: LAYOUT_DPI,
+      })],
     });
 
     this.previewMap.addLayers(this.map.getLayers().map((layer) => layer.clone()));
@@ -380,10 +410,11 @@ export default class TemplateCustomizer extends IDEE.Control {
   setupViewScaleListener() {
     const view = this.previewMap.getMapImpl().getView();
     const resolution = view.getResolution();
+    // Escala respecto al papel (LAYOUT_DPI), no DPI_OGC de pantalla
     const scale = IDEE.impl.utils.getScaleForResolution(
       resolution,
       view,
-      IDEE.config.DPI_OGC,
+      LAYOUT_DPI,
       true,
     );
     const scaleEl = document.querySelector(ID_TEMPLATE_SCALE);
@@ -410,6 +441,9 @@ export default class TemplateCustomizer extends IDEE.Control {
    * Actualiza las coordenadas en el elemento texto-libre si está activo
    */
   updateDataTemplate() {
+    if (this.isExporting_) {
+      return;
+    }
     const epsgTemplate = this.getDescriptionElements().epsgTemplate;
     const dateTemplate = this.getDescriptionElements().dateTemplate;
     const coordElements = this.getBorderCoordinates();
@@ -469,19 +503,45 @@ export default class TemplateCustomizer extends IDEE.Control {
   }
 
   /**
-   * Actualiza las coordenadas del borde del mapa en grados, minutos y segundos
-   * Este método se puede personalizar para actualizar otros elementos de borde según sea necesario.
+   * Actualiza las coordenadas del borde del mapa.
+   * Sin borde: esquinas del viewport del mapa.
+   * Con borde: esquinas del marco exterior (interior-container).
    * @param {Object} coordElementsObject Objeto que contiene los elementos de coordenadas del borde
    */
   updateBorderCoordinates(coordElementsObject) {
     const coordElements = coordElementsObject;
-    const extent = this.previewMap.getMapImpl().getView().calculateExtent();
-    const mapProjection = this.previewMap.getMapImpl().getView().getProjection().getCode();
-    let transformedExtent = extent;
-    if (mapProjection !== 'EPSG:4326') {
-      transformedExtent = this.getImpl().transformExtent(extent, mapProjection, 'EPSG:4326');
+    const map = this.previewMap.getMapImpl();
+    const view = map.getView();
+    let extent = view.calculateExtent(map.getSize());
+    if (this.borderElement_) {
+      extent = this.expandExtentToBorderFrame(extent);
     }
-    const [minLon, minLat, maxLon, maxLat] = transformedExtent;
+
+    const mapProjection = view.getProjection().getCode();
+    let minLon;
+    let minLat;
+    let maxLon;
+    let maxLat;
+    if (mapProjection === 'EPSG:4326') {
+      [minLon, minLat, maxLon, maxLat] = extent;
+    } else {
+      const corners = [
+        [extent[0], extent[1]],
+        [extent[0], extent[3]],
+        [extent[2], extent[1]],
+        [extent[2], extent[3]],
+      ];
+      const transformed = corners.map((corner) => {
+        return this.getImpl().transformCoordinates(corner, mapProjection, 'EPSG:4326');
+      });
+      const lons = transformed.map((corner) => corner[0]);
+      const lats = transformed.map((corner) => corner[1]);
+      minLon = Math.min(...lons);
+      maxLon = Math.max(...lons);
+      minLat = Math.min(...lats);
+      maxLat = Math.max(...lats);
+    }
+
     coordElements['top-left-coord'].textContent = this.toDMS(maxLat);
     coordElements['top-right-coord'].textContent = this.toDMS(maxLat);
     coordElements['left-top-coord'].textContent = this.toDMS(minLon);
@@ -493,17 +553,82 @@ export default class TemplateCustomizer extends IDEE.Control {
   }
 
   /**
-   * Convierte coordenadas decimales a grados, minutos y segundos (DMS)
+   * Expande el extent del mapa hasta las esquinas del marco de borde.
+   * Usa el viewport OL y compensa el CSS transform: scale del preview.
+   * @param {Array<number>} mapExtent Extent del viewport [minX, minY, maxX, maxY]
+   * @returns {Array<number>} Extent ampliado al interior-container
+   */
+  expandExtentToBorderFrame(mapExtent) {
+    const map = this.previewMap.getMapImpl();
+    const borderEl = this.borderElement_;
+    if (!borderEl) {
+      return mapExtent;
+    }
+    const viewport = map.getViewport();
+    if (!viewport) {
+      return mapExtent;
+    }
+    const mapSize = map.getSize();
+    if (!mapSize || mapSize[0] <= 0 || mapSize[1] <= 0) {
+      return mapExtent;
+    }
+
+    const mapRect = viewport.getBoundingClientRect();
+    const borderRect = borderEl.getBoundingClientRect();
+    if (mapRect.width <= 0 || mapRect.height <= 0) {
+      return mapExtent;
+    }
+
+    // getBoundingClientRect está afectado por transform:scale; map.getSize() no.
+    const scaleX = mapSize[0] / mapRect.width;
+    const scaleY = mapSize[1] / mapRect.height;
+    const leftPx = (borderRect.left - mapRect.left) * scaleX;
+    const topPx = (borderRect.top - mapRect.top) * scaleY;
+    const rightPx = (borderRect.right - mapRect.left) * scaleX;
+    const bottomPx = (borderRect.bottom - mapRect.top) * scaleY;
+
+    const topLeft = map.getCoordinateFromPixel([leftPx, topPx]);
+    const topRight = map.getCoordinateFromPixel([rightPx, topPx]);
+    const bottomLeft = map.getCoordinateFromPixel([leftPx, bottomPx]);
+    const bottomRight = map.getCoordinateFromPixel([rightPx, bottomPx]);
+    if (!topLeft || !topRight || !bottomLeft || !bottomRight) {
+      return mapExtent;
+    }
+
+    const xs = [topLeft[0], topRight[0], bottomLeft[0], bottomRight[0]];
+    const ys = [topLeft[1], topRight[1], bottomLeft[1], bottomRight[1]];
+    return [
+      Math.min(...xs),
+      Math.min(...ys),
+      Math.max(...xs),
+      Math.max(...ys),
+    ];
+  }
+
+  /**
+   * Convierte coordenadas decimales a grados, minutos y segundos (DMS).
+   * Redondea segundos para reducir el error sistemático del truncado.
    * @param {Number} coord Coordenada
    * @returns {String} Coordenadas en formato DMS
    */
   toDMS(coord) {
+    const sign = coord < 0 ? '-' : '';
     const absolute = Math.abs(coord);
     const degrees = Math.floor(absolute);
     const minutesNotTruncated = (absolute - degrees) * 60;
     const minutes = Math.floor(minutesNotTruncated);
-    const seconds = Math.floor((minutesNotTruncated - minutes) * 60);
-    return `${degrees}º${minutes}'${seconds}"`;
+    let seconds = Math.round((minutesNotTruncated - minutes) * 60);
+    let finalDegrees = degrees;
+    let finalMinutes = minutes;
+    if (seconds === 60) {
+      seconds = 0;
+      finalMinutes += 1;
+    }
+    if (finalMinutes === 60) {
+      finalMinutes = 0;
+      finalDegrees += 1;
+    }
+    return `${sign}${finalDegrees}º${finalMinutes}'${seconds}"`;
   }
 
   /**
@@ -552,6 +677,7 @@ export default class TemplateCustomizer extends IDEE.Control {
           this.templateElementsContainer_.appendChild(borderElement);
         }
         this.borderElement_ = borderElement;
+        this.previewMap.getMapImpl().updateSize();
         const coordElements = this.getBorderCoordinates();
         this.updateBorderCoordinates(coordElements);
       }
@@ -630,6 +756,11 @@ export default class TemplateCustomizer extends IDEE.Control {
 
         this.templateElementsContainer_.removeChild(element);
         this.borderElement_ = null;
+        this.previewMap.getMapImpl().updateSize();
+        const coordElements = this.getBorderCoordinates();
+        if (Object.values(coordElements).every((el) => el !== null)) {
+          this.updateBorderCoordinates(coordElements);
+        }
       } else {
         this.templateElementsContainer_.removeChild(element);
 
@@ -742,6 +873,48 @@ export default class TemplateCustomizer extends IDEE.Control {
   }
 
   /**
+   * Configura el checkbox para incluir o no la barra de escala en la impresión
+   * y en la previsualización.
+   * @param {string} checkboxId Selector del checkbox
+   */
+  setupScaleBarControl(checkboxId) {
+    const checkbox = document.querySelector(checkboxId);
+    if (!checkbox) {
+      return;
+    }
+    this.showScaleBar_ = checkbox.checked;
+    this.setPreviewScaleBarVisible(this.showScaleBar_);
+    checkbox.addEventListener('change', (e) => {
+      this.showScaleBar_ = e.target.checked;
+      this.setPreviewScaleBarVisible(this.showScaleBar_);
+    });
+  }
+
+  /**
+   * Muestra u oculta el ScaleLine del mapa de previsualización.
+   * @param {boolean} visible Si true, añade la barra; si false, la elimina
+   */
+  setPreviewScaleBarVisible(visible) {
+    if (!this.previewMap) {
+      return;
+    }
+    const hasScaleLine = this.previewMap.hasControl(SCALE_LINE_CONTROL_NAME);
+    if (visible) {
+      if (!hasScaleLine) {
+        this.previewMap.addControls(new IDEE.control.ScaleLine({
+          bar: true,
+          steps: 4,
+          dpi: LAYOUT_DPI,
+        }));
+      }
+      return;
+    }
+    if (hasScaleLine) {
+      this.previewMap.removeControls(SCALE_LINE_CONTROL_NAME);
+    }
+  }
+
+  /**
    * Maneja el evento de cambio de escala al escribir en el campo de entrada
    * @param {*} e - Evento de cambio en el campo de entrada de escala
    */
@@ -757,17 +930,15 @@ export default class TemplateCustomizer extends IDEE.Control {
   }
 
   /**
-   * Zooms the map to a specific scale
+   * Zooms the map to a specific scale (respecto al papel / LAYOUT_DPI).
+   * Usa la inversa de getScaleForResolution para no desfasar la escala ~x1000.
    * @param {*} scale - La escala a la que se desea hacer zoom
    */
   zoomToScale(scale) {
     if (!scale || Number.isNaN(scale)) return;
 
     const view = this.previewMap.getMapImpl().getView();
-    const dpi = this.dpi;
-    const inchesPerMeter = 39.3701;
-
-    const resolution = (scale * 1) / (dpi * inchesPerMeter);
+    const resolution = IDEE.impl.utils.getCurrentScale(view, `${scale}`, LAYOUT_DPI);
     view.setResolution(resolution);
 
     const scaleElement = document.querySelector(ID_TEMPLATE_SCALE);
@@ -775,6 +946,22 @@ export default class TemplateCustomizer extends IDEE.Control {
       scaleElement.value = `1:${scale}`;
     }
     this.scale = scale;
+  }
+
+  /**
+   * Obtiene el ScaleLine de OpenLayers del mapa de preview.
+   * @param {Object} map Mapa OL
+   * @returns {Object|null}
+   */
+  getOlScaleLineControl(map) {
+    const controls = map.getControls().getArray();
+    const scaleLine = controls.find((control) => {
+      return typeof control.getDpi === 'function' && typeof control.setDpi === 'function';
+    });
+    if (!scaleLine) {
+      return null;
+    }
+    return scaleLine;
   }
 
   /**
@@ -1043,8 +1230,8 @@ export default class TemplateCustomizer extends IDEE.Control {
       [widthMm, heightMm] = [Math.min(widthMm, heightMm), Math.max(widthMm, heightMm)];
     }
 
-    const widthPx = Math.round((widthMm * 96) / 25.4);
-    const heightPx = Math.round((heightMm * 96) / 25.4);
+    const widthPx = Math.round((widthMm * LAYOUT_DPI) / 25.4);
+    const heightPx = Math.round((heightMm * LAYOUT_DPI) / 25.4);
 
     const wrapperRect = mapContainer.parentNode.getBoundingClientRect();
     const availableWidth = wrapperRect.width - 40;
@@ -1057,7 +1244,9 @@ export default class TemplateCustomizer extends IDEE.Control {
     mapContainer.style.width = `${widthPx}px`;
     mapContainer.style.height = `${heightPx}px`;
     mapContainer.style.transform = `translate(-50%,-50%) scale(${scaleFactor})`;
-    this.previewMap.getMapImpl().updateSize();
+    if (this.previewMap) {
+      this.previewMap.getMapImpl().updateSize();
+    }
   }
 
   /**
@@ -1073,22 +1262,84 @@ export default class TemplateCustomizer extends IDEE.Control {
   }
 
   /**
-   * Genera una imagen en base64 del mapa de previsualización
-   * @returns {Promise<string>} Promesa que resuelve con la imagen en base64
+   * Inyecta CSS para que la plantilla ocupe el 100% de la página en exportación.
+   * @returns {HTMLStyleElement} Nodo de estilo (hay que eliminarlo al terminar)
    */
-  async generateTemplateImage64() {
+  injectFullPageTemplateStyles() {
+    const fullPageStyle = document.createElement('style');
+    fullPageStyle.setAttribute('data-print-fullpage', 'true');
+    fullPageStyle.textContent = `
+      ${ID_CONTAINER_DEFAULT_TEMPLATE},
+      ${ID_CONTAINER_DEFAULT_TEMPLATE} .interior-container,
+      ${ID_CONTAINER_DEFAULT_TEMPLATE} .superior-container,
+      ${ID_CONTAINER_DEFAULT_TEMPLATE} .inferior-container,
+      ${ID_CONTAINER_DEFAULT_TEMPLATE} .api-idee-template-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+      }
+      ${ID_CONTAINER_DEFAULT_TEMPLATE} {
+        width: 100% !important;
+        height: 100% !important;
+        box-sizing: border-box !important;
+      }
+    `;
+    document.head.appendChild(fullPageStyle);
+    return fullPageStyle;
+  }
+
+  /**
+   * Genera una imagen en base64 de la página de plantilla (ratio del PDF).
+   * @param {Object} [options]
+   * @param {boolean} [options.keepFullPageStyles=false] Si true, no inyecta/quita el CSS 100%
+   * @param {HTMLStyleElement} [options.fullPageStyle] Estilo ya inyectado por el caller
+   * @returns {Promise<string>} Imagen en base64
+   */
+  async generateTemplateImage64(options = {}) {
+    const keepFullPageStyles = options.keepFullPageStyles === true;
+    const pageContainer = document.querySelector(CLASS_MAP_CONTAINER);
     const templateContainer = document.querySelector(ID_CONTAINER_DEFAULT_TEMPLATE);
     const currentLayout = this.layoutOptions_.find((layout) => layout.value === this.layout);
     const originalStyles = this.applyExportStyles(currentLayout);
+
+    let previousTransform = '';
+    if (pageContainer) {
+      previousTransform = pageContainer.style.transform;
+      pageContainer.style.transform = 'translate(-50%, -50%) scale(1)';
+    }
+
+    let fullPageStyle = options.fullPageStyle || null;
+    if (!keepFullPageStyles) {
+      fullPageStyle = this.injectFullPageTemplateStyles();
+    }
+
     const html2canvasScale = this.getHtml2CanvasScale(this.dpi);
-    const canvas = await html2canvas(templateContainer, {
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: 'white',
-      scale: html2canvasScale,
-    });
-    if (this.styleContainer_) {
-      this.styleContainer_.textContent = originalStyles;
+    const captureTarget = pageContainer || templateContainer;
+    let canvas;
+    try {
+      canvas = await html2canvas(captureTarget, {
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: 'white',
+        scale: html2canvasScale,
+        width: captureTarget.offsetWidth,
+        height: captureTarget.offsetHeight,
+        windowWidth: captureTarget.offsetWidth,
+        windowHeight: captureTarget.offsetHeight,
+      });
+    } finally {
+      if (!keepFullPageStyles && fullPageStyle) {
+        fullPageStyle.remove();
+      }
+      if (pageContainer && !keepFullPageStyles) {
+        pageContainer.style.transform = previousTransform;
+      }
+      if (this.styleContainer_) {
+        this.styleContainer_.textContent = originalStyles;
+      }
     }
     return canvas.toDataURL('image/png', 1.0);
   }
@@ -1160,74 +1411,273 @@ export default class TemplateCustomizer extends IDEE.Control {
   }
 
   /**
-   * Genera la imagen en base 64 del visor con el dpi elegido
+   * Genera la imagen en base 64 del visor con el dpi elegido.
+   * Mantiene la vista (centro + escala) y renderiza al tamaño del marco
+   * para no deformar el mapa al insertarlo al 100%.
    * @param {Object} config - Configuración de la plantilla
    */
   generateMapImage64(config) {
     const map = this.previewMap.getMapImpl();
+    const view = map.getView();
     const originalSize = map.getSize();
-    const originalResolution = map.getView().getResolution();
+    const originalResolution = view.getResolution();
+    const center = view.getCenter();
+    const printDpi = Number(this.dpi);
 
-    const scaleFactor = this.dpi / 72;
-    const newWidth = Math.round(originalSize[0] * scaleFactor);
-    const newHeight = Math.round(originalSize[1] * scaleFactor);
+    this.isExporting_ = true;
+
+    const mapContainer = document.querySelector(CLASS_MAP_CONTAINER);
+    let originalTransform = '';
+    if (mapContainer) {
+      originalTransform = mapContainer.style.transform;
+      mapContainer.style.transform = 'translate(-50%, -50%) scale(1)';
+    }
+
+    // 100% de página ANTES de medir el marco y renderizar el mapa
+    const fullPageStyle = this.injectFullPageTemplateStyles();
+
     const maskImageContainer = document.querySelector(`#${MAP_CONTAINER_TEMPLATE}`);
+    map.updateSize();
+
+    // Forzar layout a escala 1 antes de medir el marco del borde
+    if (mapContainer) {
+      mapContainer.getBoundingClientRect();
+    }
+    if (this.borderElement_) {
+      this.borderElement_.getBoundingClientRect();
+    }
+
+    // Coordenadas del borde con layout a escala 1 (antes del setSize DPI)
+    const coordElements = this.getBorderCoordinates();
+    if (Object.values(coordElements).every((el) => el !== null)) {
+      this.updateBorderCoordinates(coordElements);
+    }
+
+    let baseWidth = originalSize[0];
+    let baseHeight = originalSize[1];
+    if (maskImageContainer && maskImageContainer.clientWidth > 0
+      && maskImageContainer.clientHeight > 0) {
+      baseWidth = maskImageContainer.clientWidth;
+      baseHeight = maskImageContainer.clientHeight;
+    }
+
+    const scaleFactor = printDpi / LAYOUT_DPI;
+    const newWidth = Math.round(baseWidth * scaleFactor);
+    const newHeight = Math.round(baseHeight * scaleFactor);
+
     const originalMapViewport = map.getViewport();
     const parentNode = originalMapViewport.parentNode;
 
+    const cleanupExportLayout = () => {
+      fullPageStyle.remove();
+      if (mapContainer) {
+        mapContainer.style.transform = originalTransform;
+      }
+      this.isExporting_ = false;
+    };
+
     map.once('rendercomplete', async () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = newWidth;
-      canvas.height = newHeight;
-      const context = canvas.getContext('2d');
-      Array.prototype.forEach.call(
-        map.getViewport().querySelectorAll('.ol-layer canvas'),
-        (layerCanvas) => {
-          if (layerCanvas.width > 0) {
-            const opacity = layerCanvas.parentNode.style.opacity || '1';
-            context.globalAlpha = Number(opacity);
-            const transform = layerCanvas.style.transform;
-
-            if (transform) {
-              const matrix = transform
-                .match(/^matrix\(([^(]*)\)$/)[1]
-                .split(',')
-                .map(Number);
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+        const context = canvas.getContext('2d');
+        Array.prototype.forEach.call(
+          map.getViewport().querySelectorAll('.ol-layer canvas, canvas.ol-layer'),
+          (layerCanvas) => {
+            if (layerCanvas.width > 0) {
+              const opacity = layerCanvas.parentNode.style.opacity
+                || layerCanvas.style.opacity
+                || '1';
+              context.globalAlpha = Number(opacity);
+              const transform = layerCanvas.style.transform;
+              let matrix;
+              if (transform) {
+                matrix = transform
+                  .match(/^matrix\(([^(]*)\)$/)[1]
+                  .split(',')
+                  .map(Number);
+              } else {
+                matrix = [
+                  parseFloat(layerCanvas.style.width) / layerCanvas.width,
+                  0,
+                  0,
+                  parseFloat(layerCanvas.style.height) / layerCanvas.height,
+                  0,
+                  0,
+                ];
+              }
               context.setTransform(...matrix);
+              context.drawImage(layerCanvas, 0, 0);
             }
+          },
+        );
 
-            context.drawImage(layerCanvas, 0, 0, newWidth, newHeight);
-          }
-        },
-      );
-      map.setSize(originalSize);
-      map.getView().setResolution(originalResolution);
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.globalAlpha = 1;
+        if (this.showScaleBar_) {
+          this.drawExportScaleBar(context, map, newWidth, newHeight);
+        }
 
-      this.insertMapImageIntoTemplate(canvas.toDataURL('image/png'));
-      const templateImage64 = await this.generateTemplateImage64();
-      const event = new CustomEvent('templateConfigApplied', {
-        detail: { templateImage64, config },
-      });
-      document.dispatchEvent(event);
+        // Quitar el viewport del DOM y poner la imagen; layout sigue al 100%
+        if (maskImageContainer) {
+          this.insertMapImageIntoTemplate(canvas.toDataURL('image/png'));
+        }
 
-      if (this.onApplyCallback) {
-        this.onApplyCallback({
-          instancePreviewMap: this.previewMap.getMapImpl(),
-          imagePreviewMap: templateImage64,
-          layout: this.layout,
-          orientation: this.mapOrientation,
+        const templateImage64 = await this.generateTemplateImage64({
+          keepFullPageStyles: true,
+          fullPageStyle,
         });
+
+        cleanupExportLayout();
+
+        map.setSize(originalSize);
+        view.setResolution(originalResolution);
+        view.setCenter(center);
+
+        const event = new CustomEvent('templateConfigApplied', {
+          detail: { templateImage64, config },
+        });
+        document.dispatchEvent(event);
+
+        if (this.onApplyCallback) {
+          this.onApplyCallback({
+            instancePreviewMap: this.previewMap.getMapImpl(),
+            imagePreviewMap: templateImage64,
+            layout: this.layout,
+            orientation: this.mapOrientation,
+          });
+        }
+        if (this.loadingOverlay_) {
+          this.loadingOverlay_.remove();
+          this.loadingOverlay_ = null;
+        }
+        if (maskImageContainer) {
+          maskImageContainer.innerHTML = '';
+        }
+        parentNode.appendChild(originalMapViewport);
+        map.updateSize();
+      } catch (error) {
+        cleanupExportLayout();
+        map.setSize(originalSize);
+        view.setResolution(originalResolution);
+        view.setCenter(center);
+        if (this.loadingOverlay_) {
+          this.loadingOverlay_.remove();
+          this.loadingOverlay_ = null;
+        }
+        if (parentNode && originalMapViewport && !parentNode.contains(originalMapViewport)) {
+          parentNode.appendChild(originalMapViewport);
+        }
+        IDEE.toast.error(error.message, null, 6000);
       }
-      if (this.loadingOverlay_) {
-        this.loadingOverlay_.remove();
-        this.loadingOverlay_ = null;
-      }
-      maskImageContainer.innerHTML = '';
-      parentNode.appendChild(originalMapViewport);
     });
+
     map.setSize([newWidth, newHeight]);
-    const scaling = Math.min(newWidth / originalSize[0], newHeight / originalSize[1]);
-    map.getView().setResolution(originalResolution / scaling);
+    view.setCenter(center);
+    view.setResolution(originalResolution / scaleFactor);
+  }
+
+  /**
+   * Dibuja una barra de escala métrica coherente con la resolución del canvas exportado.
+   * Evita html2canvas (desalineaba y cortaba etiquetas).
+   * @param {CanvasRenderingContext2D} context Contexto del canvas de exportación
+   * @param {Object} map Mapa OL en el estado de exportación
+   * @param {number} canvasWidth Ancho del canvas
+   * @param {number} canvasHeight Alto del canvas
+   */
+  drawExportScaleBar(context, map, canvasWidth, canvasHeight) {
+    const view = map.getView();
+    const center = view.getCenter();
+    const projection = view.getProjection();
+    let pointResolution = this.getImpl().getMetricPointResolution(
+      projection,
+      view.getResolution(),
+      center,
+    );
+    if (!pointResolution || pointResolution <= 0) {
+      return;
+    }
+
+    // Misma lógica de “números redondos” que OpenLayers ScaleLine (métrico)
+    const leadingDigits = [1, 2, 5];
+    const minWidthPx = Math.max(64, Math.round(canvasWidth * 0.08));
+    const nominalCount = minWidthPx * pointResolution;
+    let suffix = 'm';
+    if (nominalCount < 1) {
+      suffix = 'mm';
+      pointResolution *= 1000;
+    } else if (nominalCount >= 1000) {
+      suffix = 'km';
+      pointResolution /= 1000;
+    }
+
+    let i = 3 * Math.floor(Math.log(minWidthPx * pointResolution) / Math.log(10));
+    let count = 0;
+    let width = 0;
+    let found = false;
+    while (!found && i < 100) {
+      const decimalCount = Math.floor(i / 3);
+      const decimal = 10 ** decimalCount;
+      const digitIndex = ((i % 3) + 3) % 3;
+      count = leadingDigits[digitIndex] * decimal;
+      width = Math.round(count / pointResolution);
+      if (width >= minWidthPx) {
+        found = true;
+      } else {
+        i += 1;
+      }
+    }
+    if (!found || width <= 0) {
+      return;
+    }
+
+    const steps = 4;
+    const margin = Math.max(8, Math.round(canvasWidth * 0.012));
+    const barHeight = Math.max(8, Math.round(canvasHeight * 0.012));
+    const fontSize = Math.max(10, Math.round(canvasHeight * 0.018));
+    const labelGap = Math.max(4, Math.round(fontSize * 0.35));
+    const x0 = margin;
+    const y0 = canvasHeight - margin - barHeight - fontSize - labelGap;
+
+    context.save();
+    context.fillStyle = 'rgba(255,255,255,0.75)';
+    context.fillRect(
+      x0 - 4,
+      y0 - fontSize - labelGap - 2,
+      width + 8,
+      barHeight + fontSize + labelGap + 6,
+    );
+
+    const stepWidth = width / steps;
+    for (let step = 0; step < steps; step += 1) {
+      if (step % 2 === 0) {
+        context.fillStyle = '#000000';
+      } else {
+        context.fillStyle = '#ffffff';
+      }
+      context.fillRect(x0 + (step * stepWidth), y0, stepWidth, barHeight);
+    }
+    context.strokeStyle = '#000000';
+    context.lineWidth = 1;
+    context.strokeRect(x0, y0, width, barHeight);
+
+    context.fillStyle = '#000000';
+    context.font = `${fontSize}px sans-serif`;
+    context.textBaseline = 'bottom';
+    const labelY = y0 - labelGap;
+    const midCount = count / 2;
+    let midLabel = `${midCount}`;
+    if (midCount % 1 !== 0) {
+      midLabel = midCount.toFixed(1);
+    }
+    context.textAlign = 'left';
+    context.fillText('0', x0, labelY);
+    context.textAlign = 'center';
+    context.fillText(midLabel, x0 + (width / 2), labelY);
+    context.textAlign = 'right';
+    context.fillText(`${count} ${suffix}`, x0 + width, labelY);
+    context.restore();
   }
 
   /**
@@ -1240,7 +1690,10 @@ export default class TemplateCustomizer extends IDEE.Control {
     img.style.width = '100%';
     img.style.height = '100%';
     const imagenMascara = document.querySelector(ID_MAP_CONTAINER_TEMPLATE);
-    const containerId = imagenMascara ? MAP_CONTAINER_TEMPLATE : MAP_CONTAINER;
+    let containerId = MAP_CONTAINER;
+    if (imagenMascara) {
+      containerId = MAP_CONTAINER_TEMPLATE;
+    }
     const maskImageContainer = document.querySelector(`#${containerId}`);
     maskImageContainer.innerHTML = '';
     maskImageContainer.appendChild(img);

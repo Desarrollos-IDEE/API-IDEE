@@ -45,6 +45,17 @@ export default class TemplateCustomizer extends IDEE.impl.Control {
   }
 
   /**
+   * Resolución métrica (m/px) en un punto para una resolución de vista.
+   * @param {ol.proj.Projection} projection Proyección
+   * @param {number} resolution Resolución de la vista
+   * @param {Array<number>} point Coordenadas del centro
+   * @returns {number} Metros por píxel
+   */
+  getMetricPointResolution(projection, resolution, point) {
+    return ol.proj.getPointResolution(projection, resolution, point, 'm');
+  }
+
+  /**
    * Función auxiliar para transformar coordenadas entre proyecciones
    * @param {Array<number>} coordinates Coordenadas [x, y]
    * @param {string} sourceProjection Proyección origen
