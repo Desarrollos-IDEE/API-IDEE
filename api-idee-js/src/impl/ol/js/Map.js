@@ -810,12 +810,18 @@ class Map extends MObject {
      */
   removeLayerGroups(layers) {
     const layerGroupMapLayers = this.getLayerGroups(layers);
+    const removedLayers = [];
     layerGroupMapLayers.forEach((layerGroup) => {
       this.layers_ = this.layers_.filter((layer) => !layerGroup.equals(layer));
       layerGroup.getImpl().destroy();
       layerGroup.getImpl().activateBaseLayer(layerGroup, this.facadeMap_);
       layerGroup.fire(EventType.REMOVED_FROM_MAP, [layerGroup]);
+      removedLayers.push(layerGroup);
     });
+
+    if (removedLayers.length > 0) {
+      this.facadeMap_.fire(EventType.REMOVED_LAYER, [removedLayers]);
+    }
 
     return this;
   }

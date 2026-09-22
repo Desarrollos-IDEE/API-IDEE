@@ -218,6 +218,12 @@ export default class LayerswitcherControl extends IDEE.Control {
       }
     });
 
+    map.on(IDEE.evt.REMOVED_LAYER, () => {
+      if (!IDEE.utils.isNullOrEmpty(this.template_)) {
+        this.render();
+      }
+    });
+
     return new Promise((success) => {
       this.getTemplateVariables(map).then((templateVars) => {
         const html = IDEE.template.compileSync(template, {

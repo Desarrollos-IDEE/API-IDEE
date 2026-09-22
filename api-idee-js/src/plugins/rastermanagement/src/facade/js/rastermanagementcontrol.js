@@ -381,6 +381,10 @@ export default class RasterManagementControl extends IDEE.Control {
       }
       this.refreshLayers();
     });
+    group.on(IDEE.evt.REMOVED_FROM_MAP, () => {
+      this.layerGroupListeners_.delete(group.idLayer);
+      this.refreshLayers();
+    });
   }
 
   /**

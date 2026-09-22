@@ -326,8 +326,20 @@ class LayerGroup extends Layer {
    * @api
    */
   removeLayer(layer) {
+    const layerImpl = layer.getImpl();
     this.removeLayers_(layer);
-    this.layersCollection.remove(layer.getImpl().getLayer());
+    this.layersCollection.remove(layerImpl.getLayer());
+    layerImpl.rootGroup = null;
+    layerImpl.destroy();
+    if (!isNullOrEmpty(this.map)) {
+      layerImpl.activateBaseLayer(layer, this.map);
+    }
+    layer.fire(EventType.REMOVED_FROM_MAP, [layer]);
+    this.facadeLayer_?.fire(EventType.REMOVED_FROM_LAYERGROUP, [layer, this.facadeLayer_]);
+    if (!isNullOrEmpty(this.map)) {
+      const removedLayers = [layer];
+      this.map.fire(EventType.REMOVED_LAYER, [removedLayers]);
+    }
   }
 
   /**
