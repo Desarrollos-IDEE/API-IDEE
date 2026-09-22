@@ -134,7 +134,7 @@ npm run start:cesium
 Metodologías y herramientas usadas en el proyecto para garantizar el Quality Assurance Code (QAC)
 
 * ESLint
-  * [NPM ESLint](https://www.npmjs.com/package/eslint) \
+  * [NPM ESLint](https://www.npmjs.com/package/eslint)
   * [NPM ESLint | Airbnb](https://www.npmjs.com/package/eslint-config-airbnb)
 
 ## ⛽️ Revisión e instalación de dependencias / *Review and Update Dependencies*
