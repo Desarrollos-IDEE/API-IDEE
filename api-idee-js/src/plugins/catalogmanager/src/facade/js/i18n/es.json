@@ -55,7 +55,7 @@
   },
   "imageActions": {
     "info": "Información",
-    "preview": "Vista previa",
+    "preview": "Añadir al mapa",
     "download": "Descargar imagen",
     "downloadCollection": "Descargar colección",
     "histogram": "Histograma"

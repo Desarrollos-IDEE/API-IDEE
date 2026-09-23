@@ -55,7 +55,7 @@
   },
   "imageActions": {
     "info": "Information",
-    "preview": "Preview",
+    "preview": "Add to map",
     "download": "Download image",
     "downloadCollection": "Download collection",
     "histogram": "Histogram"

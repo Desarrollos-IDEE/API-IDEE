@@ -2860,14 +2860,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
       });
       this.map_.addLayerGroups(catalog.layerGroup);
     } */
-    if (!collection.layerGroup) {
-      collection.layerGroup = new IDEE.layer.LayerGroup({
-        name: collection.id,
-        legend: collection.title,
-      });
-      // catalog.layerGroup.addLayers(collection.layerGroup);
-      this.map_.addLayerGroups(collection.layerGroup);
-    }
+    this.createCollectionLayerGroup(collection);
     let itemLayer = collection.layerGroup.getLayers()
       .find((l) => l.type === 'LayerGroup' && l.name === item.id);
     if (!itemLayer) {
@@ -2916,23 +2909,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
     if (items.features.length === 0) {
       IDEE.dialog.info(getValue('exception').no_results);
     }
-    if (!collection.layerGroup) {
-      // Puede perderse la asignación del layerGroup al cambiar de colección,
-      // por lo que se debe buscar el layerGroup anterior y se asigna de nuevo
-      // const previousGroup = catalog.layerGroup.getLayers()
-      const previousGroup = this.map_.getLayerGroup()
-        .find((l) => l.name === collection.id);
-      if (previousGroup) {
-        collection.layerGroup = previousGroup;
-      } else {
-        collection.layerGroup = new IDEE.layer.LayerGroup({
-          name: collection.id,
-          legend: collection.title,
-        });
-        // catalog.layerGroup.addLayers(collection.layerGroup);
-        this.map_.addLayerGroups(collection.layerGroup);
-      }
-    }
+    this.createCollectionLayerGroup(collection);
     this.hideFootprintLayers();
     let huella = this.getHuellaLayer(collection);
     if (huella) {
@@ -2957,6 +2934,26 @@ export default class CatalogmanagerControl extends IDEE.Control {
       this.footprintLayers_.push(huella);
     }
     this.getImpl().addLayerToSelectItem(huella.getImpl().getLayer());
+  }
+
+  createCollectionLayerGroup(collection) {
+    const coll = collection;
+    const previousGroup = this.map_.getLayerGroup()
+      .find((l) => l.name === coll.id);
+    if (!coll.layerGroup || !previousGroup) {
+      // Puede perderse la asignación del layerGroup al cambiar de colección,
+      // por lo que se debe buscar el layerGroup anterior y se asigna de nuevo
+      // const previousGroup = catalog.layerGroup.getLayers()
+      if (previousGroup) {
+        coll.layerGroup = previousGroup;
+      } else {
+        coll.layerGroup = new IDEE.layer.LayerGroup({
+          name: coll.id,
+          legend: coll.title,
+        });
+        this.map_.addLayerGroups(coll.layerGroup);
+      }
+    }
   }
 
   /**
