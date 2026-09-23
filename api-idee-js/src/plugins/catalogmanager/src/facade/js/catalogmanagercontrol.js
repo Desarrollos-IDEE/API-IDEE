@@ -2688,9 +2688,9 @@ export default class CatalogmanagerControl extends IDEE.Control {
       this.getItemImages(catalogIndex, collectionIndex, itemId, imagesElement, true);
     } else if (imagesElement.classList.contains('hidden')) {
       this.closeAllImages();
-      this.toggleIcon(itemElement);
       this.toggleHidden(imagesElement);
     }
+    this.toggleIcon(itemElement);
   }
 
   /**
