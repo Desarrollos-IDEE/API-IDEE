@@ -378,10 +378,8 @@ class WMTS extends LayerBase {
         this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
       }
 
-      setTimeout(() => {
-        this.olLayer.setMaxZoom(this.maxZoom);
-        this.olLayer.setMinZoom(this.minZoom);
-      }, 500);
+      this.olLayer.setMaxZoom(this.maxZoom);
+      this.olLayer.setMinZoom(this.minZoom);
 
       // sets its z-index
       if (zIndex !== null) {
