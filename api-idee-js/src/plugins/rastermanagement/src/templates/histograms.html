@@ -1,0 +1,75 @@
+<div class="m-rastermanagement-histogram">
+    <p id="m-rastermanagement-histogram-empty" class="m-rastermanagement-histogram-message hidden">{{selectLayerHint}}</p>
+    <div id="m-rastermanagement-histogram-actions" class="m-rastermanagement-histogram-actions hidden">
+        <div class="m-rastermanagement-histogram-geom-modes" role="group" aria-label="{{histogramScope}}">
+            <button type="button" class="m-rastermanagement-histogram-mode active" data-mode="full" title="{{histogramScopeFull}}" aria-label="{{histogramScopeFull}}">{{histogramScopeFull}}</button>
+            <button type="button" class="m-rastermanagement-histogram-mode" data-mode="point" title="{{histogramDrawPoint}}" aria-label="{{histogramDrawPoint}}">{{histogramDrawPoint}}</button>
+            <button type="button" class="m-rastermanagement-histogram-mode" data-mode="polygon" title="{{histogramDrawPolygon}}" aria-label="{{histogramDrawPolygon}}">{{histogramDrawPolygon}}</button>
+            <button type="button" class="m-rastermanagement-histogram-mode" data-mode="line" title="{{histogramDrawLine}}" aria-label="{{histogramDrawLine}}">{{histogramDrawLine}}</button>
+            <button type="button" id="m-rastermanagement-histogram-clear-geom" class="m-rastermanagement-histogram-clear-geom" title="{{histogramClearGeom}}" aria-label="{{histogramClearGeom}}">{{histogramClearGeom}}</button>
+        </div>
+        <div id="m-rastermanagement-histogram-distance-row" class="m-rastermanagement-histogram-distance-row hidden">
+            <label for="m-rastermanagement-histogram-distance">{{histogramDistance}}</label>
+            <input type="number" id="m-rastermanagement-histogram-distance" min="0" step="any" placeholder="{{histogramDistancePlaceholder}}">
+        </div>
+        <button type="button" id="m-rastermanagement-histogram-calculate" class="m-rastermanagement-histogram-calculate" tabindex="0" title="{{histogramCalculate}}" aria-label="{{histogramCalculate}}">{{histogramCalculate}}</button>
+    </div>
+    <div id="m-rastermanagement-histogram-loading-row" class="m-rastermanagement-histogram-loading-row hidden">
+        <button type="button" id="m-rastermanagement-histogram-cancel" class="m-rastermanagement-histogram-cancel" tabindex="0" title="{{cancel}}" aria-label="{{cancel}}">{{cancel}}</button>
+        <p id="m-rastermanagement-histogram-loading" class="m-rastermanagement-histogram-message">{{histogramLoading}}</p>
+    </div>
+    <p id="m-rastermanagement-histogram-error" class="m-rastermanagement-histogram-message m-rastermanagement-histogram-error hidden"></p>
+    <div id="m-rastermanagement-histogram-content" class="hidden">
+        <div id="m-rastermanagement-histogram-point-result" class="m-rastermanagement-histogram-point-result hidden">
+            <h3 class="m-rastermanagement-histogram-stats-title">{{histogramPointValues}}</h3>
+            <div id="m-rastermanagement-histogram-point-values" class="m-rastermanagement-histogram-point-values"></div>
+        </div>
+        <div id="m-rastermanagement-histogram-band-row" class="m-rastermanagement-histogram-band-row hidden">
+            <label for="m-rastermanagement-histogram-band">{{band}}</label>
+            <select id="m-rastermanagement-histogram-band" class="m-rastermanagement-histogram-band-select"></select>
+        </div>
+        <div id="m-rastermanagement-histogram-chart-section">
+            <div class="m-rastermanagement-histogram-chart-wrap">
+                <h3 class="m-rastermanagement-histogram-stats-title">{{histogramChart}}</h3>
+                <div class="m-rastermanagement-histogram-chart-box">
+                    <canvas id="m-rastermanagement-histogram-chart" aria-label="{{histogramChart}}" role="img"></canvas>
+                </div>
+            </div>
+            <h3 class="m-rastermanagement-histogram-stats-title">{{descriptiveStats}}</h3>
+            <div class="m-rastermanagement-histogram-stats-grid">
+                <div class="m-rastermanagement-histogram-stat">
+                    <span id="m-rastermanagement-histogram-stat-pixels" class="m-rastermanagement-histogram-stat-value">-</span>
+                    <span class="m-rastermanagement-histogram-stat-label">{{statPixels}}</span>
+                </div>
+                <div class="m-rastermanagement-histogram-stat">
+                    <span id="m-rastermanagement-histogram-stat-min" class="m-rastermanagement-histogram-stat-value">-</span>
+                    <span class="m-rastermanagement-histogram-stat-label">{{min}}</span>
+                </div>
+                <div class="m-rastermanagement-histogram-stat">
+                    <span id="m-rastermanagement-histogram-stat-max" class="m-rastermanagement-histogram-stat-value">-</span>
+                    <span class="m-rastermanagement-histogram-stat-label">{{max}}</span>
+                </div>
+                <div class="m-rastermanagement-histogram-stat">
+                    <span id="m-rastermanagement-histogram-stat-mean" class="m-rastermanagement-histogram-stat-value">-</span>
+                    <span class="m-rastermanagement-histogram-stat-label">{{bandsMean}}</span>
+                </div>
+                <div class="m-rastermanagement-histogram-stat">
+                    <span id="m-rastermanagement-histogram-stat-median" class="m-rastermanagement-histogram-stat-value">-</span>
+                    <span class="m-rastermanagement-histogram-stat-label">{{statMedian}}</span>
+                </div>
+                <div class="m-rastermanagement-histogram-stat">
+                    <span id="m-rastermanagement-histogram-stat-stddev" class="m-rastermanagement-histogram-stat-value">-</span>
+                    <span class="m-rastermanagement-histogram-stat-label">{{statStdDev}}</span>
+                </div>
+                <div class="m-rastermanagement-histogram-stat">
+                    <span id="m-rastermanagement-histogram-stat-p25" class="m-rastermanagement-histogram-stat-value">-</span>
+                    <span class="m-rastermanagement-histogram-stat-label">{{statPercentile25}}</span>
+                </div>
+                <div class="m-rastermanagement-histogram-stat">
+                    <span id="m-rastermanagement-histogram-stat-p75" class="m-rastermanagement-histogram-stat-value">-</span>
+                    <span class="m-rastermanagement-histogram-stat-label">{{statPercentile75}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

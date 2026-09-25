@@ -1028,13 +1028,15 @@ export const extendsObj = (destParam = {}, src = {}) => {
  * @api
  */
 export const generateIntervals = (array, breaks) => {
-  let intervals = [...array];
-  if (array.length < breaks) {
-    const step = (array[0] + array[1]) / (breaks - 1);
-    for (let i = 1; i < breaks - 1; i += 1) {
-      intervals[i] = step * i;
-    }
-    intervals = [...intervals, array[1]];
+  if (array.length >= breaks) {
+    return [...array];
+  }
+  const min = array[0];
+  const max = array[1];
+  const step = (max - min) / (breaks - 1);
+  const intervals = [];
+  for (let i = 0; i < breaks; i += 1) {
+    intervals.push(min + (step * i));
   }
   return intervals;
 };

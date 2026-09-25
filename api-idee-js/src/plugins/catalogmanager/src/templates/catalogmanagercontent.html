@@ -1,0 +1,18 @@
+<div>
+    <h3 class="m-catalogmanager-section-title">{{translations.catalogs}} <span class="g-cartografia-catalog-up-open m-catalogmanager-icon"></span></h3>
+    <select id="m-catalogmanager-filters-catalogs-content">
+        {{#each catalogs}}
+            <option value="{{this.index}}">{{this.title}}
+            <!--{{#if public}}
+                <span class="g-cartografia-catalog-lock-open">
+                    {{../translations.public}}
+                </span>
+            {{else}}
+                <span class="g-cartografia-catalog-lock">
+                    {{../translations.private}}
+                </span>
+            {{/if}}-->
+            </option>
+        {{/each}}
+    </select>
+</div>

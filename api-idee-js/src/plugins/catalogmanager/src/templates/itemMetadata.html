@@ -1,0 +1,27 @@
+<div class="m-catalogmanager-item-metadata">
+    <div class="m-catalogmanager-metadata-panel">
+        <div class="m-catalogmanager-metadata-section">
+            <h3>{{translations.general}}</h3>
+            <label>{{translations.id}}: </label><span>{{id}}</span><br>
+            <label>{{translations.collection}}: </label><span>{{collectionId}}</span><br>
+            <label>{{translations.datetime}}: </label><span>{{datetime}}</span><br>
+        </div>
+        <div class="m-catalogmanager-metadata-section">
+            <h3>{{translations.spatial}}</h3>
+            <label>{{translations.extent}}: </label><span>{{extent}}</span><br>
+            <label>{{translations.crs}}: </label><span>{{crs}}</span><br>
+        </div>
+        <div class="m-catalogmanager-metadata-section">
+            <h3>{{translations.sensor}}</h3>
+            <label>{{translations.platform}}: </label><span>{{platform}}</span><br>
+            <label>{{translations.instruments}}: </label><span>{{instruments}}</span><br>
+            {{#if sunElevation}}
+                <label>{{translations.sunElevation}}: </label><span>{{sunElevationValue}}°</span><br>
+            {{/if}}
+            {{#if cloudCover}}
+                <label>{{translations.cloudCover}}: </label><span>{{cloudCoverValue}}%</span><br>
+            {{/if}}
+            <label>{{translations.processingLevel}}: </label><span>{{processingLevel}}</span><br>
+        </div>
+    </div>
+</div>

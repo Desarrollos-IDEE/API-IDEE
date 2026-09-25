@@ -5,7 +5,6 @@
 import LayerGroupImpl from 'impl/layer/LayerGroup';
 import LayerBase from './Layer';
 import * as parameter from '../parameter/parameter';
-import * as EventType from '../event/eventtype';
 import * as LayerType from './Type';
 import {
   isUndefined, isNullOrEmpty, isObject, isString,
@@ -166,8 +165,7 @@ class LayerGroup extends LayerBase {
     }
 
     arrLayers.forEach((layer) => {
-      const l = this.getImpl().addLayer(layer);
-      this.fire(EventType.ADDED_TO_LAYERGROUP, [l, this]);
+      this.getImpl().addLayer(layer);
     });
 
     // ! Se actualiza this.layers

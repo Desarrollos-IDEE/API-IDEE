@@ -170,10 +170,11 @@ const isCorsError = (xhr) => {
  * @param {String} dataVar Parámetros.
  * @param {Object} methodType Tipo de petición.
  * @param {Boolean|String} useProxy true proxy siempre, 'conditional' si hay error CORS, false nunca
+ * @param {Object} headers Headers de la petición.
  * @returns {Promise} Devuelve la respuesta.
  * @api
  */
-const ajax = (urlVar, dataVar, methodType, useProxy) => {
+const ajax = (urlVar, dataVar, methodType, useProxy, headers) => {
   let url = urlVar;
   let data = dataVar;
 
@@ -286,6 +287,11 @@ const ajax = (urlVar, dataVar, methodType, useProxy) => {
       }
     };
     xhr.open(methodType, url, true);
+    if (!isNullOrEmpty(headers)) {
+      Object.keys(headers).forEach((header) => {
+        xhr.setRequestHeader(header, headers[header]);
+      });
+    }
     xhr.send(data);
   });
 };
@@ -319,6 +325,11 @@ export const get = (url, data, options) => {
     useProxyValue = useproxy;
   }
 
+  let headers = null;
+  if (!isNullOrEmpty(options) && 'headers' in options) {
+    headers = options.headers;
+  }
+
   const useJsonp = useProxyValue === true
     && (isNullOrEmpty(options) || options.jsonp !== false)
     && useProxyValue !== 'conditional';
@@ -326,7 +337,7 @@ export const get = (url, data, options) => {
   if (useJsonp) {
     req = jsonp(newUrl, data, options);
   } else {
-    req = ajax(newUrl, data, method.GET, useProxyValue);
+    req = ajax(newUrl, data, method.GET, useProxyValue, headers);
   }
 
   return req;
@@ -346,12 +357,16 @@ export const get = (url, data, options) => {
  */
 export const post = (url, data, options) => {
   let useProxyValue = null;
+  let headers = null;
   if (!isNullOrEmpty(options) && 'useProxy' in options) {
     useProxyValue = options.useProxy;
   } else {
     useProxyValue = useproxy;
   }
-  return ajax(url, data, method.POST, useProxyValue);
+  if (!isNullOrEmpty(options) && 'headers' in options) {
+    headers = options.headers;
+  }
+  return ajax(url, data, method.POST, useProxyValue, headers);
 };
 
 /**

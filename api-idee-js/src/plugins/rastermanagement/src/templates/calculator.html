@@ -1,0 +1,66 @@
+<div class="m-rastermanagement-calculator">
+    <p id="m-rastermanagement-calculator-empty" class="m-rastermanagement-calculator-message hidden">{{selectLayerHint}}</p>
+
+    <div id="m-rastermanagement-calculator-form" class="m-rastermanagement-calculator-form hidden">
+        <p class="m-rastermanagement-calculator-hint" tabindex="0">{{calculatorHint}}</p>
+
+        <div class="m-rastermanagement-calculator-section">
+            <label class="m-rastermanagement-section-title">{{predefinedOpsLabel}}</label>
+            <div id="m-rastermanagement-calculator-ops" class="m-rastermanagement-calculator-ops" role="listbox" aria-label="{{predefinedOpsLabel}}">
+                {{#each predefinedOps}}
+                <button type="button"
+                    class="m-rastermanagement-calculator-op"
+                    data-op-id="{{id}}"
+                    role="option"
+                    tabindex="0"
+                    aria-selected="false"
+                    title="{{tooltip}}"
+                    aria-label="{{tooltip}}">{{label}}</button>
+                {{/each}}
+            </div>
+        </div>
+
+        <div id="m-rastermanagement-calculator-params" class="m-rastermanagement-calculator-params hidden">
+            <div id="m-rastermanagement-calculator-params-grid" class="m-rastermanagement-filters-grid"></div>
+        </div>
+
+        <div class="m-rastermanagement-filter-control m-rastermanagement-calculator-expression-control">
+            <label for="m-rastermanagement-calculator-expression">{{expression}}</label>
+            <textarea id="m-rastermanagement-calculator-expression"
+                rows="4"
+                tabindex="0"
+                aria-label="{{expression}}"
+                placeholder="{{expressionPlaceholder}}"></textarea>
+            <p class="m-rastermanagement-calculator-syntax" tabindex="0">{{expressionSyntax}}</p>
+        </div>
+
+        <div class="m-rastermanagement-filter-control">
+            <label for="m-rastermanagement-calculator-output">{{outputName}}</label>
+            <input type="text"
+                id="m-rastermanagement-calculator-output"
+                tabindex="0"
+                aria-label="{{outputName}}"
+                value="">
+        </div>
+
+        <div class="m-rastermanagement-calculator-actions">
+            <button type="button"
+                id="m-rastermanagement-calculator-run"
+                class="m-rastermanagement-calculator-run"
+                tabindex="0"
+                title="{{calculate}}"
+                aria-label="{{calculate}}">{{calculate}}</button>
+        </div>
+    </div>
+
+    <div id="m-rastermanagement-calculator-loading-row" class="m-rastermanagement-calculator-loading-row hidden">
+        <button type="button"
+            id="m-rastermanagement-calculator-cancel"
+            class="m-rastermanagement-calculator-cancel"
+            tabindex="0"
+            title="{{cancel}}"
+            aria-label="{{cancel}}">{{cancel}}</button>
+        <p id="m-rastermanagement-calculator-loading" class="m-rastermanagement-calculator-message">{{loading}}</p>
+    </div>
+    <p id="m-rastermanagement-calculator-error" class="m-rastermanagement-calculator-message m-rastermanagement-calculator-error hidden"></p>
+</div>

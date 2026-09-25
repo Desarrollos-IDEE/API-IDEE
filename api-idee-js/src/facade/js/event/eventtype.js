@@ -81,6 +81,14 @@ export const ADDED_LAYERGROUP = 'added:layergroup';
 export const ADDED_TO_LAYERGROUP = 'added:tolayergroup';
 
 /**
+ * Evento que se produce al eliminar una capa de un LayerGroup.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const REMOVED_FROM_LAYERGROUP = 'removed:fromlayergroup';
+
+/**
  * Evento que se produce al añadir WFS.
  * @public
  * @type {string}

@@ -1,0 +1,831 @@
+/** Estilos propios*/
+
+.m-areas>div.m-area>div.m-panel.m-plugin-catalogmanager.collapsed {
+    max-height: 40px;
+}
+
+.m-areas>div.m-area>div.m-panel.m-plugin-catalogmanager.opened {
+    width: max-content;
+	z-index: 9999999999;
+}
+
+.m-plugin-catalogmanager.opened #div-contenedor {
+    position: fixed !important;
+    top: 0px;
+    height: 100vh;
+    width: 25vw;
+    background-color: white !important;
+    box-shadow: 0 2px 4px rgb(0 0 0 / 20%), 0 -1px 0 rgb(0 0 0 / 2%);
+    color: #000;
+}
+
+div.m-area.m-left .m-plugin-catalogmanager.opened #div-contenedor {
+    left: 0px;
+}
+
+div.m-area.m-right .m-plugin-catalogmanager.opened #div-contenedor {
+    right: 0px;
+}
+
+.m-areas>div.m-area>div.m-plugin-catalogmanager.collapsed>button.m-panel-btn {
+    background-color: #71a7d3 !important;
+    color: white !important;
+    font-family: 'catalogmanager' !important;
+}
+
+.m-areas>div.m-area>div.m-plugin-catalogmanager.opened>button.m-panel-btn {
+    background-color: #71a7d3 !important;
+    color: white !important;
+}
+
+.m-areas>div.m-area.m-left>div.m-plugin-catalogmanager.opened.no-collapsible {
+    border-radius: 4px;
+}
+
+.m-areas>div.m-area.m-right>div.m-plugin-catalogmanager.opened>button.m-panel-btn {
+    position: absolute;
+    top: -10px;
+    right: calc(25vw - 10px);
+    background-color: #71a7d3;
+}
+
+.m-areas>div.m-area.m-left>div.m-plugin-catalogmanager.opened>button.m-panel-btn {
+    position: absolute;
+    top: -10px;
+    left: calc(25vw - 10px);
+    background-color: #71a7d3;
+}
+
+.m-control.m-container.m-catalogmanager {
+    display: block;
+    width: 25vw;
+}
+
+/*********************
+     TITLE
+*********************/
+
+.m-control.m-container.m-catalogmanager>header .title {
+    background-color: #f4f4f4;
+    color: #000 !important;
+    font-family: 'Muli', 'sans-serif' !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    font-size: 15px;
+    height: 39px;
+    line-height: 40px;
+    text-align: center;
+    margin-top: 0;
+}
+
+
+.hidden {
+    display: none !important;
+}
+
+.form-container .form-row.flex-reverse {
+    flex-direction: row-reverse;
+}
+
+.form-container .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    align-items: center;
+}
+
+.form-container .form-row label {
+    font-size: 12px;
+    min-width: 90px;
+}
+
+.form-container .form-row input {
+    flex: 1;
+    min-width: 180px;
+    font-size: 12px;
+    padding: 0.25rem 0.5rem;
+}
+
+.form-container .form-row input[type="checkbox"] {
+    max-width: 100px;
+}
+
+.m-catalogmanager-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin: 0.5rem;
+}
+
+#m-catalogmanager-filters-content>div {
+    margin-left: 10px;
+}
+
+#m-catalogmanager-filters-temporal>table tr {
+    margin-bottom: 0.5rem;
+}
+
+#m-catalogmanager-filters-temporal input {
+    width: 100%;
+    min-width: 7rem;
+    box-sizing: border-box;
+}
+
+.flatpickr-calendar {
+    z-index: 10000 !important;
+}
+
+#m-catalogmanager-filters-temporal-predefined {
+    margin-top: 0.5rem;
+}
+
+.m-catalogmanager-actions button,
+#m-catalogmanager-filters-temporal-predefined button,
+.m-catalogmanager-items-buttons button,
+.m-catalogmanager-collections-order-button {
+    background-color: white;
+    color: #71a7d3;
+    border: 1px solid #71a7d3;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    margin-top: 0.25rem;
+}
+
+#m-catalogmanager-filters-spatial-predefined button {
+    background-color: white;
+    color: #71a7d3;
+    border: 1px solid #71a7d3;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    margin-top: 0.25rem;
+}
+
+.m-catalogmanager-items-buttons button:disabled {
+    color: #ccc;
+    border-color: #ccc;
+}
+
+.m-catalogmanager-actions button:hover,
+#m-catalogmanager-filters-temporal-predefined button:hover,
+#m-catalogmanager-filters-spatial-predefined button:hover,
+.m-catalogmanager-collections-order-button:hover,
+.m-catalogmanager-actions button.active,
+#m-catalogmanager-filters-temporal-predefined button.active,
+#m-catalogmanager-filters-spatial-predefined button.active,
+.m-catalogmanager-collections-order-button.active {
+    background-color: #71a7d3;
+    color: white;
+}
+
+.action-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: #2ecc71
+}
+
+h3 .action-btn {
+    float: right;
+}
+
+#add-catalog {
+    background-color: #71a7d3;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    margin: auto;
+}
+
+ul.m-catalogmanager-ulcatalogs {
+    list-style: none;
+    padding: 0px 10px 0px 10px;
+    max-height: 50vh;
+    overflow-y: auto;
+    min-width: 440px;
+    max-width: 50vw;
+}
+
+ul.m-catalogmanager-ulcatalogs.fullsize {
+    max-height: 80vh;
+}
+
+ul.m-catalogmanager-ulcatalogs li>.m-catalogmanager-title-catalog {
+    background-color: #a6cded;
+    border-left: 4px solid #148aeb;
+    color: black;
+    padding: 0.5rem;
+}
+
+section.m-catalogmanager-collections,
+.m-catalogmanager-collections {
+    max-width: 25vw;
+}
+
+.m-catalogmanager-items {
+    max-width: calc(25vw - 20px);
+}
+
+.m-catalogmanager-images,
+.m-catalogmanager-images>table,
+.m-catalogmanager-title-item table {
+    max-width: calc(25vw - 40px);
+}
+
+.m-catalogmanager-title-item span.m-catalogmanager-title-box {
+    text-wrap: wrap;
+    max-width: calc(22vw - 75px);
+    word-wrap: break-word;
+    display: inline-block;
+}
+
+.m-catalogmanager-images span.m-catalogmanager-title-box {
+    max-width: 16vw;
+    text-wrap: wrap;
+    word-wrap: break-word;
+    display: inline-block;
+}
+
+ul.m-catalogmanager-ulcollections {
+    list-style: none;
+    overflow-y: auto;
+    min-width: 400px;
+    max-width: 50vw;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+ul.m-catalogmanager-ulcollections li>.m-catalogmanager-title-collection {
+    background-color: #f8f4f4;
+    color: black;
+    padding: 0.5rem;
+}
+
+div.m-catalogmanager-collections-list {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+div.m-catalogmanager-collections-list div>.m-catalogmanager-title-collection {
+    background-color: #fff;
+    color: #71a7d3;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    border: 1px solid #71a7d3;
+    cursor: pointer;
+}
+
+div.m-catalogmanager-collections-list div>.m-catalogmanager-title-collection:hover,
+div.m-catalogmanager-collections-list div>.m-catalogmanager-title-collection.active {
+    background-color: #71a7d3;
+    color: #fff;
+}
+
+#m-catalogmanager-filters-catalogs-content {
+    width: 95%;
+    background-color: #fff;
+    border: 2px solid #71a7d3;
+}
+
+ul.m-catalogmanager-ulitems, ul.m-catalogmanager-tableimages {
+    list-style: none;
+    overflow-y: auto;
+    max-width: calc(25vw - 40px);
+    padding-left: 10px;
+    padding-right: 10px;
+    max-height: calc(100vh - 265px - 3.5rem);
+}
+
+.m-catalogmanager-title-item {
+    margin: 0.4rem 0;
+}
+
+.m-catalogmanager-title-item.active {
+    background-color: #71a7d3;
+    color: #fff;
+}
+
+ul.m-catalogmanager-ulcatalogs li {
+    border: 1px solid rgb(194, 194, 194);
+    min-width: fit-content;
+}
+
+ul.m-catalogmanager-ulcatalogs span.g-cartografia-catalog-lock {
+    color: #fba300;
+    background-color: #fbe3b6;
+    padding: 0.15rem 0.25rem;
+    border-radius: 1rem;
+}
+
+ul.m-catalogmanager-ulcatalogs span.g-cartografia-catalog-lock-open {
+    color: #27d400;
+    background-color: #baffaa;
+    padding: 0.15rem 0.25rem;
+    border-radius: 1rem;
+}
+
+table.m-catalogmanager-tableimages tr>.m-catalogmanager-title-image {
+    /*background-color: #a6cded;*/
+    color: black;
+    padding: 0.5rem;
+}
+
+table.m-catalogmanager-tableimages thead {
+    background-color: #e6e6e6;
+    font-weight: bold;
+}
+
+table.m-catalogmanager-tableimages tbody {
+    background-color: #f0f8ff;
+}
+
+table.m-catalogmanager-tableimages tbody tr {
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.loading {
+    align-items: center;
+    background-color: #fffbfb;
+    display: flex;
+}
+
+.loading::before {
+    margin: 0 auto;
+    -webkit-animation: mloading 1s linear infinite;
+    -moz-animation: mloading 1s linear infinite;
+    animation: mloading 1s linear infinite;
+}
+/*
+button.m-catalogmanager-info-button {
+    background-color: #148aeb;
+    color: white;
+}
+
+button.m-catalogmanager-preview-button {
+    background-color: #fff;
+    color: #00c02a;
+}
+
+button.m-catalogmanager-download-button {
+    background-color: #00c02a;
+    color: #fff;
+}
+*/
+.m-catalogmanager-items-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px;
+}
+
+.m-catalogmanager-download-progress {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    background: #71a7d3;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    max-width: 90%;
+}
+
+.m-catalogmanager-download-progress-text {
+    margin: 0;
+    font-size: 0.9rem;
+    word-break: break-all;
+}
+
+.m-catalogmanager-download-browser-note {
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.m-catalogmanager-download-errors {
+    margin-top: 8px;
+    padding-left: 20px;
+    text-align: left;
+}
+
+.m-catalogmanager-metadata-section>label {
+    font-weight: bold;
+}
+
+/*********************
+  ADVANCED FILTER
+*********************/
+
+#m-catalogmanager-advanced-filters-tabs,
+#m-catalogmanager-filters-tabs {
+    display: flex;
+}
+
+#advanced-filter-query-container {
+    display: flex;
+    flex-direction: column;
+    /*margin-top: 10px;*/
+}
+
+#advanced-filter-query-container label {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+#advanced-filter-query-container select {
+    background-color: #fff;
+    border: 1px solid gray;
+}
+
+.m-catalogmanager .m-catalogmanager {
+    max-width: 480px;
+    padding: 0.5rem;
+}
+
+.m-catalogmanager .filtered-search-title {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #148aeb;
+}
+
+.m-catalogmanager .m-catalogmanager-headers {
+    font-weight: bold;
+    margin: 0.25rem 0;
+}
+
+.m-catalogmanager .m-catalogmanager-lists-container {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 10px;
+}
+
+.m-catalogmanager .m-catalogmanager-fields,
+.m-catalogmanager .m-catalogmanager-type {
+    flex: 1;
+    min-width: 0;
+}
+
+.m-catalogmanager #m-catalogmanager-fieldstable,
+.m-catalogmanager #m-catalogmanager-typetable {
+    width: 100%;
+    font-size: 12px;
+}
+
+.m-catalogmanager #m-catalogmanager-fieldstable td {
+    cursor: pointer;
+    padding: 0.25rem;
+    border: 1px solid #ddd;
+}
+
+.m-catalogmanager #m-catalogmanager-typetable td {
+    padding: 0.25rem;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.m-catalogmanager #m-catalogmanager-fieldstable td.focus,
+.m-catalogmanager #m-catalogmanager-typetable td.focus {
+    background-color: #a6cded;
+}
+
+.m-catalogmanager #m-attributetable-tfoot {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+}
+
+.m-catalogmanager #m-catalogmanager-operators-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin: 1rem 0;
+}
+
+.m-catalogmanager #m-catalogmanager-operators-container>button,
+.m-catalogmanager #m-catalogmanager-options-buttons>button,
+.m-catalogmanager #m-attributetable-tfoot>button {
+    background-color: white;
+    color: #71a7d3;
+    border: 1px solid #71a7d3;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 12px;
+}
+
+.m-catalogmanager #m-catalogmanager-operators-container>button:hover,
+.m-catalogmanager #m-catalogmanager-options-buttons>button:hover,
+.m-catalogmanager #m-attributetable-tfoot>button:hover {
+    background-color: #71a7d3;
+    color: white;
+}
+
+.m-catalogmanager #m-catalogmanager-query-container>textarea {
+    width: 22vw;
+    font-size: 12px;
+    font-family: monospace;
+}
+
+.m-catalogmanager #m-catalogmanager-options-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.m-catalogmanager .m-catalogmanager-type-hint {
+    font-size: 11px;
+    color: #666;
+    font-style: italic;
+}
+
+.m-catalogmanager-tab {
+    padding: 0 10px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 50%;
+    text-align: center;
+    font-size: medium;
+}
+
+.m-catalogmanager-tab.active {
+    background-color: #fff;
+    color: #71a7d3;
+    border-bottom: 2px solid #71a7d3;
+}
+
+#m-catalogmanager-filters-tab-content {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+#m-catalogmanager-filters-tab-content,
+#m-catalogmanager-results-tab-content {
+    max-height: calc(100vh - 107px - 1rem);
+    overflow-y: auto;
+}
+
+.m-catalogmanager-section-title {
+    border-bottom: 2px solid #71a7d3;
+    cursor: pointer;
+    width: 95%;
+}
+
+#m-catalogmanager-results-content .m-catalogmanager-section-title {
+    margin-left: 20px;
+}
+
+h3.m-catalogmanager-section-title>span.m-catalogmanager-icon {
+    float: right;
+}
+
+.m-catalogmanager-histogram {
+    min-width: 480px;
+}
+
+.m-catalogmanager-histogram-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.m-catalogmanager-histogram-controls label {
+    margin: 0;
+    font-weight: 600;
+}
+
+.m-catalogmanager-histogram-band-select {
+    min-width: 120px;
+    padding: 0.25rem 0.5rem;
+}
+
+.m-catalogmanager-histogram-chart-container {
+    position: relative;
+    height: 320px;
+    width: 100%;
+}
+
+.m-dialog.info .m-content:has(.m-catalogmanager-histogram) {
+    overflow-x: auto;
+    max-height: 80vh;
+}
+
+#m-catalogmanager-advanced-filters {
+    max-width: calc(25vw - 20px);
+}
+
+.dialog-btn {
+    background-color: #71a7d3 !important;
+    color: white !important;
+    padding: 0.3rem;
+    border: none;
+}
+
+.m-catalogmanager-filters-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+}
+
+#m-catalogmanager-results-tab-content .m-catalogmanager-filters-tags {
+    margin-left: 10px;
+}
+
+.m-catalogmanager-tag {
+    background-color: #71a7d3;
+    color: #fff;
+    padding: 0.2rem;
+}
+
+.m-catalogmanager-tag-close {
+    margin-left: 1rem;
+    padding-right: 0.3rem;
+    cursor: pointer;
+}
+
+/*********************
+     CLOUD COVER SLIDER
+*********************/
+
+.m-catalogmanager-cloudcover-slider {
+    margin: 0.5rem 0 1rem;
+}
+
+.m-catalogmanager-cloudcover-slider-label {
+    display: flex;
+    /* justify-content: space-between; */
+    align-items: center;
+    font-size: 12px;
+    color: #000;
+    margin-bottom: 0.5rem;
+}
+
+.m-catalogmanager-cloudcover-slider-values {
+    font-weight: 600;
+    color: #71a7d3;
+}
+
+.m-catalogmanager-dual-range {
+    position: relative;
+    height: 1.75rem;
+    width: 80%;
+    margin-left: 5%;
+}
+
+.m-catalogmanager-dual-range-track {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 4px;
+    transform: translateY(-50%);
+    border-radius: 2px;
+    background: linear-gradient(
+        to right,
+        #fff 0%,
+        #fff var(--cc-min, 0%),
+        #71a7d3 var(--cc-min, 0%),
+        #71a7d3 var(--cc-max, 100%),
+        #fff var(--cc-max, 100%),
+        #fff 100%
+    );
+    border: 1px solid #d1d5db;
+    box-sizing: border-box;
+    pointer-events: none;
+}
+
+.m-catalogmanager-dual-range-input {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    pointer-events: none;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.m-catalogmanager-dual-range-input::-webkit-slider-thumb {
+    pointer-events: auto;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    background: #71a7d3;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 25%);
+    cursor: pointer;
+}
+
+.m-catalogmanager-dual-range-input::-moz-range-thumb {
+    pointer-events: auto;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    background: #71a7d3;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 25%);
+    cursor: pointer;
+}
+
+.m-catalogmanager-dual-range-input::-webkit-slider-runnable-track {
+    height: 4px;
+    background: transparent;
+}
+
+.m-catalogmanager-dual-range-input::-moz-range-track {
+    height: 4px;
+    background: transparent;
+    border: none;
+}
+
+.m-catalogmanager-dual-range-min {
+    z-index: 2;
+}
+
+.m-catalogmanager-dual-range-max {
+    z-index: 3;
+}
+
+.m-catalogmanager-collections-order {
+    margin-bottom: 1rem;
+}
+
+.m-catalogmanager-items-page {
+    align-content: center;
+}
+
+@media only screen and (max-width: 768px) {
+    .m-plugin-catalogmanager.opened #div-contenedor {
+        width: 100vw;
+    }
+
+    .m-areas>div.m-area.m-right>div.m-plugin-catalogmanager.opened>button.m-panel-btn {
+        right: 0;
+    }
+
+    .m-plugin-catalogmanager.opened .m-panel-btn.g-cartografia-flecha-derecha,
+    .m-plugin-catalogmanager.opened .m-panel-btn.g-cartografia-flecha-izquierda {
+        position: absolute;
+        left: 0 !important;
+        z-index: 999999;
+        box-shadow: none;
+    }
+
+    .m-control.m-container.m-catalogmanager {
+        width: 100vw;
+    }
+
+    .m-areas > div.m-area.m-left > div.m-panel {
+        margin-left: 0 !important;
+    }
+
+    section.m-catalogmanager-collections,
+    .m-catalogmanager-collections {
+        max-width: 100vw;
+    }
+
+    .m-catalogmanager-items {
+        max-width: calc(100vw - 20px);
+    }
+
+    .m-catalogmanager-images,
+    .m-catalogmanager-images>table,
+    .m-catalogmanager-title-item table {
+        max-width: calc(100vw - 40px);
+    }
+
+    .m-catalogmanager-title-item span.m-catalogmanager-title-box {
+        max-width: calc(100vw - 75px);
+    }
+
+    .m-catalogmanager-images span.m-catalogmanager-title-box {
+        max-width: 96vw;
+    }
+
+    #m-catalogmanager-advanced-filters {
+        max-width: calc(100vw - 20px);
+    }
+
+    ul.m-catalogmanager-ulitems, ul.m-catalogmanager-tableimages {
+        max-width: calc(100vw - 40px);
+    }
+
+    .m-catalogmanager #m-catalogmanager-query-container>textarea {
+        width: 94vw;
+    }
+
+    #m-catalogmanager-filters-content {
+        height: 100vh;
+    }
+}

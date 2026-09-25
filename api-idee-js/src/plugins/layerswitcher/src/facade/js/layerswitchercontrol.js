@@ -246,6 +246,12 @@ export default class LayerswitcherControl extends IDEE.Control {
       this.refreshPanel_();
     });
 
+    map.on(IDEE.evt.REMOVED_LAYER, () => {
+      if (!IDEE.utils.isNullOrEmpty(this.template_)) {
+        this.render();
+      }
+    });
+
     return new Promise((success) => {
       this.getTemplateVariables(map).then((templateVars) => {
         const html = IDEE.template.compileSync(template, {
@@ -371,7 +377,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       let hasStyles = (hasMetadata
         && layer.capabilitiesMetadata.style !== undefined
         && layer.capabilitiesMetadata.style.length > 1)
-        || (layer instanceof IDEE.layer.Vector
+        || ((layer instanceof IDEE.layer.Vector || layer instanceof IDEE.layer.GeoTIFF)
           && !IDEE.utils.isNullOrEmpty(layer.predefinedStyles)
           && layer.predefinedStyles.length > 1);
       if (layer.type === 'KML') {

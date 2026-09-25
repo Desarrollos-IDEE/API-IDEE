@@ -1,0 +1,16 @@
+<div>
+    <table id="m-catalogmanager-fieldstable">
+        <tbody>
+            {{#each fields}}
+                <tr>
+                    <td id="{{key}}">{{title}}</td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    <div id="m-attributetable-tfoot">
+        <button id="prevBtn" title="{{translations.previous}}">&#8810;</button>
+        <span id="pageNumBtn"></span>
+        <button id="nextBtn" title="{{translations.next}}">&#8811;</button>
+    </div>
+</div>

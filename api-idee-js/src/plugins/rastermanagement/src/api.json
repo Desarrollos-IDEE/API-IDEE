@@ -1,0 +1,86 @@
+{
+  "url": {
+    "name": "rastermanagement",
+    "separator": "*"
+  },
+  "constructor": "IDEE.plugin.RasterManagement",
+  "parameters": [
+    {
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "possibleValues": [
+            "TL",
+            "TR",
+            "BL",
+            "BR"
+          ],
+          "position": 0
+        },
+        {
+          "type": "boolean",
+          "name": "collapsed",
+          "position": 1
+        },
+        {
+          "type": "boolean",
+          "name": "collapsible",
+          "position": 2
+        },
+        {
+          "type": "simple",
+          "name": "tooltip",
+          "position": 3
+        },
+        {
+          "type": "simple",
+          "name": "calcHistogramUrl",
+          "position": 4
+        },
+        {
+          "type": "simple",
+          "name": "rasterCalculatorUrl",
+          "position": 5
+        },
+        {
+          "type": "boolean",
+          "name": "showGeoprocesses",
+          "position": 6
+        }
+      ]
+    }
+  ],
+  "files": {
+    "ol": {
+      "scripts": [
+        "rastermanagement.ol.min.js"
+      ],
+      "styles": [
+        "rastermanagement.ol.min.css"
+      ]
+    },
+    "cesium": {
+      "scripts": [
+        "rastermanagement.cesium.min.js"
+      ],
+      "styles": [
+        "rastermanagement.cesium.min.css"
+      ]
+    }
+  },
+  "metadata": {
+    "name": "RasterManagement",
+    "description": "Gestión de estilos de capas raster (GeoTIFF)",
+    "text": "Plugin de gestión de estilos de capas raster (GeoTIFF)",
+    "version": "1.0.0",
+    "date": "Julio 2026",
+    "author": "IDEE",
+    "org": "IDEE",
+    "homepage": " https://www.idee.es",
+    "funding": "Desarrollo financiado por los nodos participantes en el Grupo Técnico de Trabajo Desarrollos IDEE",
+    "tags": "api-idee,plugin",
+    "icon": "./facade/assets/icons/icons.svg"
+  }
+}
