@@ -316,11 +316,11 @@ export default class LayerswitcherControl extends IDEE.Control {
   parseLayerForTemplate_(layer) {
     const layerTitle = layer.legend || layer.name;
     const hasMetadata = !IDEE.utils.isNullOrEmpty(layer.capabilitiesMetadata)
-      && !IDEE.utils.isNullOrEmpty(layer.capabilitiesMetadata.abstract);
+      && !IDEE.utils.isNullOrEmpty(layer.capabilitiesMetadata?.abstract);
 
     return new Promise((success) => {
       let hasStyles = (hasMetadata
-        && layer.capabilitiesMetadata.style !== undefined
+        && layer.capabilitiesMetadata?.style !== undefined
         && layer.capabilitiesMetadata.style.length > 1)
         || (layer instanceof IDEE.layer.Vector
           && !IDEE.utils.isNullOrEmpty(layer.predefinedStyles)
@@ -587,19 +587,19 @@ export default class LayerswitcherControl extends IDEE.Control {
             const vars = {
               name: layer.name, // nombre
               title: layer.legend, // titulo
-              abstract: layer.capabilitiesMetadata.abstract, // resumen
+              abstract: layer.capabilitiesMetadata?.abstract, // resumen
               translations: TRANSLATIONS_OGCAPIFEATURES_WMS_WMTS,
             };
 
             vars.capabilities = this.addCapabilitiesInformation(layer);
-            if (layer.capabilitiesMetadata.metadataURL) {
+            if (layer.capabilitiesMetadata?.metadataURL) {
               vars.metadata = layer.capabilitiesMetadata.metadataURL[0].OnlineResource;
             }
             vars.provider = this.informationProvider(layer);
             // IDEE.proxy(this.useProxy);
             IDEE.remote.get(vars.capabilities).then((response) => {
-              const source = response.text;
-              const urlService = source.split('<inspire_common:URL>')[1].split('<')[0].split('&amp;').join('&');
+              const inspireUrl = response.text.split('<inspire_common:URL>')[1];
+              const urlService = inspireUrl ? inspireUrl.split('<')[0].split('&amp;').join('&') : undefined;
               if (!IDEE.utils.isNullOrEmpty(urlService) && IDEE.utils.isUrl(urlService)) {
                 vars.metadata_service = urlService;
                 vars.hasMetadata = true;
@@ -935,7 +935,7 @@ export default class LayerswitcherControl extends IDEE.Control {
 
   // Obtiene información del provider
   informationProvider(layer) {
-    if (IDEE.utils.isNullOrEmpty(layer.capabilitiesMetadata.attribution)) {
+    if (IDEE.utils.isNullOrEmpty(layer.capabilitiesMetadata?.attribution)) {
       return false;
     }
     let provider = '';
