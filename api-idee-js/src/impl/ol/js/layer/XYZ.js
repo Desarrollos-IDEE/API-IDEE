@@ -3,7 +3,7 @@
  */
 import { isNullOrEmpty, extend, getZDirectionFunction } from 'IDEE/util/Utils';
 import OLTileLayer from 'ol/layer/Tile';
-import { get as getProj } from 'ol/proj';
+import { get as getProj, transform } from 'ol/proj';
 import XYZSource from 'ol/source/XYZ';
 import * as LayerType from '../../../../facade/js/layer/Type';
 import Layer from './Layer';
@@ -273,6 +273,67 @@ class XYZ extends Layer {
       equals = (this.name === obj.name);
     }
     return equals;
+  }
+
+  /**
+   * Obtiene el índice de tesela en convención URL XYZ.
+   *
+   * @public
+   * @function
+   * @param {Array<number>} coordinate Coordenadas en la proyección del mapa.
+   * @returns {{z: number, x: number, y: number}|null} Índice z/x/y o null.
+   * @api
+   */
+  getTileIndexAtCoordinate(coordinate) {
+    if (isNullOrEmpty(this.olLayer)) {
+      return null;
+    }
+    const olMap = this.map.getMapImpl();
+    const view = olMap.getView();
+    const source = this.olLayer.getSource();
+    if (isNullOrEmpty(source)) {
+      return null;
+    }
+    const tileGrid = source.getTileGrid();
+    if (isNullOrEmpty(tileGrid)) {
+      return null;
+    }
+    const resolution = view.getResolution();
+    if (isNullOrEmpty(resolution)) {
+      return null;
+    }
+    const z = tileGrid.getZForResolution(resolution);
+    const viewProj = view.getProjection();
+    const sourceProj = source.getProjection() || viewProj;
+    let coord = coordinate;
+    if (viewProj.getCode() !== sourceProj.getCode()) {
+      coord = transform(coordinate, viewProj, sourceProj);
+    }
+    const tileCoord = tileGrid.getTileCoordForCoordAndZ(coord, z);
+    if (isNullOrEmpty(tileCoord)) {
+      return null;
+    }
+    return {
+      z: tileCoord[0],
+      x: tileCoord[1],
+      y: (-tileCoord[2]) - 1,
+    };
+  }
+
+  /**
+   * Obtiene los componentes de color del píxel renderizado de la capa.
+   *
+   * @public
+   * @function
+   * @param {Array<number>} pixel Coordenadas de píxel [x, y] del mapa.
+   * @returns {Uint8ClampedArray|Uint8Array|Float32Array|DataView|null} Datos del píxel.
+   * @api
+   */
+  getData(pixel) {
+    if (!this.olLayer || typeof this.olLayer.getData !== 'function') {
+      return null;
+    }
+    return this.olLayer.getData(pixel);
   }
 }
 export default XYZ;

@@ -51,13 +51,29 @@
     }
   },
   "getfeatureinfo": {
+    "band": "Banda",
+    "tile_z": "Tesela Z",
+    "tile_x": "Tesela X",
+    "tile_y": "Tesela Y",
+    "red": "Rojo",
+    "green": "Verde",
+    "blue": "Azul",
+    "alpha": "Alfa",
+    "hex": "Hexadecimal",
+    "elevation": "Elevación",
+    "elevation_unit": "m",
+    "elevation_nodata": "No hay dato de elevación en este píxel.",
+    "pixel_unavailable": "No se pudo leer el color del píxel.",
+    "geotiff_intro": "Valores del píxel en el punto seleccionado del mapa.",
+    "nir": "Infrarrojo cercano (NIR)",
+    "swir": "Infrarrojo de onda corta (SWIR)",
     "info": "Información",
     "title": "Consultar capa",
     "no_info": "No existe información asociada",
     "info_of": "Información de",
     "unsupported_format": "Formato no soportado",
     "textHelp": {
-      "text1": "La herramienta de obtener información permite obtener el GetFeatureInfo (la información asociada al punto clickado sobre el visualizador) en servicios WMS y WMTS."
+      "text1": "La herramienta de obtener información permite obtener el GetFeatureInfo (la información asociada al punto clickado sobre el visualizador) en servicios WMS y WMTS, los valores de banda de capas GeoTIFF, el índice de tesela con color de píxel en capas XYZ y TMS, y la elevación decodificada en el servicio XYZ MDT."
     }
   },
   "wmcselector": {

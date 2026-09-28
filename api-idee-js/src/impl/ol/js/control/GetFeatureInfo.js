@@ -13,14 +13,16 @@ import Popup from 'IDEE/Popup';
 import { get as getRemote } from 'IDEE/util/Remote';
 import { compileSync as compileTemplate } from 'IDEE/util/Template';
 import {
-  isNullOrEmpty, beautifyAttribute, addParameters, isString,
+  isNullOrEmpty, beautifyAttribute, addParameters, isString, rgbaToHex,
+  isIdeeMdtRasterDemUrl, decodeTerrainRgbElevation,
 } from 'IDEE/util/Utils';
 import { getValue } from 'IDEE/i18n/language';
+import * as LayerType from 'IDEE/layer/Type';
 import Control from './Control';
 
 /**
  * @classdesc
- * Agrega la herramienta de consulta de información de capas WMS y WMTS.
+ * Agrega la herramienta de consulta de información de capas WMS, WMTS, GeoTIFF, XYZ y TMS.
  * @property {Array} userFormats Formato de respuesta.
  * @property {Number} buffer  Área de influencia, valor por defecto 5.
  * @api
@@ -124,19 +126,387 @@ class GetFeatureInfo extends Control {
     const allLayers = [...this.facadeMap_.getImpl().getAllLayerInGroup(),
       ...this.facadeMap_.getLayers()];
 
-    const wms = allLayers.filter((layer) => layer.type === 'WMS');
-    const wmts = allLayers.filter((layer) => layer.type === 'WMTS');
+    const wms = [];
+    const wmts = [];
+    const geotiff = [];
+    const xyz = [];
+    allLayers.forEach((layer) => {
+      if (layer.type === 'WMS') {
+        wms.push(layer);
+      } else if (layer.type === 'WMTS') {
+        wmts.push(layer);
+      } else if (layer.type === 'GeoTIFF') {
+        geotiff.push(layer);
+      } else if (layer.type === 'XYZ' || layer.type === 'TMS') {
+        xyz.push(layer);
+      }
+    });
 
     const wmsInfoURLS = this.buildWMSInfoURL([...wms, ...urlsWMS]);
     const wmtsInfoURLS = this.buildWMTSInfoURL([...wmts, ...urlsWMTS]);
+    const geotiffInfos = this.buildGeoTIFFInfo(geotiff, evt);
+    const xyzInfos = this.buildXYZInfo(xyz, evt);
+    const clientLayerInfos = [...geotiffInfos, ...xyzInfos];
 
     const layerNamesUrls = [...wmtsInfoURLS, ...wmsInfoURLS]
       .filter((layer) => !isNullOrEmpty(layer));
-    if (layerNamesUrls.length > 0) {
-      this.showInfoFromURL_(layerNamesUrls, evt.coordinate, olMap);
+    if (layerNamesUrls.length > 0 || clientLayerInfos.length > 0) {
+      this.showInfoFromURL_(layerNamesUrls, evt.coordinate, olMap, clientLayerInfos);
     } else {
       dialogParam.info('No existen capas consultables');
     }
+  }
+
+  /**
+   * Obtiene la información de capas GeoTIFF con extract activo en el píxel clicado.
+   *
+   * @function
+   * @param {Array<IDEE.layer.GeoTIFF>} geotiffLayers Capas GeoTIFF.
+   * @returns {Array<{formatedInfo: string, layerName: string}>} Información formateada por capa.
+   * @api stable
+   */
+  buildGeoTIFFInfo(geotiffLayers, evt) {
+    const pixel = evt.pixel;
+    const infos = [];
+
+    geotiffLayers.forEach((layer) => {
+      if (!layer.isVisible() || !layer.extract) {
+        return;
+      }
+      const data = layer.getData(pixel);
+      if (isNullOrEmpty(data) || data.length === 0) {
+        return;
+      }
+      const formatedInfo = GetFeatureInfo.formatGeoTIFFInfo(data, layer);
+      infos.push({
+        formatedInfo,
+        layerName: layer.legend || layer.name,
+      });
+    });
+
+    return infos;
+  }
+
+  /**
+   * Obtiene la información de capas XYZ/TMS con extract activo en el píxel clicado.
+   *
+   * @function
+   * @param {Array<IDEE.layer.XYZ|IDEE.layer.TMS>} xyzLayers Capas XYZ o TMS.
+   * @param {ol.MapBrowserEvent} evt Evento de clic en el mapa.
+   * @returns {Array<{formatedInfo: string, layerName: string}>} Información formateada por capa.
+   * @api stable
+   */
+  buildXYZInfo(xyzLayers, evt) {
+    const pixel = evt.pixel;
+    const coordinate = evt.coordinate;
+    const infos = [];
+
+    xyzLayers.forEach((layer) => {
+      if (!layer.isVisible() || !layer.extract) {
+        return;
+      }
+      const tileIndex = layer.getTileIndexAtCoordinate(coordinate);
+      const data = layer.getData(pixel);
+      if (isNullOrEmpty(tileIndex) && isNullOrEmpty(data)) {
+        return;
+      }
+      const formatedInfo = GetFeatureInfo.formatXYZInfo(tileIndex, data, layer);
+      infos.push({
+        formatedInfo,
+        layerName: layer.legend || layer.name,
+      });
+    });
+
+    return infos;
+  }
+
+  /**
+   * Formatea índice de tesela y color de píxel de una capa XYZ como tabla HTML.
+   *
+   * @public
+   * @function
+   * @param {{z: number, x: number, y: number}|null} tileIndex Índice de tesela z/x/y.
+   * @param {Uint8ClampedArray|Uint8Array|Float32Array|DataView|null} data Color RGBA del píxel.
+   * @param {IDEE.layer.XYZ|IDEE.layer.TMS|null} layer Capa XYZ/TMS (elevación MDT solo en XYZ).
+   * @returns {string} HTML con la información de la tesela y el color.
+   * @api stable
+   */
+  static formatXYZInfo(tileIndex, data, layer) {
+    const gfi = getValue('getfeatureinfo');
+    let isMdtElevation = false;
+    if (!isNullOrEmpty(layer) && layer.type === LayerType.XYZ && !isNullOrEmpty(layer.url)) {
+      isMdtElevation = isIdeeMdtRasterDemUrl(layer.url);
+    }
+    let html = '<div class=\'divinfo\'>';
+    html += '<table class=\'api-idee-table\'><tbody>';
+
+    if (!isNullOrEmpty(tileIndex)) {
+      html += '<tr><td class="key"><b>';
+      html += beautifyAttribute(gfi.tile_z);
+      html += '</b></td><td class="value">';
+      html += tileIndex.z;
+      html += '</td></tr>';
+      html += '<tr><td class="key"><b>';
+      html += beautifyAttribute(gfi.tile_x);
+      html += '</b></td><td class="value">';
+      html += tileIndex.x;
+      html += '</td></tr>';
+      html += '<tr><td class="key"><b>';
+      html += beautifyAttribute(gfi.tile_y);
+      html += '</b></td><td class="value">';
+      html += tileIndex.y;
+      html += '</td></tr>';
+    }
+
+    if (!isNullOrEmpty(data) && data.length >= 3) {
+      const red = data[0];
+      const green = data[1];
+      const blue = data[2];
+      let alpha = 255;
+      if (data.length > 3) {
+        alpha = data[3];
+      }
+      if (isMdtElevation) {
+        const isTransparent = alpha === 0;
+        if (isTransparent) {
+          html += '<tr><td class="value" colspan="2">';
+          html += gfi.elevation_nodata;
+          html += '</td></tr>';
+        } else {
+          const elevation = decodeTerrainRgbElevation(red, green, blue);
+          html += '<tr><td class="key"><b>';
+          html += beautifyAttribute(gfi.elevation);
+          html += '</b></td><td class="value">';
+          html += elevation.toFixed(1);
+          html += ' ';
+          html += gfi.elevation_unit;
+          html += '</td></tr>';
+        }
+      } else {
+        html = GetFeatureInfo.appendXyzPixelColorRows(html, data, gfi);
+      }
+    } else if (isNullOrEmpty(tileIndex)) {
+      html += '<tr><td class="value" colspan="2">';
+      html += gfi.pixel_unavailable;
+      html += '</td></tr>';
+    } else {
+      html += '<tr><td class="value" colspan="2">';
+      html += gfi.pixel_unavailable;
+      html += '</td></tr>';
+    }
+
+    html += '</tbody></table></div>';
+    return html;
+  }
+
+  /**
+   * Añade filas RGBA/hex de un píxel XYZ/TMS a una tabla HTML parcial.
+   *
+   * @private
+   * @function
+   * @param {string} html HTML parcial.
+   * @param {Uint8ClampedArray|Uint8Array|Float32Array|DataView} data Color RGBA del píxel.
+   * @param {Object} gfi Traducciones getfeatureinfo.
+   * @returns {string} HTML con filas de color añadidas.
+   * @api stable
+   */
+  static appendXyzPixelColorRows(html, data, gfi) {
+    let htmlVar = html;
+    const red = data[0];
+    const green = data[1];
+    const blue = data[2];
+    let alpha = 255;
+    if (data.length > 3) {
+      alpha = data[3];
+    }
+    const hex = rgbaToHex(`rgba(${red}, ${green}, ${blue}, ${alpha / 255})`);
+
+    htmlVar += '<tr><td class="key"><b>';
+    htmlVar += beautifyAttribute(gfi.red);
+    htmlVar += '</b></td><td class="value">';
+    htmlVar += red;
+    htmlVar += '</td></tr>';
+    htmlVar += '<tr><td class="key"><b>';
+    htmlVar += beautifyAttribute(gfi.green);
+    htmlVar += '</b></td><td class="value">';
+    htmlVar += green;
+    htmlVar += '</td></tr>';
+    htmlVar += '<tr><td class="key"><b>';
+    htmlVar += beautifyAttribute(gfi.blue);
+    htmlVar += '</b></td><td class="value">';
+    htmlVar += blue;
+    htmlVar += '</td></tr>';
+    htmlVar += '<tr><td class="key"><b>';
+    htmlVar += beautifyAttribute(gfi.alpha);
+    htmlVar += '</b></td><td class="value">';
+    htmlVar += alpha;
+    htmlVar += '</td></tr>';
+    htmlVar += '<tr><td class="key"><b>';
+    htmlVar += beautifyAttribute(gfi.hex);
+    htmlVar += '</b></td><td class="value">';
+    htmlVar += hex;
+    htmlVar += '</td></tr>';
+    return htmlVar;
+  }
+
+  /**
+   * Etiqueta legible de una banda GeoTIFF según roles GDAL en metadatos.
+   *
+   * @private
+   * @function
+   * @param {string|null} role Rol espectral (red, green, …).
+   * @param {number} bandIndex Índice de banda (1-based).
+   * @param {Object} gfi Traducciones getfeatureinfo.
+   * @returns {string} Etiqueta para el usuario.
+   * @api stable
+   */
+  static getGeoTIFFBandLabel(role, bandIndex, gfi) {
+    if (!isNullOrEmpty(role)) {
+      if (role === 'red') {
+        return gfi.red;
+      }
+      if (role === 'green') {
+        return gfi.green;
+      }
+      if (role === 'blue') {
+        return gfi.blue;
+      }
+      if (role === 'nir') {
+        return gfi.nir;
+      }
+      if (role === 'swir') {
+        return gfi.swir;
+      }
+    }
+    return `${gfi.band} ${bandIndex}`;
+  }
+
+  /**
+   * Formatea un valor de banda para mostrarlo en el popup.
+   *
+   * @private
+   * @function
+   * @param {number} value Valor numérico de la banda.
+   * @returns {string|number}
+   * @api stable
+   */
+  static formatGeoTIFFBandValue(value) {
+    if (typeof value !== 'number') {
+      return value;
+    }
+    if (Number.isInteger(value)) {
+      return value;
+    }
+    return value.toFixed(4);
+  }
+
+  /**
+   * Obtiene canales RGB(A) del píxel para resumen de color.
+   *
+   * @private
+   * @function
+   * @param {TypedArray|Array<number>} data Valores por banda.
+   * @param {Object<string, number>|null} bandRoles Roles espectrales.
+   * @returns {{red: number, green: number, blue: number, alpha: number}|null}
+   * @api stable
+   */
+  static getGeoTIFFRgbChannels(data, bandRoles) {
+    if (isNullOrEmpty(bandRoles) || !bandRoles.red || !bandRoles.green || !bandRoles.blue) {
+      return null;
+    }
+    const red = data[bandRoles.red - 1];
+    const green = data[bandRoles.green - 1];
+    const blue = data[bandRoles.blue - 1];
+    const alpha = 255;
+    return {
+      red,
+      green,
+      blue,
+      alpha,
+    };
+  }
+
+  /**
+   * Añade fila de color hexadecimal derivado de RGB(A) en consulta GeoTIFF.
+   *
+   * @private
+   * @function
+   * @param {string} html HTML parcial.
+   * @param {number} red Canal rojo.
+   * @param {number} green Canal verde.
+   * @param {number} blue Canal azul.
+   * @param {number} alpha Canal alfa.
+   * @param {Object} gfi Traducciones getfeatureinfo.
+   * @returns {string}
+   * @api stable
+   */
+  static appendGeoTIFFHexRow(html, red, green, blue, alpha, gfi) {
+    let htmlVar = html;
+    const hex = rgbaToHex(`rgba(${red}, ${green}, ${blue}, ${alpha / 255})`);
+    htmlVar += '<tr><td class="key"><b>';
+    htmlVar += beautifyAttribute(gfi.hex);
+    htmlVar += '</b></td><td class="value">';
+    htmlVar += hex;
+    htmlVar += '</td></tr>';
+    return htmlVar;
+  }
+
+  /**
+   * Formatea los valores de banda de un GeoTIFF como tabla HTML.
+   *
+   * @public
+   * @function
+   * @param {TypedArray|Array<number>} data Valores por banda del píxel.
+   * @param {IDEE.layer.GeoTIFF} layer Capa GeoTIFF.
+   * @returns {string} HTML con la información de bandas.
+   * @api stable
+   */
+  static formatGeoTIFFInfo(data, layer) {
+    const gfi = getValue('getfeatureinfo');
+    const impl = layer.getImpl();
+    let bandRoles = null;
+    if (impl) {
+      bandRoles = impl.getCachedBandRoles();
+    }
+    const roleByBandIndex = {};
+    if (bandRoles) {
+      Object.keys(bandRoles).forEach((role) => {
+        roleByBandIndex[bandRoles[role]] = role;
+      });
+    }
+
+    let html = '<div class=\'divinfo\'>';
+    html += '<table class=\'api-idee-table\'><tbody>';
+    html += '<tr><td class="value" colspan="2">';
+    html += gfi.geotiff_intro;
+    html += '</td></tr>';
+
+    for (let i = 0; i < data.length; i += 1) {
+      const bandIndex = i + 1;
+      const role = roleByBandIndex[bandIndex];
+      const label = GetFeatureInfo.getGeoTIFFBandLabel(role, bandIndex, gfi);
+      const value = GetFeatureInfo.formatGeoTIFFBandValue(data[i]);
+      html += '<tr><td class="key"><b>';
+      html += beautifyAttribute(label);
+      html += '</b></td><td class="value">';
+      html += value;
+      html += '</td></tr>';
+    }
+
+    const rgbChannels = GetFeatureInfo.getGeoTIFFRgbChannels(data, bandRoles);
+    if (!isNullOrEmpty(rgbChannels)) {
+      html = GetFeatureInfo.appendGeoTIFFHexRow(
+        html,
+        rgbChannels.red,
+        rgbChannels.green,
+        rgbChannels.blue,
+        rgbChannels.alpha,
+        gfi,
+      );
+    }
+
+    html += '</tbody></table></div>';
+    return html;
   }
 
   buildGenericInfoURL() {
@@ -500,9 +870,23 @@ class GetFeatureInfo extends Control {
    * @param {array<object>} layerNamesUrls Capas consultadas
    * @param {array} coordinate Posición de las coordenadas al hacer clic.
    * @param {olMap} olMap Mapa.
+   * @param {Array<{formatedInfo: string, layerName: string}>} clientLayerInfos
+   * Información ya calculada en cliente (GeoTIFF, XYZ, etc.).
    * @api
    */
-  showInfoFromURL_(layerNamesUrls, coordinate, olMap) {
+  showInfoFromURL_(layerNamesUrls, coordinate, olMap, clientLayerInfos = []) {
+    const infos = clientLayerInfos.map((item) => ({
+      formatedInfo: item.formatedInfo,
+      layerName: item.layerName,
+    }));
+    const formato = this.userFormats[this.currentFormat];
+
+    if (layerNamesUrls.length === 0) {
+      this.renderGetFeatureInfoPopup_(infos, coordinate, null);
+      this.popup_ = this.facadeMap_.getPopup();
+      return;
+    }
+
     const htmlAsText = compileTemplate(getfeatureinfoPopupTemplate, {
       vars: {
         info: GetFeatureInfo.LOADING_MESSAGE,
@@ -510,8 +894,6 @@ class GetFeatureInfo extends Control {
       parseToHtml: false,
     });
 
-    const infos = [];
-    const formato = this.userFormats[this.currentFormat];
     let contFull = 0;
     const loadingInfoTab = {
       icon: 'g-cartografia-info',
@@ -561,38 +943,68 @@ class GetFeatureInfo extends Control {
         }
         contFull += 1;
         if (layerNamesUrls.length === contFull && !isNullOrEmpty(popup)) {
-          popup.removeTab(loadingInfoTab);
-          if (infos.length === 0) {
-            popup.addTab({
-              icon: 'g-cartografia-info',
-              title: GetFeatureInfo.POPUP_TITLE,
-              content: getValue('getfeatureinfo').no_info,
-            });
-          } else {
-            const popupContent = compileTemplate(getfeatureinfoLayers, {
-              vars: {
-                layers: infos,
-                info_of: getValue('getfeatureinfo').info_of,
-              },
-              parseToHtml: false,
-            });
-            const parsedContent = popupContent.replace(/(.*)(<a href=.*)(>.*<\/a.*)/g, '$1$2 target="_blank"$3');
-            popup.addTab({
-              icon: 'g-cartografia-info',
-              title: GetFeatureInfo.POPUP_TITLE,
-              content: parsedContent,
-              listeners: [{
-                selector: '.m-getfeatureinfo-content-info div.m-arrow-right',
-                all: true,
-                type: 'click',
-                callback: (e) => this.toogleSection(e),
-              }],
-            });
-          }
+          this.renderGetFeatureInfoPopup_(infos, coordinate, loadingInfoTab);
         }
       });
     });
     this.popup_ = popup;
+  }
+
+  /**
+   * Muestra el popup de GetFeatureInfo con la información recopilada.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @private
+   * @function
+   * @param {Array<{formatedInfo: string, layerName: string}>} infos Información por capa.
+   * @param {Array<number>} coordinate Coordenadas del clic.
+   * @param {Object|null} loadingInfoTab Pestaña de carga a eliminar, si existe.
+   * @api stable
+   */
+  renderGetFeatureInfoPopup_(infos, coordinate, loadingInfoTab) {
+    let popup = this.facadeMap_.getPopup();
+    let isNewPopup = false;
+    if (isNullOrEmpty(popup)) {
+      popup = new Popup();
+      isNewPopup = true;
+    } else if (!isNullOrEmpty(loadingInfoTab)) {
+      popup.removeTab(loadingInfoTab);
+    }
+
+    if (infos.length === 0) {
+      popup.addTab({
+        icon: 'g-cartografia-info',
+        title: GetFeatureInfo.POPUP_TITLE,
+        content: getValue('getfeatureinfo').no_info,
+      });
+      if (isNewPopup) {
+        this.facadeMap_.addPopup(popup, coordinate);
+      }
+      return;
+    }
+
+    const popupContent = compileTemplate(getfeatureinfoLayers, {
+      vars: {
+        layers: infos,
+        info_of: getValue('getfeatureinfo').info_of,
+      },
+      parseToHtml: false,
+    });
+    const parsedContent = popupContent.replace(/(.*)(<a href=.*)(>.*<\/a.*)/g, '$1$2 target="_blank"$3');
+    popup.addTab({
+      icon: 'g-cartografia-info',
+      title: GetFeatureInfo.POPUP_TITLE,
+      content: parsedContent,
+      listeners: [{
+        selector: '.m-getfeatureinfo-content-info div.m-arrow-right',
+        all: true,
+        type: 'click',
+        callback: (e) => this.toogleSection(e),
+      }],
+    });
+    if (isNewPopup) {
+      this.facadeMap_.addPopup(popup, coordinate);
+    }
   }
 
   /**

@@ -365,6 +365,21 @@ class GeoTIFF extends LayerBase {
   }
 
   /**
+   * Devuelve los roles espectrales ya resueltos en caché, sin acceder a la fuente.
+   *
+   * @public
+   * @function
+   * @returns {Object<string, number>|null}
+   * @api stable
+   */
+  getCachedBandRoles() {
+    if (this.bandRoles_) {
+      return this.bandRoles_;
+    }
+    return null;
+  }
+
+  /**
    * Obtiene roles espectrales solo desde COMMON_NAME de metadatos GDAL.
    * Si el GeoTIFF no declara COMMON_NAME, devuelve null.
    * Ejemplo: `{ red: 1, green: 2, blue: 3, nir: 4, swir: 5 }`.

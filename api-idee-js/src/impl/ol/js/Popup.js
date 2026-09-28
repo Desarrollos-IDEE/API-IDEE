@@ -336,6 +336,9 @@ class Popup extends OLOverlay {
    * @api
    */
   setAnimationView() {
+    if (isNullOrEmpty(this.facadeMap_) || isNullOrEmpty(this.facadeMap_.getMapImpl())) {
+      return;
+    }
     this.facadeMap_.getMapImpl()
       .getView()
       .animate({

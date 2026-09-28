@@ -27,6 +27,8 @@ import Raster from '../style/Raster';
  * @property {String} legend Nombre asociado en el árbol de contenido, si usamos uno.
  * @property {Boolean} transparent (deprecated) 'Falso' si es una capa base,
  * 'verdadero' en caso contrario.
+ * @property {Boolean} extract Activa la consulta de valores de banda con control GetFeatureInfo,
+ * por defecto verdadero.
  * @property {Number} minZoom Limitar el zoom mínimo.
  * @property {Number} maxZoom Limitar el zoom máximo.
  * @property {Object} options Capa de opciones GeoTIFF.
@@ -51,6 +53,8 @@ class GeoTIFF extends LayerBase {
    * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
    * - visibility: Verdadero si la capa es visible, falso si queremos que no lo sea.
    * - normalize: Normalización de los datos.
+   * - extract: Activa la consulta de valores de banda con control GetFeatureInfo,
+   *   por defecto verdadero.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a
    * la implementación de la capa.
    * - visibility: Indica la visibilidad de la capa.
@@ -126,6 +130,11 @@ class GeoTIFF extends LayerBase {
      * GeoTIFF legend: Nombre asociado en el árbol de contenido, si usamos uno.
      */
     this.legend = parameters.legend;
+
+    /**
+     * GeoTIFF extract: consulta de valores de banda con control GetFeatureInfo.
+     */
+    this.extract = parameters.extract === undefined ? true : parameters.extract;
 
     /**
      * GeoTIFF transparent: Falso si es una capa base, verdadero en caso contrario.

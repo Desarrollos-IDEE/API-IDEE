@@ -700,7 +700,12 @@ export default class ShareMapControl extends IDEE.Control {
    * @function
    */
   getGeoTIFF(layer) {
-    return `GeoTIFF*${layer.legend}*${layer.url}*${layer.name}*${layer.transparent}*${layer.projection || ''}*${layer.displayInLayerSwitcher}*${layer.isVisible()}`;
+    const normalize = layer.options?.normalize;
+    let normalizeParam = '';
+    if (!IDEE.utils.isUndefined(normalize)) {
+      normalizeParam = normalize;
+    }
+    return `GeoTIFF*${layer.legend}*${layer.url}*${layer.name}*${layer.transparent}*${layer.projection || ''}*${layer.displayInLayerSwitcher}*${layer.isVisible()}*${normalizeParam}*${layer.extract}`;
   }
 
   /**

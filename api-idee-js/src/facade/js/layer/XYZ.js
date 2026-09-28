@@ -4,7 +4,7 @@
 import XYZImpl from 'impl/layer/XYZ';
 import LayerBase from './Layer';
 import {
-  isUndefined, isObject, isNullOrEmpty, isString,
+  isUndefined, isObject, isNullOrEmpty, isString, isIdeeMdtRasterDemUrl,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import * as parameter from '../parameter/parameter';
@@ -33,6 +33,8 @@ import { getValue } from '../i18n/language';
  * @property {Boolean} transparent (deprecated) Falso si es una capa base,
  * verdadero en caso contrario.
  * @property {Array} maxExtent La medida en que restringe la visualización a una región específica.
+ * @property {Boolean} extract Activa la consulta con GetFeatureInfo; por defecto falso
+ * (verdadero por defecto en el servicio MDT IDEE raster-dem).
  *
  * @api
  * @extends {IDEE.layer}
@@ -56,6 +58,8 @@ class XYZ extends LayerBase {
    * - type: Tipo de la capa.
    * - tileGridMaxZoom: Zoom máximo de cuadrícula de mosaico.
    * - tileSize: Tamaño de la tesela
+   * - extract: Activa la consulta con GetFeatureInfo (color de píxel o elevación MDT).
+   *   Por defecto falso; verdadero por defecto solo en MDT.
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
    * - opacity: Opacidad de capa, por defecto 1.
    * - minZoom: Zoom mínimo aplicable a la capa.
@@ -126,6 +130,20 @@ class XYZ extends LayerBase {
     this.legend = parameters.legend;
 
     /**
+     * XYZ extract: consulta de tesela y color de píxel con control GetFeatureInfo.
+     * En el servicio MDT IDEE (raster-dem) se activa por defecto para mostrar elevación.
+     */
+    if (isUndefined(parameters.extract)) {
+      if (isIdeeMdtRasterDemUrl(parameters.url)) {
+        this.extract = true;
+      } else {
+        this.extract = false;
+      }
+    } else {
+      this.extract = parameters.extract;
+    }
+
+    /**
      * XYZ tileGridMaxZoom. Zoom máximo de cuadrícula de mosaico.
      */
     this.tileGridMaxZoom = parameters.tileGridMaxZoom || userParameters.tileGridMaxZoom;
@@ -165,6 +183,42 @@ class XYZ extends LayerBase {
       equals = equals && (this.idLayer === obj.idLayer);
     }
     return equals;
+  }
+
+  /**
+   * Obtiene el índice de tesela (z, x, y) en formato URL XYZ para una coordenada del mapa.
+   *
+   * @function
+   * @public
+   * @param {Array<number>} coordinate Coordenadas en la proyección del mapa.
+   * @returns {{z: number, x: number, y: number}|null}
+   * Índice de tesela o null si no está disponible.
+   * @api
+   */
+  getTileIndexAtCoordinate(coordinate) {
+    const impl = this.getImpl();
+    if (!impl || typeof impl.getTileIndexAtCoordinate !== 'function') {
+      return null;
+    }
+    return impl.getTileIndexAtCoordinate(coordinate);
+  }
+
+  /**
+   * Obtiene el color del píxel renderizado en coordenadas de pantalla del mapa.
+   * Delega en la implementación (OpenLayers Tile#getData).
+   *
+   * @function
+   * @public
+   * @param {Array<number>} pixel Coordenadas de píxel [x, y] del mapa.
+   * @returns {Uint8ClampedArray|Uint8Array|Float32Array|DataView|null} Componentes RGBA o null.
+   * @api
+   */
+  getData(pixel) {
+    const impl = this.getImpl();
+    if (!impl || typeof impl.getData !== 'function') {
+      return null;
+    }
+    return impl.getData(pixel);
   }
 }
 

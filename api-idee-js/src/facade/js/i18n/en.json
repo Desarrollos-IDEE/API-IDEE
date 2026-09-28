@@ -50,13 +50,29 @@
     }
   },
   "getfeatureinfo": {
+    "band": "Band",
+    "tile_z": "Tile Z",
+    "tile_x": "Tile X",
+    "tile_y": "Tile Y",
+    "red": "Red",
+    "green": "Green",
+    "blue": "Blue",
+    "alpha": "Alpha",
+    "hex": "Hex",
+    "elevation": "Elevation",
+    "elevation_unit": "m",
+    "elevation_nodata": "No elevation data at this pixel.",
+    "pixel_unavailable": "Pixel color could not be read.",
+    "geotiff_intro": "Pixel values at the selected point on the map.",
+    "nir": "Near infrared (NIR)",
+    "swir": "Short-wave infrared (SWIR)",
     "info": "Information",
     "title": "Consult layer",
     "no_info": "No associated info",
     "info_of": "Information about",
     "unsupported_format": "Unsupported format",
     "textHelp": {
-      "text1": "The obtain information tool allows obtaining the GetFeatureInfo (the information associated with the point clicked on the viewer) in WMS and WMTS services."
+      "text1": "The obtain information tool allows obtaining the GetFeatureInfo (the information associated with the point clicked on the viewer) in WMS and WMTS services, band values from GeoTIFF layers, tile index with pixel color from XYZ and TMS layers, and decoded elevation from XYZ MDT service."
     }
   },
   "wmcselector": {

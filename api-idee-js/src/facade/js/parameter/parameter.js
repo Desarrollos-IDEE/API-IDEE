@@ -4,6 +4,7 @@
  */
 import {
   isUndefined, isNull, isArray, isNullOrEmpty, isFunction, isObject, isString, isUrl, normalize,
+  resolveXyzExtract,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import * as LayerType from '../layer/Type';
@@ -2613,8 +2614,8 @@ export const getNormalizeGeoTIFF = (parameter) => {
   let params;
   if (isString(parameter)) {
     params = parameter.split('*');
-    if (params.length >= 8) {
-      const value = params[7];
+    if (params.length >= 9) {
+      const value = params[8];
       normalizeParam = isNullOrEmpty(value) ? undefined : value;
     }
   } else if (isObject(parameter) && !isNullOrEmpty(parameter.normalize)) {
@@ -2622,7 +2623,44 @@ export const getNormalizeGeoTIFF = (parameter) => {
   } else if (!isObject(parameter)) {
     Exception(`El parámetro no es de un tipo soportado: ${typeof parameter}`);
   }
+  if (isString(parameter) && !isNullOrEmpty(normalizeParam)) {
+    normalizeParam = /^1|(true)$/i.test(normalizeParam);
+  }
   return normalizeParam;
+};
+
+/**
+ * Analiza el parámetro para obtener el "extract" de la capa GeoTIFF.
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {string|Mx.parameters.GeoTIFF} parameter Parámetro para obtener
+ * el "extract" de la capa GeoTIFF.
+ * @returns {Boolean|undefined} Valor del extract.
+ * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
+ * @api
+ */
+export const getExtractGeoTIFF = (parameter) => {
+  let extract;
+  let params;
+  if (isString(parameter)) {
+    params = parameter.split('*');
+    if (params.length >= 10) {
+      const value = params[9];
+      extract = isNullOrEmpty(value) ? undefined : value;
+    }
+  } else if (isObject(parameter) && !isNullOrEmpty(parameter.extract)) {
+    extract = parameter.extract;
+  } else if (!isObject(parameter)) {
+    Exception(`El parámetro no es de un tipo soportado: ${typeof parameter}`);
+  }
+  if (!isNullOrEmpty(extract)) {
+    extract = /^1|(true)$/i.test(extract);
+  } else {
+    extract = undefined;
+  }
+  return extract;
 };
 
 /**
@@ -2985,6 +3023,9 @@ export const getUseCapabilitiesWMTS = (parameter) => {
 /**
  * Analiza los parámetros especificados por el usuario para la capa GeoTIFF.
  *
+ * Cadena REST (separador *): GeoTIFF, legend, url, name, transparent, projection,
+ * displayInLayerSwitcher, visibility, normalize, extract.
+ *
  * @param {string|Mx.parameters.GeoTIFF} userParameters Parámetros para la capa GeoTIFF.
  * @returns {Mx.parameters.GeoTIFF|Array<Mx.parameters.GeoTIFF>} Parámetros de la capa GeoTIFF.
  * @public
@@ -3037,6 +3078,9 @@ export const geotiff = (userParameters) => {
 
     // get normalize
     layerObj.normalize = getNormalizeGeoTIFF(userParam);
+
+    // gets the extract
+    layerObj.extract = getExtractGeoTIFF(userParam);
 
     layerObj.isBase = (layerObj.transparent === undefined)
       ? userParam.isBase
@@ -3277,6 +3321,12 @@ export const xyz = (userParamer) => {
     // gets the legend
     layerObj.legend = getExtraParameter(userParam, layerObj.name, 3, 'legend') || layerObj.name;
 
+    // gets the extract (MDT IDEE raster-dem en XYZ: true por defecto; resto: false)
+    layerObj.extract = resolveXyzExtract(
+      layerObj.url,
+      getExtraParameter(userParam, undefined, 4, 'extract'),
+    );
+
     return layerObj;
   });
 
@@ -3386,6 +3436,12 @@ export const tms = (userParamer) => {
 
     // gets tileSize
     layerObj.tileSize = getExtraParameter(userParam, undefined, 6, 'tileSize');
+
+    // TMS: extract solo si viene en parámetros; por defecto false
+    layerObj.extract = getExtraParameter(userParam, undefined, 7, 'extract');
+    if (isUndefined(layerObj.extract)) {
+      layerObj.extract = false;
+    }
 
     return layerObj;
   });
