@@ -213,7 +213,6 @@ class WMC extends Layer {
       this.sections = [];
     }
     this.layers.forEach((wms) => wms.setWMCParent(this.facadeLayer_));
-    this.layers.forEach((layer) => layer.inheritAutoRefresh(this.facadeLayer_));
     this.map.addWMS(this.layers, true);
     this.map.addSections(this.sections);
 
@@ -326,7 +325,7 @@ class WMC extends Layer {
   }
 
   /**
-   * El contenedor transmite el intervalo a sus fuentes hijas.
+   * Identifica contenedores para recorrer y detener sus capas hijas.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
    * @function

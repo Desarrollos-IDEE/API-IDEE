@@ -192,12 +192,11 @@ class OSM extends Layer {
    */
   updateSource_(resolutions) {
     let fileExtension;
-    const autoRefresh = this.facadeLayer_.isAutoRefreshEnabled();
     // Guarda la plantilla aparte para mantener la normalización pública de URL.
-    if (autoRefresh && (!this.autoRefreshOSMURL_ || this.url?.includes('/{'))) {
+    if (!this.autoRefreshOSMURL_ || this.url?.includes('/{')) {
       this.autoRefreshOSMURL_ = this.url;
     }
-    let url = autoRefresh ? this.autoRefreshOSMURL_ : this.url;
+    let url = this.autoRefreshOSMURL_;
     if (url) {
       const indexExtension = url.trim().indexOf('}.');
       fileExtension = url.substring(indexExtension + 2);
@@ -206,7 +205,6 @@ class OSM extends Layer {
       this.url = url;
     }
     const source = new OpenStreetMapImageryProvider({ url, fileExtension });
-    if (!autoRefresh) return source;
 
     // OSM construye la plantilla completa sobre UrlTemplateImageryProvider.
     // El parámetro de refresco se añade después de esa ruta, no a la URL base.

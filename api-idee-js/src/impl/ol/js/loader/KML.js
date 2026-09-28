@@ -115,7 +115,7 @@ class KML extends MObject {
         if (forRefresh && response.code >= 400) throw new Error(`HTTP ${response.code}`);
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(response.text, 'text/xml');
-        if (forRefresh && xmlDoc.querySelector('parsererror')) throw new Error('KML inválido');
+        if (forRefresh && xmlDoc.querySelector('parsererror')) throw new Error(getValue('exception').invalid_kml);
         let transformXMLtoText = false;
         if (!isUndefined(layers)) {
           const folders = xmlDoc.getElementsByTagName('Folder');

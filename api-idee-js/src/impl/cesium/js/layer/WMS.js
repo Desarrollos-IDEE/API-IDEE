@@ -608,6 +608,7 @@ class WMS extends LayerBase {
    * @api stable
    */
   destroy() {
+    this.facadeLayer_.stopAutoRefresh();
     const cesiumMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.cesiumLayer)) {
       cesiumMap.imageryLayers.remove(this.cesiumLayer);

@@ -296,7 +296,7 @@ class MBTilesVector extends Vector {
    * @api
    */
   createLayer(opts) {
-    if (this.facadeLayer_.isAutoRefreshEnabled()) autoRefreshOptions.set(this, opts);
+    autoRefreshOptions.set(this, opts);
     let tileLoadFn = this.loadVectorTileWithProvider;
     if (this.tileLoadFunction) {
       tileLoadFn = this.loadVectorTile;
@@ -599,20 +599,23 @@ class MBTilesVector extends Vector {
     const response = await fetch(addParameters(this.url_, { _ideeRefresh: Date.now() }));
     if (!response.ok) throw new Error(`MBTiles: HTTP ${response.status}`);
     const provider = new TileProvider(response);
-    await provider.getMaxZoomLevel();
-    if (!isCurrent() || this.olLayer !== layer) {
-      provider.dispose();
-      return;
+    let adopted = false;
+    try {
+      await provider.getMaxZoomLevel();
+      if (!isCurrent() || this.olLayer !== layer) return;
+      this.disposeAutoRefresh();
+      const previous = layer.getSource();
+      this.createLayer({ ...options, tileProvider: provider });
+      this.tileProvider_ = provider;
+      adopted = true;
+      previous.dispose();
+      options.tileProvider?.dispose();
+      this.features_.length = 0;
+      layer.getSource().on('tileloaderror', (event) => this.checkAllTilesLoaded_(event));
+      layer.getSource().on('tileloadend', (event) => this.checkAllTilesLoaded_(event));
+    } finally {
+      if (!adopted) provider.dispose();
     }
-    this.tileProvider_ = provider;
-    this.disposeAutoRefresh();
-    const previous = layer.getSource();
-    this.createLayer({ ...options, tileProvider: provider });
-    previous.dispose();
-    options.tileProvider?.dispose();
-    this.features_.length = 0;
-    layer.getSource().on('tileloaderror', (event) => this.checkAllTilesLoaded_(event));
-    layer.getSource().on('tileloadend', (event) => this.checkAllTilesLoaded_(event));
   }
 }
 export default MBTilesVector;

@@ -57,7 +57,7 @@ class Tile {
         getUint8ArrayFromData(data).then((uint8Array) => {
           this.db_ = new SQL.Database(uint8Array);
           resolve(this.db_);
-        });
+        }).catch(reject);
       }).catch((err) => {
         reject(err);
       });

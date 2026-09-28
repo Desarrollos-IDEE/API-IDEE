@@ -142,7 +142,7 @@ class KML extends MObject {
         const result = response.text.replace(/<extrude>.*?<\/extrude>/gs, '');
         const xmlDoc = parser.parseFromString(result, 'text/xml');
         const is2D = this.is2D(xmlDoc.getElementsByTagName('coordinates'));
-        if (forRefresh && xmlDoc.querySelector('parsererror')) throw new Error('KML inválido');
+        if (forRefresh && xmlDoc.querySelector('parsererror')) throw new Error(getValue('exception').invalid_kml);
         let transformXMLtoText = false;
         if (!isUndefined(layers)) {
           const folders = xmlDoc.getElementsByTagName('Folder');

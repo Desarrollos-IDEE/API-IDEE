@@ -56,6 +56,8 @@ class WMS extends LayerBase {
    * - version: Versión WMS.
    * - tiled: Verdadero si queremos dividir la capa en tiles, falso en caso contrario.
    * - type: Tipo de la capa.
+   * - refreshInterval: Intervalo inicial en milisegundos. Si el mapa tiene uno válido,
+   *   lo sobrescribe; al retirar y reinsertar la capa se conserva el último valor aplicado.
    * - useCapabilities: Define si se utilizará el capabilities para generar la capa.
    * - mergeLayers: Verdadero si se añaden todas las capas del servicio
    * en una, falso en caso contrario. Por defecto, verdadero.

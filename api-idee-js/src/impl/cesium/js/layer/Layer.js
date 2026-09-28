@@ -101,24 +101,30 @@ class LayerBase extends MObject {
   }
 
   /**
-   * Construye el proveedor habitual y conserva su fábrica solo para autorefresco.
+   * Construye el proveedor habitual y conserva su fábrica para autorefresco.
+   * @param {Function} Provider Constructor del proveedor de imágenes.
+   * @param {Object} options Opciones del proveedor.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
    * @function
    */
   createAutoRefreshProvider(Provider, options) {
     const provider = new Provider(options);
-    if (this.facadeLayer_.isAutoRefreshEnabled()
-      && this.isAutoRefreshRemoteURL(options.url?.url || options.url)) {
+    if (this.isAutoRefreshRemoteURL(options.url?.url || options.url)) {
       const state = { pending: 0 };
       const track = (source) => {
         const trackedSource = source;
-        const requestImage = trackedSource.requestImage.bind(trackedSource);
-        trackedSource.requestImage = (...args) => {
-          const request = requestImage(...args);
+        if (state.release) state.release();
+        const requestImage = trackedSource.requestImage;
+        const wrapper = (...args) => {
+          const request = requestImage.apply(trackedSource, args);
           if (!request || typeof request.then !== 'function') return request;
           state.pending += 1;
           return Promise.resolve(request).finally(() => { state.pending -= 1; });
+        };
+        trackedSource.requestImage = wrapper;
+        state.release = () => {
+          if (trackedSource.requestImage === wrapper) trackedSource.requestImage = requestImage;
         };
         return source;
       };
@@ -129,7 +135,9 @@ class LayerBase extends MObject {
         if (typeof this.activatePickFeatures === 'function') this.activatePickFeatures(next);
         return track(next);
       };
-      track(provider);
+      // El mapa asigna el intervalo después de addTo; permite también activarlo más tarde.
+      if (this.facadeLayer_.isAutoRefreshEnabled()) track(provider);
+      this.disposeAutoRefresh();
       autoRefreshProviders.set(this, state);
     }
     return provider;
@@ -157,6 +165,8 @@ class LayerBase extends MObject {
     const state = autoRefreshProviders.get(this);
     const previous = this.cesiumLayer;
     if (!state || state.pending > 0 || !previous || !this.map) return;
+    // Otras capas esperan a que el globo termine de cargar antes de añadir sus entidades.
+    if (!this.map.getMapImpl().scene.globe.tilesLoaded) return;
     this.replaceAutoRefreshProvider(state.create());
   }
 
@@ -201,6 +211,8 @@ class LayerBase extends MObject {
    * @function
    */
   disposeAutoRefresh() {
+    const state = autoRefreshProviders.get(this);
+    if (state?.release) state.release();
     autoRefreshProviders.delete(this);
   }
 

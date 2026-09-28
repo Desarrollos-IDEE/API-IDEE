@@ -271,10 +271,6 @@ class KML extends Vector {
             }
           },
         }));
-        // El loader ya añade los objetos; evita duplicarlos al activar el autorefresco.
-        if (!this.facadeVector_.isAutoRefreshEnabled()) {
-          this.facadeVector_.addFeatures(response.features);
-        }
       });
     }
   }
@@ -354,7 +350,7 @@ class KML extends Vector {
     }
 
     this.removePopup();
-    this.options = null;
+    // Conserva las opciones de construcción para permitir retirar y reinsertar la capa.
     this.map = null;
   }
 

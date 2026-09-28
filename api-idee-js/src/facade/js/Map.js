@@ -11,6 +11,7 @@ import {
   isArray,
   isNullOrEmpty,
   isFunction,
+  isPositiveNumber,
   isObject,
   isString,
   escapeJSCode,
@@ -135,7 +136,9 @@ class Map extends Base {
     const impl = new MapImpl(mapContainerElement, this, dpi, opts, viewVendorOptions);
     this.setImpl(impl);
 
-    this.refreshInterval_ = params.refreshInterval;
+    const interval = params.refreshInterval;
+    this.refreshInterval_ = isPositiveNumber(interval) && interval % 1 === 0
+      && interval <= 2147483647 ? interval : undefined;
 
     // checks if the param is null or empty
     if (isNullOrEmpty(userParameters)) {
@@ -702,7 +705,7 @@ class Map extends Base {
   }
 
   /**
-   * Obtiene el intervalo válido configurado al construir el mapa.
+   * Obtiene el intervalo válido configurado en el mapa.
    * Las capas lo consultan al incorporarse, incluidas las añadidas posteriormente.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @returns {Number|undefined} Intervalo en milisegundos o ausencia de autorefresco global.
@@ -710,8 +713,33 @@ class Map extends Base {
    * @function
    */
   getAutoRefreshInterval() {
-    return Layer.isValidAutoRefreshInterval(this.refreshInterval_)
-      ? this.refreshInterval_ : undefined;
+    return this.refreshInterval_;
+  }
+
+  /**
+   * Actualiza el intervalo del mapa para las capas actuales y las incorporaciones futuras.
+   * El valor del mapa sobrescribe el de sus capas, incluidas las de los grupos.
+   * @param {Number|undefined} interval Intervalo; cero o undefined desactiva todas las capas.
+   * @returns {IDEE.Map} Mapa.
+   * @public
+   * @api
+   */
+  updateLayersRefreshInterval(interval) {
+    this.refreshInterval_ = isPositiveNumber(interval) && interval % 1 === 0
+      && interval <= 2147483647 ? interval : undefined;
+    const visited = new Set();
+    const update = (layer) => {
+      if (visited.has(layer) || layer.name === '__draw__') return;
+      visited.add(layer);
+      if (isFunction(layer.updateRefreshInterval)) {
+        layer.updateRefreshInterval(this.getAutoRefreshInterval());
+      }
+      if (layer.getImpl().isAutoRefreshContainer?.()) {
+        layer.getImpl().getLayers().forEach(update);
+      }
+    };
+    this.getLayers().forEach(update);
+    return this;
   }
 
   /**
@@ -1073,6 +1101,11 @@ class Map extends Base {
       });
 
       this.getImpl().addLayerGroups(collectionLayerGroups);
+      collectionLayerGroups.forEach((layer) => {
+        if (isFunction(layer.startAutoRefresh)) {
+          layer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
 
       // Add this.featuresHandler_.addLayer(layer);
       collectionLayerGroups.forEach((group) => {
@@ -1204,6 +1237,11 @@ class Map extends Base {
 
       // adds the layers
       this.getImpl().addWMC(wmcLayers);
+      wmcLayers.forEach((layer) => {
+        if (isFunction(layer.startAutoRefresh)) {
+          layer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
       this.fire(EventType.ADDED_LAYER, [wmcLayers]);
       this.fire(EventType.ADDED_WMC, [wmcLayers]);
 
@@ -1342,6 +1380,11 @@ class Map extends Base {
 
       // adds the layers
       this.getImpl().addKML(kmlLayers);
+      kmlLayers.forEach((layer) => {
+        if (isFunction(layer.startAutoRefresh)) {
+          layer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
       this.fire(EventType.ADDED_LAYER, [kmlLayers]);
       this.fire(EventType.ADDED_KML, [kmlLayers]);
     }
@@ -1447,9 +1490,13 @@ class Map extends Base {
         wmsLayer.setMap(this);
         wmsLayers.push(wmsLayer);
       });
-
       // adds the layers
       this.getImpl().addWMS(wmsLayers);
+      wmsLayers.forEach((wmsLayer) => {
+        if (isFunction(wmsLayer.startAutoRefresh)) {
+          wmsLayer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
       this.fire(EventType.ADDED_LAYER, [wmsLayers]);
       this.fire(EventType.ADDED_WMS, [wmsLayers]);
     }
@@ -1589,6 +1636,11 @@ class Map extends Base {
 
       // adds the layers
       this.getImpl().addWFS(wfsLayers);
+      wfsLayers.forEach((layer) => {
+        if (isFunction(layer.startAutoRefresh)) {
+          layer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
       this.fire(EventType.ADDED_LAYER, [wfsLayers]);
       this.fire(EventType.ADDED_WFS, [wfsLayers]);
     }
@@ -1618,6 +1670,11 @@ class Map extends Base {
       }
     });
 
+    unknowLayers.forEach((layer) => {
+      if (isFunction(layer.startAutoRefresh)) {
+        layer.startAutoRefresh(this.getAutoRefreshInterval());
+      }
+    });
     this.fire(EventType.ADDED_LAYER, [unknowLayers]);
   }
 
@@ -1727,6 +1784,11 @@ class Map extends Base {
 
       // adds the layers
       this.getImpl().addGeoTIFF(geotiffLayers);
+      geotiffLayers.forEach((layer) => {
+        if (isFunction(layer.startAutoRefresh)) {
+          layer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
       this.fire(EventType.ADDED_LAYER, [geotiffLayers]);
       this.fire(EventType.ADDED_GEOTIFF, [geotiffLayers]);
     }
@@ -1840,6 +1902,11 @@ class Map extends Base {
 
       // adds the layers
       this.getImpl().addMapLibre(mapLibreLayers);
+      mapLibreLayers.forEach((layer) => {
+        if (isFunction(layer.startAutoRefresh)) {
+          layer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
       this.fire(EventType.ADDED_LAYER, [mapLibreLayers]);
       this.fire(EventType.ADDED_MAPLIBRE, [mapLibreLayers]);
     }
@@ -1954,6 +2021,11 @@ class Map extends Base {
 
       // adds the layers
       this.getImpl().addOGCAPIFeatures(ogcapifLayers);
+      ogcapifLayers.forEach((layer) => {
+        if (isFunction(layer.startAutoRefresh)) {
+          layer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
       this.fire(EventType.ADDED_LAYER, [ogcapifLayers]);
       this.fire(EventType.ADDED_OGCAPIFEATURES, [ogcapifLayers]);
     }
@@ -2064,6 +2136,11 @@ class Map extends Base {
 
       // adds the layers
       this.getImpl().addWMTS(wmtsLayers);
+      wmtsLayers.forEach((layer) => {
+        if (isFunction(layer.startAutoRefresh)) {
+          layer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
       this.fire(EventType.ADDED_LAYER, [wmtsLayers]);
       this.fire(EventType.ADDED_WMTS, [wmtsLayers]);
     }
@@ -2196,6 +2273,11 @@ class Map extends Base {
       });
 
       this.getImpl().addMVT(mvtLayers);
+      mvtLayers.forEach((layer) => {
+        if (isFunction(layer.startAutoRefresh)) {
+          layer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
       this.fire(EventType.ADDED_LAYER, [mvtLayers]);
       this.fire(EventType.ADDED_VECTOR_TILE, [mvtLayers]);
     }
@@ -2259,6 +2341,11 @@ class Map extends Base {
       });
 
       this.getImpl().addMBTiles(mbtilesLayers);
+      mbtilesLayers.forEach((layer) => {
+        if (isFunction(layer.startAutoRefresh)) {
+          layer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
       this.fire(EventType.ADDED_LAYER, [mbtilesLayers]);
       this.fire(EventType.ADDED_MBTILES, [mbtilesLayers]);
     }
@@ -2342,6 +2429,11 @@ class Map extends Base {
         }
       });
       this.getImpl().addMBTilesVector(mbtilesLayers);
+      mbtilesLayers.forEach((layer) => {
+        if (isFunction(layer.startAutoRefresh)) {
+          layer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
       this.fire(EventType.ADDED_LAYER, [mbtilesLayers]);
       this.fire(EventType.ADDED_MBTILES_VECTOR, [mbtilesLayers]);
     }
@@ -2433,6 +2525,11 @@ class Map extends Base {
       });
 
       this.getImpl().addXYZ(xyzLayers);
+      xyzLayers.forEach((layer) => {
+        if (isFunction(layer.startAutoRefresh)) {
+          layer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
       this.fire(EventType.ADDED_LAYER, [xyzLayers]);
       this.fire(EventType.ADDED_XYZ, [xyzLayers]);
     }
@@ -2525,6 +2622,11 @@ class Map extends Base {
       });
 
       this.getImpl().addTMS(tmsLayers);
+      tmsLayers.forEach((layer) => {
+        if (isFunction(layer.startAutoRefresh)) {
+          layer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
       this.fire(EventType.ADDED_LAYER, [tmsLayers]);
       this.fire(EventType.ADDED_TMS, [tmsLayers]);
     }
@@ -2627,6 +2729,11 @@ class Map extends Base {
 
       // adds the layers
       this.getImpl().addTiles3D(tiles3DLayers);
+      tiles3DLayers.forEach((layer) => {
+        if (isFunction(layer.startAutoRefresh)) {
+          layer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
       this.fire(EventType.ADDED_LAYER, [tiles3DLayers]);
       this.fire(EventType.ADDED_TILES3D, [tiles3DLayers]);
     }
@@ -2726,6 +2833,11 @@ class Map extends Base {
 
       // adds the layers
       this.getImpl().addTerrain(terrainLayers);
+      terrainLayers.forEach((layer) => {
+        if (isFunction(layer.startAutoRefresh)) {
+          layer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
       this.fire(EventType.ADDED_LAYER, [terrainLayers]);
       this.fire(EventType.ADDED_TERRAIN, [terrainLayers]);
     }
@@ -2802,6 +2914,11 @@ class Map extends Base {
 
       // adds the layers
       this.getImpl().addGeoPackageTile(geopackagetileLayers);
+      geopackagetileLayers.forEach((layer) => {
+        if (isFunction(layer.startAutoRefresh)) {
+          layer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
       this.fire(EventType.ADDED_LAYER, [geopackagetileLayers]);
       this.fire(EventType.ADDED_GEOPACKAGE_TILE, [geopackagetileLayers]);
     }

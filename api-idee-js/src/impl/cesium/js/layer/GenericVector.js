@@ -105,7 +105,7 @@ class GenericVector extends Vector {
       this.map.getMapImpl().dataSources.add(this.cesiumLayer);
 
       // ? Capas con features ya cargados
-      if (this.cesiumLayer) {
+      if (this.cesiumLayer && !this.loaded_) {
         if (this.cesiumLayer.entities && this.cesiumLayer.entities.values.length > 0
           && !this.cesiumLayer.isLoading) {
           const features = this.cesiumLayer.entities.values.map((f) => {
@@ -386,15 +386,20 @@ class GenericVector extends Vector {
    * Este método destruye esta capa, limpiando el HTML
    * y anulando el registro de todos los eventos.
    *
+   * @param {Boolean} preserveLayer Conserva el objeto externo para reinsertar la misma capa.
    * @public
    * @function
    * @api stable
    */
-  destroy() {
-    const cesiumMap = this.map.getMapImpl();
-    if (!isNullOrEmpty(this.cesiumLayer)) {
-      cesiumMap.dataSources.remove(this.cesiumLayer, true);
-      this.cesiumLayer = null;
+  destroy(preserveLayer = false) {
+    this.facadeLayer_.stopAutoRefresh();
+    const layer = this.cesiumLayer;
+    if (layer) {
+      this.map?.getMapImpl().dataSources.remove(layer, false);
+      if (!preserveLayer) {
+        if (typeof layer.destroy === 'function' && !layer.isDestroyed?.()) layer.destroy();
+        this.cesiumLayer = null;
+      }
     }
     this.map = null;
   }
@@ -442,12 +447,21 @@ class GenericVector extends Vector {
     const candidate = await layer.constructor.load(url, {
       camera: viewer.camera, canvas: viewer.scene.canvas, clampToGround: this.clampToGround,
     });
-    if (!isCurrent() || this.cesiumLayer !== layer || facade.isAutoRefreshPaused()) return;
-    const features = candidate.entities.values.map((feature) => Feature.feature2Facade(feature));
-    candidate.entities.removeAll();
-    facade.removeFeatures(facade.getFeatures(true));
-    await this.addFeatures_(features, true, true);
-    if (isCurrent()) facade.resumeAutoRefresh();
+    try {
+      if (!isCurrent() || this.cesiumLayer !== layer || facade.isAutoRefreshPaused()) return;
+      const features = candidate.entities.values.map((feature) => Feature.feature2Facade(feature));
+      // Espera la conversión antes de retirar los datos actuales.
+      // eslint-disable-next-line no-underscore-dangle
+      await Promise.all(features.map((feature) => feature.getImpl().isLoadCesiumFeature_));
+      if (!isCurrent() || this.cesiumLayer !== layer || facade.isAutoRefreshPaused()) return;
+      candidate.entities.removeAll();
+      facade.removeFeatures(facade.getFeatures(true));
+      await this.addFeatures_(features, true, true);
+      if (isCurrent()) facade.resumeAutoRefresh();
+    } finally {
+      candidate.entities.removeAll();
+      if (typeof candidate.destroy === 'function') candidate.destroy();
+    }
   }
 }
 

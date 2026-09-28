@@ -201,7 +201,7 @@ class Vector extends LayerBase {
    * @api
    */
   resumeAutoRefresh() {
-    if (this.isAutoRefreshEnabled()) autoRefreshSnapshots.set(this, featureSnapshot(this));
+    autoRefreshSnapshots.set(this, featureSnapshot(this));
   }
 
   /**

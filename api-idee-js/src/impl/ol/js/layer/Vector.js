@@ -243,12 +243,12 @@ class Vector extends Layer {
    */
   addFeatures(features, update) {
     this.features_.push(...features);
-    this.facadeVector_.initializeAutoRefresh();
 
     if (update) {
       this.updateLayer_();
     }
     this.redraw();
+    this.facadeVector_.initializeAutoRefresh();
   }
 
   /**

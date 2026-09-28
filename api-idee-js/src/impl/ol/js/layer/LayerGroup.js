@@ -2,6 +2,7 @@
  * @module IDEE/impl/layer/LayerGroup
  */
 import * as EventType from 'IDEE/event/eventtype';
+import * as LayerType from 'IDEE/layer/Type';
 import { isNullOrEmpty } from 'IDEE/util/Utils';
 import Section from 'IDEE/layer/Section';
 import WMC from 'IDEE/layer/WMC';
@@ -68,6 +69,7 @@ class LayerGroup extends Layer {
    */
   addTo(map, addLayer = true) {
     this.map = map;
+    this.addLayerToMap_ = addLayer;
 
     this.olLayer = new Group(this.getParamsGroup_());
     this.olLayer.setLayers(this.layersCollection);
@@ -104,6 +106,9 @@ class LayerGroup extends Layer {
     layerPromises.reduce((promiseChain, layerPromise) => {
       return promiseChain.then(() => layerPromise);
     }, Promise.resolve());
+
+    // Las hijas retenidas al retirar un grupo también necesitan un nuevo ciclo de alta.
+    this.layers.forEach((layer) => this.startLayersAutoRefresh_(layer));
 
     this.olLayer.on('change:zIndex', () => {
       this.setZIndexChildren();
@@ -213,6 +218,25 @@ class LayerGroup extends Layer {
   setOLLayerToLayer_(layer) {
     layer.setMap(this.map);
     layer.getImpl().addTo(this.map, false);
+    this.startLayersAutoRefresh_(layer);
+  }
+
+  /**
+   * Inicia las capas del grupo principal, incluidas las hijas retenidas al reinsertarlo.
+   * @param {IDEE.layer.Layer} layer Capa o subgrupo.
+   * @private
+   */
+  startLayersAutoRefresh_(layer) {
+    const root = this.getTopRootGroup() || this;
+    // eslint-disable-next-line no-underscore-dangle
+    if (!root.addLayerToMap_) return;
+    if (typeof layer.startAutoRefresh === 'function') {
+      layer.setMap(this.map);
+      layer.startAutoRefresh(this.map.getAutoRefreshInterval());
+    }
+    if (layer.type === LayerType.LayerGroup) {
+      layer.getLayers().forEach((child) => this.startLayersAutoRefresh_(child));
+    }
   }
 
   /**
@@ -281,9 +305,8 @@ class LayerGroup extends Layer {
 
       if (!this.layers.includes(layer)) {
         const impl = layer.getImpl();
-        layer.inheritAutoRefresh(this.facadeLayer_);
-        this.setOLLayerToLayer_(layer);
         impl.rootGroup = this;
+        this.setOLLayerToLayer_(layer);
 
         if (!this.layerOrder_.has(layer)) {
           const maxOrder = Math.max(...Array.from(this.layerOrder_.values()), -1);
@@ -326,7 +349,9 @@ class LayerGroup extends Layer {
    * @api
    */
   removeLayer(layer) {
-    if (this.layers.includes(layer)) layer.stopAutoRefresh();
+    if (this.layers.includes(layer)) {
+      layer.stopAutoRefresh();
+    }
     this.removeLayers_(layer);
     this.layersCollection.remove(layer.getImpl().getLayer());
   }
@@ -374,6 +399,8 @@ class LayerGroup extends Layer {
       this.map.getImpl().layers_.push(layer);
       this.map.getMapImpl().addLayer(remove);
     }
+    layer.stopAutoRefresh();
+    this.startLayersAutoRefresh_(layer);
   }
 
   /**
@@ -453,7 +480,7 @@ class LayerGroup extends Layer {
   }
 
   /**
-   * El contenedor transmite el intervalo a sus fuentes hijas.
+   * Identifica contenedores para recorrer y detener sus capas hijas.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
    * @function

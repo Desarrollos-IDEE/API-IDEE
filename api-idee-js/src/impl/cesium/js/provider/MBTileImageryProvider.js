@@ -59,7 +59,7 @@ class MBTileImageryProvider extends TileMapServiceImageryProvider {
         getUint8ArrayFromData(this.source).then((uint8Array) => {
           this.db = new SQL.Database(uint8Array);
           resolve(this.db);
-        });
+        }).catch(reject);
       }).catch((err) => {
         reject(err);
       });

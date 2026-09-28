@@ -217,6 +217,9 @@ class GenericVector extends Vector {
   addFeaturesToFacade() {
     const source = this.olLayer.getSource();
     if (source.getState() === 'ready' && !this.loaded_) {
+      if (source.getFeatures?.().length === 0) {
+        this.facadeLayer_.initializeAutoRefresh();
+      }
       if (source.getFeatures) {
         const features = [];
         source.getFeatures().forEach((f, i) => {

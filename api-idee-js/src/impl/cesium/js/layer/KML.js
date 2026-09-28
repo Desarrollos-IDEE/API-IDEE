@@ -340,8 +340,8 @@ class KML extends Vector {
         }
       });
 
-      this.facadeVector_.initializeAutoRefresh();
       if (this.countFeatures_ === this.countPromise_) {
+        this.facadeVector_.initializeAutoRefresh();
         this.facadeVector_.fire(EventType.LOAD);
         this.countFeatures_ = 0;
         this.countPromise_ = 0;

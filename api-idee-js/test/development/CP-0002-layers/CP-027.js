@@ -14,12 +14,15 @@ import MBTilesVector from 'IDEE/layer/MBTilesVector';
 import GeoTIFF from 'IDEE/layer/GeoTIFF';
 import MapLibre from 'IDEE/layer/MapLibre';
 import Vector from 'IDEE/layer/Vector';
+import Tiles3D from 'IDEE/layer/Tiles3D';
+import Terrain from 'IDEE/layer/Terrain';
 import Feature from 'IDEE/feature/Feature';
 import Generic from 'IDEE/style/Generic';
 
 const query = new URLSearchParams(window.location.search);
 const interval = Number(query.get('interval') || 5000);
 const mode = query.get('mode') || 'on';
+const route = query.get('route') || 'generic';
 const base = query.get('data') || 'http://localhost:8083/datos-prueba/';
 proxy(false);
 IDEE.config('baseLayer', []);
@@ -27,63 +30,112 @@ IDEE.config('terrain', { default: [] });
 // El servidor de desarrollo publica los recursos Cesium en /cesium/.
 IDEE.config('CESIUM_URL', new URL('/cesium/', window.location.href).href);
 IDEE.config('SQL_WASM_URL', new URL('/node_modules/sql.js/dist/', base).href);
-const mapa = Mmap({ container: 'map', projection: 'EPSG:3857', center: [0, 0],
-  zoom: 5, layers: [], controls: [],
+const mapa = Mmap({
+  container: 'map',
+  projection: 'EPSG:3857',
+  center: [0, 0],
+  zoom: 3,
+  layers: [],
+  controls: [],
   resolutions: Array.from({ length: 29 }, (_, z) => 156543.03392804097 / (2 ** z)),
 });
 const cesium = !!mapa.getMapImpl().scene;
-const constructors = { WMS, WMTS, XYZ, TMS, OSM, GeoJSON, WFS, OGCAPIFeatures,
-  KML, MBTiles, MVT, MBTilesVector, GeoTIFF, MapLibre, Vector };
+const constructors = {
+  WMS,
+  WMTS,
+  XYZ,
+  TMS,
+  OSM,
+  GeoJSON,
+  WFS,
+  OGCAPIFeatures,
+  KML,
+  MBTiles,
+  MVT,
+  MBTilesVector,
+  GeoTIFF,
+  MapLibre,
+  Vector,
+  Tiles3D,
+  Terrain,
+};
 const onlyOL = ['MVT', 'MBTilesVector', 'GeoTIFF', 'MapLibre'];
-const available = Object.keys(constructors).filter(type => !cesium || !onlyOL.includes(type));
-const type = available.includes(query.get('type')) ? query.get('type') : 'GeoJSON';
-available.forEach(value => document.getElementById('type').add(
-  new Option(value === 'Vector' ? 'Vector local (sin recarga remota)' : value, value),
+const available = Object.keys(constructors).filter((type) => (cesium
+  ? !onlyOL.includes(type) : !['Tiles3D', 'Terrain'].includes(type)));
+const type = available.includes(query.get('type')) ? query.get('type') : 'WMS';
+available.forEach((value) => document.getElementById('type').add(
+  new window.Option(value === 'Vector' ? 'Vector local (sin recarga remota)' : value, value),
 ));
 document.getElementById('engine').textContent = cesium ? 'Cesium (3D)' : 'OpenLayers (2D)';
 const tiled = cesium || query.get('tiled') !== 'false';
 const parameters = {
-  WMS: { url: base + 'wms', name: 'prueba', tiled, useCapabilities: false },
-  WMTS: { url: base + 'wmts.png', name: 'prueba', matrixSet: 'GoogleMapsCompatible',
-    format: 'image/png', useCapabilities: false,
-    maxExtent: cesium ? [-180, -85, 180, 85] : [-20037508, -20037508, 20037508, 20037508] },
-  XYZ: { url: base + 'tiles/{z}/{x}/{y}.png' },
-  TMS: { url: base + 'tiles/{z}/{x}/{y}.png' },
-  OSM: { url: base + 'tiles/{z}/{x}/{y}.png' },
-  GeoJSON: { url: base + 'puntos.geojson' },
-  WFS: { url: base + 'wfs', namespace: 'prueba', geometry: 'POINT', extract: false },
-  OGCAPIFeatures: { url: base + 'collections/', name: 'puntos', limit: 1 },
-  KML: { url: base + 'puntos.kml' },
-  MBTiles: { url: base + 'raster.mbtiles' },
-  MVT: { url: base + 'tiles/{z}/{x}/{y}.pbf', mode: 'feature' },
-  MBTilesVector: { url: base + 'vector.mbtiles' },
-  GeoTIFF: { url: base + 'raster.tif' },
-  MapLibre: { maplibrestyle: { version: 8,
-    sources: { puntos: { type: 'vector', tiles: [base + 'tiles/{z}/{x}/{y}.pbf'] } },
-    layers: [{ id: 'puntos', type: 'circle', source: 'puntos', 'source-layer': 'points',
-      paint: { 'circle-radius': 8, 'circle-color': '#be185d' } }],
-  } },
+  WMS: {
+    url: `${base}wms`, name: 'prueba', tiled, useCapabilities: false,
+  },
+  WMTS: {
+    url: `${base}wmts.png`,
+    name: 'prueba',
+    matrixSet: 'GoogleMapsCompatible',
+    format: 'image/png',
+    useCapabilities: false,
+    maxExtent: cesium ? [-180, -85, 180, 85] : [-20037508, -20037508, 20037508, 20037508],
+  },
+  XYZ: { url: `${base}tiles/{z}/{x}/{y}.png` },
+  TMS: { url: `${base}tiles/{z}/{x}/{y}.png` },
+  OSM: { url: `${base}tiles/{z}/{x}/{y}.png` },
+  GeoJSON: { url: `${base}puntos.geojson` },
+  WFS: {
+    url: `${base}wfs`, namespace: 'prueba', geometry: 'POINT', extract: false,
+  },
+  OGCAPIFeatures: { url: `${base}collections/`, name: 'puntos', limit: 1 },
+  KML: { url: `${base}puntos.kml` },
+  MBTiles: { url: `${base}raster.mbtiles` },
+  MVT: { url: `${base}tiles/{z}/{x}/{y}.pbf`, mode: 'feature' },
+  MBTilesVector: { url: `${base}vector.mbtiles` },
+  GeoTIFF: { url: `${base}raster.tif` },
+  Tiles3D: { url: `${base}tileset.json` },
+  Terrain: { url: `${base}terrain/` },
+  MapLibre: {
+    maplibrestyle: {
+      version: 8,
+      sources: { puntos: { type: 'geojson', data: `${base}puntos.geojson` } },
+      layers: [{
+        id: 'puntos',
+        type: 'circle',
+        source: 'puntos',
+        paint: { 'circle-radius': 8, 'circle-color': '#be185d' },
+      }],
+    },
+  },
 };
-const params = { name: type + '-refresh', ...parameters[type], isBase: false };
+const params = { name: `${type}-refresh`, ...parameters[type], isBase: false };
 if (mode === 'on') params.refreshInterval = interval;
 if (mode === 'invalid') params.refreshInterval = 0;
-const capa = new constructors[type](params,
-  type === 'WFS' ? { getFeatureOutputFormat: 'json', describeFeatureTypeOutputFormat: 'json' } : {});
-mapa.addLayers(capa);
+const capa = new constructors[type](
+  params,
+  type === 'WFS' ? { getFeatureOutputFormat: 'json', describeFeatureTypeOutputFormat: 'json' } : {},
+);
+const direct = typeof mapa[`add${type}`] === 'function' ? `add${type}` : 'addLayers';
+const addLayer = () => mapa[route === 'direct' ? direct : 'addLayers'](capa);
+addLayer();
 if (type === 'Vector') {
   capa.setStyle(new Generic({
     point: { radius: 10, fill: { color: '#e11d48' }, stroke: { color: '#ffffff', width: 2 } },
   }));
   capa.addFeatures(new Feature('punto-local', {
-    type: 'Feature', geometry: { type: 'Point', coordinates: [0, 0] },
+    type: 'Feature',
+    geometry: { type: 'Point', coordinates: [0, 0] },
     properties: { nombre: 'Punto local: debe conservarse', revision: 1 },
   }));
 }
 window.mapa = mapa;
 window.capa = capa;
-['type', 'mode', 'interval'].forEach(id => {
-  document.getElementById(id).value = { type, mode, interval }[id];
+['type', 'mode', 'interval', 'route'].forEach((id) => {
+  document.getElementById(id).value = {
+    type, mode, interval, route,
+  }[id];
 });
+document.querySelector('#route option[value=direct]').textContent = direct;
 document.getElementById('tiled').value = String(tiled);
 document.getElementById('type').onchange = () => {
   document.getElementById('tiled').disabled = cesium
@@ -102,7 +154,7 @@ document.getElementById('expected').textContent = type === 'Vector'
 document.getElementById('data').value = base;
 document.getElementById('params').textContent = JSON.stringify(params);
 document.getElementById('remove').onclick = () => mapa.removeLayers(capa);
-document.getElementById('add').onclick = () => mapa.addLayers(capa);
+document.getElementById('add').onclick = addLayer;
 document.getElementById('edit').disabled = !['GeoJSON', 'WFS', 'OGCAPIFeatures', 'KML'].includes(type);
 document.getElementById('resume').disabled = document.getElementById('edit').disabled;
 let edited;
@@ -121,9 +173,11 @@ document.getElementById('resume').onclick = () => {
 };
 const statusTimer = setInterval(() => {
   document.getElementById('status').textContent = JSON.stringify({
-    motor: cesium ? 'Cesium' : 'OpenLayers', intervalo: capa.getAutoRefreshInterval(),
-    configurado: capa.isAutoRefreshEnabled(), pausa: capa.isAutoRefreshPaused?.(),
-    datos: capa.getFeatures?.().slice(0, 2).map(feature => feature.getAttributes()),
+    motor: cesium ? 'Cesium' : 'OpenLayers',
+    intervaloConfigurado: capa.getAutoRefreshInterval() ?? 'Sin intervalo',
+    configurado: capa.isAutoRefreshEnabled(),
+    pausa: capa.isAutoRefreshPaused?.(),
+    datos: capa.getFeatures?.().slice(0, 2).map((feature) => feature.getAttributes()),
   }, null, 2);
 }, 1000);
 document.getElementById('destroy').onclick = () => { clearInterval(statusTimer); mapa.destroy(); };

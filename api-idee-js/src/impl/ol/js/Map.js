@@ -813,6 +813,7 @@ class Map extends MObject {
     const layerGroupMapLayers = this.getLayerGroups(layers);
     layerGroupMapLayers.forEach((layerGroup) => {
       this.layers_ = this.layers_.filter((layer) => !layerGroup.equals(layer));
+      layerGroup.stopAutoRefresh();
       layerGroup.getImpl().destroy();
       layerGroup.getImpl().activateBaseLayer(layerGroup, this.facadeMap_);
       layerGroup.fire(EventType.REMOVED_FROM_MAP, [layerGroup]);
@@ -922,6 +923,7 @@ class Map extends MObject {
     const removedLayers = [];
     wmcMapLayers.forEach((wmcLayer) => {
       if (includes(this.layers_, wmcLayer)) {
+        wmcLayer.stopAutoRefresh();
         if (wmcLayer.selected === true && wmcLayer.isLoaded() === false) {
           wmcLayer.on(EventType.LOAD, () => {
             this.layers_ = this.layers_.filter((layer) => !layer.equals(wmcLayer));
@@ -1046,6 +1048,7 @@ class Map extends MObject {
     kmlMapLayers.forEach((kmlLayer) => {
       if (includes(this.layers_, kmlLayer)) {
         this.layers_ = this.layers_.filter((layer) => !kmlLayer.equals(layer));
+        kmlLayer.stopAutoRefresh();
         kmlLayer.getImpl().destroy();
         kmlLayer.getImpl().activateBaseLayer(kmlLayer, this.facadeMap_);
         kmlLayer.fire(EventType.REMOVED_FROM_MAP, [kmlLayer]);
@@ -1176,6 +1179,7 @@ class Map extends MObject {
       if (includes(this.layers_, wmsLayer)) {
         wmsLayer.fire(EventType.REMOVED_FROM_MAP, [wmsLayer]);
         this.layers_ = this.layers_.filter((layer) => !wmsLayer.equals(layer));
+        wmsLayer.stopAutoRefresh();
         wmsLayer.getImpl().destroy();
         wmsLayer.getImpl().activateBaseLayer(wmsLayer, this.facadeMap_);
         wmsLayer.fire(EventType.REMOVED_FROM_MAP, [wmsLayer]);
@@ -1371,6 +1375,7 @@ class Map extends MObject {
     wfsMapLayers.forEach((wfsLayer) => {
       if (includes(this.layers_, wfsLayer)) {
         this.layers_ = this.layers_.filter((layer) => !layer.equals(wfsLayer));
+        wfsLayer.stopAutoRefresh();
         wfsLayer.getImpl().destroy();
         wfsLayer.getImpl().activateBaseLayer(wfsLayer, this.facadeMap_);
         wfsLayer.fire(EventType.REMOVED_FROM_MAP, [wfsLayer]);
@@ -1500,6 +1505,7 @@ class Map extends MObject {
     geotiffMapLayers.forEach((geotiffLayer) => {
       if (includes(this.layers_, geotiffLayer)) {
         this.layers_ = this.layers_.filter((layer) => !layer.equals(geotiffLayer));
+        geotiffLayer.stopAutoRefresh();
         geotiffLayer.getImpl().destroy();
         geotiffLayer.getImpl().activateBaseLayer(geotiffLayer, this.facadeMap_);
         geotiffLayer.fire(EventType.REMOVED_FROM_MAP, [geotiffLayer]);
@@ -1622,6 +1628,7 @@ class Map extends MObject {
     ogcapifMapLayers.forEach((ogcapifLayer) => {
       if (includes(this.layers_, ogcapifLayer)) {
         this.layers_ = this.layers_.filter((layer) => !layer.equals(ogcapifLayer));
+        ogcapifLayer.stopAutoRefresh();
         ogcapifLayer.getImpl().destroy();
         ogcapifLayer.getImpl().activateBaseLayer(ogcapifLayer, this.facadeMap_);
         ogcapifLayer.fire(EventType.REMOVED_FROM_MAP, [ogcapifLayer]);
@@ -1736,6 +1743,7 @@ class Map extends MObject {
     wmtsMapLayers.forEach((wmtsLayer) => {
       if (includes(this.layers_, wmtsLayer)) {
         this.layers_ = this.layers_.filter((layer) => !layer.equals(wmtsLayer));
+        wmtsLayer.stopAutoRefresh();
         wmtsLayer.getImpl().destroy();
         wmtsLayer.getImpl().activateBaseLayer(wmtsLayer, this.facadeMap_);
         wmtsLayer.fire(EventType.REMOVED_FROM_MAP, [wmtsLayer]);
@@ -1843,6 +1851,7 @@ class Map extends MObject {
     mbtilesMapLayers.forEach((mbtilesLayer) => {
       if (includes(this.layers_, mbtilesLayer)) {
         this.layers_ = this.layers_.filter((layer) => !layer.equals(mbtilesLayer));
+        mbtilesLayer.stopAutoRefresh();
         mbtilesLayer.getImpl().destroy();
         mbtilesLayer.getImpl().activateBaseLayer(mbtilesLayer, this.facadeMap_);
         mbtilesLayer.fire(EventType.REMOVED_FROM_MAP, [mbtilesLayer]);
@@ -1947,6 +1956,7 @@ class Map extends MObject {
     mbtilesMapLayers.forEach((mbtilesLayer) => {
       if (includes(this.layers_, mbtilesLayer)) {
         this.layers_ = this.layers_.filter((layer) => !layer.equals(mbtilesLayer));
+        mbtilesLayer.stopAutoRefresh();
         mbtilesLayer.getImpl().destroy();
         mbtilesLayer.getImpl().activateBaseLayer(mbtilesLayer, this.facadeMap_);
         mbtilesLayer.fire(EventType.REMOVED_FROM_MAP, [mbtilesLayer]);
@@ -2048,6 +2058,7 @@ class Map extends MObject {
     layers.forEach((layer) => {
       if (includes(this.layers_, layer)) {
         this.layers_ = this.layers_.filter((layer2) => !layer2.equals(layer));
+        layer.stopAutoRefresh();
         layer.getImpl().destroy();
         layer.getImpl().activateBaseLayer(layer, this.facadeMap_);
         layer.fire(EventType.REMOVED_FROM_MAP, [layer]);
@@ -2137,6 +2148,7 @@ class Map extends MObject {
     mvtMapLayers.forEach((mvtLayer) => {
       if (includes(this.layers_, mvtLayer)) {
         this.layers_ = this.layers_.filter((layer) => !layer.equals(mvtLayer));
+        mvtLayer.stopAutoRefresh();
         mvtLayer.getImpl().destroy();
         mvtLayer.getImpl().activateBaseLayer(mvtLayer, this.facadeMap_);
         mvtLayer.fire(EventType.REMOVED_FROM_MAP, [mvtLayer]);
@@ -2236,6 +2248,7 @@ class Map extends MObject {
     mapLibreMapLayers.forEach((mapLibreLayer) => {
       if (includes(this.layers_, mapLibreLayer)) {
         this.layers_ = this.layers_.filter((layer) => !layer.equals(mapLibreLayer));
+        mapLibreLayer.stopAutoRefresh();
         mapLibreLayer.getImpl().destroy();
         mapLibreLayer.getImpl().activateBaseLayer(mapLibreLayer, this.facadeMap_);
         mapLibreLayer.fire(EventType.REMOVED_FROM_MAP, [mapLibreLayer]);
@@ -2350,6 +2363,7 @@ class Map extends MObject {
     const removedLayers = [];
     xyzMapLayers.forEach((xyzLayer) => {
       if (includes(this.layers_, xyzLayer)) {
+        xyzLayer.stopAutoRefresh();
         xyzLayer.getImpl().destroy();
         this.layers_ = this.layers_.filter((layer) => !layer.equals(xyzLayer));
         xyzLayer.getImpl().activateBaseLayer(xyzLayer, this.facadeMap_);
@@ -2451,6 +2465,7 @@ class Map extends MObject {
     const removedLayers = [];
     tmsMapLayers.forEach((tmsLayer) => {
       if (includes(this.layers_, tmsLayer)) {
+        tmsLayer.stopAutoRefresh();
         tmsLayer.getImpl().destroy();
         this.layers_ = this.layers_.filter((layer) => !layer.equals(tmsLayer));
         tmsLayer.getImpl().activateBaseLayer(tmsLayer, this.facadeMap_);
@@ -2549,6 +2564,7 @@ class Map extends MObject {
     tileMapLayers.forEach((tileLayer) => {
       if (includes(this.layers_, tileLayer)) {
         this.layers_ = this.layers_.filter((layer) => !layer.equals(tileLayer));
+        tileLayer.stopAutoRefresh();
         tileLayer.getImpl().destroy();
         tileLayer.fire(EventType.REMOVED_FROM_MAP, [tileLayer]);
         tileLayer.getImpl().activateBaseLayer(tileLayer, this.facadeMap_);

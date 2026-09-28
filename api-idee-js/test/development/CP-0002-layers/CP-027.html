@@ -9,6 +9,8 @@ button,input,select{font:inherit}pre{max-height:160px;overflow:auto}</style></he
 <p><strong>Motor activo: <span id="engine"></span></strong></p>
 <form>
 <label for="type">Capa</label><select id="type" name="type"></select>
+<label for="route">Alta</label><select id="route" name="route">
+<option value="generic">addLayers</option><option value="direct">addWMS</option></select>
 <label for="mode">Configuración</label><select id="mode" name="mode">
 <option value="on">Solo refreshInterval</option><option value="none">Sin intervalo</option>
 <option value="invalid">Intervalo 0 (valor no válido)</option></select>
@@ -18,13 +20,13 @@ button,input,select{font:inherit}pre{max-height:160px;overflow:auto}</style></he
 <button type="submit">Crear nueva prueba</button></form>
 <p>«Sin intervalo» omite el parámetro; «Intervalo 0» envía <code>refreshInterval: 0</code>.
 En este mapa sin intervalo global, ninguno activa el autorefresco. El campo de milisegundos solo se usa con «Solo refreshInterval».</p>
+<p id="expected"></p>
 <p id="wms-help"></p>
 <p>Arranca servidor-autorefresco.py en 8083. El formulario crea un mapa nuevo; el autorefresco conserva el mapa.</p>
 <code id="params"></code><p>
 <button id="remove">Retirar capa</button> <button id="add">Volver a añadir</button>
 <button id="edit">Editar atributo</button> <button id="resume">Descartar edición y reanudar</button>
 <button id="destroy">Destruir mapa</button></p>
-<p id="expected"></p>
 <p>En Red filtra por <code>_ideeRefresh</code>. Consola: <code>mapa</code> y <code>capa</code>.</p>
 <pre id="status" aria-live="polite"></pre></main><div id="map" class="map"></div>
 <script src="/config.js" charset="utf-8"></script><script src="/CP-0002-layers/CP-027.js" charset="utf-8"></script>

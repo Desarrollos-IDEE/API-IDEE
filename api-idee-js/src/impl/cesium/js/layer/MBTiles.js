@@ -208,21 +208,13 @@ class MBTiles extends Layer {
    * @public
    * @api
    */
-  fetchSource() {
-    return new Promise((resolve, reject) => {
-      if (this.source_) {
-        const tileProvider = this.addProvider_();
-        resolve(tileProvider);
-      } else if (this.url) {
-        window.fetch(this.url).then((response) => {
-          this.source_ = response;
-          const tileProvider = this.addProvider_();
-          resolve(tileProvider);
-        });
-      } else {
-        reject(new Error(getValue('exception').no_source));
-      }
-    });
+  async fetchSource() {
+    if (!this.source_ && this.url) this.source_ = await window.fetch(this.url);
+    if (!this.source_) throw new Error(getValue('exception').no_source);
+    if (typeof this.source_.arrayBuffer === 'function') {
+      this.source_ = new Uint8Array(await this.source_.arrayBuffer());
+    }
+    return this.addProvider_();
   }
 
   /**
@@ -321,16 +313,20 @@ class MBTiles extends Layer {
    */
   async refreshSource(isCurrent = () => true) {
     const layer = this.cesiumLayer;
-    if (!layer || !this.autoRefreshRemote_
+    if (!layer || !this.map || !this.autoRefreshRemote_
       || !this.isAutoRefreshRemoteURL(this.url)) return;
+    if (!this.map.getMapImpl().scene.globe.tilesLoaded) return;
     const response = await fetch(addParameters(this.url, { _ideeRefresh: Date.now() }));
     if (!response.ok) throw new Error(`MBTiles: HTTP ${response.status}`);
     const provider = new MBTileImageryProvider({
       source: response,
     }, { url: this.url, tileWidth: this.tileSize_, tileHeight: this.tileSize_ });
-    await provider.getExtent();
-    if (isCurrent() && this.cesiumLayer === layer) this.replaceAutoRefreshProvider(provider);
-    else provider.dispose();
+    try {
+      await provider.getExtent();
+      if (isCurrent() && this.cesiumLayer === layer) this.replaceAutoRefreshProvider(provider);
+    } finally {
+      if (this.cesiumLayer?.imageryProvider !== provider) provider.dispose();
+    }
   }
 }
 export default MBTiles;
