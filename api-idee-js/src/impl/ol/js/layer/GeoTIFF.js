@@ -473,7 +473,7 @@ class GeoTIFF extends LayerBase {
       const max = this.max_;
       const nodata = this.nodata_;
       const projectionGeoTIFF = this.options.projection;
-      const sources = [
+      let sources = [
         {
           url: this.url,
           nodata,
