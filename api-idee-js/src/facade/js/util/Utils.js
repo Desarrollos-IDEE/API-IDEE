@@ -150,7 +150,7 @@ export const isUrl = (obj) => {
  * Indica si la URL corresponde al servicio XYZ MDT de IDEE (elevación codificada en RGB).
  *
  * @function
- * @param {string} url URL de la capa XYZ/TMS.
+ * @param {string} url URL de la capa XYZ.
  * @returns {boolean} Verdadero si es el servicio raster-dem de xyz-mdt.idee.es.
  * @api
  */
@@ -178,7 +178,7 @@ export const decodeTerrainRgbElevation = (red, green, blue) => {
 };
 
 /**
- * Resuelve extract en capas XYZ/TMS: true en MDT IDEE raster-dem, false en el resto.
+ * Resuelve extract en capas XYZ: true en MDT IDEE raster-dem, false en el resto.
  *
  * @function
  * @param {string} url URL del servicio.
@@ -186,7 +186,7 @@ export const decodeTerrainRgbElevation = (red, green, blue) => {
  * @returns {boolean} Valor de extract.
  * @api
  */
-export const resolveXyzTmsExtract = (url, extractFromParam) => {
+export const resolveXyzExtract = (url, extractFromParam) => {
   if (!isUndefined(extractFromParam)) {
     return extractFromParam;
   }

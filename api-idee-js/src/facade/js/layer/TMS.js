@@ -4,7 +4,7 @@
 import TMSImpl from 'impl/layer/TMS';
 import LayerBase from './Layer';
 import {
-  isUndefined, isNullOrEmpty, isObject, isString, isIdeeMdtRasterDemUrl,
+  isUndefined, isNullOrEmpty, isObject, isString,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import * as parameter from '../parameter/parameter';
@@ -41,8 +41,7 @@ import { getValue } from '../i18n/language';
  * @property {Array<Number>} maxExtent_ Extensión máxima.
  * @property {Boolean} displayInLayerSwitcher Indica si la capa se muestra en el selector de capas.
  * @property {Boolean} isBase Define si la capa es base.
- * @property {Boolean} extract Activa la consulta con GetFeatureInfo; por defecto falso
- * (verdadero por defecto en el servicio MDT).
+ * @property {Boolean} extract Activa la consulta con GetFeatureInfo; por defecto falso.
  * @api
  * @extends {IDEE.layer}
  */
@@ -66,8 +65,7 @@ class TMS extends LayerBase {
    * - type: Tipo de la capa.
    * - tileGridMaxZoom: Zoom máximo de cuadrícula de mosaico.
    * - tileSize: Tamaño de la tesela
-   * - extract: Activa la consulta con GetFeatureInfo (color de píxel o elevación MDT).
-   *   Por defecto falso; verdadero por defecto solo en MDT.
+   * - extract: Activa la consulta con GetFeatureInfo (color de píxel). Por defecto falso.
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
    * - opacity: Opacidad de capa, por defecto 1.
    * - minZoom: Zoom mínimo aplicable a la capa.
@@ -146,14 +144,9 @@ class TMS extends LayerBase {
 
     /**
      * TMS extract: consulta de tesela y color de píxel con control GetFeatureInfo.
-     * En el servicio MDT se activa por defecto para mostrar elevación.
      */
     if (isUndefined(parameters.extract)) {
-      if (isIdeeMdtRasterDemUrl(parameters.url)) {
-        this.extract = true;
-      } else {
-        this.extract = false;
-      }
+      this.extract = false;
     } else {
       this.extract = parameters.extract;
     }

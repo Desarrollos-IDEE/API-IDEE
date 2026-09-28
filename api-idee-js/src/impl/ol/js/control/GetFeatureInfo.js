@@ -17,6 +17,7 @@ import {
   isIdeeMdtRasterDemUrl, decodeTerrainRgbElevation,
 } from 'IDEE/util/Utils';
 import { getValue } from 'IDEE/i18n/language';
+import * as LayerType from 'IDEE/layer/Type';
 import Control from './Control';
 
 /**
@@ -226,14 +227,14 @@ class GetFeatureInfo extends Control {
    * @function
    * @param {{z: number, x: number, y: number}|null} tileIndex Índice de tesela z/x/y.
    * @param {Uint8ClampedArray|Uint8Array|Float32Array|DataView|null} data Color RGBA del píxel.
-   * @param {IDEE.layer.XYZ|IDEE.layer.TMS|null} layer Capa XYZ/TMS (opcional, para MDT IDEE).
+   * @param {IDEE.layer.XYZ|IDEE.layer.TMS|null} layer Capa XYZ/TMS (elevación MDT solo en XYZ).
    * @returns {string} HTML con la información de la tesela y el color.
    * @api stable
    */
   static formatXYZInfo(tileIndex, data, layer) {
     const gfi = getValue('getfeatureinfo');
     let isMdtElevation = false;
-    if (!isNullOrEmpty(layer) && !isNullOrEmpty(layer.url)) {
+    if (!isNullOrEmpty(layer) && layer.type === LayerType.XYZ && !isNullOrEmpty(layer.url)) {
       isMdtElevation = isIdeeMdtRasterDemUrl(layer.url);
     }
     let html = '<div class=\'divinfo\'>';
@@ -349,6 +350,108 @@ class GetFeatureInfo extends Control {
   }
 
   /**
+   * Etiqueta legible de una banda GeoTIFF según roles GDAL en metadatos.
+   *
+   * @private
+   * @function
+   * @param {string|null} role Rol espectral (red, green, …).
+   * @param {number} bandIndex Índice de banda (1-based).
+   * @param {Object} gfi Traducciones getfeatureinfo.
+   * @returns {string} Etiqueta para el usuario.
+   * @api stable
+   */
+  static getGeoTIFFBandLabel(role, bandIndex, gfi) {
+    if (!isNullOrEmpty(role)) {
+      if (role === 'red') {
+        return gfi.red;
+      }
+      if (role === 'green') {
+        return gfi.green;
+      }
+      if (role === 'blue') {
+        return gfi.blue;
+      }
+      if (role === 'nir') {
+        return gfi.nir;
+      }
+      if (role === 'swir') {
+        return gfi.swir;
+      }
+    }
+    return `${gfi.band} ${bandIndex}`;
+  }
+
+  /**
+   * Formatea un valor de banda para mostrarlo en el popup.
+   *
+   * @private
+   * @function
+   * @param {number} value Valor numérico de la banda.
+   * @returns {string|number}
+   * @api stable
+   */
+  static formatGeoTIFFBandValue(value) {
+    if (typeof value !== 'number') {
+      return value;
+    }
+    if (Number.isInteger(value)) {
+      return value;
+    }
+    return value.toFixed(4);
+  }
+
+  /**
+   * Obtiene canales RGB(A) del píxel para resumen de color.
+   *
+   * @private
+   * @function
+   * @param {TypedArray|Array<number>} data Valores por banda.
+   * @param {Object<string, number>|null} bandRoles Roles espectrales.
+   * @returns {{red: number, green: number, blue: number, alpha: number}|null}
+   * @api stable
+   */
+  static getGeoTIFFRgbChannels(data, bandRoles) {
+    if (isNullOrEmpty(bandRoles) || !bandRoles.red || !bandRoles.green || !bandRoles.blue) {
+      return null;
+    }
+    const red = data[bandRoles.red - 1];
+    const green = data[bandRoles.green - 1];
+    const blue = data[bandRoles.blue - 1];
+    const alpha = 255;
+    return {
+      red,
+      green,
+      blue,
+      alpha,
+    };
+  }
+
+  /**
+   * Añade fila de color hexadecimal derivado de RGB(A) en consulta GeoTIFF.
+   *
+   * @private
+   * @function
+   * @param {string} html HTML parcial.
+   * @param {number} red Canal rojo.
+   * @param {number} green Canal verde.
+   * @param {number} blue Canal azul.
+   * @param {number} alpha Canal alfa.
+   * @param {Object} gfi Traducciones getfeatureinfo.
+   * @returns {string}
+   * @api stable
+   */
+  static appendGeoTIFFHexRow(html, red, green, blue, alpha, gfi) {
+    let htmlVar = html;
+    const hex = rgbaToHex(`rgba(${red}, ${green}, ${blue}, ${alpha / 255})`);
+    htmlVar += '<tr><td class="key"><b>';
+    htmlVar += beautifyAttribute(gfi.hex);
+    htmlVar += '</b></td><td class="value">';
+    htmlVar += hex;
+    htmlVar += '</td></tr>';
+    return htmlVar;
+  }
+
+  /**
    * Formatea los valores de banda de un GeoTIFF como tabla HTML.
    *
    * @public
@@ -359,6 +462,7 @@ class GetFeatureInfo extends Control {
    * @api stable
    */
   static formatGeoTIFFInfo(data, layer) {
+    const gfi = getValue('getfeatureinfo');
     const impl = layer.getImpl();
     let bandRoles = null;
     if (impl) {
@@ -373,19 +477,32 @@ class GetFeatureInfo extends Control {
 
     let html = '<div class=\'divinfo\'>';
     html += '<table class=\'api-idee-table\'><tbody>';
+    html += '<tr><td class="value" colspan="2">';
+    html += gfi.geotiff_intro;
+    html += '</td></tr>';
 
     for (let i = 0; i < data.length; i += 1) {
       const bandIndex = i + 1;
-      let label = roleByBandIndex[bandIndex];
-      if (isNullOrEmpty(label)) {
-        label = `${getValue('getfeatureinfo').band} ${bandIndex}`;
-      }
-      const value = data[i];
+      const role = roleByBandIndex[bandIndex];
+      const label = GetFeatureInfo.getGeoTIFFBandLabel(role, bandIndex, gfi);
+      const value = GetFeatureInfo.formatGeoTIFFBandValue(data[i]);
       html += '<tr><td class="key"><b>';
       html += beautifyAttribute(label);
       html += '</b></td><td class="value">';
       html += value;
       html += '</td></tr>';
+    }
+
+    const rgbChannels = GetFeatureInfo.getGeoTIFFRgbChannels(data, bandRoles);
+    if (!isNullOrEmpty(rgbChannels)) {
+      html = GetFeatureInfo.appendGeoTIFFHexRow(
+        html,
+        rgbChannels.red,
+        rgbChannels.green,
+        rgbChannels.blue,
+        rgbChannels.alpha,
+        gfi,
+      );
     }
 
     html += '</tbody></table></div>';

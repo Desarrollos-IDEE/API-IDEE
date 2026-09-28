@@ -4,7 +4,7 @@
  */
 import {
   isUndefined, isNull, isArray, isNullOrEmpty, isFunction, isObject, isString, isUrl, normalize,
-  resolveXyzTmsExtract,
+  resolveXyzExtract,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import * as LayerType from '../layer/Type';
@@ -3321,8 +3321,8 @@ export const xyz = (userParamer) => {
     // gets the legend
     layerObj.legend = getExtraParameter(userParam, layerObj.name, 3, 'legend') || layerObj.name;
 
-    // gets the extract (MDT IDEE raster-dem: true por defecto; resto: false)
-    layerObj.extract = resolveXyzTmsExtract(
+    // gets the extract (MDT IDEE raster-dem en XYZ: true por defecto; resto: false)
+    layerObj.extract = resolveXyzExtract(
       layerObj.url,
       getExtraParameter(userParam, undefined, 4, 'extract'),
     );
@@ -3437,11 +3437,11 @@ export const tms = (userParamer) => {
     // gets tileSize
     layerObj.tileSize = getExtraParameter(userParam, undefined, 6, 'tileSize');
 
-    // gets the extract (MDT IDEE raster-dem: true por defecto; resto: false)
-    layerObj.extract = resolveXyzTmsExtract(
-      layerObj.url,
-      getExtraParameter(userParam, undefined, 7, 'extract'),
-    );
+    // TMS: extract solo si viene en parámetros; por defecto false
+    layerObj.extract = getExtraParameter(userParam, undefined, 7, 'extract');
+    if (isUndefined(layerObj.extract)) {
+      layerObj.extract = false;
+    }
 
     return layerObj;
   });
