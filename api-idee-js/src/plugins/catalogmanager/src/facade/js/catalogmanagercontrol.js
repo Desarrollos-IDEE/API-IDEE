@@ -2840,15 +2840,17 @@ export default class CatalogmanagerControl extends IDEE.Control {
   drawImageTiff(image, cat, coll, item) {
     // const catalog = cat;
     const collection = coll;
-    const styleSpec = this.resolveStyleSpec(image);
-    // const style = this.buildRasterStyle(styleSpec);
+    const styleSpec = this.resolveStyleSpec(image, item.properties);
+    const style = this.buildRasterStyle(styleSpec);
     const normalize = IDEE.utils.isNullOrEmpty(styleSpec.indice);
     const convertToRGB = styleSpec.convertToRGB;
+    const bands = styleSpec.bands.length > 3 ? styleSpec.bands.slice(0, 3) : styleSpec.bands;
     const geotiffOptions = {
       convertToRGB,
       normalize,
-      // style,
-      bands: styleSpec.bands,
+      style,
+      bands,
+      nodata: 0,
     };
     if (styleSpec.ranges) {
       geotiffOptions.min = styleSpec.ranges.min;
@@ -3266,19 +3268,101 @@ export default class CatalogmanagerControl extends IDEE.Control {
     return [];
   }
 
-  getAssetRanges(asset) {
+  getAssetRanges(asset, properties, bands) {
     const ranges = {
       min: [],
       max: [],
     };
-    if (!asset.band_statistics) {
+    const mode = this.resolveStretchMode(asset, properties);
+    if (!mode) {
       return null;
     }
-    asset.band_statistics.forEach((range) => {
+    if (mode === 'hist') {
+      bands.forEach((band) => {
+        const range = this.getAssetRangesFromHistogram(properties, band.name);
+        if (range) {
+          ranges.min.push(range.min);
+          ranges.max.push(range.max);
+        }
+      });
+    }
+    if (mode === 'stats') {
+      bands.forEach((band, index) => {
+        const range = this.getAssetRangesFromStats(properties, index + 1);
+        if (range) {
+          ranges.min.push(range.min);
+          ranges.max.push(range.max);
+        }
+      });
+    }
+    if (mode === 'ranges') {
+      bands.forEach((band, index) => {
+        const range = this.getAssetRangesFromRanges(asset, index + 1);
+        if (range) {
+          ranges.min.push(range.min);
+          ranges.max.push(range.max);
+        }
+      });
+    }
+    /* asset.band_statistics.forEach((range) => {
       ranges.min.push(range.min);
       ranges.max.push(range.max);
-    });
+    }); */
     return ranges;
+  }
+
+  resolveStretchMode(asset, props) {
+    if (props?.band_statistics?.length) {
+      return 'stats';
+    }
+    if (props?.histogram_band_list?.length) {
+      return 'hist';
+    }
+    if (asset?.ranges?.length) {
+      return 'ranges';
+    }
+    return null;
+  }
+
+  getAssetRangesFromHistogram(props, bandName) {
+    const hist = props?.histogram_band_list || [];
+    const h = hist.find((x) => String(x.band_id || '').toLowerCase() === bandName);
+    return this.mean2sFrom(h, 'histogram mean±2σ');
+  }
+
+  getAssetRangesFromStats(props, band) {
+    const propStats = props?.band_statistics || [];
+    const value = propStats.find((x) => Number(x.band_index) === band) || propStats[band - 1];
+    return this.mean2sFrom(value, 'props stx mean±2σ');
+  }
+
+  getAssetRangesFromRanges(asset, band) {
+    const r = asset?.ranges?.[band - 1];
+    return this.absFrom(r, 'asset.ranges');
+  }
+
+  mean2sFrom(s, src) {
+    const mean = s?.stx_mean ?? s?.mean;
+    const stdv = s?.stx_stdv ?? s?.stdv ?? s?.std;
+    if (typeof mean === 'number' && typeof stdv === 'number' && stdv > 0) {
+      return {
+        min: Math.max(0, mean - 2 * stdv),
+        max: mean + 2 * stdv,
+        src,
+      };
+    }
+    return null;
+  }
+
+  absFrom(s, src) {
+    if (!s) return null;
+    if (typeof s.min === 'number' && typeof s.max === 'number') {
+      return { min: s.min, max: s.max, src };
+    }
+    if (typeof s.stx_min === 'number' && typeof s.stx_max === 'number') {
+      return { min: s.stx_min, max: s.stx_max, src };
+    }
+    return null;
   }
 
   /**
@@ -3289,7 +3373,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
    * @param {Object} asset Asset STAC con metadatos eo:bands
    * @returns {{bands: {r: number, g: number, b: number}}|null} Índices de banda o null
    */
-  resolveStyleSpec(asset) {
+  resolveStyleSpec(asset, properties) {
     const spec = {
       bands: [1, 1, 1],
       convertToRGB: false,
@@ -3304,7 +3388,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
       spec.bands = [1, 2, 3];
     }
     const eoBands = this.getAssetBands(asset);
-    const ranges = this.getAssetRanges(asset);
+    const ranges = this.getAssetRanges(asset, properties, eoBands);
     if (ranges) {
       spec.ranges = ranges;
     }
@@ -3332,7 +3416,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
       } else if (eoBands.length >= 3) {
         spec.bands = [1, 2, 3];
       } else { // Escala de grises
-        spec.bands = [1, 1, 1];
+        spec.bands = [1];
       }
     }
     const bandDisplayOrder = asset.band_display_order;
@@ -3384,7 +3468,8 @@ export default class CatalogmanagerControl extends IDEE.Control {
     if (!spec) {
       return null;
     }
-    const bands = spec.bands.length > 3 ? spec.bands.slice(0, 3) : spec.bands;
+    // const bands = spec.bands.length > 3 ? spec.bands.slice(0, 3) : spec.bands;
+    const bands = [1, 2, 3];
     let options = {};
     if (spec.indice) {
       options = INDICES_STYLES[spec.indice];

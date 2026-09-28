@@ -473,7 +473,7 @@ class GeoTIFF extends LayerBase {
       const max = this.max_;
       const nodata = this.nodata_;
       const projectionGeoTIFF = this.options.projection;
-      let sources = [
+      const sources = [
         {
           url: this.url,
           nodata,
@@ -493,6 +493,11 @@ class GeoTIFF extends LayerBase {
           }
           sources.push(source);
         });
+        /* sources[0].bands = bands;
+        if (min && max) {
+          sources[0].min = min;
+          sources[0].max = max;
+        } */
       }
       olSource = new GeoTIFFSource({
         sources,
