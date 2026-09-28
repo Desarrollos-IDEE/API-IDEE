@@ -104,12 +104,13 @@ class LayerBase extends MObject {
    * Construye el proveedor habitual y conserva su fábrica para autorefresco.
    * @param {Function} Provider Constructor del proveedor de imágenes.
    * @param {Object} options Opciones del proveedor.
+   * @param {Object} [initialProvider] Proveedor inicial, si ya está construido.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
    * @function
    */
-  createAutoRefreshProvider(Provider, options) {
-    const provider = new Provider(options);
+  createAutoRefreshProvider(Provider, options, initialProvider) {
+    const provider = initialProvider || new Provider(options);
     if (this.isAutoRefreshRemoteURL(options.url?.url || options.url)) {
       const state = { pending: 0 };
       const track = (source) => {

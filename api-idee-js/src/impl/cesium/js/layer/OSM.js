@@ -206,18 +206,17 @@ class OSM extends Layer {
     }
     const source = new OpenStreetMapImageryProvider({ url, fileExtension });
 
-    // OSM construye la plantilla completa sobre UrlTemplateImageryProvider.
-    // El parámetro de refresco se añade después de esa ruta, no a la URL base.
+    // Conserva el proveedor OSM en la carga inicial. Solo el autorefresco usa la
+    // plantilla completa para añadir el parámetro después de la ruta de teselas.
     return this.createAutoRefreshProvider(UrlTemplateImageryProvider, {
       url: source.url,
-      credit: source.credit,
       tilingScheme: source.tilingScheme,
       tileWidth: source.tileWidth,
       tileHeight: source.tileHeight,
       minimumLevel: source.minimumLevel,
       maximumLevel: source.maximumLevel,
       rectangle: source.rectangle,
-    });
+    }, source);
   }
 
   /**

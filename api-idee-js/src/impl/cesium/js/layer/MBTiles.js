@@ -209,9 +209,15 @@ class MBTiles extends Layer {
    * @api
    */
   async fetchSource() {
-    if (!this.source_ && this.url) this.source_ = await window.fetch(this.url);
+    // Sin autorefresco, el proveedor recibe la fuente original y realiza su lectura habitual.
+    // Una respuesta consumida solo se recupera para reinsertar una capa con autorefresco.
+    if (!this.source_ || (this.autoRefreshRemote_ && this.facadeLayer_.isAutoRefreshEnabled()
+      && this.source_ instanceof Response && this.source_.bodyUsed)) {
+      if (this.url) this.source_ = await window.fetch(this.url);
+    }
     if (!this.source_) throw new Error(getValue('exception').no_source);
-    if (typeof this.source_.arrayBuffer === 'function') {
+    if (this.autoRefreshRemote_ && this.facadeLayer_.isAutoRefreshEnabled()
+      && typeof this.source_.arrayBuffer === 'function') {
       this.source_ = new Uint8Array(await this.source_.arrayBuffer());
     }
     return this.addProvider_();
@@ -318,12 +324,18 @@ class MBTiles extends Layer {
     if (!this.map.getMapImpl().scene.globe.tilesLoaded) return;
     const response = await fetch(addParameters(this.url, { _ideeRefresh: Date.now() }));
     if (!response.ok) throw new Error(`MBTiles: HTTP ${response.status}`);
+    const source = new Uint8Array(await response.arrayBuffer());
+    if (!isCurrent() || this.cesiumLayer !== layer) return;
     const provider = new MBTileImageryProvider({
-      source: response,
+      source,
     }, { url: this.url, tileWidth: this.tileSize_, tileHeight: this.tileSize_ });
     try {
       await provider.getExtent();
-      if (isCurrent() && this.cesiumLayer === layer) this.replaceAutoRefreshProvider(provider);
+      if (isCurrent() && this.cesiumLayer === layer) {
+        this.replaceAutoRefreshProvider(provider);
+        // Reinsertar la capa reutiliza el último archivo adoptado, no la primera descarga.
+        if (this.cesiumLayer.imageryProvider === provider) this.source_ = source;
+      }
     } finally {
       if (this.cesiumLayer?.imageryProvider !== provider) provider.dispose();
     }

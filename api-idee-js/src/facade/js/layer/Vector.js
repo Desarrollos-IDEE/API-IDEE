@@ -20,10 +20,17 @@ import Generic from '../style/Generic';
 
 // Conserva el contenido editable, sin estilos ni filtros de representación.
 const autoRefreshSnapshots = new WeakMap();
-const featureSnapshot = (layer) => JSON.stringify(layer.getFeatures(true)
-  .map((feature) => ({
-    id: feature.getId(), geometry: feature.getGeometry(), properties: feature.getAttributes(),
-  })));
+const featureSnapshot = (layer) => {
+  try {
+    return JSON.stringify(layer.getFeatures(true).map((feature) => ({
+      id: feature.getId(), geometry: feature.getGeometry(), properties: feature.getAttributes(),
+    })));
+  } catch (error) {
+    // Los atributos no serializables siguen siendo válidos para la carga habitual.
+    // Sin una comparación fiable, el autorefresco debe conservar los datos actuales.
+    return null;
+  }
+};
 
 /**
  * @classdesc
@@ -189,7 +196,7 @@ class Vector extends LayerBase {
    */
   isAutoRefreshPaused() {
     const snapshot = autoRefreshSnapshots.get(this);
-    return snapshot !== undefined && snapshot !== featureSnapshot(this);
+    return snapshot === null || (snapshot !== undefined && snapshot !== featureSnapshot(this));
   }
 
   /**
