@@ -779,14 +779,10 @@ class Map extends Base {
         return layer;
       });
 
-      // adds the layers
-      const geoPackages = layers.filter((layer) => layer instanceof GeoPackage);
-      const mapLayers = layers.filter((layer) => !isNullOrEmpty(layer)
-        && !(layer instanceof GeoPackage));
+      // adds the layers. Container layers (such as GeoPackage) are dispatched
+      // to their own addTo implementation by the map implementation.
+      const mapLayers = layers.filter((layer) => !isNullOrEmpty(layer));
       this.getImpl().addLayers(mapLayers);
-      if (geoPackages.length > 0) {
-        this.addGeoPackage(geoPackages);
-      }
     }
     return this;
   }

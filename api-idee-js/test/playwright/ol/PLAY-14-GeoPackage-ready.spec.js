@@ -59,6 +59,26 @@ test('GeoPackage: LOAD_LAYERS conserva su colección y ocurre una vez al añadir
   });
 });
 
+test('GeoPackage: addLayers delega la incorporación al addTo del paquete', async ({ page }) => {
+  const result = await page.evaluate(async () => {
+    const map = IDEE.map({ container: 'map', layers: [], controls: [] });
+    const gpkg = new IDEE.layer.GeoPackage({ url: '/fixtures/geopackage/mixed.gpkg' });
+    let added = 0;
+    let loaded = 0;
+    map.on(IDEE.evt.ADDED_GEOPACKAGE, () => { added += 1; });
+    gpkg.on(IDEE.evt.LOAD_LAYERS, () => { loaded += 1; });
+    map.addLayers(gpkg);
+    await gpkg.whenReady();
+    return {
+      added,
+      loaded,
+      registered: map.geopackages.includes(gpkg),
+      attached: gpkg.getLayers().every((layer) => map.getLayers().includes(layer)),
+    };
+  });
+  expect(result).toEqual({ added: 1, loaded: 1, registered: true, attached: true });
+});
+
 ['pending', 'ready'].forEach((state) => {
   test(`GeoPackage: carga en grupo con inicialización ${state}`, async ({ page }) => {
     await page.evaluate(async (initialState) => {
