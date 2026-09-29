@@ -12,11 +12,6 @@ const COLLECTION_BBOX = [
 test.describe('IDEE.spec.Catalog', () => {
   test.beforeEach(async ({ page }) => {
     // gneis no expone CORS; Playwright reenvía la petición desde Node sin restricción de origen.
-    await page.route('**/gneis.desarrollo.guadaltel.es/**', async (route) => {
-      const response = await route.fetch();
-      await route.fulfill({ response });
-    });
-
     await page.goto('/test/playwright/ol/basic-ol.html');
     await page.evaluate(() => {
       const catalog = new IDEE.stac.Catalog({
