@@ -184,7 +184,7 @@ class XYZ extends Layer {
    */
   addProvider_() {
     const url = this.url;
-    return new UrlTemplateImageryProvider({
+    return this.createAutoRefreshProvider(UrlTemplateImageryProvider, {
       url,
       tileWidth: this.getTileSize(),
       tileHeight: this.getTileSize(),
@@ -239,6 +239,7 @@ class XYZ extends Layer {
    * @api
    */
   destroy() {
+    this.facadeLayer_?.stopAutoRefresh();
     const cesiumMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.cesiumLayer)) {
       cesiumMap.imageryLayers.remove(this.cesiumLayer);

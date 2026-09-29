@@ -18,6 +18,20 @@ import * as EventType from '../event/eventtype';
 import { getValue } from '../i18n/language';
 import Generic from '../style/Generic';
 
+// Conserva el contenido editable, sin estilos ni filtros de representación.
+const autoRefreshSnapshots = new WeakMap();
+const featureSnapshot = (layer) => {
+  try {
+    return JSON.stringify(layer.getFeatures(true).map((feature) => ({
+      id: feature.getId(), geometry: feature.getGeometry(), properties: feature.getAttributes(),
+    })));
+  } catch (error) {
+    // Los atributos no serializables siguen siendo válidos para la carga habitual.
+    // Sin una comparación fiable, el autorefresco debe conservar los datos actuales.
+    return null;
+  }
+};
+
 /**
  * @classdesc
  * Esta clase es la base de todas las capas de tipo vectorial,
@@ -171,6 +185,40 @@ class Vector extends LayerBase {
     this.setStyle(options.style);
 
     impl.on(EventType.LOAD, (features) => this.fire(EventType.LOAD, [features]));
+  }
+
+  /**
+   * Indica si hay cambios locales que impiden sustituir los datos de la capa.
+   * @public
+   * @function
+   * @returns {Boolean} Verdadero mientras existan cambios pendientes.
+   * @api
+   */
+  isAutoRefreshPaused() {
+    const snapshot = autoRefreshSnapshots.get(this);
+    return snapshot === null || (snapshot !== undefined && snapshot !== featureSnapshot(this));
+  }
+
+  /**
+   * Acepta el estado actual tras guardar o descartar las ediciones y permite recargar.
+   * La aplicación debe llamarlo únicamente cuando esa operación haya terminado.
+   * No guarda datos ni cambia los parámetros de construcción.
+   * @public
+   * @function
+   * @api
+   */
+  resumeAutoRefresh() {
+    autoRefreshSnapshots.set(this, featureSnapshot(this));
+  }
+
+  /**
+   * Registra la primera carga para detectar también ediciones anteriores al primer intervalo.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  initializeAutoRefresh() {
+    if (!autoRefreshSnapshots.has(this)) this.resumeAutoRefresh();
   }
 
   /**

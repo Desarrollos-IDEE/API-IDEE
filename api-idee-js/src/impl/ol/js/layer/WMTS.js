@@ -662,6 +662,7 @@ class WMTS extends LayerBase {
    * @api stable
    */
   destroy() {
+    this.facadeLayer_?.stopAutoRefresh();
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.olLayer)) {
       olMap.removeLayer(this.olLayer);

@@ -437,6 +437,7 @@ class WMS extends LayerBase {
           version: layer.version,
           tiled: this.tiled,
           useCapabilities: this.useCapabilities,
+          refreshInterval: this.facadeLayer_.getAutoRefreshInterval(),
         }, this.vendorOptions_);
         this.layers.push(wmsLayer);
       });
@@ -1107,6 +1108,7 @@ class WMS extends LayerBase {
    * @api stable
    */
   destroy() {
+    this.facadeLayer_?.stopAutoRefresh();
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.olLayer)) {
       olMap.removeLayer(this.olLayer);

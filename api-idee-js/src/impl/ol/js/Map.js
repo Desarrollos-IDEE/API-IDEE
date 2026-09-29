@@ -924,6 +924,7 @@ class Map extends MObject {
     const removedLayers = [];
     wmcMapLayers.forEach((wmcLayer) => {
       if (includes(this.layers_, wmcLayer)) {
+        wmcLayer.stopAutoRefresh();
         if (wmcLayer.selected === true && wmcLayer.isLoaded() === false) {
           wmcLayer.on(EventType.LOAD, () => {
             this.layers_ = this.layers_.filter((layer) => !layer.equals(wmcLayer));

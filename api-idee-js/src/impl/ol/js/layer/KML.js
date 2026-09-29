@@ -271,7 +271,6 @@ class KML extends Vector {
             }
           },
         }));
-        this.facadeVector_.addFeatures(response.features);
       });
     }
   }
@@ -343,6 +342,7 @@ class KML extends Vector {
    * @api stable
    */
   destroy() {
+    this.facadeVector_?.stopAutoRefresh();
     const olMap = this.map.getMapImpl();
 
     if (!isNullOrEmpty(this.olLayer)) {
@@ -351,7 +351,7 @@ class KML extends Vector {
     }
 
     this.removePopup();
-    this.options = null;
+    // Conserva las opciones de construcción para permitir retirar y reinsertar la capa.
     this.map = null;
   }
 

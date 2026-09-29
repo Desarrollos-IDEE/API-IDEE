@@ -1,3 +1,4 @@
+
 CP-001
 Mapa básico con todas las capas vectoriales, con pruebas de funciones.
 
@@ -81,3 +82,6 @@ Prueba manual de GeoPackage mediante el constructor estándar, con archivo local
 
 CP-028
 Prueba manual de carga de GeoPackage desde archivo local o URL mediante el plugin LayerSwitcher.
+
+
+Pruebas de autorefresco CP-032 y CP-033: ver README-autorefresco.md.

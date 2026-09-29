@@ -1,7 +1,8 @@
 /**
  * @module IDEE/impl/layer/MBTiles
  */
-import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
+import { addParameters, isNullOrEmpty, extend } from 'IDEE/util/Utils';
+
 import {
   getValue,
 } from 'IDEE/i18n/language';
@@ -82,6 +83,7 @@ class MBTiles extends Layer {
      * MBTiles source: Fuente de la capa.
      */
     this.source_ = userParameters.source;
+    this.autoRefreshRemote_ = !userParameters.source && !userParameters.tileLoadFunction;
 
     /**
      * MBTiles maxExtent: Máxima extensión de la capa.
@@ -206,21 +208,19 @@ class MBTiles extends Layer {
    * @public
    * @api
    */
-  fetchSource() {
-    return new Promise((resolve, reject) => {
-      if (this.source_) {
-        const tileProvider = this.addProvider_();
-        resolve(tileProvider);
-      } else if (this.url) {
-        window.fetch(this.url).then((response) => {
-          this.source_ = response;
-          const tileProvider = this.addProvider_();
-          resolve(tileProvider);
-        });
-      } else {
-        reject(new Error(getValue('exception').no_source));
-      }
-    });
+  async fetchSource() {
+    // Sin autorefresco, el proveedor recibe la fuente original y realiza su lectura habitual.
+    // Una respuesta consumida solo se recupera para reinsertar una capa con autorefresco.
+    if (!this.source_ || (this.autoRefreshRemote_ && this.facadeLayer_.isAutoRefreshValid()
+      && this.source_ instanceof Response && this.source_.bodyUsed)) {
+      if (this.url) this.source_ = await window.fetch(this.url);
+    }
+    if (!this.source_) throw new Error(getValue('exception').no_source);
+    if (this.autoRefreshRemote_ && this.facadeLayer_.isAutoRefreshValid()
+      && typeof this.source_.arrayBuffer === 'function') {
+      this.source_ = new Uint8Array(await this.source_.arrayBuffer());
+    }
+    return this.addProvider_();
   }
 
   /**
@@ -286,6 +286,7 @@ class MBTiles extends Layer {
    * @api
    */
   destroy() {
+    this.facadeLayer_?.stopAutoRefresh();
     const cesiumMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.cesiumLayer)) {
       cesiumMap.imageryLayers.remove(this.cesiumLayer);
@@ -309,6 +310,36 @@ class MBTiles extends Layer {
       equals = (this.name === obj.name);
     }
     return equals;
+  }
+
+  /**
+   * Recarga la fuente manteniendo la capa y sus opciones de representación.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  async refreshSource(isCurrent = () => true) {
+    const layer = this.cesiumLayer;
+    if (!layer || !this.map || !this.autoRefreshRemote_
+      || !this.isAutoRefreshRemoteURL(this.url)) return;
+    if (!this.map.getMapImpl().scene.globe.tilesLoaded) return;
+    const response = await fetch(addParameters(this.url, { _ideeRefresh: Date.now() }));
+    if (!response.ok) throw new Error(`MBTiles: HTTP ${response.status}`);
+    const source = new Uint8Array(await response.arrayBuffer());
+    if (!isCurrent() || this.cesiumLayer !== layer) return;
+    const provider = new MBTileImageryProvider({
+      source,
+    }, { url: this.url, tileWidth: this.tileSize_, tileHeight: this.tileSize_ });
+    try {
+      await provider.getExtent();
+      if (isCurrent() && this.cesiumLayer === layer) {
+        this.replaceAutoRefreshProvider(provider);
+        // Reinsertar la capa reutiliza el último archivo adoptado, no la primera descarga.
+        if (this.cesiumLayer.imageryProvider === provider) this.source_ = source;
+      }
+    } finally {
+      if (this.cesiumLayer?.imageryProvider !== provider) provider.dispose();
+    }
   }
 }
 export default MBTiles;

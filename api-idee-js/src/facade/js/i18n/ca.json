@@ -194,6 +194,8 @@
     "msg": "Porta'm allà"
   },
   "exception": {
+    "auto_refresh_failed": "No s'ha pogut actualitzar automàticament la capa",
+    "invalid_kml": "KML no vàlid",
     "addto_method": "La implementació usada no posseeix el mètode addTo",
     "no_get_rotation_method": "La implementació usada no posseeix el mètode getRotation",
     "no_set_rotation_method": "La implementació usada no posseeix el mètode setRotation",

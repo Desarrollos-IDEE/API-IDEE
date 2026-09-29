@@ -4,7 +4,9 @@
 import FacadeOSM from 'IDEE/layer/OSM';
 import * as EventType from 'IDEE/event/eventtype';
 import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
-import { OpenStreetMapImageryProvider, ImageryLayer, Rectangle } from 'cesium';
+import {
+  OpenStreetMapImageryProvider, UrlTemplateImageryProvider, ImageryLayer, Rectangle,
+} from 'cesium';
 import Layer from './Layer';
 
 /**
@@ -190,17 +192,31 @@ class OSM extends Layer {
    */
   updateSource_(resolutions) {
     let fileExtension;
-    if (this.url) {
-      const indexExtension = this.url.trim().indexOf('}.');
-      fileExtension = this.url.substring(indexExtension + 2);
-      const index = this.url.trim().indexOf('/{');
-      this.url = this.url.substring(0, index);
+    // Guarda la plantilla aparte para mantener la normalización pública de URL.
+    if (!this.autoRefreshOSMURL_ || this.url?.includes('/{')) {
+      this.autoRefreshOSMURL_ = this.url;
     }
-    const newSource = new OpenStreetMapImageryProvider({
-      url: this.url,
-      fileExtension,
-    });
-    return newSource;
+    let url = this.autoRefreshOSMURL_;
+    if (url) {
+      const indexExtension = url.trim().indexOf('}.');
+      fileExtension = url.substring(indexExtension + 2);
+      const index = url.trim().indexOf('/{');
+      url = url.substring(0, index);
+      this.url = url;
+    }
+    const source = new OpenStreetMapImageryProvider({ url, fileExtension });
+
+    // Conserva el proveedor OSM en la carga inicial. Solo el autorefresco usa la
+    // plantilla completa para añadir el parámetro después de la ruta de teselas.
+    return this.createAutoRefreshProvider(UrlTemplateImageryProvider, {
+      url: source.url,
+      tilingScheme: source.tilingScheme,
+      tileWidth: source.tileWidth,
+      tileHeight: source.tileHeight,
+      minimumLevel: source.minimumLevel,
+      maximumLevel: source.maximumLevel,
+      rectangle: source.rectangle,
+    }, source);
   }
 
   /**
@@ -249,6 +265,7 @@ class OSM extends Layer {
    * @api stable
    */
   destroy() {
+    this.facadeLayer_?.stopAutoRefresh();
     const cesiumMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.cesiumLayer)) {
       cesiumMap.imageryLayers.remove(this.cesiumLayer);

@@ -1,14 +1,16 @@
 /**
  * @module IDEE/impl/layer/GenericVector
  */
+import { get as getRemote } from 'IDEE/util/Remote';
+import {
+  addParameters,
+  isUndefined, isNull, isNullOrEmpty, getResolutionFromScale,
+} from 'IDEE/util/Utils';
 import * as LayerType from 'IDEE/layer/Type';
 import * as EventType from 'IDEE/event/eventtype';
 import { compileSync as compileTemplate } from 'IDEE/util/Template';
 import Popup from 'IDEE/Popup';
 import { getValue } from 'IDEE/i18n/language';
-import {
-  isUndefined, isNull, isNullOrEmpty, getResolutionFromScale,
-} from 'IDEE/util/Utils';
 import geojsonPopupTemplate from 'templates/geojson_popup';
 import Vector from './Vector';
 import ImplMap from '../Map';
@@ -215,6 +217,9 @@ class GenericVector extends Vector {
   addFeaturesToFacade() {
     const source = this.olLayer.getSource();
     if (source.getState() === 'ready' && !this.loaded_) {
+      if (source.getFeatures?.().length === 0) {
+        this.facadeLayer_.initializeAutoRefresh();
+      }
       if (source.getFeatures) {
         const features = [];
         source.getFeatures().forEach((f, i) => {
@@ -468,6 +473,7 @@ class GenericVector extends Vector {
    * @api stable
    */
   destroy() {
+    this.facadeLayer_?.stopAutoRefresh();
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.olLayer)) {
       olMap.removeLayer(this.olLayer);
@@ -492,6 +498,36 @@ class GenericVector extends Vector {
     }
 
     return equals;
+  }
+
+  /**
+   * Uso interno del autorefresco de la fuente.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  async refreshSource(isCurrent = () => true) {
+    const layer = this.olLayer;
+    const source = layer?.getSource();
+    const facade = this.facadeVector_;
+    if (!source || source.loading || !facade || facade.isAutoRefreshPaused()) return;
+    const format = source.getFormat?.();
+    let url = source.getUrl?.();
+    if (!url || !format) return;
+    const view = this.map.getMapImpl().getView();
+    if (typeof url === 'function') {
+      url = url(view.calculateExtent(), view.getResolution(), view.getProjection());
+    }
+    if (!this.isAutoRefreshRemoteURL(url)) return;
+    const response = await getRemote(addParameters(url, { _ideeRefresh: Date.now() }));
+    if (response.code >= 400) throw new Error(`GenericVector: HTTP ${response.code}`);
+    const features = format.readFeatures(response.text, { featureProjection: view.getProjection() })
+      .map((feature) => Feature.feature2Facade(feature));
+    if (!isCurrent() || this.olLayer !== layer || facade.isAutoRefreshPaused()) return;
+    facade.removeFeatures(facade.getFeatures(true));
+    this.addFeatures(features);
+    facade.resumeAutoRefresh();
+    this.fire(EventType.LOAD, [features]);
   }
 }
 

@@ -72,6 +72,17 @@ class WFS extends MObject {
   }
 
   /**
+   * Reutiliza la petición GetFeature y su formato con una revisión nueva.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  loadForRefresh(projection) {
+    const url = addParameters(this.getRequestUrl_(null, projection), { _ideeRefresh: Date.now() });
+    return this.loadInternal_(url, projection, true).then((features) => ({ features }));
+  }
+
+  /**
     * Este método obtiene los objetos geográficos a partir de los parámetros
     * especificados.
     * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
@@ -82,13 +93,14 @@ class WFS extends MObject {
     * @public
     * @api
     */
-  loadInternal_(url, projection) {
+  loadInternal_(url, projection, forRefresh = false) {
     let parameterizedURL = url;
     return new Promise((success, fail) => {
       if (isString(IDEE.config.TICKET)) {
         parameterizedURL = addParameters(parameterizedURL, { ticket: IDEE.config.TICKET });
       }
-      getRemote(parameterizedURL).then((response) => {
+      const request = getRemote(parameterizedURL).then((response) => {
+        if (forRefresh && response.code >= 400) throw new Error(`HTTP ${response.code}`);
         if (!isNullOrEmpty(response.text) && response.text.indexOf('ServiceExceptionReport') < 0) {
           let text = response.text;
           // Arreglo para WFS 2.0.0 #7434
@@ -107,6 +119,7 @@ class WFS extends MObject {
           Exception(getValue('exception').no_getfeature_response);
         }
       });
+      if (forRefresh) request.catch(fail);
     });
   }
 

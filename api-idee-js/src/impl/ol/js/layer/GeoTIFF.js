@@ -3,8 +3,9 @@
  * @module IDEE/impl/layer/GeoTIFF
  */
 import {
-  isUndefined, isNull, isNullOrEmpty, getResolutionFromScale, extend,
+  addParameters, isUndefined, isNull, isNullOrEmpty, getResolutionFromScale, extend,
 } from 'IDEE/util/Utils';
+
 import * as LayerType from 'IDEE/layer/Type';
 import * as EventType from 'IDEE/event/eventtype';
 import TileLayer from 'ol/layer/WebGLTile';
@@ -311,7 +312,7 @@ class GeoTIFF extends LayerBase {
    * @return {ol.source} Fuente de Openlayers.
    * @api
    */
-  createOLSource_() {
+  createOLSource_(url = this.url) {
     let olSource = this.vendorOptions_.source;
     if (isNullOrEmpty(this.vendorOptions_.source)) {
       const convertToRGB = this.convertToRGB_;
@@ -320,7 +321,7 @@ class GeoTIFF extends LayerBase {
       const projectionGeoTIFF = this.options.projection;
       const sources = [
         {
-          url: this.url,
+          url,
           nodata,
         },
       ];
@@ -476,6 +477,7 @@ class GeoTIFF extends LayerBase {
    * @api stable
    */
   destroy() {
+    this.facadeLayer_?.stopAutoRefresh();
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.olLayer)) {
       olMap.removeLayer(this.olLayer);
@@ -502,6 +504,45 @@ class GeoTIFF extends LayerBase {
     }
 
     return equals;
+  }
+
+  /**
+   * Recarga la fuente manteniendo la capa y sus opciones de representación.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  async refreshSource(isCurrent = () => true) {
+    const layer = this.olLayer;
+    if (!layer || this.blob || this.vendorOptions_.source
+      || !this.isAutoRefreshRemoteURL(this.url)) return;
+    const source = this.createOLSource_(addParameters(this.url, { _ideeRefresh: Date.now() }));
+    try {
+      // GeoTIFF puede pasar a error sin rechazar getView(); observar su estado evita bloquearse.
+      await new Promise((resolve, reject) => {
+        const check = () => {
+          const state = source.getState();
+          if (state === 'ready' || state === 'error') {
+            source.un('change', check);
+            if (state === 'ready') resolve();
+            else reject(source.getError());
+          }
+        };
+        source.on('change', check);
+        check();
+      });
+      if (!isCurrent() || this.olLayer !== layer) {
+        source.dispose();
+        return;
+      }
+      const previous = layer.getSource();
+      this.disposeAutoRefresh();
+      layer.setSource(source);
+      previous.dispose();
+    } catch (error) {
+      source.dispose();
+      throw error;
+    }
   }
 }
 

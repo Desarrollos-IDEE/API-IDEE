@@ -394,6 +394,20 @@ class GenericRaster extends LayerBase {
   }
 
   /**
+   * Renueva las imágenes de Cesium conservando el proveedor externo y su configuración.
+   * La política de caché HTTP corresponde al proveedor suministrado por el usuario.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  refreshSource() {
+    const provider = this.cesiumLayer?.imageryProvider;
+    if (!this.map || !provider || !this.isAutoRefreshRemoteURL(provider.url)) return;
+    if (!this.map.getMapImpl().scene.globe.tilesLoaded) return;
+    this.replaceAutoRefreshProvider(provider);
+  }
+
+  /**
    * Este método actualiza la capa.
    * @function
    * @api stable
@@ -498,14 +512,20 @@ class GenericRaster extends LayerBase {
    * Este método destruye esta capa, limpiando el HTML
    * y anulando el registro de todos los eventos.
    *
+   * @param {Boolean} preserveLayer Conserva el objeto externo para reinsertar la misma capa.
    * @public
    * @function
    * @api stable
    */
-  destroy() {
-    const cesiumMap = this.map.getMapImpl();
-    if (!isNullOrEmpty(this.cesiumLayer)) {
-      cesiumMap.imageryLayers.remove(this.cesiumLayer);
+  destroy(preserveLayer = false) {
+    this.facadeLayer_?.stopAutoRefresh();
+    const layer = this.cesiumLayer;
+    if (layer) {
+      this.map?.getMapImpl().imageryLayers.remove(layer, false);
+      if (!preserveLayer) {
+        if (typeof layer.destroy === 'function' && !layer.isDestroyed?.()) layer.destroy();
+        this.cesiumLayer = null;
+      }
     }
     this.map = null;
   }

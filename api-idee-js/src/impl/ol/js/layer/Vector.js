@@ -248,6 +248,7 @@ class Vector extends Layer {
       this.updateLayer_();
     }
     this.redraw();
+    this.facadeVector_.initializeAutoRefresh();
   }
 
   /**
@@ -492,6 +493,39 @@ class Vector extends Layer {
   }
 
   /**
+   * Recarga los datos con el cargador de cada formato, conservando las ediciones locales.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  async refreshSource(isCurrent = () => true) {
+    const layer = this.olLayer;
+    const facade = this.facadeVector_;
+    if (!layer || !this.loaded_ || !facade || this.source || this.vendorOptions_.source
+      || !this.loader_?.loadForRefresh || !this.isAutoRefreshRemoteURL(this.url)) return;
+    if (facade.isAutoRefreshPaused()) return;
+    const projection = getProj(this.map.getProjection().code);
+    const response = await this.loader_.loadForRefresh(
+      projection,
+      this.scaleLabel,
+      this.layers,
+      this.removeFolderChildren,
+      this.label_,
+      this.clampToGround,
+    );
+    if (!isCurrent() || this.olLayer !== layer || facade.isAutoRefreshPaused()) return;
+    // Mantiene el filtro y estilo de la fachada; la sustitución solo ocurre tras cargar bien.
+    facade.removeFeatures(facade.getFeatures(true));
+    this.addFeatures(response.features);
+    facade.resumeAutoRefresh();
+    this.fire(EventType.LOAD, [response.features]);
+    if (response.screenOverlay) {
+      const overlay = ImplUtils.addOverlayImage(response.screenOverlay, this.map);
+      this.setScreenOverlayImg(overlay);
+    }
+  }
+
+  /**
    * Este método actualiza la capa.
    * @function
    * @api stable
@@ -520,6 +554,7 @@ class Vector extends Layer {
    * @api stable
    */
   destroy() {
+    this.facadeVector_?.stopAutoRefresh();
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.olLayer)) {
       olMap.removeLayer(this.olLayer);

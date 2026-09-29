@@ -1318,7 +1318,13 @@ class Map extends MObject {
     layers.forEach((layer) => {
       if (includes(this.layers_, layer)) {
         this.layers_ = this.layers_.filter((layer2) => !layer2.equals(layer));
-        layer.getImpl().destroy();
+        // Solo el autorefresco conserva las capas externas para poder reinsertarlas.
+        if (layer.isAutoRefreshValid()
+          && (layer.type === LayerType.GenericVector || layer.type === LayerType.GenericRaster)) {
+          layer.getImpl().destroy(true);
+        } else {
+          layer.getImpl().destroy();
+        }
       }
     });
   }

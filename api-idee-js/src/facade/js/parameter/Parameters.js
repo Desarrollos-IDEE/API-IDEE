@@ -592,6 +592,21 @@ export const parseBGColorContainer = (parameter) => {
 };
 
 /**
+ * Obtiene el intervalo de autorefresco del mapa, en milisegundos.
+ * @param {string|Mx.parameters.Map} userParameters Parámetros del mapa.
+ * @returns {Number|undefined} Intervalo solicitado; su validez se comprueba al utilizarlo.
+ * @public
+ * @function
+ */
+export const parseRefreshInterval = (userParameters) => {
+  if (isString(userParameters)) {
+    const interval = getParameterValue('refreshInterval', userParameters);
+    return isNullOrEmpty(interval) ? undefined : Number(interval);
+  }
+  return userParameters.refreshInterval;
+};
+
+/**
  * @classdesc
  * Analiza y transforma los parámetros especificados por el usuario.
  * @property {Object} container Contenedor del mapa.
@@ -636,6 +651,7 @@ class Parameters {
    * - center: Centro inicial del mapa.
    * - maxZoom: Zoom máximo del mapa.
    * - resolutions: Resoluciones del mapa.
+   * - refreshInterval: Intervalo de autorefresco de todas las capas.
    * - projection: Proyección del mapa.
    * - label: Etiqueta del mapa.
    * - ticket: Ticket de autenticación.
@@ -661,6 +677,13 @@ class Parameters {
      * @api
      */
     this.layers = parseLayers(userParameters);
+
+    /**
+     * @public
+     * @type {Number}
+     * @api
+     */
+    this.refreshInterval = parseRefreshInterval(userParameters);
 
     /**
      * @public

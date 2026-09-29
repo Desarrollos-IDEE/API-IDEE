@@ -271,9 +271,10 @@ class KML extends Vector {
    * @private
    * @param {Array<IDEE.feature>} features Objetos geográficos.
    * @param {Boolean} update Actualiza la capa.
+   * @param {Boolean} forRefresh Uso interno: devuelve la promesa solo para el autorefresco.
    * @api stable
    */
-  addFeatures_(features, update) {
+  addFeatures_(features, update, forRefresh = false) {
     this.countFeatures_ += features.length;
 
     const promises = [];
@@ -282,7 +283,7 @@ class KML extends Vector {
       promises.push(newFeature.getImpl().isLoadCesiumFeature_);
     });
 
-    Promise.all(promises).then(() => {
+    const loading = Promise.all(promises).then(() => {
       const styleLayer = this.facadeVector_.getStyle();
       const othersEntities = [];
       features.forEach((newFeature) => {
@@ -302,6 +303,7 @@ class KML extends Vector {
           implFeature.setHeightGeometry(this.height);
 
           const entity = Feature.facade2Feature(newFeature);
+          this.prepareAutoRefreshFeature_(entity);
 
           if (isNullOrEmpty(featureStyle)) {
             if (newFeature.getAttribute('vendor.api_idee.icon')) {
@@ -339,6 +341,7 @@ class KML extends Vector {
       });
 
       if (this.countFeatures_ === this.countPromise_) {
+        this.facadeVector_.initializeAutoRefresh();
         this.facadeVector_.fire(EventType.LOAD);
         this.countFeatures_ = 0;
         this.countPromise_ = 0;
@@ -355,6 +358,8 @@ class KML extends Vector {
 
       // this.fire(EventType.LOAD, [this.features_]);
     });
+    if (forRefresh) return loading;
+    return undefined;
   }
 
   /**
@@ -366,6 +371,7 @@ class KML extends Vector {
    * @api stable
    */
   destroy() {
+    this.facadeVector_?.stopAutoRefresh();
     const cesiumMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.cesiumLayer)) {
       cesiumMap.dataSources.remove(this.cesiumLayer, true);

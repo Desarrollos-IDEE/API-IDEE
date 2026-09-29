@@ -1,6 +1,9 @@
 /**
  * @module IDEE/impl/layer/GenericVector
  */
+import {
+  Resource, Color, KmlDataSource, PointGraphics,
+} from 'cesium';
 import ClusteredFeature from 'IDEE/feature/Clustered';
 import * as EventType from 'IDEE/event/eventtype';
 import { compileSync as compileTemplate } from 'IDEE/util/Template';
@@ -10,7 +13,7 @@ import {
   isUndefined,
 } from 'IDEE/util/Utils';
 import { getValue } from 'IDEE/i18n/language';
-import { Color, KmlDataSource, PointGraphics } from 'cesium';
+
 import geojsonPopupTemplate from 'templates/geojson_popup';
 import Vector from './Vector';
 import Feature from '../feature/Feature';
@@ -102,7 +105,7 @@ class GenericVector extends Vector {
       this.map.getMapImpl().dataSources.add(this.cesiumLayer);
 
       // ? Capas con features ya cargados
-      if (this.cesiumLayer) {
+      if (this.cesiumLayer && !this.loaded_) {
         if (this.cesiumLayer.entities && this.cesiumLayer.entities.values.length > 0
           && !this.cesiumLayer.isLoading) {
           const features = this.cesiumLayer.entities.values.map((f) => {
@@ -383,15 +386,20 @@ class GenericVector extends Vector {
    * Este método destruye esta capa, limpiando el HTML
    * y anulando el registro de todos los eventos.
    *
+   * @param {Boolean} preserveLayer Conserva el objeto externo para reinsertar la misma capa.
    * @public
    * @function
    * @api stable
    */
-  destroy() {
-    const cesiumMap = this.map.getMapImpl();
-    if (!isNullOrEmpty(this.cesiumLayer)) {
-      cesiumMap.dataSources.remove(this.cesiumLayer, true);
-      this.cesiumLayer = null;
+  destroy(preserveLayer = false) {
+    this.facadeLayer_?.stopAutoRefresh();
+    const layer = this.cesiumLayer;
+    if (layer) {
+      this.map?.getMapImpl().dataSources.remove(layer, false);
+      if (!preserveLayer) {
+        if (typeof layer.destroy === 'function' && !layer.isDestroyed?.()) layer.destroy();
+        this.cesiumLayer = null;
+      }
     }
     this.map = null;
   }
@@ -412,6 +420,48 @@ class GenericVector extends Vector {
     }
 
     return equals;
+  }
+
+  /**
+   * Uso interno del autorefresco de la fuente.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  setAutoRefreshURL(url) {
+    this.autoRefreshURL_ = url;
+  }
+
+  /**
+   * Recarga exclusivamente la URL interna configurada para autorefresco.
+   * @public
+   */
+  async refreshSource(isCurrent = () => true) {
+    const layer = this.cesiumLayer;
+    const facade = this.facadeVector_;
+    if (!layer || layer.isLoading || !facade || facade.isAutoRefreshPaused()) return;
+    if (!this.isAutoRefreshRemoteURL(this.autoRefreshURL_) || typeof layer.constructor.load !== 'function') return;
+    const url = Resource.createIfNeeded(this.autoRefreshURL_);
+    url.setQueryParameters({ _ideeRefresh: Date.now() });
+    const viewer = this.map.getMapImpl();
+    const candidate = await layer.constructor.load(url, {
+      camera: viewer.camera, canvas: viewer.scene.canvas, clampToGround: this.clampToGround,
+    });
+    try {
+      if (!isCurrent() || this.cesiumLayer !== layer || facade.isAutoRefreshPaused()) return;
+      const features = candidate.entities.values.map((feature) => Feature.feature2Facade(feature));
+      // Espera la conversión antes de retirar los datos actuales.
+      // eslint-disable-next-line no-underscore-dangle
+      await Promise.all(features.map((feature) => feature.getImpl().isLoadCesiumFeature_));
+      if (!isCurrent() || this.cesiumLayer !== layer || facade.isAutoRefreshPaused()) return;
+      candidate.entities.removeAll();
+      facade.removeFeatures(facade.getFeatures(true));
+      await this.addFeatures_(features, true, true);
+      if (isCurrent()) facade.resumeAutoRefresh();
+    } finally {
+      candidate.entities.removeAll();
+      if (typeof candidate.destroy === 'function') candidate.destroy();
+    }
   }
 }
 

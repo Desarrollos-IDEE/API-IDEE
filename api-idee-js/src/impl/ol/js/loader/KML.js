@@ -1,9 +1,9 @@
 /**
  * @module IDEE/impl/loader/KML
  */
+import { addParameters as refreshParameters, isUndefined, isNullOrEmpty } from 'IDEE/util/Utils';
 import MObject from 'IDEE/Object';
 import { get as getRemote } from 'IDEE/util/Remote';
-import { isUndefined, isNullOrEmpty } from 'IDEE/util/Utils';
 import FacadeFeature from 'IDEE/feature/Feature';
 import Exception from 'IDEE/exception/exception';
 import { getValue } from 'IDEE/i18n/language';
@@ -73,6 +73,23 @@ class KML extends MObject {
   }
 
   /**
+   * Recarga sin modificar la URL original del cargador.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  loadForRefresh(projection, scaleLabel, layers, removeFolderChildren) {
+    return this.loadInternal_(
+      projection,
+      scaleLabel,
+      layers,
+      removeFolderChildren,
+      refreshParameters(this.url_, { _ideeRefresh: Date.now() }),
+      true,
+    );
+  }
+
+  /**
    * Este método obtiene los objetos geográficos a partir de los parámetros
    * especificados.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
@@ -85,11 +102,20 @@ class KML extends MObject {
    * @public
    * @api
    */
-  loadInternal_(projection, scaleLabel, layers, removeFolderChildren) {
+  loadInternal_(
+    projection,
+    scaleLabel,
+    layers,
+    removeFolderChildren,
+    requestUrl = this.url_,
+    forRefresh = false,
+  ) {
     return new Promise((success, fail) => {
-      getRemote(this.url_).then((response) => {
+      const request = getRemote(requestUrl).then((response) => {
+        if (forRefresh && response.code >= 400) throw new Error(`HTTP ${response.code}`);
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(response.text, 'text/xml');
+        if (forRefresh && xmlDoc.querySelector('parsererror')) throw new Error(getValue('exception').invalid_kml);
         let transformXMLtoText = false;
         if (!isUndefined(layers)) {
           const folders = xmlDoc.getElementsByTagName('Folder');
@@ -217,6 +243,7 @@ class KML extends MObject {
           Exception(getValue('exception').no_kml_response);
         }
       });
+      if (forRefresh) request.catch(fail);
     });
   }
 }

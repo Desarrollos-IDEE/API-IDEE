@@ -1,8 +1,9 @@
 /**
  * @module IDEE/impl/layer/Terrain
  */
+import { Resource, CesiumTerrainProvider, EllipsoidTerrainProvider } from 'cesium';
 import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
-import { CesiumTerrainProvider, EllipsoidTerrainProvider } from 'cesium';
+
 import { getValue } from 'IDEE/i18n/language';
 import * as EventType from 'IDEE/event/eventtype';
 import Layer from './Layer';
@@ -299,6 +300,7 @@ class Terrain extends Layer {
    * @api
    */
   destroy() {
+    this.facadeLayer_?.stopAutoRefresh();
     const cesiumMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.cesiumLayer)) {
       cesiumMap.terrainProvider = new EllipsoidTerrainProvider();
@@ -324,6 +326,27 @@ class Terrain extends Layer {
       equals = equals && (this.options === obj.options);
     }
     return equals;
+  }
+
+  /**
+   * Recarga la fuente manteniendo la capa y sus opciones de representación.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  async refreshSource(isCurrent = () => true) {
+    const previous = this.cesiumLayer;
+    if (!previous || !this.map || this.map.getMapImpl().terrainProvider !== previous) return;
+    if (!this.isAutoRefreshRemoteURL(this.url)) return;
+    const url = Resource.createIfNeeded(this.url);
+    url.setQueryParameters({ _ideeRefresh: Date.now() });
+    const provider = await CesiumTerrainProvider.fromUrl(url, {
+      requestWaterMask: this.requestWaterMask, ...this.vendorOptions_,
+    });
+    if (!isCurrent() || this.cesiumLayer !== previous
+      || this.map.getMapImpl().terrainProvider !== previous) return;
+    this.setLayer(provider);
+    this.map.getMapImpl().scene.requestRender();
   }
 }
 

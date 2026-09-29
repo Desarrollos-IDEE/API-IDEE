@@ -1,13 +1,17 @@
 /**
  * @module IDEE/impl/Layer
  */
-import { isNullOrEmpty, isString } from 'IDEE/util/Utils';
+import { isNullOrEmpty, isString, addParameters } from 'IDEE/util/Utils';
 import MObject from 'IDEE/Object';
+import { unByKey } from 'ol/Observable';
+
 import FacadeLayer from 'IDEE/layer/Layer';
 import {
   getValue,
 } from 'IDEE/i18n/language';
 import { getResolutionFromScale, getScaleFromResolution } from 'M/util/Utils';
+
+const autoRefreshSources = new WeakMap();
 
 /**
  * @classdesc
@@ -97,6 +101,79 @@ class LayerBase extends MObject {
     this.maxZoom = this.options.maxZoom || Number.POSITIVE_INFINITY;
 
     this.userMaxExtent = options.maxExtent;
+  }
+
+  /**
+   * Comprueba el origen remoto sin depender de la referencia a una fachada concreta.
+   * @param {String} url URL del origen.
+   * @returns {Boolean} Verdadero para HTTP o HTTPS.
+   * @public
+   * @function
+   */
+  isAutoRefreshRemoteURL(url) {
+    return FacadeLayer.isAutoRefreshRemoteURL(url);
+  }
+
+  /**
+   * Invalida únicamente la fuente ráster de esta capa.
+   * Solo lo invoca la fachada con autorefresco habilitado.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  refreshSource() {
+    const source = this.olLayer && this.olLayer.getSource();
+    if (!source || typeof source.refresh !== 'function') return;
+    const urls = source.getUrls?.() || [source.getUrl?.()];
+    if (!urls.length || !urls.every((url) => this.isAutoRefreshRemoteURL(url))) return;
+
+    let state = autoRefreshSources.get(this);
+    if (!state || state.source !== source) {
+      this.disposeAutoRefresh();
+      state = { source, pending: new Set(), keys: [] };
+      const loading = (event) => state.pending.add(event.tile || event.image);
+      const loaded = (event) => state.pending.delete(event.tile || event.image);
+      state.keys = [
+        source.on(['tileloadstart', 'imageloadstart'], loading),
+        source.on(['tileloadend', 'tileloaderror', 'imageloadend', 'imageloaderror'], loaded),
+      ].flat();
+      autoRefreshSources.set(this, state);
+    }
+    if (state.pending.size > 0) return;
+
+    const revision = Date.now();
+    if (typeof source.getTileUrlFunction === 'function') {
+      const current = source.getTileUrlFunction();
+      if (current !== state.wrapper) state.original = current;
+      // Se envuelve la función actual, sin acumular envoltorios ni alterar this.url.
+      state.wrapper = (...args) => {
+        const url = state.original.apply(source, args);
+        return url ? addParameters(url, { _ideeRefresh: revision }) : url;
+      };
+      source.setTileUrlFunction(state.wrapper);
+    } else if (typeof source.updateParams === 'function') {
+      // ImageWMS: updateParams invalida la imagen manteniendo el resto de parámetros.
+      source.updateParams({ _ideeRefresh: revision });
+    }
+    source.refresh();
+    return true;
+  }
+
+  /**
+   * Libera los observadores de carga utilizados por el autorefresco.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  disposeAutoRefresh() {
+    const state = autoRefreshSources.get(this);
+    if (state) {
+      unByKey(state.keys);
+      if (state.wrapper && state.source.getTileUrlFunction() === state.wrapper) {
+        state.source.setTileUrlFunction(state.original);
+      }
+      autoRefreshSources.delete(this);
+    }
   }
 
   /**
@@ -427,6 +504,15 @@ class LayerBase extends MObject {
    */
   getMap() {
     return this.map;
+  }
+
+  /**
+   * Guarda la fachada para limpiar el autorefresco al destruir la implementación.
+   * @param {IDEE.layer.Layer} obj Fachada de la capa.
+   * @public
+   */
+  setFacadeObj(obj) {
+    this.facadeLayer_ = obj;
   }
 
   /**

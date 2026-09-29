@@ -1,9 +1,11 @@
 /**
  * @module IDEE/impl/loader/KML
  */
+import {
+  addParameters as refreshParameters, isNullOrEmpty, isUndefined, extend,
+} from 'IDEE/util/Utils';
 import MObject from 'IDEE/Object';
 import { get as getRemote } from 'IDEE/util/Remote';
-import { isNullOrEmpty, isUndefined, extend } from 'IDEE/util/Utils';
 import FacadeFeature from 'IDEE/feature/Feature';
 import Exception from 'IDEE/exception/exception';
 import { getValue } from 'IDEE/i18n/language';
@@ -90,6 +92,25 @@ class KML extends MObject {
   }
 
   /**
+   * Recarga sin modificar la URL original del cargador.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  loadForRefresh(projection, scaleLabel, layers, removeFolderChildren, showLabel, clampToGround) {
+    return this.loadInternal_(
+      projection,
+      scaleLabel,
+      layers,
+      removeFolderChildren,
+      showLabel,
+      clampToGround,
+      refreshParameters(this.url_, { _ideeRefresh: Date.now() }),
+      true,
+    );
+  }
+
+  /**
    * Este método obtiene los objetos geográficos a partir de los parámetros
    * especificados.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
@@ -104,13 +125,24 @@ class KML extends MObject {
    * @public
    * @api
    */
-  loadInternal_(projection, scaleLabel, layers, removeFolderChildren, showLabel, clampToGround) {
+  loadInternal_(
+    projection,
+    scaleLabel,
+    layers,
+    removeFolderChildren,
+    showLabel,
+    clampToGround,
+    requestUrl = this.url_,
+    forRefresh = false,
+  ) {
     return new Promise((success, fail) => {
-      getRemote(this.url_).then((response) => {
+      const request = getRemote(requestUrl).then((response) => {
+        if (forRefresh && response.code >= 400) throw new Error(`HTTP ${response.code}`);
         const parser = new DOMParser();
         const result = response.text.replace(/<extrude>.*?<\/extrude>/gs, '');
         const xmlDoc = parser.parseFromString(result, 'text/xml');
         const is2D = this.is2D(xmlDoc.getElementsByTagName('coordinates'));
+        if (forRefresh && xmlDoc.querySelector('parsererror')) throw new Error(getValue('exception').invalid_kml);
         let transformXMLtoText = false;
         if (!isUndefined(layers)) {
           const folders = xmlDoc.getElementsByTagName('Folder');
@@ -212,7 +244,7 @@ class KML extends MObject {
           */
         const lastProjection = this.map_.getProjection().code;
         if (!isNullOrEmpty(response.text)) {
-          this.format_.readCustomFeatures(response.text, {
+          const featuresLoad = this.format_.readCustomFeatures(response.text, {
             featureProjection: lastProjection,
             clampToGround: clamp,
           }).then(({ features, extractStyles }) => {
@@ -303,10 +335,12 @@ class KML extends MObject {
               screenOverlay,
             });
           });
+          if (forRefresh) featuresLoad.catch(fail);
         } else {
           Exception(getValue('exception').no_kml_response);
         }
       });
+      if (forRefresh) request.catch(fail);
     });
   }
 

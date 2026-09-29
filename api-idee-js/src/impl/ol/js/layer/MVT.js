@@ -16,6 +16,7 @@ import { get as getProj, equivalent } from 'ol/proj';
 import RenderFeature from 'ol/render/Feature';
 import { createXYZ } from 'ol/tilegrid';
 import { mode } from 'IDEE/layer/MVT';
+import Layer from './Layer';
 import Vector from './Vector';
 import ImplUtils from '../util/Utils';
 
@@ -467,6 +468,16 @@ class MVT extends Vector {
     }
 
     return equals;
+  }
+
+  /**
+   * Recarga la fuente manteniendo la capa y sus opciones de representación.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  refreshSource() {
+    if (Layer.prototype.refreshSource.call(this)) this.features_.length = 0;
   }
 }
 

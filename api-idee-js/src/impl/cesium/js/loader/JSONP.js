@@ -1,10 +1,10 @@
 /**
  * @module IDEE/impl/loader/JSONP
  */
+import { addParameters as refreshParameters, isNullOrEmpty } from 'IDEE/util/Utils';
 import MObject from 'IDEE/Object';
 import { get as getRemote } from 'IDEE/util/Remote';
 import Exception from 'IDEE/exception/exception';
-import { isNullOrEmpty } from 'IDEE/util/Utils';
 import { getValue } from 'IDEE/i18n/language';
 
 /**
@@ -72,6 +72,17 @@ class JSONP extends MObject {
   }
 
   /**
+   * Recarga sin modificar la URL original del cargador.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  loadForRefresh(projection) {
+    const url = refreshParameters(this.url_, { _ideeRefresh: Date.now() });
+    return this.loadInternal_(projection, url, true).then(([features]) => ({ features }));
+  }
+
+  /**
     * Este método obtiene los objetos geográficos a partir de los parámetros
     * especificados.
     * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
@@ -81,9 +92,10 @@ class JSONP extends MObject {
     * @public
     * @api
     */
-  loadInternal_(projection) {
-    return new Promise((success) => {
-      getRemote(this.url_).then((response) => {
+  loadInternal_(projection, requestUrl = this.url_, forRefresh = false) {
+    return new Promise((success, fail) => {
+      const request = getRemote(requestUrl).then((response) => {
+        if (forRefresh && response.code >= 400) throw new Error(`HTTP ${response.code}`);
         if (!isNullOrEmpty(response.text)) {
           const newText = response.text.replace('urn:ogc:def:crs:OGC:1.3:CRS84', 'urn:ogc:def:crs:EPSG::4326');
           const features = this.format_.read(newText, {
@@ -94,6 +106,7 @@ class JSONP extends MObject {
           Exception(getValue('exception').no_service_response);
         }
       });
+      if (forRefresh) request.catch(fail);
     });
   }
 }

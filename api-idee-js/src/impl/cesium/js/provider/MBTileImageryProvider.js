@@ -59,7 +59,7 @@ class MBTileImageryProvider extends TileMapServiceImageryProvider {
         getUint8ArrayFromData(this.source).then((uint8Array) => {
           this.db = new SQL.Database(uint8Array);
           resolve(this.db);
-        });
+        }).catch(reject);
       }).catch((err) => {
         reject(err);
       });
@@ -204,6 +204,19 @@ class MBTileImageryProvider extends TileMapServiceImageryProvider {
       }
       return zoomLevel;
     });
+  }
+
+  /**
+   * Libera la base de datos del proveedor sustituido por el autorefresco.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  dispose() {
+    if (this.db) {
+      this.db.close();
+      this.db = null;
+    }
   }
 }
 
