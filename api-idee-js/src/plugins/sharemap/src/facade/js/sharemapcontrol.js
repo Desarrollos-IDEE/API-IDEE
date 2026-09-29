@@ -542,7 +542,7 @@ export default class ShareMapControl extends IDEE.Control {
     }
     const layers = this.map_.getLayers().filter((layer) => {
       let res = layer.name !== '__draw__' && layer.name !== 'selectionLayer';
-      if (layer.name === 'attributions' && layer.type === 'KML') {
+      if (layer.name === 'attributions' && (layer.type === 'KML' || layer.type === 'KMZ')) {
         res = res && false;
       }
 
@@ -593,7 +593,7 @@ export default class ShareMapControl extends IDEE.Control {
       param = this.getWMS(layer);
     } else if (layer.type === 'WMTS') {
       param = this.getWMTS(layer);
-    } else if (layer.type === 'KML') {
+    } else if (layer.type === 'KML' || layer.type === 'KMZ') {
       param = this.getKML(layer);
     } else if (layer.type === 'WFS') {
       param = this.getWFS(layer);
@@ -622,7 +622,9 @@ export default class ShareMapControl extends IDEE.Control {
    * @function
    */
   getKML(layer) {
-    return `KML*${layer.name}*${layer.url}*${layer.extract}*${layer.label}*${layer.isVisible()}`;
+    // Los archivos locales se comparten como datos, igual que el KML importado.
+    if (layer.type === 'KMZ' && /^blob:/i.test(layer.url)) return this.getVector(layer);
+    return `${layer.type === 'KMZ' ? 'KMZ' : 'KML'}*${layer.name}*${layer.url}*${layer.extract}*${layer.label}*${layer.isVisible()}`;
   }
 
   /**

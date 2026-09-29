@@ -39,8 +39,8 @@
             </div>
         {{/gt}}
     {{/eq}}
-    {{#eq type 'kml'}}
-        <p>{{translations.data_layer}} KML</p>
+    {{#if isKML}}
+        <p>{{translations.data_layer}} {{kmlType}}</p>
         {{#gt layers.length 0}}
             <div id="m-layerswitcher-addservices-results">
                 <div class="m-layerswitcher-table-results">
@@ -48,14 +48,14 @@
                         <table id="m-layerswitcher-all">
                             <thead>
                                 <tr tabindex="0">
-                                    <th><button tabindex="0" aria-label="{{translations.addAllLayers}}" id="m-layerswitcher-addservices-selectall" class="m-layerswitcher-icons-check"></button></th>
+                                    <th>{{#if isKMZ}}<input type="checkbox" aria-label="{{translations.addAllLayers}}" id="m-layerswitcher-kmz-selectall">{{else}}<button tabindex="0" aria-label="{{translations.addAllLayers}}" id="m-layerswitcher-addservices-selectall" class="m-layerswitcher-icons-check"></button>{{/if}}</th>
                                     <th>{{translations.layers}}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {{#each layers}}
                                     <tr tabindex="0">
-                                        <td><span aria-label="{{translations.add_service}}" role="button" abindex="0" id="{{name}}" name="{{name}}" class="m-check-layerswitcher-addservices m-layerswitcher-icons-check"></span></td>
+                                        <td>{{#if ../isKMZ}}<input type="checkbox" aria-label="{{name}}" name="{{name}}" class="m-layerswitcher-kmz-folder">{{else}}<span aria-label="{{translations.add_service}}" role="button" abindex="0" id="{{name}}" name="{{name}}" class="m-check-layerswitcher-addservices m-layerswitcher-icons-check"></span>{{/if}}</td>
                                         <td class="m-layerswitcher-table-layer-name" name="{{name}}" title="{{abstract}}">{{name}}</td>
                                     </tr>
                                 {{/each}}
@@ -65,7 +65,7 @@
                 </div>
             </div>
         {{/gt}}
-    {{/eq}}
+    {{/if}}
     <div class="m-layerswitcher-layer-fields">
         {{#if isMVT}}
             {{#eq layers.length 0}}

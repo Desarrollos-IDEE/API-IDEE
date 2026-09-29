@@ -325,7 +325,7 @@ export default class LayerswitcherControl extends IDEE.Control {
         || (layer instanceof IDEE.layer.Vector
           && !IDEE.utils.isNullOrEmpty(layer.predefinedStyles)
           && layer.predefinedStyles.length > 1);
-      if (layer.type === 'KML') {
+      if (layer.type === 'KML' || layer.type === 'KMZ') {
         if (layer.options === null) {
           hasStyles = false;
         } else if (layer.options.extractStyles
@@ -1140,7 +1140,19 @@ export default class LayerswitcherControl extends IDEE.Control {
               });
               // IDEE.proxy(this.statusProxy);
             }
-
+            // KMZ
+          } else if (/\.kmz(?:[?#]|$)/i.test(url)) {
+            const kmzURL = searchInput.value.trim();
+            IDEE.util.KMZ.load(kmzURL).then((text) => {
+              const xml = new DOMParser().parseFromString(text, 'application/xml');
+              const names = Array.from(xml.getElementsByTagName('Folder')).map((folder, index) => ({
+                name: folder.querySelector(':scope > name')?.textContent.trim() || `Layer__${index}`,
+              }));
+              this.printLayerModal(kmzURL, 'kmz', names);
+            }).catch(() => {
+              IDEE.dialog.error(getValue('exception.capabilities'), undefined, this.order);
+              this.removeLoading();
+            });
             // GeoTIFF
           } else if (url.indexOf('.tif') >= 0) {
             this.printLayerModal(url, 'geotiff');
@@ -1331,7 +1343,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     const hasPrecharged = (precharged.groups !== undefined && precharged.groups.length > 0)
       || (precharged.services !== undefined && precharged.services.length > 0);
     const codsiActive = this.codsiActive;
-    const accept = ['.kml', '.zip', '.gpx', '.geojson', '.gml', '.json', '.gpkg', '.tif', '.tiff', '.dxf', '.dgn'];
+    const accept = ['.kmz', '.kml', '.zip', '.gpx', '.geojson', '.gml', '.json', '.gpkg', '.tif', '.tiff', '.dxf', '.dgn'];
     const addServices = IDEE.template.compileSync(addServicesTemplate, {
       jsonp: true,
       parseToHtml: false,
@@ -1486,7 +1498,9 @@ export default class LayerswitcherControl extends IDEE.Control {
         return this.loadGeoPackage_({ url, name });
       }
       const fileName = url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'));
-      if (['tif', 'tiff'].includes(extension)) {
+      if (extension === 'kmz') {
+        this.map_.addLayers(new IDEE.layer.KMZ({ name: fileName, url, extract: true }));
+      } else if (['tif', 'tiff'].includes(extension)) {
         IDEE.loadFiles.loadGeotiffLayer(
           this.map_,
           url,
@@ -2249,6 +2263,9 @@ export default class LayerswitcherControl extends IDEE.Control {
       vars: {
         type,
         isMVT: type === 'mvt',
+        isKML: type === 'kml' || type === 'kmz',
+        isKMZ: type === 'kmz',
+        kmlType: type.toUpperCase(),
         layers,
         translations: {
           add_btn: getValue('add_btn'),
@@ -2265,6 +2282,17 @@ export default class LayerswitcherControl extends IDEE.Control {
     });
 
     document.querySelector(LAYERS_CONTAINER).outerHTML = modal;
+
+    if (type === 'kmz') {
+      const selectAll = document.querySelector('#m-layerswitcher-kmz-selectall');
+      if (selectAll) {
+        selectAll.addEventListener('change', () => {
+          document.querySelectorAll('.m-layerswitcher-kmz-folder').forEach((input) => {
+            input.checked = selectAll.checked;
+          });
+        });
+      }
+    }
 
     if (type === 'mvt' || type === 'kml') {
       const selAll = document.querySelector('#m-layerswitcher-addservices-selectall');
@@ -2372,11 +2400,13 @@ export default class LayerswitcherControl extends IDEE.Control {
         obj.layers = layersSelected;
       }
       layer = new IDEE.layer.MVT(obj);
-    } else if (type === 'kml') {
-      const elmSel = document.querySelectorAll('#m-layerswitcher-addservices-results .m-layerswitcher-icons-check-seleccionado');
+    } else if (type === 'kml' || type === 'kmz') {
+      const elmSel = document.querySelectorAll(type === 'kmz'
+        ? '#m-layerswitcher-addservices-results .m-layerswitcher-kmz-folder:checked'
+        : '#m-layerswitcher-addservices-results .m-layerswitcher-icons-check-seleccionado');
       const layersSelected = [];
       elmSel.forEach((elm) => {
-        layersSelected.push(elm.id);
+        layersSelected.push(type === 'kmz' ? elm.name : elm.id);
       });
       const obj = {
         name,
@@ -2387,7 +2417,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       if (!IDEE.utils.isNullOrEmpty(layersSelected)) {
         obj.layers = layersSelected;
       }
-      layer = new IDEE.layer.KML(obj);
+      layer = type === 'kmz' ? new IDEE.layer.KMZ(obj) : new IDEE.layer.KML(obj);
     } else if (type === 'geotiff') {
       layer = new IDEE.layer.GeoTIFF({
         name,
