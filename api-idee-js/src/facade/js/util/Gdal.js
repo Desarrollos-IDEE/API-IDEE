@@ -7,6 +7,9 @@ let gdal;
 /** @type {Promise<Gdal>} */
 let gdalPromise;
 
+/** Nombres únicos para las conversiones GeoPackage concurrentes en el sistema virtual. */
+let geopackageSequence = 0;
+
 const gdalWorker = false;
 
 /** CRS que se asume para formatos CAD sin CRS embebido (DXF, DGN) */
@@ -34,12 +37,13 @@ export const init = async () => {
       js: '../../js/gdal/gdal3.js',
     };
     try {
-      gdalPromise = initGdalJs({
-        paths,
-        useWorker: gdalWorker,
-      }).catch((err) => {
-        throw new Error(err);
-      });
+      // gdal3.js puede dejar pendiente su promesa ante un fallo de descarga.
+      // Descargamos primero los recursos con fetch para propagar errores y permitir reintentos.
+      gdalPromise = Promise.all([paths.wasm, paths.data].map(async (url) => {
+        const response = await fetch(url, { cache: 'force-cache' });
+        if (!response.ok) throw new Error(`GDAL: HTTP ${response.status}`);
+        await response.arrayBuffer();
+      })).then(() => initGdalJs({ paths, useWorker: gdalWorker }));
       gdal = await gdalPromise;
     } catch (err) {
       gdalPromise = null;
@@ -48,6 +52,55 @@ export const init = async () => {
       IDEE.dialog.error('Gdal library failed', 'ERROR');
       throw err;
     }
+  }
+};
+
+/**
+ * Linealiza tablas de curvas mediante ogr2ogr, sin reproyectar ni modificar el fichero original.
+ * Reutiliza GDAL y su aproximación predeterminada; devuelve solo geometrías indexadas por FID.
+ * @param {Uint8Array} bytes Contenido del GeoPackage.
+ * @param {Array<Object>} tables Nombre y columnas de identidad/geometría de cada tabla.
+ * @returns {Promise<Map<String, Map<Number, Object>>>} Geometrías por tabla e identificador.
+ */
+export const linearizeGeoPackage = async (bytes, tables) => {
+  await init();
+  geopackageSequence += 1;
+  const name = `apiidee_curves_${geopackageSequence}`;
+  const input = `/input/${name}.gpkg`;
+  const temporary = [input];
+  let datasets = [];
+  try {
+    gdal.Module.FS.writeFile(input, bytes);
+    datasets = (await gdal.open(input)).datasets;
+    // Un GeoPackage mixto puede estar etiquetado como ráster y contener tablas vectoriales.
+    const [dataset] = datasets;
+    if (!dataset) throw new Error('GDAL: GeoPackage vector dataset unavailable');
+    // Una operación por tabla mantiene separados los FID y admite nombres con espacios.
+    return await tables.reduce(async (previous, table, index) => {
+      const geometries = await previous;
+      const quote = (identifier) => `"${identifier.replace(/"/g, '""')}"`;
+      const outputName = `${name}_${index}`;
+      temporary.push(`/output/${outputName}.geojson`);
+      const output = await gdal.ogr2ogr(dataset, [
+        '-f', 'GeoJSON', '-nlt', 'CONVERT_TO_LINEAR',
+        '-lco', 'COORDINATE_PRECISION=17',
+        // El FID de una consulta SQL puede ser renumerado: se transporta como atributo explícito.
+        '-sql', `SELECT ${quote(table.idColumn)} AS apiidee_fid, ${quote(table.geometryColumn)} FROM ${quote(table.name)}`,
+      ], outputName);
+      const geojson = JSON.parse(new TextDecoder().decode(await gdal.getFileBytes(output)));
+      const features = new Map(geojson.features.map(({ properties, geometry }) => [
+        properties.apiidee_fid, geometry,
+      ]));
+      if (features.has(undefined) || features.size !== geojson.features.length) {
+        throw new Error(`GDAL: invalid feature identifier (${table.name})`);
+      }
+      return geometries.set(table.name, features);
+    }, Promise.resolve(new Map()));
+  } finally {
+    await Promise.all(datasets.map((dataset) => gdal.close(dataset)));
+    temporary.forEach((file) => {
+      if (gdal.Module.FS.analyzePath(file).exists) gdal.Module.FS.unlink(file);
+    });
   }
 };
 

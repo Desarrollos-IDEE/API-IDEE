@@ -83,7 +83,7 @@ class LayerBase extends MObject {
     /**
      * Layer opacity_. Opacidad de capa, por defecto 1.
      */
-    this.opacity_ = this.options.opacity || 1;
+    this.opacity_ = this.options.opacity === 0 ? 0 : this.options.opacity || 1;
 
     /**
      * Layer legendUrl_. Leyenda URL de esta capa.

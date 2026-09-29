@@ -5,6 +5,7 @@ import { isNullOrEmpty, extend, getZDirectionFunction } from 'IDEE/util/Utils';
 import OLTileLayer from 'ol/layer/Tile';
 import { get as getProj } from 'ol/proj';
 import XYZSource from 'ol/source/XYZ';
+import * as EventType from 'IDEE/event/eventtype';
 import * as LayerType from '../../../../facade/js/layer/Type';
 import Layer from './Layer';
 import ImplMap from '../Map';
@@ -71,6 +72,11 @@ class XYZ extends Layer {
    */
   constructor(userParameters, options = {}, vendorOptions = {}) {
     super(options, vendorOptions);
+
+    /**
+     * XYZ facadeLayer_. Instancia de la fachada.
+     */
+    this.facadeLayer_ = null;
 
     /**
      * XYZ url.
@@ -185,6 +191,7 @@ class XYZ extends Layer {
 
     if (addLayer) {
       this.map.getMapImpl().addLayer(this.olLayer);
+      this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
     }
     let source = this.vendorOptions_.source;
     if (isNullOrEmpty(source)) {
@@ -199,10 +206,9 @@ class XYZ extends Layer {
     this.olLayer.setSource(source);
     if (this.tileGridMaxZoom !== undefined && this.tileGridMaxZoom > 0) {
       this.olLayer.getSource().tileGrid.maxZoom = this.tileGridMaxZoom;
-    } else {
-      this.olLayer.setMaxZoom(this.maxZoom);
-      this.olLayer.setMinZoom(this.minZoom);
     }
+    this.olLayer.setMaxZoom(this.maxZoom);
+    this.olLayer.setMinZoom(this.minZoom);
   }
 
   /**
@@ -274,6 +280,18 @@ class XYZ extends Layer {
       equals = (this.name === obj.name);
     }
     return equals;
+  }
+
+  /**
+   * Este método establece la instancia de la fachada.
+   *
+   * @public
+   * @function
+   * @param {IDEE.layer.XYZ} obj Instancia de la fachada.
+   * @api
+   */
+  setFacadeObj(obj) {
+    this.facadeLayer_ = obj;
   }
 }
 export default XYZ;

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="idee" content="yes">
+    <title>GeoPackage solo ráster</title>
+    <style>
+      html, body { margin: 0; height: 100%; font-family: sans-serif; }
+      body { display: grid; grid-template-rows: auto minmax(0, 1fr); }
+      header { padding: 12px 18px; color: #1c2730; background: #fff; }
+      h1 { display: inline; margin: 0 14px 0 0; font-size: 1.25rem; }
+      #status[data-error="true"] { color: #a40000; }
+      #map { position: relative; min-height: 0; background: #dce8ee; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>GeoPackage solo ráster</h1>
+      <span id="status" role="status" aria-live="polite">Preparando la demo…</span>
+    </header>
+    <div id="map" class="map" role="region" aria-label="Mapa con GeoPackage ráster"></div>
+    <script src="/config.js" charset="utf-8"></script>
+    <script src="/CP-0002-layers/CP-030.js" charset="utf-8"></script>
+  </body>
+</html>

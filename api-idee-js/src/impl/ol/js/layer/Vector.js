@@ -107,7 +107,7 @@ class Vector extends Layer {
     map.on(EventType.CHANGE_PROJ, this.setProjection_.bind(this), this);
     this.olLayer = new OLLayerVector(this.vendorOptions_);
     this.updateSource_();
-    if (this.opacity_) {
+    if (!isNullOrEmpty(this.opacity_)) {
       this.setOpacity(this.opacity_);
     }
     this.setVisible(this.visibility);

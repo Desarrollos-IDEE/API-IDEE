@@ -59,6 +59,9 @@ const I18N_LEGEND_ERROR = 'legend_error';
 /* TARGET LAYER */
 const layersTypesTarget = ['WMTS', 'WFS', 'MBTilesVector', 'MBTiles', 'OSM', 'XYZ', 'TMS', 'GeoJSON', 'KML', 'OGCAPIFeatures', 'Vector', 'GenericRaster', 'GenericVector', 'MVT', 'GeoTIFF', 'MapLibre'];
 
+/* TILE OPTIONS */
+const TILE_COORDS_REGEX = /\{z\}\/\{x\}\/\{(-?)y\}/;
+
 /* CHANGE NAME */
 const changeLayerLegend = (layer, target) => {
   const element = target;
@@ -117,13 +120,13 @@ const errorLegendLayer = (layer, useProxy, statusProxy) => {
     if (layer.type === 'TMS') {
       legend = layer.url.replace('{z}/{x}/{-y}', '0/0/0');
     } else if (layer.type === 'XYZ') {
-      legend = layer.url.replace('{z}/{x}/{y}', '0/0/0');
+      legend = layer.url.replace(TILE_COORDS_REGEX, '0/0/0');
     } else if (layer.type === 'OSM') {
       let url = layer.getImpl().getLayer().getSource().getUrls();
       if (url.length > 0) {
         url = url[0];
       }
-      legend = url.replace('{z}/{x}/{y}', '0/0/0');
+      legend = url.replace(TILE_COORDS_REGEX, '0/0/0');
     }
     if (legend !== '') {
       // IDEE.proxy(useProxy);

@@ -1,11 +1,12 @@
 /**
  * @module IDEE/impl/layer/GeoJSON
  */
-import { isNullOrEmpty, isObject } from 'IDEE/util/Utils';
+import { isNullOrEmpty, isObject, isFunction } from 'IDEE/util/Utils';
 import * as EventType from 'IDEE/event/eventtype';
 import GeoJSONFormat from 'IDEE/format/GeoJSON';
 import OLSourceVector from 'ol/source/Vector';
 import { get as getProj } from 'ol/proj';
+import { bbox as bboxStrategy } from 'ol/loadingstrategy';
 import { createScriptTag } from 'IDEE/util/Remote';
 import Vector from './Vector';
 import JSONPLoader from '../loader/JSONP';
@@ -82,6 +83,12 @@ class GeoJSON extends Vector {
      * GeoJSON loaded_. Define si la capa esta cargada.
      */
     this.loaded_ = false;
+
+    /** Función interna de consulta GeoPackage por extensión. */
+    this.bboxLoader_ = parameters.bboxLoader;
+
+    /** Identificadores ya incorporados por consultas BBOX anteriores. */
+    this.loadedFeatureIds_ = new Set();
 
     /**
      * GeoJSON isLocalFile_. Indica si la url es un archivo local.
@@ -238,6 +245,33 @@ class GeoJSON extends Vector {
    */
   updateSource_() {
     if (isNullOrEmpty(this.vendorOptions_.source)) {
+      if (isFunction(this.bboxLoader_)) {
+        const vectorSource = new OLSourceVector({
+          strategy: bboxStrategy,
+          loader: (extent, resolution, projection, success, failure) => {
+            Promise.resolve().then(() => (
+              this.bboxLoader_(extent, projection.getCode())
+            )).then((source) => {
+              const features = this.formater_.read(source, this.map.getProjection())
+                .filter((feature) => {
+                  const id = feature.getId();
+                  if (this.loadedFeatureIds_.has(id)) return false;
+                  this.loadedFeatureIds_.add(id);
+                  return true;
+                });
+              this.loaded_ = true;
+              if (features.length > 0) this.facadeVector_.addFeatures(features);
+              this.fire(EventType.LOAD, [features]);
+              success(vectorSource.getFeatures());
+            }).catch(() => {
+              vectorSource.removeLoadedExtent(extent);
+              failure();
+            });
+          },
+        });
+        this.olLayer.setSource(vectorSource);
+        return;
+      }
       this.requestFeatures_().then((features) => {
         if (this.olLayer) {
           this.olLayer.setSource(new OLSourceVector({

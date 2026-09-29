@@ -59,7 +59,7 @@ class GeoPackageTile extends Layer {
    */
   constructor(userParameters, provider) {
     // calls the super constructor
-    super({}, {});
+    super(userParameters, {});
 
     /**
      * Función de carga de tiles.

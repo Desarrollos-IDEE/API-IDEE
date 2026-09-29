@@ -81,6 +81,9 @@ class GeoJSON extends Vector {
      */
     this.loaded_ = false;
 
+    /** Carga completa de respaldo para fuentes GeoPackage configuradas como tiled. */
+    this.fullLoader_ = parameters.fullLoader;
+
     /**
      * GeoJSON hiddenAttributes_. Atributos de la capa ocultos.
      */
@@ -182,7 +185,10 @@ class GeoJSON extends Vector {
   requestFeatures_() {
     if (isNullOrEmpty(this.loadFeaturesPromise_)) {
       this.loadFeaturesPromise_ = new Promise((resolve) => {
-        if (this.source) {
+        if (isFunction(this.fullLoader_)) {
+          const features = this.formater_.read(this.fullLoader_(), this.map.getProjection());
+          resolve(features);
+        } else if (this.source) {
           const features = this.formater_.read(this.source, this.map.getProjection());
           resolve(features);
         } else {

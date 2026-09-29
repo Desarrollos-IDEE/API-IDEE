@@ -53,8 +53,8 @@
                 <input type="number" name="order" id="inputOrder" list="orderSug" value="-1">
             </div>
             <div>
-                <label for="inputTooltip" title="Texto que aparece al pasar el ratón sobre el botón del plugin. Por defecto: Información Coordenadas">Título de la herramienta "tooltip"</label>
-                <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="Información Coordenadas">
+                <label for="inputTooltip" title="Texto que aparece al pasar el ratón sobre el botón del plugin.">Título de la herramienta "tooltip"</label>
+                <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug">
                 <datalist id="tooltipSug">
                     <option value="Información Coordenadas"></option>
                 </datalist>

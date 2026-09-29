@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="idee" content="yes">
+    <title>GeoPackage mixto: carga tiled y completa</title>
+    <style>
+      html, body { margin: 0; height: 100%; font-family: sans-serif; }
+      body { display: grid; grid-template-columns: minmax(280px, 360px) minmax(0, 1fr); }
+      aside { padding: 16px; overflow: auto; color: #1c2730; background: #fff; }
+      h1 { margin-top: 0; font-size: 1.3rem; }
+      .switch { display: flex; gap: 10px; align-items: center; margin: 18px 0; font-weight: 700; }
+      .switch input { width: 1.3rem; height: 1.3rem; }
+      .locations { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+      button { padding: 8px; cursor: pointer; }
+      :focus-visible { outline: 3px solid #005ea8; outline-offset: 2px; }
+      #status { min-height: 3em; padding: 10px; background: #eef5f8; overflow-wrap: anywhere; }
+      #status[data-error="true"] { color: #a40000; }
+      #map { position: relative; min-width: 0; height: 100%; background: #dce8ee; }
+      code { font-size: .9em; }
+      @media (max-width: 700px) {
+        body { display: block; }
+        aside { overflow: visible; }
+        #map { height: 65vh; min-height: 320px; }
+      }
+    </style>
+  </head>
+  <body>
+    <aside aria-label="Controles de GeoPackage mixto">
+      <h1>GeoPackage mixto</h1>
+      <p>Contiene la tabla ráster <code>imagery</code> y la tabla vectorial <code>places</code>, con estilo azul específico.</p>
+      <label class="switch" for="tiled">
+        <input id="tiled" type="checkbox" checked>
+        Carga vectorial tiled (BBOX)
+      </label>
+      <p>Al cambiar el interruptor se crea de nuevo el mismo GeoPackage con la estrategia seleccionada.</p>
+      <div class="locations" aria-label="Cambiar la extensión visible">
+        <button type="button" data-center="-11131949.08,0">Oeste</button>
+        <button type="button" data-center="0,0">Centro</button>
+        <button type="button" data-center="11131949.08,0">Este</button>
+      </div>
+      <p id="status" role="status" aria-live="polite">Preparando la demo…</p>
+      <p>En modo tiled la lista crece al visitar cada zona. En modo completo aparecen las tres entidades desde la primera carga.</p>
+    </aside>
+    <div id="map" class="map" role="region" aria-label="Mapa con GeoPackage mixto"></div>
+    <script src="/config.js" charset="utf-8"></script>
+    <script src="/CP-0002-layers/CP-029.js" charset="utf-8"></script>
+  </body>
+</html>

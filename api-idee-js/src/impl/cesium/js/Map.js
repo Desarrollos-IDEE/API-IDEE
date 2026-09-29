@@ -428,6 +428,8 @@ class Map extends MObject {
         this.facadeMap_.addTiles3D(layer);
       } else if (layer.type === LayerType.Terrain) {
         this.facadeMap_.addTerrain(layer);
+      } else if (layer.type === LayerType.GeoPackage) {
+        this.facadeMap_.addGeoPackage(layer);
       } else if (!LayerType.know(layer.type)) {
         this.addUnknowLayers_([layer]);
         // eslint-disable-next-line no-underscore-dangle

@@ -434,6 +434,8 @@ class Map extends MObject {
         this.facadeMap_.addTMS(layer);
       } else if (layer.type === LayerType.GeoPackageTile) {
         this.facadeMap_.addGeoPackageTile(layer);
+      } else if (layer.type === LayerType.GeoPackage) {
+        this.facadeMap_.addGeoPackage(layer);
       } else if (layer.type === LayerType.LayerGroup) {
         this.facadeMap_.addLayerGroups(layer);
       } else if (!LayerType.know(layer.type)) {
