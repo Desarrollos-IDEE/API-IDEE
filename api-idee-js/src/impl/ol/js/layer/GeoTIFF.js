@@ -68,6 +68,28 @@ function getFullResolutionImage(source) {
 }
 
 /**
+ * Obtiene la imagen GeoTIFF de la capa cuando la fuente OpenLayers está lista.
+ *
+ * @param {IDEE.impl.layer.GeoTIFF} layerImpl Implementación de la capa
+ * @returns {Promise<Object|null>} GeoTIFFImage o null
+ */
+function getGeoTIFFImageWhenReady(layerImpl) {
+  if ((!layerImpl.olLayer || !layerImpl.olLayer.getSource)
+    || !layerImpl.olLayer.getSource().getView) {
+    return Promise.resolve(null);
+  }
+
+  const source = layerImpl.olLayer.getSource();
+  return source.getView()
+    .then(() => getFullResolutionImage(source))
+    .catch((err) => {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      return null;
+    });
+}
+
+/**
  * @classdesc
  * El formato ráster GeoTIFF aprovecha un formato de archivo independiente de plataforma (TIFF)
  * maduro añadiendo metadatos necesarios para describir y utilizar datos de imágenes geográficas.
@@ -380,6 +402,33 @@ class GeoTIFF extends LayerBase {
   }
 
   /**
+   * Obtiene el número de bandas (SamplesPerPixel) del GeoTIFF.
+   *
+   * @public
+   * @function
+   * @returns {Promise<number|null>} Número de bandas o null si no está disponible
+   * @api stable
+   */
+  getBandCount() {
+    if (typeof this.bandCount_ === 'number' && this.bandCount_ > 0) {
+      return Promise.resolve(this.bandCount_);
+    }
+
+    return getGeoTIFFImageWhenReady(this)
+      .then((image) => {
+        if (!image || typeof image.getSamplesPerPixel !== 'function') {
+          return null;
+        }
+        const sampleCount = image.getSamplesPerPixel();
+        if (!sampleCount || sampleCount < 1) {
+          return null;
+        }
+        this.bandCount_ = sampleCount;
+        return sampleCount;
+      });
+  }
+
+  /**
    * Obtiene roles espectrales solo desde COMMON_NAME de metadatos GDAL.
    * Si el GeoTIFF no declara COMMON_NAME, devuelve null.
    * Ejemplo: `{ red: 1, green: 2, blue: 3, nir: 4, swir: 5 }`.
@@ -394,24 +443,18 @@ class GeoTIFF extends LayerBase {
       return Promise.resolve(this.bandRoles_);
     }
 
-    if (!this.olLayer || !this.olLayer.getSource) {
-      return Promise.resolve(null);
-    }
-
-    const source = this.olLayer.getSource();
-    if (!source || !source.getView) {
-      return Promise.resolve(null);
-    }
-
-    return source.getView()
-      .then(() => {
-        const image = getFullResolutionImage(source);
+    return getGeoTIFFImageWhenReady(this)
+      .then((image) => {
         if (!image || typeof image.getSamplesPerPixel !== 'function'
           || typeof image.getGDALMetadata !== 'function') {
           return null;
         }
 
         const sampleCount = image.getSamplesPerPixel();
+        if (typeof this.bandCount_ !== 'number' || this.bandCount_ < 1) {
+          this.bandCount_ = sampleCount;
+        }
+
         const roles = {};
 
         for (let sample = 0; sample < sampleCount; sample += 1) {
@@ -427,11 +470,6 @@ class GeoTIFF extends LayerBase {
 
         this.bandRoles_ = roles;
         return roles;
-      })
-      .catch((err) => {
-        // eslint-disable-next-line no-console
-        console.error(err);
-        return null;
       });
   }
 
@@ -645,6 +683,7 @@ class GeoTIFF extends LayerBase {
       this.olLayer = null;
     }
     this.bandRoles_ = null;
+    this.bandCount_ = null;
     this.map = null;
   }
 

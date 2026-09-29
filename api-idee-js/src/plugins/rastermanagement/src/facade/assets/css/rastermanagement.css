@@ -99,6 +99,13 @@
     border-bottom: 2px solid #71a7d3;
 }
 
+.m-rastermanagement-tab.m-rastermanagement-disabled,
+.m-rastermanagement-index.m-rastermanagement-disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
 .m-rastermanagement-layer-selector {
     padding: 12px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);

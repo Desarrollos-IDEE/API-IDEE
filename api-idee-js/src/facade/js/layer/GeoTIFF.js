@@ -303,6 +303,22 @@ class GeoTIFF extends LayerBase {
   }
 
   /**
+   * Obtiene el número de bandas (SamplesPerPixel) del GeoTIFF.
+   *
+   * @function
+   * @public
+   * @returns {Promise<number|null>}
+   * @api
+   */
+  getBandCount() {
+    const impl = this.getImpl();
+    if (!impl || typeof impl.getBandCount !== 'function') {
+      return Promise.resolve(null);
+    }
+    return impl.getBandCount();
+  }
+
+  /**
    * Obtiene los valores del ráster en un píxel de pantalla.
    * Delega en la implementación (OpenLayers WebGLTile#getData).
    *
