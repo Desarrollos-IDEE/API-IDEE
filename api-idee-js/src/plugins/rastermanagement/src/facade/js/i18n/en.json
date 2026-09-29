@@ -92,7 +92,7 @@
   "spectralIndices": "Spectral indices",
   "rgbCombinations": "RGB combinations",
   "imageAdjustment": "Image adjustment",
-  "imageAdjustmentHint": "These settings combine with the color ramp, index or RGB combination configured in the other tabs. If the layer already has a style, only the filters are updated.",
+  "imageAdjustmentHint": "These settings combine with the color ramp, index or RGB combination configured in the other tabs.",
   "rgbSubtitle": "True color / False color",
   "rgbHint": "Red, green and blue/NIR are band numbers. Use 0 to turn a channel off.",
   "bandChannelR": "Red",

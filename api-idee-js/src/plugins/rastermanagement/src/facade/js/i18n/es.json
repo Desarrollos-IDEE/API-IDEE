@@ -92,7 +92,7 @@
   "spectralIndices": "Índices espectrales",
   "rgbCombinations": "Combinaciones RGB",
   "imageAdjustment": "Ajuste de imagen",
-  "imageAdjustmentHint": "Estos ajustes se combinan con la rampa, índice o combinación RGB configurada en las otras pestañas. Si la capa ya tiene estilo, solo actualizará los filtros.",
+  "imageAdjustmentHint": "Estos ajustes se combinan con la rampa, índice o combinación RGB configurada en las otras pestañas.",
   "rgbSubtitle": "Color verdadero / Color falso",
   "rgbHint": "Rojo, verde y azul/NIR son números de banda. Use 0 para apagar un canal.",
   "bandChannelR": "Rojo",
