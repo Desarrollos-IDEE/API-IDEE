@@ -169,7 +169,11 @@ class WMTS extends LayerBase {
           // filter current layer capabilities
           const capabilitiesOptions = this.getFilterCapabilities_(capabilities);
           // adds layer from capabilities
-          this.addLayer_(capabilitiesOptions);
+          if (isNullOrEmpty(capabilitiesOptions)) {
+            this.addLayerNotCapabilities_();
+          } else {
+            this.addLayer_(capabilitiesOptions);
+          }
         });
     } else {
       this.addLayerNotCapabilities_();
@@ -429,8 +433,11 @@ class WMTS extends LayerBase {
       capabilitiesLayer = capabilitiesLayer.find((l) => l.Identifier === layerName);
     }
 
-    if (capabilitiesLayer.Style.length > 0 && capabilitiesLayer.Style[0].LegendURL !== undefined) {
+    if (!isNullOrEmpty(capabilitiesLayer.Style)
+      && capabilitiesLayer.Style[0].LegendURL !== undefined) {
       this.legendUrl_ = capabilitiesLayer.Style[0].LegendURL.replaceAll('&amp;', '&');
+    } else {
+      return null;
     }
 
     const abstract = !isNullOrEmpty(capabilitiesLayer.Abstract) ? capabilitiesLayer.Abstract : '';
