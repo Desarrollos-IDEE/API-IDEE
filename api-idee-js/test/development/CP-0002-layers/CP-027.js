@@ -1,183 +1,112 @@
-import { map as Mmap, proxy } from 'IDEE/api-idee';
-import WMS from 'IDEE/layer/WMS';
-import WMTS from 'IDEE/layer/WMTS';
-import XYZ from 'IDEE/layer/XYZ';
-import TMS from 'IDEE/layer/TMS';
-import OSM from 'IDEE/layer/OSM';
-import GeoJSON from 'IDEE/layer/GeoJSON';
-import WFS from 'IDEE/layer/WFS';
-import OGCAPIFeatures from 'IDEE/layer/OGCAPIFeatures';
-import KML from 'IDEE/layer/KML';
-import MBTiles from 'IDEE/layer/MBTiles';
-import MVT from 'IDEE/layer/MVT';
-import MBTilesVector from 'IDEE/layer/MBTilesVector';
-import GeoTIFF from 'IDEE/layer/GeoTIFF';
-import MapLibre from 'IDEE/layer/MapLibre';
-import Vector from 'IDEE/layer/Vector';
-import Tiles3D from 'IDEE/layer/Tiles3D';
-import Terrain from 'IDEE/layer/Terrain';
-import Feature from 'IDEE/feature/Feature';
+import { map as Mmap } from 'IDEE/api-idee';
+import GeoPackage from 'IDEE/layer/GeoPackage';
 import Generic from 'IDEE/style/Generic';
 
-const query = new URLSearchParams(window.location.search);
-const interval = Number(query.get('interval') || 5000);
-const mode = query.get('mode') || 'on';
-const route = query.get('route') || 'generic';
-const base = query.get('data') || 'http://localhost:8083/datos-prueba/';
-proxy(false);
-IDEE.config('baseLayer', []);
-IDEE.config('terrain', { default: [] });
-// El servidor de desarrollo publica los recursos Cesium en /cesium/.
-IDEE.config('CESIUM_URL', new URL('/cesium/', window.location.href).href);
-IDEE.config('SQL_WASM_URL', new URL('/node_modules/sql.js/dist/', base).href);
 const mapa = Mmap({
-  container: 'map',
-  projection: 'EPSG:3857',
-  center: [0, 0],
-  zoom: 3,
-  layers: [],
-  controls: [],
-  resolutions: Array.from({ length: 29 }, (_, z) => 156543.03392804097 / (2 ** z)),
+  container: 'map', layers: [], controls: [], center: [0, 0], zoom: 2,
 });
-const cesium = !!mapa.getMapImpl().scene;
-const constructors = {
-  WMS,
-  WMTS,
-  XYZ,
-  TMS,
-  OSM,
-  GeoJSON,
-  WFS,
-  OGCAPIFeatures,
-  KML,
-  MBTiles,
-  MVT,
-  MBTilesVector,
-  GeoTIFF,
-  MapLibre,
-  Vector,
-  Tiles3D,
-  Terrain,
+window.map = mapa;
+window.geopackages = [];
+
+const form = document.getElementById('geopackage-form');
+const inputs = document.getElementById('inputs');
+const sourceKind = document.getElementById('source-kind');
+const fileInput = document.getElementById('source-file');
+const urlInput = document.getElementById('source-url');
+const status = document.getElementById('status');
+let loading = false;
+
+/** Alterna fuentes sin borrar los datos introducidos. */
+const updateSource = () => {
+  const local = sourceKind.value === 'file';
+  document.getElementById('file-field').hidden = !local;
+  document.getElementById('url-field').hidden = local;
+  fileInput.disabled = !local;
+  fileInput.required = local;
+  urlInput.disabled = local;
+  urlInput.required = !local;
 };
-const onlyOL = ['MVT', 'MBTilesVector', 'GeoTIFF', 'MapLibre'];
-const available = Object.keys(constructors).filter((type) => (cesium
-  ? !onlyOL.includes(type) : !['Tiles3D', 'Terrain'].includes(type)));
-const type = available.includes(query.get('type')) ? query.get('type') : 'WMS';
-available.forEach((value) => document.getElementById('type').add(
-  new window.Option(value === 'Vector' ? 'Vector local (sin recarga remota)' : value, value),
-));
-document.getElementById('engine').textContent = cesium ? 'Cesium (3D)' : 'OpenLayers (2D)';
-const tiled = cesium || query.get('tiled') !== 'false';
-const parameters = {
-  WMS: {
-    url: `${base}wms`, name: 'prueba', tiled, useCapabilities: false,
-  },
-  WMTS: {
-    url: `${base}wmts.png`,
-    name: 'prueba',
-    matrixSet: 'GoogleMapsCompatible',
-    format: 'image/png',
-    useCapabilities: false,
-    maxExtent: cesium ? [-180, -85, 180, 85] : [-20037508, -20037508, 20037508, 20037508],
-  },
-  XYZ: { url: `${base}tiles/{z}/{x}/{y}.png` },
-  TMS: { url: `${base}tiles/{z}/{x}/{y}.png` },
-  OSM: { url: `${base}tiles/{z}/{x}/{y}.png` },
-  GeoJSON: { url: `${base}puntos.geojson` },
-  WFS: {
-    url: `${base}wfs`, namespace: 'prueba', geometry: 'POINT', extract: false,
-  },
-  OGCAPIFeatures: { url: `${base}collections/`, name: 'puntos', limit: 1 },
-  KML: { url: `${base}puntos.kml` },
-  MBTiles: { url: `${base}raster.mbtiles` },
-  MVT: { url: `${base}tiles/{z}/{x}/{y}.pbf`, mode: 'feature' },
-  MBTilesVector: { url: `${base}vector.mbtiles` },
-  GeoTIFF: { url: `${base}raster.tif` },
-  Tiles3D: { url: `${base}tileset.json` },
-  Terrain: { url: `${base}terrain/` },
-  MapLibre: {
-    maplibrestyle: {
-      version: 8,
-      sources: { puntos: { type: 'geojson', data: `${base}puntos.geojson` } },
-      layers: [{
-        id: 'puntos',
-        type: 'circle',
-        source: 'puntos',
-        paint: { 'circle-radius': 8, 'circle-color': '#be185d' },
-      }],
-    },
-  },
+
+/** Valida registros JSON y convierte los estilos sin ejecutar código del usuario. */
+const readTables = () => {
+  const tables = JSON.parse(document.getElementById('table-options').value, (key, value) => {
+    if (['__proto__', 'constructor', 'prototype'].includes(key)) {
+      throw new Error(`La clave ${key} no está admitida en este formulario.`);
+    }
+    return value;
+  });
+  const isRecord = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
+  if (!isRecord(tables)) throw new Error('Las opciones por tabla deben ser un objeto JSON.');
+  return Object.fromEntries(Object.entries(tables).map(([table, options]) => {
+    if (!isRecord(options)) throw new Error('Cada tabla debe contener un objeto de opciones.');
+    if (options.opacity !== undefined && (typeof options.opacity !== 'number'
+      || options.opacity < 0 || options.opacity > 1)) {
+      throw new Error('La opacidad por tabla debe ser un número entre 0 y 1.');
+    }
+    if (options.visibility !== undefined && typeof options.visibility !== 'boolean') {
+      throw new Error('La visibilidad por tabla debe ser true o false.');
+    }
+    const normalized = { ...options };
+    if (options.style !== undefined) {
+      if (!isRecord(options.style)) throw new Error('El estilo debe ser un objeto de IDEE.style.Generic.');
+      // La conversión solo afecta al JSON recién leído, no al texto del formulario.
+      normalized.style = new Generic(options.style);
+    }
+    return [table, normalized];
+  }));
 };
-const params = { name: `${type}-refresh`, ...parameters[type], isBase: false };
-if (mode === 'on') params.refreshInterval = interval;
-if (mode === 'invalid') params.refreshInterval = 0;
-const capa = new constructors[type](
-  params,
-  type === 'WFS' ? { getFeatureOutputFormat: 'json', describeFeatureTypeOutputFormat: 'json' } : {},
-);
-const direct = typeof mapa[`add${type}`] === 'function' ? `add${type}` : 'addLayers';
-const addLayer = () => mapa[route === 'direct' ? direct : 'addLayers'](capa);
-addLayer();
-if (type === 'Vector') {
-  capa.setStyle(new Generic({
-    point: { radius: 10, fill: { color: '#e11d48' }, stroke: { color: '#ffffff', width: 2 } },
-  }));
-  capa.addFeatures(new Feature('punto-local', {
-    type: 'Feature',
-    geometry: { type: 'Point', coordinates: [0, 0] },
-    properties: { nombre: 'Punto local: debe conservarse', revision: 1 },
-  }));
-}
-window.mapa = mapa;
-window.capa = capa;
-['type', 'mode', 'interval', 'route'].forEach((id) => {
-  document.getElementById(id).value = {
-    type, mode, interval, route,
-  }[id];
+
+sourceKind.addEventListener('change', updateSource);
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  if (loading || !form.reportValidity()) return;
+  status.dataset.error = 'false';
+  try {
+    const parameters = {
+      name: document.getElementById('package-name').value.trim(),
+      legend: document.getElementById('package-legend').value,
+    };
+    if (!parameters.name) throw new Error('Introduce un nombre de paquete.');
+    if (sourceKind.value === 'file') {
+      [parameters.source] = fileInput.files;
+      if (!parameters.source) throw new Error('Selecciona un archivo GeoPackage.');
+    } else {
+      const url = new URL(urlInput.value.trim(), window.location.href);
+      if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) {
+        throw new Error('Utiliza una URL HTTP(S) sin credenciales.');
+      }
+      parameters.url = url.href;
+    }
+    const options = {
+      opacity: document.getElementById('opacity').valueAsNumber,
+      visibility: document.getElementById('visibility').checked,
+      tables: readTables(),
+    };
+    loading = true;
+    inputs.disabled = true;
+    form.setAttribute('aria-busy', 'true');
+    status.textContent = 'Cargando el fichero y construyendo las capas…';
+    const gpkg = new GeoPackage(parameters, options);
+    await gpkg.whenReady();
+    mapa.addGeoPackage(gpkg);
+    window.geopackages.push(gpkg);
+    const item = document.createElement('li');
+    const layers = gpkg.getLayers();
+    item.textContent = `${gpkg.name}: ${layers.length} tablas. ${layers.map((layer) => `${layer.name} (${layer.type})`).join('; ')}`;
+    document.getElementById('empty-state')?.remove();
+    document.getElementById('packages').appendChild(item);
+    status.textContent = 'Paquete inicializado y enviado al mapa. whenReady() no espera al renderizado.';
+  } catch (error) {
+    status.dataset.error = 'true';
+    status.textContent = `Error: ${error.message || String(error)}`;
+  } finally {
+    loading = false;
+    inputs.disabled = false;
+    form.removeAttribute('aria-busy');
+    updateSource();
+  }
 });
-document.querySelector('#route option[value=direct]').textContent = direct;
-document.getElementById('tiled').value = String(tiled);
-document.getElementById('type').onchange = () => {
-  document.getElementById('tiled').disabled = cesium
-    || document.getElementById('type').value !== 'WMS';
-};
-document.getElementById('type').onchange();
-document.getElementById('wms-help').textContent = cesium
-  ? 'Cesium utiliza WMS por teselas; la opción sin teselas solo está disponible en OpenLayers.'
-  : 'Solo WMS: Sí solicita varias imágenes por teselas; No solicita una imagen para la vista.';
-document.getElementById('expected').textContent = type === 'Vector'
-  ? 'Vector local: debe aparecer un punto rosa en el centro. No tiene URL ni descarga datos. '
-    + 'Su revisión permanece en 1 aunque haya intervalo. Es una prueba de conservación de datos locales. '
-    + 'Para probar recargas vectoriales elige GeoJSON, WFS, OGCAPIFeatures o KML.'
-  : 'Con intervalo válido, comprueba nuevas peticiones en Red. GeoJSON/WFS/OGC cambian revision; '
-    + 'KML cambia name. Los demás archivos e imágenes de prueba son fijos.';
-document.getElementById('data').value = base;
-document.getElementById('params').textContent = JSON.stringify(params);
-document.getElementById('remove').onclick = () => mapa.removeLayers(capa);
-document.getElementById('add').onclick = addLayer;
-document.getElementById('edit').disabled = !['GeoJSON', 'WFS', 'OGCAPIFeatures', 'KML'].includes(type);
-document.getElementById('resume').disabled = document.getElementById('edit').disabled;
-let edited;
-document.getElementById('edit').onclick = () => {
-  const feature = capa.getFeatures?.()[0];
-  if (!feature || edited) return;
-  const attribute = type === 'KML' ? 'name' : 'revision';
-  edited = { feature, attribute, value: feature.getAttribute(attribute) };
-  feature.setAttribute(attribute, 'edición local');
-};
-document.getElementById('resume').onclick = () => {
-  if (!edited) return;
-  edited.feature.setAttribute(edited.attribute, edited.value);
-  capa.resumeAutoRefresh();
-  edited = undefined;
-};
-const statusTimer = setInterval(() => {
-  document.getElementById('status').textContent = JSON.stringify({
-    motor: cesium ? 'Cesium' : 'OpenLayers',
-    intervaloConfigurado: capa.getAutoRefreshInterval() ?? 'Sin intervalo',
-    configurado: capa.isAutoRefreshEnabled(),
-    pausa: capa.isAutoRefreshPaused?.(),
-    datos: capa.getFeatures?.().slice(0, 2).map((feature) => feature.getAttributes()),
-  }, null, 2);
-}, 1000);
-document.getElementById('destroy').onclick = () => { clearInterval(statusTimer); mapa.destroy(); };
+
+inputs.disabled = false;
+updateSource();
+status.textContent = 'Selecciona un archivo o una URL para comenzar.';

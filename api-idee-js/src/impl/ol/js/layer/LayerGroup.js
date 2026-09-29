@@ -2,10 +2,10 @@
  * @module IDEE/impl/layer/LayerGroup
  */
 import * as EventType from 'IDEE/event/eventtype';
-import * as LayerType from 'IDEE/layer/Type';
-import { isNullOrEmpty } from 'IDEE/util/Utils';
+import { isNullOrEmpty, escapeXSS } from 'IDEE/util/Utils';
 import Section from 'IDEE/layer/Section';
 import WMC from 'IDEE/layer/WMC';
+import * as Dialog from 'IDEE/dialog';
 import { Group } from 'ol/layer';
 import { Collection } from 'ol';
 import Layer from './Layer';
@@ -103,16 +103,14 @@ class LayerGroup extends Layer {
       return this.addLayer(layer);
     });
 
-    layerPromises.reduce((promiseChain, layerPromise) => {
-      return promiseChain.then(() => layerPromise);
-    }, Promise.resolve());
-
-    // Las hijas retenidas al retirar un grupo también necesitan un nuevo ciclo de alta.
-    this.layers.forEach((layer) => this.startLayersAutoRefresh_(layer));
+    Promise.all(layerPromises).catch((error) => Dialog.error(escapeXSS(String(error))));
 
     this.olLayer.on('change:zIndex', () => {
       this.setZIndexChildren();
     });
+
+    // Las hijas retenidas al retirar un grupo también necesitan un nuevo ciclo de alta.
+    this.layers.forEach((layer) => this.startLayersAutoRefresh_(layer));
   }
 
   /**
@@ -234,7 +232,7 @@ class LayerGroup extends Layer {
       layer.setMap(this.map);
       layer.startAutoRefresh(this.map.getAutoRefreshInterval());
     }
-    if (layer.type === LayerType.LayerGroup) {
+    if (layer.getImpl() instanceof LayerGroup) {
       layer.getLayers().forEach((child) => this.startLayersAutoRefresh_(child));
     }
   }
@@ -285,21 +283,15 @@ class LayerGroup extends Layer {
       }
 
       if (layer.type === 'GeoPackage') {
-        return new Promise((resolve) => {
-          layer.addTo(this.map, false);
-          layer.on(EventType.LOAD_LAYERS, (ls) => {
-            const layerPromises = Object.values(ls).map((value) => {
-              const parentOrder = this.layerOrder_.get(layer);
-              this.layerOrder_.set(value, parentOrder);
-              const aux = this.addLayer(value);
-              this.setZIndexChildren();
-              return aux;
-            });
-
-            Promise.all(layerPromises).then(() => {
-              resolve(layer);
-            });
+        return layer.addTo(this.map, false).then(() => {
+          const layerPromises = layer.getLayers().map((value) => {
+            const parentOrder = this.layerOrder_.get(layer);
+            this.layerOrder_.set(value, parentOrder);
+            const child = this.addLayer(value);
+            this.setZIndexChildren();
+            return child;
           });
+          return Promise.all(layerPromises).then(() => layer);
         });
       }
 
