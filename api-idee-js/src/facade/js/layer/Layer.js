@@ -537,35 +537,17 @@ class LayerBase extends Base {
    */
   startAutoRefresh(interval = this.getAutoRefreshInterval()) {
     const impl = this.getImpl();
-    if (autoRefreshTimers.has(this) || !impl.getMap()) return;
-    const refreshInterval = isPositiveNumber(interval) && interval % 1 === 0
+    if (!impl.getMap()) return;
+    let state = autoRefreshTimers.get(this);
+    if (state && (state.timer !== undefined || state.map !== impl.getMap())) return;
+    this.refreshInterval_ = isPositiveNumber(interval) && interval % 1 === 0
       && interval <= 2147483647 ? interval : this.getAutoRefreshInterval();
-    const state = { pending: false, map: impl.getMap(), revision: 0 };
-    autoRefreshTimers.set(this, state);
-    this.updateRefreshInterval(refreshInterval);
-  }
-
-  /**
-   * Sustituye el intervalo configurado y reprograma el ciclo actual.
-   * Un valor inválido, cero o undefined desactiva el refresco.
-   * Una capa retirada no puede reactivarse por esta vía.
-   * @param {Number|undefined} interval Nuevo intervalo en milisegundos.
-   * @public
-   * @function
-   * @api
-   */
-  updateRefreshInterval(interval) {
-    const state = autoRefreshTimers.get(this);
-    const impl = this.getImpl();
-    if (!state || impl.getMap() !== state.map) return;
-    const next = isPositiveNumber(interval) && interval % 1 === 0
-      && interval <= 2147483647 ? interval : undefined;
-    if (this.refreshInterval_ === next && (state.timer !== undefined || !next)) return;
-    clearInterval(state.timer);
-    state.timer = undefined;
-    this.refreshInterval_ = next;
-    state.revision += 1;
-    if (!next || impl.isAutoRefreshContainer?.()) return;
+    if (!state) {
+      // Una capa incorporada sin intervalo también puede activarse mediante update.
+      state = { pending: false, map: impl.getMap(), revision: 0 };
+      autoRefreshTimers.set(this, state);
+    }
+    if (!this.refreshInterval_ || impl.isAutoRefreshContainer?.()) return;
     const revision = state.revision;
     state.timer = setInterval(() => {
       if (impl.getMap() !== state.map) {
@@ -582,7 +564,20 @@ class LayerBase extends Base {
           console.warn(getValue('exception').auto_refresh_failed, this.name, error);
         }).finally(() => { state.pending = false; });
       }
-    }, next);
+    }, this.refreshInterval_);
+  }
+
+  /**
+   * Sustituye el intervalo y reinicia la programación de una capa incorporada.
+   * Un valor inválido, cero o undefined desactiva el refresco.
+   * @param {Number|undefined} interval Nuevo intervalo en milisegundos.
+   * @public
+   * @function
+   * @api
+   */
+  updateRefreshInterval(interval) {
+    this.stopAutoRefresh({ releaseResources: false });
+    this.startAutoRefresh(interval);
   }
 
   /**
@@ -619,36 +614,34 @@ class LayerBase extends Base {
    * @public
    * @function
    */
-  isAutoRefreshEnabled() {
+  isAutoRefreshValid() {
     return this.getAutoRefreshInterval() > 0;
   }
 
   /**
    * Detiene el autorefresco al retirar o destruir la capa.
+   * Al reprogramar conserva los recursos y la recarga pendiente.
+   * @param {Object} options Opciones internas de parada.
+   * @param {Boolean} options.releaseResources Libera los recursos al retirar la capa.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
    * @function
    */
-  stopAutoRefresh() {
+  stopAutoRefresh({ releaseResources = true } = {}) {
     const impl = this.getImpl();
     const state = autoRefreshTimers.get(this);
     if (state !== undefined) {
       clearInterval(state.timer);
-      autoRefreshTimers.delete(this);
-      impl?.disposeAutoRefresh();
+      state.timer = undefined;
+      state.revision += 1;
+      if (releaseResources) {
+        autoRefreshTimers.delete(this);
+        impl?.disposeAutoRefresh();
+      }
     }
-    if (impl?.isAutoRefreshContainer?.()) {
+    if (releaseResources && impl?.isAutoRefreshContainer?.()) {
       impl.getLayers().forEach((layer) => layer.stopAutoRefresh());
     }
-  }
-
-  /**
-   * Detiene la programación antes de destruir la implementación.
-   * @api
-   */
-  destroy() {
-    this.stopAutoRefresh();
-    super.destroy();
   }
 
   /**

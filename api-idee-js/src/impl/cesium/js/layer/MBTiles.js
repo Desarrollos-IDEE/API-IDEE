@@ -211,12 +211,12 @@ class MBTiles extends Layer {
   async fetchSource() {
     // Sin autorefresco, el proveedor recibe la fuente original y realiza su lectura habitual.
     // Una respuesta consumida solo se recupera para reinsertar una capa con autorefresco.
-    if (!this.source_ || (this.autoRefreshRemote_ && this.facadeLayer_.isAutoRefreshEnabled()
+    if (!this.source_ || (this.autoRefreshRemote_ && this.facadeLayer_.isAutoRefreshValid()
       && this.source_ instanceof Response && this.source_.bodyUsed)) {
       if (this.url) this.source_ = await window.fetch(this.url);
     }
     if (!this.source_) throw new Error(getValue('exception').no_source);
-    if (this.autoRefreshRemote_ && this.facadeLayer_.isAutoRefreshEnabled()
+    if (this.autoRefreshRemote_ && this.facadeLayer_.isAutoRefreshValid()
       && typeof this.source_.arrayBuffer === 'function') {
       this.source_ = new Uint8Array(await this.source_.arrayBuffer());
     }
@@ -286,6 +286,7 @@ class MBTiles extends Layer {
    * @api
    */
   destroy() {
+    this.facadeLayer_?.stopAutoRefresh();
     const cesiumMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.cesiumLayer)) {
       cesiumMap.imageryLayers.remove(this.cesiumLayer);

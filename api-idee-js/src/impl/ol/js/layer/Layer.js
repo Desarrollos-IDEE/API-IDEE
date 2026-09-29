@@ -507,6 +507,15 @@ class LayerBase extends MObject {
   }
 
   /**
+   * Guarda la fachada para limpiar el autorefresco al destruir la implementación.
+   * @param {IDEE.layer.Layer} obj Fachada de la capa.
+   * @public
+   */
+  setFacadeObj(obj) {
+    this.facadeLayer_ = obj;
+  }
+
+  /**
    * Este método busca si hay capas base y activa la primera de la lista.
    *
    * @function

@@ -448,7 +448,7 @@ class LayerGroup extends Layer {
    * @api
    */
   destroy() {
-    this.layers.forEach((layer) => layer.stopAutoRefresh());
+    this.facadeLayer_?.stopAutoRefresh();
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.olLayer)) {
       olMap.removeLayer(this.olLayer);

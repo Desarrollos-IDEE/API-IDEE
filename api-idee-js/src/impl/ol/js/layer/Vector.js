@@ -554,6 +554,7 @@ class Vector extends Layer {
    * @api stable
    */
   destroy() {
+    this.facadeVector_?.stopAutoRefresh();
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.olLayer)) {
       olMap.removeLayer(this.olLayer);

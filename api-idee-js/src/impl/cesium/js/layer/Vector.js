@@ -460,7 +460,7 @@ class Vector extends Layer {
    * @private
    */
   prepareAutoRefreshFeature_(entity) {
-    if (!this.facadeVector_.isAutoRefreshEnabled()) return;
+    if (!this.facadeVector_.isAutoRefreshValid()) return;
     const geometry = ImplUtils.getGeometryEntity(entity);
     if (geometry instanceof PointGraphics) {
       if (!geometry.color) geometry.color = Color.WHITE;
@@ -876,6 +876,7 @@ class Vector extends Layer {
    * @api stable
    */
   destroy() {
+    this.facadeVector_?.stopAutoRefresh();
     const cesiumMap = this.map.getMapImpl();
     // Eliminar el listener de tileLoadProgressEvent si existe
     if (!isNullOrEmpty(this.tileLoadHandler)) {

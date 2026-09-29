@@ -371,6 +371,7 @@ class KML extends Vector {
    * @api stable
    */
   destroy() {
+    this.facadeVector_?.stopAutoRefresh();
     const cesiumMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.cesiumLayer)) {
       cesiumMap.dataSources.remove(this.cesiumLayer, true);

@@ -577,7 +577,6 @@ class Map extends MObject {
     const kmlMapLayers = this.getKML(layers);
     kmlMapLayers.forEach((kmlLayer) => {
       this.layers_ = this.layers_.filter((layer) => !kmlLayer.equals(layer));
-      kmlLayer.stopAutoRefresh();
       kmlLayer.getImpl().destroy();
       kmlLayer.fire(EventType.REMOVED_FROM_MAP, [kmlLayer]);
     }, this);
@@ -707,7 +706,6 @@ class Map extends MObject {
   removeWMS(layers) {
     const wmsMapLayers = this.getWMS(layers);
     wmsMapLayers.forEach((wmsLayer) => {
-      wmsLayer.stopAutoRefresh();
       wmsLayer.getImpl().destroy();
       this.layers_ = this.layers_.filter((layer) => !wmsLayer.equals(layer));
       wmsLayer.fire(EventType.REMOVED_FROM_MAP, [wmsLayer]);
@@ -894,7 +892,6 @@ class Map extends MObject {
     const wfsMapLayers = this.getWFS(layers);
     wfsMapLayers.forEach((wfsLayer) => {
       this.layers_ = this.layers_.filter((layer) => !layer.equals(wfsLayer));
-      wfsLayer.stopAutoRefresh();
       wfsLayer.getImpl().destroy();
       wfsLayer.fire(EventType.REMOVED_FROM_MAP, [wfsLayer]);
     });
@@ -1012,7 +1009,6 @@ class Map extends MObject {
     const ogcapifMapLayers = this.getOGCAPIFeatures(layers);
     ogcapifMapLayers.forEach((ogcapifLayer) => {
       this.layers_ = this.layers_.filter((layer) => !layer.equals(ogcapifLayer));
-      ogcapifLayer.stopAutoRefresh();
       ogcapifLayer.getImpl().destroy();
       ogcapifLayer.fire(EventType.REMOVED_FROM_MAP, [ogcapifLayer]);
     });
@@ -1124,7 +1120,6 @@ class Map extends MObject {
     wmtsMapLayers.forEach((wmtsLayer) => {
       wmtsLayer.fire(EventType.REMOVED_FROM_MAP, [wmtsLayer]);
       this.layers_ = this.layers_.filter((layer) => !layer.equals(wmtsLayer));
-      wmtsLayer.stopAutoRefresh();
       wmtsLayer.getImpl().destroy();
     });
 
@@ -1221,7 +1216,6 @@ class Map extends MObject {
     const mbtilesMapLayers = this.getMBTiles(layers);
     mbtilesMapLayers.forEach((mbtilesLayer) => {
       this.layers_ = this.layers_.filter((layer) => !layer.equals(mbtilesLayer));
-      mbtilesLayer.stopAutoRefresh();
       mbtilesLayer.getImpl().destroy();
       mbtilesLayer.fire(EventType.REMOVED_FROM_MAP, [mbtilesLayer]);
     });
@@ -1322,9 +1316,8 @@ class Map extends MObject {
     layers.forEach((layer) => {
       if (includes(this.layers_, layer)) {
         this.layers_ = this.layers_.filter((layer2) => !layer2.equals(layer));
-        layer.stopAutoRefresh();
         // Solo el autorefresco conserva las capas externas para poder reinsertarlas.
-        if (layer.isAutoRefreshEnabled()
+        if (layer.isAutoRefreshValid()
           && (layer.type === LayerType.GenericVector || layer.type === LayerType.GenericRaster)) {
           layer.getImpl().destroy(true);
         } else {
@@ -1421,7 +1414,6 @@ class Map extends MObject {
   removeXYZ(layers) {
     const xyzMapLayers = this.getXYZs(layers);
     xyzMapLayers.forEach((xyzLayer) => {
-      xyzLayer.stopAutoRefresh();
       xyzLayer.getImpl().destroy();
       this.layers_ = this.layers_.filter((layer) => !layer.equals(xyzLayer));
       xyzLayer.fire(EventType.REMOVED_FROM_MAP, [xyzLayer]);
@@ -1519,7 +1511,6 @@ class Map extends MObject {
     tmsMapLayers.forEach((tmsLayer) => {
       tmsLayer.fire(EventType.REMOVED_FROM_MAP, [tmsLayer]);
       this.layers_ = this.layers_.filter((layer) => !layer.equals(tmsLayer));
-      tmsLayer.stopAutoRefresh();
       tmsLayer.getImpl().destroy();
     });
 
@@ -1621,7 +1612,6 @@ class Map extends MObject {
     const tiles3DMapLayers = this.getTiles3D(layers);
     tiles3DMapLayers.forEach((tiles3DLayer) => {
       this.layers_ = this.layers_.filter((layer) => !layer.equals(tiles3DLayer));
-      tiles3DLayer.stopAutoRefresh();
       tiles3DLayer.getImpl().destroy();
       tiles3DLayer.fire(EventType.REMOVED_FROM_MAP, [tiles3DLayer]);
     });
@@ -1729,7 +1719,6 @@ class Map extends MObject {
     const terrainMapLayers = this.getTerrain(layers);
     terrainMapLayers.forEach((terrainLayer) => {
       this.layers_ = this.layers_.filter((layer) => !layer.equals(terrainLayer));
-      terrainLayer.stopAutoRefresh();
       terrainLayer.getImpl().destroy();
       terrainLayer.fire(EventType.REMOVED_FROM_MAP, [terrainLayer]);
     });

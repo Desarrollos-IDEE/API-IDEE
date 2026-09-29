@@ -295,6 +295,7 @@ class WMC extends Layer {
     * @api
     */
   destroy() {
+    this.facadeLayer_?.stopAutoRefresh();
     if (!isNullOrEmpty(this.layers)) {
       this.map.removeLayers(this.layers);
     }

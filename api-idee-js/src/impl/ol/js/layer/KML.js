@@ -342,6 +342,7 @@ class KML extends Vector {
    * @api stable
    */
   destroy() {
+    this.facadeVector_?.stopAutoRefresh();
     const olMap = this.map.getMapImpl();
 
     if (!isNullOrEmpty(this.olLayer)) {

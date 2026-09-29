@@ -499,6 +499,7 @@ class MapLibre extends LayerBase {
    * @api stable
    */
   destroy() {
+    this.facade?.stopAutoRefresh();
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.olLayer)) {
       olMap.removeLayer(this.olLayer);

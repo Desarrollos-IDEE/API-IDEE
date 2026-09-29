@@ -418,6 +418,7 @@ class Tiles3D extends Layer {
    * @api stable
    */
   destroy() {
+    this.facadeLayer_?.stopAutoRefresh();
     const cesiumMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.cesiumLayer)) {
       cesiumMap.scene.primitives.destroyPrimitives = true;

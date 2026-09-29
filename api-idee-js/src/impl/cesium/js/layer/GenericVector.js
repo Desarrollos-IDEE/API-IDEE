@@ -392,7 +392,7 @@ class GenericVector extends Vector {
    * @api stable
    */
   destroy(preserveLayer = false) {
-    this.facadeLayer_.stopAutoRefresh();
+    this.facadeLayer_?.stopAutoRefresh();
     const layer = this.cesiumLayer;
     if (layer) {
       this.map?.getMapImpl().dataSources.remove(layer, false);

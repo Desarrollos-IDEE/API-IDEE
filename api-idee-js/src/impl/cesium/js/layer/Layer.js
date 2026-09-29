@@ -137,7 +137,7 @@ class LayerBase extends MObject {
         return track(next);
       };
       // El mapa asigna el intervalo después de addTo; permite también activarlo más tarde.
-      if (this.facadeLayer_.isAutoRefreshEnabled()) track(provider);
+      if (this.facadeLayer_.isAutoRefreshValid()) track(provider);
       this.disposeAutoRefresh();
       autoRefreshProviders.set(this, state);
     }
@@ -463,6 +463,15 @@ class LayerBase extends MObject {
    */
   getMap() {
     return this.map;
+  }
+
+  /**
+   * Guarda la fachada para limpiar el autorefresco al destruir la implementación.
+   * @param {IDEE.layer.Layer} obj Fachada de la capa.
+   * @public
+   */
+  setFacadeObj(obj) {
+    this.facadeLayer_ = obj;
   }
 
   /**

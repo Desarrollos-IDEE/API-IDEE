@@ -300,6 +300,7 @@ class Terrain extends Layer {
    * @api
    */
   destroy() {
+    this.facadeLayer_?.stopAutoRefresh();
     const cesiumMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.cesiumLayer)) {
       cesiumMap.terrainProvider = new EllipsoidTerrainProvider();
