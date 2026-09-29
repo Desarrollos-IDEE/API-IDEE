@@ -267,7 +267,7 @@ class Tiles3D extends LayerBase {
    *
    * @function
    * @public
-   * @param {Object|IDEE.style.3DTiles} style Estilo que se aplicará a la capa.
+   * @param {Object|IDEE.style.Tiles3D} style Estilo que se aplicará a la capa.
    * @api
    */
   setStyle(style) {

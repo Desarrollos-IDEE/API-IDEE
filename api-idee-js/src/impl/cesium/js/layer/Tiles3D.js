@@ -26,7 +26,7 @@ import Layer from './Layer';
  * Resuelve un estilo de fachada o un objeto plano al formato de Cesium3DTileStyle.
  *
  * @function
- * @param {Object} style Estilo IDEE.style.3DTiles o objeto Cesium3DTileStyle.
+ * @param {Object} style Estilo IDEE.style.Tiles3D u objeto de estilo 3D Tiles.
  * @returns {Object} Objeto para Cesium3DTileStyle.
  */
 const resolveCesium3DTileStyle = (style) => {
@@ -422,7 +422,7 @@ class Tiles3D extends Layer {
    *
    * @function
    * @public
-   * @param {Object|IDEE.style.3DTiles} style Estilo que se aplicará a la capa.
+   * @param {Object|IDEE.style.Tiles3D} style Estilo que se aplicará a la capa.
    * @api
    */
   setStyle(style) {
