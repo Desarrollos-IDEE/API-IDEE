@@ -714,7 +714,13 @@ export default class PrinterMapControl extends IDEE.Control {
       const scripts = this.extractScripts(doc);
       templateData = {
         name: 'default',
-        content: defaultTemplate,
+        content: defaultTemplate
+          .replaceAll(
+            '${api-idee.static_resources.url}',
+            IDEE.config.STATIC_RESOURCES_URL,
+          )
+          .replaceAll('Introduzca título', getValue('enterTitle'))
+          .replaceAll('Introduzca descripción...', getValue('enterDescription')),
         types,
         styles,
         scripts,

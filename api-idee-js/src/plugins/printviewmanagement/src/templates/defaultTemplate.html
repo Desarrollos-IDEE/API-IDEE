@@ -17,7 +17,7 @@
         }
 
         .api-idee-template-container {
-		   width: 90%;
+		   width: 100%;
 		   height: 100%;    
 		   box-sizing: border-box;
 		   display: flex;
@@ -27,12 +27,12 @@
 
          /* Containers */
         .interior-container {
-            width: 90%;
+            width: 100%;
             margin: auto;
             border: 1px solid black;
             box-sizing: border-box;
             display: grid;
-            grid-template-columns: 1fr 17fr 1fr;
+            grid-template-columns: 1.1fr 15.8fr 1.1fr;
             grid-template-rows: 1fr 14fr 1fr;
             position: absolute;
 			top: calc(var(--superior-height) + var(--gap));
@@ -68,7 +68,7 @@
         .api-idee-template-container:not(:has(.interior-container, .superior-container)) .imagen-mascara {
             margin: auto;
             top: 0;
-            width: 90%;
+            width: 100%;
             position: absolute;
             height: calc(100% - var(--inferior-height) - var(--gap));
         }
@@ -79,7 +79,7 @@
         }
         
         .inferior-container, .superior-container {
-            width: 90%;
+            width: 100%;
             margin: auto;
             border: 1px solid black;
             box-sizing: border-box;

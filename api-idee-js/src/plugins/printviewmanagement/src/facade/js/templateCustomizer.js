@@ -219,11 +219,13 @@ export default class TemplateCustomizer extends IDEE.Control {
     this.projection = currentProjection;
     this.templateItems_ = this.templateData_.types.map((fullType) => {
       const [type, name] = fullType.split(':');
+      const labelKey = name || type || fullType;
+      const translatedLabel = getValue(labelKey) || getValue(type) || labelKey;
       return {
         id: name ? `texto-libre-${name}` : type,
         type: type || fullType,
         name: name || null,
-        label: name || getValue(type) || type,
+        label: translatedLabel,
       };
     });
     const content = IDEE.template.compileSync(templateCustomizer, {
@@ -386,11 +388,34 @@ export default class TemplateCustomizer extends IDEE.Control {
       })],
     });
 
+    const locatorLayerNames = [
+      'coordinatexylocator',
+      'searchresult',
+      'coordinatecatastro',
+      'coordinateparcel',
+    ];
     this.previewMap.addLayers(this.map.getLayers().map((layer) => layer.clone()));
     this.previewMap.getLayers().forEach((layer) => {
-      if (typeof layer.getStyle === 'function' && layer.getStyle()) {
-        layer.setStyle(layer.getStyle());
+      if (typeof layer.getStyle !== 'function' || !layer.getStyle()) {
+        return;
       }
+      // El estilo SVG del Locator no sobrevive al clone (canvas_ → Illegal invocation).
+      if (locatorLayerNames.includes(layer.name)) {
+        layer.setStyle(new IDEE.style.Point({
+          radius: 5,
+          fill: {
+            color: '#71a7d3',
+            opacity: 0.9,
+          },
+          stroke: {
+            color: '#71a7d3',
+            opacity: 1,
+            width: 3,
+          },
+        }));
+        return;
+      }
+      layer.setStyle(layer.getStyle());
     });
     const previewContainer = document.querySelector(ID_CONTAINER_DEFAULT_TEMPLATE);
     this.templateElementsContainer_ = previewContainer;
@@ -607,7 +632,7 @@ export default class TemplateCustomizer extends IDEE.Control {
 
   /**
    * Convierte coordenadas decimales a grados, minutos y segundos (DMS).
-   * Redondea segundos para reducir el error sistemático del truncado.
+   * Segundos con dos decimales para reducir el error del truncado.
    * @param {Number} coord Coordenada
    * @returns {String} Coordenadas en formato DMS
    */
@@ -617,10 +642,11 @@ export default class TemplateCustomizer extends IDEE.Control {
     const degrees = Math.floor(absolute);
     const minutesNotTruncated = (absolute - degrees) * 60;
     const minutes = Math.floor(minutesNotTruncated);
-    let seconds = Math.round((minutesNotTruncated - minutes) * 60);
+    let seconds = (minutesNotTruncated - minutes) * 60;
+    seconds = Math.round(seconds * 100) / 100;
     let finalDegrees = degrees;
     let finalMinutes = minutes;
-    if (seconds === 60) {
+    if (seconds >= 60) {
       seconds = 0;
       finalMinutes += 1;
     }
@@ -628,7 +654,8 @@ export default class TemplateCustomizer extends IDEE.Control {
       finalMinutes = 0;
       finalDegrees += 1;
     }
-    return `${sign}${finalDegrees}º${finalMinutes}'${seconds}"`;
+    const secondsText = seconds.toFixed(2);
+    return `${sign}${finalDegrees}º${finalMinutes}'${secondsText}"`;
   }
 
   /**
@@ -806,6 +833,10 @@ export default class TemplateCustomizer extends IDEE.Control {
     }
     const cssContent = this.templateData_.styles.styleTags.join('\n');
     this.styleContainer_.textContent = cssContent;
+    // Misma maquetación que en exportación (también para plantillas remotas con width: 90%)
+    if (!this.fullPageStyle_) {
+      this.fullPageStyle_ = this.injectFullPageTemplateStyles();
+    }
   }
 
   /**
@@ -840,6 +871,11 @@ export default class TemplateCustomizer extends IDEE.Control {
     styleElements.forEach((style) => {
       document.head.removeChild(style);
     });
+
+    if (this.fullPageStyle_) {
+      this.fullPageStyle_.remove();
+      this.fullPageStyle_ = null;
+    }
 
     if (this.templateData_.scripts && this.templateData_.scripts.src) {
       this.templateData_.scripts.src.forEach((scriptSrc) => {
@@ -1262,7 +1298,8 @@ export default class TemplateCustomizer extends IDEE.Control {
   }
 
   /**
-   * Inyecta CSS para que la plantilla ocupe el 100% de la página en exportación.
+   * Inyecta CSS para que la plantilla ocupe el 100% de la página (preview y exportación).
+   * También ensancha un poco las columnas laterales del marco.
    * @returns {HTMLStyleElement} Nodo de estilo (hay que eliminarlo al terminar)
    */
   injectFullPageTemplateStyles() {
@@ -1285,6 +1322,12 @@ export default class TemplateCustomizer extends IDEE.Control {
         width: 100% !important;
         height: 100% !important;
         box-sizing: border-box !important;
+      }
+      ${ID_CONTAINER_DEFAULT_TEMPLATE} .interior-container {
+        grid-template-columns: 1.1fr 15.8fr 1.1fr !important;
+      }
+      ${ID_CONTAINER_DEFAULT_TEMPLATE} .cell {
+        min-width: 60px !important;
       }
     `;
     document.head.appendChild(fullPageStyle);
@@ -1434,7 +1477,8 @@ export default class TemplateCustomizer extends IDEE.Control {
     }
 
     // 100% de página ANTES de medir el marco y renderizar el mapa
-    const fullPageStyle = this.injectFullPageTemplateStyles();
+    const fullPageStyle = this.fullPageStyle_ || this.injectFullPageTemplateStyles();
+    const ownsFullPageStyle = fullPageStyle !== this.fullPageStyle_;
 
     const maskImageContainer = document.querySelector(`#${MAP_CONTAINER_TEMPLATE}`);
     map.updateSize();
@@ -1453,13 +1497,9 @@ export default class TemplateCustomizer extends IDEE.Control {
       this.updateBorderCoordinates(coordElements);
     }
 
-    let baseWidth = originalSize[0];
-    let baseHeight = originalSize[1];
-    if (maskImageContainer && maskImageContainer.clientWidth > 0
-      && maskImageContainer.clientHeight > 0) {
-      baseWidth = maskImageContainer.clientWidth;
-      baseHeight = maskImageContainer.clientHeight;
-    }
+    // Usar el tamaño del preview (no remediar tras quitar el scale CSS)
+    const baseWidth = originalSize[0];
+    const baseHeight = originalSize[1];
 
     const scaleFactor = printDpi / LAYOUT_DPI;
     const newWidth = Math.round(baseWidth * scaleFactor);
@@ -1469,7 +1509,9 @@ export default class TemplateCustomizer extends IDEE.Control {
     const parentNode = originalMapViewport.parentNode;
 
     const cleanupExportLayout = () => {
-      fullPageStyle.remove();
+      if (ownsFullPageStyle) {
+        fullPageStyle.remove();
+      }
       if (mapContainer) {
         mapContainer.style.transform = originalTransform;
       }
@@ -1522,6 +1564,13 @@ export default class TemplateCustomizer extends IDEE.Control {
         // Quitar el viewport del DOM y poner la imagen; layout sigue al 100%
         if (maskImageContainer) {
           this.insertMapImageIntoTemplate(canvas.toDataURL('image/png'));
+          const exportImg = maskImageContainer.querySelector('img');
+          if (exportImg && !exportImg.complete) {
+            await new Promise((resolve) => {
+              exportImg.onload = resolve;
+              exportImg.onerror = resolve;
+            });
+          }
         }
 
         const templateImage64 = await this.generateTemplateImage64({
