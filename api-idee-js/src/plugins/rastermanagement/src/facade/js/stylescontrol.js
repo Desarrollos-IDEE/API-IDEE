@@ -112,8 +112,8 @@ export default class StylesControl extends IDEE.Control {
       removeBand: getValue('removeBand'),
       spectralIndices: getValue('spectralIndices'),
       rgbCombinations: getValue('rgbCombinations'),
-      basic: getValue('basic'),
-      basicHint: getValue('basicHint'),
+      imageAdjustment: getValue('imageAdjustment'),
+      imageAdjustmentHint: getValue('imageAdjustmentHint'),
       rgbSubtitle: getValue('rgbSubtitle'),
       rgbHint: getValue('rgbHint'),
       bandChannelR: getValue('bandChannelR'),
@@ -154,7 +154,6 @@ export default class StylesControl extends IDEE.Control {
       removeColor: getValue('removeColor'),
       rampStop: getValue('rampStop'),
       defaults: FILTER_DEFAULTS,
-      basicDefaults: { band: rasterDefaults.bands },
       rampDefaults: {
         band: rasterDefaults.bands,
         meanBands: MEAN_DEFAULT_BANDS,
@@ -1184,14 +1183,14 @@ export default class StylesControl extends IDEE.Control {
   }
 
   /**
-   * Indica si la pestaña básica está activa
+   * Indica si la pestaña de ajuste de imagen está activa
    *
    * @private
    * @function
    * @returns {boolean}
    */
 
-  isBasicTabActive() {
+  isImageAdjustmentTabActive() {
     const tab = this.html.querySelector('#m-rastermanagement-basic-tab');
     return tab.classList.contains('active');
   }
@@ -1514,7 +1513,6 @@ export default class StylesControl extends IDEE.Control {
     this.resetAllIndexForms();
     this.resetAllColorRampForms();
     this.resetRgbCombinationForm();
-    this.resetBasicForm();
     this.activatePanelSelection(
       this.html.querySelector('#m-rastermanagement-colorramps-tab'),
     );
@@ -1581,7 +1579,6 @@ export default class StylesControl extends IDEE.Control {
     this.activatePanelSelection(
       this.html.querySelector('#m-rastermanagement-basic-tab'),
     );
-    this.populateBasicFormFromOptions(options);
   }
 
   /**
@@ -1820,33 +1817,6 @@ export default class StylesControl extends IDEE.Control {
       nodataInput.value = options.nodata;
     } else {
       nodataInput.value = RGB_DEFAULTS.nodata;
-    }
-  }
-
-  /**
-   * Rellena el formulario básico desde opciones de estilo
-   *
-   * @private
-   * @function
-   * @param {object} options Opciones del estilo Raster
-   */
-
-  populateBasicFormFromOptions(options) {
-    let band = IDEE.style.Raster.DEFAULT_OPTIONS.bands;
-    if (!IDEE.utils.isNullOrEmpty(options.bands) || options.bands === 0) {
-      if (IDEE.utils.isArray(options.bands)) {
-        band = options.bands[0];
-      } else {
-        band = options.bands;
-      }
-    }
-    this.html.querySelector('#m-rastermanagement-basic-band').value = band;
-
-    const nodataInput = this.html.querySelector('#m-rastermanagement-basic-nodata');
-    if (!IDEE.utils.isNullOrEmpty(options.nodata) || options.nodata === 0) {
-      nodataInput.value = options.nodata;
-    } else {
-      nodataInput.value = '';
     }
   }
 
@@ -2257,53 +2227,6 @@ export default class StylesControl extends IDEE.Control {
   }
 
   /**
-   * Obtiene las opciones del modo básico (filtros / nodata sin rampa)
-   *
-   * @private
-   * @function
-   * @returns {object|null}
-   */
-
-  getBasicOptions() {
-    const options = {};
-    const nodataInput = this.html.querySelector('#m-rastermanagement-basic-nodata').value;
-    const bandInput = this.html.querySelector('#m-rastermanagement-basic-band').value;
-
-    if (nodataInput !== '') {
-      const nodata = parseFloat(nodataInput);
-      if (Number.isNaN(nodata)) {
-        IDEE.toast.warning(getValue('exception.invalidBasicOptions'), null, 6000);
-        return null;
-      }
-      options.nodata = nodata;
-
-      let band = IDEE.style.Raster.DEFAULT_OPTIONS.bands;
-      if (bandInput !== '') {
-        band = parseInt(bandInput, 10);
-        if (Number.isNaN(band) || band < 1) {
-          IDEE.toast.warning(getValue('exception.invalidBasicBand'), null, 6000);
-          return null;
-        }
-      }
-      options.bands = band;
-    }
-
-    return options;
-  }
-
-  /**
-   * Restaura el formulario del modo básico
-   *
-   * @private
-   * @function
-   */
-
-  resetBasicForm() {
-    this.html.querySelector('#m-rastermanagement-basic-band').value = IDEE.style.Raster.DEFAULT_OPTIONS.bands;
-    this.html.querySelector('#m-rastermanagement-basic-nodata').value = '';
-  }
-
-  /**
    * Aplica el estilo Raster a la capa seleccionada
    *
    * @public
@@ -2357,17 +2280,19 @@ export default class StylesControl extends IDEE.Control {
       return;
     }
 
-    if (this.isBasicTabActive()) {
-      const basicOptions = this.getBasicOptions();
-      if (!basicOptions) {
-        return;
+    if (this.isImageAdjustmentTabActive()) {
+      const currentStyle = this.selectedLayer.getStyle();
+      let options = { ...filters };
+
+      if (currentStyle instanceof IDEE.style.Raster) {
+        options = {
+          ...currentStyle.getOptions(),
+          ...filters,
+        };
       }
-      const options = {
-        ...basicOptions,
-        ...filters,
-      };
+
       if (!IDEE.style.Raster.optionsHaveEffect(options)) {
-        IDEE.toast.warning(getValue('exception.invalidBasicOptions'), null, 6000);
+        IDEE.toast.warning(getValue('exception.invalidImageAdjustment'), null, 6000);
         return;
       }
       this.selectedLayer.setStyle(new IDEE.style.Raster(options));

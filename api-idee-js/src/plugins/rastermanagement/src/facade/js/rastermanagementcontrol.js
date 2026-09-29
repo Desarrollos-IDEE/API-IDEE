@@ -262,20 +262,32 @@ export default class RasterManagementControl extends IDEE.Control {
     selectBtn.addEventListener('click', (evt) => {
       evt.stopPropagation();
       selectList.classList.toggle('hidden');
+      if (selectList.classList.contains('hidden')) {
+        this.closeLayerSelectList_();
+      } else {
+        this.syncLayerSelectListPosition_();
+      }
     });
     selectList.addEventListener('click', (evt) => {
+      evt.stopPropagation();
       const option = evt.target.closest('li[data-value]');
       if (!option) {
         return;
       }
       selector.value = option.dataset.value;
-      selectList.classList.add('hidden');
+      this.closeLayerSelectList_();
       this.updateLayerSelectLabel_();
       this.selectLayerEvent();
     });
     document.addEventListener('click', () => {
-      selectList.classList.add('hidden');
+      this.closeLayerSelectList_();
     });
+    window.addEventListener('resize', () => {
+      this.syncLayerSelectListPosition_();
+    });
+    html.addEventListener('scroll', () => {
+      this.syncLayerSelectListPosition_();
+    }, true);
 
     selector.addEventListener('change', () => this.selectLayerEvent());
     applyBtn.addEventListener('click', () => this.stylesControl_.applyStyle());
@@ -477,6 +489,43 @@ export default class RasterManagementControl extends IDEE.Control {
       list.appendChild(item);
     });
     this.updateLayerSelectLabel_();
+  }
+
+  /**
+   * Cierra el desplegable del selector de capas y restaura su posicionamiento.
+   *
+   * @private
+   * @function
+   */
+  closeLayerSelectList_() {
+    const selectList = this.html.querySelector('#m-rastermanagement-selectionlayer-list');
+    if (!selectList) {
+      return;
+    }
+    selectList.classList.add('hidden');
+    selectList.classList.remove('is-portal');
+    selectList.style.left = '';
+    selectList.style.top = '';
+    selectList.style.width = '';
+  }
+
+  /**
+   * Coloca el desplegable con position:fixed para evitar recorte por overflow del panel.
+   *
+   * @private
+   * @function
+   */
+  syncLayerSelectListPosition_() {
+    const selectBtn = this.html.querySelector('#m-rastermanagement-selectionlayer-btn');
+    const selectList = this.html.querySelector('#m-rastermanagement-selectionlayer-list');
+    if (!selectBtn || !selectList || selectList.classList.contains('hidden')) {
+      return;
+    }
+    const rect = selectBtn.getBoundingClientRect();
+    selectList.classList.add('is-portal');
+    selectList.style.left = `${rect.left}px`;
+    selectList.style.top = `${rect.bottom + 2}px`;
+    selectList.style.width = `${rect.width}px`;
   }
 
   /**

@@ -5,7 +5,7 @@
         <div id="m-rastermanagement-colorramps-tab" class="m-rastermanagement-tab active" role="tab" tabindex="0" aria-selected="true" aria-controls="m-rastermanagement-colorramps-tab-content">{{colorRamps}}</div>
         <div id="m-rastermanagement-spectralindices-tab" class="m-rastermanagement-tab" role="tab" tabindex="0" aria-selected="false" aria-controls="m-rastermanagement-spectralindices-tab-content">{{spectralIndices}}</div>
         <div id="m-rastermanagement-rgbcombinations-tab" class="m-rastermanagement-tab" role="tab" tabindex="0" aria-selected="false" aria-controls="m-rastermanagement-rgbcombinations-tab-content">{{rgbCombinations}}</div>
-        <div id="m-rastermanagement-basic-tab" class="m-rastermanagement-tab" role="tab" tabindex="0" aria-selected="false" aria-controls="m-rastermanagement-basic-tab-content">{{basic}}</div>
+        <div id="m-rastermanagement-basic-tab" class="m-rastermanagement-tab" role="tab" tabindex="0" aria-selected="false" aria-controls="m-rastermanagement-basic-tab-content">{{imageAdjustment}}</div>
     </div>
     <div id="m-rastermanagement-tabs-contents">
         <div id="m-rastermanagement-colorramps-tab-content" class="m-rastermanagement-tab-content" role="tabpanel" aria-labelledby="m-rastermanagement-colorramps-tab">
@@ -337,57 +337,44 @@
             </div>
         </div>
         <div id="m-rastermanagement-basic-tab-content" class="m-rastermanagement-tab-content hidden" role="tabpanel" aria-labelledby="m-rastermanagement-basic-tab">
-            <div class="m-rastermanagement-index-form">
+            <div class="m-rastermanagement-filters">
+                <p class="m-rastermanagement-rgb-hint">{{imageAdjustmentHint}}</p>
                 <div class="m-rastermanagement-filters-grid">
                     <div class="m-rastermanagement-filter-control">
-                        <label for="m-rastermanagement-basic-band">{{band}}</label>
-                        <input type="number" id="m-rastermanagement-basic-band" name="basic-band" min="1" step="1" value="{{basicDefaults.band}}" tabindex="0" aria-label="{{band}}">
+                        <div class="m-rastermanagement-filter-header">
+                            <label for="m-rastermanagement-saturation">{{saturation}}</label>
+                            <span id="m-rastermanagement-saturation-value" class="m-rastermanagement-filter-value">{{defaults.saturation}}</span>
+                        </div>
+                        <input type="range" id="m-rastermanagement-saturation" name="saturation" min="-1" max="1" value="{{defaults.saturation}}" step="0.01" tabindex="0" aria-label="{{saturation}}">
                     </div>
                     <div class="m-rastermanagement-filter-control">
-                        <label for="m-rastermanagement-basic-nodata">{{nodata}}</label>
-                        <input type="number" id="m-rastermanagement-basic-nodata" name="basic-nodata" step="any" tabindex="0" aria-label="{{nodata}}" placeholder="{{nodataOptional}}">
+                        <div class="m-rastermanagement-filter-header">
+                            <label for="m-rastermanagement-brightness">{{brightness}}</label>
+                            <span id="m-rastermanagement-brightness-value" class="m-rastermanagement-filter-value">{{defaults.brightness}}</span>
+                        </div>
+                        <input type="range" id="m-rastermanagement-brightness" name="brightness" min="-1" max="1" value="{{defaults.brightness}}" step="0.01" tabindex="0" aria-label="{{brightness}}">
+                    </div>
+                    <div class="m-rastermanagement-filter-control">
+                        <div class="m-rastermanagement-filter-header">
+                            <label for="m-rastermanagement-contrast">{{contrast}}</label>
+                            <span id="m-rastermanagement-contrast-value" class="m-rastermanagement-filter-value">{{defaults.contrast}}</span>
+                        </div>
+                        <input type="range" id="m-rastermanagement-contrast" name="contrast" min="-1" max="1" value="{{defaults.contrast}}" step="0.01" tabindex="0" aria-label="{{contrast}}">
+                    </div>
+                    <div class="m-rastermanagement-filter-control">
+                        <div class="m-rastermanagement-filter-header">
+                            <label for="m-rastermanagement-exposure">{{exposure}}</label>
+                            <span id="m-rastermanagement-exposure-value" class="m-rastermanagement-filter-value">{{defaults.exposure}}</span>
+                        </div>
+                        <input type="range" id="m-rastermanagement-exposure" name="exposure" min="-1" max="1" value="{{defaults.exposure}}" step="0.01" tabindex="0" aria-label="{{exposure}}">
+                    </div>
+                    <div class="m-rastermanagement-filter-control">
+                        <div class="m-rastermanagement-filter-header">
+                            <label for="m-rastermanagement-gamma">{{gamma}}</label>
+                        </div>
+                        <input type="number" id="m-rastermanagement-gamma" name="gamma" min="0" value="{{defaults.gamma}}" step="0.01" tabindex="0" aria-label="{{gamma}}">
                     </div>
                 </div>
-                <p class="m-rastermanagement-rgb-hint">{{basicHint}}</p>
-            </div>
-        </div>
-    </div>
-    <div class="m-rastermanagement-filters">
-        <h3 class="m-rastermanagement-section-title">{{filters}}</h3>
-        <div class="m-rastermanagement-filters-grid">
-            <div class="m-rastermanagement-filter-control">
-                <div class="m-rastermanagement-filter-header">
-                    <label for="m-rastermanagement-saturation">{{saturation}}</label>
-                    <span id="m-rastermanagement-saturation-value" class="m-rastermanagement-filter-value">{{defaults.saturation}}</span>
-                </div>
-                <input type="range" id="m-rastermanagement-saturation" name="saturation" min="-1" max="1" value="{{defaults.saturation}}" step="0.01" tabindex="0" aria-label="{{saturation}}">
-            </div>
-            <div class="m-rastermanagement-filter-control">
-                <div class="m-rastermanagement-filter-header">
-                    <label for="m-rastermanagement-brightness">{{brightness}}</label>
-                    <span id="m-rastermanagement-brightness-value" class="m-rastermanagement-filter-value">{{defaults.brightness}}</span>
-                </div>
-                <input type="range" id="m-rastermanagement-brightness" name="brightness" min="-1" max="1" value="{{defaults.brightness}}" step="0.01" tabindex="0" aria-label="{{brightness}}">
-            </div>
-            <div class="m-rastermanagement-filter-control">
-                <div class="m-rastermanagement-filter-header">
-                    <label for="m-rastermanagement-contrast">{{contrast}}</label>
-                    <span id="m-rastermanagement-contrast-value" class="m-rastermanagement-filter-value">{{defaults.contrast}}</span>
-                </div>
-                <input type="range" id="m-rastermanagement-contrast" name="contrast" min="-1" max="1" value="{{defaults.contrast}}" step="0.01" tabindex="0" aria-label="{{contrast}}">
-            </div>
-            <div class="m-rastermanagement-filter-control">
-                <div class="m-rastermanagement-filter-header">
-                    <label for="m-rastermanagement-exposure">{{exposure}}</label>
-                    <span id="m-rastermanagement-exposure-value" class="m-rastermanagement-filter-value">{{defaults.exposure}}</span>
-                </div>
-                <input type="range" id="m-rastermanagement-exposure" name="exposure" min="-1" max="1" value="{{defaults.exposure}}" step="0.01" tabindex="0" aria-label="{{exposure}}">
-            </div>
-            <div class="m-rastermanagement-filter-control">
-                <div class="m-rastermanagement-filter-header">
-                    <label for="m-rastermanagement-gamma">{{gamma}}</label>
-                </div>
-                <input type="number" id="m-rastermanagement-gamma" name="gamma" min="0" value="{{defaults.gamma}}" step="0.01" tabindex="0" aria-label="{{gamma}}">
             </div>
         </div>
     </div>

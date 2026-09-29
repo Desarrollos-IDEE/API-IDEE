@@ -36,6 +36,16 @@
     box-sizing: border-box;
 }
 
+/* El panel IDEE aplica overflow:hidden al contenedor del control y recorta el desplegable */
+.m-areas>div.m-area>div.m-panel.m-plugin-rastermanagement>div.m-panel-controls>div.m-control.m-container.m-rastermanagement {
+    overflow: visible;
+}
+
+.m-rastermanagement-layer-selector,
+.m-rastermanagement-layer-select {
+    overflow: visible;
+}
+
 .m-rastermanagement .hidden {
     display: none;
 }
@@ -146,7 +156,7 @@
     top: calc(100% + 2px);
     left: 0;
     right: 0;
-    z-index: 20;
+    z-index: 100002;
     max-height: 220px;
     margin: 0;
     padding: 4px 0;
@@ -175,6 +185,11 @@
 .m-rastermanagement-layer-select-list > li.is-selected {
     background-color: #71a7d3;
     color: #fff;
+}
+
+.m-rastermanagement-layer-select-list.is-portal {
+    position: fixed;
+    right: auto;
 }
 
 .m-rastermanagement-layer-selector>button {
@@ -508,9 +523,11 @@
 }
 
 .m-rastermanagement-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
     margin: 0;
-    padding: 12px;
-    border-top: 1px solid rgb(113 167 211);
+    padding: 0;
     color: #404040;
     font-family: 'Muli', 'sans-serif';
     font-size: 14px;
