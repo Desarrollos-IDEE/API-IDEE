@@ -42,6 +42,12 @@ export const ADDED_LAYER = 'added:layer';
 export const ADDED_KML = 'added:kml';
 
 /**
+ *Evento que se produce al añadir KMZ
+ * @api
+ */
+export const ADDED_KMZ = 'added:kmz';
+
+/**
  * Evento que se produce al añadir WMS.
  * @public
  * @type {string}

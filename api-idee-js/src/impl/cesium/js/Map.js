@@ -333,6 +333,7 @@ class Map extends MObject {
    */
   getLayers(filters) {
     const kmlLayers = this.getKML(filters);
+    const kmzLayers = this.getKMZ(filters);
     const wmsLayers = this.getWMS(filters);
     const wfsLayers = this.getWFS(filters);
     const ogcapifLayers = this.getOGCAPIFeatures(filters);
@@ -355,7 +356,7 @@ class Map extends MObject {
     imageryLayers = imageryLayers
       .sort((layer1, layer2) => FacadeMap.LAYER_SORT(layer1, layer2, this.facadeMap_));
 
-    let datasources = kmlLayers.concat(wfsLayers)
+    let datasources = kmlLayers.concat(kmzLayers).concat(wfsLayers)
       .concat(ogcapifLayers)
       .concat(vector);
     datasources = datasources
@@ -412,6 +413,8 @@ class Map extends MObject {
         this.facadeMap_.addWMS(layer);
       } else if (layer.type === LayerType.WMTS) {
         this.facadeMap_.addWMTS(layer);
+      } else if (layer.type === LayerType.KMZ) {
+        this.facadeMap_.addKMZ(layer);
       } else if (layer.type === LayerType.KML) {
         this.facadeMap_.addKML(layer);
       } else if (layer.type === LayerType.WFS) {
@@ -460,6 +463,7 @@ class Map extends MObject {
 
     if (knowLayers.length > 0) {
       this.removeKML(knowLayers);
+      this.removeKMZ(knowLayers);
       this.removeWMS(knowLayers);
       this.removeWFS(knowLayers);
       this.removeOGCAPIFeatures(knowLayers);
@@ -581,6 +585,102 @@ class Map extends MObject {
       this.layers_ = this.layers_.filter((layer) => !kmlLayer.equals(layer));
       kmlLayer.getImpl().destroy();
       kmlLayer.fire(EventType.REMOVED_FROM_MAP, [kmlLayer]);
+    }, this);
+
+    return this;
+  }
+
+  /** Gestión de capas KMZ. @api */
+  getKMZ(filtersParam) {
+    let foundLayers = [];
+    let filters = filtersParam;
+
+    // get all kmzLayers
+    const kmzLayers = this.layers_.filter((layer) => {
+      return (layer.type === LayerType.KMZ);
+    });
+
+    // parse to Array
+    if (isNullOrEmpty(filters)) {
+      filters = [];
+    }
+    if (!isArray(filters)) {
+      filters = [filters];
+    }
+
+    if (filters.length === 0) {
+      foundLayers = kmzLayers;
+    } else {
+      filters.forEach((filterLayer) => {
+        const filteredKMZLayers = kmzLayers.filter((kmzLayer) => {
+          let layerMatched = true;
+          // checks if the layer is not in selected layers
+          if (!foundLayers.includes(kmzLayer)) {
+            // type
+            if (!isNullOrEmpty(filterLayer.type)) {
+              layerMatched = (layerMatched && (filterLayer.type === kmzLayer.type));
+            }
+            // URL
+            if (!isNullOrEmpty(filterLayer.url)) {
+              layerMatched = (layerMatched && (filterLayer.url === kmzLayer.url));
+            }
+            // name
+            if (!isNullOrEmpty(filterLayer.name)) {
+              layerMatched = (layerMatched && (filterLayer.name === kmzLayer.name));
+            }
+            // extract
+            if (!isNullOrEmpty(filterLayer.extract)) {
+              layerMatched = (layerMatched && (filterLayer.extract === kmzLayer.extract));
+            }
+          } else {
+            layerMatched = false;
+          }
+          return layerMatched;
+        });
+        foundLayers = foundLayers.concat(filteredKMZLayers);
+      }, this);
+    }
+    return foundLayers;
+  }
+
+  /**
+   * Este método añade las capas KMZ especificadas por el usuario al mapa.
+   *
+   * @function
+   * @param {Array<IDEE.layer.KMZ>} layers Capas KMZ a añadir.
+   * @returns {Map} Mapa.
+   * @public
+   * @api
+   */
+  addKMZ(layers) {
+    layers.forEach((layer) => {
+      // checks if layer is WMC and was added to the map
+      if (layer.type === LayerType.KMZ) {
+        if (!includes(this.layers_, layer)) {
+          this.layers_.push(layer);
+          layer.getImpl().addTo(this.facadeMap_);
+        }
+      }
+    }, this);
+
+    return this;
+  }
+
+  /**
+   * Este método elimina las capas KMZ del mapa especificadas por el usuario.
+   *
+   * @function
+   * @param {Array<IDEE.layer.KMZ>} layers Capas KMZ a eliminar.
+   * @returns {Map} Mapa.
+   * @public
+   * @api
+   */
+  removeKMZ(layers) {
+    const kmzMapLayers = this.getKMZ(layers);
+    kmzMapLayers.forEach((kmzLayer) => {
+      this.layers_ = this.layers_.filter((layer) => !kmzLayer.equals(layer));
+      kmzLayer.getImpl().destroy();
+      kmzLayer.fire(EventType.REMOVED_FROM_MAP, [kmzLayer]);
     }, this);
 
     return this;

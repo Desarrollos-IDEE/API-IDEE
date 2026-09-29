@@ -14,6 +14,14 @@ import { isString, normalize } from '../util/Utils';
 export const KML = 'KML';
 
 /**
+ * Tipo KML comprimido con sus recursos.
+ * @const
+ * @type {string}
+ * @api
+ */
+export const KMZ = 'KMZ';
+
+/**
  * Tipo WMS (Web Map Service). Definido por una url,
  * el servicio puede ofrecer una o muchas capas, individuales
  * o agrupadas, cada una con un nombre propio.
@@ -240,6 +248,7 @@ export const WMC = 'WMC';
  */
 const layertypes = {
   KML,
+  KMZ,
   WMS,
   GeoTIFF,
   WFS,
@@ -298,6 +307,7 @@ export const parse = (rawType) => {
 export const know = (type) => {
   const knowTypes = [
     KML,
+    KMZ,
     WMS,
     GeoTIFF,
     WFS,
