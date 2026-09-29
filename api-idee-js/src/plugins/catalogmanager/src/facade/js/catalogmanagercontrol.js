@@ -2844,7 +2844,10 @@ export default class CatalogmanagerControl extends IDEE.Control {
     const style = this.buildRasterStyle(styleSpec);
     const normalize = IDEE.utils.isNullOrEmpty(styleSpec.indice);
     const convertToRGB = styleSpec.convertToRGB;
-    const bands = styleSpec.bands.length > 3 ? styleSpec.bands.slice(0, 3) : styleSpec.bands;
+    const bands = [];
+    for (let i = 1; i <= styleSpec.numberOfBands; i += 1) {
+      bands.push(i);
+    }
     const geotiffOptions = {
       convertToRGB,
       normalize,
@@ -3377,6 +3380,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
     const spec = {
       bands: [1, 1, 1],
       convertToRGB: false,
+      numberOfBands: 1,
     };
     if (asset.title.includes('NDVI')) {
       spec.indice = 'NDVI';
@@ -3386,6 +3390,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
       spec.indice = 'NBR';
     } else {
       spec.bands = [1, 2, 3];
+      spec.numberOfBands = 3;
     }
     const eoBands = this.getAssetBands(asset);
     const ranges = this.getAssetRanges(asset, properties, eoBands);
@@ -3395,6 +3400,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
     if (!Array.isArray(eoBands) || eoBands.length === 0) {
       return spec;
     }
+    spec.numberOfBands = eoBands.length;
     // RGB Monobanda
     if (eoBands.length === 1) {
       const commonName = eoBands[0].common_name?.toLowerCase();
@@ -3413,8 +3419,8 @@ export default class CatalogmanagerControl extends IDEE.Control {
       const rgbBands = this.mapBandsByCommonName(eoBands, ['red', 'green', 'blue']);
       if (rgbBands) {
         spec.bands = rgbBands;
-      } else if (eoBands.length >= 3) {
-        spec.bands = [1, 2, 3];
+      } else if (eoBands) {
+        spec.bands = eoBands.map((b, index) => index + 1);
       } else { // Escala de grises
         spec.bands = [1];
       }
@@ -3452,6 +3458,13 @@ export default class CatalogmanagerControl extends IDEE.Control {
         reorderedBands.push(index + 1);
       }
     });
+    if (reorderedBands.length < eoBands.length) {
+      for (let i = 1; i <= eoBands.length; i += 1) {
+        if (!reorderedBands.includes(i)) {
+          reorderedBands.push(i);
+        }
+      }
+    }
     return reorderedBands;
   }
 
@@ -3468,8 +3481,8 @@ export default class CatalogmanagerControl extends IDEE.Control {
     if (!spec) {
       return null;
     }
-    // const bands = spec.bands.length > 3 ? spec.bands.slice(0, 3) : spec.bands;
-    const bands = [1, 2, 3];
+    const bands = spec.bands.length > 3 ? spec.bands.slice(0, 3) : spec.bands;
+    // const bands = [1, 2, 3];
     let options = {};
     if (spec.indice) {
       options = INDICES_STYLES[spec.indice];
