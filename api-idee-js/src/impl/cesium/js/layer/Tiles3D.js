@@ -23,6 +23,26 @@ import geojsonPopupTemplate from 'templates/geojson_popup';
 import Layer from './Layer';
 
 /**
+ * Resuelve un estilo de fachada o un objeto plano al formato de Cesium3DTileStyle.
+ *
+ * @function
+ * @param {Object} style Estilo IDEE.style.Tiles3D u objeto de estilo 3D Tiles.
+ * @returns {Object} Objeto para Cesium3DTileStyle.
+ */
+const resolveCesium3DTileStyle = (style) => {
+  if (isNullOrEmpty(style)) {
+    return style;
+  }
+  if (isFunction(style.getImpl)) {
+    const styleImpl = style.getImpl();
+    if (!isNullOrEmpty(styleImpl) && isFunction(styleImpl.toCesiumStyle)) {
+      return styleImpl.toCesiumStyle();
+    }
+  }
+  return style;
+};
+
+/**
  * @classdesc
  * Las capas Tiles3D son un estándar OGC que se refieren a un conjunto de teselas que
  * se organizan en una estructura de datos espaciales jerárquica.
@@ -402,12 +422,14 @@ class Tiles3D extends Layer {
    *
    * @function
    * @public
-   * @param {Object} style Estilo que se aplicará a la capa.
+   * @param {Object|IDEE.style.Tiles3D} style Estilo que se aplicará a la capa.
    * @api
    */
   setStyle(style) {
+    this.style = style;
     if (!isNullOrEmpty(this.cesiumLayer)) {
-      this.cesiumLayer.style = new Cesium3DTileStyle(style);
+      const cesiumStyle = resolveCesium3DTileStyle(style);
+      this.cesiumLayer.style = new Cesium3DTileStyle(cesiumStyle);
     }
   }
 
