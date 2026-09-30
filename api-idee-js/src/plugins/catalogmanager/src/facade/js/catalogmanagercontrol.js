@@ -2840,19 +2840,30 @@ export default class CatalogmanagerControl extends IDEE.Control {
   drawImageTiff(image, cat, coll, item) {
     // const catalog = cat;
     const collection = coll;
-    const styleSpec = this.resolveStyleSpec(image);
+    const styleSpec = this.resolveStyleSpec(image, item.properties);
     const style = this.buildRasterStyle(styleSpec);
     const normalize = IDEE.utils.isNullOrEmpty(styleSpec.indice);
     const convertToRGB = styleSpec.convertToRGB;
+    const bands = [];
+    for (let i = 1; i <= styleSpec.numberOfBands; i += 1) {
+      bands.push(i);
+    }
+    const geotiffOptions = {
+      convertToRGB,
+      normalize,
+      style,
+      bands,
+      nodata: 0,
+    };
+    if (styleSpec.ranges) {
+      geotiffOptions.min = styleSpec.ranges.min;
+      geotiffOptions.max = styleSpec.ranges.max;
+    }
     const geotiff = new IDEE.layer.GeoTIFF({
       url: image.href,
       name: image.title,
       legend: image.title,
-    }, {
-      convertToRGB,
-      normalize,
-      style,
-    });
+    }, geotiffOptions);
     /* if (!catalog.layerGroup) {
       catalog.layerGroup = new IDEE.layer.LayerGroup({
         name: catalog.title,
@@ -3260,6 +3271,103 @@ export default class CatalogmanagerControl extends IDEE.Control {
     return [];
   }
 
+  getAssetRanges(asset, properties, bands) {
+    const ranges = {
+      min: [],
+      max: [],
+    };
+    const mode = this.resolveStretchMode(asset, properties);
+    if (!mode) {
+      return null;
+    }
+    if (mode === 'hist') {
+      bands.forEach((band) => {
+        const range = this.getAssetRangesFromHistogram(properties, band.name);
+        if (range) {
+          ranges.min.push(range.min);
+          ranges.max.push(range.max);
+        }
+      });
+    }
+    if (mode === 'stats') {
+      bands.forEach((band, index) => {
+        const range = this.getAssetRangesFromStats(properties, index + 1);
+        if (range) {
+          ranges.min.push(range.min);
+          ranges.max.push(range.max);
+        }
+      });
+    }
+    if (mode === 'ranges') {
+      bands.forEach((band, index) => {
+        const range = this.getAssetRangesFromRanges(asset, index + 1);
+        if (range) {
+          ranges.min.push(range.min);
+          ranges.max.push(range.max);
+        }
+      });
+    }
+    /* asset.band_statistics.forEach((range) => {
+      ranges.min.push(range.min);
+      ranges.max.push(range.max);
+    }); */
+    return ranges;
+  }
+
+  resolveStretchMode(asset, props) {
+    if (props?.band_statistics?.length) {
+      return 'stats';
+    }
+    if (props?.histogram_band_list?.length) {
+      return 'hist';
+    }
+    if (asset?.ranges?.length) {
+      return 'ranges';
+    }
+    return null;
+  }
+
+  getAssetRangesFromHistogram(props, bandName) {
+    const hist = props?.histogram_band_list || [];
+    const h = hist.find((x) => String(x.band_id || '').toLowerCase() === bandName);
+    return this.mean2sFrom(h, 'histogram mean±2σ');
+  }
+
+  getAssetRangesFromStats(props, band) {
+    const propStats = props?.band_statistics || [];
+    const value = propStats.find((x) => Number(x.band_index) === band) || propStats[band - 1];
+    return this.mean2sFrom(value, 'props stx mean±2σ');
+  }
+
+  getAssetRangesFromRanges(asset, band) {
+    const r = asset?.ranges?.[band - 1];
+    return this.absFrom(r, 'asset.ranges');
+  }
+
+  mean2sFrom(s, src) {
+    const mean = s?.stx_mean ?? s?.mean;
+    const stdv = s?.stx_stdv ?? s?.stdv ?? s?.std;
+    if (typeof mean === 'number' && typeof stdv === 'number' && stdv > 0) {
+      return {
+        min: Math.max(0, mean - 2 * stdv),
+        max: mean + 2 * stdv,
+        src,
+      };
+    }
+    return null;
+  }
+
+  absFrom(s, src) {
+    if (!s) return null;
+    if (typeof s.min === 'number' && typeof s.max === 'number') {
+      return { min: s.min, max: s.max, src };
+    }
+    if (typeof s.stx_min === 'number' && typeof s.stx_max === 'number') {
+      return { min: s.stx_min, max: s.stx_max, src };
+    }
+    return null;
+  }
+
   /**
    * Determina los índices de bandas RGB para el estilo WebGL según los metadatos del asset
    *
@@ -3268,10 +3376,11 @@ export default class CatalogmanagerControl extends IDEE.Control {
    * @param {Object} asset Asset STAC con metadatos eo:bands
    * @returns {{bands: {r: number, g: number, b: number}}|null} Índices de banda o null
    */
-  resolveStyleSpec(asset) {
+  resolveStyleSpec(asset, properties) {
     const spec = {
       bands: [1, 1, 1],
       convertToRGB: false,
+      numberOfBands: 1,
     };
     if (asset.title.includes('NDVI')) {
       spec.indice = 'NDVI';
@@ -3281,13 +3390,17 @@ export default class CatalogmanagerControl extends IDEE.Control {
       spec.indice = 'NBR';
     } else {
       spec.bands = [1, 2, 3];
-      spec.convertToRGB = true;
+      spec.numberOfBands = 3;
     }
     const eoBands = this.getAssetBands(asset);
+    const ranges = this.getAssetRanges(asset, properties, eoBands);
+    if (ranges) {
+      spec.ranges = ranges;
+    }
     if (!Array.isArray(eoBands) || eoBands.length === 0) {
       return spec;
     }
-    spec.convertToRGB = false;
+    spec.numberOfBands = eoBands.length;
     // RGB Monobanda
     if (eoBands.length === 1) {
       const commonName = eoBands[0].common_name?.toLowerCase();
@@ -3306,10 +3419,10 @@ export default class CatalogmanagerControl extends IDEE.Control {
       const rgbBands = this.mapBandsByCommonName(eoBands, ['red', 'green', 'blue']);
       if (rgbBands) {
         spec.bands = rgbBands;
-      } else if (eoBands.length >= 3) {
-        spec.bands = [1, 2, 3];
+      } else if (eoBands) {
+        spec.bands = eoBands.map((b, index) => index + 1);
       } else { // Escala de grises
-        spec.bands = [1, 1, 1];
+        spec.bands = [1];
       }
     }
     const bandDisplayOrder = asset.band_display_order;
@@ -3345,6 +3458,13 @@ export default class CatalogmanagerControl extends IDEE.Control {
         reorderedBands.push(index + 1);
       }
     });
+    if (reorderedBands.length < eoBands.length) {
+      for (let i = 1; i <= eoBands.length; i += 1) {
+        if (!reorderedBands.includes(i)) {
+          reorderedBands.push(i);
+        }
+      }
+    }
     return reorderedBands;
   }
 
@@ -3362,6 +3482,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
       return null;
     }
     const bands = spec.bands.length > 3 ? spec.bands.slice(0, 3) : spec.bands;
+    // const bands = [1, 2, 3];
     let options = {};
     if (spec.indice) {
       options = INDICES_STYLES[spec.indice];

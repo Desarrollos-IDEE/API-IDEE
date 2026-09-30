@@ -99,7 +99,7 @@ export default class Catalogmanager extends IDEE.Plugin {
 
     this.predefinedCatalogs = options.predefinedCatalogs || [];
 
-    this.addCatalogEnabled = options.addCatalogEnabled || false;
+    this.addCatalogEnabled = options.addCatalogEnabled !== false;
 
     this.downloadUrl = options.downloadUrl || 'https://stac-gneis.idee.es/download-service/v1/download-jobs';
 
