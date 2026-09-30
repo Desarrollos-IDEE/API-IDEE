@@ -6,6 +6,7 @@ import StylesControlImpl from 'impl/stylescontrol';
 import template from '../../templates/styles';
 import { getValue } from './i18n/language';
 import { sampleViewportRange } from './util/viewportrangestats';
+import { validateBandUsageForLayer } from './util/bandlayerlimits';
 
 const FILTER_DEFAULTS = {
   saturation: 0,
@@ -75,6 +76,9 @@ export default class StylesControl extends IDEE.Control {
     this.template_ = null;
     this.activated_ = false;
     this.bandRolesRequestId_ = 0;
+    this.bandCountRequestId_ = 0;
+    /** @type {number|null} */
+    this.bandCount_ = null;
     this.updatingRampStops_ = false;
     this.fittingMinMax_ = false;
   }
@@ -239,6 +243,7 @@ export default class StylesControl extends IDEE.Control {
    */
   onLayerSelected() {
     this.updateEditorVisibility();
+    this.refreshBandCountFromSelectedLayer();
     this.loadSelectedLayerStyle();
   }
 
@@ -717,6 +722,9 @@ export default class StylesControl extends IDEE.Control {
         IDEE.toast.warning(getValue('exception.invalidRampBands'), null, 6000);
         return null;
       }
+      if (!this.validateBandUsageForLayer_('monoband', band)) {
+        return null;
+      }
       return { mode: 'monoband', bands: band };
     }
 
@@ -736,6 +744,9 @@ export default class StylesControl extends IDEE.Control {
         IDEE.toast.warning(getValue('exception.invalidMeanBands'), null, 6000);
         return null;
       }
+      if (!this.validateBandUsageForLayer_('mean', meanBands)) {
+        return null;
+      }
       return { mode: 'mean', bands: meanBands };
     }
 
@@ -745,6 +756,9 @@ export default class StylesControl extends IDEE.Control {
       const band2 = parseInt(this.html.querySelector(`#m-rastermanagement-${mode}-${bandIds[1]}`).value, 10);
       if (Number.isNaN(band1) || Number.isNaN(band2) || band1 < 1 || band2 < 1) {
         IDEE.toast.warning(getValue('exception.invalidIndexBands'), null, 6000);
+        return null;
+      }
+      if (!this.validateBandUsageForLayer_('index', [band1, band2])) {
         return null;
       }
       return { mode, bands: [band1, band2] };
@@ -1114,6 +1128,10 @@ export default class StylesControl extends IDEE.Control {
       mode = mode.closest('.m-rastermanagement-index');
     }
     if (!mode) {
+      return;
+    }
+    if (mode.classList.contains('m-rastermanagement-disabled')) {
+      IDEE.toast.warning(getValue('exception.singleBandMultibandStyle'), null, 6000);
       return;
     }
 
@@ -1489,11 +1507,13 @@ export default class StylesControl extends IDEE.Control {
     const style = this.selectedLayer.getStyle();
     if (style instanceof IDEE.style.Raster) {
       this.populateFormFromStyle(style);
+      this.ensureAllowedStylePanelActive_();
       return;
     }
 
     this.resetFormToDefaults();
     this.suggestBandsFromSelectedLayer();
+    this.ensureAllowedStylePanelActive_();
   }
 
   /**
@@ -1827,6 +1847,217 @@ export default class StylesControl extends IDEE.Control {
    * @function
    */
 
+  /**
+   * Muestra un aviso según el resultado de validación de bandas.
+   *
+   * @private
+   * @function
+   * @param {{ valid: boolean, reason: string|null, maxBand?: number }} result
+   */
+  showBandValidationToast_(result) {
+    if (result.valid) {
+      return;
+    }
+    if (result.reason === 'unavailable') {
+      IDEE.toast.warning(getValue('exception.bandCountUnavailable'), null, 6000);
+      return;
+    }
+    if (result.reason === 'singleBandMultiband') {
+      IDEE.toast.warning(getValue('exception.singleBandMultibandStyle'), null, 6000);
+      return;
+    }
+    if (result.reason === 'exceedsLayerCount') {
+      let message = getValue('exception.bandExceedsLayerCount');
+      if (typeof result.maxBand === 'number') {
+        message = `${message} (${result.maxBand})`;
+      }
+      IDEE.toast.warning(message, null, 6000);
+    }
+  }
+
+  /**
+   * Valida bandas del formulario frente al número de bandas de la capa.
+   *
+   * @private
+   * @function
+   * @param {string} styleKind monoband | mean | index | rgb
+   * @param {number|Array<number>} bands Bandas del estilo
+   * @returns {boolean}
+   */
+  validateBandUsageForLayer_(styleKind, bands) {
+    const result = validateBandUsageForLayer(this.bandCount_, styleKind, bands);
+    if (result.valid) {
+      return true;
+    }
+    this.showBandValidationToast_(result);
+    return false;
+  }
+
+  /**
+   * Marca un control de la UI como no disponible por restricción de bandas.
+   *
+   * @private
+   * @function
+   * @param {HTMLElement|null} element Elemento de pestaña o botón
+   * @param {boolean} restricted Si debe deshabilitarse
+   */
+  setElementBandRestricted_(element, restricted) {
+    if (!element) {
+      return;
+    }
+    const el = element;
+    if (restricted) {
+      el.classList.add('m-rastermanagement-disabled');
+      el.setAttribute('aria-disabled', 'true');
+      if (!el.dataset.rmTitleBackup && el.title) {
+        el.dataset.rmTitleBackup = el.title;
+      }
+      el.title = getValue('exception.singleBandStyleDisabled');
+      return;
+    }
+    el.classList.remove('m-rastermanagement-disabled');
+    el.removeAttribute('aria-disabled');
+    if (el.dataset.rmTitleBackup) {
+      el.title = el.dataset.rmTitleBackup;
+      delete el.dataset.rmTitleBackup;
+    }
+  }
+
+  /**
+   * Actualiza límites max en inputs de banda y controles multibanda.
+   *
+   * @private
+   * @function
+   * @param {number|null} bandCount Número de bandas del GeoTIFF
+   */
+  applyBandInputLimits_(bandCount) {
+    const bandInputs = this.html.querySelectorAll(
+      '#m-rastermanagement-monoband-band, .m-rastermanagement-mean-band, '
+      + '#m-rastermanagement-ndvi-nir, #m-rastermanagement-ndvi-red, '
+      + '#m-rastermanagement-ndwi-green, #m-rastermanagement-ndwi-nir, '
+      + '#m-rastermanagement-nbr-nir, #m-rastermanagement-nbr-swir, '
+      + '#m-rastermanagement-rgb-r, #m-rastermanagement-rgb-g, #m-rastermanagement-rgb-b',
+    );
+    for (let i = 0; i < bandInputs.length; i += 1) {
+      const inputEl = bandInputs[i];
+      if (typeof bandCount === 'number' && bandCount > 0) {
+        inputEl.max = String(bandCount);
+      } else {
+        inputEl.removeAttribute('max');
+      }
+    }
+
+    const singleBandLayer = bandCount === 1;
+    this.setElementBandRestricted_(
+      this.html.querySelector('#m-rastermanagement-mean-mode'),
+      singleBandLayer,
+    );
+    this.setElementBandRestricted_(
+      this.html.querySelector('#m-rastermanagement-spectralindices-tab'),
+      singleBandLayer,
+    );
+    const addMeanBandBtn = this.html.querySelector('#m-rastermanagement-mean-add-band');
+    if (addMeanBandBtn) {
+      addMeanBandBtn.disabled = singleBandLayer;
+    }
+  }
+
+  /**
+   * Si la pestaña activa no está permitida para el número de bandas, cambia a monobanda.
+   *
+   * @private
+   * @function
+   */
+  ensureAllowedStylePanelActive_() {
+    if (this.bandCount_ !== 1) {
+      return;
+    }
+    if (this.isSpectralIndicesTabActive()) {
+      this.activatePanelSelection(
+        this.html.querySelector('#m-rastermanagement-colorramps-tab'),
+      );
+    }
+    if (this.isColorRampsTabActive() && this.getActiveColorRampMode() === 'mean') {
+      this.activatePanelSelection(
+        this.html.querySelector('#m-rastermanagement-monoband-mode'),
+      );
+    }
+  }
+
+  /**
+   * Actualiza la UI según el número de bandas de la capa seleccionada.
+   *
+   * @private
+   * @function
+   * @param {number|null} bandCount Bandas del GeoTIFF o null si desconocido
+   */
+  updateUiForBandCount(bandCount) {
+    if (bandCount === 1) {
+      this.applyBandInputLimits_(bandCount);
+      return;
+    }
+    if (typeof bandCount === 'number' && bandCount > 1) {
+      this.applyBandInputLimits_(bandCount);
+      return;
+    }
+    this.applyBandInputLimits_(null);
+  }
+
+  /**
+   * Obtiene el número de bandas de la capa seleccionada y actualiza la UI.
+   *
+   * @private
+   * @function
+   */
+  refreshBandCountFromSelectedLayer() {
+    this.bandCountRequestId_ += 1;
+    const requestId = this.bandCountRequestId_;
+    const layer = this.selectedLayer;
+    this.bandCount_ = null;
+    this.updateUiForBandCount(null);
+
+    if (!layer || typeof layer.getBandCount !== 'function') {
+      return;
+    }
+
+    const applyCount = (count) => {
+      if (requestId !== this.bandCountRequestId_) {
+        return;
+      }
+      if (this.selectedLayer !== layer) {
+        return;
+      }
+      if (typeof count !== 'number' || count < 1) {
+        return;
+      }
+      this.bandCount_ = count;
+      this.updateUiForBandCount(count);
+      this.ensureAllowedStylePanelActive_();
+    };
+
+    const fetchBandCount = () => {
+      layer.getBandCount().then((count) => {
+        if (count) {
+          applyCount(count);
+          return;
+        }
+        if (typeof layer.once === 'function') {
+          layer.once(IDEE.evt.LOAD, () => {
+            layer.getBandCount().then(applyCount).catch((err) => {
+              // eslint-disable-next-line no-console
+              console.error(err);
+            });
+          });
+        }
+      }).catch((err) => {
+        // eslint-disable-next-line no-console
+        console.error(err);
+      });
+    };
+
+    this.waitForLayerLoaded_(layer).then(fetchBandCount);
+  }
+
   suggestBandsFromSelectedLayer() {
     this.bandRolesRequestId_ += 1;
     const requestId = this.bandRolesRequestId_;
@@ -1961,6 +2192,9 @@ export default class StylesControl extends IDEE.Control {
       IDEE.toast.warning(getValue('exception.invalidIndexBands'), null, 6000);
       return null;
     }
+    if (!this.validateBandUsageForLayer_('index', [band1, band2])) {
+      return null;
+    }
 
     const interpolation = this.html.querySelector(`#m-rastermanagement-${index}-interpolation`).value;
     const rampInputs = this.html.querySelectorAll(`#m-rastermanagement-${index}-ramp .m-rastermanagement-ramp-color`);
@@ -2046,6 +2280,11 @@ export default class StylesControl extends IDEE.Control {
         return null;
       }
       bands = meanBands;
+    }
+
+    const rampStyleKind = mode === 'monoband' ? 'monoband' : 'mean';
+    if (!this.validateBandUsageForLayer_(rampStyleKind, bands)) {
+      return null;
     }
 
     const interpolation = this.html.querySelector(`#m-rastermanagement-${mode}-interpolation`).value;
@@ -2192,6 +2431,9 @@ export default class StylesControl extends IDEE.Control {
     const hasActiveBand = bands.some((band) => band > 0);
     if (!hasActiveBand) {
       IDEE.toast.warning(getValue('exception.invalidRgbBands'), null, 6000);
+      return null;
+    }
+    if (!this.validateBandUsageForLayer_('rgb', bands)) {
       return null;
     }
 
@@ -2373,6 +2615,10 @@ export default class StylesControl extends IDEE.Control {
     evt.stopPropagation();
     const tab = evt.target;
     if (!tab.classList.contains('m-rastermanagement-tab')) {
+      return;
+    }
+    if (tab.classList.contains('m-rastermanagement-disabled')) {
+      IDEE.toast.warning(getValue('exception.singleBandMultibandStyle'), null, 6000);
       return;
     }
 
