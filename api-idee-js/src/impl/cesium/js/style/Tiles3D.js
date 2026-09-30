@@ -37,6 +37,17 @@ export const isTiles3DShowStyleExpression = (showStr) => {
 };
 
 /**
+ * Indica si una cadena es una expresión escalar de estilo 3D Tiles (pointSize, etc.).
+ *
+ * @function
+ * @param {String} valueStr Cadena del estilo.
+ * @returns {Boolean} Verdadero si es expresión.
+ */
+export const isTiles3DScalarStyleExpression = (valueStr) => {
+  return isTiles3DShowStyleExpression(valueStr);
+};
+
+/**
  * Convierte un nombre de color en expresión de estilo 3D Tiles o devuelve la expresión tal cual.
  *
  * @function
@@ -145,6 +156,54 @@ export const resolveTiles3DShowOption = (show) => {
 };
 
 /**
+ * Normaliza el valor pointSize de una condición para el estilo 3D Tiles.
+ *
+ * @function
+ * @param {Number|String} value Valor de la condición.
+ * @returns {Number|String} Valor del estilo.
+ */
+export const formatTiles3DPointSizeConditionValue = (value) => {
+  if (typeof value === 'number') {
+    return value;
+  }
+  if (typeof value === 'string') {
+    return value.trim();
+  }
+  return value;
+};
+
+/**
+ * Resuelve la opción pointSize de fachada al valor del estilo 3D Tiles.
+ *
+ * @function
+ * @param {Number|String|Mx.Tiles3DStylePointSizeConditions} pointSize Tamaño de punto.
+ * @returns {Number|String|Object|undefined} pointSize para el visor.
+ */
+export const resolveTiles3DPointSizeOption = (pointSize) => {
+  if (isUndefined(pointSize) || pointSize === null) {
+    return undefined;
+  }
+  if (typeof pointSize === 'number') {
+    return pointSize;
+  }
+  if (isObject(pointSize) && isArray(pointSize.conditions)) {
+    const conditions = pointSize.conditions.map((condition) => {
+      if (!isArray(condition) || condition.length < 2) {
+        return condition;
+      }
+      const test = condition[0];
+      const pointSizeValue = condition[1];
+      return [test, formatTiles3DPointSizeConditionValue(pointSizeValue)];
+    });
+    return { conditions };
+  }
+  if (typeof pointSize === 'string') {
+    return pointSize.trim();
+  }
+  return undefined;
+};
+
+/**
  * @classdesc
  * Implementación del estilo 3D Tiles.
  * @api
@@ -184,6 +243,12 @@ class Tiles3D extends Style {
       const showExpr = resolveTiles3DShowOption(options_.show);
       if (!isUndefined(showExpr)) {
         cesiumStyle.show = showExpr;
+      }
+    }
+    if (Object.hasOwn(options_, 'pointSize')) {
+      const pointSizeExpr = resolveTiles3DPointSizeOption(options_.pointSize);
+      if (!isUndefined(pointSizeExpr)) {
+        cesiumStyle.pointSize = pointSizeExpr;
       }
     }
     return cesiumStyle;

@@ -23,6 +23,7 @@ class Tiles3D extends Style {
    * - show: Booleano, expresión 3D Tiles (p. ej. '${Height} > 0')
    *   u objeto con conditions (p. ej.
    *   { conditions: [['${height} > 2', 'false'], ['true', 'true']] }).
+   * - pointSize: Número, expresión 3D Tiles o objeto con conditions (nubes de puntos).
    * @param {Object} vendorOptionsParam Opciones de la biblioteca base.
    * @api
    */
