@@ -47,7 +47,11 @@
       <button id="load" type="button">Cargar URL</button>
     </div>
     <div class="row">
-      <label><input id="refresh" type="checkbox"> refresco automático cada 5 s</label>
+      <label><input id="refresh" type="checkbox"> Refresco automático</label>
+      <label for="interval">Intervalo (ms)</label>
+      <input id="interval" type="number" min="1" max="2147483647" step="1" value="5000">
+      <button id="apply-interval" type="button">Aplicar intervalo a la capa</button>
+      <button id="dynamic" type="button">Cargar KMZ cambiante (servidor 8083)</button>
       <button id="visible" type="button">Mostrar / ocultar</button>
       <button id="reload" type="button">Recargar</button>
       <button id="change-url" type="button">Cambiar a updated.kmz</button>
@@ -55,6 +59,8 @@
       <button id="remove" type="button">Eliminar</button>
       <button id="kml" type="button">Añadir KML de control</button>
     </div>
+    <p>El refresco descarga de nuevo una URL HTTP(S). Los ejemplos fijos conservan su contenido.
+      El archivo local es una copia en memoria; no observa cambios posteriores en el disco.</p>
     <p id="status" role="status" aria-live="polite">Preparando el mapa…</p>
     <div id="summary" aria-live="polite">
       <span>Tipo: <strong id="type">—</strong></span>

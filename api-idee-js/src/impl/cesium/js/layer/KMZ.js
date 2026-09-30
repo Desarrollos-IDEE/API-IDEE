@@ -1,6 +1,7 @@
 /**
  * @module IDEE/impl/layer/KMZ
  */
+import * as EventType from 'IDEE/event/eventtype';
 import KML from './KML';
 import LoaderKMZ from '../loader/KMZ';
 
@@ -40,10 +41,18 @@ class KMZ extends KML {
 
   updateSource_(force) {
     const generation = this.loadGeneration_;
+    // La carga explícita establece una nueva referencia; no es una edición local.
+    const facade = this.facadeVector_;
+    const onLoad = () => {
+      facade.un(EventType.LOAD, onLoad);
+      if (this.map && generation === this.loadGeneration_) facade.resumeAutoRefresh();
+    };
+    facade.on(EventType.LOAD, onLoad);
     // La promesa conserva el rechazo para quien consulte la carga.
     // eslint-disable-next-line no-underscore-dangle
     const loading = super.updateSource_(force);
     loading?.catch((error) => {
+      facade.un(EventType.LOAD, onLoad);
       if (this.map && generation === this.loadGeneration_) {
         this.loadFeaturesPromise_ = null;
         this.facadeVector_.fire('load:error', [error]);
@@ -60,19 +69,19 @@ class KMZ extends KML {
 
   setURL(url) {
     this.facadeVector_.stopAutoRefresh();
-    this.disposeAutoRefresh();
     this.loadGeneration_ += 1;
     this.url = url;
     this.loadFeaturesPromise_ = null;
     if (this.map) {
       this.loader_ = new LoaderKMZ(this.map, url, this.formater_);
+      this.loaded_ = false;
       this.updateSource_(true);
+      this.facadeVector_.startAutoRefresh();
     }
   }
 
   destroy() {
     this.facadeVector_.stopAutoRefresh();
-    this.disposeAutoRefresh();
     this.loadGeneration_ += 1;
     this.loadFeaturesPromise_ = null;
     if (this.screenOverlayImg_) this.screenOverlayImg_.remove();

@@ -1510,6 +1510,11 @@ class Map extends Base {
 
       // adds the layers
       this.getImpl().addKMZ(kmzLayers);
+      kmzLayers.forEach((layer) => {
+        if (isFunction(layer.startAutoRefresh)) {
+          layer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
       this.fire(EventType.ADDED_LAYER, [kmzLayers]);
       this.fire(EventType.ADDED_KMZ, [kmzLayers]);
     }

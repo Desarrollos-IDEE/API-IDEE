@@ -41,6 +41,7 @@
     await loadAsset('script', { src: `../../../dist/js/apiidee.${engine}.min.js` });
     await loadAsset('script', { src: '../../configuration_filtered.js' });
 
+    IDEE.config('CESIUM_URL', new URL('../../../dist/cesium/', location.href).href);
     IDEE.config.baseLayer = [];
     IDEE.config.terrain.default = [];
     IDEE.proxy(false);
@@ -93,8 +94,7 @@
         name: 'Prueba KMZ',
         url,
         extract: true,
-        refresh: byId('refresh').checked,
-        refreshInterval: 5000,
+        refreshInterval: byId('refresh').checked ? Number(byId('interval').value) : undefined,
       });
       listen(candidate);
       map.addLayers(candidate);
@@ -111,6 +111,16 @@
 
     byId('sample').addEventListener('click', () => {
       loadURL(new URL(`../../playwright/fixtures/kmz/${byId('fixture').value}`, location.href).href);
+    });
+    byId('dynamic').addEventListener('click', () => {
+      const base = params.get('data') || 'http://localhost:8083/datos-prueba/';
+      byId('url').value = new URL('puntos.kmz', base).href;
+      loadURL(byId('url').value);
+    });
+    byId('apply-interval').addEventListener('click', () => {
+      if (!layer) return;
+      layer.updateRefreshInterval(byId('refresh').checked ? Number(byId('interval').value) : 0);
+      setStatus(`Intervalo configurado: ${layer.getAutoRefreshInterval() || 'desactivado'} ms.`);
     });
     byId('load').addEventListener('click', () => {
       const url = byId('url').value.trim();

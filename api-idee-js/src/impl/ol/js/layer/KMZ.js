@@ -47,6 +47,7 @@ class KMZ extends KML {
       this.facadeVector_.removeFeatures(this.facadeVector_.getFeatures(true));
       this.loaded_ = true;
       this.facadeVector_.addFeatures(response.features);
+      this.facadeVector_.resumeAutoRefresh();
       this.fire(EventType.LOAD, [response.features]);
       if (response.screenOverlay) {
         this.setScreenOverlayImg(ImplUtils.addOverlayImage(response.screenOverlay, this.map));
@@ -65,19 +66,19 @@ class KMZ extends KML {
 
   setURL(url) {
     this.facadeVector_.stopAutoRefresh();
-    this.disposeAutoRefresh();
     this.loadGeneration_ += 1;
     this.url = url;
     this.loadFeaturesPromise_ = null;
     if (this.map) {
       this.loader_ = new LoaderKMZ(this.map, url, this.formater_);
+      this.loaded_ = false;
       this.updateSource_(true);
+      this.facadeVector_.startAutoRefresh();
     }
   }
 
   destroy() {
     this.facadeVector_.stopAutoRefresh();
-    this.disposeAutoRefresh();
     this.loadGeneration_ += 1;
     this.loadFeaturesPromise_ = null;
     if (this.screenOverlayImg_) this.screenOverlayImg_.remove();
