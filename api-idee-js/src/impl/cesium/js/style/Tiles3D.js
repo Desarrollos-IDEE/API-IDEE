@@ -1,6 +1,7 @@
 /**
  * @module IDEE/impl/style/Tiles3D
  */
+
 import {
   isNullOrEmpty, isBoolean, isArray, isObject, isUndefined,
 } from 'IDEE/util/Utils';
