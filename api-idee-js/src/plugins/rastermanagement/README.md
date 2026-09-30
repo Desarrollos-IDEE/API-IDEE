@@ -45,11 +45,14 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 - **collapsed**: Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true.
 - **collapsible**: Indica si el plugin puede abrirse y cerrarse (true) o si permanece siempre abierto (false). 
 - **tooltip**. Información emergente para mostrar en el tooltip del plugin (se muestra al dejar el ratón encima del plugin como información).
+- **calcHistogramUrl**: URL del servicio WPS usado en la sección de geoprocesos (histogramas). Si no se indica, se usa la URL por defecto del plugin.
+- **rasterCalculatorUrl**: URL del servicio WPS usado en la sección de geoprocesos (calculadora ráster). Si no se indica, se usa la URL por defecto del plugin.
+- **showGeoprocesses**: Indica si se muestra la pestaña **Geoprocesos** (true/false). Por defecto: `false`. Con `true`, el panel incluye histogramas, calculadora ráster y descargas sobre la capa GeoTIFF seleccionada; las pestañas de sección (Estilos / Geoprocesos) solo son visibles cuando este parámetro está activo.
 
 # API-REST
 
 ```javascript
-URL_API?rastermanagement=position*collapsed*collapsible*tooltip
+URL_API?rastermanagement=position*collapsed*collapsible*tooltip*calcHistogramUrl*rasterCalculatorUrl*showGeoprocesses
 ```
 
 <table>
@@ -78,17 +81,32 @@ URL_API?rastermanagement=position*collapsed*collapsible*tooltip
     <td>Valor a usar para mostrar en el tooltip del plugin</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
+  <tr>
+    <td>calcHistogramUrl</td>
+    <td>URL del WPS calcHistogram (vacío = valor por defecto)</td>
+    <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
+  <tr>
+    <td>rasterCalculatorUrl</td>
+    <td>URL del WPS rasterCalculator (vacío = valor por defecto)</td>
+    <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
+  <tr>
+    <td>showGeoprocesses</td>
+    <td>true/false — muestra la pestaña Geoprocesos (histogramas, calculadora, descargas)</td>
+    <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
 </table>
 
 
 ### Ejemplos de uso API-REST
 
 ```
-https://componentes.idee.es/api-idee/?rastermanagement=TR*true*true*EstilosRasters
+https://componentes.idee.es/api-idee/?rastermanagement=TR*true*true*EstilosRasters***false
 ```
 
 ```
-https://componentes.idee.es/api-idee/?rastermanagement=TR*true*true
+https://componentes.idee.es/api-idee/?rastermanagement=TR*true*true*EstilosRasters***true
 ```
 
 ### Ejemplos de uso API-REST en base64
@@ -109,6 +127,7 @@ https://componentes.idee.es/api-idee/?rastermanagement=base64=eyJwb3Np
 ```javascript
 const mp = new RasterManagement({
   position: 'TR',
+  showGeoprocesses: true,
 });
 
 map.addPlugin(mp);
