@@ -40,9 +40,9 @@
           "position": 4
         },
         {
-          "type": "array",
-          "name": "predefinedCatalogs",
-          "position": 5
+          "type": "boolean",
+          "name": "addCatalogEnabled",
+          "position": 4
         }
       ]
     }
