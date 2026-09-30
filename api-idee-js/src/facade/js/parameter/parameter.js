@@ -2423,7 +2423,7 @@ export const getURLGeoTIFF = (parameter) => {
  * @function
  * @param {string|Mx.parameters.GeoTIFF} parameter Parámetro para obtener la
  * URL del servicio de la capa GeoTIFF.
- * @returns {string} URL del servicio.
+ * @returns {string|Blob|null} URL http(s)/blob:, instancia Blob o null.
  * @throws {IDEE.exception} Si el parámetro no es de un tipo soportado.
  * @api
  */
@@ -2432,7 +2432,14 @@ export const getBlobGeoTIFF = (parameter) => {
   if (isString(parameter)) {
     blob = null;
   } else if (isObject(parameter) && !isNullOrEmpty(parameter.blob)) {
-    blob = parameter.blob.trim();
+    const value = parameter.blob;
+    if (typeof Blob !== 'undefined' && value instanceof Blob) {
+      blob = value;
+    } else if (isString(value)) {
+      blob = value.trim();
+    } else {
+      Exception(getValue('exception').no_param);
+    }
   } else if (!isObject(parameter)) {
     Exception(`El parámetro no es de un tipo soportado: ${typeof parameter}`);
   }

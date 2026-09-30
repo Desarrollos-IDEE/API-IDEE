@@ -3,13 +3,14 @@
  * @module IDEE/impl/layer/GeoTIFF
  */
 import {
-  isUndefined, isNull, isNullOrEmpty, getResolutionFromScale, extend,
+  isUndefined, isNull, isNullOrEmpty, isString, getResolutionFromScale, extend,
 } from 'IDEE/util/Utils';
 import * as LayerType from 'IDEE/layer/Type';
 import * as EventType from 'IDEE/event/eventtype';
 import TileLayer from 'ol/layer/WebGLTile';
 import GeoTIFFSource from 'ol/source/GeoTIFF';
 import { get as getProj } from 'ol/proj';
+import { getValue } from 'IDEE/i18n/language';
 import ImplMap from '../Map';
 import LayerBase from './Layer';
 import ImplUtils from '../util/Utils';
@@ -90,6 +91,51 @@ function getGeoTIFFImageWhenReady(layerImpl) {
 }
 
 /**
+ * Indica si el valor es una instancia Blob (datos GeoTIFF en memoria).
+ *
+ * @param {*} value Valor del parámetro blob.
+ * @returns {boolean}
+ */
+function isGeoTIFFBlobInstance(value) {
+  return typeof Blob !== 'undefined' && value instanceof Blob;
+}
+
+/**
+ * Descarga o lee una URL (http(s) o blob:...) y devuelve el GeoTIFF como Blob.
+ *
+ * @param {string} urlOrObjectUrl URL remota o URL objeto blob:...
+ * @returns {Promise<Blob>}
+ */
+function fetchGeoTIFFBlobFromUrl(urlOrObjectUrl) {
+  return window.fetch(urlOrObjectUrl).then((response) => {
+    if (!response.ok) {
+      const message = getValue('exception').geotiff_blob_fetch_error
+        .replace('[replace1]', String(response.status))
+        .replace('[replace2]', urlOrObjectUrl);
+      throw new Error(message);
+    }
+    return response.blob();
+  });
+}
+
+/**
+ * Obtiene un Blob listo para ol/source.GeoTIFF a partir del parámetro blob de la capa.
+ * Instancias Blob se usan directamente; blob:... y http(s) se resuelven con fetch.
+ *
+ * @param {string|Blob} blobParam Parámetro blob (cadena o Blob).
+ * @returns {Promise<Blob>}
+ */
+function resolveGeoTIFFBlobParam(blobParam) {
+  if (isGeoTIFFBlobInstance(blobParam)) {
+    return Promise.resolve(blobParam);
+  }
+  if (isString(blobParam) && blobParam.length > 0) {
+    return fetchGeoTIFFBlobFromUrl(blobParam);
+  }
+  return Promise.reject(new Error(getValue('exception').geotiff_blob_invalid));
+}
+
+/**
  * @classdesc
  * El formato ráster GeoTIFF aprovecha un formato de archivo independiente de plataforma (TIFF)
  * maduro añadiendo metadatos necesarios para describir y utilizar datos de imágenes geográficas.
@@ -113,8 +159,8 @@ class GeoTIFF extends LayerBase {
    * @constructor
    * @implements {IDEE.impl.Layer}
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
-   * - url: url del servicio.
-   * - blob: url del blob.
+   * - url: url del servicio (COG remoto http(s)).
+   * - blob: instancia Blob, URL blob:... o URL http(s) (legacy).
    * - projection: SRS usado por la capa.
    * - legend: Nombre asociado en el árbol de contenidos, si usamos uno.
    * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
@@ -333,12 +379,18 @@ class GeoTIFF extends LayerBase {
     }
 
     if (this.blob) {
-      window.fetch(this.blob).then((response) => {
-        response.blob().then((blob) => {
-          const source = this.createOLSourceBlob_(blob);
+      resolveGeoTIFFBlobParam(this.blob)
+        .then((fileBlob) => {
+          const source = this.createOLSourceBlob_(fileBlob);
           this.createOLLayerBySource_(source);
+        })
+        .catch((err) => {
+          // eslint-disable-next-line no-console
+          console.error(err);
+          if (this.facadeLayer_) {
+            this.facadeLayer_.fire('error', [err]);
+          }
         });
-      });
     } else {
       const source = this.createOLSource_();
       this.createOLLayerBySource_(source);

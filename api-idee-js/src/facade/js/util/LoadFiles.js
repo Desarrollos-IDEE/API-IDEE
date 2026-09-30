@@ -9,8 +9,48 @@ import * as Gdal from './Gdal';
 import LoadFilesImpl from '../../../impl/ol/js/util/LoadFiles';
 import * as Dialog from '../dialog';
 import { getValue } from '../i18n/language';
+import { isUrl } from './Utils';
+import * as EventType from '../event/eventtype';
 import Vector from '../layer/Vector';
 import GeoTIFF from '../layer/GeoTIFF';
+
+/**
+ * Valor para el parámetro blob de GeoTIFF según el origen (URL, File/Blob u otro).
+ *
+ * @param {string | Blob | File} source Origen del GeoTIFF.
+ * @returns {string | Blob}
+ */
+function resolveGeotiffBlobParam(source) {
+  if (typeof source === 'string' && isUrl(source)) {
+    return source;
+  }
+  if (typeof Blob !== 'undefined' && source instanceof Blob) {
+    return source;
+  }
+  return URL.createObjectURL(source);
+}
+
+/**
+ * Centra el mapa en la extensión de la capa GeoTIFF cuando termina de cargar.
+ *
+ * @param {IDEE.Map} map Mapa.
+ * @param {IDEE.layer.GeoTIFF} geoTiffLayer Capa GeoTIFF.
+ */
+function fitMapToGeotiffLayerWhenReady(map, geoTiffLayer) {
+  geoTiffLayer.once(EventType.LOAD, () => {
+    setTimeout(() => {
+      try {
+        const extent = geoTiffLayer.getMaxExtent();
+        if (Array.isArray(extent) && extent.length === 4) {
+          LoadFilesImpl.fitMapToExtent(map, extent);
+        }
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.warn(getValue('exception').invalid_maxextent_param);
+      }
+    }, 200);
+  });
+}
 
 /**
  * Esta función añade al mapa una capa vector con los features
@@ -48,7 +88,7 @@ export const loadGeotiffLayer = (
   legend = name,
 ) => {
   const geoTiffLayer = new GeoTIFF({
-    blob: IDEE.utils.isUrl(source) ? source : URL.createObjectURL(source),
+    blob: resolveGeotiffBlobParam(source),
     name,
     legend,
     visibility: true,
@@ -58,20 +98,7 @@ export const loadGeotiffLayer = (
   }, {
     opacity: 1,
   });
-  map.once(IDEE.evt.ADDED_GEOTIFF, async () => {
-    // Get some time to load geotiff
-    setTimeout(() => {
-      try {
-        const extent = geoTiffLayer.getMaxExtent();
-        if (Array.isArray(extent) && extent.length === 4) {
-          IDEE.impl.loadFiles.fitMapToExtent(map, extent);
-        }
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.warn(getValue('exception').invalid_maxextent_param);
-      }
-    }, 200);
-  });
+  fitMapToGeotiffLayerWhenReady(map, geoTiffLayer);
   map.addLayers(geoTiffLayer);
 };
 
