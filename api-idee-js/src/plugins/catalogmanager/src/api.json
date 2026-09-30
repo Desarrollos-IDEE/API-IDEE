@@ -36,11 +36,6 @@
         },
         {
           "type": "boolean",
-          "name": "isDraggable",
-          "position": 4
-        },
-        {
-          "type": "boolean",
           "name": "addCatalogEnabled",
           "position": 4
         }
