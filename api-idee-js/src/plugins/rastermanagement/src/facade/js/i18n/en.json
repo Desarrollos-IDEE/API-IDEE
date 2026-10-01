@@ -23,14 +23,19 @@
     "calculatorTimeout": "The raster calculation timed out"
   },
   "textHelp": {
-    "help1": "The raster layer management extension lets you edit the display style of GeoTIFF layers loaded on the map.",
-    "help2": "At the top, select the GeoTIFF layer. Apply, clear style and copy serialized style act on the chosen layer.",
-    "help3": "The Styles section includes color ramps, spectral indices (NDVI, NDWI, NBR), RGB combinations and the Image adjustment tab.",
-    "help4": "With color ramps you can use monoband, mean of several bands or predefined indices. Set minimum, maximum, ramp, interpolation and no data.",
-    "help5": "Fit to image zooms to the layer extent, waits for it to load and estimates minimum and maximum (2–98 percentiles) in the visible view.",
-    "help6": "RGB combinations support true or false color by assigning band numbers to red, green and blue/NIR (0 turns a channel off).",
-    "help7": "In Image adjustment set saturation, gamma, brightness, contrast and exposure; they combine with ramps, indices or RGB when you click Apply.",
-    "help8": "Click Apply to update the map. Clear style restores the layer; copy serialized style saves the definition to the clipboard."
+    "help1": "Raster layer management lets you edit GeoTIFF display styles and, when enabled, run geoprocesses on them (histograms, raster calculator and result downloads).",
+    "help2": "Select the GeoTIFF layer in the top dropdown. Apply, clear style and copy serialized style act on the chosen layer and on the Styles tab. When showGeoprocesses is true, the Geoprocesses tab is shown.",
+    "helpStylesHeading": "Styles",
+    "helpGeoprocessHeading": "Geoprocesses",
+    "help3": "Color ramps: choose Monoband or Mean, set band(s), minimum, maximum, interpolation and no data. Configure the ramp with colors and stops; Fit to image estimates minimum and maximum (2–98 percentiles) in the visible view. Mean is not available on single-band layers.",
+    "help4": "Spectral indices: on this tab choose NDVI, NDWI or NBR and set the bands (NIR, red, green, SWIR). Not available on single-band layers. Apply uses only the active tab (it does not combine color ramps and RGB at the same time). To color the index you have the same controls as in color ramps: minimum, maximum, ramp, interpolation and Fit to image. Settings from the Image adjustment tab are merged when you apply.",
+    "help5": "RGB combinations: assign band numbers to red, green and blue/NIR for true or false color. Use 0 to disable a channel and set no data when needed.",
+    "help6": "Image adjustment: change saturation, brightness, contrast, exposure and gamma. These settings combine with the active ramp, index or RGB combination when you click Apply.",
+    "help7": "Click Apply to update the map. Clear style restores the default layer. Copy serialized style saves the definition to the clipboard.",
+    "help9": "Geoprocesses requires creating the plugin with showGeoprocesses: true. It includes Histograms, Raster calculator and Downloads tabs.",
+    "help10": "Histograms: pick Full layer or draw a point, polygon or line on the map (for lines, set sample distance). Click Calculate histogram for the chart, descriptive statistics and band selector; point mode also shows pixel values.",
+    "help11": "Raster calculator: pick a predefined operation (NDVI, NDWI, NBR, sum, difference, product, ratio, mean of 3 bands) or type an expression with @1, @2… for bands. Set an output name and click Calculate; the result layer is added to the map (may take several minutes).",
+    "help12": "Downloads: after a successful calculation, the tab lists generated GeoTIFFs. Click a link to download each result. If the list is empty, generate a file with the raster calculator first."
   },
   "title": "Raster layer management",
   "sections": "Sections",
