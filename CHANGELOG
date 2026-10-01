@@ -5,7 +5,16 @@
 - Se incorpora la gestión de secciones en el Layerswitcher.
 - Se soluciona problema con peticiones al proxy con url con espacio.
 - Actualizadas/Añadidas etiquetas de metadatos de plugins: author, org, homepage y funding.
-- Se soluciona problemas con el filtro LIKE cuando el valor del atributo es nulo
+- Se soluciona problemas con el filtro LIKE cuando el valor del atributo es nulo.
+- Implementada clase IDEE.catalog.STAC.
+- Implementada clase IDEE.style.Raster.
+- Implementada la clase IDEE.style.Tiles3D que permite asignar estilos a capas IDEE.layer.Tiles3D.
+- Se adapta IDEE.remote para aceptar cabeceras.
+- Implementados los plugins CatalogManager y RasterManagement.
+- Se dan de alta nuevas proyecciones y se adapta extensión de 25830.
+- Se soluciona problema con scroll del plugin InfoCoordinates.
+
+
 
 01/07/26 - Versión 1.1.0
 - Se añade el método getImageMap para generar la imagen del mapa.
