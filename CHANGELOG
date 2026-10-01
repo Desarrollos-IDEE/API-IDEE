@@ -1,4 +1,4 @@
-14/10/26 - Versión 1.2.0
+21/10/26 - Versión 1.2.0
 - Se soluciona el problema de añadir capas WMTS mediante Layerswitcher.
 - Layerswitcher: se eliminan servicios repetidos o en desuso (ie: Copernicus Land Monitoring).
 - Se soluciona el problema de la medición en el plugin VectorsManagement.
@@ -13,7 +13,6 @@
 - Implementados los plugins CatalogManager y RasterManagement.
 - Se dan de alta nuevas proyecciones y se adapta extensión de 25830.
 - Se soluciona problema con scroll del plugin InfoCoordinates.
-
 
 
 01/07/26 - Versión 1.1.0
