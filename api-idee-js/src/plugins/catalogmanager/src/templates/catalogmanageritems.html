@@ -1,8 +1,18 @@
 <div>
     <div class="m-catalogmanager-items-buttons">
-        <button class="m-catalogmanager-prev-items-button" {{#if hasNotPrev}}disabled{{/if}} title="{{translations.previous}}"><span class="g-cartografia-catalog-left-big m-catalogmanager-prev-items-button"></span></button>
-        <span class="m-catalogmanager-items-page">{{translations.pagination}}</span>
-        <button class="m-catalogmanager-next-items-button" {{#if hasNotNext}}disabled{{/if}} title="{{translations.next}}"><span class="g-cartografia-catalog-right-big m-catalogmanager-next-items-button"></span></button>
+        <label class="m-catalogmanager-items-page-size-label" title="{{translations.pageSize}}">
+            {{translations.pageSize}}
+            <select class="m-catalogmanager-items-page-size">
+                {{#each pageSizeOptions}}
+                <option value="{{value}}" {{#if selected}}selected{{/if}}>{{value}}</option>
+                {{/each}}
+            </select>
+        </label>
+        <div class="m-catalogmanager-items-pagination">
+            <button class="m-catalogmanager-prev-items-button" {{#if hasNotPrev}}disabled{{/if}} title="{{translations.previous}}"><span class="g-cartografia-catalog-left-big m-catalogmanager-prev-items-button"></span></button>
+            <span class="m-catalogmanager-items-page">{{translations.pagination}}</span>
+            <button class="m-catalogmanager-next-items-button" {{#if hasNotNext}}disabled{{/if}} title="{{translations.next}}"><span class="g-cartografia-catalog-right-big m-catalogmanager-next-items-button"></span></button>
+        </div>
     </div>
     <h3 class="m-catalogmanager-section-title no-event">
         {{collectionTitle}}

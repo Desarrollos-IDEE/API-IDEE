@@ -135,6 +135,7 @@
   "previous": "Anterior",
   "next": "Siguiente",
   "pagination": "Página {0} de {1}",
+  "pageSize": "Resultados por página",
   "unknown": "Desconocido",
   "sort": {
     "nameUp": "Ordenar por nombre ascendente",
