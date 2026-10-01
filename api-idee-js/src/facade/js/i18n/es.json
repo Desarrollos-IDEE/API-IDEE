@@ -249,6 +249,8 @@
     "location_method": "La implementación usada no puede crear controles Location",
     "wms_method": "La implementación usada no puede crear capas WMS",
     "geotiff_method": "La implementación usada no puede crear capas GeoTIFF",
+    "geotiff_blob_fetch_error": "HTTP [replace1] al obtener GeoTIFF ([replace2])",
+    "geotiff_blob_invalid": "Parámetro blob GeoTIFF no válido",
     "mapLibre_method": "La implementación usada no puede crear capas MapLibre",
     "generic_method": "La implementación usada no puede crear capas Genéricas",
     "wmts_method": "La implementación usada no puede crear capas WMTS",

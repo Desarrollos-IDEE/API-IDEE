@@ -45,8 +45,9 @@ class GeoTIFF extends LayerBase {
    * @param {string|Mx.parameters.GeoTIFF} userParameters Parámetros para la
    * construcción de la capa.
    * - name: nombre de la capa.
-   * - url: url del servicio.
-   * - blob: url del blob.
+   * - url: url del servicio (COG remoto http(s)).
+   * - blob: GeoTIFF en memoria: instancia Blob, URL objeto blob:... o, por compatibilidad,
+   *   URL http(s) (descarga completa vía fetch).
    * - projection: SRS usado por la capa.
    * - legend: nombre asociado en el árbol de contenidos, si usamos uno.
    * - isBase: verdadero si es una capa base, falso en caso contrario.

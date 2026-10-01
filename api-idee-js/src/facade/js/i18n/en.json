@@ -248,6 +248,8 @@
     "location_method": "The used implementation can not create Location controls",
     "wms_method": "The used implementation can not create WMS layers",
     "geotiff_method": "The used implementation can not create GeoTIFF layers",
+    "geotiff_blob_fetch_error": "HTTP [replace1] while fetching GeoTIFF ([replace2])",
+    "geotiff_blob_invalid": "Invalid GeoTIFF blob parameter",
     "mapLibre_method": "The used implementation can not create MapLibre layers",
     "generic_method": "The used implementation can not create Generic layers",
     "wmts_method": "The used implementation can not create WMTS layers",
