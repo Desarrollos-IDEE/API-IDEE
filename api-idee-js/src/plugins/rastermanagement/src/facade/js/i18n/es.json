@@ -23,14 +23,19 @@
     "calculatorTimeout": "El cálculo ráster ha superado el tiempo de espera"
   },
   "textHelp": {
-    "help1": "La extensión de gestión de capas ráster permite editar el estilo de visualización de capas GeoTIFF cargadas en el mapa.",
-    "help2": "En la parte superior seleccione la capa GeoTIFF. Los botones aplicar, quitar estilo y copiar estilo serializado actúan sobre la capa elegida.",
-    "help3": "La sección Estilos reúne rampas de color, índices espectrales (NDVI, NDWI, NBR), combinaciones RGB y la pestaña Ajuste de imagen.",
-    "help4": "En rampas de color puede usarse monobanda, media de varias bandas o índices predefinidos. Configure mínimo, máximo, rampa, interpolación y valor no data.",
-    "help5": "El botón «Ajustar a la imagen» hace zoom a la extensión de la capa, espera a que cargue y estima mínimo y máximo (percentiles 2–98) en la vista visible.",
-    "help6": "Las combinaciones RGB permiten color verdadero o falso asignando números de banda a rojo, verde y azul/NIR (0 apaga un canal).",
-    "help7": "En Ajuste de imagen configure saturación, gamma, brillo, contraste y exposición; se combinan con rampas, índices o RGB al pulsar Aplicar.",
-    "help8": "Pulse Aplicar para actualizar el mapa. Quitar estilo restaura la capa y copiar estilo serializado guarda la definición en el portapapeles."
+    "help1": "Gestión de capas ráster permite editar la visualización de capas GeoTIFF y, si está habilitado, ejecutar geoprocessos sobre ellas (histogramas, calculadora ráster y descarga de resultados).",
+    "help2": "Seleccione la capa GeoTIFF en el desplegable superior. Los botones Aplicar, Quitar estilo y Copiar estilo serializado actúan sobre la capa elegida y sobre la pestaña estilos. Si showGeoprocesses es true, se mostrará la pestaña geoprocesos.",
+    "helpStylesHeading": "Estilos",
+    "helpGeoprocessHeading": "Geoprocesos",
+    "help3": "Rampas de color: elija Monobanda o Media, indique banda(s), mínimo, máximo, interpolación y valor no data. Configure la rampa con colores y umbrales; «Ajustar a la imagen» estima mínimo y máximo (percentiles 2–98) en la vista visible. La media no está disponible en capas de una sola banda.",
+    "help4": "Índices espectrales: en esta pestaña elija NDVI, NDWI o NBR e indique las bandas (NIR, roja, verde, SWIR). No está disponible en capas de una sola banda. El mapa usa solo la pestaña activa al pulsar Aplicar (no se combina con rampas de color ni con RGB a la vez). Para colorear el índice dispone de los mismos controles que en rampas de color: mínimo, máximo, rampa, interpolación y «Ajustar a la imagen». Los ajustes de la pestaña Ajuste de imagen sí se suman al aplicar.",
+    "help5": "Combinaciones RGB: asigne números de banda a rojo, verde y azul/NIR para color verdadero o falso. Use 0 para desactivar un canal y, si procede, el valor no data.",
+    "help6": "Ajuste de imagen: modifique saturación, brillo, contraste, exposición y gamma. Estos ajustes se combinan con la rampa, el índice o la combinación RGB activos al pulsar Aplicar.",
+    "help7": "Pulse Aplicar para actualizar el mapa. Quitar estilo restaura la capa por defecto. Copiar estilo serializado guarda la definición en el portapapeles.",
+    "help9": "La sección Geoprocessos requiere instanciar el plugin con showGeoprocesses: true. Incluye las pestañas Histogramas, Calculadora ráster y Descargas.",
+    "help10": "Histogramas: seleccione Toda la capa o dibuje punto, polígono o línea en el mapa (en líneas, indique distancia de muestreo). Pulse Calcular histograma para obtener gráfico, estadísticas descriptivas y selector de banda; en modo punto, los valores del píxel.",
+    "help11": "Calculadora ráster: elija una operación predefinida (NDVI, NDWI, NBR, suma, diferencia, producto, ratio, media de 3 bandas) o escriba una expresión con @1, @2… para referenciar bandas. Defina nombre de salida y pulse Calcular; la capa resultante se añade al mapa (puede tardar varios minutos).",
+    "help12": "Descargas: tras un cálculo correcto, la pestaña lista los GeoTIFF generados. Pulse el enlace para descargar cada resultado. Si no hay archivos, genere uno antes con la calculadora ráster."
   },
   "title": "Gestión de capas ráster",
   "sections": "Secciones",

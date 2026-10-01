@@ -251,12 +251,17 @@ export default class RasterManagement extends IDEE.Plugin {
             translations: {
               help1: getValue('textHelp.help1'),
               help2: getValue('textHelp.help2'),
+              helpStylesHeading: getValue('textHelp.helpStylesHeading'),
+              helpGeoprocessHeading: getValue('textHelp.helpGeoprocessHeading'),
               help3: getValue('textHelp.help3'),
               help4: getValue('textHelp.help4'),
               help5: getValue('textHelp.help5'),
               help6: getValue('textHelp.help6'),
               help7: getValue('textHelp.help7'),
-              help8: getValue('textHelp.help8'),
+              help9: getValue('textHelp.help9'),
+              help10: getValue('textHelp.help10'),
+              help11: getValue('textHelp.help11'),
+              help12: getValue('textHelp.help12'),
             },
           },
         });
