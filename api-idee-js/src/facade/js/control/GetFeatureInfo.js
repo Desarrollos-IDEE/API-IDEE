@@ -14,7 +14,7 @@ import { compileSync as compileTemplate } from '../util/Template';
  * @classdesc
  * Agrega la herramienta de consulta de información de capas
  * WMS y WMTS a través de su servicio getFeatureInfo, capas GeoTIFF mediante consulta de bandas
- * y capas XYZ/TMS mediante índice de tesela y color de píxel.
+ * y capas XYZ/TMS mediante índice de tesela, color de píxel y/o elevación (extract XYZ).
  *
  * @api
  * @extends {IDEE.Control}

@@ -276,7 +276,27 @@ class XYZ extends Layer {
   }
 
   /**
-   * Obtiene el índice de tesela en convención URL XYZ.
+   * Índice y de tesela como en la petición HTTP ({y} o {-y} en la plantilla URL).
+   *
+   * @private
+   * @function
+   * @param {number} tileCoordRow Componente y de tileCoord [z, x, y].
+   * @param {number} z Nivel de zoom de la tesela.
+   * @returns {number} Valor y sustituido en la URL.
+   */
+  getTileYForUrlTemplate_(tileCoordRow, z) {
+    if (!isNullOrEmpty(this.url) && this.url.indexOf('{-y}') >= 0) {
+      if (tileCoordRow < 0) {
+        return (-tileCoordRow) - 1;
+      }
+      // Hay que invertir la fila respecto al zoom
+      return ((1 << z) - 1) - tileCoordRow;
+    }
+    return tileCoordRow;
+  }
+
+  /**
+   * Obtiene z/x/y de tesela como en la URL ({y} o {-y} según la plantilla).
    *
    * @public
    * @function
@@ -316,7 +336,7 @@ class XYZ extends Layer {
     return {
       z: tileCoord[0],
       x: tileCoord[1],
-      y: (-tileCoord[2]) - 1,
+      y: this.getTileYForUrlTemplate_(tileCoord[2], tileCoord[0]),
     };
   }
 

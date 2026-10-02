@@ -4,7 +4,7 @@
 import XYZImpl from 'impl/layer/XYZ';
 import LayerBase from './Layer';
 import {
-  isUndefined, isObject, isNullOrEmpty, isString, isIdeeMdtRasterDemUrl,
+  isUndefined, isObject, isNullOrEmpty, isString,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import * as parameter from '../parameter/parameter';
@@ -33,8 +33,8 @@ import { getValue } from '../i18n/language';
  * @property {Boolean} transparent (deprecated) Falso si es una capa base,
  * verdadero en caso contrario.
  * @property {Array} maxExtent La medida en que restringe la visualización a una región específica.
- * @property {Boolean} extract Activa la consulta con GetFeatureInfo; por defecto falso
- * (verdadero por defecto en el servicio MDT IDEE raster-dem).
+ * @property {Boolean|String} extract Activa la consulta con GetFeatureInfo; por defecto falso.
+ * Puede ser true/false, cadena vacía (equivalente a true), o lista tiles/colors/elevation.
  *
  * @api
  * @extends {IDEE.layer}
@@ -58,8 +58,8 @@ class XYZ extends LayerBase {
    * - type: Tipo de la capa.
    * - tileGridMaxZoom: Zoom máximo de cuadrícula de mosaico.
    * - tileSize: Tamaño de la tesela
-   * - extract: Activa la consulta con GetFeatureInfo (color de píxel o elevación MDT).
-   *   Por defecto falso; verdadero por defecto solo en MDT.
+   * - extract: Activa GetFeatureInfo. Por defecto falso. true o cadena vacía: teselas y colores.
+   *   Cadena con tiles, colors y/o elevation según lo indicado.
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
    * - opacity: Opacidad de capa, por defecto 1.
    * - minZoom: Zoom mínimo aplicable a la capa.
@@ -130,15 +130,11 @@ class XYZ extends LayerBase {
     this.legend = parameters.legend;
 
     /**
-     * XYZ extract: consulta de tesela y color de píxel con control GetFeatureInfo.
-     * En el servicio MDT IDEE (raster-dem) se activa por defecto para mostrar elevación.
+     * XYZ extract: consulta GetFeatureInfo (teselas, colores y/o elevación según extract).
+     * @type {boolean|string}
      */
     if (isUndefined(parameters.extract)) {
-      if (isIdeeMdtRasterDemUrl(parameters.url)) {
-        this.extract = true;
-      } else {
-        this.extract = false;
-      }
+      this.extract = false;
     } else {
       this.extract = parameters.extract;
     }
