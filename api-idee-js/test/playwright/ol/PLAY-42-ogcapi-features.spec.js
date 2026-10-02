@@ -134,6 +134,36 @@ test('OGCAPIFeaturesJson requests an individual feature by ID', async ({ page })
   expect(new URL(request.url()).pathname).toBe('/collections/roads/items/road-1');
 });
 
+test('OGCAPIFeaturesJson omits the format parameter when the service uses its GeoJSON default', async ({ page }) => {
+  await page.route('https://ogc.test/**', (route) => route.fulfill({
+    status: 200,
+    contentType: 'application/geo+json',
+    body: JSON.stringify(geoJSON),
+  }));
+  await page.goto('/test/playwright/ol/basic-ol.html');
+  await page.evaluate(() => {
+    window.map = IDEE.map({ container: 'map' });
+  });
+  await page.waitForFunction(() => window.map.isFinished());
+
+  const requestPromise = page.waitForRequest((request) => request.url().startsWith('https://ogc.test/'));
+  await page.evaluate(() => {
+    window.map.addLayers(new IDEE.layer.OGCAPIFeaturesJson({
+      url: 'https://ogc.test/data-idee-api',
+      name: 'local:eurovelo_rutas',
+      limit: 10,
+    }, {}, {
+      filter: "etapa = 'Etapa 4'",
+      filterLang: 'cql2-text',
+    }));
+  });
+  const url = new URL((await requestPromise).url());
+  expect(url.pathname).toBe('/data-idee-api/collections/local%3Aeurovelo_rutas/items');
+  expect(url.searchParams.has('f')).toBe(false);
+  expect(url.searchParams.get('filter')).toBe("etapa = 'Etapa 4'");
+  expect(url.searchParams.get('filter-lang')).toBe('cql2-text');
+});
+
 test('OGCAPIFeaturesJson keeps the existing CQL vendor option usable', async ({ page }) => {
   await page.route('https://ogc.test/**', (route) => route.fulfill({
     status: 200,

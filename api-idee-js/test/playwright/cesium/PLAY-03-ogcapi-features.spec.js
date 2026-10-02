@@ -76,6 +76,34 @@ test('OGCAPIFeaturesJson requests an individual feature by ID in Cesium', async 
   expect(new URL(request.url()).pathname).toBe('/collections/roads/items/road-1');
 });
 
+test('OGCAPIFeaturesJson omits format when the service uses its GeoJSON default in Cesium', async ({ page }) => {
+  await page.route('https://ogc.test/**', (route) => route.fulfill({
+    status: 200,
+    contentType: 'application/geo+json',
+    body: JSON.stringify(geoJSON),
+  }));
+  await page.goto('/test/playwright/cesium/basic-cesium.html');
+  await page.evaluate(() => {
+    window.map = IDEE.map({ container: 'map' });
+  });
+
+  const requestPromise = page.waitForRequest((request) => request.url().startsWith('https://ogc.test/'));
+  await page.evaluate(() => {
+    window.map.addLayers(new IDEE.layer.OGCAPIFeaturesJson({
+      url: 'https://ogc.test/data-idee-api',
+      name: 'local:farmacias',
+    }, {}, {
+      filter: "nombre = 'Farmacia Andrade Iglesias Obdulia'",
+      filterLang: 'cql2-text',
+    }));
+  });
+  const url = new URL((await requestPromise).url());
+  expect(url.pathname).toBe('/data-idee-api/collections/local%3Afarmacias/items');
+  expect(url.searchParams.has('f')).toBe(false);
+  expect(url.searchParams.get('filter')).toBe("nombre = 'Farmacia Andrade Iglesias Obdulia'");
+  expect(url.searchParams.get('filter-lang')).toBe('cql2-text');
+});
+
 test('OGCAPIFeaturesJson loads Cesium features and supports map add, get and remove methods', async ({ page }) => {
   await page.route('https://ogc.test/**', (route) => route.fulfill({
     status: 200,

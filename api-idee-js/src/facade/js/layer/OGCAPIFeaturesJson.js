@@ -23,7 +23,8 @@ import { getValue } from '../i18n/language';
  * @property {String} name Nombre de la capa en el servidor.
  * @property {Number} limit Límite de objetos geográficos a mostrar.
  * @property {Array<Number>} bbox Filtro para mostrar los resultados en un bbox específico.
- * @property {String} format Formato de los objetos geográficos.
+ * @property {String} format Formato solicitado. Si se omite, se usa el formato
+ * predeterminado del servicio.
  * @property {Number} offset Determina desde que número comenzará a leer los objetos geográficos.
  * Ejemplo:
  * El parámetro offset tiene valor 10 con límite de 5 objetos geográficos, devolverá los 5 primeros
@@ -59,7 +60,8 @@ class OGCAPIFeaturesJson extends Vector {
    * - name: Nombre de la capa en el servidor.
    * - limit: Límite de objetos geográficos a mostrar.
    * - bbox: Filtro para mostrar los resultados en un bbox específico.
-   * - format: Formato de los objetos geográficos.
+   * - format: Formato solicitado. Si se omite, se usa el formato predeterminado
+   *   del servicio.
    * - offset: Determina desde que número comenzará a leer los objetos geográficos.Ejemplo:
    * El parámetro offset tiene valor 10 con límite de 5 objetos geográficos,
    * devolverá los 5 primeros objetos geográficos desde número 10 de los resultados.

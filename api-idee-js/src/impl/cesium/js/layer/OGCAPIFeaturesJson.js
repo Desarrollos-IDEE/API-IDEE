@@ -25,7 +25,7 @@ class OGCAPIFeaturesJson extends OGCAPIFeatures {
       name: this.name,
       limit: this.limit,
       offset: this.offset,
-      format: this.format || 'json',
+      format: this.format,
       id: this.id,
       bbox: this.bbox,
       conditional: this.conditional,
