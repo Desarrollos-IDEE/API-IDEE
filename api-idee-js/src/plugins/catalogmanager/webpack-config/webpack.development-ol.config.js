@@ -51,7 +51,6 @@ module.exports = {
           },
           'css-loader',
         ],
-        exclude: [/node_modules/],
       },
       {
         test: /\.(woff|woff2|eot|ttf|svg)$/,

@@ -52,6 +52,9 @@ const INDICES_STYLES = {
   },
 };
 
+/** @private @type {number[]} Tamaños de página disponibles en el listado de ítems */
+const ITEMS_PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
+
 /**
  * Estilo por defecto para la huella de los ítems en el mapa
  * @constant
@@ -1244,6 +1247,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
       fields.push({
         key,
         title: queryableFields[key].title,
+        description: queryableFields[key].description,
       });
     });
     return fields;
@@ -1846,7 +1850,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
       format: 'stac-query',
       filter: filterObj,
       sqlExpression,
-      limit: 10,
+      limit: this.pagination_.pageSize,
     };
     this.getFilteredItemsAdvanced();
   }
@@ -1874,7 +1878,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
       format,
       filter: jsonExpression,
       queryExpression,
-      limit: 10,
+      limit: this.pagination_.pageSize,
     };
     this.getFilteredItemsAdvanced();
   }
@@ -1894,6 +1898,8 @@ export default class CatalogmanagerControl extends IDEE.Control {
     const collection = catalog.collections[state.collectionIndex];
     const bbox = this.commonFilters_.bbox || null;
     const datetime = this.commonFilters_.datetime || null;
+    collection.advancedFilter.limit = this.pagination_.pageSize;
+    this.pagination_.currentPage = 1;
     catalog.obj.getFilteredItemsAdvanced(collection.id, collection.advancedFilter, bbox, datetime)
       .then((items) => {
         collection.links = items.links;
@@ -1951,7 +1957,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
     collection.advancedFilter = {
       format: 'stac-query',
       filter: filterObj,
-      limit: 10,
+      limit: this.pagination_.pageSize,
     };
     this.getFilteredItemsAdvanced();
   }
@@ -1995,6 +2001,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
     collection.items = itemsJson;
     const downloadable = !catalog.obj.public;
     this.updatePagination(items);
+    const pageSize = this.pagination_.pageSize;
     const html = IDEE.template.compileSync(itemsTemplate, {
       vars: {
         items: itemsJson,
@@ -2002,11 +2009,16 @@ export default class CatalogmanagerControl extends IDEE.Control {
         hasNotPrev: !this.linksHaveRel(items.links, 'previous'),
         hasNotNext: !this.linksHaveRel(items.links, 'next'),
         collectionTitle: collection.title,
+        pageSizeOptions: ITEMS_PAGE_SIZE_OPTIONS.map((value) => ({
+          value,
+          selected: value === pageSize,
+        })),
         translations: {
           metadata: getValue('metadata'),
           previous: getValue('previous'),
           next: getValue('next'),
           download: getValue('imageActions.downloadCollection'),
+          pageSize: getValue('pageSize'),
           pagination: getValue('pagination').replace('{0}', this.pagination_.currentPage).replace('{1}', this.formatNumber(this.pagination_.totalPages)),
         },
       },
@@ -2030,6 +2042,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
     container.querySelector('.m-catalogmanager-ulitems').addEventListener('click', (evt) => this.itemsEvent(evt));
     container.querySelector('.m-catalogmanager-next-items-button').addEventListener('click', (evt) => this.changeItemsPage(evt, 'next'));
     container.querySelector('.m-catalogmanager-prev-items-button').addEventListener('click', (evt) => this.changeItemsPage(evt, 'previous'));
+    container.querySelector('.m-catalogmanager-items-page-size').addEventListener('change', (evt) => this.changeItemsPageSize(evt));
     container.querySelectorAll('.m-catalogmanager-title-item').forEach((item) => {
       item.addEventListener('mouseenter', (evt) => this.applyFocusStyle(evt));
       item.addEventListener('mouseleave', (evt) => this.removeFocusStyle(evt));
@@ -2052,10 +2065,8 @@ export default class CatalogmanagerControl extends IDEE.Control {
    */
   updatePagination(items) {
     this.pagination_.totalItems = items.numberMatched;
-    this.pagination_.pageSize = items.numberReturned;
-    this.pagination_.totalPages = Math.ceil(
-      this.pagination_.totalItems / this.pagination_.pageSize,
-    );
+    const pageSize = this.pagination_.pageSize || items.numberReturned || 10;
+    this.pagination_.totalPages = Math.ceil(this.pagination_.totalItems / pageSize) || 1;
   }
 
   /**
@@ -2564,13 +2575,18 @@ export default class CatalogmanagerControl extends IDEE.Control {
     let promise = null;
     const bbox = this.commonFilters_.bbox || null;
     const datetime = this.commonFilters_.datetime || null;
+    const pageSize = this.pagination_.pageSize;
     if (collection.advancedFilter) {
+      collection.advancedFilter.limit = pageSize;
       promise = catalog.obj
         .getFilteredItemsAdvanced(collection.id, collection.advancedFilter, bbox, datetime);
     } else if (!IDEE.utils.isNullOrEmpty(this.commonFilters_)) {
-      promise = catalog.obj.getFilteredItems(collection.id, this.commonFilters_);
+      promise = catalog.obj.getFilteredItems(collection.id, {
+        ...this.commonFilters_,
+        limit: pageSize,
+      });
     } else {
-      promise = catalog.obj.getItems(collection.id);
+      promise = catalog.obj.getItems(collection.id, pageSize);
     }
     promise.then((items) => {
       collection.links = items.links;
@@ -2611,6 +2627,24 @@ export default class CatalogmanagerControl extends IDEE.Control {
       }
       this.renderCollectionItems(catalogIndex, collectionIndex, items);
     });
+  }
+
+  /**
+   * Cambia el tamaño de página de ítems y vuelve a ejecutar la búsqueda desde la primera página
+   *
+   * @private
+   * @function
+   * @param {Event} event Evento change del selector de tamaño de página
+   */
+  changeItemsPageSize(event) {
+    event.stopPropagation();
+    const pageSize = parseInt(event.target.value, 10);
+    if (Number.isNaN(pageSize) || pageSize === this.pagination_.pageSize) {
+      return;
+    }
+    this.pagination_.pageSize = pageSize;
+    this.pagination_.currentPage = 1;
+    this.getItems(this.selectedCatalogIndex_, this.selectedCollectionIndex_);
   }
 
   /**

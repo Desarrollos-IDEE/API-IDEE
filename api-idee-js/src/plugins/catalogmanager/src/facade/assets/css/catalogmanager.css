@@ -294,7 +294,7 @@ ul.m-catalogmanager-ulitems, ul.m-catalogmanager-tableimages {
     max-width: calc(25vw - 40px);
     padding-left: 10px;
     padding-right: 10px;
-    max-height: calc(100vh - 265px - 3.5rem);
+    max-height: calc(100vh - 310px - 3.5rem);
 }
 
 .m-catalogmanager-title-item {
@@ -374,8 +374,32 @@ button.m-catalogmanager-download-button {
 */
 .m-catalogmanager-items-buttons {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
     margin: 10px;
+}
+
+.m-catalogmanager-items-pagination {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.m-catalogmanager-items-page-size-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #333;
+}
+
+.m-catalogmanager-items-page-size {
+    border: 1px solid #71a7d3;
+    border-radius: 0.25rem;
+    padding: 0.35rem 0.5rem;
+    color: #71a7d3;
+    background-color: white;
 }
 
 .m-catalogmanager-download-progress {
