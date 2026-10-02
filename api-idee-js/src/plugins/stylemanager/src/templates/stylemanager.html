@@ -3,7 +3,7 @@
         <select class="" id="m-stylemanager-select">
             <option disabled="disabled" selected="selected">{{translations.selectLayer}}</option>
             {{#each layers}}
-                <option name={{this.name}}>{{this.name}}</option>
+                <option name="{{this.name}}">{{this.name}}</option>
             {{/each}}
         </select>
         <button title="{{translations.applyStyle}}" class="m-button-styles" data-apply-style><i class="g-cartografia-stylemanager-apply"></i></button>
