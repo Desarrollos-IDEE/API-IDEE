@@ -2001,7 +2001,8 @@ class Map extends Base {
 
   /**
    * Obtiene las capas OGC API Features JSON añadidas al mapa.
-   * @param {Array<string>|Array<Mx.parameters.OGCAPIFeaturesJson>} layersParamVar Filtros.
+   * @param {Array|string|Object} [layersParamVar] Filtros opcionales por nombre o
+   * parámetros de capa. Sin filtro, devuelve todas.
    * @returns {Array<OGCAPIFeaturesJson>} Capas del mapa.
    * @api
    */
@@ -2076,8 +2077,8 @@ class Map extends Base {
 
   /**
    * Añade capas OGC API Features JSON al mapa.
-   * @param {Array<string|Mx.parameters.OGCAPIFeaturesJson>|string|
-   * Mx.parameters.OGCAPIFeaturesJson} layersParamVar Capas.
+   * @param {Array|string|Object} layersParamVar Una capa, sus parámetros o una
+   * matriz de cualquiera de ellos.
    * @returns {Map} Mapa.
    * @api
    */
@@ -2112,8 +2113,8 @@ class Map extends Base {
 
   /**
    * Elimina capas OGC API Features JSON del mapa.
-   * @param {Array<string|Mx.parameters.OGCAPIFeaturesJson>|string|
-   * Mx.parameters.OGCAPIFeaturesJson} layersParam Filtros.
+   * @param {Array|string|Object} layersParam Capas que se eliminarán,
+   * identificadas por nombre o parámetros.
    * @returns {Map} Mapa.
    * @api
    */

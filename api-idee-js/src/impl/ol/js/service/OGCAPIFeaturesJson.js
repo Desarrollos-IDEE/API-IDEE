@@ -5,16 +5,25 @@ import { addParameters, isNullOrEmpty } from 'IDEE/util/Utils';
 import ServiceOGCAPIFeatures from './OGCAPIFeatures';
 
 /**
- * Service URL builder for OGC API Features JSON and CQL2 filtering.
+ * Builds OGC API Features Core item URLs with paging, bbox and CQL2 filters.
  * @api
  */
 class OGCAPIFeaturesJson extends ServiceOGCAPIFeatures {
+  /**
+   * @param {Object} layerParameters Shared OGC API Features layer parameters.
+   * @param {Object} [vendorOpts={}] Provider options. Supports `filter` as CQL2
+   * text or JSON and optional `filterLang` to select the CQL2 encoding.
+   */
   constructor(layerParameters, vendorOpts = {}) {
     super(layerParameters, vendorOpts);
     this.filter_ = vendorOpts.filter;
     this.filterLang_ = vendorOpts.filterLang;
   }
 
+  /**
+   * Creates the collection items URL, including configured filters and paging.
+   * @returns {String} URL for the collection items or an individual item.
+   */
   getItemsUrl() {
     const [basePath, existingQuery = ''] = this.url_.split('?');
     let pathUrl = basePath.replace(/\/+$/, '');

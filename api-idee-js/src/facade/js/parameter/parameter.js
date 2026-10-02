@@ -4628,6 +4628,19 @@ export const ogcapifeatures = (userParameters) => {
   return layers;
 };
 
+/**
+ * Analiza los parámetros de una capa OGC API Features JSON.
+ * Reutiliza la configuración compartida con OGCAPIFeatures y registra el tipo
+ * moderno para que los métodos específicos del mapa la identifiquen.
+ * @param {string|Mx.parameters.OGCAPIFeaturesJson|Array} userParameters Parámetros de capa.
+ * @returns {Mx.parameters.OGCAPIFeaturesJson|Array<Mx.parameters.OGCAPIFeaturesJson>}
+ */
+const ogcapifeaturesjson = (userParameters) => {
+  const layers = ogcapifeatures(userParameters);
+  const withJsonType = (layer) => ({ ...layer, type: LayerType.OGCAPIFeaturesJson });
+  return isArray(layers) ? layers.map(withJsonType) : withJsonType(layers);
+};
+
 const generic = (userParameters, type) => {
   const params = userParameters;
 
@@ -5224,6 +5237,7 @@ const parameterFunction = {
   mbtiles,
   mbtilesvector,
   ogcapifeatures,
+  ogcapifeaturesjson,
   genericvector,
   genericraster,
   tiles3d,

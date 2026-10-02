@@ -13,6 +13,11 @@ import OGCAPIFeatures from './OGCAPIFeatures';
  * @api
  */
 class OGCAPIFeaturesJson extends OGCAPIFeatures {
+  /**
+   * Loads GeoJSON from the OGC API Features items endpoint into Cesium entities.
+   * @param {Boolean} forceNewSource Replaces the current features when true.
+   * @private
+   */
   updateSource_(forceNewSource) {
     this.service_ = new ServiceOGCAPIFeaturesJson({
       url: this.url,

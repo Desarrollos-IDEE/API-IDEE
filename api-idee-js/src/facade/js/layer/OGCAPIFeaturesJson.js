@@ -13,10 +13,8 @@ import { getValue } from '../i18n/language';
 
 /**
  * @classdesc
- * OGCAPIFeaturesJson(OGC API - Features) es un estándar que ofrece la
- * capacidad de crear, modificar y consultar datos
- * espaciales en la Web y especifica requisitos y recomendaciones para las API que desean seguir una
- * forma estándar de compartir datos de entidades.
+ * Capa de solo lectura para consultar entidades GeoJSON mediante OGC API Features.
+ * Admite filtros CQL2 en texto o JSON a través de las opciones del proveedor.
  *
  * @property {String} idLayer Identificador de la capa.
  * @property {String} legend Indica el nombre que queremos que aparezca en el
@@ -32,8 +30,7 @@ import { getValue } from '../i18n/language';
  * objetos geográficos desde número 10 de los resultados.
  * @property {Number} id Filtro por ID para un objeto geográfico.
  * @property {Array<IDEE.style>} predefinedStyles Estilos predefinidos para la capa.
- * @property {String} cql Declaración CQL para filtrar las características
- * (Sólo disponible para servicios en PostgreSQL).
+ * @property {String} cql Filtro CQL heredado, enviado como parámetro filter.
  * @property {Object} conditional Declaración de filtros literales por atributos del objeto
  * geográfico.
  * @property {String} crs Definición de la proyección de los datos.
@@ -95,13 +92,16 @@ class OGCAPIFeaturesJson extends Vector {
    *   son 3D, por defecto es falso, en caso contrario es verdadero.
    *   Solo disponible para Cesium.
    * @param {Object} vendorOpts Opciones para la biblioteca base.
-   * -cql: Declaración CQL para filtrar las características
-   * (Sólo disponible para servicios en PostgreSQL).
+   * - filter: Expresión CQL2 en texto o un objeto CQL2 JSON. Una cadena usa
+   *   cql2-text por defecto y un objeto usa cql2-json.
+   * - filterLang: Lenguaje CQL2 explícito para filter (por ejemplo, cql2-text
+   *   o cql2-json).
+   * - cql: Alias heredado para enviar un filtro mediante el parámetro filter.
    * Ejemplo vendorOptions:
    * <pre><code>
-   * import OLSourceVector from 'ol/source/Vector';
    * {
-   *   cql: 'id IN (3,5)',
+   *   filter: { op: '=', args: [{ property: 'status' }, 'active'] },
+   *   filterLang: 'cql2-json',
    * }
    * </code></pre>
    * @api

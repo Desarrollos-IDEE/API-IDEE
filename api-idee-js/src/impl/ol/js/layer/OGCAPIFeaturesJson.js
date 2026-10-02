@@ -17,6 +17,11 @@ import OGCAPIFeatures from './OGCAPIFeatures';
  * @api
  */
 class OGCAPIFeaturesJson extends OGCAPIFeatures {
+  /**
+   * Loads GeoJSON from the OGC API Features items endpoint into the vector source.
+   * @param {Boolean} forceNewSource Replaces the existing source when true.
+   * @private
+   */
   updateSource_(forceNewSource) {
     if (!isNullOrEmpty(this.vendorOptions_.source)) return;
 

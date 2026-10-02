@@ -9,11 +9,10 @@ import { getValue } from 'IDEE/i18n/language';
 
 /**
   * @classdesc
-  * JSONP es un JSON con relleno, que se utiliza en JavaScript
-  * para solicitar los datos desde la etiqueta "script".
+  * Cargador de entidades GeoJSON obtenidas mediante una petición HTTP GET.
   *
   * @property {IDEE.Map} map_ Mapa.
-  * @property {IDEE.impl.service.WFS} url_ URL del servicio WFS.
+  * @property {String} url_ URL de los elementos de la colección.
   * @property {IDEE.format.GeoJSON} format_ Formato.
   *
   * @api
@@ -40,9 +39,9 @@ class OGCAPIFeaturesJson extends MObject {
     this.map_ = map;
 
     /**
-      * URL del servicio WFS.
+      * URL de los elementos de la colección.
       * @private
-      * @type {IDEE.impl.service.WFS}
+      * @type {String}
       */
     this.url_ = url;
 

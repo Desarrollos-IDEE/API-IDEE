@@ -75,3 +75,36 @@ test('OGCAPIFeaturesJson requests an individual feature by ID in Cesium', async 
   expect(request.method()).toBe('GET');
   expect(new URL(request.url()).pathname).toBe('/collections/roads/items/road-1');
 });
+
+test('OGCAPIFeaturesJson loads Cesium features and supports map add, get and remove methods', async ({ page }) => {
+  await page.route('https://ogc.test/**', (route) => route.fulfill({
+    status: 200,
+    contentType: 'application/geo+json',
+    body: JSON.stringify(geoJSON),
+  }));
+  await page.goto('/test/playwright/cesium/basic-cesium.html');
+  await page.evaluate(() => {
+    window.map = IDEE.map({ container: 'map' });
+  });
+
+  await page.evaluate(() => {
+    window.ogcLayer = new IDEE.layer.OGCAPIFeaturesJson({
+      url: 'https://ogc.test/collections/',
+      name: 'roads',
+    });
+    window.map.addOGCAPIFeaturesJson(window.ogcLayer);
+  });
+  await page.waitForFunction(() => window.ogcLayer.getFeatures().length === 1);
+
+  const state = await page.evaluate(() => {
+    const featuresLoaded = window.ogcLayer.getFeatures().length;
+    const layerWasFound = window.map.getOGCAPIFeaturesJson('roads')[0] === window.ogcLayer;
+    window.map.removeOGCAPIFeaturesJson('roads');
+    return {
+      featuresLoaded,
+      layerWasFound,
+      layersAfterRemoval: window.map.getOGCAPIFeaturesJson().length,
+    };
+  });
+  expect(state).toEqual({ featuresLoaded: 1, layerWasFound: true, layersAfterRemoval: 0 });
+});

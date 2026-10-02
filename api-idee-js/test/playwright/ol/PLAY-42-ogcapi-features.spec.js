@@ -159,3 +159,40 @@ test('OGCAPIFeaturesJson keeps the existing CQL vendor option usable', async ({ 
   expect(url.searchParams.get('filter')).toBe("name = 'Main road'");
   expect(url.searchParams.has('filter-lang')).toBe(false);
 });
+
+test('OGCAPIFeaturesJson loads features and supports map add, get and remove methods', async ({ page }) => {
+  await page.route('https://ogc.test/**', (route) => route.fulfill({
+    status: 200,
+    contentType: 'application/geo+json',
+    body: JSON.stringify(geoJSON),
+  }));
+  await page.goto('/test/playwright/ol/basic-ol.html');
+  await page.evaluate(() => {
+    window.map = IDEE.map({ container: 'map' });
+  });
+  await page.waitForFunction(() => window.map.isFinished());
+  await page.evaluate(() => window.map.setCenter([0, 0]));
+
+  const layersAfterAdd = await page.evaluate(() => {
+    window.ogcLayer = new IDEE.layer.OGCAPIFeaturesJson({
+      url: 'https://ogc.test/collections/',
+      name: 'roads',
+    });
+    window.map.addOGCAPIFeaturesJson(window.ogcLayer);
+    return window.map.getOGCAPIFeaturesJson().length;
+  });
+  expect(layersAfterAdd).toBe(1);
+  await page.waitForFunction(() => window.ogcLayer.getFeatures().length === 1);
+
+  const state = await page.evaluate(() => {
+    const featuresLoaded = window.ogcLayer.getFeatures().length;
+    const layerWasFound = window.map.getOGCAPIFeaturesJson('roads')[0] === window.ogcLayer;
+    window.map.removeOGCAPIFeaturesJson('roads');
+    return {
+      featuresLoaded,
+      layerWasFound,
+      layersAfterRemoval: window.map.getOGCAPIFeaturesJson().length,
+    };
+  });
+  expect(state).toEqual({ featuresLoaded: 1, layerWasFound: true, layersAfterRemoval: 0 });
+});
