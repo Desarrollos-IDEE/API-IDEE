@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="idee" content="yes">
+  <title>OGC API Features — IGN España</title>
+  <style>
+    html, body { margin: 0; height: 100%; font: 15px sans-serif; }
+    body { display: flex; flex-direction: column; }
+    header { padding: 12px 16px; background: #fff; box-shadow: 0 1px 5px #0003; z-index: 1; }
+    h1 { margin: 0 0 6px; font-size: 20px; }
+    p { margin: 4px 0; }
+    #status { font-weight: 600; }
+    #map { flex: 1; min-height: 300px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>OGC API Features JSON — Núcleos de población</h1>
+    <p>Fuente: <a href="https://api-features.ign.es" target="_blank" rel="noreferrer">API-Features del IGN</a>
+      · Licencia CC BY 4.0.</p>
+    <p>Colección: <code>/collections/nuc/items?f=json&amp;limit=100</code> · Entidad: <code>/collections/nuc/items/100000001?f=json</code></p>
+    <p>Este servicio público no acepta <code>filter-lang=cql2-text</code>; el ejemplo prueba Core.</p>
+    <p id="status" role="status" aria-live="polite">Cargando entidades…</p>
+  </header>
+  <div id="map" class="map"></div>
+  <script src="/config.js" charset="utf-8"></script>
+  <script src="/ogcapifeatures-modern.js" charset="utf-8"></script>
+</body>
+</html>

@@ -57,6 +57,15 @@ export const WFS = 'WFS';
 export const OGCAPIFeatures = 'OGCAPIFeatures';
 
 /**
+ * Tipo de capa de lectura OGC API Features JSON.
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+export const OGCAPIFeaturesJson = 'OGCAPIFeaturesJson';
+
+/**
  * Tipo WMTS (Web Map Tile Service). Es un estándar OGC para servir
  * información geográfica en forma de mosaicos pregenerados en
  * resoluciones específicas.
@@ -254,6 +263,7 @@ const layertypes = {
   MBTiles,
   MBTilesVector,
   OGCAPIFeatures,
+  OGCAPIFeaturesJson,
   GenericRaster,
   GenericVector,
   LayerGroup,
@@ -309,6 +319,7 @@ export const know = (type) => {
     MBTiles,
     MBTilesVector,
     OGCAPIFeatures,
+    OGCAPIFeaturesJson,
     LayerGroup,
     Tiles3D,
     Terrain,

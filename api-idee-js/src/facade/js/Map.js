@@ -41,6 +41,7 @@ import WMS from './layer/WMS';
 import WMTS from './layer/WMTS';
 import MVT from './layer/MVT';
 import OGCAPIFeatures from './layer/OGCAPIFeatures';
+import OGCAPIFeaturesJson from './layer/OGCAPIFeaturesJson';
 import GenericRaster from './layer/GenericRaster';
 import GenericVector from './layer/GenericVector';
 import OverviewMapButton from './ui/buttons/OverviewMapButton';
@@ -813,7 +814,8 @@ class Map extends Base {
           if ((layer instanceof Vector)
             /* && !(layer instanceof KML) */
             && !(layer instanceof WFS)
-            && !(layer instanceof OGCAPIFeatures)) {
+            && !(layer instanceof OGCAPIFeatures)
+            && !(layer instanceof OGCAPIFeaturesJson)) {
             this.featuresHandler_.addLayer(layer);
           }
 
@@ -892,6 +894,9 @@ class Map extends Base {
           break;
         case 'OGCAPIFeatures':
           layer = new OGCAPIFeatures(layerParam, { style: parameterVariable.style });
+          break;
+        case 'OGCAPIFeaturesJson':
+          layer = new OGCAPIFeaturesJson(layerParam, { style: parameterVariable.style });
           break;
         case 'GenericRaster':
           layer = new GenericRaster(layerParam);
@@ -1995,6 +2000,28 @@ class Map extends Base {
   }
 
   /**
+   * Obtiene las capas OGC API Features JSON añadidas al mapa.
+   * @param {Array<string>|Array<Mx.parameters.OGCAPIFeaturesJson>} layersParamVar Filtros.
+   * @returns {Array<OGCAPIFeaturesJson>} Capas del mapa.
+   * @api
+   */
+  getOGCAPIFeaturesJson(layersParamVar) {
+    let layersParam = layersParamVar;
+    if (isUndefined(MapImpl.prototype.getOGCAPIFeaturesJson)) {
+      Exception(getValue('exception').getogcapif_method);
+    }
+    if (isNull(layersParam)) {
+      layersParam = [];
+    } else if (!isArray(layersParam)) {
+      layersParam = [layersParam];
+    }
+    const filters = layersParam.length > 0
+      ? layersParam.map((layerParam) => parameter.layer(layerParam, LayerType.OGCAPIFeaturesJson))
+      : [];
+    return this.getImpl().getOGCAPIFeaturesJson(filters).sort(Map.LAYER_SORT);
+  }
+
+  /**
    * Este método agrega las capas OGCAPIFeatures al mapa.
    *
    * @function
@@ -2043,6 +2070,61 @@ class Map extends Base {
       });
       this.fire(EventType.ADDED_LAYER, [ogcapifLayers]);
       this.fire(EventType.ADDED_OGCAPIFEATURES, [ogcapifLayers]);
+    }
+    return this;
+  }
+
+  /**
+   * Añade capas OGC API Features JSON al mapa.
+   * @param {Array<string|Mx.parameters.OGCAPIFeaturesJson>|string|
+   * Mx.parameters.OGCAPIFeaturesJson} layersParamVar Capas.
+   * @returns {Map} Mapa.
+   * @api
+   */
+  addOGCAPIFeaturesJson(layersParamVar) {
+    let layersParam = layersParamVar;
+    if (!isNullOrEmpty(layersParam)) {
+      if (isUndefined(MapImpl.prototype.addOGCAPIFeaturesJson)) {
+        Exception(getValue('exception').addogcapif_method);
+      }
+      if (!isArray(layersParam)) layersParam = [layersParam];
+
+      const layers = layersParam.map((layerParam) => {
+        if (layerParam instanceof OGCAPIFeaturesJson) return layerParam;
+        if (layerParam instanceof Layer) return null;
+        return new OGCAPIFeaturesJson(layerParam, layerParam.options);
+      }).filter((layer) => !isNullOrEmpty(layer));
+
+      layers.forEach((layer) => {
+        this.featuresHandler_.addLayer(layer);
+        layer.setMap(this);
+      });
+      this.getImpl().addOGCAPIFeaturesJson(layers);
+      layers.forEach((layer) => {
+        if (isFunction(layer.startAutoRefresh)) {
+          layer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
+      this.fire(EventType.ADDED_LAYER, [layers]);
+    }
+    return this;
+  }
+
+  /**
+   * Elimina capas OGC API Features JSON del mapa.
+   * @param {Array<string|Mx.parameters.OGCAPIFeaturesJson>|string|
+   * Mx.parameters.OGCAPIFeaturesJson} layersParam Filtros.
+   * @returns {Map} Mapa.
+   * @api
+   */
+  removeOGCAPIFeaturesJson(layersParam) {
+    if (!isNullOrEmpty(layersParam)) {
+      if (isUndefined(MapImpl.prototype.removeOGCAPIFeaturesJson)) {
+        Exception(getValue('exception').removeogcapif_method);
+      }
+      const layers = this.getOGCAPIFeaturesJson(layersParam);
+      layers.forEach((layer) => this.featuresHandler_.removeLayer(layer));
+      this.getImpl().removeOGCAPIFeaturesJson(layers);
     }
     return this;
   }
