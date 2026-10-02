@@ -336,7 +336,7 @@ class Map extends MObject {
     const wmsLayers = this.getWMS(filters);
     const wfsLayers = this.getWFS(filters);
     const ogcapifLayers = this.getOGCAPIFeatures(filters);
-    const ogcapifJsonLayers = this.getOGCAPIFeaturesJson(filters);
+    const dataIDEELayers = this.getDataIDEE(filters);
     const wmtsLayers = this.getWMTS(filters);
     const xyzLayers = this.getXYZs(filters);
     const tmsLayers = this.getTMS(filters);
@@ -358,7 +358,7 @@ class Map extends MObject {
 
     let datasources = kmlLayers.concat(wfsLayers)
       .concat(ogcapifLayers)
-      .concat(ogcapifJsonLayers)
+      .concat(dataIDEELayers)
       .concat(vector);
     datasources = datasources
       .sort((layer1, layer2) => FacadeMap.LAYER_SORT(layer1, layer2, this.facadeMap_));
@@ -420,8 +420,8 @@ class Map extends MObject {
         this.facadeMap_.addWFS(layer);
       } else if (layer.type === LayerType.OGCAPIFeatures) {
         this.facadeMap_.addOGCAPIFeatures(layer);
-      } else if (layer.type === LayerType.OGCAPIFeaturesJson) {
-        this.facadeMap_.addOGCAPIFeaturesJson(layer);
+      } else if (layer.type === LayerType.DataIDEE) {
+        this.facadeMap_.addDataIDEE(layer);
       } else if (layer.type === LayerType.MBTiles) {
         this.facadeMap_.addMBTiles(layer);
       } else if (layer.type === LayerType.XYZ) {
@@ -467,7 +467,7 @@ class Map extends MObject {
       this.removeWMS(knowLayers);
       this.removeWFS(knowLayers);
       this.removeOGCAPIFeatures(knowLayers);
-      this.removeOGCAPIFeaturesJson(knowLayers);
+      this.removeDataIDEE(knowLayers);
       this.removeWMTS(knowLayers);
       this.removeMBTiles(knowLayers);
       this.removeXYZ(knowLayers);
@@ -1023,9 +1023,9 @@ class Map extends MObject {
     return this;
   }
 
-  getOGCAPIFeaturesJson(filtersParam) {
+  getDataIDEE(filtersParam) {
     let filters = filtersParam;
-    const layers = this.layers_.filter((layer) => layer.type === LayerType.OGCAPIFeaturesJson);
+    const layers = this.layers_.filter((layer) => layer.type === LayerType.DataIDEE);
     if (isNullOrEmpty(filters)) filters = [];
     if (!isArray(filters)) filters = [filters];
     if (filters.length === 0) return layers;
@@ -1037,9 +1037,9 @@ class Map extends MObject {
     }));
   }
 
-  addOGCAPIFeaturesJson(layers) {
+  addDataIDEE(layers) {
     layers.forEach((layer) => {
-      if (layer.type === LayerType.OGCAPIFeaturesJson && !includes(this.layers_, layer)) {
+      if (layer.type === LayerType.DataIDEE && !includes(this.layers_, layer)) {
         this.layers_.push(layer);
         layer.getImpl().addTo(this.facadeMap_);
       }
@@ -1047,8 +1047,8 @@ class Map extends MObject {
     return this;
   }
 
-  removeOGCAPIFeaturesJson(layers) {
-    this.getOGCAPIFeaturesJson(layers).forEach((layer) => {
+  removeDataIDEE(layers) {
+    this.getDataIDEE(layers).forEach((layer) => {
       this.layers_ = this.layers_.filter((mapLayer) => !mapLayer.equals(layer));
       layer.getImpl().destroy();
       layer.fire(EventType.REMOVED_FROM_MAP, [layer]);

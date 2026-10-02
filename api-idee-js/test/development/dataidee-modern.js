@@ -1,5 +1,5 @@
 import { map as createMap } from 'IDEE/api-idee';
-import OGCAPIFeaturesJson from 'IDEE/layer/OGCAPIFeaturesJson';
+import DataIDEE from 'IDEE/layer/DataIDEE';
 import Generic from 'IDEE/style/Generic';
 
 const map = createMap({
@@ -13,7 +13,7 @@ if (map.getImplementation() === 'cesium') {
   map.setZoom(16);
 }
 
-const layer = new OGCAPIFeaturesJson({
+const layer = new DataIDEE({
   url: 'https://api-features.ign.es',
   name: 'nuc',
   legend: 'Núcleos de población (IGN)',
@@ -28,7 +28,7 @@ const layer = new OGCAPIFeaturesJson({
   }),
 });
 
-const item = new OGCAPIFeaturesJson({
+const item = new DataIDEE({
   url: 'https://api-features.ign.es',
   name: 'nuc',
   id: '100000001',

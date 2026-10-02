@@ -10,7 +10,7 @@ const geoJSON = {
   }],
 };
 
-test('OGCAPIFeaturesJson uses Core item paths and CQL2 with explicit GET in Cesium', async ({ page }) => {
+test('DataIDEE uses Core item paths and CQL2 with explicit GET in Cesium', async ({ page }) => {
   await page.route('https://ogc.test/**', (route) => route.fulfill({
     status: 200,
     contentType: 'application/geo+json',
@@ -23,7 +23,7 @@ test('OGCAPIFeaturesJson uses Core item paths and CQL2 with explicit GET in Cesi
 
   const requestPromise = page.waitForRequest((request) => request.url().startsWith('https://ogc.test/'));
   await page.evaluate(() => {
-    const layer = new IDEE.layer.OGCAPIFeaturesJson({
+    const layer = new IDEE.layer.DataIDEE({
       url: 'https://ogc.test/api',
       name: 'roads',
       limit: 4,
@@ -52,7 +52,7 @@ test('OGCAPIFeaturesJson uses Core item paths and CQL2 with explicit GET in Cesi
   expect(url.searchParams.get('filter-lang')).toBe('cql2-json');
 });
 
-test('OGCAPIFeaturesJson requests an individual feature by ID in Cesium', async ({ page }) => {
+test('DataIDEE requests an individual feature by ID in Cesium', async ({ page }) => {
   await page.route('https://ogc.test/**', (route) => route.fulfill({
     status: 200,
     contentType: 'application/geo+json',
@@ -65,7 +65,7 @@ test('OGCAPIFeaturesJson requests an individual feature by ID in Cesium', async 
 
   const requestPromise = page.waitForRequest((request) => request.url().startsWith('https://ogc.test/'));
   await page.evaluate(() => {
-    window.map.addLayers(new IDEE.layer.OGCAPIFeaturesJson({
+    window.map.addLayers(new IDEE.layer.DataIDEE({
       url: 'https://ogc.test/collections/',
       name: 'roads',
       id: 'road-1',
@@ -76,7 +76,7 @@ test('OGCAPIFeaturesJson requests an individual feature by ID in Cesium', async 
   expect(new URL(request.url()).pathname).toBe('/collections/roads/items/road-1');
 });
 
-test('OGCAPIFeaturesJson omits format when the service uses its GeoJSON default in Cesium', async ({ page }) => {
+test('DataIDEE omits format when the service uses its GeoJSON default in Cesium', async ({ page }) => {
   await page.route('https://ogc.test/**', (route) => route.fulfill({
     status: 200,
     contentType: 'application/geo+json',
@@ -89,7 +89,7 @@ test('OGCAPIFeaturesJson omits format when the service uses its GeoJSON default 
 
   const requestPromise = page.waitForRequest((request) => request.url().startsWith('https://ogc.test/'));
   await page.evaluate(() => {
-    window.map.addLayers(new IDEE.layer.OGCAPIFeaturesJson({
+    window.map.addLayers(new IDEE.layer.DataIDEE({
       url: 'https://ogc.test/data-idee-api',
       name: 'local:farmacias',
     }, {}, {
@@ -104,7 +104,7 @@ test('OGCAPIFeaturesJson omits format when the service uses its GeoJSON default 
   expect(url.searchParams.get('filter-lang')).toBe('cql2-text');
 });
 
-test('OGCAPIFeaturesJson loads Cesium features and supports map add, get and remove methods', async ({ page }) => {
+test('DataIDEE loads Cesium features and supports map add, get and remove methods', async ({ page }) => {
   await page.route('https://ogc.test/**', (route) => route.fulfill({
     status: 200,
     contentType: 'application/geo+json',
@@ -116,22 +116,22 @@ test('OGCAPIFeaturesJson loads Cesium features and supports map add, get and rem
   });
 
   await page.evaluate(() => {
-    window.ogcLayer = new IDEE.layer.OGCAPIFeaturesJson({
+    window.ogcLayer = new IDEE.layer.DataIDEE({
       url: 'https://ogc.test/collections/',
       name: 'roads',
     });
-    window.map.addOGCAPIFeaturesJson(window.ogcLayer);
+    window.map.addDataIDEE(window.ogcLayer);
   });
   await page.waitForFunction(() => window.ogcLayer.getFeatures().length === 1);
 
   const state = await page.evaluate(() => {
     const featuresLoaded = window.ogcLayer.getFeatures().length;
-    const layerWasFound = window.map.getOGCAPIFeaturesJson('roads')[0] === window.ogcLayer;
-    window.map.removeOGCAPIFeaturesJson('roads');
+    const layerWasFound = window.map.getDataIDEE('roads')[0] === window.ogcLayer;
+    window.map.removeDataIDEE('roads');
     return {
       featuresLoaded,
       layerWasFound,
-      layersAfterRemoval: window.map.getOGCAPIFeaturesJson().length,
+      layersAfterRemoval: window.map.getDataIDEE().length,
     };
   });
   expect(state).toEqual({ featuresLoaded: 1, layerWasFound: true, layersAfterRemoval: 0 });

@@ -41,7 +41,7 @@ import WMS from './layer/WMS';
 import WMTS from './layer/WMTS';
 import MVT from './layer/MVT';
 import OGCAPIFeatures from './layer/OGCAPIFeatures';
-import OGCAPIFeaturesJson from './layer/OGCAPIFeaturesJson';
+import DataIDEE from './layer/DataIDEE';
 import GenericRaster from './layer/GenericRaster';
 import GenericVector from './layer/GenericVector';
 import OverviewMapButton from './ui/buttons/OverviewMapButton';
@@ -815,7 +815,7 @@ class Map extends Base {
             /* && !(layer instanceof KML) */
             && !(layer instanceof WFS)
             && !(layer instanceof OGCAPIFeatures)
-            && !(layer instanceof OGCAPIFeaturesJson)) {
+            && !(layer instanceof DataIDEE)) {
             this.featuresHandler_.addLayer(layer);
           }
 
@@ -895,8 +895,8 @@ class Map extends Base {
         case 'OGCAPIFeatures':
           layer = new OGCAPIFeatures(layerParam, { style: parameterVariable.style });
           break;
-        case 'OGCAPIFeaturesJson':
-          layer = new OGCAPIFeaturesJson(layerParam, { style: parameterVariable.style });
+        case 'DataIDEE':
+          layer = new DataIDEE(layerParam, { style: parameterVariable.style });
           break;
         case 'GenericRaster':
           layer = new GenericRaster(layerParam);
@@ -2000,15 +2000,15 @@ class Map extends Base {
   }
 
   /**
-   * Obtiene las capas OGC API Features JSON añadidas al mapa.
+   * Obtiene las capas DataIDEE añadidas al mapa.
    * @param {Array|string|Object} [layersParamVar] Filtros opcionales por nombre o
    * parámetros de capa. Sin filtro, devuelve todas.
-   * @returns {Array<OGCAPIFeaturesJson>} Capas del mapa.
+   * @returns {Array<DataIDEE>} Capas del mapa.
    * @api
    */
-  getOGCAPIFeaturesJson(layersParamVar) {
+  getDataIDEE(layersParamVar) {
     let layersParam = layersParamVar;
-    if (isUndefined(MapImpl.prototype.getOGCAPIFeaturesJson)) {
+    if (isUndefined(MapImpl.prototype.getDataIDEE)) {
       Exception(getValue('exception').getogcapif_method);
     }
     if (isNull(layersParam)) {
@@ -2017,9 +2017,9 @@ class Map extends Base {
       layersParam = [layersParam];
     }
     const filters = layersParam.length > 0
-      ? layersParam.map((layerParam) => parameter.layer(layerParam, LayerType.OGCAPIFeaturesJson))
+      ? layersParam.map((layerParam) => parameter.layer(layerParam, LayerType.DataIDEE))
       : [];
-    return this.getImpl().getOGCAPIFeaturesJson(filters).sort(Map.LAYER_SORT);
+    return this.getImpl().getDataIDEE(filters).sort(Map.LAYER_SORT);
   }
 
   /**
@@ -2076,31 +2076,31 @@ class Map extends Base {
   }
 
   /**
-   * Añade capas OGC API Features JSON al mapa.
+   * Añade capas DataIDEE al mapa.
    * @param {Array|string|Object} layersParamVar Una capa, sus parámetros o una
    * matriz de cualquiera de ellos.
    * @returns {Map} Mapa.
    * @api
    */
-  addOGCAPIFeaturesJson(layersParamVar) {
+  addDataIDEE(layersParamVar) {
     let layersParam = layersParamVar;
     if (!isNullOrEmpty(layersParam)) {
-      if (isUndefined(MapImpl.prototype.addOGCAPIFeaturesJson)) {
+      if (isUndefined(MapImpl.prototype.addDataIDEE)) {
         Exception(getValue('exception').addogcapif_method);
       }
       if (!isArray(layersParam)) layersParam = [layersParam];
 
       const layers = layersParam.map((layerParam) => {
-        if (layerParam instanceof OGCAPIFeaturesJson) return layerParam;
+        if (layerParam instanceof DataIDEE) return layerParam;
         if (layerParam instanceof Layer) return null;
-        return new OGCAPIFeaturesJson(layerParam, layerParam.options);
+        return new DataIDEE(layerParam, layerParam.options);
       }).filter((layer) => !isNullOrEmpty(layer));
 
       layers.forEach((layer) => {
         this.featuresHandler_.addLayer(layer);
         layer.setMap(this);
       });
-      this.getImpl().addOGCAPIFeaturesJson(layers);
+      this.getImpl().addDataIDEE(layers);
       layers.forEach((layer) => {
         if (isFunction(layer.startAutoRefresh)) {
           layer.startAutoRefresh(this.getAutoRefreshInterval());
@@ -2112,20 +2112,20 @@ class Map extends Base {
   }
 
   /**
-   * Elimina capas OGC API Features JSON del mapa.
+   * Elimina capas DataIDEE del mapa.
    * @param {Array|string|Object} layersParam Capas que se eliminarán,
    * identificadas por nombre o parámetros.
    * @returns {Map} Mapa.
    * @api
    */
-  removeOGCAPIFeaturesJson(layersParam) {
+  removeDataIDEE(layersParam) {
     if (!isNullOrEmpty(layersParam)) {
-      if (isUndefined(MapImpl.prototype.removeOGCAPIFeaturesJson)) {
+      if (isUndefined(MapImpl.prototype.removeDataIDEE)) {
         Exception(getValue('exception').removeogcapif_method);
       }
-      const layers = this.getOGCAPIFeaturesJson(layersParam);
+      const layers = this.getDataIDEE(layersParam);
       layers.forEach((layer) => this.featuresHandler_.removeLayer(layer));
-      this.getImpl().removeOGCAPIFeaturesJson(layers);
+      this.getImpl().removeDataIDEE(layers);
     }
     return this;
   }

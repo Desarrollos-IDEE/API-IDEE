@@ -1,10 +1,10 @@
 /**
- * @module IDEE/impl/layer/OGCAPIFeaturesJson
+ * @module IDEE/impl/layer/DataIDEE
  */
 import FormatGeoJSON from 'IDEE/format/GeoJSON';
 import { isNullOrEmpty } from 'IDEE/util/Utils';
-import ServiceOGCAPIFeaturesJson from '../service/OGCAPIFeaturesJson';
-import JsonLoader from '../loader/OGCAPIFeaturesJson';
+import ServiceDataIDEE from '../service/DataIDEE';
+import JsonLoader from '../loader/DataIDEE';
 import OGCAPIFeatures from './OGCAPIFeatures';
 
 /**
@@ -12,14 +12,14 @@ import OGCAPIFeatures from './OGCAPIFeatures';
  * @extends {IDEE.impl.layer.OGCAPIFeatures}
  * @api
  */
-class OGCAPIFeaturesJson extends OGCAPIFeatures {
+class DataIDEE extends OGCAPIFeatures {
   /**
    * Loads GeoJSON from the OGC API Features items endpoint into Cesium entities.
    * @param {Boolean} forceNewSource Replaces the current features when true.
    * @private
    */
   updateSource_(forceNewSource) {
-    this.service_ = new ServiceOGCAPIFeaturesJson({
+    this.service_ = new ServiceDataIDEE({
       url: this.url,
       namespace: this.namespace,
       name: this.name,
@@ -56,4 +56,4 @@ class OGCAPIFeaturesJson extends OGCAPIFeatures {
   }
 }
 
-export default OGCAPIFeaturesJson;
+export default DataIDEE;

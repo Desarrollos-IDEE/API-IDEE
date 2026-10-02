@@ -1,5 +1,5 @@
 /**
- * @module IDEE/impl/service/OGCAPIFeaturesJson
+ * @module IDEE/impl/service/DataIDEE
  */
 import { addParameters, isNullOrEmpty } from 'IDEE/util/Utils';
 import ServiceOGCAPIFeatures from './OGCAPIFeatures';
@@ -8,7 +8,7 @@ import ServiceOGCAPIFeatures from './OGCAPIFeatures';
  * Builds OGC API Features Core item URLs with paging, bbox and CQL2 filters.
  * @api
  */
-class OGCAPIFeaturesJson extends ServiceOGCAPIFeatures {
+class DataIDEE extends ServiceOGCAPIFeatures {
   /**
    * @param {Object} layerParameters Shared OGC API Features layer parameters.
    * @param {Object} [vendorOpts={}] Provider options. Supports `filter` as CQL2
@@ -62,4 +62,4 @@ class OGCAPIFeaturesJson extends ServiceOGCAPIFeatures {
   }
 }
 
-export default OGCAPIFeaturesJson;
+export default DataIDEE;

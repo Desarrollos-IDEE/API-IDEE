@@ -1,9 +1,7 @@
 /**
- * @module IDEE/impl/loader/OGCAPIFeaturesJson
+ * @module IDEE/impl/loader/DataIDEE
  */
-import {
-  addParameters as refreshParameters, isNullOrEmpty, addParameters, isString,
-} from 'IDEE/util/Utils';
+import { addParameters as refreshParameters, isNullOrEmpty } from 'IDEE/util/Utils';
 import MObject from 'IDEE/Object';
 import { get as getRemote } from 'IDEE/util/Remote';
 import Exception from 'IDEE/exception/exception';
@@ -20,7 +18,7 @@ import { getValue } from 'IDEE/i18n/language';
   * @api
   * @extends {IDEE.Object}
   */
-class OGCAPIFeaturesJson extends MObject {
+class DataIDEE extends MObject {
   /**
     * Constructor principal del cargador OGC API Features JSON.
     *
@@ -94,21 +92,18 @@ class OGCAPIFeaturesJson extends MObject {
     * especificados.
     * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
     * @function
-    * @param {ol.proj.Projection} projection Proyección.
+    * @param {Object} projection Proyección.
     * @returns {Promise} Promesa con la obtención de los objetos geográficos.
     * @public
     * @api
     */
   loadInternal_(projection, requestUrl = this.url_, forRefresh = false) {
-    let url = requestUrl;
     return new Promise((success, fail) => {
-      if (isString(IDEE.config.TICKET)) {
-        url = addParameters(url, { ticket: IDEE.config.TICKET });
-      }
-      const request = getRemote(url, null, this.requestOptions_).then((response) => {
+      const request = getRemote(requestUrl, null, this.requestOptions_).then((response) => {
         if (forRefresh && response.code >= 400) throw new Error(`HTTP ${response.code}`);
         if (!isNullOrEmpty(response.text)) {
-          const features = this.format_.read(response.text, {
+          const newText = response.text.replace('urn:ogc:def:crs:OGC:1.3:CRS84', 'urn:ogc:def:crs:EPSG::4326');
+          const features = this.format_.read(newText, {
             featureProjection: projection,
           });
           success.call(this, [features]);
@@ -121,4 +116,4 @@ class OGCAPIFeaturesJson extends MObject {
   }
 }
 
-export default OGCAPIFeaturesJson;
+export default DataIDEE;

@@ -4629,16 +4629,16 @@ export const ogcapifeatures = (userParameters) => {
 };
 
 /**
- * Analiza los parámetros de una capa OGC API Features JSON.
+ * Analiza los parámetros de una capa DataIDEE.
  * Reutiliza la configuración compartida con OGCAPIFeatures y registra el tipo
  * moderno para que los métodos específicos del mapa la identifiquen.
- * @param {string|Mx.parameters.OGCAPIFeaturesJson|Array} userParameters Parámetros de capa.
- * @returns {Mx.parameters.OGCAPIFeaturesJson|Array<Mx.parameters.OGCAPIFeaturesJson>}
+ * @param {string|Mx.parameters.DataIDEE|Array} userParameters Parámetros de capa.
+ * @returns {Mx.parameters.DataIDEE|Array<Mx.parameters.DataIDEE>}
  */
-const ogcapifeaturesjson = (userParameters) => {
+const dataidee = (userParameters) => {
   const layers = ogcapifeatures(userParameters);
-  const withJsonType = (layer) => ({ ...layer, type: LayerType.OGCAPIFeaturesJson });
-  return isArray(layers) ? layers.map(withJsonType) : withJsonType(layers);
+  const withDataIDEEType = (layer) => ({ ...layer, type: LayerType.DataIDEE });
+  return isArray(layers) ? layers.map(withDataIDEEType) : withDataIDEEType(layers);
 };
 
 const generic = (userParameters, type) => {
@@ -5237,7 +5237,7 @@ const parameterFunction = {
   mbtiles,
   mbtilesvector,
   ogcapifeatures,
-  ogcapifeaturesjson,
+  dataidee,
   genericvector,
   genericraster,
   tiles3d,

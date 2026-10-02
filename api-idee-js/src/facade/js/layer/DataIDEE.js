@@ -1,7 +1,7 @@
 /**
- * @module IDEE/layer/OGCAPIFeaturesJson
+ * @module IDEE/layer/DataIDEE
  */
-import OGCAPIFeaturesJsonImpl from 'impl/layer/OGCAPIFeaturesJson';
+import DataIDEEImpl from 'impl/layer/DataIDEE';
 import {
   isUndefined, isNullOrEmpty, isString, normalize, isObject,
 } from '../util/Utils';
@@ -13,7 +13,7 @@ import { getValue } from '../i18n/language';
 
 /**
  * @classdesc
- * Capa de solo lectura para consultar entidades GeoJSON mediante OGC API Features.
+ * Capa DataIDEE de solo lectura para consultar entidades GeoJSON mediante OGC API Features.
  * Admite filtros CQL2 en texto o JSON a través de las opciones del proveedor.
  *
  * @property {String} idLayer Identificador de la capa.
@@ -48,12 +48,12 @@ import { getValue } from '../i18n/language';
  * @api
  * @extends {IDEE.layer.Vector}
  */
-class OGCAPIFeaturesJson extends Vector {
+class DataIDEE extends Vector {
   /**
-   * Constructor principal de la clase. Crea una capa OGCAPIFeaturesJson
+   * Constructor principal de la clase. Crea una capa DataIDEE
    * con parámetros especificados por el usuario.
    * @constructor
-   * @param {string|Mx.parameters.OGCAPIFeaturesJson} userParams Parámetros para la construcción de
+   * @param {string|Mx.parameters.DataIDEE} userParams Parámetros para la construcción de
    * la capa.
    * - legend: Indica el nombre que queremos que aparezca en el árbol de contenidos, si lo hay.
    * - url: URL del servicio.
@@ -120,7 +120,7 @@ class OGCAPIFeaturesJson extends Vector {
     }
 
     // This layer is of parameters.
-    const parameters = parameter.layer(userParams, LayerType.OGCAPIFeaturesJson);
+    const parameters = parameter.layer(userParams, LayerType.DataIDEE);
 
     const optionsVar = opt;
 
@@ -128,110 +128,110 @@ class OGCAPIFeaturesJson extends Vector {
       optionsVar.maxExtent = userParams.maxExtent;
     }
 
-    // Comprueba si la implementación puede crear capas OGCAPIFeaturesJson
-    if (isUndefined(OGCAPIFeaturesJsonImpl) || (isObject(OGCAPIFeaturesJsonImpl)
-      && isNullOrEmpty(Object.keys(OGCAPIFeaturesJsonImpl)))) {
+    // Comprueba si la implementación puede crear capas DataIDEE
+    if (isUndefined(DataIDEEImpl) || (isObject(DataIDEEImpl)
+      && isNullOrEmpty(Object.keys(DataIDEEImpl)))) {
       Exception(getValue('exception').OGCAPIFeatureslayer_method);
     }
 
     /**
      * Implementación
      * @public
-     * @implements {IDEE.impl.layer.OGCAPIFeaturesJson}
-     * @type {IDEE.impl.layer.OGCAPIFeaturesJson}
+     * @implements {IDEE.impl.layer.DataIDEE}
+     * @type {IDEE.impl.layer.DataIDEE}
      */
-    const impl = new OGCAPIFeaturesJsonImpl(optionsVar, vendorOpts);
+    const impl = new DataIDEEImpl(optionsVar, vendorOpts);
 
     // Llama al contructor del que se extiende la clase
     super(parameters, optionsVar, undefined, impl);
     this.constructorParameters = { userParams, opt, vendorOpts };
 
     /**
-     * OGCAPIFeaturesJson legend: Indica el nombre que queremos
+     * DataIDEE legend: Indica el nombre que queremos
      * que aparezca en el árbol de contenidos, si lo hay.
      */
     this.legend = parameters.legend;
 
     /**
-     * OGCAPIFeaturesJson url: URL del servicio.
+     * DataIDEE url: URL del servicio.
      */
     this.url = parameters.url;
 
     /**
-     * OGCAPIFeaturesJson name: Nombre de la capa en el servidor.
+     * DataIDEE name: Nombre de la capa en el servidor.
      */
     this.name = parameters.name;
 
     /**
-     * OGCAPIFeaturesJson limit: Límite de objetos geográficos a mostrar.
+     * DataIDEE limit: Límite de objetos geográficos a mostrar.
      */
     this.limit = parameters.limit;
 
     /**
-     * OGCAPIFeaturesJson bbox: Filtro para mostrar los resultados en un bbox específico.
+     * DataIDEE bbox: Filtro para mostrar los resultados en un bbox específico.
      */
     this.bbox = parameters.bbox;
 
     /**
-     * OGCAPIFeaturesJson format: Formato de los objetos geográficos.
+     * DataIDEE format: Formato de los objetos geográficos.
      */
     this.format = parameters.format;
 
     /**
-     * OGCAPIFeaturesJson offset: Determina desde que número comenzará a leer
+     * DataIDEE offset: Determina desde que número comenzará a leer
      * los objetos geográficos.
      */
     this.offset = parameters.offset;
 
     /**
-     * OGCAPIFeaturesJson id: Filtro por ID para un objeto geográfico.
+     * DataIDEE id: Filtro por ID para un objeto geográfico.
      */
     this.id = parameters.id;
 
     /**
-     * OGCAPIFeaturesJson extract: Activa la consulta al hacer clic sobre un objeto geográfico,
+     * DataIDEE extract: Activa la consulta al hacer clic sobre un objeto geográfico,
      * por defecto verdadero.
      */
     this.extract = parameters.extract === undefined ? true : parameters.extract;
 
     /**
-     * OGCAPIFeaturesJson cql: Declaración CQL para filtrar las características
+     * DataIDEE cql: Declaración CQL para filtrar las características
      * (Sólo disponible para servicios en PostgreSQL).
      */
     this.cql = vendorOpts.cql;
 
     /**
-     * OGCAPIFeaturesJson conditional: Declaración de filtros literales por atributos del
+     * DataIDEE conditional: Declaración de filtros literales por atributos del
      * objeto geográfico.
      */
     this.conditional = parameters.conditional;
 
     /**
-     * OGCAPIFeaturesJson crs: Definición de la proyección de los datos.
+     * DataIDEE crs: Definición de la proyección de los datos.
      */
     this.crs = parameters.crs;
 
     /**
-     * OGCAPIFeaturesJson geometry: Tipo de geometría.
+     * DataIDEE geometry: Tipo de geometría.
      */
     this.geometry = parameters.geometry;
 
     /**
-     * OGCAPIFeaturesJson minZoom: Límite del zoom mínimo.
+     * DataIDEE minZoom: Límite del zoom mínimo.
      * @public
      * @type {Number}
      */
     this.minZoom = optionsVar.minZoom || Number.NEGATIVE_INFINITY;
 
     /**
-     * OGCAPIFeaturesJson maxZoom: Límite del zoom máximo.
+     * DataIDEE maxZoom: Límite del zoom máximo.
      * @public
      * @type {Number}
      */
     this.maxZoom = optionsVar.maxZoom || Number.POSITIVE_INFINITY;
 
     /**
-     * OGCAPIFeaturesJson opt: Opciones.
+     * DataIDEE opt: Opciones.
      */
     this.opt = opt;
   }
@@ -412,14 +412,14 @@ class OGCAPIFeaturesJson extends Vector {
    * @param {Boolean} applyToFeature Si el valor es verdadero se aplicará a los objetos geográficos,
    * falso no.
    * Por defecto, falso.
-   * @param {IDEE.layer.OGCAPIFeaturesJson.DEFAULT_OPTIONS_STYLE} defaultStyle Estilo por defecto,
-   * se define en OGCAPIFeaturesJson.js.
+   * @param {IDEE.layer.DataIDEE.DEFAULT_OPTIONS_STYLE} defaultStyle Estilo por defecto,
+   * se define en DataIDEE.js.
    * @api
    */
   setStyle(
     styleParam,
     applyToFeature = false,
-    defaultStyle = OGCAPIFeaturesJson.DEFAULT_OPTS_STYLE,
+    defaultStyle = DataIDEE.DEFAULT_OPTS_STYLE,
   ) {
     super.setStyle(styleParam, applyToFeature, defaultStyle);
   }
@@ -471,7 +471,7 @@ class OGCAPIFeaturesJson extends Vector {
    */
   equals(obj) {
     let equals = false;
-    if (obj instanceof OGCAPIFeaturesJson) {
+    if (obj instanceof DataIDEE) {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
       equals = equals && (this.legend === obj.legend);
@@ -488,13 +488,13 @@ class OGCAPIFeaturesJson extends Vector {
 }
 
 /**
- * Parámetros predeterminados para las capas OGCAPIFeaturesJson de estilo.
+ * Parámetros predeterminados para las capas DataIDEE de estilo.
  * @const
  * @type {Object}
  * @public
  * @api
  */
-OGCAPIFeaturesJson.DEFAULT_PARAMS = {
+DataIDEE.DEFAULT_PARAMS = {
   fill: {
     color: 'rgba(103, 175, 19, 0.2)',
     opacity: 0.4,
@@ -506,23 +506,23 @@ OGCAPIFeaturesJson.DEFAULT_PARAMS = {
 };
 
 /**
- * Estilo predeterminado para capas OGCAPIFeaturesJson.
+ * Estilo predeterminado para capas DataIDEE.
  * @const
  * @type {Object}
  * @public
  * @api
  */
-OGCAPIFeaturesJson.DEFAULT_OPTS_STYLE = {
+DataIDEE.DEFAULT_OPTS_STYLE = {
   point: {
-    ...OGCAPIFeaturesJson.DEFAULT_PARAMS,
+    ...DataIDEE.DEFAULT_PARAMS,
     radius: 5,
   },
   line: {
-    ...OGCAPIFeaturesJson.DEFAULT_PARAMS,
+    ...DataIDEE.DEFAULT_PARAMS,
   },
   polygon: {
-    ...OGCAPIFeaturesJson.DEFAULT_PARAMS,
+    ...DataIDEE.DEFAULT_PARAMS,
   },
 };
 
-export default OGCAPIFeaturesJson;
+export default DataIDEE;

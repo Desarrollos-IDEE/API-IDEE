@@ -39,7 +39,7 @@ test('OGCAPIFeatures keeps the previous GetFeatureUrl request by default', async
   expect(new URL(request.url()).searchParams.has('filter-lang')).toBe(false);
 });
 
-test('OGCAPIFeaturesJson preserves the shared public configuration and performs filtered GET requests', async ({ page }) => {
+test('DataIDEE preserves the shared public configuration and performs filtered GET requests', async ({ page }) => {
   await page.route('https://ogc.test/**', (route) => route.fulfill({
     status: 200,
     contentType: 'application/geo+json',
@@ -53,7 +53,7 @@ test('OGCAPIFeaturesJson preserves the shared public configuration and performs 
 
   const requestPromise = page.waitForRequest((request) => request.url().startsWith('https://ogc.test/'));
   const api = await page.evaluate(() => {
-    const layer = new IDEE.layer.OGCAPIFeaturesJson({
+    const layer = new IDEE.layer.DataIDEE({
       url: 'https://ogc.test/collections/',
       name: 'roads',
       legend: 'Roads',
@@ -109,7 +109,7 @@ test('OGCAPIFeaturesJson preserves the shared public configuration and performs 
   });
 });
 
-test('OGCAPIFeaturesJson requests an individual feature by ID', async ({ page }) => {
+test('DataIDEE requests an individual feature by ID', async ({ page }) => {
   await page.route('https://ogc.test/**', (route) => route.fulfill({
     status: 200,
     contentType: 'application/geo+json',
@@ -123,7 +123,7 @@ test('OGCAPIFeaturesJson requests an individual feature by ID', async ({ page })
 
   const requestPromise = page.waitForRequest((request) => request.url().startsWith('https://ogc.test/'));
   await page.evaluate(() => {
-    window.map.addLayers(new IDEE.layer.OGCAPIFeaturesJson({
+    window.map.addLayers(new IDEE.layer.DataIDEE({
       url: 'https://ogc.test/collections/',
       name: 'roads',
       id: 'road-1',
@@ -134,7 +134,7 @@ test('OGCAPIFeaturesJson requests an individual feature by ID', async ({ page })
   expect(new URL(request.url()).pathname).toBe('/collections/roads/items/road-1');
 });
 
-test('OGCAPIFeaturesJson omits the format parameter when the service uses its GeoJSON default', async ({ page }) => {
+test('DataIDEE omits the format parameter when the service uses its GeoJSON default', async ({ page }) => {
   await page.route('https://ogc.test/**', (route) => route.fulfill({
     status: 200,
     contentType: 'application/geo+json',
@@ -148,7 +148,7 @@ test('OGCAPIFeaturesJson omits the format parameter when the service uses its Ge
 
   const requestPromise = page.waitForRequest((request) => request.url().startsWith('https://ogc.test/'));
   await page.evaluate(() => {
-    window.map.addLayers(new IDEE.layer.OGCAPIFeaturesJson({
+    window.map.addLayers(new IDEE.layer.DataIDEE({
       url: 'https://ogc.test/data-idee-api',
       name: 'local:eurovelo_rutas',
       limit: 10,
@@ -164,7 +164,7 @@ test('OGCAPIFeaturesJson omits the format parameter when the service uses its Ge
   expect(url.searchParams.get('filter-lang')).toBe('cql2-text');
 });
 
-test('OGCAPIFeaturesJson keeps the existing CQL vendor option usable', async ({ page }) => {
+test('DataIDEE keeps the existing CQL vendor option usable', async ({ page }) => {
   await page.route('https://ogc.test/**', (route) => route.fulfill({
     status: 200,
     contentType: 'application/geo+json',
@@ -178,7 +178,7 @@ test('OGCAPIFeaturesJson keeps the existing CQL vendor option usable', async ({ 
 
   const requestPromise = page.waitForRequest((request) => request.url().startsWith('https://ogc.test/'));
   await page.evaluate(() => {
-    window.map.addLayers(new IDEE.layer.OGCAPIFeaturesJson({
+    window.map.addLayers(new IDEE.layer.DataIDEE({
       url: 'https://ogc.test/collections/',
       name: 'roads',
     }, {}, { cql: "name = 'Main road'" }));
@@ -190,7 +190,7 @@ test('OGCAPIFeaturesJson keeps the existing CQL vendor option usable', async ({ 
   expect(url.searchParams.has('filter-lang')).toBe(false);
 });
 
-test('OGCAPIFeaturesJson loads features and supports map add, get and remove methods', async ({ page }) => {
+test('DataIDEE loads features and supports map add, get and remove methods', async ({ page }) => {
   await page.route('https://ogc.test/**', (route) => route.fulfill({
     status: 200,
     contentType: 'application/geo+json',
@@ -204,24 +204,24 @@ test('OGCAPIFeaturesJson loads features and supports map add, get and remove met
   await page.evaluate(() => window.map.setCenter([0, 0]));
 
   const layersAfterAdd = await page.evaluate(() => {
-    window.ogcLayer = new IDEE.layer.OGCAPIFeaturesJson({
+    window.ogcLayer = new IDEE.layer.DataIDEE({
       url: 'https://ogc.test/collections/',
       name: 'roads',
     });
-    window.map.addOGCAPIFeaturesJson(window.ogcLayer);
-    return window.map.getOGCAPIFeaturesJson().length;
+    window.map.addDataIDEE(window.ogcLayer);
+    return window.map.getDataIDEE().length;
   });
   expect(layersAfterAdd).toBe(1);
   await page.waitForFunction(() => window.ogcLayer.getFeatures().length === 1);
 
   const state = await page.evaluate(() => {
     const featuresLoaded = window.ogcLayer.getFeatures().length;
-    const layerWasFound = window.map.getOGCAPIFeaturesJson('roads')[0] === window.ogcLayer;
-    window.map.removeOGCAPIFeaturesJson('roads');
+    const layerWasFound = window.map.getDataIDEE('roads')[0] === window.ogcLayer;
+    window.map.removeDataIDEE('roads');
     return {
       featuresLoaded,
       layerWasFound,
-      layersAfterRemoval: window.map.getOGCAPIFeaturesJson().length,
+      layersAfterRemoval: window.map.getDataIDEE().length,
     };
   });
   expect(state).toEqual({ featuresLoaded: 1, layerWasFound: true, layersAfterRemoval: 0 });

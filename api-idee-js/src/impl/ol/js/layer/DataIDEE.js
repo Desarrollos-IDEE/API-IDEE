@@ -1,5 +1,5 @@
 /**
- * @module IDEE/impl/layer/OGCAPIFeaturesJson
+ * @module IDEE/impl/layer/DataIDEE
  */
 import FormatGeoJSON from 'IDEE/format/GeoJSON';
 import { isNullOrEmpty } from 'IDEE/util/Utils';
@@ -7,8 +7,8 @@ import * as EventType from 'IDEE/event/eventtype';
 import OLSourceVector from 'ol/source/Vector';
 import { get as getProj } from 'ol/proj';
 import { all } from 'ol/loadingstrategy';
-import ServiceOGCAPIFeaturesJson from '../service/OGCAPIFeaturesJson';
-import LoaderOGCAPIFeaturesJson from '../loader/OGCAPIFeaturesJson';
+import ServiceDataIDEE from '../service/DataIDEE';
+import LoaderDataIDEE from '../loader/DataIDEE';
 import OGCAPIFeatures from './OGCAPIFeatures';
 
 /**
@@ -16,7 +16,7 @@ import OGCAPIFeatures from './OGCAPIFeatures';
  * @extends {IDEE.impl.layer.OGCAPIFeatures}
  * @api
  */
-class OGCAPIFeaturesJson extends OGCAPIFeatures {
+class DataIDEE extends OGCAPIFeatures {
   /**
    * Loads GeoJSON from the OGC API Features items endpoint into the vector source.
    * @param {Boolean} forceNewSource Replaces the existing source when true.
@@ -25,7 +25,7 @@ class OGCAPIFeaturesJson extends OGCAPIFeatures {
   updateSource_(forceNewSource) {
     if (!isNullOrEmpty(this.vendorOptions_.source)) return;
 
-    this.service_ = new ServiceOGCAPIFeaturesJson({
+    this.service_ = new ServiceDataIDEE({
       url: this.url,
       namespace: this.namespace,
       name: this.name,
@@ -42,7 +42,7 @@ class OGCAPIFeaturesJson extends OGCAPIFeatures {
     this.formater_ = new FormatGeoJSON({
       defaultDataProjection: getProj(this.map.getProjection().code),
     });
-    this.loader_ = new LoaderOGCAPIFeaturesJson(
+    this.loader_ = new LoaderDataIDEE(
       this.map,
       this.service_.getItemsUrl(),
       this.formater_,
@@ -75,4 +75,4 @@ class OGCAPIFeaturesJson extends OGCAPIFeatures {
   }
 }
 
-export default OGCAPIFeaturesJson;
+export default DataIDEE;
