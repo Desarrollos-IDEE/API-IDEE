@@ -194,6 +194,8 @@
     "msg": "Porta'm allà"
   },
   "exception": {
+    "invalid_gpx": "El contingut no és un GPX vàlid.",
+    "invalid_gpx_source": "GPX requereix una URL o una font XML/File, exclusivament.",
     "auto_refresh_failed": "No s'ha pogut actualitzar automàticament la capa",
     "invalid_kml": "KML no vàlid",
     "addto_method": "La implementació usada no posseeix el mètode addTo",

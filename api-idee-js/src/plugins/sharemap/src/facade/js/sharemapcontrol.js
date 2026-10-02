@@ -593,6 +593,14 @@ export default class ShareMapControl extends IDEE.Control {
       param = this.getWMS(layer);
     } else if (layer.type === 'WMTS') {
       param = this.getWMTS(layer);
+    } else if (layer.type === 'GPX') {
+      // Las fuentes locales se comparten como datos vectoriales, igual que Vector.
+      if (layer.url) {
+        const style = layer.getStyle()?.serialize() || '';
+        param = `GPX*${layer.name}*${encodeURIComponent(layer.url)}*${layer.extract}*${layer.isVisible()}*${style}`;
+      } else {
+        param = this.getVector(layer);
+      }
     } else if (layer.type === 'KML') {
       param = this.getKML(layer);
     } else if (layer.type === 'WFS') {

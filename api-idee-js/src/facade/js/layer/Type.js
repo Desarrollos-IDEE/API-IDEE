@@ -14,6 +14,15 @@ import { isString, normalize } from '../util/Utils';
 export const KML = 'KML';
 
 /**
+ * Tipo GPX: puntos, rutas y tracks GPS.
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+export const GPX = 'GPX';
+
+/**
  * Tipo WMS (Web Map Service). Definido por una url,
  * el servicio puede ofrecer una o muchas capas, individuales
  * o agrupadas, cada una con un nombre propio.
@@ -240,6 +249,7 @@ export const WMC = 'WMC';
  */
 const layertypes = {
   KML,
+  GPX,
   WMS,
   GeoTIFF,
   WFS,

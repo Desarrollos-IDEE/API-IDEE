@@ -48,6 +48,7 @@ import Panel from './ui/panels/Panel';
 import CollapsiblePanel from './ui/panels/CollapsiblePanel';
 import * as Position from './ui/position';
 import GeoJSON from './layer/GeoJSON';
+import GPX from './layer/GPX';
 import GeoPackage from './layer/GeoPackage';
 import GeoTIFF from './layer/GeoTIFF';
 import MapLibre from './layer/MapLibre';
@@ -848,6 +849,9 @@ class Map extends Base {
         case 'GeoJSON':
           layer = new GeoJSON(parameterVariable, { style: parameterVariable.style });
           break;
+        case 'GPX':
+          layer = new GPX(parameterVariable);
+          break;
         case 'GeoPackage': {
           const {
             type, source, url, name, legend, metadata, properties, options = {}, ...layerOptions
@@ -1432,6 +1436,63 @@ class Map extends Base {
         this.getImpl().removeKML(kmlLayers);
       }
     }
+    return this;
+  }
+
+  /**
+   * Obtiene las capas GPX mediante la colección general del mapa.
+   * Sin parámetros devuelve todas; admite instancia, nombre, descriptor con name/url
+   * o parámetros GPX de REST. Una lista combina los filtros sin duplicar resultados.
+   * @param {IDEE.layer.GPX|String|Object|Array} layersParam Filtros opcionales.
+   * @returns {Array<IDEE.layer.GPX>} Capas GPX encontradas.
+   * @api
+   */
+  getGPX(layersParam) {
+    const layers = this.getLayers().filter((layer) => layer instanceof GPX);
+    if (isNullOrEmpty(layersParam)) return layers;
+    const parameters = isArray(layersParam) ? layersParam : [layersParam];
+    const filters = parameters.map((filter) => {
+      if (filter instanceof Layer) return filter;
+      if (isString(filter) && !/^GPX\*/i.test(filter)) return { name: filter };
+      return parameter.layer(isString(filter) ? buildLayer(filter) : filter, LayerType.GPX);
+    });
+    return layers.filter((layer) => filters.some((filter) => {
+      if (filter instanceof Layer) return layer.equals(filter);
+      return (isNullOrEmpty(filter.name) || filter.name === layer.name)
+        && (isNullOrEmpty(filter.url) || filter.url === layer.url);
+    }));
+  }
+
+  /**
+   * Añade capas GPX usando el registro, los eventos y el ciclo de vida de addLayers.
+   * Admite instancias, parámetros del constructor o cadenas GPX de REST.
+   * Las opciones del constructor se incluyen en el descriptor de cada capa.
+   * @param {IDEE.layer.GPX|Object|String|Array} layersParam Capas que se añadirán.
+   * @returns {IDEE.Map} Este mapa; la carga se completa con el evento LOAD de la capa.
+   * @api
+   */
+  addGPX(layersParam) {
+    if (isNullOrEmpty(layersParam)) return this;
+    const parameters = isArray(layersParam) ? layersParam : [layersParam];
+    const layers = parameters.map((layerParam) => {
+      if (layerParam instanceof GPX) return layerParam;
+      const params = isString(layerParam) ? buildLayer(layerParam) : layerParam;
+      parameter.getType(params, LayerType.GPX);
+      return new GPX(params);
+    });
+    return this.addLayers(layers);
+  }
+
+  /**
+   * Retira únicamente las GPX seleccionadas, delegando su limpieza en removeLayers.
+   * Admite los filtros de getGPX; sin parámetros no elimina capas.
+   * Para retirar todas se proporciona el resultado de getGPX().
+   * @param {IDEE.layer.GPX|String|Object|Array} layersParam Capas que se retirarán.
+   * @returns {IDEE.Map} Este mapa.
+   * @api
+   */
+  removeGPX(layersParam) {
+    if (!isNullOrEmpty(layersParam)) this.removeLayers(this.getGPX(layersParam));
     return this;
   }
 

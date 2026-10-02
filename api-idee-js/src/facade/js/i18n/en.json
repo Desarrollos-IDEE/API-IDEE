@@ -193,6 +193,8 @@
     "msg": "Take me there"
   },
   "exception": {
+    "invalid_gpx": "The content is not valid GPX.",
+    "invalid_gpx_source": "GPX requires either a URL or an XML/File source, exclusively.",
     "auto_refresh_failed": "Could not automatically refresh the layer",
     "invalid_kml": "Invalid KML",
     "addto_method": "The used implementation does not have the addTo method",
