@@ -14,7 +14,7 @@ import { get as getRemote } from 'IDEE/util/Remote';
 import { compileSync as compileTemplate } from 'IDEE/util/Template';
 import {
   isNullOrEmpty, beautifyAttribute, addParameters, isString, rgbaToHex,
-  isIdeeMdtRasterDemUrl, decodeTerrainRgbElevation,
+  decodeTerrainRgbElevation, getXyzExtractDisplayOptions,
 } from 'IDEE/util/Utils';
 import { getValue } from 'IDEE/i18n/language';
 import * as LayerType from 'IDEE/layer/Type';
@@ -202,7 +202,7 @@ class GetFeatureInfo extends Control {
     const infos = [];
 
     xyzLayers.forEach((layer) => {
-      if (!layer.isVisible() || !layer.extract) {
+      if (!layer.isVisible() || layer.extract === false) {
         return;
       }
       const tileIndex = layer.getTileIndexAtCoordinate(coordinate);
@@ -227,20 +227,25 @@ class GetFeatureInfo extends Control {
    * @function
    * @param {{z: number, x: number, y: number}|null} tileIndex Índice de tesela z/x/y.
    * @param {Uint8ClampedArray|Uint8Array|Float32Array|DataView|null} data Color RGBA del píxel.
-   * @param {IDEE.layer.XYZ|IDEE.layer.TMS|null} layer Capa XYZ/TMS (elevación MDT solo en XYZ).
+   * @param {IDEE.layer.XYZ|IDEE.layer.TMS|null} layer Capa XYZ/TMS.
    * @returns {string} HTML con la información de la tesela y el color.
    * @api stable
    */
   static formatXYZInfo(tileIndex, data, layer) {
     const gfi = getValue('getfeatureinfo');
-    let isMdtElevation = false;
-    if (!isNullOrEmpty(layer) && layer.type === LayerType.XYZ && !isNullOrEmpty(layer.url)) {
-      isMdtElevation = isIdeeMdtRasterDemUrl(layer.url);
+    let displayOptions = {
+      showTiles: true,
+      showColors: true,
+      showElevation: false,
+    };
+    if (!isNullOrEmpty(layer) && layer.type === LayerType.XYZ) {
+      displayOptions = getXyzExtractDisplayOptions(layer.extract);
     }
+    const hasPixelData = !isNullOrEmpty(data) && data.length >= 3;
     let html = '<div class=\'divinfo\'>';
     html += '<table class=\'api-idee-table\'><tbody>';
 
-    if (!isNullOrEmpty(tileIndex)) {
+    if (displayOptions.showTiles && !isNullOrEmpty(tileIndex)) {
       html += '<tr><td class="key"><b>';
       html += beautifyAttribute(gfi.tile_z);
       html += '</b></td><td class="value">';
@@ -258,7 +263,7 @@ class GetFeatureInfo extends Control {
       html += '</td></tr>';
     }
 
-    if (!isNullOrEmpty(data) && data.length >= 3) {
+    if (hasPixelData) {
       const red = data[0];
       const green = data[1];
       const blue = data[2];
@@ -266,7 +271,7 @@ class GetFeatureInfo extends Control {
       if (data.length > 3) {
         alpha = data[3];
       }
-      if (isMdtElevation) {
+      if (displayOptions.showElevation) {
         const isTransparent = alpha === 0;
         if (isTransparent) {
           html += '<tr><td class="value" colspan="2">';
@@ -282,14 +287,15 @@ class GetFeatureInfo extends Control {
           html += gfi.elevation_unit;
           html += '</td></tr>';
         }
-      } else {
+      }
+      if (displayOptions.showColors) {
         html = GetFeatureInfo.appendXyzPixelColorRows(html, data, gfi);
       }
-    } else if (isNullOrEmpty(tileIndex)) {
+    } else if (displayOptions.showColors || displayOptions.showElevation) {
       html += '<tr><td class="value" colspan="2">';
       html += gfi.pixel_unavailable;
       html += '</td></tr>';
-    } else {
+    } else if (displayOptions.showTiles && isNullOrEmpty(tileIndex)) {
       html += '<tr><td class="value" colspan="2">';
       html += gfi.pixel_unavailable;
       html += '</td></tr>';
