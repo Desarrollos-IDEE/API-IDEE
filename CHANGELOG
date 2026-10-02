@@ -13,6 +13,7 @@
 - Implementados los plugins CatalogManager y RasterManagement.
 - Se dan de alta nuevas proyecciones y se adapta extensión de 25830.
 - Se soluciona problema con scroll del plugin InfoCoordinates.
+- Se adapta el parámetro blob de GeoTIFF para que acepte instancia de Blob y URL de objeto Blob.
 
 
 01/07/26 - Versión 1.1.0
