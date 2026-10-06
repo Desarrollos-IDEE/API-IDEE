@@ -112,7 +112,9 @@ export const load = async (url) => {
     if (useproxy !== 'conditional' || local) throw error;
     response = await fetch(proxyURL());
   }
-  if (!response.ok) throw new Error(`KMZ: HTTP ${response.status}`);
+  if (!response.ok) {
+    throw new Error(getValue('exception').kmz_http_error.replace('{status}', response.status));
+  }
   return read(await response.arrayBuffer(), originalURL);
 };
 

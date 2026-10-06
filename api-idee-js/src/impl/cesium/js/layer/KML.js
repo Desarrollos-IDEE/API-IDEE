@@ -51,10 +51,9 @@ class KML extends Vector {
    * </code></pre>
    * @api stable
    */
-  constructor(options, vendorOptions, Loader = LoaderKML) {
+  constructor(options, vendorOptions) {
     // calls the super constructor
     super(options, vendorOptions);
-    this.Loader_ = Loader;
 
     /**
     * KML popup_. Muestra el popup.
@@ -135,6 +134,15 @@ class KML extends Vector {
   }
 
   /**
+   * Crea el cargador específico de esta capa con el mapa y formato actuales.
+   * @private
+   * @returns {LoaderKML} Cargador KML.
+   */
+  getLoader() {
+    return new LoaderKML(this.map, this.url, this.formater_);
+  }
+
+  /**
    * Este método añade la capa al mapa.
    *
    * @public
@@ -157,7 +165,7 @@ class KML extends Vector {
       screenOverlayContainer,
       clampToGround: this.clampToGround,
     });
-    this.loader_ = new this.Loader_(this.map, this.url, this.formater_);
+    this.loader_ = this.getLoader();
     this.cesiumLayer = new KmlDataSource(this.vendorOptions_);
     this.updateSource_();
     this.setVisible(this.visibility);

@@ -296,6 +296,14 @@ export const LEAVE_FEATURES = 'leave:features';
 export const LOAD = 'load';
 
 /**
+ * Evento que se produce cuando falla la carga de una capa.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const LOAD_ERROR = 'load:error';
+
+/**
  * Evento que se produce al cargarse las capas.
  * @public
  * @type {string}
