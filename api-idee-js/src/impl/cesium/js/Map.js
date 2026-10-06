@@ -335,9 +335,11 @@ class Map extends MObject {
     const kmlLayers = this.getKML(filters);
     const gpxLayers = this.getGPX(filters);
     const geojsonLayers = this.getGeoJSON(filters);
+    const kmzLayers = this.getKMZ(filters);
     const wmsLayers = this.getWMS(filters);
     const wfsLayers = this.getWFS(filters);
     const ogcapifLayers = this.getOGCAPIFeatures(filters);
+    const dataIDEELayers = this.getDataIDEE(filters);
     const wmtsLayers = this.getWMTS(filters);
     const xyzLayers = this.getXYZs(filters);
     const tmsLayers = this.getTMS(filters);
@@ -359,8 +361,9 @@ class Map extends MObject {
 
     let datasources = kmlLayers.concat(gpxLayers)
       .concat(geojsonLayers)
-      .concat(wfsLayers)
+      .concat(kmzLayers).concat(wfsLayers)
       .concat(ogcapifLayers)
+      .concat(dataIDEELayers)
       .concat(vector);
     datasources = datasources
       .sort((layer1, layer2) => FacadeMap.LAYER_SORT(layer1, layer2, this.facadeMap_));
@@ -416,6 +419,8 @@ class Map extends MObject {
         this.facadeMap_.addWMS(layer);
       } else if (layer.type === LayerType.WMTS) {
         this.facadeMap_.addWMTS(layer);
+      } else if (layer.type === LayerType.KMZ) {
+        this.facadeMap_.addKMZ(layer);
       } else if (layer.type === LayerType.KML) {
         this.facadeMap_.addKML(layer);
       } else if (layer.type === LayerType.GPX) {
@@ -426,6 +431,8 @@ class Map extends MObject {
         this.facadeMap_.addWFS(layer);
       } else if (layer.type === LayerType.OGCAPIFeatures) {
         this.facadeMap_.addOGCAPIFeatures(layer);
+      } else if (layer.type === LayerType.DataIDEE) {
+        this.facadeMap_.addDataIDEE(layer);
       } else if (layer.type === LayerType.MBTiles) {
         this.facadeMap_.addMBTiles(layer);
       } else if (layer.type === LayerType.XYZ) {
@@ -468,12 +475,14 @@ class Map extends MObject {
 
     if (knowLayers.length > 0) {
       this.removeKML(knowLayers);
+      this.removeKMZ(knowLayers);
       // removeLayers emite REMOVED_LAYER después de procesar todos los tipos.
       this.removeGPX(knowLayers, false);
       this.removeGeoJSON(knowLayers, false);
       this.removeWMS(knowLayers);
       this.removeWFS(knowLayers);
       this.removeOGCAPIFeatures(knowLayers);
+      this.removeDataIDEE(knowLayers);
       this.removeWMTS(knowLayers);
       this.removeMBTiles(knowLayers);
       this.removeXYZ(knowLayers);
@@ -592,6 +601,102 @@ class Map extends MObject {
       this.layers_ = this.layers_.filter((layer) => !kmlLayer.equals(layer));
       kmlLayer.getImpl().destroy();
       kmlLayer.fire(EventType.REMOVED_FROM_MAP, [kmlLayer]);
+    }, this);
+
+    return this;
+  }
+
+  /** Gestión de capas KMZ. @api */
+  getKMZ(filtersParam) {
+    let foundLayers = [];
+    let filters = filtersParam;
+
+    // get all kmzLayers
+    const kmzLayers = this.layers_.filter((layer) => {
+      return (layer.type === LayerType.KMZ);
+    });
+
+    // parse to Array
+    if (isNullOrEmpty(filters)) {
+      filters = [];
+    }
+    if (!isArray(filters)) {
+      filters = [filters];
+    }
+
+    if (filters.length === 0) {
+      foundLayers = kmzLayers;
+    } else {
+      filters.forEach((filterLayer) => {
+        const filteredKMZLayers = kmzLayers.filter((kmzLayer) => {
+          let layerMatched = true;
+          // checks if the layer is not in selected layers
+          if (!foundLayers.includes(kmzLayer)) {
+            // type
+            if (!isNullOrEmpty(filterLayer.type)) {
+              layerMatched = (layerMatched && (filterLayer.type === kmzLayer.type));
+            }
+            // URL
+            if (!isNullOrEmpty(filterLayer.url)) {
+              layerMatched = (layerMatched && (filterLayer.url === kmzLayer.url));
+            }
+            // name
+            if (!isNullOrEmpty(filterLayer.name)) {
+              layerMatched = (layerMatched && (filterLayer.name === kmzLayer.name));
+            }
+            // extract
+            if (!isNullOrEmpty(filterLayer.extract)) {
+              layerMatched = (layerMatched && (filterLayer.extract === kmzLayer.extract));
+            }
+          } else {
+            layerMatched = false;
+          }
+          return layerMatched;
+        });
+        foundLayers = foundLayers.concat(filteredKMZLayers);
+      }, this);
+    }
+    return foundLayers;
+  }
+
+  /**
+   * Este método añade las capas KMZ especificadas por el usuario al mapa.
+   *
+   * @function
+   * @param {Array<IDEE.layer.KMZ>} layers Capas KMZ a añadir.
+   * @returns {Map} Mapa.
+   * @public
+   * @api
+   */
+  addKMZ(layers) {
+    layers.forEach((layer) => {
+      // checks if layer is WMC and was added to the map
+      if (layer.type === LayerType.KMZ) {
+        if (!includes(this.layers_, layer)) {
+          this.layers_.push(layer);
+          layer.getImpl().addTo(this.facadeMap_);
+        }
+      }
+    }, this);
+
+    return this;
+  }
+
+  /**
+   * Este método elimina las capas KMZ del mapa especificadas por el usuario.
+   *
+   * @function
+   * @param {Array<IDEE.layer.KMZ>} layers Capas KMZ a eliminar.
+   * @returns {Map} Mapa.
+   * @public
+   * @api
+   */
+  removeKMZ(layers) {
+    const kmzMapLayers = this.getKMZ(layers);
+    kmzMapLayers.forEach((kmzLayer) => {
+      this.layers_ = this.layers_.filter((layer) => !kmzLayer.equals(layer));
+      kmzLayer.getImpl().destroy();
+      kmzLayer.fire(EventType.REMOVED_FROM_MAP, [kmzLayer]);
     }, this);
 
     return this;
@@ -1128,6 +1233,39 @@ class Map extends MObject {
       ogcapifLayer.fire(EventType.REMOVED_FROM_MAP, [ogcapifLayer]);
     });
 
+    return this;
+  }
+
+  getDataIDEE(filtersParam) {
+    let filters = filtersParam;
+    const layers = this.layers_.filter((layer) => layer.type === LayerType.DataIDEE);
+    if (isNullOrEmpty(filters)) filters = [];
+    if (!isArray(filters)) filters = [filters];
+    if (filters.length === 0) return layers;
+    return layers.filter((layer) => filters.some((filter) => {
+      if (filter === layer) return true;
+      return ['url', 'name', 'legend', 'cql', 'geometry', 'id'].every((key) => (
+        isNullOrEmpty(filter[key]) || filter[key] === layer[key]
+      ));
+    }));
+  }
+
+  addDataIDEE(layers) {
+    layers.forEach((layer) => {
+      if (layer.type === LayerType.DataIDEE && !includes(this.layers_, layer)) {
+        this.layers_.push(layer);
+        layer.getImpl().addTo(this.facadeMap_);
+      }
+    });
+    return this;
+  }
+
+  removeDataIDEE(layers) {
+    this.getDataIDEE(layers).forEach((layer) => {
+      this.layers_ = this.layers_.filter((mapLayer) => !mapLayer.equals(layer));
+      layer.getImpl().destroy();
+      layer.fire(EventType.REMOVED_FROM_MAP, [layer]);
+    });
     return this;
   }
 

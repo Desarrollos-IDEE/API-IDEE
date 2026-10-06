@@ -16,6 +16,7 @@ import Control from 'IDEE/control/Control';
 import FacadeWMS from 'IDEE/layer/WMS';
 import FacadeWMTS from 'IDEE/layer/WMTS';
 import FacadeKML from 'IDEE/layer/KML';
+import FacadeKMZ from 'IDEE/layer/KMZ';
 import FacadeWFS from 'IDEE/layer/WFS';
 import FacadeLayerGroup from 'IDEE/layer/LayerGroup';
 import FacadeOGCAPIFeatures from 'IDEE/layer/OGCAPIFeatures';
@@ -332,6 +333,7 @@ class Map extends MObject {
   getLayers(filters) {
     const wmcLayers = this.getWMC(filters);
     const kmlLayers = this.getKML(filters);
+    const kmzLayers = this.getKMZ(filters);
     const gpxLayers = this.getGPX(filters);
     const geojsonLayers = this.getGeoJSON(filters);
     const wmsLayers = this.getWMS(filters);
@@ -339,6 +341,7 @@ class Map extends MObject {
     const mapLibreLayers = this.getMapLibre(filters);
     const wfsLayers = this.getWFS(filters);
     const ogcapifLayers = this.getOGCAPIFeatures(filters);
+    const dataIDEELayers = this.getDataIDEE(filters);
     const wmtsLayers = this.getWMTS(filters);
     const mvtLayers = this.getMVT(filters);
     const mbtilesLayers = this.getMBTiles(filters);
@@ -352,6 +355,7 @@ class Map extends MObject {
 
     const layers = wmcLayers
       .concat(kmlLayers)
+      .concat(kmzLayers)
       .concat(gpxLayers)
       .concat(geojsonLayers)
       .concat(wmsLayers)
@@ -359,6 +363,7 @@ class Map extends MObject {
       .concat(mapLibreLayers)
       .concat(wfsLayers)
       .concat(ogcapifLayers)
+      .concat(dataIDEELayers)
       .concat(wmtsLayers)
       .concat(mvtLayers)
       .concat(mbtilesLayers)
@@ -416,6 +421,8 @@ class Map extends MObject {
         this.facadeMap_.addWMS(layer);
       } else if (layer.type === LayerType.WMTS) {
         this.facadeMap_.addWMTS(layer);
+      } else if (layer.type === LayerType.KMZ) {
+        this.facadeMap_.addKMZ(layer);
       } else if (layer.type === LayerType.KML) {
         this.facadeMap_.addKML(layer);
       } else if (layer.type === LayerType.GPX) {
@@ -428,6 +435,8 @@ class Map extends MObject {
         this.facadeMap_.addGeoTIFF(layer);
       } else if (layer.type === LayerType.OGCAPIFeatures) {
         this.facadeMap_.addOGCAPIFeatures(layer);
+      } else if (layer.type === LayerType.DataIDEE) {
+        this.facadeMap_.addDataIDEE(layer);
       } else if (layer.type === LayerType.MVT) {
         this.facadeMap_.addMVT(layer);
       } else if (layer.type === LayerType.MapLibre) {
@@ -541,6 +550,7 @@ class Map extends MObject {
     if (knowLayers.length > 0) {
       this.removeWMC(knowLayers);
       this.removeKML(knowLayers);
+      this.removeKMZ(knowLayers);
       this.removeGPX(knowLayers);
       this.removeGeoJSON(knowLayers);
       this.removeWMS(knowLayers);
@@ -548,6 +558,7 @@ class Map extends MObject {
       this.removeMapLibre(knowLayers);
       this.removeWFS(knowLayers);
       this.removeOGCAPIFeatures(knowLayers);
+      this.removeDataIDEE(knowLayers);
       this.removeWMTS(knowLayers);
       this.removeMVT(knowLayers);
       this.removeMBTiles(knowLayers);
@@ -1063,6 +1074,111 @@ class Map extends MObject {
         kmlLayer.getImpl().activateBaseLayer(kmlLayer, this.facadeMap_);
         kmlLayer.fire(EventType.REMOVED_FROM_MAP, [kmlLayer]);
         removedLayers.push(kmlLayer);
+      }
+    }, this);
+
+    if (removedLayers.length > 0) {
+      this.facadeMap_.fire(EventType.REMOVED_LAYER, [removedLayers]);
+    }
+
+    return this;
+  }
+
+  /** Gestión de capas KMZ. @api */
+  getKMZ(filtersParam) {
+    let foundLayers = [];
+    let filters = filtersParam;
+
+    // get all kmzLayers
+    const kmzLayers = this.layers_.filter((layer) => {
+      return (layer.type === LayerType.KMZ);
+    });
+
+    // parse to Array
+    if (isNullOrEmpty(filters)) {
+      filters = [];
+    }
+    if (!isArray(filters)) {
+      filters = [filters];
+    }
+
+    if (filters.length === 0) {
+      foundLayers = kmzLayers;
+    } else {
+      filters.forEach((filterLayer) => {
+        const filteredKMZLayers = kmzLayers.filter((kmzLayer) => {
+          let layerMatched = true;
+          // checks if the layer is not in selected layers
+          if (!foundLayers.includes(kmzLayer)) {
+            // if instanceof FacadeKMZ check if it is the same
+            if (filterLayer instanceof FacadeKMZ) {
+              layerMatched = (filterLayer === kmzLayer);
+            } else {
+              // type
+              if (!isNullOrEmpty(filterLayer.type)) {
+                layerMatched = (layerMatched && (filterLayer.type === kmzLayer.type));
+              }
+              // URL
+              if (!isNullOrEmpty(filterLayer.url)) {
+                layerMatched = (layerMatched && (filterLayer.url === kmzLayer.url));
+              }
+              // name
+              if (!isNullOrEmpty(filterLayer.name)) {
+                layerMatched = (layerMatched && (filterLayer.name === kmzLayer.name));
+              }
+              // extract
+              if (!isNullOrEmpty(filterLayer.extract)) {
+                layerMatched = (layerMatched && (filterLayer.extract === kmzLayer.extract));
+              }
+              // template
+              if (!isNullOrEmpty(filterLayer.template)) {
+                layerMatched = (layerMatched && (filterLayer.template === kmzLayer.template));
+              }
+            }
+          } else {
+            layerMatched = false;
+          }
+          return layerMatched;
+        });
+        foundLayers = foundLayers.concat(filteredKMZLayers);
+      }, this);
+    }
+    return foundLayers;
+  }
+
+  /**
+   * Este método añade las capas KMZ especificadas por el usuario al mapa.
+   *
+   * @function
+   * @param {Array<IDEE.layer.KMZ>} layers Capas KMZ a añadir.
+   * @returns {Map} Mapa.
+   * @public
+   * @api
+   */
+  addKMZ(layers) {
+    this.addToLayers_(layers);
+    return this;
+  }
+
+  /**
+   * Este método elimina las capas KMZ del mapa especificadas por el usuario.
+   *
+   * @function
+   * @param {Array<IDEE.layer.KMZ>} layers Capas KMZ a eliminar.
+   * @returns {Map} Mapa.
+   * @public
+   * @api
+   */
+  removeKMZ(layers) {
+    const kmzMapLayers = this.getKMZ(layers);
+    const removedLayers = [];
+    kmzMapLayers.forEach((kmzLayer) => {
+      if (includes(this.layers_, kmzLayer)) {
+        this.layers_ = this.layers_.filter((layer) => !kmzLayer.equals(layer));
+        kmzLayer.getImpl().destroy();
+        kmzLayer.getImpl().activateBaseLayer(kmzLayer, this.facadeMap_);
+        kmzLayer.fire(EventType.REMOVED_FROM_MAP, [kmzLayer]);
+        removedLayers.push(kmzLayer);
       }
     }, this);
 
@@ -1740,6 +1856,40 @@ class Map extends MObject {
       this.facadeMap_.fire(EventType.REMOVED_LAYER, [removedLayers]);
     }
 
+    return this;
+  }
+
+  getDataIDEE(filtersParam) {
+    let filters = filtersParam;
+    const layers = this.layers_.filter((layer) => layer.type === LayerType.DataIDEE);
+    if (isNullOrEmpty(filters)) filters = [];
+    if (!isArray(filters)) filters = [filters];
+    if (filters.length === 0) return layers;
+    return layers.filter((layer) => filters.some((filter) => {
+      if (filter === layer) return true;
+      return ['url', 'name', 'legend', 'cql', 'geometry', 'id'].every((key) => (
+        isNullOrEmpty(filter[key]) || filter[key] === layer[key]
+      ));
+    }));
+  }
+
+  addDataIDEE(layers) {
+    this.addToLayers_(layers.filter((layer) => layer.type === LayerType.DataIDEE));
+    return this;
+  }
+
+  removeDataIDEE(layers) {
+    const removedLayers = [];
+    this.getDataIDEE(layers).forEach((layer) => {
+      if (includes(this.layers_, layer)) {
+        this.layers_ = this.layers_.filter((mapLayer) => !mapLayer.equals(layer));
+        layer.getImpl().destroy();
+        layer.getImpl().activateBaseLayer(layer, this.facadeMap_);
+        layer.fire(EventType.REMOVED_FROM_MAP, [layer]);
+        removedLayers.push(layer);
+      }
+    });
+    if (removedLayers.length > 0) this.facadeMap_.fire(EventType.REMOVED_LAYER, [removedLayers]);
     return this;
   }
 
@@ -4051,6 +4201,7 @@ Map.Z_INDEX[LayerType.OSM] = 40;
 Map.Z_INDEX[LayerType.WMS] = 40;
 Map.Z_INDEX[LayerType.WMTS] = 40;
 Map.Z_INDEX[LayerType.KML] = 40;
+Map.Z_INDEX[LayerType.KMZ] = 40;
 Map.Z_INDEX[LayerType.WFS] = 40;
 Map.Z_INDEX[LayerType.MVT] = 40;
 Map.Z_INDEX[LayerType.Vector] = 40;

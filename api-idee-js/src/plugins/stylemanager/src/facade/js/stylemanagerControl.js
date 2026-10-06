@@ -41,7 +41,7 @@ export default class StyleManagerControl extends IDEE.Control {
   createView(map) {
     this.facadeMap_ = map;
 
-    const filterLayersTyle = ['WFS', 'MVT', 'KML', 'GeoJSON', 'Vector'];
+    const filterLayersTyle = ['WFS', 'MVT', 'KML', 'KMZ', 'GeoJSON', 'Vector'];
     const allLayers = map.getLayers().concat(map.getImpl().getAllLayerInGroup());
     const layers = allLayers.filter((layer) => filterLayersTyle.includes(layer.type) && layer.name !== 'selectLayer' && layer.name !== '__draw__');
 
@@ -174,8 +174,7 @@ export default class StyleManagerControl extends IDEE.Control {
       } else if (layers instanceof IDEE.layer.Vector
         && !LAYERS_PREVENT_PLUGINS.includes(layers.name)
       ) {
-        const layer = { ...layers };
-        this.addLayerOption(htmlSelect, layer);
+        this.addLayerOption(htmlSelect, layers.name);
       }
     });
     this.facadeMap_.on(IDEE.evt.REMOVED_LAYER, (layers) => {
@@ -202,10 +201,9 @@ export default class StyleManagerControl extends IDEE.Control {
   }
 
   removeLayerOption(htmlSelect, name) {
-    if (this.isNotAdded(name, htmlSelect) === false) {
-      const htmlOption = Array.from(htmlSelect.options).find((option) => option.getAttribute('name') === name);
-      htmlOption.remove();
-    }
+    const htmlOption = Array.from(htmlSelect.options)
+      .find((option) => option.getAttribute('name') === name);
+    htmlOption?.remove();
   }
 
   /**
@@ -250,7 +248,7 @@ export default class StyleManagerControl extends IDEE.Control {
    */
   getLayerByName(layerName) {
     const map = this.facadeMap_;
-    const filterLayersTyle = ['WFS', 'MVT', 'KML', 'GeoJSON', 'Vector'];
+    const filterLayersTyle = ['WFS', 'MVT', 'KML', 'KMZ', 'GeoJSON', 'Vector'];
     const allLayers = map.getLayers().concat(map.getImpl().getAllLayerInGroup());
     const layers = allLayers.filter((layer) => filterLayersTyle.includes(layer.type) && layer.name !== 'selectLayer' && layer.name !== '__draw__');
 

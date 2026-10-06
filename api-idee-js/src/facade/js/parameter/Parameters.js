@@ -169,6 +169,24 @@ export const parseKML = (parameter) => {
 };
 
 /**
+ * Analiza las capas KMZ del mapa.
+ * @api
+ */
+export const parseKMZ = (parameter) => {
+  let kmz;
+
+  if (isString(parameter)) {
+    kmz = getParameterValue('kmz', parameter);
+  } else if (isObject(parameter)) {
+    kmz = parameter.kmz;
+  } else {
+    Exception(`El tipo del parámetro container no es válido: ${typeof parameter}`);
+  }
+
+  return kmz;
+};
+
+/**
  * Esta función analiza un parámetro de control en un formato legible
  * parámetro a API-IDEE y chequea posibles errores.
  * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
@@ -712,6 +730,7 @@ class Parameters {
      * @api
      */
     this.kml = parseKML(userParameters);
+    this.kmz = parseKMZ(userParameters);
 
     /**
      * @public

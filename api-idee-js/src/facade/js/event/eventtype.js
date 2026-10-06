@@ -58,6 +58,12 @@ export const ADDED_GPX = 'added:gpx';
 export const ADDED_GEOJSON = 'added:geojson';
 
 /**
+ *Evento que se produce al añadir KMZ
+ * @api
+ */
+export const ADDED_KMZ = 'added:kmz';
+
+/**
  * Evento que se produce al añadir WMS.
  * @public
  * @type {string}
@@ -304,6 +310,14 @@ export const LEAVE_FEATURES = 'leave:features';
  * @api
  */
 export const LOAD = 'load';
+
+/**
+ * Evento que se produce cuando falla la carga de una capa.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const LOAD_ERROR = 'load:error';
 
 /**
  * Evento que se produce al cargarse las capas.

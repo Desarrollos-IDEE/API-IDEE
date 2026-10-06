@@ -54,6 +54,14 @@ class KML extends MObject {
     this.format_ = format;
   }
 
+  getFolders_(xml) {
+    return xml.getElementsByTagName('Folder');
+  }
+
+  getResponse_(url) {
+    return getRemote(url);
+  }
+
   /**
    * Este método ejecutará la función "callback" a los objetos geográficos.
    *
@@ -111,14 +119,14 @@ class KML extends MObject {
     forRefresh = false,
   ) {
     return new Promise((success, fail) => {
-      const request = getRemote(requestUrl).then((response) => {
+      const request = this.getResponse_(requestUrl).then((response) => {
         if (forRefresh && response.code >= 400) throw new Error(`HTTP ${response.code}`);
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(response.text, 'text/xml');
         if (forRefresh && xmlDoc.querySelector('parsererror')) throw new Error(getValue('exception').invalid_kml);
         let transformXMLtoText = false;
         if (!isUndefined(layers)) {
-          const folders = xmlDoc.getElementsByTagName('Folder');
+          const folders = this.getFolders_(xmlDoc);
           let count = -1;
           const foldersArray = [...folders].map((folder) => folder.cloneNode(true));
 

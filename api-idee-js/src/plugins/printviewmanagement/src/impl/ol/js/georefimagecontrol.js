@@ -78,11 +78,11 @@ export default class GeorefimageControl extends IDEE.impl.Control {
     return (new Promise((success, fail) => {
       if (layer.type === IDEE.layer.type.MVT) {
         success(encodeMVT(layer, this.facadeMap_));
-      } else if (layer.type === IDEE.layer.type.KML
+      } else if ((layer.type === IDEE.layer.type.KML || layer.type === IDEE.layer.type.KMZ)
           // eslint-disable-next-line no-underscore-dangle
           && layer.getImpl().formater_.extractStyles_ !== false) {
         success(encodeKML(layer, this.facadeMap_));
-      } else if (layer.type === IDEE.layer.type.KML
+      } else if ((layer.type === IDEE.layer.type.KML || layer.type === IDEE.layer.type.KMZ)
           // eslint-disable-next-line no-underscore-dangle
           && layer.getImpl().formater_.extractStyles_ === false) {
         success(this.encodeWFS(layer));

@@ -57,6 +57,10 @@ class KML extends MObject {
     this.format_ = format;
   }
 
+  getResponse_(url) {
+    return getRemote(url);
+  }
+
   /**
    * Este método ejecutará la función "callback" a los objetos geográficos.
    *
@@ -136,7 +140,7 @@ class KML extends MObject {
     forRefresh = false,
   ) {
     return new Promise((success, fail) => {
-      const request = getRemote(requestUrl).then((response) => {
+      const request = this.getResponse_(requestUrl).then((response) => {
         if (forRefresh && response.code >= 400) throw new Error(`HTTP ${response.code}`);
         const parser = new DOMParser();
         const result = response.text.replace(/<extrude>.*?<\/extrude>/gs, '');
