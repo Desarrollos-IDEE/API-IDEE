@@ -1260,6 +1260,7 @@ export default class QueryAttributesControl extends IDEE.Control {
    * @api
    */
   isLayerLoaded(layer) {
+    if (layer.type === 'KMZ') return layer.getImpl().isLoaded();
     let isLoaded = false;
     const kmlLayerLoaded = this.kmlLayers.some((l) => l.layer === layer)
       ? this.kmlLayers.find((l) => l.layer === layer).loaded

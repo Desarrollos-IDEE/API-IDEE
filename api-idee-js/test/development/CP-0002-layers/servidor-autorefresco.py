@@ -7,6 +7,8 @@ import base64
 from collections import Counter
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import json
+import io
+import zipfile
 from pathlib import Path
 import struct
 from urllib.parse import urlsplit, parse_qs
@@ -88,11 +90,18 @@ class Handler(SimpleHTTPRequestHandler):
             if name in ('puntos.geojson', 'wfs') or name == 'collections/puntos/items':
                 # WFS sintético: devuelve GeoJSON al GetFeature del cargador existente.
                 self.reply(point(revision), 'application/json')
-            elif name == 'puntos.kml':
-                self.reply(f'<kml xmlns="http://www.opengis.net/kml/2.2"><Document>'
-                           f'<Placemark id="prueba"><name>{revision}</name>'
-                           '<Point><coordinates>0,0,0</coordinates></Point>'
-                           '</Placemark></Document></kml>', 'application/vnd.google-earth.kml+xml')
+            elif name in ('puntos.kml', 'puntos.kmz'):
+                kml = (f'<kml xmlns="http://www.opengis.net/kml/2.2"><Document>'
+                       f'<Placemark id="prueba"><name>{revision}</name>'
+                       '<Point><coordinates>0,0,0</coordinates></Point>'
+                       '</Placemark></Document></kml>')
+                if name.endswith('.kmz'):
+                    output = io.BytesIO()
+                    with zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED) as archive:
+                        archive.writestr('doc.kml', kml)
+                    self.reply(output.getvalue(), 'application/vnd.google-earth.kmz')
+                else:
+                    self.reply(kml, 'application/vnd.google-earth.kml+xml')
             elif name in ('vector.mbtiles', 'raster.mbtiles', 'raster.tif', 'points.gpkg'):
                 self.reply((FIXTURES / name).read_bytes(), 'application/octet-stream')
             elif name.endswith('.pbf'):

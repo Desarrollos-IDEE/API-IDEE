@@ -58,9 +58,10 @@ class KML extends Vector {
    * </code></pre>
    * @api stable
    */
-  constructor(options, vendorOptions) {
+  constructor(options, vendorOptions, Loader = LoaderKML) {
     // calls the super constructor
     super(options, vendorOptions);
+    this.Loader_ = Loader;
 
     /**
      * KML popup_. Muestra el popup.
@@ -150,12 +151,13 @@ class KML extends Vector {
    */
   addTo(map, addLayer = true) {
     this.map = map;
-    map.on(EventType.CHANGE_PROJ, this.setProjection_.bind(this), this);
+    this.changeProjectionHandler_ = this.setProjection_.bind(this);
+    map.on(EventType.CHANGE_PROJ, this.changeProjectionHandler_, this);
     this.formater_ = new FormatKML({
       label: this.label_,
       extractStyles: this.extractStyles_,
     });
-    this.loader_ = new LoaderKML(this.map, this.url, this.formater_);
+    this.loader_ = new this.Loader_(this.map, this.url, this.formater_);
     this.olLayer = new OLLayerVector(extend({
       extent: this.maxExtent_,
       opacity: this.opacity_,
@@ -293,7 +295,7 @@ class KML extends Vector {
       label: this.label_,
       extractStyles: this.extractStyles_,
     });
-    this.loader_ = new LoaderKML(this.map, this.url, this.formater_);
+    this.loader_ = new this.Loader_(this.map, this.url, this.formater_);
     this.olLayer = new OLLayerVector(extend({
       extent: this.maxExtent_,
       opacity: this.opacity_,

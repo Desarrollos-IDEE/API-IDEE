@@ -123,7 +123,8 @@ export default class Magnify extends IDEE.Plugin {
     });
     this.panel_.addControls(this.controls_);
     this.panel_.on(IDEE.evt.SHOW, (evt) => {
-      if (map.getWFS().length === 0 && map.getKML().length === 0 && map.getGeoJSON() === 0) {
+      if (map.getWFS().length === 0 && map.getKML().length === 0
+        && map.getKMZ().length === 0 && map.getGeoJSON() === 0) {
         this.panel_.collapse();
         IDEE.dialog.info(getValue('exception.nolayersavai'));
       }

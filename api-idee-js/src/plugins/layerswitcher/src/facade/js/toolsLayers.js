@@ -57,7 +57,7 @@ const CLASS_CHECK = 'm-layerswitcher-check';
 const I18N_LEGEND_ERROR = 'legend_error';
 
 /* TARGET LAYER */
-const layersTypesTarget = ['WMTS', 'WFS', 'MBTilesVector', 'MBTiles', 'OSM', 'XYZ', 'TMS', 'GeoJSON', 'KML', 'OGCAPIFeatures', 'Vector', 'GenericRaster', 'GenericVector', 'MVT', 'GeoTIFF', 'MapLibre'];
+const layersTypesTarget = ['WMTS', 'WFS', 'MBTilesVector', 'MBTiles', 'OSM', 'XYZ', 'TMS', 'GeoJSON', 'KML', 'KMZ', 'OGCAPIFeatures', 'Vector', 'GenericRaster', 'GenericVector', 'MVT', 'GeoTIFF', 'MapLibre'];
 
 /* TILE OPTIONS */
 const TILE_COORDS_REGEX = /\{z\}\/\{x\}\/\{(-?)y\}/;

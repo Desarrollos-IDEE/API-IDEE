@@ -5202,6 +5202,39 @@ export const wmc = (userParameters) => {
 };
 
 /**
+ * Analiza KMZ con la misma sintaxis que KML.
+ * @param {string|Object|Array} userParameters Parámetros de capa.
+ * @returns {Object|Array} Parámetros normalizados.
+ * @api
+ */
+export const kmz = (userParameters) => {
+  if (isArray(userParameters)) return userParameters.map(kmz);
+  let source = userParameters;
+  if (isString(userParameters)) {
+    if (!userParameters.includes('*')) {
+      source = isUrl(userParameters) ? { url: userParameters } : { name: userParameters };
+    } else {
+      source = userParameters.replace(/^KMZ\*/i, 'KML*');
+    }
+  }
+  const result = kml(source);
+  if (isString(userParameters)) {
+    const parts = userParameters.split('*');
+    if (/^KMZ$/i.test(parts[0]) && parts.length >= 3) {
+      result.url = parts[2];
+      if (parts.length === 5 && /\.kmz$/i.test(parts[3])) {
+        result.url += parts[3];
+        result.extract = parts[4] === 'true';
+        result.label = true;
+        result.visibility = true;
+      }
+    }
+  }
+  result.type = LayerType.KMZ;
+  return result;
+};
+
+/**
  * Parámetros con los tipos de capa soportados.
  * @const
  * @type {object}
@@ -5210,6 +5243,7 @@ export const wmc = (userParameters) => {
  */
 const parameterFunction = {
   kml,
+  kmz,
   wfs,
   osm,
   wms,

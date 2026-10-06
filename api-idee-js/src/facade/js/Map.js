@@ -36,6 +36,7 @@ import Layer from './layer/Layer';
 import * as LayerType from './layer/Type';
 import Vector from './layer/Vector';
 import KML from './layer/KML';
+import KMZ from './layer/KMZ';
 import WFS from './layer/WFS';
 import WMS from './layer/WMS';
 import WMTS from './layer/WMTS';
@@ -363,6 +364,10 @@ class Map extends Base {
     // kml
     if (!isNullOrEmpty(params.kml)) {
       this.addKML(params.kml);
+    }
+
+    if (!isNullOrEmpty(params.kmz)) {
+      this.addKMZ(params.kmz);
     }
 
     // controls
@@ -862,6 +867,9 @@ class Map extends Base {
         }
         case 'GeoTIFF':
           layer = new GeoTIFF(layerParam);
+          break;
+        case 'KMZ':
+          layer = new KMZ(layerParam);
           break;
         case 'KML':
           layer = new KML(layerParam);
@@ -1430,6 +1438,113 @@ class Map extends Base {
         });
         // removes the layers
         this.getImpl().removeKML(kmlLayers);
+      }
+    }
+    return this;
+  }
+
+  /** Gestión de capas KMZ. @api */
+  getKMZ(layersParamVar) {
+    let layersParam = layersParamVar;
+    // checks if the implementation can manage layers
+    if (isUndefined(MapImpl.prototype.getKMZ)) {
+      Exception(getValue('exception').getkmz_method);
+    }
+
+    // parses parameters to Array
+    if (isNull(layersParam)) {
+      layersParam = [];
+    } else if (!isArray(layersParam)) {
+      layersParam = [layersParam];
+    }
+
+    // gets the parameters as Layer objects to filter
+    let filters = [];
+    if (layersParam.length > 0) {
+      filters = layersParam.map((layerParam) => {
+        return parameter.layer(layerParam, LayerType.KMZ);
+      });
+    }
+
+    // gets the layers
+    const layers = this.getImpl().getKMZ(filters).sort(Map.LAYER_SORT);
+
+    return layers;
+  }
+
+  /**
+   * Este método agrega las capas KMZ al mapa.
+   *
+   * @function
+   * @param {Array<string>|Array<Mx.parameters.KMZ>} layersParam Colección u objeto de capa.
+   * @returns {Map} Devuelve el estado del mapa.
+   * @api
+   */
+  addKMZ(layersParamVar) {
+    let layersParam = layersParamVar;
+    if (!isNullOrEmpty(layersParam)) {
+      // checks if the implementation can manage layers
+      if (isUndefined(MapImpl.prototype.addKMZ)) {
+        Exception(getValue('exception').addkmz_method);
+      }
+
+      // parses parameters to Array
+      if (!isArray(layersParam)) {
+        layersParam = [layersParam];
+      }
+
+      // gets the parameters as KMZ objects to add
+      const kmzLayers = [];
+      layersParam.forEach((layerParam) => {
+        let kmzLayer;
+        if (layerParam instanceof KMZ) {
+          kmzLayer = layerParam;
+        } else if (!(layerParam instanceof Layer)) {
+          kmzLayer = new KMZ(layerParam, layerParam.options);
+        }
+        if (kmzLayer.extract === true) {
+          this.featuresHandler_.addLayer(kmzLayer);
+        }
+        kmzLayers.push(kmzLayer);
+      });
+
+      // adds the layers
+      this.getImpl().addKMZ(kmzLayers);
+      kmzLayers.forEach((layer) => {
+        if (isFunction(layer.startAutoRefresh)) {
+          layer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
+      this.fire(EventType.ADDED_LAYER, [kmzLayers]);
+      this.fire(EventType.ADDED_KMZ, [kmzLayers]);
+    }
+    return this;
+  }
+
+  /**
+   * Este método elimina las capas KMZ del mapa.
+   *
+   * @function
+   * @param {Array<string>|Array<Mx.parameters.KMZ>} layersParam Matriz de capas de nombres que
+   * desea eliminar.
+   * @returns {Map} Devuelve el estado del mapa.
+   * @api
+   */
+  removeKMZ(layersParam) {
+    if (!isNullOrEmpty(layersParam)) {
+      // checks if the implementation can manage layers
+      if (isUndefined(MapImpl.prototype.removeKMZ)) {
+        Exception(getValue('exception').removekmz_method);
+      }
+
+      // gets the layers
+      const kmzLayers = this.getKMZ(layersParam);
+      if (kmzLayers.length > 0) {
+        kmzLayers.forEach((layer) => {
+          this.featuresHandler_.removeLayer(layer);
+        });
+        // removes the layers
+        this.getImpl().removeKMZ(kmzLayers);
       }
     }
     return this;

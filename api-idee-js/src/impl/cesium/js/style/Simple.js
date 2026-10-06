@@ -53,7 +53,7 @@ class Simple extends Style {
   applyToLayer(layer) {
     this.layer_ = layer;
     if (!isNullOrEmpty(layer)) {
-      if (layer.type === 'KML') {
+      if (layer.type === 'KML' || layer.type === 'KMZ') {
         if (!isNullOrEmpty(layer.options) && layer.options.extractStyles === false) {
           layer.getFeatures().forEach(this.applyToFeature, this);
         }

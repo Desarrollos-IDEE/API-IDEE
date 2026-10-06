@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CP-034 · Pruebas manuales KMZ</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; font: 14px system-ui, sans-serif; }
+    body { display: grid; grid-template-rows: auto minmax(320px, 1fr); }
+    header { padding: 12px; background: #f2f4f6; border-bottom: 1px solid #ccd2d8; }
+    h1 { margin: 0 0 8px; font-size: 19px; }
+    .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 7px 0; }
+    input, select, button { min-height: 34px; padding: 5px 8px; font: inherit; }
+    input[type=url] { flex: 1; min-width: 260px; }
+    button { cursor: pointer; }
+    #summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px; margin-top: 8px; }
+    #summary span { padding: 6px; background: white; border: 1px solid #d8dde2; border-radius: 3px; }
+    #status { margin: 7px 0 0; font-weight: 600; }
+    #status.error { color: #a40000; }
+    #map { min-height: 320px; }
+    details { margin-top: 7px; }
+    #log { max-height: 110px; overflow: auto; padding: 7px; background: #17202a; color: #ecf0f1; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>CP-034 · Compatibilidad manual con KMZ</h1>
+    <div class="row">
+      <label for="engine">Motor</label>
+      <select id="engine"><option value="ol">OpenLayers</option><option value="cesium">Cesium</option></select>
+      <label for="fixture">Ejemplo</label>
+      <select id="fixture">
+        <option value="basic.kmz">KMZ básico (2 objetos)</option>
+        <option value="nested.kmz">KMZ con KML y recursos anidados</option>
+        <option value="updated.kmz">KMZ alternativo para cambio de URL</option>
+        <option value="empty.kmz">KMZ sin KML (error esperado)</option>
+        <option value="invalid.kmz">Archivo no ZIP (error esperado)</option>
+      </select>
+      <button id="sample" type="button">Cargar ejemplo</button>
+    </div>
+    <div class="row">
+      <label for="file">Archivo local</label>
+      <input id="file" type="file" accept=".kmz,application/vnd.google-earth.kmz">
+      <label for="url">URL</label>
+      <input id="url" type="url" placeholder="Solo HTTP(S): https://servidor/datos/capa.kmz">
+      <button id="load" type="button">Cargar URL</button>
+    </div>
+    <div class="row">
+      <label><input id="refresh" type="checkbox"> Refresco automático</label>
+      <label for="interval">Intervalo (ms)</label>
+      <input id="interval" type="number" min="1" max="2147483647" step="1" value="5000">
+      <button id="apply-interval" type="button">Aplicar intervalo a la capa</button>
+      <button id="dynamic" type="button">Cargar KMZ cambiante (servidor 8083)</button>
+      <button id="visible" type="button">Mostrar / ocultar</button>
+      <button id="reload" type="button">Recargar</button>
+      <button id="change-url" type="button">Cambiar a updated.kmz</button>
+      <button id="fit" type="button">Encuadrar</button>
+      <button id="remove" type="button">Eliminar</button>
+      <button id="kml" type="button">Añadir KML de control</button>
+    </div>
+    <p>El refresco descarga de nuevo una URL HTTP(S). Los ejemplos fijos conservan su contenido.
+      El archivo local es una copia en memoria; no observa cambios posteriores en el disco.</p>
+    <p id="status" role="status" aria-live="polite">Preparando el mapa…</p>
+    <div id="summary" aria-live="polite">
+      <span>Tipo: <strong id="type">—</strong></span>
+      <span>Nombre: <strong id="name">—</strong></span>
+      <span>Objetos: <strong id="features">0</strong></span>
+      <span>Visible: <strong id="visibility">—</strong></span>
+      <span>getKMZ(nombre): <strong id="registered">0</strong></span>
+    </div>
+    <details><summary>Registro de eventos</summary><div id="log" role="log"></div></details>
+  </header>
+  <div id="map"></div>
+  <script src="CP-034.js"></script>
+</body>
+</html>
