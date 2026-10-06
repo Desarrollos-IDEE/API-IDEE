@@ -101,6 +101,8 @@ export default class Catalogmanager extends IDEE.Plugin {
 
     this.addCatalogEnabled = options.addCatalogEnabled !== false;
 
+    this.cogCacheSize = options.cogCacheSize || 350;
+
     this.downloadUrl = options.downloadUrl || 'https://stac-gneis.idee.es/download-service/v1/download-jobs';
 
     /**
@@ -125,6 +127,7 @@ export default class Catalogmanager extends IDEE.Plugin {
       order: this.order,
       predefinedCatalogs: this.predefinedCatalogs,
       addCatalogEnabled: this.addCatalogEnabled,
+      cogCacheSize: this.cogCacheSize,
       downloadUrl: this.downloadUrl,
     }));
     this.map_ = map;

@@ -97,7 +97,8 @@ const handleOnAdd = (map) => (evt) => {
   if (isToMap || isGroupToGroup) {
     if (fromContainer !== null) {
       if (fromContainer.isSection) {
-        item = fromContainer.container.getChildren().find((l) => l.idLayer === itemId);
+        item = fromContainer.container.getChildren()
+          .find((l) => l.idLayer === itemId || l.idSection === itemId);
       } else {
         item = fromContainer.container.getLayers().find((l) => l.idLayer === itemId);
       }
@@ -129,7 +130,7 @@ const handleOnAdd = (map) => (evt) => {
 
   if (isToMap || isGroupToGroup) {
     if (fromContainer.isSection) {
-      fromContainer.container.ungroup(item);
+      fromContainer.container.ungroup(item, isToMap);
     } else {
       fromContainer.container.ungroup(item, true);
     }
@@ -152,7 +153,7 @@ const handleOnEnd = (map, overlayLayers) => (evt) => {
   let maxZIndex = 0;
 
   const filterLayers = layers
-    .filter(({ displayInLayerSwitcher }) => displayInLayerSwitcher === true);
+    .filter((l) => l.displayInLayerSwitcher === true || l instanceof IDEE.layer.Section);
   maxZIndex = Math.max(...(filterLayers.map((l) => {
     return l.getZIndex();
   })));

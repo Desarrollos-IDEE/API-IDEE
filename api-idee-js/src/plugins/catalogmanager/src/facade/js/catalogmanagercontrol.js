@@ -158,6 +158,13 @@ export default class CatalogmanagerControl extends IDEE.Control {
     this.addCatalogEnabled_ = options.addCatalogEnabled || false;
 
     /**
+     * Tamaño del caché de COGs
+     * @private
+     * @type {number}
+     */
+    this.cogCacheSize_ = options.cogCacheSize || 350;
+
+    /**
      * URL del servicio de descarga masiva de imágenes
      * @private
      * @type {string}
@@ -2882,17 +2889,21 @@ export default class CatalogmanagerControl extends IDEE.Control {
     for (let i = 1; i <= styleSpec.numberOfBands; i += 1) {
       bands.push(i);
     }
+
     const geotiffOptions = {
       convertToRGB,
       normalize,
       style,
       bands,
       nodata: 0,
+      cacheSize: this.cogCacheSize_,
     };
     if (styleSpec.ranges) {
       geotiffOptions.min = styleSpec.ranges.min;
       geotiffOptions.max = styleSpec.ranges.max;
     }
+    console.log('geotiffOptions', geotiffOptions);
+
     const geotiff = new IDEE.layer.GeoTIFF({
       url: image.href,
       name: image.title,
