@@ -2,6 +2,7 @@
  * @module IDEE/impl/layer/KMZ
  */
 import * as EventType from 'IDEE/event/eventtype';
+import { getValue } from 'IDEE/i18n/language';
 import KML from './KML';
 import LoaderKMZ from '../loader/KMZ';
 
@@ -12,8 +13,17 @@ import LoaderKMZ from '../loader/KMZ';
  */
 class KMZ extends KML {
   constructor(options, vendorOptions) {
-    super(options, vendorOptions, LoaderKMZ);
+    super(options, vendorOptions);
     this.loadGeneration_ = 0;
+  }
+
+  /**
+   * Crea el cargador específico de esta capa con el mapa y formato actuales.
+   * @private
+   * @returns {LoaderKMZ} Cargador KMZ.
+   */
+  getLoader() {
+    return new LoaderKMZ(this.map, this.url, this.formater_);
   }
 
   requestFeatures_(force = false) {
@@ -31,7 +41,7 @@ class KMZ extends KML {
         true,
       ).then((response) => {
         if (!this.map || generation !== this.loadGeneration_) {
-          throw new Error('KMZ: carga cancelada');
+          throw new Error(getValue('exception').kmz_load_cancelled);
         }
         return response;
       });
@@ -55,7 +65,7 @@ class KMZ extends KML {
       facade.un(EventType.LOAD, onLoad);
       if (this.map && generation === this.loadGeneration_) {
         this.loadFeaturesPromise_ = null;
-        this.facadeVector_.fire('load:error', [error]);
+        this.facadeVector_.fire(EventType.LOAD_ERROR, [error]);
       }
     });
   }
@@ -73,7 +83,7 @@ class KMZ extends KML {
     this.url = url;
     this.loadFeaturesPromise_ = null;
     if (this.map) {
-      this.loader_ = new LoaderKMZ(this.map, url, this.formater_);
+      this.loader_ = this.getLoader();
       this.loaded_ = false;
       this.updateSource_(true);
       this.facadeVector_.startAutoRefresh();
@@ -87,7 +97,7 @@ class KMZ extends KML {
     if (this.screenOverlayImg_) this.screenOverlayImg_.remove();
     this.screenOverlayImg_ = null;
     if (this.map) {
-      this.map.un('change:proj', this.changeProjectionHandler_, this);
+      this.map.un(EventType.CHANGE_PROJ, this.changeProjectionHandler_, this);
       super.destroy();
     }
   }

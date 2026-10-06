@@ -201,6 +201,8 @@
     "kmz_no_kml": "KMZ: no contiene un documento KML",
     "kmz_cycle": "KMZ: enlace KML circular",
     "kmz_invalid": "KMZ: documento KML inválido",
+    "kmz_load_cancelled": "KMZ: carga cancelada",
+    "kmz_http_error": "KMZ: error HTTP {status}",
     "addto_method": "La implementación usada no posee el método addTo",
     "no_get_rotation_method": "La implementación usada no posee el método getRotation",
     "no_set_rotation_method": "La implementación usada no posee el método setRotation",
