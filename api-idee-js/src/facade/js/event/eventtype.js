@@ -42,6 +42,22 @@ export const ADDED_LAYER = 'added:layer';
 export const ADDED_KML = 'added:kml';
 
 /**
+ * Evento que se produce al añadir GPX.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const ADDED_GPX = 'added:gpx';
+
+/**
+ * Evento que se produce al añadir GeoJSON.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const ADDED_GEOJSON = 'added:geojson';
+
+/**
  * Evento que se produce al añadir WMS.
  * @public
  * @type {string}

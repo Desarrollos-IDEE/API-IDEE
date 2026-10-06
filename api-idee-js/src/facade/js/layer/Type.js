@@ -308,6 +308,8 @@ export const parse = (rawType) => {
 export const know = (type) => {
   const knowTypes = [
     KML,
+    GPX,
+    GeoJSON,
     WMS,
     GeoTIFF,
     WFS,

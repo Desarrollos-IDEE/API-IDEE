@@ -1440,7 +1440,7 @@ class Map extends Base {
   }
 
   /**
-   * Obtiene las capas GPX mediante la colección general del mapa.
+   * Obtiene las capas GPX mediante la consulta específica del motor.
    * Sin parámetros devuelve todas; admite instancia, nombre, descriptor con name/url
    * o parámetros GPX de REST. Una lista combina los filtros sin duplicar resultados.
    * @param {IDEE.layer.GPX|String|Object|Array} layersParam Filtros opcionales.
@@ -1448,23 +1448,22 @@ class Map extends Base {
    * @api
    */
   getGPX(layersParam) {
-    const layers = this.getLayers().filter((layer) => layer instanceof GPX);
-    if (isNullOrEmpty(layersParam)) return layers;
-    const parameters = isArray(layersParam) ? layersParam : [layersParam];
+    if (isUndefined(MapImpl.prototype.getGPX)) {
+      Exception(getValue('exception').getgpx_method);
+    }
+    let parameters = layersParam;
+    if (isNullOrEmpty(parameters)) parameters = [];
+    else if (!isArray(parameters)) parameters = [parameters];
     const filters = parameters.map((filter) => {
       if (filter instanceof Layer) return filter;
       if (isString(filter) && !/^GPX\*/i.test(filter)) return { name: filter };
       return parameter.layer(isString(filter) ? buildLayer(filter) : filter, LayerType.GPX);
     });
-    return layers.filter((layer) => filters.some((filter) => {
-      if (filter instanceof Layer) return layer.equals(filter);
-      return (isNullOrEmpty(filter.name) || filter.name === layer.name)
-        && (isNullOrEmpty(filter.url) || filter.url === layer.url);
-    }));
+    return this.getImpl().getGPX(filters).sort(Map.LAYER_SORT);
   }
 
   /**
-   * Añade capas GPX usando el registro, los eventos y el ciclo de vida de addLayers.
+   * Añade capas GPX mediante el motor y emite los eventos generales y específicos.
    * Admite instancias, parámetros del constructor o cadenas GPX de REST.
    * Las opciones del constructor se incluyen en el descriptor de cada capa.
    * @param {IDEE.layer.GPX|Object|String|Array} layersParam Capas que se añadirán.
@@ -1473,6 +1472,9 @@ class Map extends Base {
    */
   addGPX(layersParam) {
     if (isNullOrEmpty(layersParam)) return this;
+    if (isUndefined(MapImpl.prototype.addGPX)) {
+      Exception(getValue('exception').addgpx_method);
+    }
     const parameters = isArray(layersParam) ? layersParam : [layersParam];
     const layers = parameters.map((layerParam) => {
       if (layerParam instanceof GPX) return layerParam;
@@ -1480,11 +1482,23 @@ class Map extends Base {
       parameter.getType(params, LayerType.GPX);
       return new GPX(params);
     });
-    return this.addLayers(layers);
+    layers.forEach((layer) => {
+      this.featuresHandler_.addLayer(layer);
+      layer.setMap(this);
+    });
+    this.getImpl().addGPX(layers);
+    layers.forEach((layer) => {
+      if (isFunction(layer.startAutoRefresh)) {
+        layer.startAutoRefresh(this.getAutoRefreshInterval());
+      }
+    });
+    this.fire(EventType.ADDED_LAYER, [layers]);
+    this.fire(EventType.ADDED_GPX, [layers]);
+    return this;
   }
 
   /**
-   * Retira únicamente las GPX seleccionadas, delegando su limpieza en removeLayers.
+   * Retira únicamente las GPX seleccionadas mediante el motor y limpia su interacción.
    * Admite los filtros de getGPX; sin parámetros no elimina capas.
    * Para retirar todas se proporciona el resultado de getGPX().
    * @param {IDEE.layer.GPX|String|Object|Array} layersParam Capas que se retirarán.
@@ -1492,7 +1506,16 @@ class Map extends Base {
    * @api
    */
   removeGPX(layersParam) {
-    if (!isNullOrEmpty(layersParam)) this.removeLayers(this.getGPX(layersParam));
+    if (!isNullOrEmpty(layersParam)) {
+      if (isUndefined(MapImpl.prototype.removeGPX)) {
+        Exception(getValue('exception').removegpx_method);
+      }
+      const layers = this.getGPX(layersParam);
+      if (layers.length > 0) {
+        layers.forEach((layer) => this.featuresHandler_.removeLayer(layer));
+        this.getImpl().removeGPX(layers);
+      }
+    }
     return this;
   }
 
@@ -1669,6 +1692,76 @@ class Map extends Base {
     const layers = this.getImpl().getGeoJSON(layersParam).sort(Map.LAYER_SORT);
 
     return layers;
+  }
+
+  /**
+   * Añade capas GeoJSON mediante el motor y emite los eventos generales y específicos.
+   * Admite instancias, parámetros del constructor o cadenas GeoJSON de REST.
+   * Las opciones del constructor se incluyen en el descriptor de cada capa.
+   * @param {IDEE.layer.GeoJSON|Object|String|Array} layersParam Capas que se añadirán.
+   * @returns {IDEE.Map} Este mapa; la carga se completa con el evento LOAD de la capa.
+   * @api
+   */
+  addGeoJSON(layersParam) {
+    if (isNullOrEmpty(layersParam)) return this;
+    if (isUndefined(MapImpl.prototype.addGeoJSON)) {
+      Exception(getValue('exception').addgeojson_method);
+    }
+    const parameters = isArray(layersParam) ? layersParam : [layersParam];
+    const layers = parameters.map((layerParam) => {
+      if (layerParam instanceof GeoJSON) return layerParam;
+      const params = parameter.layer(
+        isString(layerParam) ? buildLayer(layerParam) : layerParam,
+        LayerType.GeoJSON,
+      );
+      parameter.getType(params, LayerType.GeoJSON);
+      const options = isString(layerParam) ? {} : layerParam.options ?? {};
+      return new GeoJSON({ ...params }, {
+        ...options,
+        style: options.style ?? params.style,
+      });
+    });
+    layers.forEach((layer) => {
+      this.featuresHandler_.addLayer(layer);
+      layer.setMap(this);
+    });
+    this.getImpl().addGeoJSON(layers);
+    layers.forEach((layer) => {
+      if (isFunction(layer.startAutoRefresh)) {
+        layer.startAutoRefresh(this.getAutoRefreshInterval());
+      }
+    });
+    this.fire(EventType.ADDED_LAYER, [layers]);
+    this.fire(EventType.ADDED_GEOJSON, [layers]);
+    return this;
+  }
+
+  /**
+   * Retira únicamente las GeoJSON seleccionadas mediante el motor y limpia su interacción.
+   * Admite los filtros de getGeoJSON; sin parámetros no elimina capas.
+   * Para retirar todas se proporciona el resultado de getGeoJSON().
+   * @param {IDEE.layer.GeoJSON|String|Object|Array} layersParam Capas que se retirarán.
+   * @returns {IDEE.Map} Este mapa.
+   * @api
+   */
+  removeGeoJSON(layersParam) {
+    if (!isNullOrEmpty(layersParam)) {
+      if (isUndefined(MapImpl.prototype.removeGeoJSON)) {
+        Exception(getValue('exception').removegeojson_method);
+      }
+      const parameters = isArray(layersParam) ? layersParam : [layersParam];
+      const filters = parameters.map((filter) => {
+        if (filter instanceof Layer) return filter;
+        if (isString(filter) && !/^GeoJSON\*/i.test(filter)) return { name: filter };
+        return parameter.layer(isString(filter) ? buildLayer(filter) : filter, LayerType.GeoJSON);
+      });
+      const layers = this.getGeoJSON(filters);
+      if (layers.length > 0) {
+        layers.forEach((layer) => this.featuresHandler_.removeLayer(layer));
+        this.getImpl().removeGeoJSON(layers);
+      }
+    }
+    return this;
   }
 
   /**

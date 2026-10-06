@@ -332,6 +332,8 @@ class Map extends MObject {
   getLayers(filters) {
     const wmcLayers = this.getWMC(filters);
     const kmlLayers = this.getKML(filters);
+    const gpxLayers = this.getGPX(filters);
+    const geojsonLayers = this.getGeoJSON(filters);
     const wmsLayers = this.getWMS(filters);
     const geotiffLayers = this.getGeoTIFF(filters);
     const mapLibreLayers = this.getMapLibre(filters);
@@ -350,6 +352,8 @@ class Map extends MObject {
 
     const layers = wmcLayers
       .concat(kmlLayers)
+      .concat(gpxLayers)
+      .concat(geojsonLayers)
       .concat(wmsLayers)
       .concat(geotiffLayers)
       .concat(mapLibreLayers)
@@ -414,6 +418,10 @@ class Map extends MObject {
         this.facadeMap_.addWMTS(layer);
       } else if (layer.type === LayerType.KML) {
         this.facadeMap_.addKML(layer);
+      } else if (layer.type === LayerType.GPX) {
+        this.facadeMap_.addGPX(layer);
+      } else if (layer.type === LayerType.GeoJSON) {
+        this.facadeMap_.addGeoJSON(layer);
       } else if (layer.type === LayerType.WFS) {
         this.facadeMap_.addWFS(layer);
       } else if (layer.type === LayerType.GeoTIFF) {
@@ -424,9 +432,9 @@ class Map extends MObject {
         this.facadeMap_.addMVT(layer);
       } else if (layer.type === LayerType.MapLibre) {
         this.facadeMap_.addMapLibre(layer);
-      } else if (layer.type === 'MBTiles') {
+      } else if (layer.type === LayerType.MBTiles) {
         this.facadeMap_.addMBTiles(layer);
-      } else if (layer.type === 'MBTilesVector') {
+      } else if (layer.type === LayerType.MBTilesVector) {
         this.facadeMap_.addMBTilesVector(layer);
       } else if (layer.type === LayerType.XYZ) {
         this.facadeMap_.addXYZ(layer);
@@ -533,6 +541,8 @@ class Map extends MObject {
     if (knowLayers.length > 0) {
       this.removeWMC(knowLayers);
       this.removeKML(knowLayers);
+      this.removeGPX(knowLayers);
+      this.removeGeoJSON(knowLayers);
       this.removeWMS(knowLayers);
       this.removeGeoTIFF(knowLayers);
       this.removeMapLibre(knowLayers);
@@ -1194,6 +1204,63 @@ class Map extends MObject {
   }
 
   /**
+   * Obtiene las GPX por instancia o por filtros de tipo, nombre y URL, sin duplicarlas.
+   * @param {Array<IDEE.Layer>|Object} filters Filtros opcionales.
+   * @returns {Array<IDEE.layer.GPX>} Capas GPX del mapa.
+   * @public
+   * @api
+   */
+  getGPX(filters = []) {
+    let parameters = filters;
+    if (isNullOrEmpty(parameters)) parameters = [];
+    else if (!isArray(parameters)) parameters = [parameters];
+    const layers = this.layers_.filter((layer) => layer.type === LayerType.GPX);
+    return layers.filter((layer) => parameters.length === 0 || parameters.some((filter) => {
+      if (filter instanceof LayerBase) return layer.equals(filter);
+      return (isNullOrEmpty(filter.type) || filter.type === layer.type)
+        && (isNullOrEmpty(filter.name) || filter.name === layer.name)
+        && (isNullOrEmpty(filter.url) || filter.url === layer.url);
+    }));
+  }
+
+  /**
+   * Añade GPX mediante el ciclo vectorial de OpenLayers.
+   * @param {Array<IDEE.layer.GPX>} layers Capas que se incorporarán.
+   * @returns {Map} Este mapa.
+   * @public
+   * @api
+   */
+  addGPX(layers) {
+    this.addToLayers_(layers);
+    return this;
+  }
+
+  /**
+   * Retira las GPX y notifica una vez la retirada de cada capa y del conjunto.
+   * @param {Array<IDEE.Layer>} layers Instancias o filtros.
+   * @returns {Map} Este mapa.
+   * @public
+   * @api
+   */
+  removeGPX(layers) {
+    const removedLayers = this.getGPX(layers);
+    removedLayers.forEach((layer) => {
+      this.layers_ = this.layers_.filter((candidate) => !candidate.equals(layer));
+      layer.getImpl().destroy();
+      layer.getImpl().activateBaseLayer(layer, this.facadeMap_);
+      layer.fire(EventType.REMOVED_FROM_MAP, [layer]);
+      if (layer.isBase === true) {
+        const baseLayers = this.facadeMap_.getBaseLayers();
+        if (baseLayers.length > 0) baseLayers[0].setVisible(true);
+      }
+    });
+    if (removedLayers.length > 0) {
+      this.facadeMap_.fire(EventType.REMOVED_LAYER, [removedLayers]);
+    }
+    return this;
+  }
+
+  /**
    * Este método obtiene las capas GeoJSON añadidas al mapa.
    *
    * @function
@@ -1257,6 +1324,43 @@ class Map extends MObject {
       });
     }
     return foundLayers;
+  }
+
+  /**
+   * Añade GeoJSON mediante el ciclo vectorial de OpenLayers.
+   * @param {Array<IDEE.layer.GeoJSON>} layers Capas que se incorporarán.
+   * @returns {Map} Este mapa.
+   * @public
+   * @api
+   */
+  addGeoJSON(layers) {
+    this.addToLayers_(layers);
+    return this;
+  }
+
+  /**
+   * Retira las GeoJSON y notifica una vez la retirada de cada capa y del conjunto.
+   * @param {Array<IDEE.Layer>} layers Instancias o filtros.
+   * @returns {Map} Este mapa.
+   * @public
+   * @api
+   */
+  removeGeoJSON(layers) {
+    const removedLayers = this.getGeoJSON(layers);
+    removedLayers.forEach((layer) => {
+      this.layers_ = this.layers_.filter((candidate) => candidate !== layer);
+      layer.getImpl().destroy();
+      layer.getImpl().activateBaseLayer(layer, this.facadeMap_);
+      layer.fire(EventType.REMOVED_FROM_MAP, [layer]);
+      if (layer.isBase === true) {
+        const baseLayers = this.facadeMap_.getBaseLayers();
+        if (baseLayers.length > 0) baseLayers[0].setVisible(true);
+      }
+    });
+    if (removedLayers.length > 0) {
+      this.facadeMap_.fire(EventType.REMOVED_LAYER, [removedLayers]);
+    }
+    return this;
   }
 
   /**

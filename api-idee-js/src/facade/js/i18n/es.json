@@ -194,6 +194,11 @@
     "msg": "Llévame allí"
   },
   "exception": {
+    "addgeojson_method": "La implementación usada no posee el método addGeoJSON.",
+    "removegeojson_method": "La implementación usada no posee el método removeGeoJSON.",
+    "getgpx_method": "La implementación usada no posee el método getGPX",
+    "addgpx_method": "La implementación usada no posee el método addGPX",
+    "removegpx_method": "La implementación usada no posee el método removeGPX",
     "invalid_gpx": "El contenido no es un GPX válido.",
     "invalid_gpx_source": "GPX requiere una URL o una fuente XML/File, exclusivamente.",
     "auto_refresh_failed": "No se ha podido autorefrescar la capa",

@@ -333,6 +333,8 @@ class Map extends MObject {
    */
   getLayers(filters) {
     const kmlLayers = this.getKML(filters);
+    const gpxLayers = this.getGPX(filters);
+    const geojsonLayers = this.getGeoJSON(filters);
     const wmsLayers = this.getWMS(filters);
     const wfsLayers = this.getWFS(filters);
     const ogcapifLayers = this.getOGCAPIFeatures(filters);
@@ -355,7 +357,9 @@ class Map extends MObject {
     imageryLayers = imageryLayers
       .sort((layer1, layer2) => FacadeMap.LAYER_SORT(layer1, layer2, this.facadeMap_));
 
-    let datasources = kmlLayers.concat(wfsLayers)
+    let datasources = kmlLayers.concat(gpxLayers)
+      .concat(geojsonLayers)
+      .concat(wfsLayers)
       .concat(ogcapifLayers)
       .concat(vector);
     datasources = datasources
@@ -414,6 +418,10 @@ class Map extends MObject {
         this.facadeMap_.addWMTS(layer);
       } else if (layer.type === LayerType.KML) {
         this.facadeMap_.addKML(layer);
+      } else if (layer.type === LayerType.GPX) {
+        this.facadeMap_.addGPX(layer);
+      } else if (layer.type === LayerType.GeoJSON) {
+        this.facadeMap_.addGeoJSON(layer);
       } else if (layer.type === LayerType.WFS) {
         this.facadeMap_.addWFS(layer);
       } else if (layer.type === LayerType.OGCAPIFeatures) {
@@ -460,6 +468,9 @@ class Map extends MObject {
 
     if (knowLayers.length > 0) {
       this.removeKML(knowLayers);
+      // removeLayers emite REMOVED_LAYER después de procesar todos los tipos.
+      this.removeGPX(knowLayers, false);
+      this.removeGeoJSON(knowLayers, false);
       this.removeWMS(knowLayers);
       this.removeWFS(knowLayers);
       this.removeOGCAPIFeatures(knowLayers);
@@ -717,6 +728,65 @@ class Map extends MObject {
   }
 
   /**
+   * Obtiene las GPX por instancia o por filtros de tipo, nombre y URL, sin duplicarlas.
+   * @param {Array<IDEE.Layer>|Object} filters Filtros opcionales.
+   * @returns {Array<IDEE.layer.GPX>} Capas GPX del mapa.
+   * @public
+   * @api
+   */
+  getGPX(filters = []) {
+    let parameters = filters;
+    if (isNullOrEmpty(parameters)) parameters = [];
+    else if (!isArray(parameters)) parameters = [parameters];
+    const layers = this.layers_.filter((layer) => layer.type === LayerType.GPX);
+    return layers.filter((layer) => parameters.length === 0 || parameters.some((filter) => {
+      if (filter instanceof LayerBase) return layer.equals(filter);
+      return (isNullOrEmpty(filter.type) || filter.type === layer.type)
+        && (isNullOrEmpty(filter.name) || filter.name === layer.name)
+        && (isNullOrEmpty(filter.url) || filter.url === layer.url);
+    }));
+  }
+
+  /**
+   * Añade GPX como fuentes de entidades de Cesium.
+   * @param {Array<IDEE.layer.GPX>} layers Capas que se incorporarán.
+   * @returns {Map} Este mapa.
+   * @public
+   * @api
+   */
+  addGPX(layers) {
+    layers.forEach((layer) => {
+      if (layer.type === LayerType.GPX && !includes(this.layers_, layer)) {
+        this.layers_.push(layer);
+        layer.getImpl().addTo(this.facadeMap_);
+      }
+    });
+    return this;
+  }
+
+  /**
+   * Retira las GPX y notifica una vez la retirada de cada capa.
+   * @param {Array<IDEE.Layer>} layers Instancias o filtros.
+   * @param {Boolean} emitMapEvent False cuando removeLayers emitirá el evento del mapa.
+   * @returns {Map} Este mapa.
+   * @public
+   * @api
+   */
+  removeGPX(layers, emitMapEvent = true) {
+    const removedLayers = this.getGPX(layers);
+    removedLayers.forEach((layer) => {
+      this.layers_ = this.layers_.filter((candidate) => !candidate.equals(layer));
+      layer.getImpl().destroy();
+      layer.fire(EventType.REMOVED_FROM_MAP, [layer]);
+    });
+    if (removedLayers.length > 0) {
+      if (emitMapEvent) this.facadeMap_.fire(EventType.REMOVED_LAYER, [removedLayers]);
+      this.refreshIndexAndBaseStatus_();
+    }
+    return this;
+  }
+
+  /**
    * Este método obtiene las capas GeoJSON añadidas al mapa.
    *
    * @function
@@ -750,6 +820,10 @@ class Map extends MObject {
           let layerMatched = true;
           // checks if the layer is not in selected layers
           if (!foundLayers.includes(geojsonLayer)) {
+            // Una instancia selecciona esa capa, aunque nombre y URL coincidan con otras.
+            if (filterLayer instanceof LayerBase) {
+              return filterLayer === geojsonLayer;
+            }
             // type
             if (!isNullOrEmpty(filterLayer.type)) {
               layerMatched = (layerMatched && (filterLayer.type === geojsonLayer.type));
@@ -775,6 +849,45 @@ class Map extends MObject {
       });
     }
     return foundLayers;
+  }
+
+  /**
+   * Añade GeoJSON como fuentes de entidades de Cesium.
+   * @param {Array<IDEE.layer.GeoJSON>} layers Capas que se incorporarán.
+   * @returns {Map} Este mapa.
+   * @public
+   * @api
+   */
+  addGeoJSON(layers) {
+    layers.forEach((layer) => {
+      if (layer.type === LayerType.GeoJSON && !includes(this.layers_, layer)) {
+        this.layers_.push(layer);
+        layer.getImpl().addTo(this.facadeMap_);
+      }
+    });
+    return this;
+  }
+
+  /**
+   * Retira las GeoJSON y notifica una vez la retirada de cada capa.
+   * @param {Array<IDEE.Layer>} layers Instancias o filtros.
+   * @param {Boolean} emitMapEvent False cuando removeLayers emitirá el evento del mapa.
+   * @returns {Map} Este mapa.
+   * @public
+   * @api
+   */
+  removeGeoJSON(layers, emitMapEvent = true) {
+    const removedLayers = this.getGeoJSON(layers);
+    removedLayers.forEach((layer) => {
+      this.layers_ = this.layers_.filter((candidate) => candidate !== layer);
+      layer.getImpl().destroy();
+      layer.fire(EventType.REMOVED_FROM_MAP, [layer]);
+    });
+    if (removedLayers.length > 0) {
+      if (emitMapEvent) this.facadeMap_.fire(EventType.REMOVED_LAYER, [removedLayers]);
+      this.refreshIndexAndBaseStatus_();
+    }
+    return this;
   }
 
   /**

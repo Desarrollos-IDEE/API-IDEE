@@ -193,6 +193,11 @@
     "msg": "Take me there"
   },
   "exception": {
+    "addgeojson_method": "The used implementation does not have the addGeoJSON method.",
+    "removegeojson_method": "The used implementation does not have the removeGeoJSON method.",
+    "getgpx_method": "The implementation does not provide the getGPX method",
+    "addgpx_method": "The implementation does not provide the addGPX method",
+    "removegpx_method": "The implementation does not provide the removeGPX method",
     "invalid_gpx": "The content is not valid GPX.",
     "invalid_gpx_source": "GPX requires either a URL or an XML/File source, exclusively.",
     "auto_refresh_failed": "Could not automatically refresh the layer",
