@@ -337,6 +337,7 @@ class Map extends MObject {
     const wmsLayers = this.getWMS(filters);
     const wfsLayers = this.getWFS(filters);
     const ogcapifLayers = this.getOGCAPIFeatures(filters);
+    const dataIDEELayers = this.getDataIDEE(filters);
     const wmtsLayers = this.getWMTS(filters);
     const xyzLayers = this.getXYZs(filters);
     const tmsLayers = this.getTMS(filters);
@@ -358,6 +359,7 @@ class Map extends MObject {
 
     let datasources = kmlLayers.concat(kmzLayers).concat(wfsLayers)
       .concat(ogcapifLayers)
+      .concat(dataIDEELayers)
       .concat(vector);
     datasources = datasources
       .sort((layer1, layer2) => FacadeMap.LAYER_SORT(layer1, layer2, this.facadeMap_));
@@ -421,6 +423,8 @@ class Map extends MObject {
         this.facadeMap_.addWFS(layer);
       } else if (layer.type === LayerType.OGCAPIFeatures) {
         this.facadeMap_.addOGCAPIFeatures(layer);
+      } else if (layer.type === LayerType.DataIDEE) {
+        this.facadeMap_.addDataIDEE(layer);
       } else if (layer.type === LayerType.MBTiles) {
         this.facadeMap_.addMBTiles(layer);
       } else if (layer.type === LayerType.XYZ) {
@@ -467,6 +471,7 @@ class Map extends MObject {
       this.removeWMS(knowLayers);
       this.removeWFS(knowLayers);
       this.removeOGCAPIFeatures(knowLayers);
+      this.removeDataIDEE(knowLayers);
       this.removeWMTS(knowLayers);
       this.removeMBTiles(knowLayers);
       this.removeXYZ(knowLayers);
@@ -1115,6 +1120,39 @@ class Map extends MObject {
       ogcapifLayer.fire(EventType.REMOVED_FROM_MAP, [ogcapifLayer]);
     });
 
+    return this;
+  }
+
+  getDataIDEE(filtersParam) {
+    let filters = filtersParam;
+    const layers = this.layers_.filter((layer) => layer.type === LayerType.DataIDEE);
+    if (isNullOrEmpty(filters)) filters = [];
+    if (!isArray(filters)) filters = [filters];
+    if (filters.length === 0) return layers;
+    return layers.filter((layer) => filters.some((filter) => {
+      if (filter === layer) return true;
+      return ['url', 'name', 'legend', 'cql', 'geometry', 'id'].every((key) => (
+        isNullOrEmpty(filter[key]) || filter[key] === layer[key]
+      ));
+    }));
+  }
+
+  addDataIDEE(layers) {
+    layers.forEach((layer) => {
+      if (layer.type === LayerType.DataIDEE && !includes(this.layers_, layer)) {
+        this.layers_.push(layer);
+        layer.getImpl().addTo(this.facadeMap_);
+      }
+    });
+    return this;
+  }
+
+  removeDataIDEE(layers) {
+    this.getDataIDEE(layers).forEach((layer) => {
+      this.layers_ = this.layers_.filter((mapLayer) => !mapLayer.equals(layer));
+      layer.getImpl().destroy();
+      layer.fire(EventType.REMOVED_FROM_MAP, [layer]);
+    });
     return this;
   }
 

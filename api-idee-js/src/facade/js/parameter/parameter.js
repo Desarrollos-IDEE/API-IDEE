@@ -4628,6 +4628,19 @@ export const ogcapifeatures = (userParameters) => {
   return layers;
 };
 
+/**
+ * Analiza los parámetros de una capa DataIDEE.
+ * Reutiliza la configuración compartida con OGCAPIFeatures y registra el tipo
+ * moderno para que los métodos específicos del mapa la identifiquen.
+ * @param {string|Mx.parameters.DataIDEE|Array} userParameters Parámetros de capa.
+ * @returns {Mx.parameters.DataIDEE|Array<Mx.parameters.DataIDEE>}
+ */
+const dataidee = (userParameters) => {
+  const layers = ogcapifeatures(userParameters);
+  const withDataIDEEType = (layer) => ({ ...layer, type: LayerType.DataIDEE });
+  return isArray(layers) ? layers.map(withDataIDEEType) : withDataIDEEType(layers);
+};
+
 const generic = (userParameters, type) => {
   const params = userParameters;
 
@@ -5258,6 +5271,7 @@ const parameterFunction = {
   mbtiles,
   mbtilesvector,
   ogcapifeatures,
+  dataidee,
   genericvector,
   genericraster,
   tiles3d,

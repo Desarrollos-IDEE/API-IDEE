@@ -42,6 +42,7 @@ import WMS from './layer/WMS';
 import WMTS from './layer/WMTS';
 import MVT from './layer/MVT';
 import OGCAPIFeatures from './layer/OGCAPIFeatures';
+import DataIDEE from './layer/DataIDEE';
 import GenericRaster from './layer/GenericRaster';
 import GenericVector from './layer/GenericVector';
 import OverviewMapButton from './ui/buttons/OverviewMapButton';
@@ -818,7 +819,8 @@ class Map extends Base {
           if ((layer instanceof Vector)
             /* && !(layer instanceof KML) */
             && !(layer instanceof WFS)
-            && !(layer instanceof OGCAPIFeatures)) {
+            && !(layer instanceof OGCAPIFeatures)
+            && !(layer instanceof DataIDEE)) {
             this.featuresHandler_.addLayer(layer);
           }
 
@@ -900,6 +902,9 @@ class Map extends Base {
           break;
         case 'OGCAPIFeatures':
           layer = new OGCAPIFeatures(layerParam, { style: parameterVariable.style });
+          break;
+        case 'DataIDEE':
+          layer = new DataIDEE(layerParam, { style: parameterVariable.style });
           break;
         case 'GenericRaster':
           layer = new GenericRaster(layerParam);
@@ -2110,6 +2115,29 @@ class Map extends Base {
   }
 
   /**
+   * Obtiene las capas DataIDEE añadidas al mapa.
+   * @param {Array|string|Object} [layersParamVar] Filtros opcionales por nombre o
+   * parámetros de capa. Sin filtro, devuelve todas.
+   * @returns {Array<DataIDEE>} Capas del mapa.
+   * @api
+   */
+  getDataIDEE(layersParamVar) {
+    let layersParam = layersParamVar;
+    if (isUndefined(MapImpl.prototype.getDataIDEE)) {
+      Exception(getValue('exception').getogcapif_method);
+    }
+    if (isNull(layersParam)) {
+      layersParam = [];
+    } else if (!isArray(layersParam)) {
+      layersParam = [layersParam];
+    }
+    const filters = layersParam.length > 0
+      ? layersParam.map((layerParam) => parameter.layer(layerParam, LayerType.DataIDEE))
+      : [];
+    return this.getImpl().getDataIDEE(filters).sort(Map.LAYER_SORT);
+  }
+
+  /**
    * Este método agrega las capas OGCAPIFeatures al mapa.
    *
    * @function
@@ -2158,6 +2186,61 @@ class Map extends Base {
       });
       this.fire(EventType.ADDED_LAYER, [ogcapifLayers]);
       this.fire(EventType.ADDED_OGCAPIFEATURES, [ogcapifLayers]);
+    }
+    return this;
+  }
+
+  /**
+   * Añade capas DataIDEE al mapa.
+   * @param {Array|string|Object} layersParamVar Una capa, sus parámetros o una
+   * matriz de cualquiera de ellos.
+   * @returns {Map} Mapa.
+   * @api
+   */
+  addDataIDEE(layersParamVar) {
+    let layersParam = layersParamVar;
+    if (!isNullOrEmpty(layersParam)) {
+      if (isUndefined(MapImpl.prototype.addDataIDEE)) {
+        Exception(getValue('exception').addogcapif_method);
+      }
+      if (!isArray(layersParam)) layersParam = [layersParam];
+
+      const layers = layersParam.map((layerParam) => {
+        if (layerParam instanceof DataIDEE) return layerParam;
+        if (layerParam instanceof Layer) return null;
+        return new DataIDEE(layerParam, layerParam.options);
+      }).filter((layer) => !isNullOrEmpty(layer));
+
+      layers.forEach((layer) => {
+        this.featuresHandler_.addLayer(layer);
+        layer.setMap(this);
+      });
+      this.getImpl().addDataIDEE(layers);
+      layers.forEach((layer) => {
+        if (isFunction(layer.startAutoRefresh)) {
+          layer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
+      this.fire(EventType.ADDED_LAYER, [layers]);
+    }
+    return this;
+  }
+
+  /**
+   * Elimina capas DataIDEE del mapa.
+   * @param {Array|string|Object} layersParam Capas que se eliminarán,
+   * identificadas por nombre o parámetros.
+   * @returns {Map} Mapa.
+   * @api
+   */
+  removeDataIDEE(layersParam) {
+    if (!isNullOrEmpty(layersParam)) {
+      if (isUndefined(MapImpl.prototype.removeDataIDEE)) {
+        Exception(getValue('exception').removeogcapif_method);
+      }
+      const layers = this.getDataIDEE(layersParam);
+      layers.forEach((layer) => this.featuresHandler_.removeLayer(layer));
+      this.getImpl().removeDataIDEE(layers);
     }
     return this;
   }

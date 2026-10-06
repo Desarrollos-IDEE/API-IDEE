@@ -339,6 +339,7 @@ class Map extends MObject {
     const mapLibreLayers = this.getMapLibre(filters);
     const wfsLayers = this.getWFS(filters);
     const ogcapifLayers = this.getOGCAPIFeatures(filters);
+    const dataIDEELayers = this.getDataIDEE(filters);
     const wmtsLayers = this.getWMTS(filters);
     const mvtLayers = this.getMVT(filters);
     const mbtilesLayers = this.getMBTiles(filters);
@@ -358,6 +359,7 @@ class Map extends MObject {
       .concat(mapLibreLayers)
       .concat(wfsLayers)
       .concat(ogcapifLayers)
+      .concat(dataIDEELayers)
       .concat(wmtsLayers)
       .concat(mvtLayers)
       .concat(mbtilesLayers)
@@ -425,6 +427,8 @@ class Map extends MObject {
         this.facadeMap_.addGeoTIFF(layer);
       } else if (layer.type === LayerType.OGCAPIFeatures) {
         this.facadeMap_.addOGCAPIFeatures(layer);
+      } else if (layer.type === LayerType.DataIDEE) {
+        this.facadeMap_.addDataIDEE(layer);
       } else if (layer.type === LayerType.MVT) {
         this.facadeMap_.addMVT(layer);
       } else if (layer.type === LayerType.MapLibre) {
@@ -544,6 +548,7 @@ class Map extends MObject {
       this.removeMapLibre(knowLayers);
       this.removeWFS(knowLayers);
       this.removeOGCAPIFeatures(knowLayers);
+      this.removeDataIDEE(knowLayers);
       this.removeWMTS(knowLayers);
       this.removeMVT(knowLayers);
       this.removeMBTiles(knowLayers);
@@ -1747,6 +1752,40 @@ class Map extends MObject {
       this.facadeMap_.fire(EventType.REMOVED_LAYER, [removedLayers]);
     }
 
+    return this;
+  }
+
+  getDataIDEE(filtersParam) {
+    let filters = filtersParam;
+    const layers = this.layers_.filter((layer) => layer.type === LayerType.DataIDEE);
+    if (isNullOrEmpty(filters)) filters = [];
+    if (!isArray(filters)) filters = [filters];
+    if (filters.length === 0) return layers;
+    return layers.filter((layer) => filters.some((filter) => {
+      if (filter === layer) return true;
+      return ['url', 'name', 'legend', 'cql', 'geometry', 'id'].every((key) => (
+        isNullOrEmpty(filter[key]) || filter[key] === layer[key]
+      ));
+    }));
+  }
+
+  addDataIDEE(layers) {
+    this.addToLayers_(layers.filter((layer) => layer.type === LayerType.DataIDEE));
+    return this;
+  }
+
+  removeDataIDEE(layers) {
+    const removedLayers = [];
+    this.getDataIDEE(layers).forEach((layer) => {
+      if (includes(this.layers_, layer)) {
+        this.layers_ = this.layers_.filter((mapLayer) => !mapLayer.equals(layer));
+        layer.getImpl().destroy();
+        layer.getImpl().activateBaseLayer(layer, this.facadeMap_);
+        layer.fire(EventType.REMOVED_FROM_MAP, [layer]);
+        removedLayers.push(layer);
+      }
+    });
+    if (removedLayers.length > 0) this.facadeMap_.fire(EventType.REMOVED_LAYER, [removedLayers]);
     return this;
   }
 

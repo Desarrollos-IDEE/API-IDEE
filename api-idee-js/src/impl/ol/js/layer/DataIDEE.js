@@ -1,0 +1,78 @@
+/**
+ * @module IDEE/impl/layer/DataIDEE
+ */
+import FormatGeoJSON from 'IDEE/format/GeoJSON';
+import { isNullOrEmpty } from 'IDEE/util/Utils';
+import * as EventType from 'IDEE/event/eventtype';
+import OLSourceVector from 'ol/source/Vector';
+import { get as getProj } from 'ol/proj';
+import { all } from 'ol/loadingstrategy';
+import ServiceDataIDEE from '../service/DataIDEE';
+import LoaderDataIDEE from '../loader/DataIDEE';
+import OGCAPIFeatures from './OGCAPIFeatures';
+
+/**
+ * OGC API Features JSON vector layer implementation.
+ * @extends {IDEE.impl.layer.OGCAPIFeatures}
+ * @api
+ */
+class DataIDEE extends OGCAPIFeatures {
+  /**
+   * Loads GeoJSON from the OGC API Features items endpoint into the vector source.
+   * @param {Boolean} forceNewSource Replaces the existing source when true.
+   * @private
+   */
+  updateSource_(forceNewSource) {
+    if (!isNullOrEmpty(this.vendorOptions_.source)) return;
+
+    this.service_ = new ServiceDataIDEE({
+      url: this.url,
+      namespace: this.namespace,
+      name: this.name,
+      limit: this.limit,
+      offset: this.offset,
+      format: this.format,
+      id: this.id,
+      bbox: this.bbox,
+      conditional: this.conditional,
+      projection: this.map.getProjection(),
+      getFeatureOutputFormat: this.options.getFeatureOutputFormat,
+      describeFeatureTypeOutputFormat: this.options.describeFeatureTypeOutputFormat,
+    }, this.vendorOptions_);
+    this.formater_ = new FormatGeoJSON({
+      defaultDataProjection: getProj(this.map.getProjection().code),
+    });
+    this.loader_ = new LoaderDataIDEE(
+      this.map,
+      this.service_.getItemsUrl(),
+      this.formater_,
+    );
+
+    const ol3LayerSource = this.olLayer.getSource();
+    this.requestFeatures_().then((features) => {
+      if (forceNewSource === true || isNullOrEmpty(ol3LayerSource)) {
+        const newSource = new OLSourceVector({
+          loader: () => {
+            this.loaded_ = true;
+            this.facadeVector_.addFeatures(features);
+            this.fire(EventType.LOAD, [features]);
+            this.facadeVector_.redraw();
+          },
+        });
+        this.olLayer.setSource(newSource);
+      } else {
+        ol3LayerSource.set('format', this.formater_);
+        ol3LayerSource.set('loader', this.loader_.getLoaderFn((features2) => {
+          this.loaded_ = true;
+          this.facadeVector_.addFeatures(features2);
+          this.fire(EventType.LOAD, [features2]);
+          this.facadeVector_.redraw();
+        }));
+        ol3LayerSource.set('strategy', all);
+        ol3LayerSource.changed();
+      }
+    });
+  }
+}
+
+export default DataIDEE;
