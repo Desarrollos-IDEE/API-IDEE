@@ -101,6 +101,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
    * @param {number} [options.order] Orden de tabulación y prioridad en modales
    * @param {Array<Object>} [options.predefinedCatalogs=[]] Catálogos STAC precargados
    * @param {boolean} [options.addCatalogEnabled=false] Permite añadir catálogos desde la UI
+   * @param {number} [options.cogCacheSize=350] Tamaño de caché OpenLayers para capas COG
    * @param {string} [options.downloadUrl=''] URL del servicio de descarga masiva
    * @api stable
    */
@@ -199,6 +200,11 @@ export default class CatalogmanagerControl extends IDEE.Control {
      */
     this.selectedItems_ = [];
 
+    /**
+     * Capas vectoriales de huella (footprint) añadidas al mapa
+     * @private
+     * @type {Array<IDEE.layer.Vector>}
+     */
     this.footprintLayers_ = [];
 
     /**
@@ -208,6 +214,11 @@ export default class CatalogmanagerControl extends IDEE.Control {
      */
     this.selectedImages_ = {};
 
+    /**
+     * Caché de peticiones de estadísticas de visualización ya enviadas
+     * @private
+     * @type {{collectionId: string|null, items: Object<string, Object>}}
+     */
     this.cachedElements_ = {
       collectionId: null,
       items: {},
@@ -308,7 +319,18 @@ export default class CatalogmanagerControl extends IDEE.Control {
       },
     });
 
+    /**
+     * Criterio de ordenación activo del listado de colecciones
+     * @private
+     * @type {string}
+     */
     this.collectionsSortType_ = 'sort-name-up';
+
+    /**
+     * Estado de paginación del listado de ítems
+     * @private
+     * @type {{currentPage: number, totalPages: number, pageSize: number, totalItems: number}}
+     */
     this.pagination_ = {
       currentPage: 1,
       totalPages: 1,
@@ -343,6 +365,11 @@ export default class CatalogmanagerControl extends IDEE.Control {
   createView(map) {
     this.map_ = map;
     this.getImpl().createAllInteractions(map, this);
+    /**
+     * Callback enlazado para refrescar ítems al cambiar filtros desde la implementación
+     * @private
+     * @type {Function}
+     */
     this.updateItemsEvent_ = this.updateItems.bind(this, true);
     const yesterdayDate = new Date();
     yesterdayDate.setDate(yesterdayDate.getDate() - 1);
@@ -611,6 +638,14 @@ export default class CatalogmanagerControl extends IDEE.Control {
     this.toggleMapMoveEvent(tab.id);
   }
 
+  /**
+   * Activa o desactiva la escucha de movimiento del mapa según la pestaña activa
+   * y el filtro espacial por vista
+   *
+   * @private
+   * @function
+   * @param {string} tabId Identificador de la pestaña (`m-catalogmanager-results-tab`, etc.)
+   */
   toggleMapMoveEvent(tabId) {
     const filterViewBtn = this.template_.querySelector('button#view');
     if (!filterViewBtn.classList.contains('active')) {
@@ -766,6 +801,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
    * Formatea una fecha en hora local (DD/MM/YYYY).
    *
    * @private
+   * @function
    * @param {Date} date Fecha a formatear
    * @returns {string} Fecha en formato local
    */
@@ -778,6 +814,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
    * Convierte una fecha DD/MM/YYYY a formato ISO (YYYY-MM-DD) para el filtro STAC.
    *
    * @private
+   * @function
    * @param {string} dateStr Fecha en formato DD/MM/YYYY
    * @returns {string} Fecha en formato YYYY-MM-DD
    */
@@ -794,6 +831,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
    * Formatea una hora en hora local (HH:mm:ss).
    *
    * @private
+   * @function
    * @param {Date} date Fecha de la que extraer la hora
    * @returns {string} Hora en formato local
    */
@@ -924,6 +962,12 @@ export default class CatalogmanagerControl extends IDEE.Control {
     }
   }
 
+  /**
+   * Desregistra el evento MOVE del mapa y cancela el temporizador de debounce
+   *
+   * @private
+   * @function
+   */
   disableMoveMapEvent() {
     this.map_.un(IDEE.evt.MOVE, this.onMoveMapBound_);
     clearTimeout(this.moveMapTimer_);
@@ -1986,6 +2030,14 @@ export default class CatalogmanagerControl extends IDEE.Control {
     this.syncCloudCoverSliderStyle();
   }
 
+  /**
+   * Formatea un número con separador de miles (espacio no separable)
+   *
+   * @private
+   * @function
+   * @param {number} number Valor numérico a formatear
+   * @returns {string} Número formateado para mostrar en la UI
+   */
   formatNumber(number) {
     return new Intl.NumberFormat('en-US').format(number).replace(/,/g, '\u00a0');
   }
@@ -2902,7 +2954,6 @@ export default class CatalogmanagerControl extends IDEE.Control {
       geotiffOptions.min = styleSpec.ranges.min;
       geotiffOptions.max = styleSpec.ranges.max;
     }
-    console.log('geotiffOptions', geotiffOptions);
 
     const geotiff = new IDEE.layer.GeoTIFF({
       url: image.href,
@@ -2992,6 +3043,13 @@ export default class CatalogmanagerControl extends IDEE.Control {
     this.getImpl().addLayerToSelectItem(huella.getImpl().getLayer());
   }
 
+  /**
+   * Obtiene o crea el grupo de capas asociado a una colección STAC
+   *
+   * @private
+   * @function
+   * @param {Object} collection Objeto de colección con `id`, `title` y opcionalmente `layerGroup`
+   */
   createCollectionLayerGroup(collection) {
     const coll = collection;
     const previousGroup = this.map_.getLayerGroup()
@@ -3316,6 +3374,16 @@ export default class CatalogmanagerControl extends IDEE.Control {
     return [];
   }
 
+  /**
+   * Calcula los rangos mínimo y máximo por banda para el estiramiento de la imagen
+   *
+   * @private
+   * @function
+   * @param {Object} asset Asset STAC con metadatos de bandas y rangos
+   * @param {Object} properties Propiedades del ítem (histogramas, estadísticas, etc.)
+   * @param {Array<Object>} bands Bandas unificadas del asset
+   * @returns {{min: number[], max: number[]}|null} Rangos por banda o null si no hay modo válido
+   */
   getAssetRanges(asset, properties, bands) {
     const ranges = {
       min: [],
@@ -3359,6 +3427,15 @@ export default class CatalogmanagerControl extends IDEE.Control {
     return ranges;
   }
 
+  /**
+   * Determina la fuente de datos para calcular el estiramiento radiométrico
+   *
+   * @private
+   * @function
+   * @param {Object} asset Asset STAC
+   * @param {Object} props Propiedades del ítem STAC
+   * @returns {'stats'|'hist'|'ranges'|null} Modo de estiramiento o null si no hay datos
+   */
   resolveStretchMode(asset, props) {
     if (props?.band_statistics?.length) {
       return 'stats';
@@ -3372,23 +3449,59 @@ export default class CatalogmanagerControl extends IDEE.Control {
     return null;
   }
 
+  /**
+   * Obtiene el rango mean±2σ a partir del histograma de una banda
+   *
+   * @private
+   * @function
+   * @param {Object} props Propiedades del ítem con `histogram_band_list`
+   * @param {string} bandName Nombre o identificador de la banda
+   * @returns {{min: number, max: number, src: string}|null} Rango calculado o null
+   */
   getAssetRangesFromHistogram(props, bandName) {
     const hist = props?.histogram_band_list || [];
     const h = hist.find((x) => String(x.band_id || '').toLowerCase() === bandName);
     return this.mean2sFrom(h, 'histogram mean±2σ');
   }
 
+  /**
+   * Obtiene el rango mean±2σ a partir de estadísticas de banda en propiedades STAC
+   *
+   * @private
+   * @function
+   * @param {Object} props Propiedades del ítem con `band_statistics`
+   * @param {number} band Índice de banda (1-based)
+   * @returns {{min: number, max: number, src: string}|null} Rango calculado o null
+   */
   getAssetRangesFromStats(props, band) {
     const propStats = props?.band_statistics || [];
     const value = propStats.find((x) => Number(x.band_index) === band) || propStats[band - 1];
     return this.mean2sFrom(value, 'props stx mean±2σ');
   }
 
+  /**
+   * Obtiene el rango absoluto definido en los metadatos del asset
+   *
+   * @private
+   * @function
+   * @param {Object} asset Asset STAC con array `ranges`
+   * @param {number} band Índice de banda (1-based)
+   * @returns {{min: number, max: number, src: string}|null} Rango o null
+   */
   getAssetRangesFromRanges(asset, band) {
     const r = asset?.ranges?.[band - 1];
     return this.absFrom(r, 'asset.ranges');
   }
 
+  /**
+   * Construye un rango [mean - 2σ, mean + 2σ] a partir de media y desviación típica
+   *
+   * @private
+   * @function
+   * @param {Object} s Objeto con media y desviación (`stx_mean`, `stx_stdv`, etc.)
+   * @param {string} src Etiqueta de la fuente del rango (depuración)
+   * @returns {{min: number, max: number, src: string}|null} Rango o null si faltan datos
+   */
   mean2sFrom(s, src) {
     const mean = s?.stx_mean ?? s?.mean;
     const stdv = s?.stx_stdv ?? s?.stdv ?? s?.std;
@@ -3402,6 +3515,15 @@ export default class CatalogmanagerControl extends IDEE.Control {
     return null;
   }
 
+  /**
+   * Normaliza un objeto con límites mínimo y máximo absolutos
+   *
+   * @private
+   * @function
+   * @param {Object|null} s Objeto con `min`/`max` o `stx_min`/`stx_max`
+   * @param {string} src Etiqueta de la fuente del rango (depuración)
+   * @returns {{min: number, max: number, src: string}|null} Rango o null
+   */
   absFrom(s, src) {
     if (!s) return null;
     if (typeof s.min === 'number' && typeof s.max === 'number') {

@@ -61,12 +61,13 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 - **draggable**. Indica si el plugin puede arrastrarse.
 - **predefinedCatalogs**. Lista de propiedades de catalogos predefinidos que se cargarán por defecto.
 - **addCatalogEnabled**. Indica si se podrán añadir catalogos desde la interfaz. Por defecto false.
+- **cogCacheSize**. Indica el tamaño de la cache que guarda openlayers para los cog que se piden por partes.
 - **downloadUrl**. Url del servicio de descarga masiva.
 
 # API-REST
 
 ```javascript
-URL_API?catalogmanager=position*collapsed*collapsible*tooltip*draggable
+URL_API?catalogmanager=position*collapsed*collapsible*tooltip
 ```
 
 <table>
@@ -127,6 +128,7 @@ https://componentes.idee.es/api-idee/?catalogmanager=base64=eyJwb3NpdGlvbiI6IlRM
 ```javascript
 const mp = new IDEE.plugin.Catalogmanager({
   position: 'TR',
+  addCatalogEnabled: true,
 });
 
 map.addPlugin(mp);
