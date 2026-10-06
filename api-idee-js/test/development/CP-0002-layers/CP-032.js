@@ -9,6 +9,7 @@ import WFS from 'IDEE/layer/WFS';
 import OGCAPIFeatures from 'IDEE/layer/OGCAPIFeatures';
 import KML from 'IDEE/layer/KML';
 import KMZ from 'IDEE/layer/KMZ';
+import GPX from 'IDEE/layer/GPX';
 import MBTiles from 'IDEE/layer/MBTiles';
 import MVT from 'IDEE/layer/MVT';
 import MBTilesVector from 'IDEE/layer/MBTilesVector';
@@ -52,6 +53,7 @@ const constructors = {
   OGCAPIFeatures,
   KML,
   KMZ,
+  GPX,
   MBTiles,
   MVT,
   MBTilesVector,
@@ -92,6 +94,7 @@ const parameters = {
   OGCAPIFeatures: { url: `${base}collections/`, name: 'puntos', limit: 1 },
   KML: { url: `${base}puntos.kml` },
   KMZ: { url: `${base}puntos.kmz` },
+  GPX: { url: `${base}puntos.gpx` },
   MBTiles: { url: `${base}raster.mbtiles` },
   MVT: { url: `${base}tiles/{z}/{x}/{y}.pbf`, mode: 'feature' },
   MBTilesVector: { url: `${base}vector.mbtiles` },
@@ -151,20 +154,20 @@ document.getElementById('wms-help').textContent = cesium
 document.getElementById('expected').textContent = type === 'Vector'
   ? 'Vector local: debe aparecer un punto rosa en el centro. No tiene URL ni descarga datos. '
     + 'Su revisión permanece en 1 aunque haya intervalo. Es una prueba de conservación de datos locales. '
-    + 'Para probar recargas vectoriales elige GeoJSON, WFS, OGCAPIFeatures, KML o KMZ.'
+    + 'Para probar recargas vectoriales elige GeoJSON, WFS, OGCAPIFeatures, KML, KMZ o GPX.'
   : 'Con intervalo válido, comprueba nuevas peticiones en Red. GeoJSON/WFS/OGC cambian revision; '
-    + 'KML/KMZ cambian name. Los demás archivos e imágenes de prueba son fijos.';
+    + 'KML/KMZ y GPX cambiann name. Los demás archivos e imágenes de prueba son fijos.';
 document.getElementById('data').value = base;
 document.getElementById('params').textContent = JSON.stringify(params);
 document.getElementById('remove').onclick = () => mapa.removeLayers(capa);
 document.getElementById('add').onclick = addLayer;
-document.getElementById('edit').disabled = !['GeoJSON', 'WFS', 'OGCAPIFeatures', 'KML', 'KMZ'].includes(type);
+document.getElementById('edit').disabled = !['GeoJSON', 'WFS', 'OGCAPIFeatures', 'KML', 'KMZ', 'GPX'].includes(type);
 document.getElementById('resume').disabled = document.getElementById('edit').disabled;
 let edited;
 document.getElementById('edit').onclick = () => {
   const feature = capa.getFeatures?.()[0];
   if (!feature || edited) return;
-  const attribute = ['KML', 'KMZ'].includes(type) ? 'name' : 'revision';
+  const attribute = ['KML', 'KMZ', 'GPX'].includes(type) ? 'name' : 'revision';
   edited = { feature, attribute, value: feature.getAttribute(attribute) };
   feature.setAttribute(attribute, 'edición local');
 };

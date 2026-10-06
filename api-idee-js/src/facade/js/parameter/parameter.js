@@ -5215,6 +5215,41 @@ export const wmc = (userParameters) => {
 };
 
 /**
+ * Parámetros GPX. Formato REST: GPX*nombre*url*extract*visibility*style.
+ * También admite el objeto de configuración del mapa sin descartar sus opciones.
+ * Admite filtros parciales de Map.getLayers; el constructor valida el origen y asigna el nombre.
+ * @param {Object|String} parameters Parámetros de la capa.
+ * @returns {Object} Parámetros normalizados.
+ * @api
+ */
+export const gpx = (parameters) => {
+  let params;
+  if (isString(parameters)) {
+    if (/^GPX\*/i.test(parameters)) {
+      const [, name, url, extract, visibility, style] = parameters.split('*');
+      params = {
+        name,
+        url: decodeURIComponent(url || ''),
+        extract: extract === undefined || extract === '' ? true : extract !== 'false',
+        visibility: visibility === undefined || visibility === '' ? true : visibility !== 'false',
+        style: style || undefined,
+      };
+    } else {
+      params = { url: parameters };
+    }
+  } else if (isObject(parameters)) {
+    params = { ...parameters };
+  } else {
+    Exception(getValue('exception').invalid_gpx_source);
+  }
+  return {
+    ...params,
+    type: LayerType.GPX,
+    extract: params.extract === undefined ? true : params.extract,
+  };
+};
+
+/**
  * Analiza KMZ con la misma sintaxis que KML.
  * @param {string|Object|Array} userParameters Parámetros de capa.
  * @returns {Object|Array} Parámetros normalizados.
@@ -5255,6 +5290,7 @@ export const kmz = (userParameters) => {
  * @api
  */
 const parameterFunction = {
+  gpx,
   kml,
   kmz,
   wfs,

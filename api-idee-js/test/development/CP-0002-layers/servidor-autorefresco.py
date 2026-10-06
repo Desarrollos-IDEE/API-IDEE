@@ -102,6 +102,14 @@ class Handler(SimpleHTTPRequestHandler):
                     self.reply(output.getvalue(), 'application/vnd.google-earth.kmz')
                 else:
                     self.reply(kml, 'application/vnd.google-earth.kml+xml')
+            elif name == 'puntos.gpx':
+                self.reply('<gpx version="1.1" creator="API-IDEE test" '
+                           'xmlns="http://www.topografix.com/GPX/1/1">'
+                           '<wpt lon="0" lat="0"><ele>10</ele>'
+                           f'<name>GPX revisión {revision}</name>'
+                           '<desc>Punto sintético para comprobar el autorefresco.</desc>'
+                           '<time>2026-10-01T00:00:00Z</time></wpt></gpx>',
+                           'application/gpx+xml')
             elif name in ('vector.mbtiles', 'raster.mbtiles', 'raster.tif', 'points.gpkg'):
                 self.reply((FIXTURES / name).read_bytes(), 'application/octet-stream')
             elif name.endswith('.pbf'):

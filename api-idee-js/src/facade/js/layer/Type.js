@@ -14,6 +14,15 @@ import { isString, normalize } from '../util/Utils';
 export const KML = 'KML';
 
 /**
+ * Tipo GPX: puntos, rutas y tracks GPS.
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+export const GPX = 'GPX';
+
+/**
  * Tipo KML comprimido con sus recursos.
  * @const
  * @type {string}
@@ -257,6 +266,7 @@ export const WMC = 'WMC';
  */
 const layertypes = {
   KML,
+  GPX,
   KMZ,
   WMS,
   GeoTIFF,
@@ -317,6 +327,8 @@ export const parse = (rawType) => {
 export const know = (type) => {
   const knowTypes = [
     KML,
+    GPX,
+    GeoJSON,
     KMZ,
     WMS,
     GeoTIFF,

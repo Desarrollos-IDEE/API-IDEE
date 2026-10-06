@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="API-IDEE" xmlns="http://www.topografix.com/GPX/1/1">
+  <wpt lat="40.4168" lon="-3.7038"><ele>650</ele><time>2020-01-01T10:00:00Z</time><name>Madrid 2020</name><desc>Punto de inicio</desc></wpt>
+  <wpt lat="40.42" lon="-3.70"><time>2021-01-01T10:00:00Z</time><name>Madrid 2021</name></wpt>
+  <rte><name>Ruta</name><rtept lat="40.4168" lon="-3.7038"><time>2020-01-01T10:00:00Z</time></rtept><rtept lat="40.42" lon="-3.70"><time>2020-01-01T11:00:00Z</time></rtept></rte>
+  <trk><name>Track con dos segmentos</name>
+    <trkseg><trkpt lat="40.4168" lon="-3.7038"><ele>650</ele><time>2021-01-01T10:00:00Z</time></trkpt><trkpt lat="40.42" lon="-3.70"><ele>655</ele><time>2021-01-01T11:00:00Z</time></trkpt></trkseg>
+    <trkseg><trkpt lat="40.43" lon="-3.69"><ele>660</ele><time>2021-01-01T12:00:00Z</time></trkpt><trkpt lat="40.44" lon="-3.68"><ele>665</ele><time>2021-01-01T13:00:00Z</time></trkpt></trkseg>
+  </trk>
+</gpx>
