@@ -1323,7 +1323,14 @@ export default class LayerswitcherControl extends IDEE.Control {
   openAddServices() {
     let precharged = this.precharged;
 
-    if (precharged && precharged.groups && !Array.isArray(precharged.groups[0].services)) {
+    if (
+      precharged
+      && precharged.groups
+      && !(
+        Array.isArray(precharged.groups)
+        && precharged.groups.every((group) => group && Array.isArray(group.services))
+      )
+    ) {
       precharged = this.normalizePrecharged(precharged);
       this.precharged = precharged;
     }
@@ -1382,6 +1389,19 @@ export default class LayerswitcherControl extends IDEE.Control {
 
   normalizePrecharged(obj) {
     const finalGroups = [];
+
+    if (Array.isArray(obj.groups) && obj.groups.every((group) => group && group.name
+      && group.services && typeof group.services === 'object')) {
+      obj.groups.forEach((group) => {
+        const services = Array.isArray(group.services) ? group.services : [group.services];
+        finalGroups.push({ ...group, services });
+      });
+      return {
+        services: obj.services || [],
+        groups: finalGroups,
+      };
+    }
+
     const rawGroups = (Array.isArray(obj.groups) && obj.groups.length > 0)
       ? obj.groups[0] : obj.groups;
     Object.keys(rawGroups).forEach((categoryName) => {
