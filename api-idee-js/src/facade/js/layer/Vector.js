@@ -558,7 +558,7 @@ class Vector extends LayerBase {
    */
   clearStyle() {
     this.setStyle(null);
-    this.getFeatures().forEach((feature) => feature.clearStyle());
+    this.getFeatures().forEach((feature) => feature?.clearStyle?.());
   }
 
   /**

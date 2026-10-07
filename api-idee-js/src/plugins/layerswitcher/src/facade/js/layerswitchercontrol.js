@@ -319,8 +319,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       && !IDEE.utils.isNullOrEmpty(layer.capabilitiesMetadata?.abstract);
 
     return new Promise((success) => {
-      let hasStyles = (hasMetadata
-        && layer.capabilitiesMetadata?.style !== undefined
+      let hasStyles = (Array.isArray(layer.capabilitiesMetadata?.style)
         && layer.capabilitiesMetadata.style.length > 1)
         || (layer instanceof IDEE.layer.Vector
           && !IDEE.utils.isNullOrEmpty(layer.predefinedStyles)
@@ -1417,6 +1416,7 @@ export default class LayerswitcherControl extends IDEE.Control {
               type: item.type,
               url: item.url,
               white_list: item.white_list,
+              styles: item.styles,
             });
           } else if (item && typeof item === 'object') {
             processNode(item);
@@ -1750,25 +1750,13 @@ export default class LayerswitcherControl extends IDEE.Control {
   filterResults(allLayers) {
     const layers = [];
     const layerNames = [];
-    let allServices = [];
     if (this.filterName === undefined) {
       allLayers.forEach((layer) => {
         layers.push(layer);
         layerNames.push(layer.name);
       });
     } else if (this.filterName === 'none') {
-      if (this.precharged.services !== undefined && this.precharged.services.length > 0) {
-        allServices = allServices.concat(this.precharged.services);
-      }
-
-      if (this.precharged.groups !== undefined && this.precharged.groups.length > 0) {
-        this.precharged.groups.forEach((group) => {
-          if (group.services !== undefined && group.services.length > 0) {
-            allServices = allServices.concat(group.services);
-          }
-        });
-      }
-
+      const allServices = this.getPrechargedServices();
       allLayers.forEach((layer) => {
         let insideService = false;
         allServices.forEach((service) => {
@@ -1825,6 +1813,38 @@ export default class LayerswitcherControl extends IDEE.Control {
     }
 
     return layers;
+  }
+
+  getPrechargedServices() {
+    const { services = [], groups = [] } = this.precharged || {};
+    return services.concat(...groups.map((group) => group.services || []));
+  }
+
+  getPrechargedService(type, url) {
+    return this.getPrechargedServices().find((s) => s.type === type
+      && !IDEE.utils.isNullOrEmpty(url) && this.checkUrls(s.url, url));
+  }
+
+  applyPrechargedStyles(layer) {
+    const service = this.getPrechargedService(layer.type, layer.url);
+    if (!service || IDEE.utils.isNullOrEmpty(service.styles)) {
+      return;
+    }
+
+    if (layer instanceof IDEE.layer.Vector) {
+      // eslint-disable-next-line no-param-reassign
+      layer.predefinedStyles = service.styles.map((s) => (typeof s === 'string'
+        ? IDEE.Style.deserialize(s) : new IDEE.style.Generic(s)));
+      layer.setStyle(layer.predefinedStyles[0]);
+    } else if (layer instanceof IDEE.layer.WMS) {
+      const metadata = layer.capabilitiesMetadata || {};
+      const capStyles = Array.isArray(metadata.style) ? metadata.style : [];
+      metadata.style = service.styles.map((name) => capStyles.find((s) => s.Name === name)
+        || { Name: name, Title: name });
+      // eslint-disable-next-line no-param-reassign
+      layer.capabilitiesMetadata = metadata;
+      layer.setStyles(service.styles[0]);
+    }
   }
 
   // Muesta el resueltado de las capas encontradas
@@ -2290,10 +2310,6 @@ export default class LayerswitcherControl extends IDEE.Control {
       const selAll = document.querySelector('#m-layerswitcher-addservices-selectall');
       if (!IDEE.utils.isNullOrEmpty(selAll)) {
         selAll.addEventListener('click', (evt) => this.registerCheck(evt));
-        const results = document.querySelectorAll('span.m-check-layerswitcher-addservices');
-        for (let i = 0; i < results.length; i += 1) {
-          results[i].addEventListener('click', (evt) => this.registerCheck(evt));
-        }
       }
     }
 
@@ -2372,7 +2388,7 @@ export default class LayerswitcherControl extends IDEE.Control {
         // projection: matrixSet,
       });
     } else if (type === 'mvt') {
-      const elmSel = document.querySelectorAll('#m-layerswitcher-addservices-results .m-layerswitcher-icons-check-seleccionado');
+      const elmSel = document.querySelectorAll('#m-layerswitcher-addservices-results #m-layerswitcher-all tbody input:checked');
       let layersSelected = [];
       elmSel.forEach((elm) => {
         layersSelected.push(elm.id);
@@ -2393,7 +2409,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       }
       layer = new IDEE.layer.MVT(obj);
     } else if (type === 'kml') {
-      const elmSel = document.querySelectorAll('#m-layerswitcher-addservices-results .m-layerswitcher-icons-check-seleccionado');
+      const elmSel = document.querySelectorAll('#m-layerswitcher-addservices-results #m-layerswitcher-all tbody input:checked');
       const layersSelected = [];
       elmSel.forEach((elm) => {
         layersSelected.push(elm.id);
@@ -2407,7 +2423,9 @@ export default class LayerswitcherControl extends IDEE.Control {
       if (!IDEE.utils.isNullOrEmpty(layersSelected)) {
         obj.layers = layersSelected;
       }
-      layer = new IDEE.layer.KML(obj);
+      const prechargedStyles = this.getPrechargedService('KML', url)?.styles;
+      layer = new IDEE.layer.KML(obj, IDEE.utils.isNullOrEmpty(prechargedStyles)
+        ? {} : { extractStyles: false });
     } else if (type === 'geotiff') {
       layer = new IDEE.layer.GeoTIFF({
         name,
@@ -2448,6 +2466,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       layer = existingLayer;
     }
 
+    this.applyPrechargedStyles(layer);
     const inGroup = getLayerSelectGroup(this.map_);
 
     if (inGroup) {
