@@ -61,6 +61,9 @@ class GeoJSON extends Vector {
      */
     this.popup_ = null;
 
+    /** Recarga interna de una tabla de un GeoPackage remoto. */
+    this.refreshLoader_ = parameters.refreshLoader;
+
     /**
      * GeoJSON formater_. Determina el formato, "GeoJSONFormat".
      */
@@ -110,6 +113,11 @@ class GeoJSON extends Vector {
    * @api stable
    */
   addTo(map) {
+    if (this.refreshLoader_) {
+      this.loaded_ = false;
+      this.loadFeaturesPromise_ = null;
+      this.facadeVector_.resetAutoRefresh();
+    }
     this.facadeVector_.userMaxExtent = null;
     this.formater_ = new GeoJSONFormat({
       defaultDataProjection: map.getProjection(),
@@ -127,6 +135,26 @@ class GeoJSON extends Vector {
     this.setVisible(this.visibility);
     const cesiumMap = this.map.getMapImpl();
     cesiumMap.dataSources.add(this.cesiumLayer);
+  }
+
+  /** Recarga interna de GeoPackage; los GeoJSON habituales usan el refresco vectorial. */
+  async refreshSource(isCurrent = () => true) {
+    if (!this.refreshLoader_) return super.refreshSource(isCurrent);
+    const layer = this.cesiumLayer;
+    const facade = this.facadeVector_;
+    if (!layer || !this.loaded_ || facade.isAutoRefreshPaused()) return undefined;
+    return this.refreshLoader_(isCurrent, async (source) => {
+      const features = this.formater_.read(source, this.map.getProjection());
+      // eslint-disable-next-line no-underscore-dangle
+      await Promise.all(features.map((feature) => feature.getImpl().isLoadCesiumFeature_));
+      if (!isCurrent() || this.cesiumLayer !== layer || facade.isAutoRefreshPaused()) return false;
+      facade.removeFeatures(facade.getFeatures(true));
+      this.source = source;
+      await this.addFeatures_(features, true, true);
+      if (isCurrent()) facade.resumeAutoRefresh();
+      this.map?.getMapImpl().scene.requestRender();
+      return true;
+    });
   }
 
   /**
@@ -209,7 +237,9 @@ class GeoJSON extends Vector {
    * @api
    */
   updateSource_() {
+    const requestedLayer = this.cesiumLayer;
     this.requestFeatures_().then((features) => {
+      if (!this.map || this.cesiumLayer !== requestedLayer) return;
       if (this.cesiumLayer) {
         this.facadeVector_.clear();
       }

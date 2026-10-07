@@ -321,6 +321,15 @@ class GeoPackageConnector {
     return new Uint8Array(source);
   }
 
+  /** Libera SQLite cuando ya no hay tablas ni teselas en vuelo que lo utilicen. */
+  dispose() {
+    this.initPromise_.then(async () => {
+      await Promise.all(this.tileProviders_.map((provider) => provider.whenIdle()));
+      this.gpkg_?.close();
+      this.gpkg_ = null;
+    }).catch(() => undefined);
+  }
+
   /**
    * Este método obtiene los proveedores de capas vectoriales.
    *

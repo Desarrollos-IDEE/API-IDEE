@@ -64,6 +64,9 @@ class GeoJSON extends Vector {
      */
     this.popup_ = null;
 
+    /** Recarga interna de una tabla de un GeoPackage remoto. */
+    this.refreshLoader_ = parameters.refreshLoader;
+
     /**
      * GeoJSON formater_. Determina el formato, "GeoJSONFormat".
      */
@@ -121,6 +124,12 @@ class GeoJSON extends Vector {
    * @api stable
    */
   addTo(map, addLayer = true) {
+    if (this.refreshLoader_) {
+      this.loaded_ = false;
+      this.loadFeaturesPromise_ = null;
+      this.facadeVector_.resetAutoRefresh();
+      this.loadedFeatureIds_.clear();
+    }
     this.formater_ = new GeoJSONFormat({
       defaultDataProjection: getProj(map.getProjection().code),
     });
@@ -128,6 +137,30 @@ class GeoJSON extends Vector {
       this.loader_ = new JSONPLoader(map, this.url, this.formater_);
     }
     super.addTo(map, addLayer);
+  }
+
+  /** Recarga interna de GeoPackage; los GeoJSON habituales usan el refresco vectorial. */
+  async refreshSource(isCurrent = () => true) {
+    if (!this.refreshLoader_) return super.refreshSource(isCurrent);
+    const layer = this.olLayer;
+    const facade = this.facadeVector_;
+    if (!layer || !this.loaded_ || facade.isAutoRefreshPaused()) return undefined;
+    return this.refreshLoader_(isCurrent, async (source) => {
+      const features = this.formater_.read(source, getProj(this.map.getProjection().code));
+      if (!isCurrent() || this.olLayer !== layer || facade.isAutoRefreshPaused()) return false;
+      facade.removeFeatures(facade.getFeatures(true));
+      this.source = source;
+      if (this.bboxLoader_) {
+        this.loadedFeatureIds_.clear();
+        layer.getSource().refresh();
+        features.forEach((feature) => this.loadedFeatureIds_.add(feature.getId()));
+      }
+      this.addFeatures(features);
+      facade.resumeAutoRefresh();
+      this.fire(EventType.LOAD, [features]);
+      return true;
+    }, this.bboxLoader_ ? this.map.getMapImpl().getView()
+      .calculateExtent(this.map.getMapImpl().getSize()) : undefined, this.map.getProjection().code);
   }
 
   /**
@@ -252,6 +285,8 @@ class GeoJSON extends Vector {
             Promise.resolve().then(() => (
               this.bboxLoader_(extent, projection.getCode())
             )).then((source) => {
+              if (!this.map || this.olLayer?.getSource() !== vectorSource) return;
+              const paused = this.facadeVector_.isAutoRefreshPaused();
               const features = this.formater_.read(source, this.map.getProjection())
                 .filter((feature) => {
                   const id = feature.getId();
@@ -261,6 +296,7 @@ class GeoJSON extends Vector {
                 });
               this.loaded_ = true;
               if (features.length > 0) this.facadeVector_.addFeatures(features);
+              if (!paused) this.facadeVector_.resumeAutoRefresh();
               this.fire(EventType.LOAD, [features]);
               success(vectorSource.getFeatures());
             }).catch(() => {
@@ -272,7 +308,9 @@ class GeoJSON extends Vector {
         this.olLayer.setSource(vectorSource);
         return;
       }
+      const requestedLayer = this.olLayer;
       this.requestFeatures_().then((features) => {
+        if (!this.map || this.olLayer !== requestedLayer) return;
         if (this.olLayer) {
           this.olLayer.setSource(new OLSourceVector({
             loader: (extent, resolution, projection) => {

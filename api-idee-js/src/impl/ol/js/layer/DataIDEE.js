@@ -49,7 +49,9 @@ class DataIDEE extends OGCAPIFeatures {
     );
 
     const ol3LayerSource = this.olLayer.getSource();
+    const requestedLayer = this.olLayer;
     this.requestFeatures_().then((features) => {
+      if (!this.map || this.olLayer !== requestedLayer) return;
       if (forceNewSource === true || isNullOrEmpty(ol3LayerSource)) {
         const newSource = new OLSourceVector({
           loader: () => {
