@@ -147,56 +147,6 @@ export const isUrl = (obj) => {
 };
 
 /**
- * Indica si la URL corresponde al servicio XYZ MDT de IDEE (elevación codificada en RGB).
- *
- * @function
- * @param {string} url URL de la capa XYZ.
- * @returns {boolean} Verdadero si es el servicio raster-dem de xyz-mdt.idee.es.
- * @api
- */
-export const isIdeeMdtRasterDemUrl = (url) => {
-  if (isNullOrEmpty(url) || !isString(url)) {
-    return false;
-  }
-  return /xyz-mdt\.idee\.es/i.test(url) && /raster-dem/i.test(url);
-};
-
-/**
- * Decodifica elevación (m) según codificación MapTiler Terrain RGB / MDT IDEE.
- * elevación = -10000 + ((R × 256² + G × 256 + B) × 0,1)
- *
- * @function
- * @param {number} red Componente rojo (0-255).
- * @param {number} green Componente verde (0-255).
- * @param {number} blue Componente azul (0-255).
- * @returns {number} Elevación en metros.
- * @api
- */
-export const decodeTerrainRgbElevation = (red, green, blue) => {
-  const encoded = (red * 65536) + (green * 256) + blue;
-  return -10000 + (encoded * 0.1);
-};
-
-/**
- * Resuelve extract en capas XYZ: true en MDT IDEE raster-dem, false en el resto.
- *
- * @function
- * @param {string} url URL del servicio.
- * @param {boolean|undefined} extractFromParam Valor de extract si viene en parámetros.
- * @returns {boolean} Valor de extract.
- * @api
- */
-export const resolveXyzExtract = (url, extractFromParam) => {
-  if (!isUndefined(extractFromParam)) {
-    return extractFromParam;
-  }
-  if (isIdeeMdtRasterDemUrl(url)) {
-    return true;
-  }
-  return false;
-};
-
-/**
  * Devuelve verdadero si es valor que se le pasa por
  * parámetros es un numero.
  * @function

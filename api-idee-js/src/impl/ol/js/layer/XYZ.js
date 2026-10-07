@@ -1,13 +1,22 @@
 /**
  * @module IDEE/impl/layer/XYZ
  */
-import { isNullOrEmpty, extend, getZDirectionFunction } from 'IDEE/util/Utils';
+import {
+  isNullOrEmpty, extend, getZDirectionFunction,
+} from 'IDEE/util/Utils';
 import OLTileLayer from 'ol/layer/Tile';
 import { get as getProj, transform } from 'ol/proj';
 import XYZSource from 'ol/source/XYZ';
 import * as LayerType from '../../../../facade/js/layer/Type';
 import Layer from './Layer';
 import ImplMap from '../Map';
+
+/**
+ * Zoom mínimo por defecto para consultar elevación Terrain-RGB.
+ * @constant
+ * @type {number}
+ */
+const ELEVATION_QUERY_MIN_ZOOM = 15;
 
 /**
  * @classdesc
@@ -194,6 +203,7 @@ class XYZ extends Layer {
         tileSize: this.getTileSize(),
         crossOrigin: this.crossOrigin,
         zDirection: this.zDirection,
+        interpolate: false,
       });
     }
     this.olLayer.setSource(source);
@@ -276,16 +286,65 @@ class XYZ extends Layer {
   }
 
   /**
-   * Obtiene el índice de tesela en convención URL XYZ.
+   * Índice y de tesela como en la petición HTTP ({y} o {-y} en la plantilla URL).
+   *
+   * @private
+   * @function
+   * @param {number} tileCoordRow Componente y de tileCoord [z, x, y].
+   * @param {number} z Nivel de zoom de la tesela.
+   * @returns {number} Valor y sustituido en la URL.
+   */
+  getTileYForUrlTemplate_(tileCoordRow, z) {
+    if (!isNullOrEmpty(this.url) && this.url.indexOf('{-y}') >= 0) {
+      if (tileCoordRow < 0) {
+        return (-tileCoordRow) - 1;
+      }
+      // Hay que invertir la fila respecto al zoom
+      return ((1 << z) - 1) - tileCoordRow;
+    }
+    return tileCoordRow;
+  }
+
+  /**
+   * Obtiene z/x/y de tesela como en la URL ({y} o {-y} según la plantilla).
    *
    * @public
    * @function
    * @param {Array<number>} coordinate Coordenadas en la proyección del mapa.
+   * @param {number} [zoom] Nivel de zoom de tesela; si se omite, el de la vista.
    * @returns {{z: number, x: number, y: number}|null} Índice z/x/y o null.
    * @api
    */
-  getTileIndexAtCoordinate(coordinate) {
-    if (isNullOrEmpty(this.olLayer)) {
+  getTileIndexAtCoordinate(coordinate, zoom) {
+    const context = this.getTileQueryContext_(coordinate);
+    if (isNullOrEmpty(context)) {
+      return null;
+    }
+    let z = zoom;
+    if (z === undefined || z === null) {
+      z = context.mapZoom;
+    }
+    const tileCoord = context.tileGrid.getTileCoordForCoordAndZ(context.coord, z);
+    if (isNullOrEmpty(tileCoord)) {
+      return null;
+    }
+    return {
+      z: tileCoord[0],
+      x: tileCoord[1],
+      y: this.getTileYForUrlTemplate_(tileCoord[2], tileCoord[0]),
+    };
+  }
+
+  /**
+   * Contexto de proyección/teselas para una coordenada del mapa.
+   *
+   * @private
+   * @function
+   * @param {Array<number>} coordinate Coordenadas en la proyección del mapa.
+   * @returns {Object|null} Contexto o null si no está disponible.
+   */
+  getTileQueryContext_(coordinate) {
+    if (isNullOrEmpty(this.olLayer) || isNullOrEmpty(this.map)) {
       return null;
     }
     const olMap = this.map.getMapImpl();
@@ -302,21 +361,19 @@ class XYZ extends Layer {
     if (isNullOrEmpty(resolution)) {
       return null;
     }
-    const z = tileGrid.getZForResolution(resolution);
     const viewProj = view.getProjection();
     const sourceProj = source.getProjection() || viewProj;
     let coord = coordinate;
     if (viewProj.getCode() !== sourceProj.getCode()) {
       coord = transform(coordinate, viewProj, sourceProj);
     }
-    const tileCoord = tileGrid.getTileCoordForCoordAndZ(coord, z);
-    if (isNullOrEmpty(tileCoord)) {
-      return null;
-    }
+    const mapZoom = tileGrid.getZForResolution(resolution, this.zDirection);
     return {
-      z: tileCoord[0],
-      x: tileCoord[1],
-      y: (-tileCoord[2]) - 1,
+      source,
+      tileGrid,
+      sourceProj,
+      coord,
+      mapZoom,
     };
   }
 
@@ -334,6 +391,171 @@ class XYZ extends Layer {
       return null;
     }
     return this.olLayer.getData(pixel);
+  }
+
+  /**
+   * Índice de tesela y color de píxel para GetFeatureInfo con elevación.
+   * Si el zoom de la vista es menor que el mínimo de consulta, lee la tesela
+   * a ese zoom (p. ej. 15); si no, usa el píxel renderizado del mapa.
+   *
+   * @public
+   * @function
+   * @param {Array<number>} coordinate Coordenadas del clic.
+   * @param {Array<number>} mapPixel Coordenadas de píxel [x, y] del mapa.
+   * @param {number} [minQueryZoom] Zoom mínimo de tesela para la consulta.
+   * @returns {Promise<{tileIndex: Object|null, data: Uint8ClampedArray|null}|null>}
+   * @api
+   */
+  async getFeatureInfoPixelData(coordinate, mapPixel, minQueryZoom) {
+    const context = this.getTileQueryContext_(coordinate);
+    if (isNullOrEmpty(context)) {
+      return null;
+    }
+    const maxZoom = context.tileGrid.getMaxZoom();
+    const queryZoom = this.resolveElevationQueryZoom_(
+      context.mapZoom,
+      maxZoom,
+      minQueryZoom,
+    );
+    if (queryZoom === context.mapZoom) {
+      return {
+        tileIndex: this.getTileIndexAtCoordinate(coordinate),
+        data: this.getData(mapPixel),
+      };
+    }
+    return this.sampleTilePixelAtCoordinate_(coordinate, queryZoom, context);
+  }
+
+  /**
+   * Resuelve el zoom de tesela para consultar elevación.
+   * Si el zoom del mapa es menor que el mínimo, usa el mínimo; nunca supera maxZoom.
+   *
+   * @private
+   * @function
+   * @param {number} mapZoom Zoom de tesela de la vista.
+   * @param {number} maxZoom Zoom máximo de la cuadrícula.
+   * @param {number} [minQueryZoom] Zoom mínimo de consulta.
+   * @returns {number} Zoom de tesela a usar.
+   */
+  resolveElevationQueryZoom_(mapZoom, maxZoom, minQueryZoom) {
+    let minZoom = ELEVATION_QUERY_MIN_ZOOM;
+    if (typeof minQueryZoom === 'number' && !Number.isNaN(minQueryZoom)) {
+      minZoom = minQueryZoom;
+    }
+    let queryZoom = mapZoom;
+    if (mapZoom < minZoom) {
+      queryZoom = minZoom;
+    }
+    if (queryZoom > maxZoom) {
+      queryZoom = maxZoom;
+    }
+    return queryZoom;
+  }
+
+  /**
+   * Carga una imagen de tesela por URL.
+   *
+   * @private
+   * @function
+   * @param {string} url URL de la tesela.
+   * @returns {Promise<HTMLImageElement|null>} Imagen o null si falla.
+   */
+  loadTileImage_(url) {
+    return new Promise((resolve) => {
+      if (isNullOrEmpty(url)) {
+        resolve(null);
+        return;
+      }
+      const img = new Image();
+      if (!isNullOrEmpty(this.crossOrigin)) {
+        img.crossOrigin = this.crossOrigin;
+      }
+      img.onload = () => {
+        resolve(img);
+      };
+      img.onerror = () => {
+        resolve(null);
+      };
+      img.src = url;
+    });
+  }
+
+  /**
+   * Muestrea el RGBA del píxel de una tesela concreta en una coordenada.
+   *
+   * @private
+   * @function
+   * @param {Array<number>} coordinate Coordenadas del mapa.
+   * @param {number} queryZoom Zoom de tesela a consultar.
+   * @param {Object} context Contexto de getTileQueryContext_.
+   * @returns {Promise<{tileIndex: Object|null, data: Uint8ClampedArray|null}>}
+   */
+  async sampleTilePixelAtCoordinate_(coordinate, queryZoom, context) {
+    const tileIndex = this.getTileIndexAtCoordinate(coordinate, queryZoom);
+    const tileCoord = context.tileGrid.getTileCoordForCoordAndZ(context.coord, queryZoom);
+    if (isNullOrEmpty(tileCoord)) {
+      return {
+        tileIndex,
+        data: null,
+      };
+    }
+    const tileUrlFunction = context.source.getTileUrlFunction();
+    if (typeof tileUrlFunction !== 'function') {
+      return {
+        tileIndex,
+        data: null,
+      };
+    }
+    const url = tileUrlFunction.call(context.source, tileCoord, 1, context.sourceProj);
+    const img = await this.loadTileImage_(url);
+    if (isNullOrEmpty(img)) {
+      return {
+        tileIndex,
+        data: null,
+      };
+    }
+    const extent = context.tileGrid.getTileCoordExtent(tileCoord);
+    const imgWidth = img.naturalWidth || img.width;
+    const imgHeight = img.naturalHeight || img.height;
+    if (imgWidth <= 0 || imgHeight <= 0) {
+      return {
+        tileIndex,
+        data: null,
+      };
+    }
+    const extentWidth = extent[2] - extent[0];
+    const extentHeight = extent[3] - extent[1];
+    // Dónde cae el clic dentro de esa tesela
+    let px = Math.floor(((context.coord[0] - extent[0]) / extentWidth) * imgWidth);
+    let py = Math.floor(((extent[3] - context.coord[1]) / extentHeight) * imgHeight);
+    if (px < 0) {
+      px = 0;
+    }
+    if (py < 0) {
+      py = 0;
+    }
+    if (px >= imgWidth) {
+      px = imgWidth - 1;
+    }
+    if (py >= imgHeight) {
+      py = imgHeight - 1;
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = imgWidth;
+    canvas.height = imgHeight;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    if (isNullOrEmpty(ctx)) {
+      return {
+        tileIndex,
+        data: null,
+      };
+    }
+    ctx.drawImage(img, 0, 0);
+    const imageData = ctx.getImageData(px, py, 1, 1);
+    return {
+      tileIndex,
+      data: imageData.data,
+    };
   }
 }
 export default XYZ;
