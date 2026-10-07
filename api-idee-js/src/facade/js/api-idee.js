@@ -18,12 +18,20 @@ import pkg from '../../../package';
 import 'assets/css/idee';
 import { isUndefined, isNullOrEmpty } from './util/Utils';
 import Exception from './exception/exception';
+import { addConfigAccessors } from './util/ConfigAccessor';
 import './util/Window';
 import './util/polyfills';
 import { getValue } from './i18n/language';
 
 /**
  * Esta función establece las variables de configuración.
+ * Además, dispone de los métodos:
+ * - IDEE.config.get(path): devuelve el valor de la ruta o undefined si no existe.
+ *   Ej: IDEE.config.get('metadata.title')
+ * - IDEE.config.set(path, value): reemplaza el valor de la ruta.
+ *   Ej: IDEE.config.set('metadata.title', 'Mi visor')
+ * - IDEE.config.set(object): combina el objeto con la configuración.
+ *   Ej: IDEE.config.set({ metadata: { author: 'CNIG' } })
  *
  * @function
  * @param {String} configKey Clave de la variable de configuración.
@@ -33,6 +41,7 @@ import { getValue } from './i18n/language';
 export const config = (configKey, configValue) => {
   config[configKey] = configValue;
 };
+addConfigAccessors(config);
 
 /**
  * Esta función crea un nuevo mapa usando los parámetros

@@ -435,6 +435,25 @@
    */
   IDEE.config('ZOOM_LOCATION', '${zoomLocation}');
 
+  /**
+   * Metadatos del visualizador.
+   * @public
+   * @type {Object}
+   * @api
+   */
+  IDEE.config('metadata', {
+    logoURL: '${metadata.logoURL}',
+    title: '${metadata.title}',
+    author: '${metadata.author}',
+    attribution: '${metadata.attribution}',
+    description: '${metadata.description}',
+    date: '${build.timestamp}',
+    version: '${metadata.version}',
+    license: '${metadata.license}',
+    contact: '${metadata.contact}',
+    url: '${metadata.url}',
+  });
+
   // eslint-disable-next-line no-param-reassign
   IDEE.config.token = {
     "cnig": {

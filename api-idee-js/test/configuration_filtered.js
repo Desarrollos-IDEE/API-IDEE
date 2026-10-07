@@ -46,9 +46,9 @@ if (isLocal) {
   }
 }
 
-const config = (configKey, configValue) => {
+const config = (window.IDEE && window.IDEE.config) || ((configKey, configValue) => {
   config[configKey] = configValue;
-};
+});
 
 if (!window.IDEE) {
   const IDEE = {};
@@ -388,6 +388,24 @@ function fun(IDEE_) {
    * @type {Number}
    */
   IDEE.config('ZOOM_LOCATION', 16);
+
+  /**
+   * Metadatos del visualizador.
+   * @public
+   * @type {Object}
+   */
+  IDEE.config('metadata', {
+    logoURL: '',
+    title: 'API-IDEE',
+    author: 'Instituto Geográfico Nacional',
+    attribution: '© Instituto Geográfico Nacional',
+    description: '',
+    date: '',
+    version: '',
+    license: '',
+    contact: '',
+    url: 'https://www.idee.es',
+  });
 }
 
 fun(window.IDEE);
