@@ -112,6 +112,8 @@ class OGCAPIFeatures extends Vector {
    * @api stable
    */
   addTo(map) {
+    this.loaded_ = false;
+    this.facadeVector_.resetAutoRefresh();
     this.facadeVector_.userMaxExtent = null;
     this.map = map;
     this.fire(EventType.ADDED_TO_MAP);
@@ -121,7 +123,15 @@ class OGCAPIFeatures extends Vector {
     this.setVisible(this.visibility);
     const cesiumMap = this.map.getMapImpl();
     cesiumMap.dataSources.add(this.cesiumLayer);
-    map.getImpl().on(EventType.CHANGE, () => this.refresh());
+    this.refreshOnChange_ = () => this.refresh();
+    map.getImpl().on(EventType.CHANGE, this.refreshOnChange_);
+  }
+
+  /** Retira el escuchador de cambios antes de destruir la capa y detener su intervalo. */
+  destroy() {
+    this.map?.getImpl().un(EventType.CHANGE, this.refreshOnChange_);
+    this.refreshOnChange_ = null;
+    super.destroy();
   }
 
   /**
@@ -183,7 +193,9 @@ class OGCAPIFeatures extends Vector {
     });
     this.loader_ = new JSONPLoader(this.map, this.service_.getFeatureUrl(), this.formater_);
 
+    const requestedLayer = this.cesiumLayer;
     this.requestFeatures_().then((features) => {
+      if (!this.map || this.cesiumLayer !== requestedLayer) return;
       if (forceNewSource === true || isNullOrEmpty(this.cesiumLayer)) {
         this.loaded_ = true;
         this.facadeVector_.addFeatures(features);

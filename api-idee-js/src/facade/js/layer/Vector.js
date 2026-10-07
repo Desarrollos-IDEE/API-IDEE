@@ -212,6 +212,15 @@ class Vector extends LayerBase {
   }
 
   /**
+   * Descarta la referencia de edición antes de una nueva incorporación al mapa.
+   * La siguiente carga inicial volverá a establecerla.
+   * - Advertencia: método interno del ciclo de vida de las capas.
+   */
+  resetAutoRefresh() {
+    autoRefreshSnapshots.delete(this);
+  }
+
+  /**
    * Registra la primera carga para detectar también ediciones anteriores al primer intervalo.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public

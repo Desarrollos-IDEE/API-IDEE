@@ -43,7 +43,9 @@ class DataIDEE extends OGCAPIFeatures {
       this.formater_,
     );
 
+    const requestedLayer = this.cesiumLayer;
     this.requestFeatures_().then((features) => {
+      if (!this.map || this.cesiumLayer !== requestedLayer) return;
       if (forceNewSource === true || isNullOrEmpty(this.cesiumLayer)) {
         this.loaded_ = true;
         this.facadeVector_.addFeatures(features);

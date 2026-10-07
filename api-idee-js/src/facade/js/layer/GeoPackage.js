@@ -3,10 +3,11 @@
  */
 import GeoPackageProvider from '../connector/GeoPackageConnector';
 import MObject from '../Object';
+import Layer from './Layer';
 import * as LayerType from './Type';
 import GeoPackageTile from './GeoPackageTile';
 import GeoJSON from './GeoJSON';
-import { generateRandom, escapeXSS } from '../util/Utils';
+import { generateRandom, escapeXSS, addParameters } from '../util/Utils';
 import * as EventType from '../event/eventtype';
 import * as Dialog from '../dialog';
 import Style from '../style/Style';
@@ -137,6 +138,10 @@ class GeoPackage extends MObject {
     /** Proveedores vectoriales, indexados por el nombre original de tabla. */
     this.vectorProviders_ = Object.create(null);
 
+    /** Conectores aún utilizados por cada tabla; las recargas simultáneas se comparten. */
+    this.tableConnectors_ = new Map();
+    this.refreshBatch_ = null;
+
     /** Opciones propias del paquete, sin compartir objetos de configuración mutables. */
     this.options = this.copyOptions_(normalizedOptions);
     this.tiled = this.options.tiled === true;
@@ -265,11 +270,14 @@ class GeoPackage extends MObject {
       layers[tableName] = new GeoJSON({
         ...options,
         source,
+        refreshLoader: (isCurrent, apply, extent, projection) => (
+          this.refreshTable_(tableName, false, isCurrent, apply, extent, projection)
+        ),
         ...(tiled ? {
           bboxLoader: (extent, projection) => (
-            vectorProvider.getGeoJSONByBoundingBox(extent, projection)
+            this.vectorProviders_[tableName].getGeoJSONByBoundingBox(extent, projection)
           ),
-          fullLoader: () => vectorProvider.getGeoJSON(),
+          fullLoader: () => this.vectorProviders_[tableName].getGeoJSON(),
         } : {}),
       }, this.copyOptions_(options));
       tables[tableName] = {
@@ -280,7 +288,10 @@ class GeoPackage extends MObject {
     });
     tileProviders.forEach((tileProvider) => {
       const tableName = tileProvider.getTableName();
-      layers[tableName] = new GeoPackageTile(this.getTableOptions_(tableName, true), tileProvider);
+      layers[tableName] = new GeoPackageTile({
+        ...this.getTableOptions_(tableName, true),
+        refreshLoader: (isCurrent, apply) => this.refreshTable_(tableName, true, isCurrent, apply),
+      }, tileProvider);
       tables[tableName] = {
         type: 'tiles',
         metadata: this.copyOptions_(metadata.tables[tableName]),
@@ -292,10 +303,82 @@ class GeoPackage extends MObject {
         metadata: this.copyOptions_(metadata.tables[tableName]),
       };
     });
+    Object.keys(layers).forEach((name) => this.tableConnectors_.set(name, this.connector_));
     this.layers_ = layers;
     this.properties = { tables };
     this.loadedVectorLayers_ = true;
     this.loadedTileLayers_ = true;
+  }
+
+  /**
+   * Recarga una tabla remota conservando las capas y compartiendo la descarga en curso.
+   * Cada hija mantiene su intervalo, pausa por edición y comprobación de vigencia.
+   * Las fuentes binarias/locales no tienen un origen remoto que volver a consultar.
+   * @private
+   */
+  async refreshTable_(tableName, raster, isCurrent, apply, extent, projection) {
+    if (!Layer.isAutoRefreshRemoteURL(this.url) || !isCurrent()) return;
+    let batch = this.refreshBatch_;
+    if (!batch && this.latestRefresh_
+      && this.tableConnectors_.get(tableName) !== this.latestRefresh_.connector) {
+      batch = this.latestRefresh_;
+      this.refreshBatch_ = batch;
+    }
+    if (!batch) {
+      const connector = new GeoPackageProvider({
+        url: addParameters(this.url, { _ideeRefresh: Date.now() }),
+      }, { tile: this.options.tile, vector: this.options.vector });
+      batch = {
+        connector,
+        users: 0,
+        promise: Promise.all([
+          connector.getVectorProviders(), connector.getTileProviders(), connector.getMetadata(),
+        ]),
+      };
+      this.refreshBatch_ = batch;
+    }
+    batch.users += 1;
+    try {
+      const [vectors, tiles, metadata] = await batch.promise;
+      if (!isCurrent()) return;
+      const provider = (raster ? tiles : vectors)
+        .find((item) => item.getTableName() === tableName);
+      // Un cambio de esquema no debe borrar una tabla ni las ediciones del usuario.
+      if (!provider) throw new Error(`GeoPackage: ${tableName}`);
+      let source;
+      if (!raster) {
+        if (extent) {
+          await provider.prepareForBoundingBox();
+          source = await provider.getGeoJSONByBoundingBox(extent, projection);
+        } else {
+          source = provider.getGeoJSON();
+        }
+      }
+      if (!isCurrent() || !await apply(raster ? provider : source)) return;
+      this.latestRefresh_ = batch;
+      this.tableConnectors_.set(tableName, batch.connector);
+      if (!raster) this.vectorProviders_[tableName] = provider;
+      this.metadata.tables[tableName] = this.copyOptions_(metadata.tables[tableName]);
+      this.properties.tables[tableName] = {
+        type: raster ? 'tiles' : 'features',
+        metadata: this.copyOptions_(metadata.tables[tableName]),
+        ...(raster ? {} : { data: source }),
+      };
+    } finally {
+      batch.users -= 1;
+      if (batch.users === 0) {
+        this.refreshBatch_ = null;
+        const used = new Set(this.tableConnectors_.values());
+        const previous = this.refreshConnectors_ || new Set([this.connector_]);
+        previous.add(batch.connector);
+        previous.forEach((connector) => {
+          if (!used.has(connector)) connector.dispose();
+        });
+        this.refreshConnectors_ = used;
+        // No retiene la base inicial cuando todas sus tablas ya se han actualizado.
+        this.connector_ = this.tableConnectors_.values().next().value;
+      }
+    }
   }
 
   /**
@@ -414,7 +497,10 @@ class GeoPackage extends MObject {
    */
   addTo(map, addLayer = true) {
     this.map_ = map;
+    const addition = {};
+    this.pendingAddition_ = addition;
     const loading = this.whenReady().then(() => {
+      if (this.pendingAddition_ !== addition) return this;
       if (addLayer) {
         this.getLayers().forEach((layer) => map.addLayers(layer));
       }
@@ -464,7 +550,8 @@ class GeoPackage extends MObject {
    * @api
    */
   removeLayers() {
-    this.map_.removeLayers(this.getLayers());
+    this.pendingAddition_ = null;
+    this.map_?.removeLayers(this.getLayers());
   }
 
   /**
