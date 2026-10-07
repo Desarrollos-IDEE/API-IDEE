@@ -319,8 +319,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       && !IDEE.utils.isNullOrEmpty(layer.capabilitiesMetadata?.abstract);
 
     return new Promise((success) => {
-      let hasStyles = (hasMetadata
-        && layer.capabilitiesMetadata?.style !== undefined
+      let hasStyles = (Array.isArray(layer.capabilitiesMetadata?.style)
         && layer.capabilitiesMetadata.style.length > 1)
         || (layer instanceof IDEE.layer.Vector
           && !IDEE.utils.isNullOrEmpty(layer.predefinedStyles)
@@ -1335,7 +1334,14 @@ export default class LayerswitcherControl extends IDEE.Control {
   openAddServices() {
     let precharged = this.precharged;
 
-    if (precharged && precharged.groups && !Array.isArray(precharged.groups[0].services)) {
+    if (
+      precharged
+      && precharged.groups
+      && !(
+        Array.isArray(precharged.groups)
+        && precharged.groups.every((group) => group && Array.isArray(group.services))
+      )
+    ) {
       precharged = this.normalizePrecharged(precharged);
       this.precharged = precharged;
     }
@@ -1394,6 +1400,19 @@ export default class LayerswitcherControl extends IDEE.Control {
 
   normalizePrecharged(obj) {
     const finalGroups = [];
+
+    if (Array.isArray(obj.groups) && obj.groups.every((group) => group && group.name
+      && group.services && typeof group.services === 'object')) {
+      obj.groups.forEach((group) => {
+        const services = Array.isArray(group.services) ? group.services : [group.services];
+        finalGroups.push({ ...group, services });
+      });
+      return {
+        services: obj.services || [],
+        groups: finalGroups,
+      };
+    }
+
     const rawGroups = (Array.isArray(obj.groups) && obj.groups.length > 0)
       ? obj.groups[0] : obj.groups;
     Object.keys(rawGroups).forEach((categoryName) => {
@@ -1409,6 +1428,7 @@ export default class LayerswitcherControl extends IDEE.Control {
               type: item.type,
               url: item.url,
               white_list: item.white_list,
+              styles: item.styles,
             });
           } else if (item && typeof item === 'object') {
             processNode(item);
@@ -1744,25 +1764,13 @@ export default class LayerswitcherControl extends IDEE.Control {
   filterResults(allLayers) {
     const layers = [];
     const layerNames = [];
-    let allServices = [];
     if (this.filterName === undefined) {
       allLayers.forEach((layer) => {
         layers.push(layer);
         layerNames.push(layer.name);
       });
     } else if (this.filterName === 'none') {
-      if (this.precharged.services !== undefined && this.precharged.services.length > 0) {
-        allServices = allServices.concat(this.precharged.services);
-      }
-
-      if (this.precharged.groups !== undefined && this.precharged.groups.length > 0) {
-        this.precharged.groups.forEach((group) => {
-          if (group.services !== undefined && group.services.length > 0) {
-            allServices = allServices.concat(group.services);
-          }
-        });
-      }
-
+      const allServices = this.getPrechargedServices();
       allLayers.forEach((layer) => {
         let insideService = false;
         allServices.forEach((service) => {
@@ -1819,6 +1827,38 @@ export default class LayerswitcherControl extends IDEE.Control {
     }
 
     return layers;
+  }
+
+  getPrechargedServices() {
+    const { services = [], groups = [] } = this.precharged || {};
+    return services.concat(...groups.map((group) => group.services || []));
+  }
+
+  getPrechargedService(type, url) {
+    return this.getPrechargedServices().find((s) => s.type === type
+      && !IDEE.utils.isNullOrEmpty(url) && this.checkUrls(s.url, url));
+  }
+
+  applyPrechargedStyles(layer) {
+    const service = this.getPrechargedService(layer.type, layer.url);
+    if (!service || IDEE.utils.isNullOrEmpty(service.styles)) {
+      return;
+    }
+
+    if (layer instanceof IDEE.layer.Vector) {
+      // eslint-disable-next-line no-param-reassign
+      layer.predefinedStyles = service.styles.map((s) => (typeof s === 'string'
+        ? IDEE.Style.deserialize(s) : new IDEE.style.Generic(s)));
+      layer.setStyle(layer.predefinedStyles[0]);
+    } else if (layer instanceof IDEE.layer.WMS) {
+      const metadata = layer.capabilitiesMetadata || {};
+      const capStyles = Array.isArray(metadata.style) ? metadata.style : [];
+      metadata.style = service.styles.map((name) => capStyles.find((s) => s.Name === name)
+        || { Name: name, Title: name });
+      // eslint-disable-next-line no-param-reassign
+      layer.capabilitiesMetadata = metadata;
+      layer.setStyles(service.styles[0]);
+    }
   }
 
   // Muesta el resueltado de las capas encontradas
@@ -2264,7 +2304,6 @@ export default class LayerswitcherControl extends IDEE.Control {
         type,
         isMVT: type === 'mvt',
         isKML: type === 'kml' || type === 'kmz',
-        isKMZ: type === 'kmz',
         kmlType: type.toUpperCase(),
         layers,
         translations: {
@@ -2283,25 +2322,10 @@ export default class LayerswitcherControl extends IDEE.Control {
 
     document.querySelector(LAYERS_CONTAINER).outerHTML = modal;
 
-    if (type === 'kmz') {
-      const selectAll = document.querySelector('#m-layerswitcher-kmz-selectall');
-      if (selectAll) {
-        selectAll.addEventListener('change', () => {
-          document.querySelectorAll('.m-layerswitcher-kmz-folder').forEach((input) => {
-            input.checked = selectAll.checked;
-          });
-        });
-      }
-    }
-
-    if (type === 'mvt' || type === 'kml') {
+    if (type === 'mvt' || type === 'kml' || type === 'kmz') {
       const selAll = document.querySelector('#m-layerswitcher-addservices-selectall');
       if (!IDEE.utils.isNullOrEmpty(selAll)) {
         selAll.addEventListener('click', (evt) => this.registerCheck(evt));
-        const results = document.querySelectorAll('span.m-check-layerswitcher-addservices');
-        for (let i = 0; i < results.length; i += 1) {
-          results[i].addEventListener('click', (evt) => this.registerCheck(evt));
-        }
       }
     }
 
@@ -2380,7 +2404,7 @@ export default class LayerswitcherControl extends IDEE.Control {
         // projection: matrixSet,
       });
     } else if (type === 'mvt') {
-      const elmSel = document.querySelectorAll('#m-layerswitcher-addservices-results .m-layerswitcher-icons-check-seleccionado');
+      const elmSel = document.querySelectorAll('#m-layerswitcher-addservices-results #m-layerswitcher-all tbody input:checked');
       let layersSelected = [];
       elmSel.forEach((elm) => {
         layersSelected.push(elm.id);
@@ -2401,12 +2425,10 @@ export default class LayerswitcherControl extends IDEE.Control {
       }
       layer = new IDEE.layer.MVT(obj);
     } else if (type === 'kml' || type === 'kmz') {
-      const elmSel = document.querySelectorAll(type === 'kmz'
-        ? '#m-layerswitcher-addservices-results .m-layerswitcher-kmz-folder:checked'
-        : '#m-layerswitcher-addservices-results .m-layerswitcher-icons-check-seleccionado');
+      const elmSel = document.querySelectorAll('#m-layerswitcher-addservices-results #m-layerswitcher-all tbody input:checked');
       const layersSelected = [];
       elmSel.forEach((elm) => {
-        layersSelected.push(type === 'kmz' ? elm.name : elm.id);
+        layersSelected.push(elm.id);
       });
       const obj = {
         name,
@@ -2417,7 +2439,10 @@ export default class LayerswitcherControl extends IDEE.Control {
       if (!IDEE.utils.isNullOrEmpty(layersSelected)) {
         obj.layers = layersSelected;
       }
-      layer = type === 'kmz' ? new IDEE.layer.KMZ(obj) : new IDEE.layer.KML(obj);
+      // Si el servicio precargado define estilos, no se usan los propios del KML/KMZ
+      const prechargedStyles = this.getPrechargedService(type.toUpperCase(), url)?.styles;
+      const kmlOptions = IDEE.utils.isNullOrEmpty(prechargedStyles) ? {} : { extractStyles: false };
+      layer = type === 'kmz' ? new IDEE.layer.KMZ(obj, kmlOptions) : new IDEE.layer.KML(obj, kmlOptions);
     } else if (type === 'geotiff') {
       layer = new IDEE.layer.GeoTIFF({
         name,
@@ -2458,6 +2483,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       layer = existingLayer;
     }
 
+    this.applyPrechargedStyles(layer);
     const inGroup = getLayerSelectGroup(this.map_);
 
     if (inGroup) {
