@@ -147,58 +147,6 @@ export const isUrl = (obj) => {
 };
 
 /**
- * Decodifica elevación (m) según codificación MapTiler Terrain RGB / MDT IDEE.
- * elevación = -10000 + ((R × 256² + G × 256 + B) × 0,1)
- *
- * @function
- * @param {number} red Componente rojo (0-255).
- * @param {number} green Componente verde (0-255).
- * @param {number} blue Componente azul (0-255).
- * @returns {number} Elevación en metros.
- * @api
- */
-export const decodeTerrainRgbElevation = (red, green, blue) => {
-  const encoded = (red * 65536) + (green * 256) + blue;
-  return -10000 + (encoded * 0.1);
-};
-
-/**
- * Opciones de visualización GetFeatureInfo para extract XYZ.
- *
- * @function
- * @param {boolean|string|undefined} extract Valor de extract de la capa XYZ.
- * @returns {{showTiles: boolean, showColors: boolean, showElevation: boolean}}
- * Qué bloques mostrar en la consulta.
- * @api
- */
-export const getXyzExtractDisplayOptions = (extract) => {
-  const tilesAndColors = {
-    showTiles: true,
-    showColors: true,
-    showElevation: false,
-  };
-
-  if (extract === true) {
-    return tilesAndColors;
-  }
-  if (isString(extract)) {
-    const trimmed = extract.trim();
-    if (trimmed === '' || /^(true|1)$/i.test(trimmed)) {
-      return tilesAndColors;
-    }
-    const parts = trimmed.split(/[,;\s]+/)
-      .map((part) => part.trim().toLowerCase())
-      .filter((part) => !isNullOrEmpty(part));
-    return {
-      showTiles: parts.includes('tiles'),
-      showColors: parts.includes('colors'),
-      showElevation: parts.includes('elevation'),
-    };
-  }
-  return tilesAndColors;
-};
-
-/**
  * Devuelve verdadero si es valor que se le pasa por
  * parámetros es un numero.
  * @function

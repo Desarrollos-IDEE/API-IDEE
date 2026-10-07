@@ -14,11 +14,90 @@ import { get as getRemote } from 'IDEE/util/Remote';
 import { compileSync as compileTemplate } from 'IDEE/util/Template';
 import {
   isNullOrEmpty, beautifyAttribute, addParameters, isString, rgbaToHex,
-  decodeTerrainRgbElevation, getXyzExtractDisplayOptions,
 } from 'IDEE/util/Utils';
 import { getValue } from 'IDEE/i18n/language';
 import * as LayerType from 'IDEE/layer/Type';
 import Control from './Control';
+
+/**
+ * Zoom mínimo por defecto para consultar elevación Terrain-RGB en XYZ.
+ * @constant
+ * @type {number}
+ */
+const XYZ_ELEVATION_QUERY_MIN_ZOOM = 15;
+
+/**
+ * Decodifica elevación (m) según codificación MapTiler Terrain RGB / MDT IDEE.
+ *
+ * @function
+ * @param {number} red Componente rojo (0-255).
+ * @param {number} green Componente verde (0-255).
+ * @param {number} blue Componente azul (0-255).
+ * @returns {number} Elevación en metros.
+ */
+const decodeTerrainRgbElevation = (red, green, blue) => {
+  const encoded = (red * 65536) + (green * 256) + blue;
+  return -10000 + (encoded * 0.1);
+};
+
+/**
+ * Opciones de visualización GetFeatureInfo para extract XYZ.
+ * En elevation se admite `elevation` (zoom mínimo por defecto 15) o `elevation:16`.
+ *
+ * @function
+ * @param {boolean|string|undefined} extract Valor de extract de la capa XYZ.
+ * @returns {{
+ *   showTiles: boolean,
+ *   showColors: boolean,
+ *   showElevation: boolean,
+ *   elevationQueryMinZoom: number
+ * }}
+ */
+const getXyzExtractDisplayOptions = (extract) => {
+  const tilesAndColors = {
+    showTiles: true,
+    showColors: true,
+    showElevation: false,
+    elevationQueryMinZoom: XYZ_ELEVATION_QUERY_MIN_ZOOM,
+  };
+
+  if (extract === true) {
+    return tilesAndColors;
+  }
+  if (isString(extract)) {
+    const trimmed = extract.trim();
+    if (trimmed === '' || /^(true|1)$/i.test(trimmed)) {
+      return tilesAndColors;
+    }
+    const parts = trimmed.split(/[,;\s]+/)
+      .map((part) => part.trim().toLowerCase())
+      .filter((part) => !isNullOrEmpty(part));
+    let showElevation = false;
+    let elevationQueryMinZoom = XYZ_ELEVATION_QUERY_MIN_ZOOM;
+    parts.forEach((part) => {
+      if (part === 'elevation') {
+        showElevation = true;
+        return;
+      }
+      const elevationMatch = part.match(/^elevation[=:](\d+)$/);
+      if (isNullOrEmpty(elevationMatch)) {
+        return;
+      }
+      showElevation = true;
+      const zoom = Number.parseInt(elevationMatch[1], 10);
+      if (!Number.isNaN(zoom)) {
+        elevationQueryMinZoom = zoom;
+      }
+    });
+    return {
+      showTiles: parts.includes('tiles'),
+      showColors: parts.includes('colors'),
+      showElevation,
+      elevationQueryMinZoom,
+    };
+  }
+  return tilesAndColors;
+};
 
 /**
  * @classdesc
@@ -145,16 +224,25 @@ class GetFeatureInfo extends Control {
     const wmsInfoURLS = this.buildWMSInfoURL([...wms, ...urlsWMS]);
     const wmtsInfoURLS = this.buildWMTSInfoURL([...wmts, ...urlsWMTS]);
     const geotiffInfos = this.buildGeoTIFFInfo(geotiff, evt);
-    const xyzInfos = this.buildXYZInfo(xyz, evt);
-    const clientLayerInfos = [...geotiffInfos, ...xyzInfos];
-
     const layerNamesUrls = [...wmtsInfoURLS, ...wmsInfoURLS]
       .filter((layer) => !isNullOrEmpty(layer));
-    if (layerNamesUrls.length > 0 || clientLayerInfos.length > 0) {
-      this.showInfoFromURL_(layerNamesUrls, evt.coordinate, olMap, clientLayerInfos);
-    } else {
-      dialogParam.info('No existen capas consultables');
-    }
+
+    this.buildXYZInfo(xyz, evt).then((xyzInfos) => {
+      const clientLayerInfos = [...geotiffInfos, ...xyzInfos];
+      if (layerNamesUrls.length > 0 || clientLayerInfos.length > 0) {
+        this.showInfoFromURL_(layerNamesUrls, evt.coordinate, olMap, clientLayerInfos);
+      } else {
+        dialogParam.info('No existen capas consultables');
+      }
+    }).catch((err) => {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      if (layerNamesUrls.length > 0 || geotiffInfos.length > 0) {
+        this.showInfoFromURL_(layerNamesUrls, evt.coordinate, olMap, geotiffInfos);
+      } else {
+        dialogParam.info('No existen capas consultables');
+      }
+    });
   }
 
   /**
@@ -189,35 +277,53 @@ class GetFeatureInfo extends Control {
 
   /**
    * Obtiene la información de capas XYZ/TMS con extract activo en el píxel clicado.
+   * Con elevación, si el zoom del mapa es menor que el mínimo de consulta, lee la
+   * tesela a ese zoom (p. ej. 15) en lugar del píxel renderizado.
    *
    * @function
    * @param {Array<IDEE.layer.XYZ|IDEE.layer.TMS>} xyzLayers Capas XYZ o TMS.
    * @param {ol.MapBrowserEvent} evt Evento de clic en el mapa.
-   * @returns {Array<{formatedInfo: string, layerName: string}>} Información formateada por capa.
+   * @returns {Promise<Array<{formatedInfo: string, layerName: string}>>}
+   * Información formateada por capa.
    * @api stable
    */
-  buildXYZInfo(xyzLayers, evt) {
+  async buildXYZInfo(xyzLayers, evt) {
     const pixel = evt.pixel;
     const coordinate = evt.coordinate;
-    const infos = [];
-
-    xyzLayers.forEach((layer) => {
+    const layerResults = await Promise.all(xyzLayers.map(async (layer) => {
       if (!layer.isVisible() || layer.extract === false) {
-        return;
+        return null;
       }
-      const tileIndex = layer.getTileIndexAtCoordinate(coordinate);
-      const data = layer.getData(pixel);
+      const displayOptions = getXyzExtractDisplayOptions(layer.extract);
+      let tileIndex = null;
+      let data = null;
+      const useElevationQuery = layer.type === LayerType.XYZ
+        && displayOptions.showElevation
+        && typeof layer.getFeatureInfoPixelData === 'function';
+      if (useElevationQuery) {
+        const pixelData = await layer.getFeatureInfoPixelData(
+          coordinate,
+          pixel,
+          displayOptions.elevationQueryMinZoom,
+        );
+        if (!isNullOrEmpty(pixelData)) {
+          tileIndex = pixelData.tileIndex;
+          data = pixelData.data;
+        }
+      } else {
+        tileIndex = layer.getTileIndexAtCoordinate(coordinate);
+        data = layer.getData(pixel);
+      }
       if (isNullOrEmpty(tileIndex) && isNullOrEmpty(data)) {
-        return;
+        return null;
       }
-      const formatedInfo = GetFeatureInfo.formatXYZInfo(tileIndex, data, layer);
-      infos.push({
-        formatedInfo,
+      return {
+        formatedInfo: GetFeatureInfo.formatXYZInfo(tileIndex, data, layer),
         layerName: layer.legend || layer.name,
-      });
-    });
+      };
+    }));
 
-    return infos;
+    return layerResults.filter((info) => !isNullOrEmpty(info));
   }
 
   /**
