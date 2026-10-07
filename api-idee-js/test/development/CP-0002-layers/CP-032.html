@@ -21,6 +21,8 @@ button,input,select{font:inherit}pre{max-height:160px;overflow:auto}</style></he
 <p>«Sin intervalo» omite el parámetro; «Intervalo 0» envía <code>refreshInterval: 0</code>.
 En este mapa sin intervalo global, ninguno activa el autorefresco. El campo de milisegundos solo se usa con «Solo refreshInterval».</p>
 <p id="expected"></p>
+<p>GPX remoto: selecciona GPX y comprueba que <code>name</code> cambia a «GPX revisión N».
+Prueba tanto <code>addLayers</code> como <code>addGPX</code>. Un File local no se consulta de nuevo automáticamente; se prueba su carga en CP-035.</p>
 <p id="wms-help"></p>
 <p>Arranca servidor-autorefresco.py en 8083. El formulario crea un mapa nuevo; el autorefresco conserva el mapa.</p>
 <code id="params"></code><p>

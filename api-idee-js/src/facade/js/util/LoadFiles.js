@@ -11,6 +11,7 @@ import * as Dialog from '../dialog';
 import { getValue } from '../i18n/language';
 import Vector from '../layer/Vector';
 import GeoTIFF from '../layer/GeoTIFF';
+import KMZ from '../layer/KMZ';
 
 /**
  * Esta función añade al mapa una capa vector con los features
@@ -114,7 +115,19 @@ export const loadGeotiffLayer = (
 export const loadFeaturesFromSource = async (map, source, layerName, fileExt) => {
   try {
     const projection = map.getProjection().code;
-    if (fileExt === 'zip') {
+    if (fileExt === 'kmz') {
+      const url = URL.createObjectURL(new Blob([source]));
+      const layer = new KMZ({
+        name: layerName, legend: layerName, url, extract: true,
+      });
+      const release = () => URL.revokeObjectURL(url);
+      layer.once('load:error', release);
+      layer.once('removed:map', release);
+      layer.once('load', () => {
+        layer.calculateMaxExtent().then((extent) => map.setBbox(extent));
+      });
+      map.addLayers(layer);
+    } else if (fileExt === 'zip') {
       shp.parseZip(source).then((data) => {
         const geojsonArray = [].concat(data);
         const features = LoadFilesImpl.loadAllInGeoJSONLayer(geojsonArray, projection);
@@ -160,6 +173,7 @@ export const addFileToMap = (map, file) => {
     // Formatos binarios (GDAL / comprimidos / raster)
     const binaryFormats = [
       'zip',
+      'kmz',
     ];
 
     // Formatos de texto vectorial

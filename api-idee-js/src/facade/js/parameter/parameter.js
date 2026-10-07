@@ -4628,6 +4628,19 @@ export const ogcapifeatures = (userParameters) => {
   return layers;
 };
 
+/**
+ * Analiza los parámetros de una capa DataIDEE.
+ * Reutiliza la configuración compartida con OGCAPIFeatures y registra el tipo
+ * moderno para que los métodos específicos del mapa la identifiquen.
+ * @param {string|Mx.parameters.DataIDEE|Array} userParameters Parámetros de capa.
+ * @returns {Mx.parameters.DataIDEE|Array<Mx.parameters.DataIDEE>}
+ */
+const dataidee = (userParameters) => {
+  const layers = ogcapifeatures(userParameters);
+  const withDataIDEEType = (layer) => ({ ...layer, type: LayerType.DataIDEE });
+  return isArray(layers) ? layers.map(withDataIDEEType) : withDataIDEEType(layers);
+};
+
 const generic = (userParameters, type) => {
   const params = userParameters;
 
@@ -5202,6 +5215,74 @@ export const wmc = (userParameters) => {
 };
 
 /**
+ * Parámetros GPX. Formato REST: GPX*nombre*url*extract*visibility*style.
+ * También admite el objeto de configuración del mapa sin descartar sus opciones.
+ * Admite filtros parciales de Map.getLayers; el constructor valida el origen y asigna el nombre.
+ * @param {Object|String} parameters Parámetros de la capa.
+ * @returns {Object} Parámetros normalizados.
+ * @api
+ */
+export const gpx = (parameters) => {
+  let params;
+  if (isString(parameters)) {
+    if (/^GPX\*/i.test(parameters)) {
+      const [, name, url, extract, visibility, style] = parameters.split('*');
+      params = {
+        name,
+        url: decodeURIComponent(url || ''),
+        extract: extract === undefined || extract === '' ? true : extract !== 'false',
+        visibility: visibility === undefined || visibility === '' ? true : visibility !== 'false',
+        style: style || undefined,
+      };
+    } else {
+      params = { url: parameters };
+    }
+  } else if (isObject(parameters)) {
+    params = { ...parameters };
+  } else {
+    Exception(getValue('exception').invalid_gpx_source);
+  }
+  return {
+    ...params,
+    type: LayerType.GPX,
+    extract: params.extract === undefined ? true : params.extract,
+  };
+};
+
+/**
+ * Analiza KMZ con la misma sintaxis que KML.
+ * @param {string|Object|Array} userParameters Parámetros de capa.
+ * @returns {Object|Array} Parámetros normalizados.
+ * @api
+ */
+export const kmz = (userParameters) => {
+  if (isArray(userParameters)) return userParameters.map(kmz);
+  let source = userParameters;
+  if (isString(userParameters)) {
+    if (!userParameters.includes('*')) {
+      source = isUrl(userParameters) ? { url: userParameters } : { name: userParameters };
+    } else {
+      source = userParameters.replace(/^KMZ\*/i, 'KML*');
+    }
+  }
+  const result = kml(source);
+  if (isString(userParameters)) {
+    const parts = userParameters.split('*');
+    if (/^KMZ$/i.test(parts[0]) && parts.length >= 3) {
+      result.url = parts[2];
+      if (parts.length === 5 && /\.kmz$/i.test(parts[3])) {
+        result.url += parts[3];
+        result.extract = parts[4] === 'true';
+        result.label = true;
+        result.visibility = true;
+      }
+    }
+  }
+  result.type = LayerType.KMZ;
+  return result;
+};
+
+/**
  * Parámetros con los tipos de capa soportados.
  * @const
  * @type {object}
@@ -5209,7 +5290,9 @@ export const wmc = (userParameters) => {
  * @api
  */
 const parameterFunction = {
+  gpx,
   kml,
+  kmz,
   wfs,
   osm,
   wms,
@@ -5224,6 +5307,7 @@ const parameterFunction = {
   mbtiles,
   mbtilesvector,
   ogcapifeatures,
+  dataidee,
   genericvector,
   genericraster,
   tiles3d,

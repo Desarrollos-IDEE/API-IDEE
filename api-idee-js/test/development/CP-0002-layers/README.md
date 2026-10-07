@@ -77,6 +77,8 @@ Mapa básico con Capas WMC y una WMS.
 CP-026
 Mapa básico con capa GeoPackage.
 
+
+
 CP-027
 Prueba manual de GeoPackage mediante el constructor estándar, con archivo local, URL y opciones por tabla.
 
@@ -85,3 +87,10 @@ Prueba manual de carga de GeoPackage desde archivo local o URL mediante el plugi
 
 
 Pruebas de autorefresco CP-032 y CP-033: ver README-autorefresco.md.
+
+
+CP-034
+Mapa básico para Prueba manual de capas KMZ en OpenLayers y Cesium: carga local y por URL, descompresión,
+errores, visibilidad, encuadre, refresco, cambio de URL, eliminación y regresión KML.
+
+

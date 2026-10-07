@@ -6,7 +6,7 @@ editar un atributo debe pausar la recarga; descartar y reanudar permite continua
 Vector local conserva sus datos y no descarga nada. Las imágenes de prueba son fijas.
 
 CP-033
-Intervalo del mapa con WMS, GeoJSON y XYZ: el valor válido del mapa sobrescribe
+Intervalo del mapa con WMS, GeoJSON, KMZ y XYZ: el valor válido del mapa sobrescribe
 el de las capas, también en altas posteriores y grupos OL. Actualizarlo cambia las
 capas actuales; 0 o sin intervalo las desactiva. Retirar conserva el último valor
 configurado de esa instancia. Los grupos no transmiten su intervalo; OverviewMap se excluye.
@@ -34,3 +34,29 @@ Pruebas automáticas, con los bundles del núcleo generados y el servidor de dat
 npm run test:playwright-ol -- PLAY-wms-autorefresh.spec.js PLAY-layer-autorefresh.spec.js
 npm run test:playwright-cesium -- PLAY-wms-autorefresh.spec.js PLAY-layer-autorefresh.spec.js
 ~~~
+
+CP-034: KMZ y refresco (OpenLayers y Cesium)
+-----------------------------------------
+
+1. Construir el núcleo con `npm run build:core` desde `api-idee-js`.
+2. Iniciar el servidor de datos del comando anterior en el puerto 8083.
+3. Servir la raíz del worktree por HTTP, por ejemplo
+   `python3 -m http.server 8086 --bind 127.0.0.1` desde `.worktrees/kmz`.
+   Si ya existe ese servidor, conservarlo.
+4. Abrir
+   http://localhost:8086/api-idee-js/test/development/CP-0002-layers/CP-034.html?engine=ol.
+   Repetir con `engine=cesium`.
+5. Marcar «Refresco automático», indicar 2000 ms y pulsar «Cargar KMZ cambiante».
+   Debe aparecer un objeto cuyo nombre numérico cambia aproximadamente cada 2 s.
+   En Red, filtrar `puntos.kmz`: las recargas llevan `_ideeRefresh`.
+6. Cambiar a 5000 ms y pulsar «Aplicar intervalo a la capa»: comprobar la nueva cadencia.
+   Desmarcar el refresco y aplicar: deben cesar las recargas.
+7. Eliminar la capa: no deben continuar sus peticiones. Volver a cargar permite repetir.
+8. Cargar un ejemplo fijo por HTTP con intervalo: se vuelve a descargar, pero sus
+   objetos no cambian. Importar un archivo con el selector local carga una copia:
+   no vigila el archivo del disco ni se actualiza al editarlo externamente.
+
+En CP-032 seleccionar KMZ y probar las dos rutas (addLayers/addKMZ), sin intervalo,
+con intervalo, retirar/reinsertar, editar y descartar/reanudar.
+En CP-033 comprobar el intervalo efectivo de «KMZ propia» y usar «Añadir KMZ
+posterior» para verificar que también hereda el intervalo del mapa.

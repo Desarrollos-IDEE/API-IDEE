@@ -134,6 +134,15 @@ class KML extends Vector {
   }
 
   /**
+   * Crea el cargador específico de esta capa con el mapa y formato actuales.
+   * @private
+   * @returns {LoaderKML} Cargador KML.
+   */
+  getLoader() {
+    return new LoaderKML(this.map, this.url, this.formater_);
+  }
+
+  /**
    * Este método añade la capa al mapa.
    *
    * @public
@@ -144,7 +153,8 @@ class KML extends Vector {
   addTo(map) {
     this.map = map;
     this.fire(EventType.ADDED_TO_MAP);
-    map.on(EventType.CHANGE_PROJ, this.setProjection_.bind(this), this);
+    this.changeProjectionHandler_ = this.setProjection_.bind(this);
+    map.on(EventType.CHANGE_PROJ, this.changeProjectionHandler_, this);
     this.facadeVector_.userMaxExtent = null;
     const screenOverlayContainer = !isNullOrEmpty(this.vendorOptions_)
       && this.vendorOptions_.screenOverlayContainer
@@ -155,7 +165,7 @@ class KML extends Vector {
       screenOverlayContainer,
       clampToGround: this.clampToGround,
     });
-    this.loader_ = new LoaderKML(this.map, this.url, this.formater_);
+    this.loader_ = this.getLoader();
     this.cesiumLayer = new KmlDataSource(this.vendorOptions_);
     this.updateSource_();
     this.setVisible(this.visibility);
@@ -230,7 +240,7 @@ class KML extends Vector {
    * @api stable
    */
   updateSource_() {
-    this.requestFeatures_().then((response) => {
+    return this.requestFeatures_().then((response) => {
       if (this.cesiumLayer) {
         const screenOverlay = response.screenOverlay;
         // removes previous features

@@ -1,6 +1,7 @@
 import { map as Mmap, proxy } from 'IDEE/api-idee';
 import WMS from 'IDEE/layer/WMS';
 import GeoJSON from 'IDEE/layer/GeoJSON';
+import KMZ from 'IDEE/layer/KMZ';
 import XYZ from 'IDEE/layer/XYZ';
 import LayerGroup from 'IDEE/layer/LayerGroup';
 
@@ -35,13 +36,18 @@ const geojson = new GeoJSON({
   url: `${base}puntos.geojson`,
   refreshInterval: ownInterval,
 });
+const kmz = new KMZ({
+  name: 'KMZ propia',
+  url: `${base}puntos.kmz`,
+  refreshInterval: ownInterval,
+});
 const xyz = new XYZ({ name: 'XYZ heredada', url: `${base}tiles/{z}/{x}/{y}.png`, isBase: false });
 const params = {
   container: 'map',
   projection: 'EPSG:3857',
   center: [0, 0],
   zoom: 5,
-  layers: [wms, inherited, geojson, xyz],
+  layers: [wms, inherited, geojson, kmz, xyz],
   controls: [],
 };
 if (mode === 'on') params.refreshInterval = interval;
@@ -49,7 +55,7 @@ if (mode === 'invalid') params.refreshInterval = 0;
 const mapa = Mmap(params);
 const cesium = !!mapa.getMapImpl().scene;
 document.getElementById('engine').textContent = cesium ? 'Cesium (3D)' : 'OpenLayers (2D)';
-const capas = [wms, inherited, geojson, xyz];
+const capas = [wms, inherited, geojson, kmz, xyz];
 window.mapa = mapa;
 window.capas = capas;
 let sequence = 0;
@@ -88,6 +94,16 @@ document.getElementById('add-vector').onclick = () => {
   });
   capas.push(last);
   mapa.addLayers(last);
+};
+
+document.getElementById('add-kmz').onclick = () => {
+  sequence += 1;
+  last = new KMZ({
+    name: `KMZ posterior ${sequence}`,
+    url: `${base}puntos.kmz?case=later-${sequence}`,
+  });
+  capas.push(last);
+  mapa.addKMZ(last);
 };
 
 document.getElementById('group').disabled = cesium;

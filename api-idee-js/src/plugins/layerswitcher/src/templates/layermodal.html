@@ -43,8 +43,8 @@
             </div>
         {{/gt}}
     {{/eq}}
-    {{#eq type 'kml'}}
-        <p>{{translations.data_layer}} KML</p>
+    {{#if isKML}}
+        <p>{{translations.data_layer}} {{kmlType}}</p>
         {{#gt layers.length 0}}
             <div id="m-layerswitcher-addservices-results">
                 <div class="m-layerswitcher-table-results">
@@ -73,7 +73,7 @@
                 </div>
             </div>
         {{/gt}}
-    {{/eq}}
+    {{/if}}
     <div class="m-layerswitcher-layer-fields">
         {{#if isMVT}}
             {{#eq layers.length 0}}

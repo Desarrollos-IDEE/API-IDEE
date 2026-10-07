@@ -36,11 +36,13 @@ import Layer from './layer/Layer';
 import * as LayerType from './layer/Type';
 import Vector from './layer/Vector';
 import KML from './layer/KML';
+import KMZ from './layer/KMZ';
 import WFS from './layer/WFS';
 import WMS from './layer/WMS';
 import WMTS from './layer/WMTS';
 import MVT from './layer/MVT';
 import OGCAPIFeatures from './layer/OGCAPIFeatures';
+import DataIDEE from './layer/DataIDEE';
 import GenericRaster from './layer/GenericRaster';
 import GenericVector from './layer/GenericVector';
 import OverviewMapButton from './ui/buttons/OverviewMapButton';
@@ -48,6 +50,7 @@ import Panel from './ui/panels/Panel';
 import CollapsiblePanel from './ui/panels/CollapsiblePanel';
 import * as Position from './ui/position';
 import GeoJSON from './layer/GeoJSON';
+import GPX from './layer/GPX';
 import GeoPackage from './layer/GeoPackage';
 import GeoTIFF from './layer/GeoTIFF';
 import MapLibre from './layer/MapLibre';
@@ -363,6 +366,10 @@ class Map extends Base {
     // kml
     if (!isNullOrEmpty(params.kml)) {
       this.addKML(params.kml);
+    }
+
+    if (!isNullOrEmpty(params.kmz)) {
+      this.addKMZ(params.kmz);
     }
 
     // controls
@@ -813,7 +820,8 @@ class Map extends Base {
           if ((layer instanceof Vector)
             /* && !(layer instanceof KML) */
             && !(layer instanceof WFS)
-            && !(layer instanceof OGCAPIFeatures)) {
+            && !(layer instanceof OGCAPIFeatures)
+            && !(layer instanceof DataIDEE)) {
             this.featuresHandler_.addLayer(layer);
           }
 
@@ -848,6 +856,9 @@ class Map extends Base {
         case 'GeoJSON':
           layer = new GeoJSON(parameterVariable, { style: parameterVariable.style });
           break;
+        case 'GPX':
+          layer = new GPX(parameterVariable);
+          break;
         case 'GeoPackage': {
           const {
             type, source, url, name, legend, metadata, properties, options = {}, ...layerOptions
@@ -862,6 +873,9 @@ class Map extends Base {
         }
         case 'GeoTIFF':
           layer = new GeoTIFF(layerParam);
+          break;
+        case 'KMZ':
+          layer = new KMZ(layerParam);
           break;
         case 'KML':
           layer = new KML(layerParam);
@@ -892,6 +906,9 @@ class Map extends Base {
           break;
         case 'OGCAPIFeatures':
           layer = new OGCAPIFeatures(layerParam, { style: parameterVariable.style });
+          break;
+        case 'DataIDEE':
+          layer = new DataIDEE(layerParam, { style: parameterVariable.style });
           break;
         case 'GenericRaster':
           layer = new GenericRaster(layerParam);
@@ -1435,6 +1452,193 @@ class Map extends Base {
     return this;
   }
 
+  /** Gestión de capas KMZ. @api */
+  getKMZ(layersParamVar) {
+    let layersParam = layersParamVar;
+    // checks if the implementation can manage layers
+    if (isUndefined(MapImpl.prototype.getKMZ)) {
+      Exception(getValue('exception').getkmz_method);
+    }
+
+    // parses parameters to Array
+    if (isNull(layersParam)) {
+      layersParam = [];
+    } else if (!isArray(layersParam)) {
+      layersParam = [layersParam];
+    }
+
+    // gets the parameters as Layer objects to filter
+    let filters = [];
+    if (layersParam.length > 0) {
+      filters = layersParam.map((layerParam) => {
+        return parameter.layer(layerParam, LayerType.KMZ);
+      });
+    }
+
+    // gets the layers
+    const layers = this.getImpl().getKMZ(filters).sort(Map.LAYER_SORT);
+
+    return layers;
+  }
+
+  /**
+   * Este método agrega las capas KMZ al mapa.
+   *
+   * @function
+   * @param {Array<string>|Array<Mx.parameters.KMZ>} layersParam Colección u objeto de capa.
+   * @returns {Map} Devuelve el estado del mapa.
+   * @api
+   */
+  addKMZ(layersParamVar) {
+    let layersParam = layersParamVar;
+    if (!isNullOrEmpty(layersParam)) {
+      // checks if the implementation can manage layers
+      if (isUndefined(MapImpl.prototype.addKMZ)) {
+        Exception(getValue('exception').addkmz_method);
+      }
+
+      // parses parameters to Array
+      if (!isArray(layersParam)) {
+        layersParam = [layersParam];
+      }
+
+      // gets the parameters as KMZ objects to add
+      const kmzLayers = [];
+      layersParam.forEach((layerParam) => {
+        let kmzLayer;
+        if (layerParam instanceof KMZ) {
+          kmzLayer = layerParam;
+        } else if (!(layerParam instanceof Layer)) {
+          kmzLayer = new KMZ(layerParam, layerParam.options);
+        }
+        if (kmzLayer.extract === true) {
+          this.featuresHandler_.addLayer(kmzLayer);
+        }
+        kmzLayers.push(kmzLayer);
+      });
+
+      // adds the layers
+      this.getImpl().addKMZ(kmzLayers);
+      kmzLayers.forEach((layer) => {
+        if (isFunction(layer.startAutoRefresh)) {
+          layer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
+      this.fire(EventType.ADDED_LAYER, [kmzLayers]);
+      this.fire(EventType.ADDED_KMZ, [kmzLayers]);
+    }
+    return this;
+  }
+
+  /**
+   * Este método elimina las capas KMZ del mapa.
+   *
+   * @function
+   * @param {Array<string>|Array<Mx.parameters.KMZ>} layersParam Matriz de capas de nombres que
+   * desea eliminar.
+   * @returns {Map} Devuelve el estado del mapa.
+   * @api
+   */
+  removeKMZ(layersParam) {
+    if (!isNullOrEmpty(layersParam)) {
+      // checks if the implementation can manage layers
+      if (isUndefined(MapImpl.prototype.removeKMZ)) {
+        Exception(getValue('exception').removekmz_method);
+      }
+
+      // gets the layers
+      const kmzLayers = this.getKMZ(layersParam);
+      if (kmzLayers.length > 0) {
+        kmzLayers.forEach((layer) => {
+          this.featuresHandler_.removeLayer(layer);
+        });
+        // removes the layers
+        this.getImpl().removeKMZ(kmzLayers);
+      }
+    }
+    return this;
+  }
+
+  /**
+   * Obtiene las capas GPX mediante la consulta específica del motor.
+   * Sin parámetros devuelve todas; admite instancia, nombre, descriptor con name/url
+   * o parámetros GPX de REST. Una lista combina los filtros sin duplicar resultados.
+   * @param {IDEE.layer.GPX|String|Object|Array} layersParam Filtros opcionales.
+   * @returns {Array<IDEE.layer.GPX>} Capas GPX encontradas.
+   * @api
+   */
+  getGPX(layersParam) {
+    if (isUndefined(MapImpl.prototype.getGPX)) {
+      Exception(getValue('exception').getgpx_method);
+    }
+    let parameters = layersParam;
+    if (isNullOrEmpty(parameters)) parameters = [];
+    else if (!isArray(parameters)) parameters = [parameters];
+    const filters = parameters.map((filter) => {
+      if (filter instanceof Layer) return filter;
+      if (isString(filter) && !/^GPX\*/i.test(filter)) return { name: filter };
+      return parameter.layer(isString(filter) ? buildLayer(filter) : filter, LayerType.GPX);
+    });
+    return this.getImpl().getGPX(filters).sort(Map.LAYER_SORT);
+  }
+
+  /**
+   * Añade capas GPX mediante el motor y emite los eventos generales y específicos.
+   * Admite instancias, parámetros del constructor o cadenas GPX de REST.
+   * Las opciones del constructor se incluyen en el descriptor de cada capa.
+   * @param {IDEE.layer.GPX|Object|String|Array} layersParam Capas que se añadirán.
+   * @returns {IDEE.Map} Este mapa; la carga se completa con el evento LOAD de la capa.
+   * @api
+   */
+  addGPX(layersParam) {
+    if (isNullOrEmpty(layersParam)) return this;
+    if (isUndefined(MapImpl.prototype.addGPX)) {
+      Exception(getValue('exception').addgpx_method);
+    }
+    const parameters = isArray(layersParam) ? layersParam : [layersParam];
+    const layers = parameters.map((layerParam) => {
+      if (layerParam instanceof GPX) return layerParam;
+      const params = isString(layerParam) ? buildLayer(layerParam) : layerParam;
+      parameter.getType(params, LayerType.GPX);
+      return new GPX(params);
+    });
+    layers.forEach((layer) => {
+      this.featuresHandler_.addLayer(layer);
+      layer.setMap(this);
+    });
+    this.getImpl().addGPX(layers);
+    layers.forEach((layer) => {
+      if (isFunction(layer.startAutoRefresh)) {
+        layer.startAutoRefresh(this.getAutoRefreshInterval());
+      }
+    });
+    this.fire(EventType.ADDED_LAYER, [layers]);
+    this.fire(EventType.ADDED_GPX, [layers]);
+    return this;
+  }
+
+  /**
+   * Retira únicamente las GPX seleccionadas mediante el motor y limpia su interacción.
+   * Admite los filtros de getGPX; sin parámetros no elimina capas.
+   * Para retirar todas se proporciona el resultado de getGPX().
+   * @param {IDEE.layer.GPX|String|Object|Array} layersParam Capas que se retirarán.
+   * @returns {IDEE.Map} Este mapa.
+   * @api
+   */
+  removeGPX(layersParam) {
+    if (!isNullOrEmpty(layersParam)) {
+      if (isUndefined(MapImpl.prototype.removeGPX)) {
+        Exception(getValue('exception').removegpx_method);
+      }
+      const layers = this.getGPX(layersParam);
+      if (layers.length > 0) {
+        layers.forEach((layer) => this.featuresHandler_.removeLayer(layer));
+        this.getImpl().removeGPX(layers);
+      }
+    }
+    return this;
+  }
+
   /**
    * Este método obtiene las capas WMS agregadas al mapa.
    *
@@ -1608,6 +1812,76 @@ class Map extends Base {
     const layers = this.getImpl().getGeoJSON(layersParam).sort(Map.LAYER_SORT);
 
     return layers;
+  }
+
+  /**
+   * Añade capas GeoJSON mediante el motor y emite los eventos generales y específicos.
+   * Admite instancias, parámetros del constructor o cadenas GeoJSON de REST.
+   * Las opciones del constructor se incluyen en el descriptor de cada capa.
+   * @param {IDEE.layer.GeoJSON|Object|String|Array} layersParam Capas que se añadirán.
+   * @returns {IDEE.Map} Este mapa; la carga se completa con el evento LOAD de la capa.
+   * @api
+   */
+  addGeoJSON(layersParam) {
+    if (isNullOrEmpty(layersParam)) return this;
+    if (isUndefined(MapImpl.prototype.addGeoJSON)) {
+      Exception(getValue('exception').addgeojson_method);
+    }
+    const parameters = isArray(layersParam) ? layersParam : [layersParam];
+    const layers = parameters.map((layerParam) => {
+      if (layerParam instanceof GeoJSON) return layerParam;
+      const params = parameter.layer(
+        isString(layerParam) ? buildLayer(layerParam) : layerParam,
+        LayerType.GeoJSON,
+      );
+      parameter.getType(params, LayerType.GeoJSON);
+      const options = isString(layerParam) ? {} : layerParam.options ?? {};
+      return new GeoJSON({ ...params }, {
+        ...options,
+        style: options.style ?? params.style,
+      });
+    });
+    layers.forEach((layer) => {
+      this.featuresHandler_.addLayer(layer);
+      layer.setMap(this);
+    });
+    this.getImpl().addGeoJSON(layers);
+    layers.forEach((layer) => {
+      if (isFunction(layer.startAutoRefresh)) {
+        layer.startAutoRefresh(this.getAutoRefreshInterval());
+      }
+    });
+    this.fire(EventType.ADDED_LAYER, [layers]);
+    this.fire(EventType.ADDED_GEOJSON, [layers]);
+    return this;
+  }
+
+  /**
+   * Retira únicamente las GeoJSON seleccionadas mediante el motor y limpia su interacción.
+   * Admite los filtros de getGeoJSON; sin parámetros no elimina capas.
+   * Para retirar todas se proporciona el resultado de getGeoJSON().
+   * @param {IDEE.layer.GeoJSON|String|Object|Array} layersParam Capas que se retirarán.
+   * @returns {IDEE.Map} Este mapa.
+   * @api
+   */
+  removeGeoJSON(layersParam) {
+    if (!isNullOrEmpty(layersParam)) {
+      if (isUndefined(MapImpl.prototype.removeGeoJSON)) {
+        Exception(getValue('exception').removegeojson_method);
+      }
+      const parameters = isArray(layersParam) ? layersParam : [layersParam];
+      const filters = parameters.map((filter) => {
+        if (filter instanceof Layer) return filter;
+        if (isString(filter) && !/^GeoJSON\*/i.test(filter)) return { name: filter };
+        return parameter.layer(isString(filter) ? buildLayer(filter) : filter, LayerType.GeoJSON);
+      });
+      const layers = this.getGeoJSON(filters);
+      if (layers.length > 0) {
+        layers.forEach((layer) => this.featuresHandler_.removeLayer(layer));
+        this.getImpl().removeGeoJSON(layers);
+      }
+    }
+    return this;
   }
 
   /**
@@ -1995,6 +2269,29 @@ class Map extends Base {
   }
 
   /**
+   * Obtiene las capas DataIDEE añadidas al mapa.
+   * @param {Array|string|Object} [layersParamVar] Filtros opcionales por nombre o
+   * parámetros de capa. Sin filtro, devuelve todas.
+   * @returns {Array<DataIDEE>} Capas del mapa.
+   * @api
+   */
+  getDataIDEE(layersParamVar) {
+    let layersParam = layersParamVar;
+    if (isUndefined(MapImpl.prototype.getDataIDEE)) {
+      Exception(getValue('exception').getogcapif_method);
+    }
+    if (isNull(layersParam)) {
+      layersParam = [];
+    } else if (!isArray(layersParam)) {
+      layersParam = [layersParam];
+    }
+    const filters = layersParam.length > 0
+      ? layersParam.map((layerParam) => parameter.layer(layerParam, LayerType.DataIDEE))
+      : [];
+    return this.getImpl().getDataIDEE(filters).sort(Map.LAYER_SORT);
+  }
+
+  /**
    * Este método agrega las capas OGCAPIFeatures al mapa.
    *
    * @function
@@ -2043,6 +2340,61 @@ class Map extends Base {
       });
       this.fire(EventType.ADDED_LAYER, [ogcapifLayers]);
       this.fire(EventType.ADDED_OGCAPIFEATURES, [ogcapifLayers]);
+    }
+    return this;
+  }
+
+  /**
+   * Añade capas DataIDEE al mapa.
+   * @param {Array|string|Object} layersParamVar Una capa, sus parámetros o una
+   * matriz de cualquiera de ellos.
+   * @returns {Map} Mapa.
+   * @api
+   */
+  addDataIDEE(layersParamVar) {
+    let layersParam = layersParamVar;
+    if (!isNullOrEmpty(layersParam)) {
+      if (isUndefined(MapImpl.prototype.addDataIDEE)) {
+        Exception(getValue('exception').addogcapif_method);
+      }
+      if (!isArray(layersParam)) layersParam = [layersParam];
+
+      const layers = layersParam.map((layerParam) => {
+        if (layerParam instanceof DataIDEE) return layerParam;
+        if (layerParam instanceof Layer) return null;
+        return new DataIDEE(layerParam, layerParam.options);
+      }).filter((layer) => !isNullOrEmpty(layer));
+
+      layers.forEach((layer) => {
+        this.featuresHandler_.addLayer(layer);
+        layer.setMap(this);
+      });
+      this.getImpl().addDataIDEE(layers);
+      layers.forEach((layer) => {
+        if (isFunction(layer.startAutoRefresh)) {
+          layer.startAutoRefresh(this.getAutoRefreshInterval());
+        }
+      });
+      this.fire(EventType.ADDED_LAYER, [layers]);
+    }
+    return this;
+  }
+
+  /**
+   * Elimina capas DataIDEE del mapa.
+   * @param {Array|string|Object} layersParam Capas que se eliminarán,
+   * identificadas por nombre o parámetros.
+   * @returns {Map} Mapa.
+   * @api
+   */
+  removeDataIDEE(layersParam) {
+    if (!isNullOrEmpty(layersParam)) {
+      if (isUndefined(MapImpl.prototype.removeDataIDEE)) {
+        Exception(getValue('exception').removeogcapif_method);
+      }
+      const layers = this.getDataIDEE(layersParam);
+      layers.forEach((layer) => this.featuresHandler_.removeLayer(layer));
+      this.getImpl().removeDataIDEE(layers);
     }
     return this;
   }
