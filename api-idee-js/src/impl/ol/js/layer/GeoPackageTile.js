@@ -110,6 +110,7 @@ class GeoPackageTile extends Layer {
       * Proveedor
       */
     this.provider = provider;
+    this.refreshLoader_ = userParameters.refreshLoader;
   }
 
   /**
@@ -182,6 +183,19 @@ class GeoPackageTile extends Layer {
       this.map.getMapImpl().addLayer(this.olLayer);
       this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
     }
+  }
+
+  /** Recarga una tabla remota y descarta las teselas de la versión anterior. */
+  async refreshSource(isCurrent = () => true) {
+    const layer = this.olLayer;
+    if (!layer || !this.refreshLoader_ || this.tileLoadFunction) return;
+    await this.refreshLoader_(isCurrent, (provider) => {
+      if (!isCurrent() || this.olLayer !== layer) return false;
+      this.provider = provider;
+      layer.setExtent(this.extent_ || provider.getExtent());
+      layer.getSource().refresh();
+      return true;
+    });
   }
 
   /**

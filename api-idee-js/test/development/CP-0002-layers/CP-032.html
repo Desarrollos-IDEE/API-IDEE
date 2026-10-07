@@ -16,6 +16,9 @@ button,input,select{font:inherit}pre{max-height:160px;overflow:auto}</style></he
 <option value="invalid">Intervalo 0 (valor no válido)</option></select>
 <label for="interval">Intervalo (ms)</label><input id="interval" name="interval" type="number" value="5000" min="1" max="2147483647">
 <label for="tiled">WMS teselado</label><select id="tiled" name="tiled"><option value="true">Sí</option><option value="false">No</option></select>
+<label for="gpkgMode">GeoPackage</label><select id="gpkgMode" name="gpkgMode">
+<option value="remote">URL remota</option><option value="bbox">URL remota por BBOX (OL)</option>
+<option value="local">ArrayBuffer local</option></select>
 <label for="data">Datos de prueba</label><input id="data" name="data" type="url" size="40">
 <button type="submit">Crear nueva prueba</button></form>
 <p>«Sin intervalo» omite el parámetro; «Intervalo 0» envía <code>refreshInterval: 0</code>.

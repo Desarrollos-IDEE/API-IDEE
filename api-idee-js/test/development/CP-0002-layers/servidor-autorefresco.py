@@ -11,6 +11,8 @@ import io
 import zipfile
 from pathlib import Path
 import struct
+import sqlite3
+import zlib
 from urllib.parse import urlsplit, parse_qs
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -26,6 +28,60 @@ def point(revision):
         'geometry': {'type': 'Point', 'coordinates': [0, 0]},
         'properties': {'revision': revision, 'nombre': 'Punto de prueba'},
     }]}
+
+
+def geopackage(revision, raster=False):
+    """GeoPackage sintético cambiante, vectorial o mixto; no modifica fixtures existentes."""
+    db = sqlite3.connect(':memory:')
+    db.executescript("""
+        PRAGMA application_id=1196444487;
+        PRAGMA user_version=10300;
+        CREATE TABLE gpkg_spatial_ref_sys (srs_name TEXT NOT NULL, srs_id INTEGER PRIMARY KEY,
+            organization TEXT NOT NULL, organization_coordsys_id INTEGER NOT NULL,
+            definition TEXT NOT NULL, description TEXT);
+        INSERT INTO gpkg_spatial_ref_sys VALUES ('Undefined Cartesian', -1, 'NONE', -1, 'undefined', '');
+        INSERT INTO gpkg_spatial_ref_sys VALUES ('Undefined Geographic', 0, 'NONE', 0, 'undefined', '');
+        INSERT INTO gpkg_spatial_ref_sys VALUES ('WGS 84', 4326, 'EPSG', 4326, 'undefined', '');
+        INSERT INTO gpkg_spatial_ref_sys VALUES ('Web Mercator', 3857, 'EPSG', 3857, 'undefined', '');
+        CREATE TABLE gpkg_contents (table_name TEXT PRIMARY KEY, data_type TEXT NOT NULL,
+            identifier TEXT UNIQUE, description TEXT DEFAULT '', last_change DATETIME NOT NULL,
+            min_x DOUBLE, min_y DOUBLE, max_x DOUBLE, max_y DOUBLE, srs_id INTEGER);
+        CREATE TABLE gpkg_geometry_columns (table_name TEXT NOT NULL, column_name TEXT NOT NULL,
+            geometry_type_name TEXT NOT NULL, srs_id INTEGER NOT NULL, z TINYINT NOT NULL,
+            m TINYINT NOT NULL, PRIMARY KEY(table_name, column_name));
+        CREATE TABLE puntos (id INTEGER PRIMARY KEY, geom POINT, revision INTEGER);
+        INSERT INTO gpkg_contents VALUES ('puntos','features','puntos','','2026-10-07T00:00:00Z',0,0,0,0,4326);
+        INSERT INTO gpkg_geometry_columns VALUES ('puntos','geom','POINT',4326,0,0);
+    """)
+    geometry = b'GP' + bytes([0, 1]) + struct.pack('<iBIdd', 4326, 1, 1, 0, 0)
+    db.execute('INSERT INTO puntos VALUES (1, ?, ?)', (geometry, revision))
+    if raster:
+        db.executescript("""
+            CREATE TABLE gpkg_tile_matrix_set (table_name TEXT PRIMARY KEY, srs_id INTEGER NOT NULL,
+                min_x DOUBLE NOT NULL, min_y DOUBLE NOT NULL, max_x DOUBLE NOT NULL, max_y DOUBLE NOT NULL);
+            CREATE TABLE gpkg_tile_matrix (table_name TEXT NOT NULL, zoom_level INTEGER NOT NULL,
+                matrix_width INTEGER NOT NULL, matrix_height INTEGER NOT NULL,
+                tile_width INTEGER NOT NULL, tile_height INTEGER NOT NULL,
+                pixel_x_size DOUBLE NOT NULL, pixel_y_size DOUBLE NOT NULL,
+                PRIMARY KEY(table_name, zoom_level));
+            CREATE TABLE raster (id INTEGER PRIMARY KEY, zoom_level INTEGER NOT NULL,
+                tile_column INTEGER NOT NULL, tile_row INTEGER NOT NULL, tile_data BLOB NOT NULL);
+            INSERT INTO gpkg_contents VALUES ('raster','tiles','raster','','2026-10-07T00:00:00Z',
+                -20037508.342789244,-20037508.342789244,20037508.342789244,20037508.342789244,3857);
+            INSERT INTO gpkg_tile_matrix_set VALUES ('raster',3857,
+                -20037508.342789244,-20037508.342789244,20037508.342789244,20037508.342789244);
+            INSERT INTO gpkg_tile_matrix VALUES ('raster',0,1,1,256,256,156543.03392804097,156543.03392804097);
+        """)
+        def chunk(kind, data):
+            return struct.pack('>I', len(data)) + kind + data + struct.pack('>I', zlib.crc32(kind + data))
+        color = bytes([40, 120, 220]) if revision % 2 else bytes([220, 120, 40])
+        png = (b'\x89PNG\r\n\x1a\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', 256, 256, 8, 2, 0, 0, 0))
+               + chunk(b'IDAT', zlib.compress((b'\x00' + color * 256) * 256)) + chunk(b'IEND', b''))
+        db.execute('INSERT INTO raster VALUES (1, 0, 0, 0, ?)', (png,))
+    db.commit()
+    result = db.serialize()
+    db.close()
+    return result
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -110,6 +166,8 @@ class Handler(SimpleHTTPRequestHandler):
                            '<desc>Punto sintético para comprobar el autorefresco.</desc>'
                            '<time>2026-10-01T00:00:00Z</time></wpt></gpx>',
                            'application/gpx+xml')
+            elif name in ('autorefresh-vector.gpkg', 'autorefresh-mixed.gpkg'):
+                self.reply(geopackage(revision, 'mixed' in name), 'application/geopackage+sqlite3')
             elif name in ('vector.mbtiles', 'raster.mbtiles', 'raster.tif', 'points.gpkg'):
                 self.reply((FIXTURES / name).read_bytes(), 'application/octet-stream')
             elif name.endswith('.pbf'):
