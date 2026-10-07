@@ -64,6 +64,12 @@ class GeoTIFF extends LayerBase {
    * - opacity: Opacidad de la capa de 0 a 1, por defecto 1.
    * - bands: Bandas a mostrar en forma de array y como numero, si el array esta vacio muestra todas
    *   por defecto [].
+   * - min: El valor minimo de los datos de las bandas. Si se proporciona un array,
+   *   los valores corresponden a las bandas en el archivo (no el option bands)
+   * - max: El valor maximo de los datos de las bandas. Si se proporciona un array,
+   *   los valores corresponden a las bandas en el archivo (no el option bands)
+   * - cacheSize: Tamaño de la cache de la capa.
+   * - blockSize: Tamaño de los bloques de la capa.
    * - nodata: Usado para sobreescribir el parametro nodata del dato original
    * - minZoom: Zoom mínimo aplicable a la capa.
    * - maxZoom: Zoom máximo aplicable a la capa.

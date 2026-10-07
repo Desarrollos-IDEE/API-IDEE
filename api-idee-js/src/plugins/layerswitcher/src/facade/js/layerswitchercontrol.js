@@ -293,7 +293,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       || IDEE.utils.isNullOrEmpty(this.getImpl().fnRender)) {
       return;
     }
-    this.statusShowHideAllLayers = undefined;
+    // this.statusShowHideAllLayers = undefined;
     this.render();
   }
 
@@ -563,7 +563,7 @@ export default class LayerswitcherControl extends IDEE.Control {
 
   // Esta función renderiza la plantilla
   async render() {
-    const contentElement = this.template_.querySelector('#m-layerswitcher-content');
+    /* const contentElement = this.template_.querySelector('#m-layerswitcher-content');
     const listLayer = contentElement.childElementCount;
 
     if (listLayer === 0 || this.statusShowHideAllLayers === undefined) {
@@ -580,7 +580,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     // ? NO SE MUESTRA NINGUNA CAPA
     if (this.statusShowHideAllLayers === undefined) {
       return;
-    }
+    } */
 
     const templateVars = await this.getTemplateVariables(this.map_);
     let scroll;

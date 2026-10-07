@@ -14,12 +14,25 @@ import en from './i18n/en';
 export default class Catalogmanager extends IDEE.Plugin {
   /**
    * @classdesc
-   * Fachada del plugin plantilla
+   * Fachada del plugin de gestión de catálogos STAC. Crea el panel y el control
+   * que permiten explorar colecciones e ítems, aplicar filtros y visualizar
+   * imágenes en el mapa.
    *
    * @constructor
    * @extends {IDEE.Plugin}
-   * @param {Object} options Opciones para el plugin
-   * @api
+   * @param {Object} [options={}] Opciones de configuración del plugin
+   * @param {string} [options.position='TR'] Posición del panel (`TL`, `TR`, `BL`, `BR`)
+   * @param {boolean} [options.collapsed=true] Si el plugin se muestra colapsado al cargar
+   * @param {boolean} [options.collapsible=true] Si el panel puede abrirse y cerrarse
+   * @param {string} [options.tooltip] Texto del tooltip; por defecto la traducción i18n
+   * @param {boolean} [options.isDraggable=false] Si el panel puede arrastrarse
+   * @param {number} [options.order] Prioridad de colocación del plugin en su área
+   * @param {Array<Object>} [options.predefinedCatalogs=[]] Catálogos STAC precargados al iniciar
+   * @param {boolean} [options.addCatalogEnabled=true] Si se permite añadir catálogos desde la UI
+   * @param {number} [options.cogCacheSize=350] Tamaño de caché de OpenLayers para capas COG
+   * @param {string} [options.downloadUrl='https://stac-gneis.idee.es/download-service/v1/download-jobs']
+   *   URL del servicio de descarga masiva de imágenes
+   * @api stable
    */
   constructor(options = {}) {
     super();
@@ -77,7 +90,7 @@ export default class Catalogmanager extends IDEE.Plugin {
     this.collapsed = options.collapsed !== false;
 
     /**
-     * Indicador de si el plugin se puede contraer no.
+     * Indicador de si el plugin se puede contraer o no
      * @public
      * @type {boolean}
      */
@@ -92,15 +105,37 @@ export default class Catalogmanager extends IDEE.Plugin {
 
     /**
      * Prioridad en la colocación del plugin en su área
-     *@private
-     *@type { Number }
+     * @private
+     * @type {number|null}
      */
     this.order = options.order >= -1 ? options.order : null;
 
+    /**
+     * Catálogos STAC precargados al iniciar el plugin
+     * @public
+     * @type {Array<Object>}
+     */
     this.predefinedCatalogs = options.predefinedCatalogs || [];
 
+    /**
+     * Indica si el usuario puede añadir catálogos desde la interfaz
+     * @public
+     * @type {boolean}
+     */
     this.addCatalogEnabled = options.addCatalogEnabled !== false;
 
+    /**
+     * Tamaño de la caché de OpenLayers para peticiones parciales de COG
+     * @public
+     * @type {number}
+     */
+    this.cogCacheSize = options.cogCacheSize || 350;
+
+    /**
+     * URL del servicio REST de descarga masiva de imágenes TIFF
+     * @public
+     * @type {string}
+     */
     this.downloadUrl = options.downloadUrl || 'https://stac-gneis.idee.es/download-service/v1/download-jobs';
 
     /**
@@ -125,9 +160,15 @@ export default class Catalogmanager extends IDEE.Plugin {
       order: this.order,
       predefinedCatalogs: this.predefinedCatalogs,
       addCatalogEnabled: this.addCatalogEnabled,
+      cogCacheSize: this.cogCacheSize,
       downloadUrl: this.downloadUrl,
     }));
     this.map_ = map;
+    /**
+     * Panel de interfaz que contiene el control del plugin
+     * @private
+     * @type {IDEE.ui.Panel}
+     */
     this.panel_ = new IDEE.ui.Panel('Catalogmanager', {
       collapsible: this.collapsible,
       collapsed: this.collapsed,
@@ -146,6 +187,8 @@ export default class Catalogmanager extends IDEE.Plugin {
    *
    * @getter
    * @function
+   * @returns {string} Identificador del plugin (`catalogmanager`)
+   * @api stable
    */
   get name() {
     return this.name_;
@@ -163,42 +206,44 @@ export default class Catalogmanager extends IDEE.Plugin {
   }
 
   /**
-   * Esta función obtiene los parámetros de
-   * la API REST del plugin
+   * Obtiene la cadena de parámetros del plugin para la API REST
    *
    * @function
    * @public
-   * @api
+   * @returns {string} Parámetros separados por `*`: posición, colapsado,
+   *   colapsable, tooltip y arrastrable
+   * @api stable
    */
   getAPIRest() {
     return `${this.name}=${this.position}*${this.collapsed}*${this.collapsible}*${this.tooltip_}*${this.isDraggable}`;
   }
 
   /**
-   * Esta función obtiene los parámetros de
-   * la API REST en base64 del plugin
+   * Obtiene los parámetros del plugin codificados en base64 para la API REST
    *
    * @function
    * @public
-   * @api
+   * @returns {string} Nombre del plugin y opciones serializadas en base64
+   * @api stable
    */
   getAPIRestBase64() {
     return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   /**
-   * Return plugin language
+   * Devuelve el diccionario de traducciones del plugin según el idioma
    *
    * @public
    * @function
-   * @param {string} lang type language
+   * @param {string} lang Código de idioma (`es`, `en` u otro registrado en API-IDEE)
+   * @returns {Object} Claves de traducción del plugin catalogmanager
    * @api stable
    */
   static getJSONTranslations(lang) {
     if (lang === 'en' || lang === 'es') {
       return (lang === 'en') ? en : es;
     }
-    return IDEE.language.getTranslation(lang).backimglayer;
+    return IDEE.language.getTranslation(lang).catalogmanager;
   }
 
   /**
@@ -206,7 +251,8 @@ export default class Catalogmanager extends IDEE.Plugin {
    *
    * @function
    * @public
-   * @api
+   * @returns {{title: string, content: Promise<string>}} Título y contenido HTML de ayuda
+   * @api stable
    */
   getHelp() {
     return {

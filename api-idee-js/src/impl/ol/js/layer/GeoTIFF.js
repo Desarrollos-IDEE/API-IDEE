@@ -173,6 +173,8 @@ class GeoTIFF extends LayerBase {
    *   los valores corresponden a las bandas en el archivo (no el option bands)
    * - max: El valor maximo de los datos de las bandas. Si se proporciona un array,
    *   los valores corresponden a las bandas en el archivo (no el option bands)
+   * - cacheSize: Tamaño de la cache de la capa.
+   * - blockSize: Tamaño de los bloques de la capa.
    * - nodata: Usado para sobreescribir el parametro nodata del dato original
    * - minZoom: Zoom mínimo aplicable a la capa.
    * - maxZoom: Zoom máximo aplicable a la capa.
@@ -291,6 +293,16 @@ class GeoTIFF extends LayerBase {
      * los valores corresponden a las bandas en el archivo (no el option bands)
      */
     this.max_ = options.max;
+
+    /**
+     * GeoTIFF cacheSize_. Tamaño de la cache de la capa.
+     */
+    this.cacheSize_ = options.cacheSize || 100;
+
+    /**
+     * GeoTIFF blockSize_. Tamaño de los bloques de la capa.
+     */
+    this.blockSize_ = options.blockSize || 65536;
 
     /**
      * GeoTIFF nodata_. Bandas a renderizar.
@@ -577,6 +589,8 @@ class GeoTIFF extends LayerBase {
       const min = this.min_;
       const max = this.max_;
       const nodata = this.nodata_;
+      const cacheSize = this.cacheSize_;
+      const blockSize = this.blockSize_;
       const projectionGeoTIFF = this.options.projection;
       let sources = [
         {
@@ -609,6 +623,10 @@ class GeoTIFF extends LayerBase {
         convertToRGB,
         projection: projectionGeoTIFF,
         normalize: this.normalize,
+        sourceOptions: {
+          cacheSize,
+          blockSize,
+        },
       });
     }
     return olSource;
