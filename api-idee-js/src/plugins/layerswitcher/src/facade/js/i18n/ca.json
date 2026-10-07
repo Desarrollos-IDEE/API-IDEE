@@ -13,7 +13,8 @@
     "no_results": "No s'han trobat capes en aquest servei",
     "codsi": "S'ha produït un error en consultar el catàleg CODSI",
     "codsi_no_results": "No hi ha resultats per a la vostra cerca",
-    "not_layerGroup": "No s'ha pogut afegir la capa al grup"
+    "not_layerGroup": "No s'ha pogut afegir la capa al grup",
+    "errorPrecharged": "El valor de 'precharged' no és un JSON ni un base64 vàlid"
   },
   "textHelp": {
     "help1": "L'extensió selector de capes permet gestionar les capes que es mostren en un visualitzador cartogràfic.",

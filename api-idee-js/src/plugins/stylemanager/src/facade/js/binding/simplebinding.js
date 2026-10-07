@@ -143,71 +143,71 @@ export class SimpleBinding extends Binding {
     }
 
     if (style != null && !(style instanceof IDEE.style.FlowLine)) {
-      const options = style.getOptions();
-      if (options['point']['fill'] != null || options['line']['fill'] != null || options['polygon']['fill'] != null) {
+      const { point = {}, line = {}, polygon = {} } = style.getOptions();
+      if (point['fill'] != null || line['fill'] != null || polygon['fill'] != null) {
         const valuesFillPoint = Object
-          .values(options.point.fill).filter((value) => value !== undefined);
+          .values(point.fill || {}).filter((value) => value !== undefined);
         const valuesFillLine = Object
-          .values(options.line.fill).filter((value) => value !== undefined);
+          .values(line.fill || {}).filter((value) => value !== undefined);
         const valuesFillPolygon = Object
-          .values(options.polygon.fill).filter((value) => value !== undefined);
+          .values(polygon.fill || {}).filter((value) => value !== undefined);
         if (valuesFillPoint.length > 0
           || valuesFillLine.length > 0 || valuesFillPolygon.length > 0) {
           this.checkOptionSection('fill');
         }
       }
 
-      if (options['point']['stroke'] !== undefined || options['line']['stroke'] !== undefined || options['polygon']['stroke'] !== undefined) {
+      if (point['stroke'] !== undefined || line['stroke'] !== undefined || polygon['stroke'] !== undefined) {
         this.checkOptionSection('stroke');
       }
 
-      if (options['point']['label'] !== undefined) {
+      if (point['label'] !== undefined) {
         this.checkOptionSection('label');
       }
 
-      if (options['point']['icon'] !== undefined) {
-        if (options['point']['icon'].hasOwnProperty('src')) {
+      if (point['icon'] !== undefined) {
+        if (point['icon'].hasOwnProperty('src')) {
           this.checkOptionSection('icon');
           this.disableOption('form');
         }
 
-        if (options['point']['icon'].hasOwnProperty('form')) {
+        if (point['icon'].hasOwnProperty('form')) {
           this.checkOptionSection('form');
           this.disableOption('icon');
         }
 
-        if (options['point']['icon'].hasOwnProperty('class')) {
-          familySelect.value = options['point']['icon']['class'];
+        if (point['icon'].hasOwnProperty('class')) {
+          familySelect.value = point['icon']['class'];
         }
       }
-      if (options['polygon']['icon'] !== undefined) {
-        if (options['polygon']['icon'].hasOwnProperty('src')) {
+      if (polygon['icon'] !== undefined) {
+        if (polygon['icon'].hasOwnProperty('src')) {
           this.checkOptionSection('icon');
           this.disableOption('form');
         }
 
-        if (options['polygon']['icon'].hasOwnProperty('form')) {
+        if (polygon['icon'].hasOwnProperty('form')) {
           this.checkOptionSection('form');
           this.disableOption('icon');
         }
 
-        if (options['polygon']['icon'].hasOwnProperty('class')) {
-          familySelect.value = options['polygon']['icon']['class'];
+        if (polygon['icon'].hasOwnProperty('class')) {
+          familySelect.value = polygon['icon']['class'];
         }
       }
-      if (options['line']['icon'] !== undefined) {
-        if (options['line']['icon'].hasOwnProperty('src')) {
+      if (line['icon'] !== undefined) {
+        if (line['icon'].hasOwnProperty('src')) {
           this.checkOptionSection('icon');
           this.disableOption('form');
         }
 
-        if (options['line']['icon'].hasOwnProperty('form')) {
+        if (line['icon'].hasOwnProperty('form')) {
           this.checkOptionSection('form');
           this.disableOption('icon');
         }
 
-        if (options['line']['icon'].hasOwnProperty('class')) {
-          familySelect.value = options['line']['icon']['class'];
+        if (line['icon'].hasOwnProperty('class')) {
+          familySelect.value = line['icon']['class'];
         }
       }
     }

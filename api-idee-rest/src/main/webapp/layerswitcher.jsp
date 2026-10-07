@@ -13,6 +13,7 @@
     <title>Visor base</title>
     <link type="text/css" rel="stylesheet" href="assets/css/apiidee.ol.min.css">
     <link href="plugins/layerswitcher/layerswitcher.ol.min.css" rel="stylesheet" />
+    <link href="plugins/stylemanager/stylemanager.ol.min.css" rel="stylesheet" />
     <link href="plugins/sharemap/sharemap.ol.min.css" rel="stylesheet" />
     </link>
     <style type="text/css">
@@ -115,7 +116,17 @@
                 <label for="inputPrecharged" title="Objeto JSON con servicios y grupos precargados en el catálogo de capas. Si se deja vacío se usan los servicios por defecto">Servicios precargados "precharged"</label>
                 <input type="text" name="precharged" id="inputPrecharged" list="prechargedSug">
                 <datalist id="prechargedSug">
-                    <option value='{"services": [{"type":"WMS","name":"Camino de Santiago","url":"https://www.ign.es/wms-inspire/camino-santiago"}],"groups":[{"name":"Cartografía","services":{"type":"WMTS","name": "Mapas","url":"https://www.ign.es/wmts/mapa-raster?"}}]}'></option>
+                    <option value='Un grupo de servicios y un servicio individual' data-precharged='{"services": [{"type":"WMS","name":"Camino de Santiago","url":"https://www.ign.es/wms-inspire/camino-santiago"}],"groups":[{"name":"Cartografía","services":{"type":"WMTS","name": "Mapas","url":"https://www.ign.es/wmts/mapa-raster?"}}]}'></option>
+                    <option value='Dos servicios con estilos únicos sin serializar' data-precharged='{"services":[{"type":"WMS","name":"Unidades administrativas","url":"https://www.ign.es/wms-inspire/unidades-administrativas?","styles":["ua-comparador"]},{"type":"GeoJSON","name":"Estaciones GNSS","url":"https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json","styles":[{"name":"Rojo","point":{"radius":6,"fill":{"color":"red"},"stroke":{"color":"white","width":1}}}]}]}'></option>
+                    <option value='Dos servicios con estilos únicos serializados' data-precharged='{"services":[{"type":"WMS","name":"Unidades administrativas","url":"https://www.ign.es/wms-inspire/unidades-administrativas?","styles":["ua-EscalaGris"]},{"type":"GeoJSON","name":"Estaciones GNSS","url":"https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json","styles":["eyJwYXJhbWV0ZXJzIjpbeyJuYW1lIjoiQXp1bCBzZXJpYWxpemFkbyIsInBvaW50Ijp7InJhZGl1cyI6NiwiZmlsbCI6eyJjb2xvciI6ImJsdWUifSwic3Ryb2tlIjp7ImNvbG9yIjoid2hpdGUiLCJ3aWR0aCI6MX19fV0sImRlc2VyaWFsaXplZE1ldGhvZCI6Iigoc2VyaWFsaXplZFBhcmFtZXRlcnMpID0+IElERUUuc3R5bGUuU2ltcGxlLmRlc2VyaWFsaXplKHNlcmlhbGl6ZWRQYXJhbWV0ZXJzLCAnSURFRS5zdHlsZS5HZW5lcmljJykpIn0="]}]}'></option>
+                    <option value='Dos servicios con varios estilos sin serializar' data-precharged='{"services":[{"type":"WMS","name":"Unidades administrativas","url":"https://www.ign.es/wms-inspire/unidades-administrativas?","styles":["UnidadesAdministrativas","ua-comparador","ua-EscalaGris"]},{"type":"GeoJSON","name":"Estaciones GNSS","url":"https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json","styles":[{"name":"Rojo","point":{"radius":6,"fill":{"color":"red"},"stroke":{"color":"white","width":1}}},{"name":"Verde","point":{"radius":8,"fill":{"color":"green"},"stroke":{"color":"white","width":1}}},{"name":"Naranja","point":{"radius":10,"fill":{"color":"orange"},"stroke":{"color":"white","width":1}}}]}]}'></option>
+                    <option value='Dos servicios con varios estilos serializados' data-precharged='{"services":[{"type":"WMS","name":"Unidades administrativas","url":"https://www.ign.es/wms-inspire/unidades-administrativas?","styles":["ccaa-gris","provincias-gris","municipios-gris"]},{"type":"GeoJSON","name":"Estaciones GNSS","url":"https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json","styles":["eyJwYXJhbWV0ZXJzIjpbeyJuYW1lIjoiQXp1bCBzZXJpYWxpemFkbyIsInBvaW50Ijp7InJhZGl1cyI6NiwiZmlsbCI6eyJjb2xvciI6ImJsdWUifSwic3Ryb2tlIjp7ImNvbG9yIjoid2hpdGUiLCJ3aWR0aCI6MX19fV0sImRlc2VyaWFsaXplZE1ldGhvZCI6Iigoc2VyaWFsaXplZFBhcmFtZXRlcnMpID0+IElERUUuc3R5bGUuU2ltcGxlLmRlc2VyaWFsaXplKHNlcmlhbGl6ZWRQYXJhbWV0ZXJzLCAnSURFRS5zdHlsZS5HZW5lcmljJykpIn0=","eyJwYXJhbWV0ZXJzIjpbeyJuYW1lIjoiTW9yYWRvIHNlcmlhbGl6YWRvIiwicG9pbnQiOnsicmFkaXVzIjo4LCJmaWxsIjp7ImNvbG9yIjoicHVycGxlIn0sInN0cm9rZSI6eyJjb2xvciI6IndoaXRlIiwid2lkdGgiOjF9fX1dLCJkZXNlcmlhbGl6ZWRNZXRob2QiOiIoKHNlcmlhbGl6ZWRQYXJhbWV0ZXJzKSA9PiBJREVFLnN0eWxlLlNpbXBsZS5kZXNlcmlhbGl6ZShzZXJpYWxpemVkUGFyYW1ldGVycywgJ0lERUUuc3R5bGUuR2VuZXJpYycpKSJ9","eyJwYXJhbWV0ZXJzIjpbeyJuYW1lIjoiTmVncm8gc2VyaWFsaXphZG8iLCJwb2ludCI6eyJyYWRpdXMiOjQsImZpbGwiOnsiY29sb3IiOiJibGFjayJ9LCJzdHJva2UiOnsiY29sb3IiOiJ3aGl0ZSIsIndpZHRoIjoxfX19XSwiZGVzZXJpYWxpemVkTWV0aG9kIjoiKChzZXJpYWxpemVkUGFyYW1ldGVycykgPT4gSURFRS5zdHlsZS5TaW1wbGUuZGVzZXJpYWxpemUoc2VyaWFsaXplZFBhcmFtZXRlcnMsICdJREVFLnN0eWxlLkdlbmVyaWMnKSkifQ=="]}]}'></option>
+                    <option value='Dos servicios en base64, cada uno con estilo único sin serializar' data-precharged='eyJzZXJ2aWNlcyI6W3sidHlwZSI6IldNUyIsIm5hbWUiOiJVbmlkYWRlcyBhZG1pbmlzdHJhdGl2YXMiLCJ1cmwiOiJodHRwczovL3d3dy5pZ24uZXMvd21zLWluc3BpcmUvdW5pZGFkZXMtYWRtaW5pc3RyYXRpdmFzPyIsInN0eWxlcyI6WyJ1YS1jb21wYXJhZG9yIl19LHsidHlwZSI6Ikdlb0pTT04iLCJuYW1lIjoiRXN0YWNpb25lcyBHTlNTIiwidXJsIjoiaHR0cHM6Ly93d3cuaWduLmVzL3Jlc291cmNlcy9nZW9kZXNpYS9HTlNTL1NQVFJfZ2VvLmpzb24iLCJzdHlsZXMiOlt7Im5hbWUiOiJSb2pvIiwicG9pbnQiOnsicmFkaXVzIjo2LCJmaWxsIjp7ImNvbG9yIjoicmVkIn0sInN0cm9rZSI6eyJjb2xvciI6IndoaXRlIiwid2lkdGgiOjF9fX1dfV19'></option>
+                    <option value='Dos servicios en base64, cada uno con varios estilos serializados' data-precharged='eyJzZXJ2aWNlcyI6W3sidHlwZSI6IldNUyIsIm5hbWUiOiJVbmlkYWRlcyBhZG1pbmlzdHJhdGl2YXMiLCJ1cmwiOiJodHRwczovL3d3dy5pZ24uZXMvd21zLWluc3BpcmUvdW5pZGFkZXMtYWRtaW5pc3RyYXRpdmFzPyIsInN0eWxlcyI6WyJjY2FhLWdyaXMiLCJwcm92aW5jaWFzLWdyaXMiLCJtdW5pY2lwaW9zLWdyaXMiXX0seyJ0eXBlIjoiR2VvSlNPTiIsIm5hbWUiOiJFc3RhY2lvbmVzIEdOU1MiLCJ1cmwiOiJodHRwczovL3d3dy5pZ24uZXMvcmVzb3VyY2VzL2dlb2Rlc2lhL0dOU1MvU1BUUl9nZW8uanNvbiIsInN0eWxlcyI6WyJleUp3WVhKaGJXVjBaWEp6SWpwYmV5SnVZVzFsSWpvaVFYcDFiQ0J6WlhKcFlXeHBlbUZrYnlJc0luQnZhVzUwSWpwN0luSmhaR2wxY3lJNk5pd2labWxzYkNJNmV5SmpiMnh2Y2lJNkltSnNkV1VpZlN3aWMzUnliMnRsSWpwN0ltTnZiRzl5SWpvaWQyaHBkR1VpTENKM2FXUjBhQ0k2TVgxOWZWMHNJbVJsYzJWeWFXRnNhWHBsWkUxbGRHaHZaQ0k2SWlnb2MyVnlhV0ZzYVhwbFpGQmhjbUZ0WlhSbGNuTXBJRDArSUVsRVJVVXVjM1I1YkdVdVUybHRjR3hsTG1SbGMyVnlhV0ZzYVhwbEtITmxjbWxoYkdsNlpXUlFZWEpoYldWMFpYSnpMQ0FuU1VSRlJTNXpkSGxzWlM1SFpXNWxjbWxqSnlrcEluMD0iLCJleUp3WVhKaGJXVjBaWEp6SWpwYmV5SnVZVzFsSWpvaVRXOXlZV1J2SUhObGNtbGhiR2w2WVdSdklpd2ljRzlwYm5RaU9uc2ljbUZrYVhWeklqbzRMQ0ptYVd4c0lqcDdJbU52Ykc5eUlqb2ljSFZ5Y0d4bEluMHNJbk4wY205clpTSTZleUpqYjJ4dmNpSTZJbmRvYVhSbElpd2lkMmxrZEdnaU9qRjlmWDFkTENKa1pYTmxjbWxoYkdsNlpXUk5aWFJvYjJRaU9pSW9LSE5sY21saGJHbDZaV1JRWVhKaGJXVjBaWEp6S1NBOVBpQkpSRVZGTG5OMGVXeGxMbE5wYlhCc1pTNWtaWE5sY21saGJHbDZaU2h6WlhKcFlXeHBlbVZrVUdGeVlXMWxkR1Z5Y3l3Z0owbEVSVVV1YzNSNWJHVXVSMlZ1WlhKcFl5Y3BLU0o5IiwiZXlKd1lYSmhiV1YwWlhKeklqcGJleUp1WVcxbElqb2lUbVZuY204Z2MyVnlhV0ZzYVhwaFpHOGlMQ0p3YjJsdWRDSTZleUp5WVdScGRYTWlPalFzSW1acGJHd2lPbnNpWTI5c2IzSWlPaUppYkdGamF5SjlMQ0p6ZEhKdmEyVWlPbnNpWTI5c2IzSWlPaUozYUdsMFpTSXNJbmRwWkhSb0lqb3hmWDE5WFN3aVpHVnpaWEpwWVd4cGVtVmtUV1YwYUc5a0lqb2lLQ2h6WlhKcFlXeHBlbVZrVUdGeVlXMWxkR1Z5Y3lrZ1BUNGdTVVJGUlM1emRIbHNaUzVUYVcxd2JHVXVaR1Z6WlhKcFlXeHBlbVVvYzJWeWFXRnNhWHBsWkZCaGNtRnRaWFJsY25Nc0lDZEpSRVZGTG5OMGVXeGxMa2RsYm1WeWFXTW5LU2tpZlE9PSJdfV19'></option>
+                    <option value='Servicio MVT con estilo único sin serializar' data-precharged='{"services":[{"type":"MVT","name":"Unidades administrativas (MVT)","url":"https://vt-unidades-administrativas.ign.es/1.0.0/uadministrativa/{z}/{x}/{y}.pbf","styles":[{"name":"Contorno rojo","polygon":{"fill":{"color":"red","opacity":0.1},"stroke":{"color":"red","width":2}}}]}]}'></option>
+                    <option value='Servicio MVT con varios estilos serializados' data-precharged='{"services":[{"type":"MVT","name":"Unidades administrativas (MVT)","url":"https://vt-unidades-administrativas.ign.es/1.0.0/uadministrativa/{z}/{x}/{y}.pbf","styles":["eyJwYXJhbWV0ZXJzIjpbeyJuYW1lIjoiQ29udG9ybm8gYXp1bCBzZXJpYWxpemFkbyIsInBvbHlnb24iOnsiZmlsbCI6eyJjb2xvciI6ImJsdWUiLCJvcGFjaXR5IjowLjF9LCJzdHJva2UiOnsiY29sb3IiOiJibHVlIiwid2lkdGgiOjJ9fX1dLCJkZXNlcmlhbGl6ZWRNZXRob2QiOiIoKHNlcmlhbGl6ZWRQYXJhbWV0ZXJzKSA9PiBJREVFLnN0eWxlLlNpbXBsZS5kZXNlcmlhbGl6ZShzZXJpYWxpemVkUGFyYW1ldGVycywgJ0lERUUuc3R5bGUuR2VuZXJpYycpKSJ9","eyJwYXJhbWV0ZXJzIjpbeyJuYW1lIjoiUmVsbGVubyB2ZXJkZSBzZXJpYWxpemFkbyIsInBvbHlnb24iOnsiZmlsbCI6eyJjb2xvciI6ImdyZWVuIiwib3BhY2l0eSI6MC40fSwic3Ryb2tlIjp7ImNvbG9yIjoiZ3JlZW4iLCJ3aWR0aCI6MX19fV0sImRlc2VyaWFsaXplZE1ldGhvZCI6Iigoc2VyaWFsaXplZFBhcmFtZXRlcnMpID0+IElERUUuc3R5bGUuU2ltcGxlLmRlc2VyaWFsaXplKHNlcmlhbGl6ZWRQYXJhbWV0ZXJzLCAnSURFRS5zdHlsZS5HZW5lcmljJykpIn0=","eyJwYXJhbWV0ZXJzIjpbeyJuYW1lIjoiQ29udG9ybm8gbmVncm8gZ3J1ZXNvIHNlcmlhbGl6YWRvIiwicG9seWdvbiI6eyJmaWxsIjp7ImNvbG9yIjoiYmxhY2siLCJvcGFjaXR5IjowfSwic3Ryb2tlIjp7ImNvbG9yIjoiYmxhY2siLCJ3aWR0aCI6NH19fV0sImRlc2VyaWFsaXplZE1ldGhvZCI6Iigoc2VyaWFsaXplZFBhcmFtZXRlcnMpID0+IElERUUuc3R5bGUuU2ltcGxlLmRlc2VyaWFsaXplKHNlcmlhbGl6ZWRQYXJhbWV0ZXJzLCAnSURFRS5zdHlsZS5HZW5lcmljJykpIn0="]}]}'></option>
+                    <option value='Servicio WFS con varios estilos sin serializar' data-precharged='{"services":[{"type":"WFS","name":"Redes geodésicas (WFS)","url":"https://www.ign.es/wfs/redes-geodesicas","styles":[{"name":"Puntos rojos","point":{"radius":6,"fill":{"color":"red"},"stroke":{"color":"white","width":1}}},{"name":"Puntos azules grandes","point":{"radius":10,"fill":{"color":"blue"},"stroke":{"color":"white","width":1}}},{"name":"Puntos amarillos con borde negro","point":{"radius":7,"fill":{"color":"yellow"},"stroke":{"color":"black","width":2}}}]}]}'></option>
+                    <option value='Servicio KML con varios estilos sin serializar' data-precharged='{"services":[{"type":"KML","name":"Delegaciones del IGN (KML)","url":"https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml","styles":[{"name":"Puntos verdes","point":{"radius":7,"fill":{"color":"green"},"stroke":{"color":"white","width":1}}},{"name":"Puntos morados grandes","point":{"radius":11,"fill":{"color":"purple"},"stroke":{"color":"white","width":1}}},{"name":"Puntos naranjas con borde negro","point":{"radius":8,"fill":{"color":"orange"},"stroke":{"color":"black","width":2}}}]}]}'></option>
                 </datalist>
             </div>
             <div>
@@ -177,6 +188,7 @@
     <script type="text/javascript" src="js/apiidee.ol.min.js"></script>
     <script type="text/javascript" src="js/configuration.js"></script>
     <script type="text/javascript" src="plugins/layerswitcher/layerswitcher.ol.min.js"></script>
+    <script type="text/javascript" src="plugins/stylemanager/stylemanager.ol.min.js"></script>
     <script type="text/javascript" src="plugins/sharemap/sharemap.ol.min.js"></script>
     <%
       String[] jsfiles = PluginsManager.getJSFiles(parameterMap);
@@ -202,148 +214,6 @@
         });
         window.map = map;
 
-        const PRECHARGED = {
-            services: [{
-                type: 'WMS', name: 'Camino de Santiago',
-                url: 'https://www.ign.es/wms-inspire/camino-santiago',
-            }, {
-                type: 'WMS', name: 'Redes Geodésicas',
-                url: 'https://www.ign.es/wms-inspire/redes-geodesicas',
-            }, {
-                type: 'WMS', name: 'Planimetrías',
-                url: 'https://www.ign.es/wms/minutas-cartograficas',
-            }, {
-                type: 'MapLibre', name: 'Mapa Libre', legend: 'Mapa Libre',
-                url: 'https://vt-mapabase.idee.es/files/styles/mapaBase_scn_color1_CNIG.json',
-            }],
-            groups: [{
-                'Cartografía': {
-                'Mapas': {
-                    'type': 'WMTS',
-                    'url': 'https://www.ign.es/wmts/mapa-raster?',
-                },
-                'Callejero': {
-                    'type': 'WMTS',
-                    'url': 'https://www.ign.es/wmts/ign-base?',
-                },
-                'Primera edición MTN y Minutas de 1910-1970': {
-                    'type': 'WMTS',
-                    'url': 'https://www.ign.es/wmts/primera-edicion-mtn?',
-                },
-                'Planimetrías (1870 y 1950)': {
-                    'type': 'WMS',
-                    'url': 'https://www.ign.es/wms/minutas-cartograficas?',
-                },
-                'Planos de Madrid (1622 - 1960)': {
-                    'type': 'WMTS',
-                    'url': 'https://www.ign.es/wmts/planos?',
-                },
-                'Hojas kilométricas (Madrid - 1860)': {
-                    'type': 'WMS',
-                    'url': 'https://www.ign.es/wms/hojas-kilometricas?',
-                },
-                'Cuadrículas Mapa Topográfico Nacional': {
-                    'type': 'WMS',
-                    'url': 'https://www.ign.es/wms-inspire/cuadriculas?',
-                },
-                },
-                'Imagenes': {
-                'Ortofotos': {
-                    'Máxima actualidad PNOA': {
-                    'type': 'WMTS',
-                    'url': 'https://www.ign.es/wmts/pnoa-ma?',
-                    },
-                    'Históricas y PNOA anual': {
-                    'type': 'WMS',
-                    'url': 'https://www.ign.es/wms/pnoa-historico?',
-                    },
-                    'PNOA Provisionales': {
-                    'type': 'WMS',
-                    'url': 'https://wms-pnoa.idee.es/pnoa-provisionales?',
-                    },
-                },
-                'Mosaicos de satélite': {
-                    'type': 'WMS',
-                    'url': 'https://wms-satelites-historicos.idee.es/satelites-historicos?',
-                },
-                'Fototeca (Consulta de fotogramas históricos y PNOA)': {
-                    'type': 'WMS',
-                    'url': 'https://wms-fototeca.idee.es/fototeca?',
-                },
-                },
-                'Información geográfica de referencia y temática': {
-                'Catastro': {
-                    'type': 'WMS',
-                    'url': 'https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?',
-                },
-                'Unidades administrativas': {
-                    'type': 'WMS',
-                    'url': ' https://www.ign.es/wms-inspire/unidades-administrativas?',
-                },
-                'Nombres geográficos (Nomenclátor Geográfico Básico NGBE)': {
-                    'type': 'WMS',
-                    'url': 'https://www.ign.es/wms-inspire/ngbe?',
-                },
-                'Redes de transporte': {
-                    'type': 'WMS',
-                    'url': 'https://servicios.idee.es/wms-inspire/transportes?',
-                },
-                'Hidrografía': {
-                    'type': 'WMS',
-                    'url': 'https://servicios.idee.es/wms-inspire/hidrografia?',
-                },
-                'Direcciones y códigos postales': {
-                    'type': 'WMS',
-                    'url': 'https://www.cartociudad.es/wms-inspire/direcciones-ccpp?',
-                },
-                'Ocupación del suelo': {
-                    'Actual (Corine y SIOSE)': {
-                    'type': 'WMTS',
-                    'url': 'https://servicios.idee.es/wmts/ocupacion-suelo?',
-                    },
-                    'Histórico (Corine y SIOSE)': {
-                    'type': 'WMS',
-                    'url': 'https://servicios.idee.es/wms-inspire/ocupacion-suelo-historico?',
-                    },
-                    // 'Copernicus Land Monitoring Service': {
-                    // 'type': 'WMS',
-                    // 'url': 'https://servicios.idee.es/wms/copernicus-landservice-spain?',
-                    // },
-                },
-                'Información sísmica (terremotos)': {
-                    'type': 'WMS',
-                    'url': 'https://www.ign.es/wms-inspire/geofisica?',
-                },
-                'Red de vigilancia volcánica': {
-                    'type': 'WMS',
-                    'url': 'https://wms-volcanologia.ign.es/volcanologia?',
-                },
-                'Redes geodésicas': {
-                    'type': 'WMS',
-                    'url': 'https://www.ign.es/wms-inspire/redes-geodesicas?',
-                },
-                },
-                'Modelos digitales de elevaciones': {
-                'Modelo Digital de Superficies (Sombreado superficies y consulta de elevaciones edificios y vegetación)': {
-                    'type': 'WMTS',
-                    'url': 'https://wmts-mapa-lidar.idee.es/lidar?',
-                },
-                'Modelo Digital del Terreno (Sombreado terreno y consulta de altitudes)': {
-                    'type': 'WMTS',
-                    'url': 'https://servicios.idee.es/wmts/mdt?',
-                    'white_list': ['EL.ElevationGridCoverage'],
-                },
-                'Curvas de nivel y puntos acotados': {
-                    'type': 'WMS',
-                    'url': 'https://servicios.idee.es/wms-inspire/mdt?',
-                    'white_list': ['EL.ContourLine', 'EL.SpotElevation'],
-                },
-                },
-            },
-
-            ],
-        };
-
         const capaGeoJSON = new IDEE.layer.GeoJSON({
             name: 'Capa GeoJSON',
             url: 'https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json',
@@ -359,6 +229,9 @@
         });
 
         map.addLayers(capaWMS);
+
+        const stylemanager = new IDEE.plugin.StyleManager();
+        map.addPlugin(stylemanager);
 
         let mp = null;
 
@@ -409,11 +282,10 @@
             options.tools = inputTools.value !== '' ? inputTools.value.split(', ') : [];
             options.isMoveLayers = boolVal(selectMoveLayer, false);
             options.modeSelectLayers = selectModeSelectLayers.options[selectModeSelectLayers.selectedIndex].value || 'eyes';
-            if (inputPrecharged.value.trim() !== '') {
-                try { options.precharged = JSON.parse(inputPrecharged.value); } catch (e) { options.precharged = inputPrecharged.value; }
-            } else {
-                options.precharged = PRECHARGED;
-            }
+            const prechargedOption = [...document.querySelectorAll('#prechargedSug option')]
+                .find((option) => option.value === inputPrecharged.value);
+            if (prechargedOption) inputPrecharged.value = prechargedOption.dataset.precharged;
+            options.precharged = inputPrecharged.value.trim() || undefined;
             options.http = boolVal(selectHttp, true);
             options.https = boolVal(selectHttps, true);
             options.showCatalog = boolVal(selectShowCatalog, false);
