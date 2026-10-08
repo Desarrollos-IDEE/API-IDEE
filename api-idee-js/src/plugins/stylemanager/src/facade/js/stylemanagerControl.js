@@ -194,6 +194,7 @@ export default class StyleManagerControl extends IDEE.Control {
       if (this.isNotAdded(name, htmlSelect) === true) {
         const htmlOption = document.createElement('option');
         htmlOption.setAttribute('name', name);
+        htmlOption.value = name;
         htmlOption.innerText = name;
         htmlSelect.add(htmlOption);
       }

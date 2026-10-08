@@ -1,5 +1,5 @@
 <select class="" name="">
   {{#each layers}}
-  <option name="{{this.name}}" {{#eq this.name this.selected}}selected{{/eq}}>{{this.name}}</option>
+  <option name="{{this.name}}" value="{{this.name}}" {{#eq this.name this.selected}}selected{{/eq}}>{{this.name}}</option>
   {{/each}}
 </select>
