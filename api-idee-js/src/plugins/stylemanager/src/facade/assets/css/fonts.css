@@ -40,3 +40,471 @@
     mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_reset.svg');
 }
 
+@font-face {
+    font-family: 'g-cartografia';
+    src: url('../fonts/g-cartografia.eot?61783612');
+    src: url('../fonts/g-cartografia.eot?61783612#iefix') format('embedded-opentype'),
+        url('../fonts/g-cartografia.ttf?61783612') format('truetype'),
+        url('../fonts/g-cartografia.woff?61783612') format('woff'),
+        url('../fonts/g-cartografia.svg?61783612#g-cartografia') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+}
+
+.g-cartografia-ayuda::before,
+.g-cartografia-bandera::before,
+.g-cartografia-brujula::before,
+.g-cartografia-cancelar2::before,
+.g-cartografia-capas::before,
+.g-cartografia-check-circle::before,
+.g-cartografia-check2::before,
+.g-cartografia-check3::before,
+.g-cartografia-check4::before,
+.g-cartografia-check5::before,
+.g-cartografia-comentarios::before,
+.g-cartografia-descargar::before,
+.g-cartografia-editar::before,
+.g-cartografia-editar2::before,
+.g-cartografia-escala::before,
+.g-cartografia-escala2::before,
+.g-cartografia-escala3::before,
+.g-cartografia-flecha::before,
+.g-cartografia-flecha-derecha3::before,
+.g-cartografia-flecha-deshacer::before,
+.g-cartografia-flecha-izquierda3::before,
+.g-cartografia-flecha-link::before,
+.g-cartografia-flechas-mover::before,
+.g-cartografia-gps::before,
+.g-cartografia-gps3::before,
+.g-cartografia-gps4::before,
+.g-cartografia-guardar::before,
+.g-cartografia-herramienta::before,
+.g-cartografia-impresora::before,
+.g-cartografia-linea::before,
+.g-cartografia-lineas::before,
+.g-cartografia-lista::before,
+.g-cartografia-localizacion::before,
+.g-cartografia-localizacion2::before,
+.g-cartografia-localizacion3::before,
+.g-cartografia-localizacion4::before,
+.g-cartografia-mano::before,
+.g-cartografia-mano2::before,
+.g-cartografia-mapa::before,
+.g-cartografia-mas::before,
+.g-cartografia-medir-area::before,
+.g-cartografia-medir-linea::before,
+.g-cartografia-menos::before,
+.g-cartografia-menos2::before,
+.g-cartografia-menu::before,
+.g-cartografia-mundo2::before,
+.g-cartografia-opciones::before,
+.g-cartografia-pin-nuevo::before,
+.g-cartografia-pin-nuevo2::before,
+.g-cartografia-pin-seleccionado::before,
+.g-cartografia-pin2::before,
+.g-cartografia-pin3::before,
+.g-cartografia-pin4::before,
+.g-cartografia-pin5::before,
+.g-cartografia-posicion::before,
+.g-cartografia-posicion2::before,
+.g-cartografia-posicion3::before,
+.g-cartografia-posicion4::before,
+.g-cartografia-posicion5::before,
+.g-cartografia-posicion6::before,
+.g-cartografia-posicion7::before,
+.g-cartografia-prismaticos::before,
+.g-cartografia-reglas::before,
+.g-cartografia-ruta::before,
+.g-cartografia-spinner::before,
+.g-cartografia-subir::before,
+.g-cartografia-tamano::before,
+.g-cartografia-temperatura::before,
+.g-cartografia-texto::before,
+.g-cartografia-usuario::before,
+.g-cartografia-usuario2::before,
+.g-cartografia-zoom-extension::before,
+.g-cartografia-zoom-mas::before,
+.g-cartografia-zoom-menos::before {
+    display: none;
+}
+
+.g-cartografia-ayuda::after,
+.g-cartografia-bandera::after,
+.g-cartografia-brujula::after,
+.g-cartografia-cancelar2::after,
+.g-cartografia-capas::after,
+.g-cartografia-check-circle::after,
+.g-cartografia-check2::after,
+.g-cartografia-check3::after,
+.g-cartografia-check4::after,
+.g-cartografia-check5::after,
+.g-cartografia-comentarios::after,
+.g-cartografia-descargar::after,
+.g-cartografia-editar::after,
+.g-cartografia-editar2::after,
+.g-cartografia-escala::after,
+.g-cartografia-escala2::after,
+.g-cartografia-escala3::after,
+.g-cartografia-flecha::after,
+.g-cartografia-flecha-derecha3::after,
+.g-cartografia-flecha-deshacer::after,
+.g-cartografia-flecha-izquierda3::after,
+.g-cartografia-flecha-link::after,
+.g-cartografia-flechas-mover::after,
+.g-cartografia-gps::after,
+.g-cartografia-gps3::after,
+.g-cartografia-gps4::after,
+.g-cartografia-guardar::after,
+.g-cartografia-herramienta::after,
+.g-cartografia-impresora::after,
+.g-cartografia-linea::after,
+.g-cartografia-lineas::after,
+.g-cartografia-lista::after,
+.g-cartografia-localizacion::after,
+.g-cartografia-localizacion2::after,
+.g-cartografia-localizacion3::after,
+.g-cartografia-localizacion4::after,
+.g-cartografia-mano::after,
+.g-cartografia-mano2::after,
+.g-cartografia-mapa::after,
+.g-cartografia-mas::after,
+.g-cartografia-medir-area::after,
+.g-cartografia-medir-linea::after,
+.g-cartografia-menos::after,
+.g-cartografia-menos2::after,
+.g-cartografia-menu::after,
+.g-cartografia-mundo2::after,
+.g-cartografia-opciones::after,
+.g-cartografia-pin-nuevo::after,
+.g-cartografia-pin-nuevo2::after,
+.g-cartografia-pin-seleccionado::after,
+.g-cartografia-pin2::after,
+.g-cartografia-pin3::after,
+.g-cartografia-pin4::after,
+.g-cartografia-pin5::after,
+.g-cartografia-posicion::after,
+.g-cartografia-posicion2::after,
+.g-cartografia-posicion3::after,
+.g-cartografia-posicion4::after,
+.g-cartografia-posicion5::after,
+.g-cartografia-posicion6::after,
+.g-cartografia-posicion7::after,
+.g-cartografia-prismaticos::after,
+.g-cartografia-reglas::after,
+.g-cartografia-ruta::after,
+.g-cartografia-spinner::after,
+.g-cartografia-subir::after,
+.g-cartografia-tamano::after,
+.g-cartografia-temperatura::after,
+.g-cartografia-texto::after,
+.g-cartografia-usuario::after,
+.g-cartografia-usuario2::after,
+.g-cartografia-zoom-extension::after,
+.g-cartografia-zoom-mas::after,
+.g-cartografia-zoom-menos::after {
+    font-family: 'g-cartografia' !important;
+    speak: never;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.g-cartografia-ayuda::after {
+    content: "\e962";
+}
+
+.g-cartografia-bandera::after {
+    content: "\e947";
+}
+
+.g-cartografia-brujula::after {
+    content: "\e950";
+}
+
+.g-cartografia-cancelar2::after {
+    content: "\e914";
+}
+
+.g-cartografia-capas::after {
+    content: "\e968";
+}
+
+.g-cartografia-check-circle::after {
+    content: "\e91d";
+}
+
+.g-cartografia-check2::after {
+    content: "\e915";
+}
+
+.g-cartografia-check3::after {
+    content: "\e917";
+}
+
+.g-cartografia-check4::after {
+    content: "\e919";
+}
+
+.g-cartografia-check5::after {
+    content: "\e80d";
+}
+
+.g-cartografia-comentarios::after {
+    content: "\e902";
+}
+
+.g-cartografia-descargar::after {
+    content: "\e93e";
+}
+
+.g-cartografia-editar::after {
+    content: "\e93f";
+}
+
+.g-cartografia-editar2::after {
+    content: "\e929";
+}
+
+.g-cartografia-escala::after {
+    content: "\e812";
+}
+
+.g-cartografia-escala2::after {
+    content: "\e813";
+}
+
+.g-cartografia-escala3::after {
+    content: "\e903";
+}
+
+.g-cartografia-flecha::after {
+    content: "\e904";
+}
+
+.g-cartografia-flecha-derecha3::after {
+    content: "\e91b";
+}
+
+.g-cartografia-flecha-deshacer::after {
+    content: "\e91c";
+}
+
+.g-cartografia-flecha-izquierda3::after {
+    content: "\e91f";
+}
+
+.g-cartografia-flecha-link::after {
+    content: "\e920";
+}
+
+.g-cartografia-flechas-mover::after {
+    content: "\e921";
+}
+
+.g-cartografia-gps::after {
+    content: "\e922";
+}
+
+.g-cartografia-gps3::after {
+    content: "\e923";
+}
+
+.g-cartografia-gps4::after {
+    content: "\e925";
+}
+
+.g-cartografia-guardar::after {
+    content: "\e926";
+}
+
+.g-cartografia-herramienta::after {
+    content: "\e927";
+}
+
+.g-cartografia-impresora::after {
+    content: "\e928";
+}
+
+.g-cartografia-linea::after {
+    content: "\e92a";
+}
+
+.g-cartografia-lineas::after {
+    content: "\e92b";
+}
+
+.g-cartografia-lista::after {
+    content: "\e92c";
+}
+
+.g-cartografia-localizacion::after {
+    content: "\e92d";
+}
+
+.g-cartografia-localizacion2::after {
+    content: "\e92e";
+}
+
+.g-cartografia-localizacion3::after {
+    content: "\e92f";
+}
+
+.g-cartografia-localizacion4::after {
+    content: "\e930";
+}
+
+.g-cartografia-mano::after {
+    content: "\e931";
+}
+
+.g-cartografia-mano2::after {
+    content: "\e932";
+}
+
+.g-cartografia-mapa::after {
+    content: "\e933";
+}
+
+.g-cartografia-mas::after {
+    content: "\e934";
+}
+
+.g-cartografia-medir-area::after {
+    content: "\e936";
+}
+
+.g-cartografia-medir-linea::after {
+    content: "\e937";
+}
+
+.g-cartografia-menos::after {
+    content: "\e938";
+}
+
+.g-cartografia-menos2::after {
+    content: "\e939";
+}
+
+.g-cartografia-menu::after {
+    content: "\e93a";
+}
+
+.g-cartografia-mundo2::after {
+    content: "\e93c";
+}
+
+.g-cartografia-opciones::after {
+    content: "\e93d";
+}
+
+.g-cartografia-pin-nuevo::after {
+    content: "\e940";
+}
+
+.g-cartografia-pin-nuevo2::after {
+    content: "\e966";
+}
+
+.g-cartografia-pin-seleccionado::after {
+    content: "\e967";
+}
+
+.g-cartografia-pin2::after {
+    content: "\e941";
+}
+
+.g-cartografia-pin3::after {
+    content: "\e942";
+}
+
+.g-cartografia-pin4::after {
+    content: "\e943";
+}
+
+.g-cartografia-pin5::after {
+    content: "\e965";
+}
+
+.g-cartografia-posicion::after {
+    content: "\e945";
+}
+
+.g-cartografia-posicion2::after {
+    content: "\e946";
+}
+
+.g-cartografia-posicion3::after {
+    content: "\e90d";
+}
+
+.g-cartografia-posicion4::after {
+    content: "\e948";
+}
+
+.g-cartografia-posicion5::after {
+    content: "\e949";
+}
+
+.g-cartografia-posicion6::after {
+    content: "\e94a";
+}
+
+.g-cartografia-posicion7::after {
+    content: "\e94b";
+}
+
+.g-cartografia-prismaticos::after {
+    content: "\e94c";
+}
+
+.g-cartografia-reglas::after {
+    content: "\e94e";
+}
+
+.g-cartografia-ruta::after {
+    content: "\e94f";
+}
+
+.g-cartografia-spinner::after {
+    content: "\e90f";
+}
+
+.g-cartografia-subir::after {
+    content: "\e95b";
+}
+
+.g-cartografia-tamano::after {
+    content: "\e95c";
+}
+
+.g-cartografia-temperatura::after {
+    content: "\e95d";
+}
+
+.g-cartografia-texto::after {
+    content: "\e95e";
+}
+
+.g-cartografia-usuario::after {
+    content: "\e95f";
+}
+
+.g-cartografia-usuario2::after {
+    content: "\e960";
+}
+
+.g-cartografia-zoom-extension::after {
+    content: "\e90e";
+}
+
+.g-cartografia-zoom-mas::after {
+    content: "\e963";
+}
+
+.g-cartografia-zoom-menos::after {
+    content: "\e964";
+}
