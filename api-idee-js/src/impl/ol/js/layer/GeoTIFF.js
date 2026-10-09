@@ -215,8 +215,6 @@ class GeoTIFF extends LayerBase {
 
     if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
     if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
-
-    this.fire(EventType.ADDED_TO_MAP);
   }
 
   /**
@@ -266,6 +264,7 @@ class GeoTIFF extends LayerBase {
     }
 
     this.fire(EventType.ADDED_TO_MAP);
+    this.facadeLayer_?.fire(EventType.ADDED_TO_MAP);
 
     this.setVisible(this.visibility);
 
