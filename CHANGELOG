@@ -14,7 +14,10 @@
 - Se dan de alta nuevas proyecciones y se adapta extensión de 25830.
 - Se soluciona problema con scroll del plugin InfoCoordinates.
 - Se adapta el parámetro blob de GeoTIFF para que acepte instancia de Blob y URL de objeto Blob.
-- Se solucionan problemas con plugin PrintViewManagement: inconsistencia entre la escala y el mapa, coordenadas en las esquinas del mapa impreso, error de impresión cuando de utiliza el plugin Locator y enlaces rotos de los logos en la plantilla “Mapa completo”
+- GeoTIFF: se le añaden las propiedades en el segundo objeto cacheSize y blockSize.
+- Plugin CatalogManager: se hace uso de las propiedades cacheSize y blockSize para que las imágenes pesadas se carguen sin huecos. Además el tamaño de cacheSize es configurable en el plugin.
+- Plugin Layerswitcher: mejoras en la ordenación de secciones y mejoras sobre la gestión de borrar grupos.
+- Se solucionan problemas con plugin PrintViewManagement: inconsistencia entre la escala y el mapa, coordenadas en las esquinas del mapa impreso, error de impresión cuando de utiliza el plugin Locator y enlaces rotos de los logos en la plantilla “Mapa completo”.
 
 
 01/07/26 - Versión 1.1.0
