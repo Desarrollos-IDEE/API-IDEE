@@ -12,6 +12,7 @@ import DownloadControl from './downloadcontrol';
 import EditionControl from './editioncontrol';
 import HelpControl from './helpcontrol';
 import StyleControl from './stylecontrol';
+import { getSnapOptions } from './snapoptions';
 
 /**
  * @classdesc
@@ -42,7 +43,7 @@ export default class VectorsManagementControl extends IDEE.Control {
    * @api stable
    */
   constructor({
-    map, selection, addlayer, analysis, creation, download, edition, help, style, order,
+    map, selection, addlayer, analysis, creation, download, edition, help, style, snapping, order,
   }) {
     const impl = new IDEE.impl.Control();
     super('VectorsManagement', impl, {});
@@ -55,6 +56,7 @@ export default class VectorsManagementControl extends IDEE.Control {
     this.creation_ = creation;
     this.download_ = download;
     this.edition_ = edition;
+    this.snapOptions = getSnapOptions(snapping);
     this.help_ = help;
     this.style_ = style;
     this.layers_ = allLayers.filter((l) => (l instanceof IDEE.layer.Vector
@@ -88,7 +90,7 @@ export default class VectorsManagementControl extends IDEE.Control {
           analysis: this.analysis_,
           creation: this.creation_,
           download: this.download_,
-          edition: !!(this.edition_ instanceof Object || this.edition_ === true),
+          edition: !!this.edition_,
           help: this.help_,
           style: this.style_,
           layer: this.layers_,

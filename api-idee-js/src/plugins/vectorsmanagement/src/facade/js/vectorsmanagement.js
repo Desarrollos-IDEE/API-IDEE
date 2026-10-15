@@ -10,6 +10,7 @@ import en from './i18n/en';
 import VectorsManagementControl from './vectorsmanagementcontrol';
 import myhelp from '../../templates/myhelp';
 import { getValue } from './i18n/language';
+import { parseSnapping } from './snapoptions';
 
 export default class VectorsManagement extends IDEE.Plugin {
   /**
@@ -144,6 +145,14 @@ export default class VectorsManagement extends IDEE.Plugin {
      */
     this.style = typeof options.style === 'boolean' ? options.style : true;
 
+    /**
+     * @private
+     * @type {boolean|Object}
+     *
+     * Snapping configuration
+     */
+    this.snapping = parseSnapping(options.snapping);
+
     // Tooltip
     this.tooltip = options.tooltip || getValue('tooltip');
   }
@@ -204,6 +213,7 @@ export default class VectorsManagement extends IDEE.Plugin {
       edition: this.edition,
       help: this.help,
       style: this.style,
+      snapping: this.snapping,
       order: this.order,
     }));
 
@@ -228,7 +238,7 @@ export default class VectorsManagement extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.selection}*${this.addlayer}*${this.analysis}*${this.creation}*${this.download}*${this.edition}*${this.help}*${this.style}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.selection}*${this.addlayer}*${this.analysis}*${this.creation}*${this.download}*${this.edition}*${this.help}*${this.style}*${typeof this.snapping === 'boolean' ? this.snapping : JSON.stringify(this.snapping)}`;
   }
 
   /**
