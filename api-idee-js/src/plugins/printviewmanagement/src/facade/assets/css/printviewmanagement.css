@@ -640,6 +640,8 @@ div.m-area.m-bottom.m-left>div.m-plugin-printviewmanagement.m-panel.opened>butto
     height: 842px;
     transform: translate(-50%, -50%) scale(0.72196);
     box-sizing: border-box;
+    border: 1px solid #666666;
+    background-color: #ffffff; 
 }
 
 .m-customize-template-option {

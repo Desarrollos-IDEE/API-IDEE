@@ -151,3 +151,12 @@ export const TEMPLATE_ELEMENTS = [
  * @type {String}
  */
 export const PREVIEW_MAP_ORIENTATION = 'horizontal';
+
+/**
+ * Margen blanco (mm) alrededor del contenido de las plantillas de impresión.
+ * Se aplica en previsualización y en la exportación (PDF/imagen).
+ *
+ * @private
+ * @type {Number}
+ */
+export const PRINT_TEMPLATE_MARGIN_MM = 4;

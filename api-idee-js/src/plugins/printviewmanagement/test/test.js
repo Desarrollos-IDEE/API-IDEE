@@ -17,7 +17,12 @@ const map = IDEE.map({
   // minZoom: 4, maxZoom: 20, zoom: 9,
   // layers: [suelo],
   // center: [-467062, 4683459],
-  bbox: [-643342.6650657187, 4465029.9973054305, -642191.954241315, 4465658.543126833],
+  bbox: [-643050.5743115058, 4465955.565227952, -642783.2575643614, 4466101.580039706],
+  layers: [new IDEE.layer.WMTS({
+    url: 'https://www.ign.es/wmts/pnoa-ma?',
+    name: 'OI.OrthoimageCoverage',
+    legend: 'PNOA',
+  })],
 });
 window.map = map;
 
@@ -233,6 +238,23 @@ const mp = new PrintViewManagement({
   order: 1,
 });
 map.addPlugin(mp); window.mp = mp;
+
+const mpLocator = new IDEE.plugin.Locator({
+  position: 'TR',
+  collapsed: true,
+  collapsible: true,
+  tooltip: 'Localización',
+  useProxy: false,
+  byPlaceAddressPostal: {
+    countryCode: 'es',
+    reverse: true,
+    resultVisibility: true,
+    urlReverse: 'https://www.cartociudad.es/geocoder/api/geocoder/reverseGeocode',
+  },
+  byParcelCadastre: true,
+  byCoordinates: true,
+});
+map.addPlugin(mpLocator); window.mpLocator = mpLocator;
 
 const mpInfocoordinates = new IDEE.plugin.Infocoordinates({
   position: 'TR',
