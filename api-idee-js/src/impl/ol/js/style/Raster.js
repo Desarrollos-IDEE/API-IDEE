@@ -191,10 +191,93 @@ class Raster extends Style {
   }
 
   /**
+   * Número de bandas de datos del source de la capa (no del estilo).
+   * El estilo puede referenciar menos bandas que las del source compuesto.
+   *
+   * @function
+   * @private
+   * @returns {number|null} Número de bandas o null si no está disponible.
+   */
+  getLayerDataBandCount_() {
+    if (isNullOrEmpty(this.layer_)) {
+      return null;
+    }
+    const layerImpl = typeof this.layer_.getImpl === 'function'
+      ? this.layer_.getImpl()
+      : null;
+    if (isNullOrEmpty(layerImpl)) {
+      return null;
+    }
+
+    const olLayer = typeof layerImpl.getLayer === 'function'
+      ? layerImpl.getLayer()
+      : null;
+    if (!isNullOrEmpty(olLayer) && typeof olLayer.getSource === 'function') {
+      const source = olLayer.getSource();
+      if (!isNullOrEmpty(source) && typeof source.bandCount === 'number'
+        && source.bandCount > 0) {
+        // bandCount de OL incluye la banda alpha si addAlpha_ es true
+        // eslint-disable-next-line no-underscore-dangle
+        if (source.addAlpha_) {
+          return source.bandCount - 1;
+        }
+        return source.bandCount;
+      }
+    }
+
+    // Bandas configuradas en la capa = bandas del source compuesto
+    // eslint-disable-next-line no-underscore-dangle
+    const layerBands = layerImpl.bands_;
+    if (isArray(layerBands) && layerBands.length > 0) {
+      return layerBands.length;
+    }
+
+    if (typeof layerBands === 'number' && layerBands > 0) {
+      return layerBands;
+    }
+    /* eslint-enable no-underscore-dangle */
+
+    return null;
+  }
+
+  /**
+   * Banda alpha que GeoTIFF añade tras las bandas de datos cuando hay nodata.
+   * Con N bandas de color en el source de la capa, el alpha es N+1
+   * (p.ej. RGB → banda 4; monobanda → banda 2).
+   * Se usa el N de la capa, no del estilo: el estilo puede aplicar menos bandas.
+   *
+   * @function
+   * @private
+   * @returns {Array} Expresión WebGL ['band', alphaIndex].
+   */
+  getPassthroughAlphaExpression_() {
+    const layerBandCount = this.getLayerDataBandCount_();
+    if (typeof layerBandCount === 'number' && layerBandCount > 0) {
+      return ['band', layerBandCount + 1];
+    }
+
+    // Fallback: máximo de bands del estilo si aún no se conoce el de la capa
+    let maxBand = 0;
+    const consider = (bandIndex) => {
+      const band = parseInt(bandIndex, 10);
+      if (!Number.isNaN(band) && band > 0) {
+        maxBand = Math.max(maxBand, band);
+      }
+    };
+    const { bands } = this.options_;
+    if (!isArray(bands)) {
+      consider(bands);
+    } else {
+      bands.forEach(consider);
+    }
+    return ['band', Math.max(maxBand, 1) + 1];
+  }
+
+  /**
    * Expresión de color sin rampa (passthrough de bandas).
-   * Con normalize (por defecto): mismo patrón que catalogmanager
-   * ['array', r, g, b, 1] con bandas en 0–1.
-   * Sin normalize: ['color', r, g, b] con valores crudos (p. ej. 0–255).
+   * Con normalize: ['array', r, g, b, alpha] (0–1).
+   * Sin normalize: ['color', r, g, b, alpha] con valores crudos.
+   * El alpha viene del GeoTIFF (nodata); no forzar 1 → bordes negros opacos.
    *
    * @function
    * @private
@@ -202,10 +285,11 @@ class Raster extends Style {
    */
   getPassthroughColorExpression_() {
     const channels = this.getPassthroughChannels_();
+    const alpha = this.getPassthroughAlphaExpression_();
     if (this.layerNormalize_) {
-      return ['array', channels[0], channels[1], channels[2], 1];
+      return ['array', channels[0], channels[1], channels[2], alpha];
     }
-    return ['color', channels[0], channels[1], channels[2]];
+    return ['color', channels[0], channels[1], channels[2], alpha];
   }
 
   /**
