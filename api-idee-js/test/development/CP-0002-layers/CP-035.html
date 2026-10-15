@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="idee" content="yes"><title>CP-035 — Fuente GPX</title>
+<style>
+html,body{height:100%;margin:0;font:15px sans-serif}body{display:flex;flex-direction:column}
+main{padding:12px}h1{font-size:1.3rem}nav{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+#map{flex:1;min-height:300px}pre{max-height:180px;overflow:auto;white-space:pre-wrap}
+button,input,select{font:inherit}
+</style>
+</head>
+<body>
+<main>
+<h1>CP-035: GPX desde JSON con estilo IDEE</h1>
+<p>Puntos, ruta y track con dos segmentos. Consola: <code>mapa</code> y <code>capa</code>.</p>
+<nav aria-label="Pruebas GPX">
+<label for="management">Gestión de capa</label><select id="management"><option value="gpx">addGPX / removeGPX</option><option value="generic">addLayers / removeLayers</option></select>
+<button id="reload">Recargar origen</button><button id="toggle">Retirar / reinsertar capa</button>
+<label for="style">Estilo</label><select id="style"><option value="json">JSON inicial: naranja / azul</option><option value="instance">Instancia Generic: verde / violeta</option></select>
+<label for="temporal-mode">Prueba temporal</label><select id="temporal-mode"><option value="manual">Filtro manual por año</option><option value="timeline">Timeline real (OpenLayers)</option></select>
+<label for="year">Filtro temporal</label><select id="year"><option value="">Todas las fechas</option><option>2020</option><option>2021</option></select>
+<label for="file">Archivo GPX local</label><input id="file" type="file" accept=".gpx,application/gpx+xml">
+</nav>
+<p>El estilo inicial procede del JSON. La segunda opción aplica una instancia que hereda de IDEE.Style.
+Comprueba colores y tamaños, <code>estiloIDEE: true</code> y su conservación al recargar.</p>
+<p id="timeline-help"></p>
+<p>Ejemplo temporal: 2020 muestra «Madrid 2020» y «Ruta»; 2021 muestra «Madrid 2021» y «Track con dos segmentos».
+Timeline filtra entidades completas; no anima vértices del recorrido. En modo Timeline se usa el fichero de ejemplo.</p>
+<pre id="status" aria-live="polite">Cargando GPX…</pre>
+</main>
+<div id="map" class="map"></div>
+<script src="/config.js" charset="utf-8"></script>
+<script src="/CP-0002-layers/CP-035.js" charset="utf-8"></script>
+</body>
+</html>

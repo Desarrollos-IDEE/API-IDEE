@@ -1,5 +1,6 @@
 import { map as Mmap } from 'IDEE/api-idee';
 import OverviewMap from 'IDEE/control/OverviewMap';
+import WMS from 'IDEE/layer/WMS';
 
 const map = Mmap({
   container: 'map',
@@ -29,6 +30,13 @@ const inputOrder = document.getElementById('inputOrder');
 const inputZoom = document.getElementById('inputZoom');
 const selectFixed = document.getElementById('selectFixed');
 const inputBaseLayer = document.getElementById('inputBaseLayer');
+const useBaseLayerInstance = document.getElementById('useBaseLayerInstance');
+
+const createBaseLayerInstance = () => new WMS({
+  name: 'NACIONAL_1981-1986',
+  legend: 'NACIONAL 1981-1986',
+  url: 'https://www.ign.es/wms/pnoa-historico',
+});
 
 const recreate = () => {
   remove();
@@ -51,7 +59,11 @@ const recreate = () => {
   const fixed = selectFixed.options[selectFixed.selectedIndex].value;
   if (fixed !== '') options.fixed = (fixed === 'true');
 
-  if (inputBaseLayer.value !== '') options.baseLayer = inputBaseLayer.value;
+  if (useBaseLayerInstance.checked) {
+    options.baseLayer = createBaseLayerInstance();
+  } else if (inputBaseLayer.value !== '') {
+    options.baseLayer = inputBaseLayer.value;
+  }
   create(options);
 };
 
@@ -64,6 +76,7 @@ const recreate = () => {
   inputZoom,
   selectFixed,
   inputBaseLayer,
+  useBaseLayerInstance,
 ].forEach((ctrl) => {
   ctrl.addEventListener('change', recreate);
 });

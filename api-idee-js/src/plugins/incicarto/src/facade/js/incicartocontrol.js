@@ -253,14 +253,14 @@ export default class IncicartoControl extends IDEE.Control {
 
   renderLayers() {
     const filtered = this.map.getLayers().filter((layer) => {
-      return ['kml', 'geojson', 'wfs', 'vector'].indexOf(layer.type.toLowerCase()) > -1
+      return ['kml', 'kmz', 'geojson', 'wfs', 'vector'].indexOf(layer.type.toLowerCase()) > -1
         && layer.name !== undefined && layer.name !== 'selectLayer' && layer.name !== '__draw__' && layer.name !== 'coordinateresult'
         && layer.name !== 'searchresult' && layer.name.indexOf('Coordenadas centro ') === -1 && layer.name !== 'infocoordinatesLayerFeatures';
     });
 
     const layers = [];
     filtered.forEach((layer) => {
-      if (!(layer.type.toLowerCase() === 'kml' && layer.name.toLowerCase() === 'attributions')) {
+      if (!(['kml', 'kmz'].includes(layer.type.toLowerCase()) && layer.name.toLowerCase() === 'attributions')) {
         const newLayer = layer;
         const geometry = !IDEE.utils.isNullOrEmpty(layer.geometry)
           ? layer.geometry
@@ -457,7 +457,7 @@ export default class IncicartoControl extends IDEE.Control {
    * @api
    */
   createUploadingTemplate() {
-    const accept = '.kml, .zip, .gpx, .geojson, .gml';
+    const accept = '.kmz, .kml, .zip, .gpx, .geojson, .gml';
     this.uploadingTemplate = IDEE.template.compileSync(uploadingTemplate, {
       jsonp: true,
       vars: {
@@ -840,7 +840,7 @@ export default class IncicartoControl extends IDEE.Control {
       param = this.getWMS(layer);
     } else if (layer.type === 'WMTS') {
       param = this.getWMTS(layer);
-    } else if (layer.type === 'KML') {
+    } else if (layer.type === 'KML' || layer.type === 'KMZ') {
       param = this.getKML(layer);
     } else if (layer.type === 'WFS') {
       param = this.getWFS(layer);
@@ -934,7 +934,9 @@ export default class IncicartoControl extends IDEE.Control {
    * @function
    */
   getKML(layer) {
-    return `KML*${layer.name}*${layer.url}*${layer.extract}*${layer.label}*${layer.isVisible()}`;
+    // Los archivos locales se comparten como datos, igual que el KML importado.
+    if (layer.type === 'KMZ' && /^blob:/i.test(layer.url)) return this.getVector(layer);
+    return `${layer.type === 'KMZ' ? 'KMZ' : 'KML'}*${layer.name}*${layer.url}*${layer.extract}*${layer.label}*${layer.isVisible()}`;
   }
 
   /**
@@ -1858,6 +1860,10 @@ export default class IncicartoControl extends IDEE.Control {
   loadLayer() {
     // eslint-disable-next-line no-bitwise
     const fileExt = this.file_.name.slice((this.file_.name.lastIndexOf('.') - 1 >>> 0) + 2).toLowerCase();
+    if (fileExt === 'kmz') {
+      IDEE.loadFiles.addFileToMap(this.map, this.file_);
+      return;
+    }
     const fileName = this.file_.name.split('.').slice(0, -1).join('.');
     const fileReader = new window.FileReader();
     fileReader.addEventListener('load', (e) => {
@@ -2091,7 +2097,7 @@ export default class IncicartoControl extends IDEE.Control {
         if (layer.type === 'WFS' || (layer.type === 'Vector' && layer.getFeatures().length > 0)) {
           const extent = layer.getMaxExtent();
           this.map.setBbox(extent);
-        } else if (layer.type === 'KML') {
+        } else if (layer.type === 'KML' || layer.type === 'KMZ') {
           const extent = layer.getImpl().getExtent();
           this.map.setBbox(extent);
         } else if (layer.type === 'GeoJSON') {

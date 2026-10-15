@@ -330,7 +330,7 @@ function normalizeString(text) {
  * @function
  */
 function getKML(layer) {
-  return `KML*${layer.name}*${layer.url}*${layer.extract}*${layer.label}*${layer.isVisible()}`;
+  return `${layer.type === 'KMZ' ? 'KMZ' : 'KML'}*${layer.name}*${layer.url}*${layer.extract}*${layer.label}*${layer.isVisible()}`;
 }
 
 /**
@@ -471,8 +471,8 @@ function layerToParam(layer, map) {
     param = getMBTiles(layer);
   } else if (layer.type === 'TMS') {
     param = getTMS(layer);
-  } else if (layer.type === 'KML') {
-    param = getKML(layer);
+  } else if (layer.type === 'KML' || layer.type === 'KMZ') {
+    param = layer.type === 'KMZ' && /^blob:/i.test(layer.url) ? getVector(layer) : getKML(layer);
   } else if (layer.type === 'WFS') {
     param = getWFS(layer);
   } else if (layer.type === 'GeoJSON') {
@@ -503,7 +503,7 @@ export function getLayers(map) {
     }
 
     let res = layer.name !== '__draw__' && layer.name !== 'selectionLayer';
-    if (layer.name === 'attributions' && layer.type === 'KML') {
+    if (layer.name === 'attributions' && (layer.type === 'KML' || layer.type === 'KMZ')) {
       res = res && false;
     }
 

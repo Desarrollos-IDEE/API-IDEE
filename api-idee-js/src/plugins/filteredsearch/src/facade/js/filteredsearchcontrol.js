@@ -885,6 +885,7 @@ export default class FilteredSearchControl extends IDEE.Control {
    */
   deleteAppliedFilters() {
     const vectorLayers = this.map.getWFS()
+      .concat(this.map.getKMZ())
       .concat(this.map.getKML()
         .concat(this.map.getLayers().filter((layer) => {
           return layer.type === 'GeoJSON';
@@ -1280,6 +1281,7 @@ export default class FilteredSearchControl extends IDEE.Control {
    * @api
    */
   isLayerLoaded(layer) {
+    if (layer.type === 'KMZ') return layer.getImpl().isLoaded();
     let isLoaded = false;
     const kmlLayerLoaded = this.kmlLayers.find((l) => l.layer === layer)
       ? this.kmlLayers.find((l) => l.layer === layer).loaded : false;

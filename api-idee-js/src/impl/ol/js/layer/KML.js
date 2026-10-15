@@ -141,6 +141,15 @@ class KML extends Vector {
   }
 
   /**
+   * Crea el cargador específico de esta capa con el mapa y formato actuales.
+   * @private
+   * @returns {LoaderKML} Cargador KML.
+   */
+  getLoader() {
+    return new LoaderKML(this.map, this.url, this.formater_);
+  }
+
+  /**
    * Este método añade la capa al mapa.
    *
    * @public
@@ -150,12 +159,13 @@ class KML extends Vector {
    */
   addTo(map, addLayer = true) {
     this.map = map;
-    map.on(EventType.CHANGE_PROJ, this.setProjection_.bind(this), this);
+    this.changeProjectionHandler_ = this.setProjection_.bind(this);
+    map.on(EventType.CHANGE_PROJ, this.changeProjectionHandler_, this);
     this.formater_ = new FormatKML({
       label: this.label_,
       extractStyles: this.extractStyles_,
     });
-    this.loader_ = new LoaderKML(this.map, this.url, this.formater_);
+    this.loader_ = this.getLoader();
     this.olLayer = new OLLayerVector(extend({
       extent: this.maxExtent_,
       opacity: this.opacity_,
@@ -271,7 +281,6 @@ class KML extends Vector {
             }
           },
         }));
-        this.facadeVector_.addFeatures(response.features);
       });
     }
   }
@@ -294,7 +303,7 @@ class KML extends Vector {
       label: this.label_,
       extractStyles: this.extractStyles_,
     });
-    this.loader_ = new LoaderKML(this.map, this.url, this.formater_);
+    this.loader_ = this.getLoader();
     this.olLayer = new OLLayerVector(extend({
       extent: this.maxExtent_,
       opacity: this.opacity_,
@@ -343,6 +352,7 @@ class KML extends Vector {
    * @api stable
    */
   destroy() {
+    this.facadeVector_?.stopAutoRefresh();
     const olMap = this.map.getMapImpl();
 
     if (!isNullOrEmpty(this.olLayer)) {
@@ -351,7 +361,7 @@ class KML extends Vector {
     }
 
     this.removePopup();
-    this.options = null;
+    // Conserva las opciones de construcción para permitir retirar y reinsertar la capa.
     this.map = null;
   }
 

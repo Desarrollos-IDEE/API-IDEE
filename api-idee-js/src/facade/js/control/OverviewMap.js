@@ -26,7 +26,8 @@ import { compileSync } from '../util/Template';
  * @param {Number} [maxZoom] Zoom máximo del minimapa.
  * @param {Number} [minZoom] Zoom mínimo del minimapa.
  * @param {Number} [ratio] Relación del minimapa con respecto al mapa principal.
- * @param {string} [baseLayer] Capa base que se mostrará en el mapa general.
+ * @param {string|IDEE.layer.WMS|IDEE.layer.WMTS|IDEE.layer.LayerGroup} [baseLayer] Capa
+ * base que se mostrará en el mapa general.
 */
 
 /**
@@ -52,7 +53,8 @@ import { compileSync } from '../util/Template';
  * @param {Number} [maxZoom] Zoom máximo del minimapa.
  * @param {Number} [minZoom] Zoom mínimo del minimapa.
  * @param {Number} [ratio] Relación del minimapa con respecto al mapa principal.
- * @param {string} [baseLayer] Capa base que se mostrará en el mapa general.
+ * @param {string|IDEE.layer.WMS|IDEE.layer.WMTS|IDEE.layer.LayerGroup} [baseLayer] Capa
+ * base que se mostrará en el mapa general.
  * El valor predeterminado es:
  * 'WMTS*http://www.ign.es/wmts/ign-base?*IGNBaseTodo*GoogleMapsCompatible*Mapa IGN*false*image/jpeg*false*'
  *
@@ -86,6 +88,14 @@ class OverviewMap extends Control {
   * });
   *
   * map.addControls(control);
+   *
+   * const baseLayer = new IDEE.layer.WMTS({
+   *   url: 'http://www.ign.es/wmts/ign-base?',
+   *   name: 'IGNBaseTodo',
+   *   matrixSet: 'GoogleMapsCompatible',
+   * });
+   *
+   * map.addControls(new IDEE.control.OverviewMap({ baseLayer }));
   *
   * @api stable
   */

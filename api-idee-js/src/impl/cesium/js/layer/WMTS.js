@@ -240,7 +240,7 @@ class WMTS extends LayerBase {
         capabilitiesOptionsVariable.tileMatrixLabels = this.tileMatrixLabels;
       }
 
-      const wmtsSource = new WebMapTileServiceImageryProvider(extend(capabilitiesOptionsVariable, {
+      const wmtsSource = this.createAutoRefreshProvider(WebMapTileServiceImageryProvider, extend(capabilitiesOptionsVariable, {
         extent,
       }, true));
 
@@ -284,7 +284,7 @@ class WMTS extends LayerBase {
         options.tileMatrixLabels = this.tileMatrixLabels;
       }
 
-      const wmtsSource = new WebMapTileServiceImageryProvider(extend({
+      const wmtsSource = this.createAutoRefreshProvider(WebMapTileServiceImageryProvider, extend({
         url: this.url,
         layer: this.name,
         tileMatrixSetID: matrixSet,
@@ -513,6 +513,7 @@ class WMTS extends LayerBase {
    * @api stable
    */
   destroy() {
+    this.facadeLayer_?.stopAutoRefresh();
     const cesiumMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.cesiumLayer)) {
       cesiumMap.imageryLayers.remove(this.cesiumLayer);

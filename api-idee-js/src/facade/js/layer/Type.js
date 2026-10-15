@@ -14,6 +14,23 @@ import { isString, normalize } from '../util/Utils';
 export const KML = 'KML';
 
 /**
+ * Tipo GPX: puntos, rutas y tracks GPS.
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+export const GPX = 'GPX';
+
+/**
+ * Tipo KML comprimido con sus recursos.
+ * @const
+ * @type {string}
+ * @api
+ */
+export const KMZ = 'KMZ';
+
+/**
  * Tipo WMS (Web Map Service). Definido por una url,
  * el servicio puede ofrecer una o muchas capas, individuales
  * o agrupadas, cada una con un nombre propio.
@@ -55,6 +72,15 @@ export const WFS = 'WFS';
  * @api
  */
 export const OGCAPIFeatures = 'OGCAPIFeatures';
+
+/**
+ * Tipo de capa DataIDEE de lectura OGC API Features.
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+export const DataIDEE = 'DataIDEE';
 
 /**
  * Tipo WMTS (Web Map Tile Service). Es un estándar OGC para servir
@@ -240,6 +266,8 @@ export const WMC = 'WMC';
  */
 const layertypes = {
   KML,
+  GPX,
+  KMZ,
   WMS,
   GeoTIFF,
   WFS,
@@ -254,6 +282,7 @@ const layertypes = {
   MBTiles,
   MBTilesVector,
   OGCAPIFeatures,
+  DataIDEE,
   GenericRaster,
   GenericVector,
   LayerGroup,
@@ -298,6 +327,9 @@ export const parse = (rawType) => {
 export const know = (type) => {
   const knowTypes = [
     KML,
+    GPX,
+    GeoJSON,
+    KMZ,
     WMS,
     GeoTIFF,
     WFS,
@@ -309,6 +341,7 @@ export const know = (type) => {
     MBTiles,
     MBTilesVector,
     OGCAPIFeatures,
+    DataIDEE,
     LayerGroup,
     Tiles3D,
     Terrain,

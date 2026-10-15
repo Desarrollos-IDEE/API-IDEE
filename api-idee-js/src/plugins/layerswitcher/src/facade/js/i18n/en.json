@@ -13,7 +13,8 @@
     "no_results": "No layers found in this service",
     "codsi": "An error occurred while consulting the CODSI catalog",
     "codsi_no_results": "There are no results for your search",
-    "not_layerGroup": "The layer could not be added to the group"
+    "not_layerGroup": "The layer could not be added to the group",
+    "errorPrecharged": "The value of 'precharged' is not a valid JSON or base64"
   },
   "textHelp": {
     "help1": "The layer selector extension allows you to manage the layers displayed in a cartographic viewer.",

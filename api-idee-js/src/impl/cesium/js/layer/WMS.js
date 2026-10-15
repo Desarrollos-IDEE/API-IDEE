@@ -394,7 +394,7 @@ class WMS extends LayerBase {
       console.warn(getValue('exception').no_notiled);
     }
 
-    const cesiumSource = new WebMapServiceImageryProvider({
+    const cesiumSource = this.createAutoRefreshProvider(WebMapServiceImageryProvider, {
       url: this.url,
       layers: this.name,
       parameters: layerParams,
@@ -608,6 +608,7 @@ class WMS extends LayerBase {
    * @api stable
    */
   destroy() {
+    this.facadeLayer_?.stopAutoRefresh();
     const cesiumMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.cesiumLayer)) {
       cesiumMap.imageryLayers.remove(this.cesiumLayer);

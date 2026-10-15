@@ -27,6 +27,7 @@ class GeoPackageTile extends AbstractProvider {
    */
   constructor(connector, tableName, options) {
     super(connector, tableName, options);
+    this.pendingTiles_ = new Set();
 
     /**
      * Ancho de la tesela
@@ -57,7 +58,16 @@ class GeoPackageTile extends AbstractProvider {
   getTile(x, y, z) {
     const dao = this.connector_.getTileDao(this.tableName_);
     const tileRetriever = new GeoPackageTileRetriever(dao, this.tileWidth_, this.tileHeight_);
-    return tileRetriever.getTile(x, y, z);
+    const request = tileRetriever.getTile(x, y, z);
+    this.pendingTiles_.add(request);
+    const settled = () => this.pendingTiles_.delete(request);
+    request.then(settled, settled);
+    return request;
+  }
+
+  /** Espera a las teselas en curso antes de liberar el conector. */
+  whenIdle() {
+    return Promise.allSettled([...this.pendingTiles_]);
   }
 
   /**

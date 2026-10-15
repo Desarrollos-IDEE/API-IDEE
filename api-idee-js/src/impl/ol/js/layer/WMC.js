@@ -295,6 +295,7 @@ class WMC extends Layer {
     * @api
     */
   destroy() {
+    this.facadeLayer_?.stopAutoRefresh();
     if (!isNullOrEmpty(this.layers)) {
       this.map.removeLayers(this.layers);
     }
@@ -322,6 +323,16 @@ class WMC extends Layer {
     }
 
     return equals;
+  }
+
+  /**
+   * Identifica contenedores para recorrer y detener sus capas hijas.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  isAutoRefreshContainer() {
+    return true;
   }
 }
 

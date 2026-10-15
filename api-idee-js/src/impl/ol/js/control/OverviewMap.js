@@ -29,8 +29,8 @@ import { extend, isNullOrEmpty, isNumber } from '../../../../facade/js/util/Util
   * @param {Number} [maxZoom] Zoom máximo del minimapa.
   * @param {Number} [minZoom] Zoom mínimo del minimapa.
   * @param {Number} [ratio] Ratio del minimapa respecto al mapa principal.
-  * @param {String} [baseLayer] Capa base del minimapa,
-  * en formato tipo*url*layer*matrixSet*format.
+   * @param {String|IDEE.layer.WMS|IDEE.layer.WMTS|IDEE.layer.LayerGroup} [baseLayer] Capa
+   * base del minimapa, como instancia IDEE o en formato tipo*url*layer*matrixSet*format.
   * @param {VendorOptions} [vendorOptions]
 */
 
@@ -328,6 +328,35 @@ class OverviewMap extends OlControlOverviewMap {
   // }
 
   /**
+   * Creates an independent IDEE layer for the overview map.
+   *
+   * @private
+   * @param {IDEE.layer.WMS|IDEE.layer.WMTS|IDEE.layer.LayerGroup} layer Source layer.
+   * @returns {IDEE.layer.WMS|IDEE.layer.WMTS|IDEE.layer.LayerGroup|null} Layer copy.
+   */
+  createBaseLayerCopy_(layer) {
+    const parameters = layer?.constructorParameters;
+    if (parameters === undefined) {
+      return null;
+    }
+
+    const { userParameters, options = {}, vendorOptions = {} } = parameters;
+    let copyParameters = userParameters;
+    if (layer.type === 'LayerGroup') {
+      const layers = (userParameters.layers || [])
+        .map((child) => {
+          const sourceLayer = typeof child === 'string'
+            ? this.facadeMap.getLayerByString(child) : child;
+          return this.createBaseLayerCopy_(sourceLayer);
+        })
+        .filter((child) => child !== null);
+      copyParameters = { ...userParameters, layers };
+    }
+
+    return new layer.constructor(copyParameters, { ...options }, { ...vendorOptions });
+  }
+
+  /**
    * This function adds the layers of map to overviewmap control
    * @function
    * @public
@@ -358,7 +387,24 @@ class OverviewMap extends OlControlOverviewMap {
     this.setCollapsed(false);
 
     // this.view_ = newView;
-    if (this.baseLayer_ !== undefined && this.baseLayer_.length > 3) {
+    const isOverviewBaseLayer = this.baseLayer_?.type === 'WMS'
+      || this.baseLayer_?.type === 'WMTS'
+      || this.baseLayer_?.type === 'LayerGroup';
+    if (isOverviewBaseLayer && typeof this.baseLayer_?.getImpl === 'function') {
+      const layerCopy = this.createBaseLayerCopy_(this.baseLayer_);
+      if (!isNullOrEmpty(layerCopy)) {
+        layerCopy.setMap(this.facadeMap);
+        layerCopy.getImpl().addTo(this.facadeMap, false);
+        const olLayer = layerCopy.getImpl().getLayer();
+        if (!isNullOrEmpty(olLayer)) {
+          this.ovmap_.addLayer(olLayer);
+        } else if (!isNullOrEmpty(olLayers[0])) {
+          this.ovmap_.addLayer(olLayers[0]);
+        }
+      } else if (!isNullOrEmpty(olLayers[0])) {
+        this.ovmap_.addLayer(olLayers[0]);
+      }
+    } else if (typeof this.baseLayer_ === 'string' && this.baseLayer_.length > 3) {
       const parameters = this.baseLayer_.split('*');
       if (parameters.length > 1 && (parameters[0] === 'WMS' || parameters[0] === 'WMTS' || parameters[0] === 'LayerGroup')) {
         if (parameters[0] === 'WMS') {

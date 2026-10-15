@@ -107,9 +107,19 @@ class OGCAPIFeatures extends Vector {
    * @api stable
    */
   addTo(map, addLayer = true) {
+    this.loaded_ = false;
+    this.facadeVector_.resetAutoRefresh();
     super.addTo(map, addLayer);
     // this.updateSource_();
-    map.getImpl().on(EventType.CHANGE, () => this.refresh());
+    this.refreshOnChange_ = () => this.refresh();
+    map.getImpl().on(EventType.CHANGE, this.refreshOnChange_);
+  }
+
+  /** Retira el escuchador de cambios antes de destruir la capa y detener su intervalo. */
+  destroy() {
+    this.map?.getImpl().un(EventType.CHANGE, this.refreshOnChange_);
+    this.refreshOnChange_ = null;
+    super.destroy();
   }
 
   /**
@@ -175,7 +185,9 @@ class OGCAPIFeatures extends Vector {
 
       // const isCluster = (this.facadeVector_.getStyle() instanceof StyleCluster);
       const ol3LayerSource = this.olLayer.getSource();
+      const requestedLayer = this.olLayer;
       this.requestFeatures_().then((features) => {
+        if (!this.map || this.olLayer !== requestedLayer) return;
         if (forceNewSource === true || isNullOrEmpty(ol3LayerSource)) {
           const newSource = new OLSourceVector({
             loader: () => {

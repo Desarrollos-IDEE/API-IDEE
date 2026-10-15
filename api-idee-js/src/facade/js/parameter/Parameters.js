@@ -169,6 +169,24 @@ export const parseKML = (parameter) => {
 };
 
 /**
+ * Analiza las capas KMZ del mapa.
+ * @api
+ */
+export const parseKMZ = (parameter) => {
+  let kmz;
+
+  if (isString(parameter)) {
+    kmz = getParameterValue('kmz', parameter);
+  } else if (isObject(parameter)) {
+    kmz = parameter.kmz;
+  } else {
+    Exception(`El tipo del parámetro container no es válido: ${typeof parameter}`);
+  }
+
+  return kmz;
+};
+
+/**
  * Esta función analiza un parámetro de control en un formato legible
  * parámetro a API-IDEE y chequea posibles errores.
  * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
@@ -592,6 +610,21 @@ export const parseBGColorContainer = (parameter) => {
 };
 
 /**
+ * Obtiene el intervalo de autorefresco del mapa, en milisegundos.
+ * @param {string|Mx.parameters.Map} userParameters Parámetros del mapa.
+ * @returns {Number|undefined} Intervalo solicitado; su validez se comprueba al utilizarlo.
+ * @public
+ * @function
+ */
+export const parseRefreshInterval = (userParameters) => {
+  if (isString(userParameters)) {
+    const interval = getParameterValue('refreshInterval', userParameters);
+    return isNullOrEmpty(interval) ? undefined : Number(interval);
+  }
+  return userParameters.refreshInterval;
+};
+
+/**
  * @classdesc
  * Analiza y transforma los parámetros especificados por el usuario.
  * @property {Object} container Contenedor del mapa.
@@ -636,6 +669,7 @@ class Parameters {
    * - center: Centro inicial del mapa.
    * - maxZoom: Zoom máximo del mapa.
    * - resolutions: Resoluciones del mapa.
+   * - refreshInterval: Intervalo de autorefresco de todas las capas.
    * - projection: Proyección del mapa.
    * - label: Etiqueta del mapa.
    * - ticket: Ticket de autenticación.
@@ -664,6 +698,13 @@ class Parameters {
 
     /**
      * @public
+     * @type {Number}
+     * @api
+     */
+    this.refreshInterval = parseRefreshInterval(userParameters);
+
+    /**
+     * @public
      * @type {Object}
      * @api
      */
@@ -689,6 +730,7 @@ class Parameters {
      * @api
      */
     this.kml = parseKML(userParameters);
+    this.kmz = parseKMZ(userParameters);
 
     /**
      * @public

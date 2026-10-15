@@ -352,4 +352,9 @@
         -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/rotate-giroscopio.svg');
         mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/rotate-giroscopio.svg');
     }
+
+    .g-cartografia-pin::before {
+        -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_punto.svg');
+        mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_punto.svg');
+    }
 }

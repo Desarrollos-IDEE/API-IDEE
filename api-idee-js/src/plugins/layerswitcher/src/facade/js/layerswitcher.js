@@ -229,8 +229,21 @@ export default class Layerswitcher extends IDEE.Plugin {
      * @public
      * @type {Object}
      */
-    this.precharged = options.precharged && Object.keys(options.precharged).length > 0
-      ? options.precharged
+    let { precharged } = options;
+    if (typeof precharged === 'string') {
+      try {
+        precharged = JSON.parse(precharged);
+      } catch (e) {
+        try {
+          precharged = IDEE.utils.decodeBase64(precharged);
+        } catch (err) {
+          IDEE.dialog.error(getValue('exception.errorPrecharged'), 'Layerswitcher.precharged');
+          precharged = undefined;
+        }
+      }
+    }
+    this.precharged = precharged && Object.keys(precharged).length > 0
+      ? precharged
       : PRECHARGED;
 
     /**

@@ -3,8 +3,9 @@
  * @module IDEE/impl/layer/MapLibre
  */
 import {
-  isNull, isNullOrEmpty, isString, getResolutionFromScale, includes,
+  addParameters, isNull, isNullOrEmpty, isString, getResolutionFromScale, includes,
 } from 'IDEE/util/Utils';
+
 import geojsonPopupTemplate from 'templates/geojson_popup';
 import { compileSync as compileTemplate } from 'IDEE/util/Template';
 import Popup from 'IDEE/Popup';
@@ -498,6 +499,7 @@ class MapLibre extends LayerBase {
    * @api stable
    */
   destroy() {
+    this.facade?.stopAutoRefresh();
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.olLayer)) {
       olMap.removeLayer(this.olLayer);
@@ -522,6 +524,35 @@ class MapLibre extends LayerBase {
    */
   equals(obj) {
     return false;
+  }
+
+  /**
+   * Recarga la fuente manteniendo la capa y sus opciones de representación.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  refreshSource() {
+    const map = this.olLayer?.mapLibreMap;
+    if (!map || !map.isStyleLoaded() || !map.areTilesLoaded()) return;
+    const revision = Date.now();
+    const remote = (value) => this.isAutoRefreshRemoteURL(value);
+    const url = (value) => addParameters(value, { _ideeRefresh: revision });
+    let updated = false;
+    Object.entries(map.getStyle().sources).forEach(([id, options]) => {
+      const source = map.getSource(id);
+      if (options.tiles?.length && options.tiles.every(remote) && source.setTiles) {
+        source.setTiles(options.tiles.map(url));
+      } else if (remote(options.url) && source.setUrl) {
+        source.setUrl(url(options.url));
+      } else if (remote(options.data) && source.setData) {
+        source.setData(url(options.data));
+      } else if (remote(options.url) && source.updateImage) {
+        source.updateImage({ url: url(options.url) });
+      } else return;
+      updated = true;
+    });
+    if (updated) map.triggerRepaint();
   }
 }
 

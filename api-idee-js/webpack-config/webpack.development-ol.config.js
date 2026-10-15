@@ -31,7 +31,7 @@ try {
 const config = path.resolve(__dirname, '../test/configuration_filtered.js');
 const entrypoint = {};
 entrypoint[testName] = testPath;
-entrypoint.config = config;
+entrypoint.config = [path.resolve(__dirname, '../test/configuration_accessors.js'), config];
 
 module.exports = {
   mode: 'development',

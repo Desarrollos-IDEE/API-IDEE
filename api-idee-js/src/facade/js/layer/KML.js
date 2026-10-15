@@ -80,7 +80,13 @@ class KML extends LayerVector {
    * </code></pre>
    * @api
    */
-  constructor(userParameters = {}, options = {}, vendorOptions = {}) {
+  constructor(
+    userParameters = {},
+    options = {},
+    vendorOptions = {},
+    Implementation = KMLImpl,
+    layerType = LayerType.KML,
+  ) {
     // checks if the implementation can create KML layers
     if (isUndefined(KMLImpl) || (isObject(KMLImpl)
       && isNullOrEmpty(Object.keys(KMLImpl)))) {
@@ -97,7 +103,7 @@ class KML extends LayerVector {
       console.warn(getValue('exception').transparent_deprecated);
     }
 
-    const parameters = parameter.layer(userParameters, LayerType.KML);
+    const parameters = parameter.layer(userParameters, layerType);
     const optionsVar = options;
 
     optionsVar.label = parameters.label;
@@ -117,7 +123,7 @@ class KML extends LayerVector {
      * @implements {IDEE.layer.KML}
      * @type {IDEE.layer.KML}
      */
-    const impl = new KMLImpl(optionsVar, vendorOptions);
+    const impl = new Implementation(optionsVar, vendorOptions);
 
     // calls the super constructor
     super(parameters, options, undefined, impl);
@@ -208,7 +214,7 @@ class KML extends LayerVector {
   equals(obj) {
     let equals = false;
 
-    if (obj instanceof KML) {
+    if (obj instanceof KML && obj.type === this.type) {
       equals = (this.url === obj.url);
       equals = equals && (this.name === obj.name);
       equals = equals && (this.extract === obj.extract);

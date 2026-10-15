@@ -1,10 +1,12 @@
 /**
  * @module IDEE/impl/loader/JSONP
  */
+import {
+  addParameters as refreshParameters, isNullOrEmpty, addParameters, isString,
+} from 'IDEE/util/Utils';
 import MObject from 'IDEE/Object';
 import { get as getRemote } from 'IDEE/util/Remote';
 import Exception from 'IDEE/exception/exception';
-import { isNullOrEmpty, addParameters, isString } from 'IDEE/util/Utils';
 import { getValue } from 'IDEE/i18n/language';
 
 /**
@@ -72,6 +74,17 @@ class JSONP extends MObject {
   }
 
   /**
+   * Recarga sin modificar la URL original del cargador.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  loadForRefresh(projection) {
+    const url = refreshParameters(this.url_, { _ideeRefresh: Date.now() });
+    return this.loadInternal_(projection, url, true).then(([features]) => ({ features }));
+  }
+
+  /**
     * Este método obtiene los objetos geográficos a partir de los parámetros
     * especificados.
     * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
@@ -81,13 +94,14 @@ class JSONP extends MObject {
     * @public
     * @api
     */
-  loadInternal_(projection) {
-    let url = this.url_;
-    return new Promise((success) => {
+  loadInternal_(projection, requestUrl = this.url_, forRefresh = false) {
+    let url = requestUrl;
+    return new Promise((success, fail) => {
       if (isString(IDEE.config.TICKET)) {
         url = addParameters(url, { ticket: IDEE.config.TICKET });
       }
-      getRemote(url).then((response) => {
+      const request = getRemote(url).then((response) => {
+        if (forRefresh && response.code >= 400) throw new Error(`HTTP ${response.code}`);
         if (!isNullOrEmpty(response.text)) {
           const features = this.format_.read(response.text, {
             featureProjection: projection,
@@ -97,6 +111,7 @@ class JSONP extends MObject {
           Exception(getValue('exception').no_service_response);
         }
       });
+      if (forRefresh) request.catch(fail);
     });
   }
 }

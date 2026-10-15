@@ -57,7 +57,7 @@ class Tile {
         getUint8ArrayFromData(data).then((uint8Array) => {
           this.db_ = new SQL.Database(uint8Array);
           resolve(this.db_);
-        });
+        }).catch(reject);
       }).catch((err) => {
         reject(err);
       });
@@ -208,6 +208,19 @@ class Tile {
       }
       return zoomLevel;
     });
+  }
+
+  /**
+   * Libera la base de datos del proveedor sustituido por el autorefresco.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  dispose() {
+    if (this.db_) {
+      this.db_.close();
+      this.db_ = null;
+    }
   }
 }
 

@@ -41,7 +41,7 @@ export default class StyleManagerControl extends IDEE.Control {
   createView(map) {
     this.facadeMap_ = map;
 
-    const filterLayersTyle = ['WFS', 'MVT', 'KML', 'GeoJSON', 'Vector'];
+    const filterLayersTyle = ['WFS', 'MVT', 'KML', 'KMZ', 'GeoJSON', 'Vector'];
     const allLayers = map.getLayers().concat(map.getImpl().getAllLayerInGroup());
     const layers = allLayers.filter((layer) => filterLayersTyle.includes(layer.type) && layer.name !== 'selectLayer' && layer.name !== '__draw__');
 
@@ -174,8 +174,7 @@ export default class StyleManagerControl extends IDEE.Control {
       } else if (layers instanceof IDEE.layer.Vector
         && !LAYERS_PREVENT_PLUGINS.includes(layers.name)
       ) {
-        const layer = { ...layers };
-        this.addLayerOption(htmlSelect, layer);
+        this.addLayerOption(htmlSelect, layers.name);
       }
     });
     this.facadeMap_.on(IDEE.evt.REMOVED_LAYER, (layers) => {
@@ -195,6 +194,7 @@ export default class StyleManagerControl extends IDEE.Control {
       if (this.isNotAdded(name, htmlSelect) === true) {
         const htmlOption = document.createElement('option');
         htmlOption.setAttribute('name', name);
+        htmlOption.value = name;
         htmlOption.innerText = name;
         htmlSelect.add(htmlOption);
       }
@@ -202,10 +202,9 @@ export default class StyleManagerControl extends IDEE.Control {
   }
 
   removeLayerOption(htmlSelect, name) {
-    if (this.isNotAdded(name, htmlSelect) === false) {
-      const htmlOption = Array.from(htmlSelect.options).find((option) => option.getAttribute('name') === name);
-      htmlOption.remove();
-    }
+    const htmlOption = Array.from(htmlSelect.options)
+      .find((option) => option.getAttribute('name') === name);
+    htmlOption?.remove();
   }
 
   /**
@@ -250,7 +249,7 @@ export default class StyleManagerControl extends IDEE.Control {
    */
   getLayerByName(layerName) {
     const map = this.facadeMap_;
-    const filterLayersTyle = ['WFS', 'MVT', 'KML', 'GeoJSON', 'Vector'];
+    const filterLayersTyle = ['WFS', 'MVT', 'KML', 'KMZ', 'GeoJSON', 'Vector'];
     const allLayers = map.getLayers().concat(map.getImpl().getAllLayerInGroup());
     const layers = allLayers.filter((layer) => filterLayersTyle.includes(layer.type) && layer.name !== 'selectLayer' && layer.name !== '__draw__');
 
@@ -462,8 +461,10 @@ export default class StyleManagerControl extends IDEE.Control {
       'fa-folder-open': '\uf07c',
       'fa-arrows-v': '\uf07d',
       'fa-arrows-h': '\uf07e',
-      'fa-bar-t-o': '\uf080',
-      'fa-bar-t': '\uf080',
+      'fa-bar-chart': '\uf080',
+      'fa-line-chart': '\uf201',
+      'fa-area-chart': '\uf1fe',
+      'fa-pie-chart': '\uf200',
       'fa-twitter-square': '\uf081',
       'fa-facebook-square': '\uf082',
       'fa-camera-retro': '\uf083',
