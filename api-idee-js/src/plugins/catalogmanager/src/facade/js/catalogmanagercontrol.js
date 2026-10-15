@@ -3656,6 +3656,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
     let options = {};
     if (spec.indice) {
       options = INDICES_STYLES[spec.indice];
+      options.nodata = 0;
     } else {
       options.exposure = 0.2;
     }

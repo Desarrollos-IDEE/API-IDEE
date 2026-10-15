@@ -193,6 +193,8 @@ class Raster extends Style {
   /**
    * Número de bandas de datos del source de la capa (no del estilo).
    * El estilo puede referenciar menos bandas que las del source compuesto.
+   * No se usa source.bandCount/addAlpha_ de OpenLayers: bandCount default es 4
+   * (RGBA) y addAlpha_ sigue false hasta configure_() async, lo que desfasaba el alpha.
    *
    * @function
    * @private
@@ -209,31 +211,18 @@ class Raster extends Style {
       return null;
     }
 
-    const olLayer = typeof layerImpl.getLayer === 'function'
-      ? layerImpl.getLayer()
-      : null;
-    if (!isNullOrEmpty(olLayer) && typeof olLayer.getSource === 'function') {
-      const source = olLayer.getSource();
-      if (!isNullOrEmpty(source) && typeof source.bandCount === 'number'
-        && source.bandCount > 0) {
-        // bandCount de OL incluye la banda alpha si addAlpha_ es true
-        // eslint-disable-next-line no-underscore-dangle
-        if (source.addAlpha_) {
-          return source.bandCount - 1;
-        }
-        return source.bandCount;
-      }
-    }
-
+    /* eslint-disable no-underscore-dangle */
     // Bandas configuradas en la capa = bandas del source compuesto
-    // eslint-disable-next-line no-underscore-dangle
     const layerBands = layerImpl.bands_;
     if (isArray(layerBands) && layerBands.length > 0) {
       return layerBands.length;
     }
-
     if (typeof layerBands === 'number' && layerBands > 0) {
       return layerBands;
+    }
+
+    if (typeof layerImpl.bandCount_ === 'number' && layerImpl.bandCount_ > 0) {
+      return layerImpl.bandCount_;
     }
     /* eslint-enable no-underscore-dangle */
 
