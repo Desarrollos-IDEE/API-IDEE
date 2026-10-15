@@ -128,6 +128,11 @@ class GenericVector extends Vector {
       impl.setFacadeObj(this);
     }
 
+    // La URL de autorefresco no modifica el contrato público de URL del motor.
+    if (isFunction(impl.setAutoRefreshURL)) {
+      impl.setAutoRefreshURL(params.url);
+    }
+
     this.sourceType = impl.sourceType;
 
     // -- WFS --

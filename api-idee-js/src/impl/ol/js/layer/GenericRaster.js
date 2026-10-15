@@ -1,12 +1,13 @@
 /**
  * @module IDEE/impl/layer/GenericRaster
  */
+import {
+  addParameters, isUndefined, isNull, isNullOrEmpty, getWMSGetCapabilitiesUrl,
+  getWMTSGetCapabilitiesUrl, getResolutionFromScale,
+} from 'IDEE/util/Utils';
 import * as LayerType from 'IDEE/layer/Type';
 import { getValue } from 'IDEE/i18n/language';
-import {
-  isUndefined, isNull, isNullOrEmpty, getWMSGetCapabilitiesUrl, getWMTSGetCapabilitiesUrl,
-  getResolutionFromScale,
-} from 'IDEE/util/Utils';
+
 import TileWMS from 'ol/source/TileWMS';
 import ImageWMS from 'ol/source/ImageWMS';
 import OLSourceWMTS from 'ol/source/WMTS';
@@ -511,6 +512,7 @@ class GenericRaster extends LayerBase {
    * @api stable
    */
   destroy() {
+    this.facadeLayer_?.stopAutoRefresh();
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.olLayer)) {
       olMap.removeLayer(this.olLayer);
@@ -533,6 +535,32 @@ class GenericRaster extends LayerBase {
     }
 
     return equals;
+  }
+
+  /**
+   * Uso interno del autorefresco de la fuente.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  refreshSource() {
+    const source = this.olLayer?.getSource();
+    if (source?.getImageExtent && source.getUrl) {
+      if (!this.isAutoRefreshRemoteURL(source.getUrl())) return;
+      const next = new source.constructor({
+        url: addParameters(source.getUrl(), { _ideeRefresh: Date.now() }),
+        imageExtent: source.getImageExtent(),
+        projection: source.getProjection(),
+        attributions: source.getAttributions(),
+        interpolate: source.getInterpolate(),
+        imageLoadFunction: source.getImageLoadFunction(),
+      });
+      this.disposeAutoRefresh();
+      this.olLayer.setSource(next);
+      source.dispose();
+    } else {
+      super.refreshSource();
+    }
   }
 }
 

@@ -7,8 +7,10 @@ import MObject from 'IDEE/Object';
 import { isNullOrEmpty, isString } from 'IDEE/util/Utils';
 import FacadeLayer from 'IDEE/layer/Layer';
 import { getValue } from 'IDEE/i18n/language';
-import { ImageryLayer } from 'cesium';
+import { ImageryLayer, Resource } from 'cesium';
 import ImplUtils from '../util/Utils';
+
+const autoRefreshProviders = new WeakMap();
 
 /**
  * @classdesc
@@ -96,6 +98,123 @@ class LayerBase extends MObject {
     this.maxZoom = this.options.maxZoom || Number.POSITIVE_INFINITY;
 
     this.userMaxExtent = options.maxExtent;
+  }
+
+  /**
+   * Construye el proveedor habitual y conserva su fábrica para autorefresco.
+   * @param {Function} Provider Constructor del proveedor de imágenes.
+   * @param {Object} options Opciones del proveedor.
+   * @param {Object} [initialProvider] Proveedor inicial, si ya está construido.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  createAutoRefreshProvider(Provider, options, initialProvider) {
+    const provider = initialProvider || new Provider(options);
+    if (this.isAutoRefreshRemoteURL(options.url?.url || options.url)) {
+      const state = { pending: 0 };
+      const track = (source) => {
+        const trackedSource = source;
+        if (state.release) state.release();
+        const requestImage = trackedSource.requestImage;
+        const wrapper = (...args) => {
+          const request = requestImage.apply(trackedSource, args);
+          if (!request || typeof request.then !== 'function') return request;
+          state.pending += 1;
+          return Promise.resolve(request).finally(() => { state.pending -= 1; });
+        };
+        trackedSource.requestImage = wrapper;
+        state.release = () => {
+          if (trackedSource.requestImage === wrapper) trackedSource.requestImage = requestImage;
+        };
+        return source;
+      };
+      state.create = () => {
+        const url = Resource.createIfNeeded(options.url);
+        url.setQueryParameters({ _ideeRefresh: Date.now() });
+        const next = new Provider({ ...options, url });
+        if (typeof this.activatePickFeatures === 'function') this.activatePickFeatures(next);
+        return track(next);
+      };
+      // El mapa asigna el intervalo después de addTo; permite también activarlo más tarde.
+      if (this.facadeLayer_.isAutoRefreshValid()) track(provider);
+      this.disposeAutoRefresh();
+      autoRefreshProviders.set(this, state);
+    }
+    return provider;
+  }
+
+  /**
+   * Comprueba el origen remoto sin depender de la referencia a una fachada concreta.
+   * @param {String} url URL del origen.
+   * @returns {Boolean} Verdadero para HTTP o HTTPS.
+   * @public
+   * @function
+   */
+  isAutoRefreshRemoteURL(url) {
+    return FacadeLayer.isAutoRefreshRemoteURL(url);
+  }
+
+  /**
+   * Renueva el proveedor y su caché de imágenes conservando orden y apariencia.
+   * Solo lo invoca la fachada con autorefresco habilitado.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  refreshSource() {
+    const state = autoRefreshProviders.get(this);
+    const previous = this.cesiumLayer;
+    if (!state || state.pending > 0 || !previous || !this.map) return;
+    // Otras capas esperan a que el globo termine de cargar antes de añadir sus entidades.
+    if (!this.map.getMapImpl().scene.globe.tilesLoaded) return;
+    this.replaceAutoRefreshProvider(state.create());
+  }
+
+  /**
+   * Recarga la fuente manteniendo la capa y sus opciones de representación.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  replaceAutoRefreshProvider(provider) {
+    const previous = this.cesiumLayer;
+    const viewer = this.map.getMapImpl();
+    const layers = viewer.imageryLayers;
+    const index = layers.indexOf(previous);
+    if (index < 0) return;
+
+    const options = {
+      minimumTerrainLevel: this.minZoom,
+      maximumTerrainLevel: this.maxZoom - 1,
+      ...this.vendorOptions_,
+      rectangle: previous.rectangle,
+    };
+    ['alpha', 'dayAlpha', 'nightAlpha', 'brightness', 'contrast', 'hue', 'saturation',
+      'gamma', 'splitDirection', 'minificationFilter', 'magnificationFilter', 'show',
+      'cutoutRectangle', 'colorToAlpha', 'colorToAlphaThreshold'].forEach((key) => {
+      options[key] = previous[key];
+    });
+    const next = new ImageryLayer(provider, options);
+    layers.remove(previous, false);
+    layers.add(next, index);
+    this.cesiumLayer = next;
+    const oldProvider = previous.imageryProvider;
+    previous.destroy();
+    if (provider !== oldProvider && oldProvider.dispose) oldProvider.dispose();
+    viewer.scene.requestRender();
+  }
+
+  /**
+   * Libera el estado
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  disposeAutoRefresh() {
+    const state = autoRefreshProviders.get(this);
+    if (state?.release) state.release();
+    autoRefreshProviders.delete(this);
   }
 
   /**
@@ -344,6 +463,15 @@ class LayerBase extends MObject {
    */
   getMap() {
     return this.map;
+  }
+
+  /**
+   * Guarda la fachada para limpiar el autorefresco al destruir la implementación.
+   * @param {IDEE.layer.Layer} obj Fachada de la capa.
+   * @public
+   */
+  setFacadeObj(obj) {
+    this.facadeLayer_ = obj;
   }
 
   /**

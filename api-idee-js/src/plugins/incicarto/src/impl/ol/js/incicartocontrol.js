@@ -1394,7 +1394,7 @@ export default class IncicartoControl extends IDEE.impl.Control {
         if (!IDEE.utils.isNull(feature.getId())) {
           if (!auxMapLayers) {
             auxMapLayers = map.getLayers().filter((l) => {
-              return ['kml', 'geojson', 'wfs', 'vector'].indexOf(l.type.toLowerCase()) > -1;
+              return ['kml', 'kmz', 'geojson', 'wfs', 'vector'].indexOf(l.type.toLowerCase()) > -1;
             });
           }
           const foundLayer = auxMapLayers.find((l) => {
@@ -1545,7 +1545,7 @@ export default class IncicartoControl extends IDEE.impl.Control {
   reloadFeaturesUpdatables(layerName, layerURL) {
     const map = this.facadeMap_;
     const found = map.getLayers().find((layer) => {
-      return ['kml', 'geojson', 'wfs', 'vector'].indexOf(layer.type.toLowerCase()) > -1
+      return ['kml', 'kmz', 'geojson', 'wfs', 'vector'].indexOf(layer.type.toLowerCase()) > -1
         && layer.name === layerName && layer.url === layerURL && layer.isVisible()
         && layer.name !== undefined && layer.name !== 'selectLayer' && layer.name !== '__draw__' && layer.updatable
         && layer.name !== 'coordinateresult' && layer.name !== 'searchresult' && layer.name !== 'infocoordinatesLayerFeatures';

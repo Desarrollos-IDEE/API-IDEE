@@ -136,7 +136,11 @@ class Features extends Base {
             // f es un Feature Facade y debe tener getImpl()
             if (f && f.getImpl && f.getImpl().getFeature) {
               // Verificar en ol/Feature la propiedad 'isUtilityFeature'
-              return f.getImpl().getFeature().get('isUtilityFeature') !== true;
+              // Cesium usa una propiedad directa; OpenLayers permite consultarla con get.
+              const feature = f.getImpl().getFeature();
+              const isUtility = feature?.isUtilityFeature === true
+                || (isFunction(feature?.get) && feature.get('isUtilityFeature') === true);
+              return !isUtility;
             }
             return true;
           });
@@ -185,7 +189,11 @@ class Features extends Base {
           // Filtrar features utilitarias (ej. marcador de Location)
           hoveredFeatures = hoveredFeatures.filter((f) => {
             if (f && f.getImpl && f.getImpl().getFeature) {
-              return f.getImpl().getFeature().get('isUtilityFeature') !== true;
+              // Cesium usa una propiedad directa; OpenLayers permite consultarla con get.
+              const feature = f.getImpl().getFeature();
+              const isUtility = feature?.isUtilityFeature === true
+                || (isFunction(feature?.get) && feature.get('isUtilityFeature') === true);
+              return !isUtility;
             }
             return true;
           });

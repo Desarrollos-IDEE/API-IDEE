@@ -151,6 +151,40 @@ public class Proxy {
 		return response;
 	}
 
+        /**
+         * Devuelve KMZ sin convertir sus bytes a texto/JSON.
+         * La ruta original del proxy mantiene su contrato JSONP.
+         */
+        @GET
+        @Path("/kmz")
+        @Produces("application/vnd.google-earth.kmz")
+        public Response proxyKMZ(@QueryParam("url") String url,
+                                 @QueryParam("ticket") String ticket) {
+                if (url == null || !url.matches("(?i)^https?://.+")) {
+                        return Response.status(Status.BAD_REQUEST).build();
+                }
+                try {
+                        this.checkRequest(url);
+                        // get() descodifica una vez: conservar los escapes de la URL remota.
+                        ProxyResponse result = this.get(java.net.URLEncoder.encode(url, "UTF-8"), ticket);
+                        int status = result.getStatusCode();
+                        if (status != HttpStatus.SC_OK) {
+                                return Response.status(status >= 400 && status < 600 ? status : 502).build();
+                        }
+                        byte[] data = result.getData();
+                        if (data == null || data.length < 4 || data.length > 100 * 1024 * 1024
+                                || data[0] != 'P' || data[1] != 'K'
+                                || !((data[2] == 3 && data[3] == 4) || (data[2] == 5 && data[3] == 6))) {
+                                return Response.status(Status.BAD_REQUEST).build();
+                        }
+                        return Response.ok(new ByteArrayInputStream(data),
+                                "application/vnd.google-earth.kmz").build();
+                } catch (IOException | HttpException | IllegalArgumentException e) {
+                        LOG.error("No se ha podido obtener el KMZ", e);
+                        return Response.status(502).build();
+                }
+        }
+
 	/**
 	 * Sends a GET operation request to the URL and gets its response.
 	 * 

@@ -6,10 +6,13 @@ import * as parserParameter from '../parameter/parameter';
 import Base from '../Base';
 import {
   isUndefined, isBoolean, isArray, isNullOrEmpty, isFunction, isObject, isString,
-  normalize, generateRandom,
+  normalize, generateRandom, isPositiveNumber,
 } from '../util/Utils';
 import { getValue } from '../i18n/language';
 import * as EventType from '../event/eventtype';
+
+// No copia estado a diferencia de Base.clone()
+const autoRefreshTimers = new WeakMap();
 
 /**
  * @classdesc
@@ -47,6 +50,8 @@ class LayerBase extends Base {
    * - minZoom. Zoom mínimo aplicable a la capa.
    * - maxZoom. Zoom máximo aplicable a la capa.
    * - url: url del servicio.
+   * - refreshInterval: Activa el autorefresco con un intervalo en milisegundos.
+   *   Debe ser un entero positivo no superior a 2147483647; cero no fija intervalo propio.
    * @param {Object} impl Implementación.
    * @api
    */
@@ -150,6 +155,11 @@ class LayerBase extends Base {
      * @api
      */
     this.section_ = null;
+
+    // Único intervalo configurado; un mapa con intervalo válido puede sobrescribirlo.
+    const interval = parameter.refreshInterval;
+    this.refreshInterval_ = isPositiveNumber(interval) && interval % 1 === 0
+      && interval <= 2147483647 ? interval : undefined;
   }
 
   /**
@@ -516,6 +526,122 @@ class LayerBase extends Base {
    */
   setMap(map) {
     this.map_ = map;
+  }
+
+  /**
+   * Inicia el autorefresco tras incorporar la capa. Prima el intervalo válido del mapa;
+   * si no existe, se utiliza el último intervalo configurado en la capa.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @param {Number|undefined} interval Intervalo del mapa en milisegundos.
+   * @public
+   */
+  startAutoRefresh(interval = this.getAutoRefreshInterval()) {
+    const impl = this.getImpl();
+    if (!impl.getMap()) return;
+    let state = autoRefreshTimers.get(this);
+    if (state && (state.timer !== undefined || state.map !== impl.getMap())) return;
+    this.refreshInterval_ = isPositiveNumber(interval) && interval % 1 === 0
+      && interval <= 2147483647 ? interval : this.getAutoRefreshInterval();
+    if (!state) {
+      // Una capa incorporada sin intervalo también puede activarse mediante update.
+      state = { pending: false, map: impl.getMap(), revision: 0 };
+      autoRefreshTimers.set(this, state);
+    }
+    if (!this.refreshInterval_ || impl.isAutoRefreshContainer?.()) return;
+    const revision = state.revision;
+    state.timer = setInterval(() => {
+      if (impl.getMap() !== state.map) {
+        this.stopAutoRefresh();
+      } else if (!state.pending) {
+        state.pending = true;
+        const isCurrent = () => autoRefreshTimers.get(this) === state
+          && state.revision === revision && impl.getMap() === state.map;
+        Promise.resolve().then(() => {
+          if (isCurrent()) return impl.refreshSource(isCurrent);
+          return undefined;
+        }).catch((error) => {
+          // eslint-disable-next-line no-console
+          console.warn(getValue('exception').auto_refresh_failed, this.name, error);
+        }).finally(() => { state.pending = false; });
+      }
+    }, this.refreshInterval_);
+  }
+
+  /**
+   * Sustituye el intervalo y reinicia la programación de una capa incorporada.
+   * Un valor inválido, cero o undefined desactiva el refresco.
+   * @param {Number|undefined} interval Nuevo intervalo en milisegundos.
+   * @public
+   * @function
+   * @api
+   */
+  updateRefreshInterval(interval) {
+    this.stopAutoRefresh({ releaseResources: false });
+    this.startAutoRefresh(interval);
+  }
+
+  /**
+   * Comprueba si una URL permite consultar datos remotos, incluyendo rutas relativas.
+   * @param {String} url URL del origen.
+   * @returns {Boolean} Verdadero para HTTP o HTTPS.
+   * @public
+   * @function
+   */
+  static isAutoRefreshRemoteURL(url) {
+    if (!isString(url) || !url.trim()) return false;
+    try {
+      return /^https?:$/.test(new URL(url, window.location.href).protocol);
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
+   * Obtiene el último intervalo configurado, que se conserva al retirar la capa.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @returns {Number|undefined} Intervalo en milisegundos; undefined si no está configurado.
+   * @public
+   * @function
+   */
+  getAutoRefreshInterval() {
+    return this.refreshInterval_;
+  }
+
+  /**
+   * Indica si la configuración permite autorefrescar esta capa.
+   * @returns {Boolean} Configuración completa y válida.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  isAutoRefreshValid() {
+    return this.getAutoRefreshInterval() > 0;
+  }
+
+  /**
+   * Detiene el autorefresco al retirar o destruir la capa.
+   * Al reprogramar conserva los recursos y la recarga pendiente.
+   * @param {Object} options Opciones internas de parada.
+   * @param {Boolean} options.releaseResources Libera los recursos al retirar la capa.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  stopAutoRefresh({ releaseResources = true } = {}) {
+    const impl = this.getImpl();
+    const state = autoRefreshTimers.get(this);
+    if (state !== undefined) {
+      clearInterval(state.timer);
+      state.timer = undefined;
+      state.revision += 1;
+      if (releaseResources) {
+        autoRefreshTimers.delete(this);
+        impl?.disposeAutoRefresh();
+      }
+    }
+    if (releaseResources && impl?.isAutoRefreshContainer?.()) {
+      impl.getLayers().forEach((layer) => layer.stopAutoRefresh());
+    }
   }
 
   /**

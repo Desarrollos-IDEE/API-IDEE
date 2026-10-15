@@ -102,7 +102,7 @@ export const getScalePanel = (control, map, params = {}) => {
     });
     map.addUpClass_(panel); // eslint-disable-line no-underscore-dangle
   }
-  panel.addClassName('m-with-scale');
+  panel.addClassName(`m-with-${Scale.NAME}`);
   return panel;
 };
 

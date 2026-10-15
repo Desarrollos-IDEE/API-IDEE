@@ -74,7 +74,7 @@ class TMS extends MXYZ {
    */
   addProvider_() {
     const url = this.url;
-    return new TileMapServiceImageryProvider({
+    return this.createAutoRefreshProvider(TileMapServiceImageryProvider, {
       url,
       maximumLevel: this.tileGridMaxZoom,
       tileWidth: this.getTileSize(),

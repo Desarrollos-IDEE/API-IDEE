@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="idee" content="yes">
+    <title>GeoPackage vectorial con estilos por tabla</title>
+    <style>
+      html, body { margin: 0; height: 100%; font-family: sans-serif; }
+      body { display: grid; grid-template-columns: minmax(250px, 330px) minmax(0, 1fr); }
+      aside { padding: 16px; color: #1c2730; background: #fff; }
+      h1 { margin-top: 0; font-size: 1.3rem; }
+      li { margin: 10px 0; }
+      .sample { display: inline-block; width: 18px; height: 18px; margin-right: 8px; vertical-align: middle; border: 2px solid; }
+      .point { border-radius: 50%; border-color: #7a0019; background: #e63946; }
+      .line { height: 4px; border: 0; background: #6f2dbd; }
+      .polygon { border-color: #176b3a; background: rgba(82, 183, 136, .55); }
+      #status[data-error="true"] { color: #a40000; }
+      #map { position: relative; min-width: 0; height: 100%; background: #edf2f5; }
+      @media (max-width: 700px) {
+        body { display: block; }
+        #map { height: 65vh; min-height: 320px; }
+      }
+    </style>
+  </head>
+  <body>
+    <aside aria-label="Leyenda de estilos vectoriales">
+      <h1>GeoPackage solo vectorial</h1>
+      <p>Cada tabla recibe una instancia distinta de <code>IDEE.style.Generic</code>.</p>
+      <ul>
+        <li><span class="sample point"></span><strong>cities:</strong> puntos rojos</li>
+        <li><span class="sample line"></span><strong>routes:</strong> líneas moradas discontinuas</li>
+        <li><span class="sample polygon"></span><strong>areas:</strong> polígonos verdes</li>
+      </ul>
+      <p id="status" role="status" aria-live="polite">Preparando la demo…</p>
+    </aside>
+    <div id="map" class="map" role="region" aria-label="Mapa con GeoPackage vectorial"></div>
+    <script src="/config.js" charset="utf-8"></script>
+    <script src="/CP-0002-layers/CP-031.js" charset="utf-8"></script>
+  </body>
+</html>

@@ -3,6 +3,7 @@
  * @module IDEE/plugin/StyleManager
  */
 import 'css/stylemanager.css';
+import 'css/font-awesome.min.css';
 import 'css/fonts.css';
 import 'templates/categorystyles';
 import StyleManagerControl from './stylemanagerControl';

@@ -13,7 +13,8 @@
     "no_results": "No se han encontrado capas en este servicio",
     "codsi": "Ha ocurrido un error al consultar el catálogo CODSI",
     "codsi_no_results": "No hay resultados para su búsqueda",
-    "not_layerGroup": "No se ha podido añadir la capa al grupo"
+    "not_layerGroup": "No se ha podido añadir la capa al grupo",
+    "errorPrecharged": "El valor de 'precharged' no es un JSON ni un base64 válido"
   },
   "textHelp": {
     "help1": "La extensión selector de capas permite gestionar las capas que se muestran en un visualizador cartográfico.",

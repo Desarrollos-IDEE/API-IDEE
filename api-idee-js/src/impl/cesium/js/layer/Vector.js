@@ -456,15 +456,29 @@ class Vector extends Layer {
   }
 
   /**
+   * Completa los colores de puntos importados para las capas con autorefresco.
+   * @private
+   */
+  prepareAutoRefreshFeature_(entity) {
+    if (!this.facadeVector_.isAutoRefreshValid()) return;
+    const geometry = ImplUtils.getGeometryEntity(entity);
+    if (geometry instanceof PointGraphics) {
+      if (!geometry.color) geometry.color = Color.WHITE;
+      if (!geometry.outlineColor) geometry.outlineColor = Color.BLACK;
+    }
+  }
+
+  /**
    * Este método añade los objetos geográficos a la capa.
    *
    * @function
    * @private
    * @param {Array<M.feature>} features Objetos geográficos.
    * @param {Boolean} update Actualiza la capa.
+   * @param {Boolean} forRefresh Uso interno: devuelve la promesa solo para el autorefresco.
    * @api stable
    */
-  addFeatures_(features, update) {
+  addFeatures_(features, update, forRefresh = false) {
     this.countFeatures_ += features.length;
 
     const promises = [];
@@ -473,7 +487,7 @@ class Vector extends Layer {
       promises.push(newFeature.getImpl().isLoadCesiumFeature_);
     });
 
-    Promise.all(promises).then(() => {
+    const loading = Promise.all(promises).then(() => {
       const styleLayer = this.facadeVector_.getStyle();
       const othersEntities = [];
       features.forEach((newFeature) => {
@@ -493,6 +507,7 @@ class Vector extends Layer {
           implFeature.setHeightGeometry(this.height);
 
           const entity = Feature.facade2Feature(newFeature);
+          this.prepareAutoRefreshFeature_(entity);
 
           if (isNullOrEmpty(featureStyle)) {
             if (newFeature.getAttribute('vendor.api_idee.icon')) {
@@ -528,6 +543,7 @@ class Vector extends Layer {
       });
 
       if (this.countFeatures_ === this.countPromise_) {
+        this.facadeVector_.initializeAutoRefresh();
         this.facadeVector_.fire(EventType.LOAD);
         this.countFeatures_ = 0;
         this.countPromise_ = 0;
@@ -542,6 +558,8 @@ class Vector extends Layer {
           .removeEventListener(this.tileLoadHandler);
       }
     });
+    if (forRefresh) return loading;
+    return undefined;
   }
 
   /**
@@ -778,6 +796,42 @@ class Vector extends Layer {
   }
 
   /**
+   * Recarga los datos con el cargador de cada formato, conservando las ediciones locales.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  async refreshSource(isCurrent = () => true) {
+    const layer = this.cesiumLayer;
+    const facade = this.facadeVector_;
+    if (!layer || !this.loaded_ || !facade || this.source || this.vendorOptions_.source
+      || !this.loader_?.loadForRefresh || !this.isAutoRefreshRemoteURL(this.url)) return;
+    if (facade.isAutoRefreshPaused()) return;
+    const projection = this.map.getProjection();
+    const response = await this.loader_.loadForRefresh(
+      projection,
+      this.scaleLabel,
+      this.layers,
+      this.removeFolderChildren,
+      this.label_,
+      this.clampToGround,
+    );
+    // Construccion de forma asíncrona en Cesium
+    // eslint-disable-next-line no-underscore-dangle
+    await Promise.all(response.features.map((feature) => feature.getImpl().isLoadCesiumFeature_));
+    if (!isCurrent() || this.cesiumLayer !== layer || facade.isAutoRefreshPaused()) return;
+    // Mantiene el filtro y estilo de la fachada
+    facade.removeFeatures(facade.getFeatures(true));
+    await this.addFeatures_(response.features, true, true);
+    if (isCurrent()) facade.resumeAutoRefresh();
+    this.map?.getMapImpl().scene.requestRender();
+    if (response.screenOverlay) {
+      const overlay = ImplUtils.addOverlayImage(response.screenOverlay, this.map, layer);
+      this.setScreenOverlayImg(overlay);
+    }
+  }
+
+  /**
    * Este método actualiza la capa.
    * @function
    * @api stable
@@ -822,6 +876,7 @@ class Vector extends Layer {
    * @api stable
    */
   destroy() {
+    this.facadeVector_?.stopAutoRefresh();
     const cesiumMap = this.map.getMapImpl();
     // Eliminar el listener de tileLoadProgressEvent si existe
     if (!isNullOrEmpty(this.tileLoadHandler)) {

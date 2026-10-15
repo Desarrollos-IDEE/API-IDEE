@@ -2,8 +2,9 @@
  * @module IDEE/impl/layer/MBTiles
  */
 import {
-  isNullOrEmpty, isFunction, extend, getZDirectionFunction,
+  addParameters, isNullOrEmpty, isFunction, extend, getZDirectionFunction,
 } from 'IDEE/util/Utils';
+
 import { get as getProj, transformExtent } from 'ol/proj';
 import OLLayerTile from 'ol/layer/Tile';
 import TileGrid from 'ol/tilegrid/TileGrid';
@@ -13,6 +14,8 @@ import { getValue } from 'IDEE/i18n/language';
 import ImplMap from '../Map';
 import Layer from './Layer';
 import TileProvider, { DEFAULT_WHITE_TILE } from '../../../../facade/js/provider/Tile';
+
+const autoRefreshOptions = new WeakMap();
 
 /**
  * Tamaño de la tesela de MBTiles por defecto.
@@ -315,6 +318,7 @@ class MBTiles extends Layer {
    * @api
    */
   createLayer(opts) {
+    autoRefreshOptions.set(this, opts);
     let tileLoadFn = this.loadTileWithProvider;
     if (this.tileLoadFunction) {
       tileLoadFn = this.loadTile;
@@ -462,6 +466,7 @@ class MBTiles extends Layer {
    * @api
    */
   destroy() {
+    this.facadeLayer_?.stopAutoRefresh();
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.olLayer)) {
       olMap.removeLayer(this.olLayer);
@@ -486,6 +491,37 @@ class MBTiles extends Layer {
       equals = (this.name === obj.name);
     }
     return equals;
+  }
+
+  /**
+   * Recarga la fuente manteniendo la capa y sus opciones de representación.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   */
+  async refreshSource(isCurrent = () => true) {
+    const layer = this.olLayer;
+    const options = autoRefreshOptions.get(this);
+    if (!layer || !options || !layer.getSource()) return;
+    if (this.source_ || this.tileLoadFunction || this.vendorOptions_.source
+      || !this.isAutoRefreshRemoteURL(this.url_)) return;
+    const response = await fetch(addParameters(this.url_, { _ideeRefresh: Date.now() }));
+    if (!response.ok) throw new Error(`MBTiles: HTTP ${response.status}`);
+    const provider = new TileProvider(response);
+    let adopted = false;
+    try {
+      await provider.getMaxZoomLevel();
+      if (!isCurrent() || this.olLayer !== layer) return;
+      this.disposeAutoRefresh();
+      const previous = layer.getSource();
+      this.createLayer({ ...options, tileProvider: provider });
+      this.tileProvider_ = provider;
+      adopted = true;
+      previous.dispose();
+      options.tileProvider?.dispose();
+    } finally {
+      if (!adopted) provider.dispose();
+    }
   }
 }
 export default MBTiles;

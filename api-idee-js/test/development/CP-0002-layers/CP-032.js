@@ -1,0 +1,231 @@
+import { map as Mmap, proxy } from 'IDEE/api-idee';
+import WMS from 'IDEE/layer/WMS';
+import WMTS from 'IDEE/layer/WMTS';
+import XYZ from 'IDEE/layer/XYZ';
+import TMS from 'IDEE/layer/TMS';
+import OSM from 'IDEE/layer/OSM';
+import GeoJSON from 'IDEE/layer/GeoJSON';
+import WFS from 'IDEE/layer/WFS';
+import OGCAPIFeatures from 'IDEE/layer/OGCAPIFeatures';
+import DataIDEE from 'IDEE/layer/DataIDEE';
+import GeoPackage from 'IDEE/layer/GeoPackage';
+import GeoPackageTile from 'IDEE/layer/GeoPackageTile';
+import KML from 'IDEE/layer/KML';
+import KMZ from 'IDEE/layer/KMZ';
+import GPX from 'IDEE/layer/GPX';
+import MBTiles from 'IDEE/layer/MBTiles';
+import MVT from 'IDEE/layer/MVT';
+import MBTilesVector from 'IDEE/layer/MBTilesVector';
+import GeoTIFF from 'IDEE/layer/GeoTIFF';
+import MapLibre from 'IDEE/layer/MapLibre';
+import Vector from 'IDEE/layer/Vector';
+import Tiles3D from 'IDEE/layer/Tiles3D';
+import Terrain from 'IDEE/layer/Terrain';
+import Feature from 'IDEE/feature/Feature';
+import Generic from 'IDEE/style/Generic';
+
+const query = new URLSearchParams(window.location.search);
+const interval = Number(query.get('interval') || 5000);
+const mode = query.get('mode') || 'on';
+const route = query.get('route') || 'generic';
+const base = query.get('data') || 'http://localhost:8083/datos-prueba/';
+proxy(false);
+IDEE.config('baseLayer', []);
+IDEE.config('terrain', { default: [] });
+// El servidor de desarrollo publica los recursos Cesium en /cesium/.
+IDEE.config('CESIUM_URL', new URL('/cesium/', window.location.href).href);
+IDEE.config('SQL_WASM_URL', new URL('/node_modules/sql.js/dist/', base).href);
+const mapa = Mmap({
+  container: 'map',
+  projection: 'EPSG:3857',
+  center: [0, 0],
+  zoom: 3,
+  layers: [],
+  controls: [],
+  resolutions: Array.from({ length: 29 }, (_, z) => 156543.03392804097 / (2 ** z)),
+});
+const cesium = !!mapa.getMapImpl().scene;
+const constructors = {
+  WMS,
+  WMTS,
+  XYZ,
+  TMS,
+  OSM,
+  GeoJSON,
+  WFS,
+  OGCAPIFeatures,
+  DataIDEE,
+  GeoPackage,
+  GeoPackageTile,
+  KML,
+  KMZ,
+  GPX,
+  MBTiles,
+  MVT,
+  MBTilesVector,
+  GeoTIFF,
+  MapLibre,
+  Vector,
+  Tiles3D,
+  Terrain,
+};
+const onlyOL = ['MVT', 'MBTilesVector', 'GeoTIFF', 'MapLibre', 'GeoPackageTile'];
+const available = Object.keys(constructors).filter((type) => (cesium
+  ? !onlyOL.includes(type) : !['Tiles3D', 'Terrain'].includes(type)));
+const type = available.includes(query.get('type')) ? query.get('type') : 'WMS';
+available.forEach((value) => document.getElementById('type').add(
+  new window.Option(value === 'Vector' ? 'Vector local (sin recarga remota)' : value, value),
+));
+document.getElementById('engine').textContent = cesium ? 'Cesium (3D)' : 'OpenLayers (2D)';
+const gpkgMode = query.get('gpkgMode') || 'remote';
+document.getElementById('gpkgMode').value = gpkgMode;
+const tiled = cesium || query.get('tiled') !== 'false';
+const parameters = {
+  WMS: {
+    url: `${base}wms`, name: 'prueba', tiled, useCapabilities: false,
+  },
+  WMTS: {
+    url: `${base}wmts.png`,
+    name: 'prueba',
+    matrixSet: 'GoogleMapsCompatible',
+    format: 'image/png',
+    useCapabilities: false,
+    maxExtent: cesium ? [-180, -85, 180, 85] : [-20037508, -20037508, 20037508, 20037508],
+  },
+  XYZ: { url: `${base}tiles/{z}/{x}/{y}.png` },
+  TMS: { url: `${base}tiles/{z}/{x}/{y}.png` },
+  OSM: { url: `${base}tiles/{z}/{x}/{y}.png` },
+  GeoJSON: { url: `${base}puntos.geojson` },
+  WFS: {
+    url: `${base}wfs`, namespace: 'prueba', geometry: 'POINT', extract: false,
+  },
+  OGCAPIFeatures: { url: `${base}collections/`, name: 'puntos', limit: 1 },
+  DataIDEE: { url: base, name: 'puntos', limit: 1 },
+  GeoPackage: {
+    url: `${base}autorefresh-${cesium ? 'vector' : 'mixed'}.gpkg`, tiled: gpkgMode === 'bbox',
+  },
+  KML: { url: `${base}puntos.kml` },
+  KMZ: { url: `${base}puntos.kmz` },
+  GPX: { url: `${base}puntos.gpx` },
+  MBTiles: { url: `${base}raster.mbtiles` },
+  MVT: { url: `${base}tiles/{z}/{x}/{y}.pbf`, mode: 'feature' },
+  MBTilesVector: { url: `${base}vector.mbtiles` },
+  GeoTIFF: { url: `${base}raster.tif` },
+  Tiles3D: { url: `${base}tileset.json` },
+  Terrain: { url: `${base}terrain/` },
+  MapLibre: {
+    maplibrestyle: {
+      version: 8,
+      sources: { puntos: { type: 'geojson', data: `${base}puntos.geojson` } },
+      layers: [{
+        id: 'puntos',
+        type: 'circle',
+        source: 'puntos',
+        paint: { 'circle-radius': 8, 'circle-color': '#be185d' },
+      }],
+    },
+  },
+};
+async function run() {
+  const params = { name: `${type}-refresh`, ...parameters[type], isBase: false };
+  if (mode === 'on') params.refreshInterval = interval;
+  if (mode === 'invalid') params.refreshInterval = 0;
+  if (type === 'GeoPackage' && gpkgMode === 'local') {
+    params.source = await fetch(params.url).then((response) => response.arrayBuffer());
+    delete params.url;
+  }
+  let capa;
+  if (type === 'GeoPackageTile') {
+    const gpkg = new GeoPackage({
+      url: `${base}autorefresh-mixed.gpkg`, refreshInterval: params.refreshInterval,
+    });
+    await gpkg.whenReady();
+    capa = gpkg.getLayer('raster');
+  } else {
+    capa = new constructors[type](
+      params,
+      type === 'WFS' ? { getFeatureOutputFormat: 'json', describeFeatureTypeOutputFormat: 'json' } : {},
+    );
+  }
+  const children = () => (type === 'GeoPackage' ? capa.getLayers() : [capa]);
+  const editable = () => children().find((layer) => typeof layer.getFeatures === 'function');
+  const direct = typeof mapa[`add${type}`] === 'function' ? `add${type}` : 'addLayers';
+  const addLayer = () => mapa[route === 'direct' ? direct : 'addLayers'](capa);
+  addLayer();
+  if (type === 'Vector') {
+    capa.setStyle(new Generic({
+      point: { radius: 10, fill: { color: '#e11d48' }, stroke: { color: '#ffffff', width: 2 } },
+    }));
+    capa.addFeatures(new Feature('punto-local', {
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [0, 0] },
+      properties: { nombre: 'Punto local: debe conservarse', revision: 1 },
+    }));
+  }
+  window.mapa = mapa;
+  window.capa = capa;
+  ['type', 'mode', 'interval', 'route'].forEach((id) => {
+    document.getElementById(id).value = {
+      type, mode, interval, route,
+    }[id];
+  });
+  document.querySelector('#route option[value=direct]').textContent = direct;
+  document.getElementById('tiled').value = String(tiled);
+  document.getElementById('type').onchange = () => {
+    document.getElementById('tiled').disabled = cesium
+      || document.getElementById('type').value !== 'WMS';
+  };
+  document.getElementById('type').onchange();
+  document.getElementById('wms-help').textContent = cesium
+    ? 'Cesium utiliza WMS por teselas; la opción sin teselas solo está disponible en OpenLayers.'
+    : 'Solo WMS: Sí solicita varias imágenes por teselas; No solicita una imagen para la vista.';
+  if (['GeoPackage', 'GeoPackageTile'].includes(type)) {
+    document.getElementById('expected').textContent = 'GeoPackage remoto: revision cambia y el ráster '
+      + 'alterna azul/naranja. Las subcapas conservan su identidad. El modo local solo descarga una '
+      + 'vez; BBOX consulta la extensión en OL. GeoPackageTile prueba el alta independiente de raster. '
+      + 'Cesium solo admite vectores.';
+  } else {
+    document.getElementById('expected').textContent = type === 'Vector'
+      ? 'Vector local: debe aparecer un punto rosa en el centro. No tiene URL ni descarga datos. '
+        + 'Su revisión permanece en 1 aunque haya intervalo. Es una prueba de conservación de datos locales. '
+        + 'Para probar recargas vectoriales elige GeoJSON, WFS, OGCAPIFeatures, KML, KMZ o GPX.'
+      : 'Con intervalo válido, comprueba nuevas peticiones en Red. GeoJSON/WFS/OGC cambian revision; '
+        + 'KML/KMZ y GPX cambian name. Los demás archivos e imágenes de prueba son fijos.';
+  }
+  document.getElementById('data').value = base;
+  document.getElementById('params').textContent = JSON.stringify(params);
+  document.getElementById('remove').onclick = () => mapa[
+    type === 'GeoPackage' ? 'removeGeoPackage' : 'removeLayers'
+  ](capa);
+  document.getElementById('add').onclick = addLayer;
+  document.getElementById('edit').disabled = !['GeoJSON', 'WFS', 'OGCAPIFeatures', 'DataIDEE', 'GeoPackage', 'KML', 'KMZ', 'GPX'].includes(type);
+  document.getElementById('resume').disabled = document.getElementById('edit').disabled;
+  let edited;
+  document.getElementById('edit').onclick = () => {
+    const feature = editable()?.getFeatures()[0];
+    if (!feature || edited) return;
+    const attribute = ['KML', 'KMZ', 'GPX'].includes(type) ? 'name' : 'revision';
+    edited = { feature, attribute, value: feature.getAttribute(attribute) };
+    feature.setAttribute(attribute, 'edición local');
+  };
+  document.getElementById('resume').onclick = () => {
+    if (!edited) return;
+    edited.feature.setAttribute(edited.attribute, edited.value);
+    editable().resumeAutoRefresh();
+    edited = undefined;
+  };
+  const statusTimer = setInterval(() => {
+    document.getElementById('status').textContent = JSON.stringify({
+      motor: cesium ? 'Cesium' : 'OpenLayers',
+      capas: children().map((layer) => ({
+        nombre: layer.name,
+        intervaloConfigurado: layer.getAutoRefreshInterval() ?? 'Sin intervalo',
+        configurado: layer.isAutoRefreshValid(),
+        pausa: layer.isAutoRefreshPaused?.(),
+        datos: layer.getFeatures?.().slice(0, 2).map((feature) => feature.getAttributes()),
+      })),
+    }, null, 2);
+  }, 1000);
+  document.getElementById('destroy').onclick = () => { clearInterval(statusTimer); mapa.destroy(); };
+}
+run();

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="idee" content="yes">
+    <title>GeoPackage: archivo, URL y opciones</title>
+    <style>
+      html, body { margin: 0; height: 100%; font-family: sans-serif; }
+      body { display: grid; grid-template-columns: minmax(280px, 380px) minmax(0, 1fr); }
+      aside { padding: 16px; overflow: auto; background: #fff; color: #222; }
+      h1 { font-size: 1.3rem; }
+      label { display: block; margin: 12px 0 4px; }
+      input:not([type="checkbox"]), select, textarea, button { box-sizing: border-box; width: 100%; padding: 8px; font: inherit; }
+      input[type="checkbox"] { margin-right: 8px; }
+      textarea { min-height: 150px; font-family: monospace; }
+      fieldset { border: 0; padding: 0; min-width: 0; }
+      button { margin-top: 16px; cursor: pointer; }
+      :focus-visible { outline: 3px solid #005ea8; outline-offset: 2px; }
+      #status { padding: 8px 0; overflow-wrap: anywhere; }
+      #status[data-error="true"] { color: #a40000; }
+      #packages { padding-left: 20px; overflow-wrap: anywhere; }
+      #map { position: relative; min-width: 0; height: 100%; background: #edf2f5; }
+      small { display: block; margin-top: 6px; }
+      @media (max-width: 700px) {
+        body { display: block; }
+        aside { overflow: visible; }
+        #map { height: 65vh; min-height: 320px; }
+      }
+    </style>
+  </head>
+  <body>
+    <aside aria-label="Prueba manual de GeoPackage">
+      <h1>GeoPackage 2D</h1>
+      <p>Prueba del constructor estándar, sin LayerSwitcher. Las URL descargan el fichero completo y necesitan permitir CORS.</p>
+      <form id="geopackage-form">
+        <fieldset id="inputs" disabled>
+          <legend>Fuente y opciones del paquete</legend>
+          <label for="source-kind">Origen</label>
+          <select id="source-kind"><option value="file">Archivo local</option><option value="url">URL</option></select>
+          <div id="file-field">
+            <label for="source-file">Archivo GeoPackage</label>
+            <input id="source-file" type="file" accept=".gpkg" required>
+          </div>
+          <div id="url-field" hidden>
+            <label for="source-url">URL del GeoPackage</label>
+            <input id="source-url" type="text" placeholder="/data/reference.gpkg" disabled>
+            <small>URL HTTP(S), absoluta o relativa al servidor de esta demo.</small>
+          </div>
+          <label for="package-name">Nombre del paquete</label>
+          <input id="package-name" value="reference" required>
+          <label for="package-legend">Leyenda del paquete</label>
+          <input id="package-legend" value="Datos de referencia">
+          <label for="opacity">Opacidad común (0–1)</label>
+          <input id="opacity" type="number" min="0" max="1" step="0.1" value="0.8" required>
+          <label><input id="visibility" type="checkbox" checked>Capas visibles</label>
+          <label for="table-options">Opciones por tabla (JSON)</label>
+          <textarea id="table-options" spellcheck="false" aria-describedby="options-help">{}</textarea>
+          <small id="options-help">Claves: nombres originales de las tablas. Ejemplo: {"roads":{"legend":"Carreteras","opacity":0.6,"visibility":true}}. Un objeto «style» se convierte en IDEE.style.Generic; ejemplo: {"roads":{"style":{"line":{"stroke":{"color":"red","width":3}}}}}.</small>
+          <button type="submit">Cargar GeoPackage</button>
+        </fieldset>
+      </form>
+      <p id="status" role="status" aria-live="polite">Preparando la demo…</p>
+      <h2>Paquetes añadidos</h2>
+      <p>Cada carga añade un paquete. Recarga la página para limpiar el mapa. La vista inicial está centrada en 0,0; navega hasta la zona de tus datos.</p>
+      <ul id="packages"><li id="empty-state">Todavía no hay paquetes.</li></ul>
+    </aside>
+    <div id="map" class="map" role="region" aria-label="Mapa de GeoPackage"></div>
+    <script src="/config.js" charset="utf-8"></script>
+    <script src="/CP-0002-layers/CP-027.js" charset="utf-8"></script>
+  </body>
+</html>

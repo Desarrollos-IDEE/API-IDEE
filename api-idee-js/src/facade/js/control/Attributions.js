@@ -16,6 +16,7 @@ import {
 import Feature from '../feature/Feature';
 import GeoJSON from '../layer/GeoJSON';
 import KML from '../layer/KML';
+import KMZ from '../layer/KMZ';
 import { LAYER_VISIBILITY_CHANGE, ADDED_LAYER } from '../event/eventtype';
 import Exception from '../exception/exception';
 import * as Position from '../ui/position';
@@ -33,7 +34,7 @@ import * as Position from '../ui/position';
  * @property {Number} [order] Accesibilidad, tabIndex.
  * @property {String} [urlAttribute] Texto de la url.
  * @property {String} [url] URL del fichero de atribuciones.
- * @property {String} [type] Tipo de fichero de atribuciones, geojson o kml.
+ * @property {String} [type] Tipo de fichero de atribuciones, geojson, kml o kmz.
  * @property {String} [layerName] Nombre de la capa de atribuciones.
  * @property {Object} [layer] Capa de atribuciones.
  * @property {Number} [scale] Escala de visualización de la capa de atribuciones.
@@ -60,7 +61,7 @@ import * as Position from '../ui/position';
  * @property {Number} [order=0] Accesibilidad, z-index.
  * @property {String} [urlAttribute='url'] Texto de la url.
  * @property {String} [url_] URL del fichero de atribuciones.
- * @property {String} [type_='kml'] geojson o kml, dependiendo de la url.
+ * @property {String} [type_='kml'] geojson, kml o kmz, dependiendo de la url.
  * @property {String} [layerName_='attributions'] Nombre de la capa de atribuciones.
  * @property {Object} [layer_] Capa de atribuciones.
  * @property {Number} [scale_=10000] Define cuando cambiara la atribución.
@@ -279,6 +280,8 @@ class Attributions extends Control {
 
       if (type === 'geojson') {
         layer = new GeoJSON(optionsLayer, { displayInLayerSwitcher: false });
+      } else if (type === 'kmz') {
+        layer = new KMZ(optionsLayer, { displayInLayerSwitcher: false });
       } else if (type === 'kml') {
         layer = new KML(optionsLayer, { displayInLayerSwitcher: false });
       } else if (this.type === 'topojson') {

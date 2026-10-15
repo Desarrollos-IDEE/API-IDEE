@@ -97,7 +97,19 @@ class View extends OLView {
    * @api
    */
   setProjection(projection) {
+    const projectionChanged = this.projection_?.getCode() !== projection?.getCode();
+    const zoom = this.getZoom();
     this.projection_ = projection;
+    if (projectionChanged && !isNullOrEmpty(projection)) {
+      this.applyOptions_(this.getUpdatedOptions_({
+        projection,
+        zoom,
+        resolution: undefined,
+        resolutions: undefined,
+        minResolution: undefined,
+        maxResolution: undefined,
+      }));
+    }
   }
 
   /**
