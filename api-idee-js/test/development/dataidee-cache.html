@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="idee" content="yes">
+  <title>DataIDEE — prueba de caché</title>
+  <style>
+    html, body { margin: 0; height: 100%; font: 15px sans-serif; }
+    body { display: flex; flex-direction: column; }
+    header { padding: 12px 16px; background: #fff; box-shadow: 0 1px 5px #0003; z-index: 1; }
+    h1 { margin: 0 0 6px; font-size: 20px; }
+    p { margin: 5px 0; }
+    button { margin: 5px 8px 0 0; padding: 7px 10px; cursor: pointer; }
+    #status { font-weight: 600; }
+    #map { flex: 1; min-height: 300px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>DataIDEE — prueba visible de caché</h1>
+    <p>La capa consulta la colección <code>nuc</code> de la API-Features del IGN. La caché está activa durante 60 segundos.</p>
+    <p>Desplaza el mapa o cambia el zoom: DataIDEE consulta automáticamente el bbox visible al terminar el movimiento.
+      Solo mantiene las entidades de la zona activa. Volver a la misma vista reutiliza la caché durante su vigencia.</p>
+    <p id="cache-config">bboxStrategy: true · throttleMs: 300 · cache: { ttlMs: 60000, maxEntries: 32, maxBytes: 33554432 }</p>
+    <p>Solicitudes de red observadas: <strong id="request-count">0</strong>
+      · Entidades cargadas: <strong id="feature-count">0</strong>
+      · Cargas aplicadas por la capa: <strong id="load-count">0</strong></p>
+    <p id="status" role="status" aria-live="polite">Cargando entidades…</p>
+    <label for="query-area">Zona de consulta</label>
+    <select id="query-area">
+      <option value="sevilla">Sevilla</option>
+      <option value="dos-hermanas">Dos Hermanas</option>
+    </select>
+    <button id="initial-view" type="button">Volver a vista inicial</button>
+    <button id="refresh-layer" type="button">Refrescar desde la red</button>
+    <button id="clear-cache" type="button">Vaciar caché</button>
+  </header>
+  <div id="map" class="map"></div>
+  <script src="/config.js" charset="utf-8"></script>
+  <script src="/dataidee-cache.js" charset="utf-8"></script>
+</body>
+</html>

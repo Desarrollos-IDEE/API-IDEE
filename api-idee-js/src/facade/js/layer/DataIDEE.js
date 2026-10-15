@@ -10,6 +10,7 @@ import Vector from './Vector';
 import * as LayerType from './Type';
 import * as parameter from '../parameter/parameter';
 import { getValue } from '../i18n/language';
+import RequestManager from '../../../impl/common/RequestManager';
 
 /**
  * @classdesc
@@ -22,7 +23,7 @@ import { getValue } from '../i18n/language';
  * @property {String} url URL del servicio.
  * @property {String} name Nombre de la capa en el servidor.
  * @property {Number} limit Límite de objetos geográficos a mostrar.
- * @property {Array<Number>} bbox Filtro para mostrar los resultados en un bbox específico.
+ * @property {Array<Number>} bbox Filtro geográfico fijo, ignorado cuando bboxStrategy está activo.
  * @property {String} format Formato solicitado. Si se omite, se usa el formato
  * predeterminado del servicio.
  * @property {Number} offset Determina desde que número comenzará a leer los objetos geográficos.
@@ -93,6 +94,19 @@ class DataIDEE extends Vector {
    * - clampToGround: Define si el objeto geográfico se debe ajustar al suelo. Si las coordenadas
    *   son 3D, por defecto es falso, en caso contrario es verdadero.
    *   Solo disponible para Cesium.
+   * - cache: false (predeterminado), true o { ttlMs, maxEntries, maxBytes }.
+   *   Valores por defecto: 60000 ms, 32 entradas y 16777216 bytes estimados de texto.
+   *   Cada instancia reutiliza únicamente peticiones con URL y contexto exactamente iguales.
+   *   La caducidad comienza al validar la respuesta y no se prolonga con los accesos.
+   * - bboxStrategy: Booleano, false por defecto. Consulta el bbox visible en CRS84
+   *   al terminar el desplazamiento o zoom y al cambiar el tamaño del mapa.
+   *   Sustituye las entidades anteriores tras una carga válida, sin acumular zonas.
+   *   El bbox visible sustituye al parámetro bbox fijo. Solo admite consultas de colección.
+   *   Compatible con caché exacta y throttling; no reutiliza por solapamiento espacial.
+   *   Las fuentes externas vendorOpts.source mantienen su propia gestión.
+   * - throttleMs: Intervalo mínimo entre inicios de peticiones; 0 lo desactiva.
+   *   Durante la espera se conserva solo la última consulta pendiente.
+   *   refresh() y refreshInterval descargan datos nuevos y renuevan la caché.
    * @param {Object} vendorOpts Opciones para la biblioteca base.
    * - filter: Expresión CQL2 en texto o un objeto CQL2 JSON. Una cadena usa
    *   cql2-text por defecto y un objeto usa cql2-json.
@@ -123,6 +137,16 @@ class DataIDEE extends Vector {
     const parameters = parameter.layer(userParams, LayerType.DataIDEE);
 
     const optionsVar = opt;
+    if (optionsVar.bboxStrategy !== undefined && typeof optionsVar.bboxStrategy !== 'boolean') {
+      throw new TypeError('DataIDEE bboxStrategy must be a boolean.');
+    }
+    if (optionsVar.bboxStrategy === true && !isNullOrEmpty(parameters.id)) {
+      throw new TypeError('DataIDEE bboxStrategy requires a collection, without an item id.');
+    }
+    RequestManager.normalizeOptions({
+      cache: optionsVar.cache,
+      throttleMs: optionsVar.throttleMs,
+    });
 
     if (typeof userParams !== 'string') {
       optionsVar.maxExtent = userParams.maxExtent;
@@ -296,6 +320,9 @@ class DataIDEE extends Vector {
 
   /**
    * Sobrescribe el rectángulo geográfico envolvente.
+   * Se utiliza en la siguiente carga; asignarlo no inicia una petición.
+   * refresh() solicita datos nuevos, omitiendo la caché almacenada.
+   * Con bboxStrategy activo se utiliza siempre el bbox visible, no este filtro fijo.
    * @function
    * @param {Array} newBbox Nuevo bbox.
    * @api
@@ -422,6 +449,27 @@ class DataIDEE extends Vector {
     defaultStyle = DataIDEE.DEFAULT_OPTS_STYLE,
   ) {
     super.setStyle(styleParam, applyToFeature, defaultStyle);
+  }
+
+  /**
+   * Fuerza una recarga de red y actualiza la caché tras una respuesta válida.
+   * @public
+   * @function
+   * @api
+   */
+  refresh() {
+    this.getImpl().refreshFresh();
+    this.redraw();
+  }
+
+  /**
+   * Invalida las respuestas guardadas de esta instancia sin hacer una petición.
+   * @public
+   * @function
+   * @api
+   */
+  clearCache() {
+    this.getImpl().clearCache();
   }
 
   /**

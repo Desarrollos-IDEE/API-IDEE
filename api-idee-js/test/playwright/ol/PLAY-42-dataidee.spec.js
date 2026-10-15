@@ -1,5 +1,12 @@
 import { test, expect } from '@playwright/test';
 
+import registerRequestManagerTests from '../common/request-manager.spec';
+import registerDataIDEECacheLayerTests from '../common/dataidee-layer-cache';
+import registerDataIDEEViewportTests from '../common/dataidee-viewport';
+
+registerDataIDEECacheLayerTests('/test/playwright/ol/basic-ol.html');
+registerDataIDEEViewportTests('/test/playwright/ol/basic-ol.html');
+
 const geoJSON = {
   type: 'FeatureCollection',
   features: [{
@@ -107,6 +114,47 @@ test('DataIDEE preserves the shared public configuration and performs filtered G
     equalsMethod: 'function',
     setStyleMethod: 'function',
   });
+});
+
+test('DataIDEE caches an exact request, invalidates it, and refreshes from the network', async ({ page }) => {
+  let requestCount = 0;
+  await page.route('https://ogc.test/**', async (route) => {
+    requestCount += 1;
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/geo+json',
+      body: JSON.stringify(geoJSON),
+    });
+  });
+  await page.goto('/test/playwright/ol/basic-ol.html');
+  await page.evaluate(() => {
+    window.map = IDEE.map({ container: 'map' });
+  });
+  await page.waitForFunction(() => window.map.isFinished());
+  await page.evaluate(() => {
+    window.dataIdee = new IDEE.layer.DataIDEE({
+      url: 'https://ogc.test/collections/', name: 'roads',
+    }, { cache: { ttlMs: 60000 } });
+    window.map.addLayers(window.dataIdee);
+  });
+  await page.waitForFunction(() => window.dataIdee.getFeatures().length === 1);
+  await page.evaluate(async () => {
+    // This implementation entry point observes the exact same request path as layer loading.
+    // eslint-disable-next-line no-underscore-dangle
+    await window.dataIdee.getImpl().requestFeatures_();
+  });
+  expect(requestCount).toBe(1);
+
+  await page.evaluate(() => window.dataIdee.clearCache());
+  await page.evaluate(async () => {
+    // eslint-disable-next-line no-underscore-dangle
+    await window.dataIdee.getImpl().requestFeatures_();
+  });
+  expect(requestCount).toBe(2);
+  const refreshRequest = page.waitForRequest((request) => request.url().includes('_ideeRefresh='));
+  await page.evaluate(() => window.dataIdee.refresh());
+  await (await refreshRequest).response();
+  expect(requestCount).toBe(3);
 });
 
 test('DataIDEE requests an individual feature by ID', async ({ page }) => {
@@ -226,3 +274,5 @@ test('DataIDEE loads features and supports map add, get and remove methods', asy
   });
   expect(state).toEqual({ featuresLoaded: 1, layerWasFound: true, layersAfterRemoval: 0 });
 });
+
+registerRequestManagerTests('/test/playwright/ol/basic-ol.html');

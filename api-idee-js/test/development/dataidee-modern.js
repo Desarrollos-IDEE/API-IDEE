@@ -20,6 +20,9 @@ const layer = new DataIDEE({
   limit: 100,
   extract: true,
 }, {
+  // Caché en memoria y throttling propios de esta capa (ms).
+  cache: { ttlMs: 60000, maxEntries: 32, maxBytes: 16777216 },
+  throttleMs: 300,
   style: new Generic({
     polygon: {
       fill: { color: 'rgba(230, 70, 30, 0.35)' },
