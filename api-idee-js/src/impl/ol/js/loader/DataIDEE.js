@@ -1,13 +1,10 @@
 /**
  * @module IDEE/impl/loader/DataIDEE
  */
-import {
-  addParameters as refreshParameters, isNullOrEmpty, addParameters, isString,
-} from 'IDEE/util/Utils';
+import { addParameters, isString } from 'IDEE/util/Utils';
 import MObject from 'IDEE/Object';
-import { get as getRemote } from 'IDEE/util/Remote';
-import Exception from 'IDEE/exception/exception';
-import { getValue } from 'IDEE/i18n/language';
+import RequestManager from '../../../common/RequestManager';
+import createDataIDEERequest from '../../../common/DataIDEERequest';
 
 /**
   * @classdesc
@@ -30,7 +27,13 @@ class DataIDEE extends MObject {
     * @param {IDEE.format.GeoJSON} format Formato.
     * @api
     */
-  constructor(map, url, format) {
+  constructor(
+    map,
+    url,
+    format,
+    requestManager = new RequestManager({ pendingPolicy: 'latest' }),
+    shouldExecute = () => true,
+  ) {
     super();
 
     /**
@@ -59,6 +62,8 @@ class DataIDEE extends MObject {
      * @private
      */
     this.requestOptions_ = { jsonp: false };
+    this.requestManager_ = requestManager;
+    this.shouldExecute_ = shouldExecute;
   }
 
   /**
@@ -85,8 +90,11 @@ class DataIDEE extends MObject {
    * @function
    */
   loadForRefresh(projection) {
-    const url = refreshParameters(this.url_, { _ideeRefresh: Date.now() });
-    return this.loadInternal_(projection, url, true).then(([features]) => ({ features }));
+    return this.loadFeatures(projection, true).then((features) => ({ features }));
+  }
+
+  loadFeatures(projection, force = false) {
+    return this.loadInternal_(projection, this.url_, force).then(([features]) => features);
   }
 
   /**
@@ -99,24 +107,25 @@ class DataIDEE extends MObject {
     * @public
     * @api
     */
-  loadInternal_(projection, requestUrl = this.url_, forRefresh = false) {
+  loadInternal_(projection, requestUrl = this.url_, force = false) {
     let url = requestUrl;
-    return new Promise((success, fail) => {
-      if (isString(IDEE.config.TICKET)) {
-        url = addParameters(url, { ticket: IDEE.config.TICKET });
-      }
-      const request = getRemote(url, null, this.requestOptions_).then((response) => {
-        if (forRefresh && response.code >= 400) throw new Error(`HTTP ${response.code}`);
-        if (!isNullOrEmpty(response.text)) {
-          const features = this.format_.read(response.text, {
-            featureProjection: projection,
-          });
-          success.call(this, [features]);
-        } else {
-          Exception(getValue('exception').no_service_response);
-        }
-      });
-      if (forRefresh) request.catch(fail);
+    if (isString(IDEE.config.TICKET)) url = addParameters(url, { ticket: IDEE.config.TICKET });
+    const context = JSON.stringify({
+      ticket: IDEE.config.TICKET || '',
+      proxyUrl: IDEE.config.PROXY_URL || '',
+      useProxy: IDEE.useproxy === true,
+      jsonp: false,
+    });
+    return this.requestManager_.request(createDataIDEERequest({
+      url,
+      context,
+      requestOptions: this.requestOptions_,
+      force,
+      shouldExecute: this.shouldExecute_,
+      validateResponse: (text) => this.format_.read(text, { featureProjection: projection }),
+    })).then((text) => {
+      const features = this.format_.read(text, { featureProjection: projection });
+      return [features];
     });
   }
 }
