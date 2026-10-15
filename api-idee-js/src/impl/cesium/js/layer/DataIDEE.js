@@ -3,6 +3,7 @@
  */
 import FormatGeoJSON from 'IDEE/format/GeoJSON';
 import { isNullOrEmpty } from 'IDEE/util/Utils';
+import * as EventType from 'IDEE/event/eventtype';
 import ServiceDataIDEE from '../service/DataIDEE';
 import JsonLoader from '../loader/DataIDEE';
 import OGCAPIFeatures from './OGCAPIFeatures';
@@ -13,6 +14,19 @@ import OGCAPIFeatures from './OGCAPIFeatures';
  * @api
  */
 class DataIDEE extends OGCAPIFeatures {
+  /**
+   * Cambia el token de autenticación y recarga la capa si está en un mapa.
+   * @param {String} token Token que se enviará como cabecera "Authorization: Bearer".
+   * @public
+   * @api
+   */
+  setToken(token) {
+    const getFeature = { ...this.vendorOptions_.getFeature, token };
+    if (isNullOrEmpty(token)) delete getFeature.token;
+    this.vendorOptions_.getFeature = getFeature;
+    if (this.map) this.refresh(true);
+  }
+
   /**
    * Loads GeoJSON from the OGC API Features items endpoint into Cesium entities.
    * @param {Boolean} forceNewSource Replaces the current features when true.
@@ -41,7 +55,10 @@ class DataIDEE extends OGCAPIFeatures {
       this.map,
       this.service_.getItemsUrl(),
       this.formater_,
+      this.service_.getRequestHeaders(),
     );
+    // El cargador se recrea en cada actualización: se reenvía su aviso de autorización.
+    this.loader_.on(EventType.LOAD_UNAUTHORIZED, () => this.fire(EventType.LOAD_UNAUTHORIZED));
 
     const requestedLayer = this.cesiumLayer;
     this.requestFeatures_().then((features) => {

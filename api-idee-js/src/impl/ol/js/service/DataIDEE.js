@@ -12,7 +12,8 @@ class DataIDEE extends ServiceOGCAPIFeatures {
   /**
    * @param {Object} layerParameters Shared OGC API Features layer parameters.
    * @param {Object} [vendorOpts={}] Provider options. Supports `filter` as CQL2
-   * text or JSON and optional `filterLang` to select the CQL2 encoding.
+   * text or JSON, optional `filterLang` to select the CQL2 encoding and
+   * `getFeature.token`, sent as an `Authorization: Bearer` header.
    */
   constructor(layerParameters, vendorOpts = {}) {
     super(layerParameters, vendorOpts);
@@ -53,12 +54,24 @@ class DataIDEE extends ServiceOGCAPIFeatures {
         });
       }
     }
-    Object.assign(params, this.getFeatureVendor_);
+    // El token viaja en la cabecera Authorization, nunca en la URL.
+    const getFeatureVendor = { ...this.getFeatureVendor_ };
+    delete getFeatureVendor.token;
+    Object.assign(params, getFeatureVendor);
 
     let requestUrl = pathUrl;
     if (!isNullOrEmpty(existingQuery)) requestUrl += `?${existingQuery}`;
     if (Object.keys(params).length) requestUrl = addParameters(requestUrl, params);
     return requestUrl.replaceAll(' ', '%20');
+  }
+
+  /**
+   * Devuelve las cabeceras de las peticiones de la colección.
+   * @returns {Object} Cabecera "Authorization: Bearer" si hay token o un objeto vacío.
+   */
+  getRequestHeaders() {
+    const { token } = this.getFeatureVendor_;
+    return isNullOrEmpty(token) ? {} : { Authorization: `Bearer ${token}` };
   }
 }
 

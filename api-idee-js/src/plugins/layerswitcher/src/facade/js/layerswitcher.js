@@ -4,6 +4,7 @@
 
 import '../assets/css/layerswitcher';
 import '../assets/css/fonts';
+import '../assets/css/animations';
 import LayerswitcherControl from './layerswitchercontrol';
 import api from '../../api';
 import { getValue } from './i18n/language';

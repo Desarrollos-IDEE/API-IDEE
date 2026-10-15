@@ -70,15 +70,32 @@ const removeScriptTag = (jsonpHandlerName) => {
 };
 
 /**
+ * Obtiene el token de una cabecera "Authorization: Bearer".
+ *
+ * @function
+ * @param {Object} headers Cabeceras de la petición.
+ * @returns {String|undefined} Token o undefined si no hay cabecera Bearer.
+ */
+const getBearerToken = (headers) => {
+  if (!isObject(headers)) return undefined;
+  const headerName = Object.keys(headers).find((name) => name.toLowerCase() === 'authorization');
+  const value = headerName ? headers[headerName] : undefined;
+  const match = typeof value === 'string' ? value.match(/^Bearer\s+(.+)$/i) : null;
+  return match ? match[1].trim() : undefined;
+};
+
+/**
  * Esta función maneja el proxy.
  *
  * @function
  * @param {String} url URL del proxy (IDEE.config.PROXY_URL).
  * @param {String} methodType Tipo de petición.
+ * @param {Object} headers Cabeceras de la petición. El proxy no reenvía
+ * cabeceras, pero convierte su parámetro "ticket" en "Authorization: Bearer".
  * @returns {String} Devuelve el proxy.
  * @api
  */
-const manageProxy = (url, methodType) => {
+const manageProxy = (url, methodType, headers) => {
   // deafult GET
   let proxyUrl = IDEE.config.PROXY_URL;
   if (methodType === method.POST) {
@@ -89,7 +106,26 @@ const manageProxy = (url, methodType) => {
     url,
   });
 
+  const ticket = getBearerToken(headers);
+  if (!isNullOrEmpty(ticket)) {
+    proxyUrl = addParameters(proxyUrl, { ticket });
+  }
+
   return proxyUrl;
+};
+
+/**
+ * Añade las cabeceras a la petición.
+ *
+ * @function
+ * @param {XMLHttpRequest} xhr Petición abierta.
+ * @param {Object} headers Cabeceras.
+ */
+const setRequestHeaders = (xhr, headers) => {
+  if (!isObject(headers)) return;
+  Object.keys(headers).forEach((name) => {
+    if (!isNullOrEmpty(headers[name])) xhr.setRequestHeader(name, headers[name]);
+  });
 };
 
 /**
@@ -109,7 +145,7 @@ const jsonp = (urlVar, data, options) => {
   }
 
   if (useproxy) {
-    url = manageProxy(url, method.GET);
+    url = manageProxy(url, method.GET, options?.headers);
   }
 
   // creates a random name to avoid clonflicts
@@ -170,10 +206,12 @@ const isCorsError = (xhr) => {
  * @param {String} dataVar Parámetros.
  * @param {Object} methodType Tipo de petición.
  * @param {Boolean|String} useProxy true proxy siempre, 'conditional' si hay error CORS, false nunca
+ * @param {Object} headers Cabeceras de la petición directa. Si la petición pasa
+ * por el proxy, la cabecera "Authorization: Bearer" se envía como "ticket".
  * @returns {Promise} Devuelve la respuesta.
  * @api
  */
-const ajax = (urlVar, dataVar, methodType, useProxy) => {
+const ajax = (urlVar, dataVar, methodType, useProxy, headers) => {
   let url = urlVar;
   let data = dataVar;
 
@@ -190,7 +228,7 @@ const ajax = (urlVar, dataVar, methodType, useProxy) => {
   }
 
   if (shouldUseProxy) {
-    url = manageProxy(url, methodType);
+    url = manageProxy(url, methodType, headers);
   }
 
   // parses parameters to string
@@ -222,7 +260,7 @@ const ajax = (urlVar, dataVar, methodType, useProxy) => {
               proxyUrl = addParameters(proxyUrl, dataVar);
             }
           }
-          proxyUrl = manageProxy(proxyUrl, methodType);
+          proxyUrl = manageProxy(proxyUrl, methodType, headers);
 
           let proxyXhr;
           if (window.XMLHttpRequest) {
@@ -257,7 +295,7 @@ const ajax = (urlVar, dataVar, methodType, useProxy) => {
             proxyUrl = addParameters(proxyUrl, dataVar);
           }
         }
-        proxyUrl = manageProxy(proxyUrl, methodType);
+        proxyUrl = manageProxy(proxyUrl, methodType, headers);
 
         let proxyXhr;
         if (window.XMLHttpRequest) {
@@ -286,6 +324,7 @@ const ajax = (urlVar, dataVar, methodType, useProxy) => {
       }
     };
     xhr.open(methodType, url, true);
+    if (!shouldUseProxy) setRequestHeaders(xhr, headers);
     xhr.send(data);
   });
 };
@@ -299,6 +338,8 @@ const ajax = (urlVar, dataVar, methodType, useProxy) => {
  * @param {string} newUrl URL.
  * @param {string} data Parámetros.
  * @param {Object} options Opciones.
+ * - headers: Cabeceras de la petición, por ejemplo
+ *   { Authorization: 'Bearer xxx' }.
  * @returns {Promise}
  * @api
  */
@@ -326,7 +367,7 @@ export const get = (url, data, options) => {
   if (useJsonp) {
     req = jsonp(newUrl, data, options);
   } else {
-    req = ajax(newUrl, data, method.GET, useProxyValue);
+    req = ajax(newUrl, data, method.GET, useProxyValue, options?.headers);
   }
 
   return req;
@@ -340,6 +381,8 @@ export const get = (url, data, options) => {
  * @param {string} url URL.
  * @param {Object} data Parámetros.
  * @param {Object} options Opciones.
+ * - headers: Cabeceras de la petición, por ejemplo
+ *   { 'Content-Type': 'application/json' }.
  *
  * @returns {Promise} Respuesta.
  * @api
@@ -351,7 +394,7 @@ export const post = (url, data, options) => {
   } else {
     useProxyValue = useproxy;
   }
-  return ajax(url, data, method.POST, useProxyValue);
+  return ajax(url, data, method.POST, useProxyValue, options?.headers);
 };
 
 /**

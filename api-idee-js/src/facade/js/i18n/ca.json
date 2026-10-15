@@ -169,6 +169,7 @@
     "invalid_type_layer": "No s'ha especificat un tipus vàlid per a la capa",
     "vector_filter": "El filtre indicat no és correcte",
     "unauthorized_user": "Ha ocorregut un error en carregar la capa: Usuari no autoritzat.",
+    "dataidee_unauthorized": "No s'ha pogut carregar la capa DataIDEE: el testimoni d'accés no és vàlid o ha caducat. Torneu a iniciar sessió al servei.",
     "only_one_filter": "FeatureID i CQL són mútuament excloents. Indicar només un tipus de filtrat.",
     "any_format": "TXT, ni HTML ni GML estan suportats"
   },

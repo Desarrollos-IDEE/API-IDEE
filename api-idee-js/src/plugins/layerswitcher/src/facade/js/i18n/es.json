@@ -14,7 +14,14 @@
     "codsi": "Ha ocurrido un error al consultar el catálogo CODSI",
     "codsi_no_results": "No hay resultados para su búsqueda",
     "not_layerGroup": "No se ha podido añadir la capa al grupo",
-    "errorPrecharged": "El valor de 'precharged' no es un JSON ni un base64 válido"
+    "errorPrecharged": "El valor de 'precharged' no es un JSON ni un base64 válido",
+    "error_ogc": "Ha ocurrido un error al consultar el servicio OGC API Features",
+    "url_not_valid": "La URL indicada no es válida",
+    "auth_failed": "Usuario o contraseña incorrectos",
+    "auth_unavailable": "No se ha podido contactar con el servicio de autenticación",
+    "auth_refresh_failed": "La sesión del servicio ha caducado. Inicie sesión de nuevo",
+    "auth_required": "El servicio requiere iniciar sesión para consultar sus capas",
+    "unreachable": "No se ha podido acceder al servicio. Compruebe la URL y que el servidor permita peticiones desde otros dominios (CORS)"
   },
   "textHelp": {
     "help1": "La extensión selector de capas permite gestionar las capas que se muestran en un visualizador cartográfico.",
@@ -139,5 +146,16 @@
   "next": "Siguiente",
   "separatedby": "Identificador separados por comas ','",
   "placeHolderLegend": "Texto que se muestra en el TOC",
-  "upload_file": "Subir fichero"
+  "upload_file": "Subir fichero",
+  "ogc_mode": "Cargar como",
+  "ogc_mode_ogcapifeatures": "OGC API Features (estándar)",
+  "ogc_mode_dataidee": "DataIDEE",
+  "auth_login": "Iniciar sesión",
+  "auth_user": "Usuario",
+  "auth_password": "Contraseña",
+  "auth_save": "Guardar",
+  "auth_cancel": "Cancelar",
+  "auth_unlocked_title": "Sin sesión. Pulse para iniciar sesión en el servicio",
+  "auth_locked_title": "Sesión iniciada. Pulse para cerrar la sesión",
+  "auth_pending": "Comprobando la sesión del servicio..."
 }

@@ -53,6 +53,8 @@ export const addAttributions = (layers) => {
 export const focusModal = (id) => {
   setTimeout(() => {
     const message = document.querySelector(id);
+    // El diálogo puede haberse cerrado antes de enfocarlo
+    if (message === null) return;
     message.focus();
     message.click();
   }, 100);

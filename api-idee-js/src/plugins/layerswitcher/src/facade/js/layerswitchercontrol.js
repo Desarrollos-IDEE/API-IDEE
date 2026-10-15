@@ -18,7 +18,17 @@ import resultstemplate from '../../templates/addservicesresults';
 import ogcModalTemplate from '../../templates/ogcmodal';
 import layerModalTemplate from '../../templates/layermodal';
 import customQueryFiltersTemplate from '../../templates/customqueryfilters';
+import ogcModeTemplate from '../../templates/ogcmode';
 import generateSortable from './sortable';
+import { parseOGCAPIUrl, isCollectionsPath, isSameService } from './ogcapi/ogcapiurl';
+import detectOGCAPIFeatures from './ogcapi/ogcapidetector';
+import {
+  createOGCAPIModes, getModeByLayerType, MODE_STANDARD, MODE_DATAIDEE,
+} from './ogcapi/ogcapimodes';
+import TokenStore from './auth/tokenstore';
+import DataIDEEAuthManager, { AUTH_LOCKED, AUTH_UNLOCKED } from './auth/authmanager';
+import AuthButton from './auth/authbutton';
+import { CLOSE_BUTTON, setDialogAction, removeDialogActions } from './dialogactions';
 import {
   getAllLayersGroup, displayLayers, createSelectGroup, getLayerSelectGroup,
   filterGroups,
@@ -47,6 +57,10 @@ const CODSI_CLEAN = '#m-layerswitcher-addservices-codsi-clean-btn';
 const SEARCH_INPUT = '#m-layerswitcher-addservices-search-input';
 
 const OGC_CONTAINER = '#m-layerswitcher-ogcCContainer';
+const OGC_MODE = '#m-layerswitcher-ogc-mode';
+const OGC_MODE_SELECT = '#m-layerswitcher-ogc-mode-select';
+const OGC_AUTH = '#m-layerswitcher-ogc-auth';
+const ADDSERVICES = '.m-layerswitcher-addservices';
 const ADDSERVICES_RESULTS = '#m-layerswitcher-addservices-results';
 const LAYERS_CONTAINER = '#m-layerswitcher-layerContainer';
 
@@ -58,7 +72,7 @@ const ADDSERVICES_SUGGESTIONS = '#m-layerswitcher-addservices-suggestions';
 const SEARCH_BTN = '#m-layerswitcher-addservices-search-btn';
 
 // - Modal
-const BT_CLOSE_MODAL = 'div.m-dialog.info div.m-button > button';
+const BT_CLOSE_MODAL = CLOSE_BUTTON;
 
 const SPINER_FATHER = '.m-layerswitcher-search-panel';
 
@@ -169,6 +183,28 @@ export default class LayerswitcherControl extends IDEE.Control {
 
     // Attribution
     this.useAttributions_ = options.useAttributions;
+
+    // Sesiones y último modo de carga de los servicios OGC API Features
+    this.tokenStore_ = new TokenStore();
+
+    // Gestor de sesiones DataIDEE y modos de carga OGC API (se crean con el mapa)
+    this.authManager_ = undefined;
+    this.ogcModes_ = undefined;
+
+    // Estado del servicio OGC API Features abierto en el diálogo
+    this.ogcState_ = undefined;
+
+    // Botón de sesión del servicio OGC API abierto
+    this.authButton_ = undefined;
+
+    // Servicios OGC API cuyas colecciones exigen autenticación
+    this.protectedOGCServices_ = new Set();
+
+    // Capas DataIDEE con aviso de no autorizado registrado
+    this.watchedDataIDEELayers_ = new WeakSet();
+
+    // Identificador de la última petición de colecciones
+    this.ogcRequestId_ = 0;
   }
 
   // Esta función crea la vista
@@ -198,7 +234,14 @@ export default class LayerswitcherControl extends IDEE.Control {
       }
     });
 
+    this.authManager_ = new DataIDEEAuthManager(map, this.tokenStore_);
+    this.ogcModes_ = createOGCAPIModes(this.authManager_);
+    this.authManager_.onSessionChange((root, token) => this.onOGCSessionChange_(root, token));
+
     map.on(IDEE.evt.ADDED_LAYER, (layers) => {
+      [].concat(layers).filter((layer) => layer?.type === 'DataIDEE')
+        .forEach((layer) => this.watchDataIDEELayer_(layer));
+
       if (this.modeSelectLayers === 'radio'
         && this.isCheckedLayerRadio === true) {
         layers.forEach((layer) => {
@@ -512,18 +555,18 @@ export default class LayerswitcherControl extends IDEE.Control {
 
         // ? Información de la capa
         if (evt.target.className.indexOf('g-cartografia-btn-layerswitcher-info') > -1) {
-          if (layer.type === 'OGCAPIFeatures') {
-            const metadataURL = `${layer.url}${layer.name}?f=json`;
-            const htmlURL = `${layer.url}${layer.name}?f=html`;
+          const ogcMode = getModeByLayerType(this.ogcModes_, layer.type);
+          if (ogcMode) {
+            const { url: metadataURL, htmlUrl, options } = ogcMode.getLayerInfoRequest(layer);
             let jsonResponseOgc;
             // IDEE.proxy(this.useProxy);
-            IDEE.remote.get(metadataURL).then((response) => {
+            IDEE.remote.get(metadataURL, null, options).then((response) => {
               jsonResponseOgc = JSON.parse(response.text);
               const vars = {
                 title: jsonResponseOgc.title,
                 abstract: jsonResponseOgc.description,
-                hasMetadata: true,
-                metadata: htmlURL,
+                hasMetadata: !IDEE.utils.isNullOrEmpty(htmlUrl),
+                metadata: htmlUrl,
                 isOgc: true,
                 translations: TRANSLATIONS_OGCAPIFEATURES_WMS_WMTS,
               };
@@ -580,6 +623,8 @@ export default class LayerswitcherControl extends IDEE.Control {
                   this.hasPrevious_();
                 }
               }
+            }).catch(() => {
+              IDEE.dialog.error(getValue('exception.error_ogc'), undefined, this.order);
             });
             // IDEE.proxy(this.statusProxy);
           } else if (layer.type === 'WMS' || layer.type === 'WMTS') {
@@ -1084,6 +1129,19 @@ export default class LayerswitcherControl extends IDEE.Control {
             return this.openFileFromUrl(fileUrl, 'gpkg');
           }
           this.showLoading();
+          if (isCollectionsPath(url)) {
+            this.openOGCAPIService_(url).then((isOGC) => {
+              if (!isOGC) {
+                IDEE.dialog.error(getValue('exception.ogcfeatures'), undefined, this.order);
+                this.removeLoading();
+              }
+            }).catch(() => {
+              // Sin respuesta del servicio (red o CORS)
+              IDEE.dialog.error(getValue('exception.unreachable'), undefined, this.order);
+              this.removeLoading();
+            });
+            return undefined;
+          }
           // MVT
           const pbf = url.indexOf('.pbf') >= 0;
           const json = url.indexOf('.json') >= 0;
@@ -1253,17 +1311,8 @@ export default class LayerswitcherControl extends IDEE.Control {
                       this.removeLoading();
                     }
                   } else {
-                    this.checkIfOGCAPIFeatures(url).then((reponseIsJson) => {
-                      if (reponseIsJson === true) {
-                        this.checkIfOGCAPICollection(url).then((responseIsOGC) => {
-                          if (responseIsOGC) {
-                            this.printOGCModal(url);
-                          } else {
-                            IDEE.dialog.error(getValue('exception.ogcfeatures'), undefined, this.order);
-                            this.removeLoading();
-                          }
-                        });
-                      } else {
+                    this.openOGCAPIService_(url).catch(() => false).then((isOGC) => {
+                      if (!isOGC) {
                         // IDEE.proxy(this.useProxy);
                         const extension = url.includes('.') ? url.substring(url.lastIndexOf('.') + 1, url.length) : '';
                         if (['zip', 'gpx', 'gml'].includes(extension)) {
@@ -1276,7 +1325,9 @@ export default class LayerswitcherControl extends IDEE.Control {
                                 if (!IDEE.utils.isNullOrEmpty(response4.text) && response4.text.replaceAll('\r\n', '').replaceAll(' ', '').indexOf('"type":"FeatureCollection"') >= 0) {
                                   this.printLayerModal(searchInput.value.trim(), 'geojson');
                                 } else {
-                                  IDEE.dialog.error(getValue('exception.capabilities'), undefined, this.order);
+                                  const errorKey = response4.code === 0
+                                    ? 'exception.unreachable' : 'exception.capabilities';
+                                  IDEE.dialog.error(getValue(errorKey), undefined, this.order);
                                   this.removeLoading();
                                 }
                               });
@@ -1293,7 +1344,13 @@ export default class LayerswitcherControl extends IDEE.Control {
                                 return { name };
                               });
                               this.printLayerModal(url, 'kml', names);
+                            } else {
+                              IDEE.dialog.error(getValue('exception.capabilities'), undefined, this.order);
+                              this.removeLoading();
                             }
+                          }).catch(() => {
+                            IDEE.dialog.error(getValue('exception.unreachable'), undefined, this.order);
+                            this.removeLoading();
                           });
                         }
                         // IDEE.proxy(this.statusProxy);
@@ -1462,6 +1519,10 @@ export default class LayerswitcherControl extends IDEE.Control {
     const navBarModal = document.querySelector('.m-layerswitcher-input-container');
 
     button.addEventListener('click', (evt) => {
+      this.hideOGCModeSelector_();
+      if (document.querySelector(OGC_CONTAINER) !== null) {
+        document.querySelector(OGC_CONTAINER).style.display = 'none';
+      }
       this.printLayerModal('', 'layerGroup');
       suggestions.style.display = 'none';
       codsi.style.display = 'none';
@@ -1502,7 +1563,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     }
     IDEE.loadFiles.addFileToMap(this.map_, file);
     inputFile.value = '';
-    const buttonClose = document.querySelector('div.m-dialog.info div.m-button > button');
+    const buttonClose = document.querySelector(BT_CLOSE_MODAL);
     buttonClose.click();
   }
 
@@ -1533,7 +1594,7 @@ export default class LayerswitcherControl extends IDEE.Control {
           IDEE.remote.get(url).then((response) => {
             const source = response.text;
             IDEE.utils.loadFeaturesFromSource(this.map_, source, fileName, extension);
-            const buttonClose = document.querySelector('div.m-dialog.info div.m-button > button');
+            const buttonClose = document.querySelector(BT_CLOSE_MODAL);
             buttonClose.click();
           });
         }
@@ -1587,7 +1648,7 @@ export default class LayerswitcherControl extends IDEE.Control {
         if (blob) {
           blob.arrayBuffer().then((buffer) => {
             IDEE.utils.loadFeaturesFromSource(this.map_, buffer, fileName, 'zip');
-            const buttonClose = document.querySelector('div.m-dialog.info div.m-button > button');
+            const buttonClose = document.querySelector(BT_CLOSE_MODAL);
             buttonClose.click();
           });
         } else {
@@ -1629,6 +1690,8 @@ export default class LayerswitcherControl extends IDEE.Control {
     const addServicesResults = document.querySelector(ADDSERVICES_RESULTS);
     const addServicesSuggestions = document.querySelector(ADDSERVICES_SUGGESTIONS);
     document.querySelector(LAYERS_CONTAINER).innerHTML = '';
+    this.hideOGCModeSelector_();
+    removeDialogActions();
 
     if (codsi !== null) {
       codsi.style.display = 'none';
@@ -1748,6 +1811,9 @@ export default class LayerswitcherControl extends IDEE.Control {
     if (ogcContainer !== null) {
       ogcContainer.style.display = 'none';
     }
+
+    this.hideOGCModeSelector_();
+    removeDialogActions();
 
     if (document.querySelector(LAYERS_CONTAINER) !== null) {
       document.querySelector(LAYERS_CONTAINER).style.display = 'none';
@@ -1991,7 +2057,12 @@ export default class LayerswitcherControl extends IDEE.Control {
       if (!IDEE.utils.isNull(selAllWFS)) {
         selAllWFS.addEventListener('click', (evt) => this.registerCheckWFS(evt));
       }
-      container.querySelector('.m-layerswitcher-add-services-add-button').addEventListener('click', (evt) => this.addSelected_WMS_WMTS_WFS(evt));
+      setDialogAction({
+        id: 'm-layerswitcher-addservices-add-btn',
+        label: getValue('add'),
+        onClick: (evt) => this.addSelected_WMS_WMTS_WFS(evt),
+        order: this.order,
+      });
       const elem = container.querySelector('.m-layerswitcher-show-capabilities');
       if (!IDEE.utils.isNull(elem)) {
         elem.addEventListener('click', () => {
@@ -2025,43 +2096,18 @@ export default class LayerswitcherControl extends IDEE.Control {
     addServicesResults.style.display = 'block';
   }
 
-  // Determina si es OGCAPI
-  checkIfOGCAPIFeatures(url) {
-    // IDEE.proxy(this.useProxy);
-    return IDEE.remote.get(`${url}?f=json`).then((response) => {
-      let isJson = false;
-      if (!IDEE.utils.isNullOrEmpty(response) && !IDEE.utils.isNullOrEmpty(response.text) && response.text.indexOf('collections') !== -1) {
-        isJson = true;
-      }
-      return isJson;
-    }).catch(() => {
-      return false;
-    });
-  }
-
-  checkIfOGCAPICollection(url) {
-    // IDEE.proxy(this.useProxy);
-    const collections = `${(url.endsWith('/') ? url : `${url}/`)}collections?f=json`;
-    return IDEE.remote.get(collections).then((response) => {
-      let isOGCAPI = false;
-      if (!IDEE.utils.isNullOrEmpty(response) && !IDEE.utils.isNullOrEmpty(response.text)) {
-        const responseJson = JSON.parse(response.text);
-        if (responseJson.collections.length > 0 && responseJson.collections[0].itemType === 'feature') {
-          isOGCAPI = true;
-        } else {
-          const collections2 = `${(url.endsWith('/') ? url : `${url}/`)}collections/${responseJson.collections[0].id}/items?f=json&limit=1`;
-          return IDEE.remote.get(collections2).then((response2) => {
-            const responseJson2 = JSON.parse(response2.text);
-            if (responseJson2.type === 'FeatureCollection') {
-              isOGCAPI = true;
-            }
-            return isOGCAPI; // Agregar un retorno aquí
-          });
-        }
-      }
-      return isOGCAPI; // Agregar un retorno aquí también
-    }).catch(() => {
-      return false;
+  /**
+   * Detecta si la URL es un servicio OGC API Features (raíz, /collections o
+   * /collections/{id}) y, si lo es, muestra el selector de modo y sus capas.
+   * @param {String} url URL introducida.
+   * @returns {Promise<Boolean>} Verdadero si es un servicio OGC API Features.
+   */
+  openOGCAPIService_(url) {
+    return detectOGCAPIFeatures(url).then((service) => {
+      if (!service) return false;
+      if (service.isProtected) this.protectedOGCServices_.add(service.root);
+      this.printOGCModal(url);
+      return true;
     });
   }
 
@@ -2238,7 +2284,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       const useAttributions = (this.useAttributions_) ? addAttributions(layers) : layers;
       useAttributions.forEach((layer) => this.addLayer({ existingLayer: layer }));
 
-      const buttonClose = document.querySelector('div.m-dialog.info div.m-button > button');
+      const buttonClose = document.querySelector(BT_CLOSE_MODAL);
       buttonClose.click();
     }
   }
@@ -2307,7 +2353,6 @@ export default class LayerswitcherControl extends IDEE.Control {
         kmlType: type.toUpperCase(),
         layers,
         translations: {
-          add_btn: getValue('add_btn'),
           legend: getValue('legend'),
           name: getValue('name'),
           data_layer: getValue('data_layer'),
@@ -2331,8 +2376,7 @@ export default class LayerswitcherControl extends IDEE.Control {
 
     createSelectGroup(this.map_);
 
-    const btnAddLayer = document.querySelector('#m-layerswitcher-layer-button');
-    btnAddLayer.addEventListener('click', () => {
+    const addLayerFromModal = () => {
       const randomNumber = Math.floor(Math.random() * 9000) + 1000;
       const nameModal = document.querySelector('#m-layerswitcher-layer-name');
       let name = null;
@@ -2356,6 +2400,12 @@ export default class LayerswitcherControl extends IDEE.Control {
       });
 
       document.querySelector('div.m-dialog.info').parentNode.removeChild(document.querySelector('div.m-dialog.info'));
+    };
+    setDialogAction({
+      id: 'm-layerswitcher-layer-button',
+      label: getValue('add_btn'),
+      onClick: addLayerFromModal,
+      order: this.order,
     });
     this.removeLoading();
   }
@@ -2367,7 +2417,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     url,
     format,
     matrixSet,
-    OGCAPIFeatures,
+    ogcapiLayer,
     namespace,
     existingLayer,
     vendor,
@@ -2461,8 +2511,8 @@ export default class LayerswitcherControl extends IDEE.Control {
         name,
         legend,
       });
-    } else if (type === 'OGCAPIFeatures') {
-      layer = new IDEE.layer.OGCAPIFeatures(OGCAPIFeatures);
+    } else if (type === 'OGCAPIFeatures' || type === 'DataIDEE') {
+      layer = ogcapiLayer;
       layer.setZIndex(layer.getZIndex() + 8);
     } else if (type === 'WFS') {
       layer = new IDEE.layer.WFS({
@@ -2504,77 +2554,236 @@ export default class LayerswitcherControl extends IDEE.Control {
     filterByID,
     filterByOtherFilters,
   ) {
-    let prevID;
-    let urlOGC = url.trim();
-    if (IDEE.utils.isUrl(urlOGC)) {
-      document.querySelector(SEARCH_INPUT).value = url;
+    const { root, collectionId } = parseOGCAPIUrl(url);
+    if (!IDEE.utils.isUrl(root)) return;
+    document.querySelector(SEARCH_INPUT).value = url;
 
-      const collections = `${(urlOGC.endsWith('/') ? urlOGC : `${urlOGC}/`)}collections?f=json`;
-      // IDEE.proxy(this.useProxy);
-      IDEE.remote.get(collections).then((response) => {
-        const resJSON = JSON.parse(response.text);
-        const layers = resJSON.collections;
-        if (IDEE.utils.isNullOrEmpty(summary)) {
-          summary = undefined;
-          filterByID = undefined;
-          filterByOtherFilters = undefined;
-        }
+    const hasSummary = !IDEE.utils.isNullOrEmpty(summary);
+    this.ogcState_ = {
+      url,
+      root,
+      collectionId,
+      mode: this.getInitialOGCMode_(root),
+      selectedLayer,
+      limitVal,
+      onlyBbox,
+      summary: hasSummary ? summary : undefined,
+      filterByID: hasSummary ? filterByID : undefined,
+      filterByOtherFilters: hasSummary ? filterByOtherFilters : undefined,
+    };
+    this.renderOGCModeSelector_();
+    this.loadOGCService_();
+  }
 
-        const ogcModal = IDEE.template.compileSync(ogcModalTemplate, {
-          jsonp: true,
-          parseToHtml: false,
-          vars: {
-            layers,
-            selectedLayer,
-            limit: limitVal,
-            bbox: onlyBbox,
-            summary,
-            filterByID,
-            filterByOtherFilters,
-            prevID,
-            translations: {
-              select_service: getValue('select_service'),
-              amount_results: getValue('amount_results'),
-              amount_results_2: getValue('amount_results_2'),
-              bbox_select: getValue('bbox-select'),
-              other_filters: getValue('other_filters'),
-              id_filter: getValue('id_filter'),
-              warning: getValue('warning'),
-              add_btn: getValue('add_btn'),
-              custom_query_btn: getValue('custom_query_btn'),
-              filters: getValue('filters'),
-              check_results: getValue('check_results'),
-            },
-          },
-        });
-        this.removeLoading();
+  // Modo de carga inicial de un servicio OGC API: el último usado con el servicio,
+  // DataIDEE si está precargado así o si sus colecciones exigen autenticación,
+  // o el estándar.
+  getInitialOGCMode_(root) {
+    const storedMode = this.tokenStore_.getMode(root);
+    if (this.ogcModes_[storedMode]) return storedMode;
+    const isPrechargedDataIDEE = this.getPrechargedServices()
+      .some((service) => service.type === 'DataIDEE' && isSameService(service.url, root));
+    return isPrechargedDataIDEE || this.protectedOGCServices_.has(root)
+      ? MODE_DATAIDEE : MODE_STANDARD;
+  }
 
-        document.querySelector('#m-layerswitcher-ogcCContainer').outerHTML = ogcModal;
+  // Muestra, debajo del buscador, el selector del modo de carga del servicio OGC API
+  renderOGCModeSelector_() {
+    const container = document.querySelector(OGC_MODE);
+    if (container === null) return;
+    const { root, mode: selectedMode } = this.ogcState_;
+    container.innerHTML = IDEE.template.compileSync(ogcModeTemplate, {
+      parseToHtml: false,
+      vars: {
+        modes: Object.values(this.ogcModes_).map((mode) => ({
+          key: mode.key,
+          label: getValue(`ogc_mode_${mode.key}`),
+          selected: mode.key === selectedMode,
+        })),
+        translations: {
+          ogc_mode: getValue('ogc_mode'),
+        },
+      },
+    });
+    container.style.display = '';
+    container.querySelector(OGC_MODE_SELECT).addEventListener('change', ({ target }) => {
+      this.ogcState_.mode = target.value;
+      this.ogcState_.selectedLayer = undefined;
+      this.tokenStore_.setMode(root, target.value);
+      this.loadOGCService_();
+    });
+  }
 
-        createSelectGroup(this.map_);
-
-        const radioBtnFilterByID = document.querySelector('input[name="m-layerswitcher-ogc-filter"][value="id"]');
-        const radioBtnFilterByOther = document.querySelector('input[name="m-layerswitcher-ogc-filter"][value="others"]');
-
-        this.setOnClickRadioBtn(radioBtnFilterByID, radioBtnFilterByOther);
-        this.setOnChanges(summary);
-        this.setOnClickCloseBtn();
-        this.setOnClickersFiltersButtons(
-          summary,
-          urlOGC,
-          radioBtnFilterByID,
-          radioBtnFilterByOther,
-          layers,
-          url,
-          filterByID,
-          filterByOtherFilters,
-        );
-      }).catch((err) => {
-        urlOGC = '';
-        IDEE.dialog.error(getValue('exception.error_ogc'), undefined, this.order);
-      });
-      // IDEE.proxy(this.statusProxy);
+  // Oculta el selector de modo y el botón de sesión
+  hideOGCModeSelector_() {
+    const container = document.querySelector(OGC_MODE);
+    if (container !== null) {
+      container.style.display = 'none';
+      container.innerHTML = '';
     }
+    this.authButton_ = undefined;
+  }
+
+  // Prepara la sesión del servicio (solo en modo DataIDEE) y carga sus colecciones
+  loadOGCService_() {
+    const authContainer = document.querySelector(OGC_AUTH);
+    this.authButton_ = undefined;
+    if (authContainer === null) return;
+
+    if (this.ogcState_.mode !== MODE_DATAIDEE) {
+      authContainer.innerHTML = '';
+      authContainer.style.display = 'none';
+      this.loadOGCCollections_();
+      return;
+    }
+
+    const authButton = new AuthButton({
+      container: authContainer,
+      formParent: document.querySelector(ADDSERVICES),
+      manager: this.authManager_,
+      root: this.ogcState_.root,
+      order: this.order,
+    });
+    this.authButton_ = authButton;
+    authButton.render();
+    this.showOGCLoading_();
+    authButton.refresh().catch(() => undefined).then(() => {
+      if (this.authButton_ === authButton) this.loadOGCCollections_();
+    });
+  }
+
+  // Muestra el indicador de carga si no está visible
+  showOGCLoading_() {
+    if (document.querySelector('#m-layerswitcher-loading') === null) {
+      this.showLoading();
+    }
+  }
+
+  // Pide las colecciones con el modo activo y pinta el formulario de la capa
+  loadOGCCollections_() {
+    this.ogcRequestId_ += 1;
+    const requestId = this.ogcRequestId_;
+    const { root, mode } = this.ogcState_;
+    removeDialogActions();
+    this.showOGCLoading_();
+    this.ogcModes_[mode].getCollections(root).then(({ collections, unauthorized }) => {
+      if (requestId !== this.ogcRequestId_) return;
+      this.removeLoading();
+      if (unauthorized) this.onOGCUnauthorized_(root);
+      this.renderOGCCollections_(collections);
+    }).catch(() => {
+      if (requestId !== this.ogcRequestId_) return;
+      this.removeLoading();
+      IDEE.dialog.error(getValue('exception.error_ogc'), undefined, this.order);
+    });
+  }
+
+  // El servicio ha rechazado el listado de colecciones (HTTP 401/403)
+  onOGCUnauthorized_(root) {
+    this.authManager_.handleUnauthorized(root).then((refreshed) => {
+      if (!refreshed) {
+        IDEE.dialog.error(getValue('exception.auth_required'), undefined, this.order);
+      }
+    });
+  }
+
+  // Pinta el formulario OGC con las colecciones del servicio
+  renderOGCCollections_(layers) {
+    const {
+      url, root, collectionId, limitVal, onlyBbox, summary, filterByID, filterByOtherFilters,
+    } = this.ogcState_;
+    let { selectedLayer } = this.ogcState_;
+    if (IDEE.utils.isNullOrEmpty(selectedLayer) && !IDEE.utils.isNullOrEmpty(collectionId)) {
+      const index = layers.findIndex((layer) => layer.id === collectionId);
+      selectedLayer = index >= 0 ? index : undefined;
+    }
+    this.ogcCollections_ = layers;
+
+    const container = document.querySelector(OGC_CONTAINER);
+    if (container === null) return;
+    container.outerHTML = IDEE.template.compileSync(ogcModalTemplate, {
+      jsonp: true,
+      parseToHtml: false,
+      vars: {
+        layers,
+        selectedLayer,
+        limit: limitVal,
+        bbox: onlyBbox,
+        summary,
+        filterByID,
+        filterByOtherFilters,
+        prevID: undefined,
+        translations: {
+          select_service: getValue('select_service'),
+          amount_results: getValue('amount_results'),
+          amount_results_2: getValue('amount_results_2'),
+          bbox_select: getValue('bbox-select'),
+          other_filters: getValue('other_filters'),
+          id_filter: getValue('id_filter'),
+          warning: getValue('warning'),
+          custom_query_btn: getValue('custom_query_btn'),
+          filters: getValue('filters'),
+          check_results: getValue('check_results'),
+        },
+      },
+    });
+
+    createSelectGroup(this.map_);
+
+    const radioBtnFilterByID = document.querySelector('input[name="m-layerswitcher-ogc-filter"][value="id"]');
+    const radioBtnFilterByOther = document.querySelector('input[name="m-layerswitcher-ogc-filter"][value="others"]');
+
+    this.setOnClickRadioBtn(radioBtnFilterByID, radioBtnFilterByOther);
+    this.setOnChanges(summary);
+    this.setOnClickCloseBtn();
+    this.setOnClickersFiltersButtons(
+      summary,
+      root,
+      radioBtnFilterByID,
+      radioBtnFilterByOther,
+      layers,
+      url,
+      filterByID,
+      filterByOtherFilters,
+    );
+  }
+
+  // Sesión DataIDEE iniciada, refrescada o cerrada: actualiza el candado y las capas listadas
+  onOGCSessionChange_(root, token) {
+    const state = this.ogcState_;
+    if (!state || state.root !== root || state.mode !== MODE_DATAIDEE
+      || document.querySelector(OGC_AUTH) === null) return;
+    if (this.authButton_) this.authButton_.setState(token ? AUTH_LOCKED : AUTH_UNLOCKED);
+    this.loadOGCCollections_();
+  }
+
+  // Intenta refrescar el token cuando el servicio rechaza una capa DataIDEE
+  watchDataIDEELayer_(layer) {
+    if (!IDEE.evt.LOAD_UNAUTHORIZED || this.watchedDataIDEELayers_.has(layer)) return;
+    this.watchedDataIDEELayers_.add(layer);
+    layer.on(IDEE.evt.LOAD_UNAUTHORIZED, () => {
+      this.authManager_.handleUnauthorized(parseOGCAPIUrl(layer.url).root);
+    });
+  }
+
+  // Colección del servicio OGC API abierto
+  getOGCCollection_(collectionId) {
+    return (this.ogcCollections_ || []).find((collection) => collection.id === collectionId);
+  }
+
+  // Añade al mapa la capa OGC API con el modo activo (OGCAPIFeatures o DataIDEE)
+  addOGCAPILayer_(properties) {
+    const { root, mode: modeKey } = this.ogcState_;
+    const mode = this.ogcModes_[modeKey];
+    const ogcapiLayer = mode.createLayer(root, properties, this.getOGCCollection_(properties.name));
+    this.addLayer({ type: mode.layerType, ogcapiLayer });
+  }
+
+  // Número de objetos geográficos que devolvería la capa con los filtros indicados
+  countOGCAPIFeatures_(properties) {
+    const { root, mode } = this.ogcState_;
+    return this.ogcModes_[mode]
+      .countFeatures(root, properties, this.getOGCCollection_(properties.name));
   }
 
   // Cambia la visualización de opciones de filtrado dependiendo del filtro seleccionado
@@ -2638,29 +2847,36 @@ export default class LayerswitcherControl extends IDEE.Control {
     let formInputs;
     let properties;
     let selectValue = document.querySelector('#m-layerswitcher-ogc-vectors-select').value;
-    const btnAddLayer = document.querySelector('#m-layerswitcher-ogcCContainer #m-layerswitcher-ogc-select-button');
     const btnCheck = document.querySelector('#m-layerswitcher-ogcCContainer #m-layerswitcher-ogc-check-button');
     const btnCustomQuery = document.querySelector('#m-layerswitcher-ogc-custom-query-button');
 
-    btnAddLayer.addEventListener('click', () => {
-      if (selectValue === getValue('select_service')) {
-        IDEE.dialog.error(getValue('no_results'), undefined, this.order);
-      } else {
-        properties = this.getProperties(selectValue, summary);
+    // "Añadir" va en el pie del diálogo, junto a "Cerrar", solo si hay capas que añadir
+    if (layers.length > 0) {
+      setDialogAction({
+        id: 'm-layerswitcher-ogc-select-button',
+        label: getValue('add_btn'),
+        order: this.order,
+        onClick: () => {
+          if (selectValue === getValue('select_service')) {
+            IDEE.dialog.error(getValue('no_results'), undefined, this.order);
+          } else {
+            properties = this.getProperties(selectValue, summary);
 
-        this.addLayer({ OGCAPIFeatures: properties, type: 'OGCAPIFeatures' });
+            this.addOGCAPILayer_(properties);
 
-        const buttonClose = document.querySelector('div.m-dialog.info div.m-button > button');
-        buttonClose.click();
-      }
-    });
+            const buttonClose = document.querySelector(BT_CLOSE_MODAL);
+            buttonClose.click();
+          }
+        },
+      });
+    }
 
     btnCheck.addEventListener('click', () => {
       if (selectValue === getValue('select_service')) {
         IDEE.dialog.error(getValue('no_results'), undefined, this.order);
       } else {
         properties = this.getProperties(selectValue, summary);
-        this.getNumberFeaturesOGCAPIFeaturesLayer(properties).then((numberFeatures) => {
+        this.countOGCAPIFeatures_(properties).then((numberFeatures) => {
           let results1;
           let results2;
           if (numberFeatures === 1) {
@@ -2676,6 +2892,9 @@ export default class LayerswitcherControl extends IDEE.Control {
         })
           .then(() => {
             document.querySelector('#m-layerswitcher-ogc-check-results').focus();
+          })
+          .catch(() => {
+            IDEE.dialog.error(getValue('no_results'), undefined, this.order);
           });
         // IDEE.proxy(this.statusProxy);
       }
@@ -2688,11 +2907,9 @@ export default class LayerswitcherControl extends IDEE.Control {
       selectValue = document.querySelector('#m-layerswitcher-ogc-vectors-select').value;
       const limit = document.querySelector('#m-layerswitcher-ogc-limit-items').value;
       const checked = document.querySelector('#m-layerswitcher-ogc-search-bbox').checked;
-      const urlQueryables = `${urlOGC}/collections/${selectValue}/queryables`;
       // IDEE.proxy(this.useProxy);
-      IDEE.remote.get(urlQueryables).then((queryablesResponse) => {
+      this.ogcModes_[this.ogcState_.mode].getQueryables(urlOGC, selectValue).then((res) => {
         try {
-          const res = JSON.parse(queryablesResponse.text);
           const props = res.properties;
           filtersList = Object.values(props);
           filtersList.forEach((v) => {
@@ -2822,8 +3039,9 @@ export default class LayerswitcherControl extends IDEE.Control {
     });
   }
 
+  // Parámetros de la capa OGC API del formulario. La URL y el formato los
+  // añade el modo de carga (OGCAPIFeatures o DataIDEE).
   getProperties(selectValue, summary) {
-    const urlQuery = document.querySelector(SEARCH_INPUT).value;
     const selectValueText = document.querySelector('#m-layerswitcher-ogc-vectors-select').selectedOptions[0].text;
     selectValue = document.querySelector('#m-layerswitcher-ogc-vectors-select').value;
     const limit = document.querySelector('#m-layerswitcher-ogc-limit-items').value;
@@ -2843,7 +3061,6 @@ export default class LayerswitcherControl extends IDEE.Control {
       bboxString = `${min[0]};${min[1]};${max[0]};${max[1]}`;
     }
     const properties = {};
-    properties.url = `${urlQuery}/collections/`;
     properties.name = selectValue;
     properties.legend = selectValueText;
     properties.limit = limitValue;
@@ -2869,8 +3086,6 @@ export default class LayerswitcherControl extends IDEE.Control {
     } else if (summary !== undefined) {
       properties.conditional = summary;
     }
-
-    properties.format = 'json';
 
     return properties;
   }
@@ -2937,89 +3152,9 @@ export default class LayerswitcherControl extends IDEE.Control {
     return cDict;
   }
 
-  // Devuelve el número de features de un layer OGCAPI
-  getNumberFeaturesOGCAPIFeaturesLayer(layerParameters) {
-    const layer = new IDEE.layer.OGCAPIFeatures(layerParameters);
-    const url = this.getFeatureUrl(layer);
-    let numberFeatures;
-    let jsonResponseOgc;
-    // IDEE.proxy(this.useProxy);
-    return IDEE.remote.get(url).then((response) => {
-      jsonResponseOgc = JSON.parse(response.text);
-      if (jsonResponseOgc !== null) {
-        if (jsonResponseOgc.type === 'Feature') {
-          numberFeatures = 1;
-        } else {
-          numberFeatures = jsonResponseOgc.features.length;
-        }
-      } else {
-        numberFeatures = 0;
-      }
-
-      return numberFeatures;
-    });
-  }
-
   destroy() {
+    if (this.authManager_) this.authManager_.destroy();
     this.getImpl().destroy();
-  }
-
-  /**
-   * Gets feature url of features
-   * @public
-   * @function
-   * @api
-   */
-  getFeatureUrl(layer) {
-    const getFeatureParams = {
-      // service: 'OGCAPIFeatures',
-      // request: 'GetFeature',
-      // outputFormat: layer.getFeatureOutputFormat_,
-      // describeOutputFormat: layer.getDescribeFeatureType_,
-      // srsname: projection.getCode(),
-    };
-    let fUrl;
-    /* eslint-disable no-param-reassign */
-    if (!IDEE.utils.isNullOrEmpty(layer.name)) {
-      layer.url = `${layer.url}${layer.name}/items`;
-    }
-
-    if (!IDEE.utils.isNullOrEmpty(layer.format)) {
-      getFeatureParams.f = layer.format;
-    }
-
-    if (!IDEE.utils.isNullOrEmpty(layer.id)) {
-      layer.url = `${layer.url}${layer.id}?`;
-      fUrl = IDEE.utils.addParameters(IDEE.utils
-        .addParameters(layer.url, getFeatureParams), layer.getFeatureVendor);
-    } else {
-      layer.url = `${layer.url}?`;
-      /* eslint-enable no-param-reassign */
-      if (!IDEE.utils.isNullOrEmpty(layer.limit)) {
-        getFeatureParams.limit = layer.limit;
-      }
-
-      if (!IDEE.utils.isNullOrEmpty(layer.offset)) {
-        getFeatureParams.offset = layer.offset;
-      }
-
-      if (!IDEE.utils.isNullOrEmpty(layer.bbox)) {
-        getFeatureParams.bbox = layer.bbox;
-      }
-      fUrl = IDEE.utils.addParameters(IDEE.utils
-        .addParameters(layer.url, getFeatureParams), layer.getFeatureVendor);
-      if (!IDEE.utils.isNullOrEmpty(layer.conditional)) {
-        let text = '';
-        Object.keys(layer.conditional).forEach((key) => {
-          const param = `&${key}=${layer.conditional[key]}&`;
-          text += param;
-        });
-        getFeatureParams.conditional = text;
-        fUrl += getFeatureParams.conditional;
-      }
-    }
-    fUrl = fUrl.replaceAll(' ', '%20');
-    return fUrl;
   }
 
   // CODSI
@@ -3263,6 +3398,8 @@ export default class LayerswitcherControl extends IDEE.Control {
   showCODSI() {
     document.querySelector(ADDSERVICES_RESULTS).innerHTML = '';
     document.querySelector(LAYERS_CONTAINER).innerHTML = '';
+    this.hideOGCModeSelector_();
+    removeDialogActions();
     document.querySelector(CODSI).style.display = 'block';
     document.querySelector(ADDSERVICES_SUGGESTIONS).style.display = 'none';
 

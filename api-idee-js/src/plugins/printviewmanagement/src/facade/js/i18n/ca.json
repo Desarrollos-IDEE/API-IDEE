@@ -113,6 +113,7 @@
   "layer_wfs": "(Web Feature Service) és un estàndard OGC per a la descàrrega i transferència d'informació geogràfica, on els elements geogràfics o features es transmeten íntegrament al client.",
   "layer_kml": "(Keyhole Markup Language). KML és un llenguatge de marcatge basat en XML per representar dades geogràfiques en tres dimensions.",
   "layer_OGCAPIFeatures": "(OGC API - FEATURES) és un estàndard OGC que ofereix la capacitat de crear, modificar i consultar dades espacials a la Web i especifica requisits i recomanacions per a les API que volen seguir una forma estàndard de compartir dades d'entitats.",
+  "layer_DataIDEE": "Capa vectorial de serveis OGC API Features DataIDEE. Pot requerir iniciar la sessió al servei; s'imprimeixen els objectes geogràfics carregats al mapa.",
   "tooltip_georefimageepsg": "Georeferenciar imatge predefinida",
   "title_map": "Impressió del mapa",
   "title_view": "Descàrrega d'imatge georeferenciada de la vista",

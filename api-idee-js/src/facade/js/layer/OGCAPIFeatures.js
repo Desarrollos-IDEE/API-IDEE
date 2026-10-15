@@ -62,7 +62,8 @@ class OGCAPIFeatures extends Vector {
    * - name: Nombre de la capa en el servidor.
    * - limit: Límite de objetos geográficos a mostrar.
    * - bbox: Filtro para mostrar los resultados en un bbox específico.
-   * - format: Formato de los objetos geográficos.
+   * - format: Formato de los objetos geográficos (parámetro "f"). Por defecto "json";
+   *   con null no se envía, para servicios que no admiten el parámetro "f".
    * - offset: Determina desde que número comenzará a leer los objetos geográficos.Ejemplo:
    * El parámetro offset tiene valor 10 con límite de 5 objetos geográficos,
    * devolverá los 5 primeros objetos geográficos desde número 10 de los resultados.

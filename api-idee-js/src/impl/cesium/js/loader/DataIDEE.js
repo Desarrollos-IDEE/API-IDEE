@@ -6,6 +6,7 @@ import MObject from 'IDEE/Object';
 import { get as getRemote } from 'IDEE/util/Remote';
 import Exception from 'IDEE/exception/exception';
 import { getValue } from 'IDEE/i18n/language';
+import * as EventType from 'IDEE/event/eventtype';
 
 /**
   * @classdesc
@@ -26,9 +27,10 @@ class DataIDEE extends MObject {
     * @param {IDEE.Map} map Mapa
     * @param {String} url URL de la colección o entidad.
     * @param {IDEE.format.GeoJSON} format Formato.
+    * @param {Object} headers Cabeceras de las peticiones (p. ej. Authorization).
     * @api
     */
-  constructor(map, url, format) {
+  constructor(map, url, format, headers = {}) {
     super();
 
     /**
@@ -56,7 +58,7 @@ class DataIDEE extends MObject {
      * Optional settings forwarded to Remote.get.
      * @private
      */
-    this.requestOptions_ = { jsonp: false };
+    this.requestOptions_ = { jsonp: false, headers };
   }
 
   /**
@@ -100,8 +102,14 @@ class DataIDEE extends MObject {
   loadInternal_(projection, requestUrl = this.url_, forRefresh = false) {
     return new Promise((success, fail) => {
       const request = getRemote(requestUrl, null, this.requestOptions_).then((response) => {
-        if (forRefresh && response.code >= 400) throw new Error(`HTTP ${response.code}`);
-        if (!isNullOrEmpty(response.text)) {
+        if (response.code === 401 || response.code === 403) {
+          this.fire(EventType.LOAD_UNAUTHORIZED);
+          // En una recarga se rechaza para conservar los objetos geográficos actuales.
+          if (forRefresh) throw new Error(`HTTP ${response.code}`);
+          success.call(this, [[]]);
+        } else if (forRefresh && response.code >= 400) {
+          throw new Error(`HTTP ${response.code}`);
+        } else if (!isNullOrEmpty(response.text)) {
           const newText = response.text.replace('urn:ogc:def:crs:OGC:1.3:CRS84', 'urn:ogc:def:crs:EPSG::4326');
           const features = this.format_.read(newText, {
             featureProjection: projection,

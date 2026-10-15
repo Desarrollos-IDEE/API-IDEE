@@ -10,6 +10,8 @@ import Vector from './Vector';
 import * as LayerType from './Type';
 import * as parameter from '../parameter/parameter';
 import { getValue } from '../i18n/language';
+import * as EventType from '../event/eventtype';
+import * as Dialog from '../dialog';
 
 /**
  * @classdesc
@@ -99,11 +101,13 @@ class DataIDEE extends Vector {
    * - filterLang: Lenguaje CQL2 explícito para filter (por ejemplo, cql2-text
    *   o cql2-json).
    * - cql: Alias heredado para enviar un filtro mediante el parámetro filter.
+   * - getFeature: Parámetros adicionales que se añaden a la petición de items.
    * Ejemplo vendorOptions:
    * <pre><code>
    * {
    *   filter: { op: '=', args: [{ property: 'status' }, 'active'] },
    *   filterLang: 'cql2-json',
+   *   getFeature: { token: tokenAutenticacion },
    * }
    * </code></pre>
    * @api
@@ -144,6 +148,7 @@ class DataIDEE extends Vector {
 
     // Llama al contructor del que se extiende la clase
     super(parameters, optionsVar, undefined, impl);
+
     this.constructorParameters = { userParams, opt, vendorOpts };
 
     /**
@@ -234,6 +239,15 @@ class DataIDEE extends Vector {
      * DataIDEE opt: Opciones.
      */
     this.opt = opt;
+
+    /**
+     * Indica si ya se ha avisado de un acceso no autorizado.
+     * @private
+     * @type {Boolean}
+     */
+    this.unauthorizedNotified_ = false;
+
+    impl.on(EventType.LOAD_UNAUTHORIZED, this.notifyUnauthorized_, this);
   }
 
   /**
@@ -457,6 +471,48 @@ class DataIDEE extends Vector {
       }
     } else {
       this.getImpl().extract = true;
+    }
+  }
+
+  /**
+   * Devuelve el token de autenticación de la capa.
+   *
+   * @function
+   * @returns {String|undefined} Token enviado como cabecera "Authorization: Bearer".
+   * @api
+   */
+  getToken() {
+    return this.constructorParameters.vendorOpts?.getFeature?.token;
+  }
+
+  /**
+   * Cambia el token de autenticación y recarga la capa.
+   *
+   * @function
+   * @param {String} token Nuevo token. Si es vacío, se eliminará.
+   * @api
+   */
+  setToken(token) {
+    const { vendorOpts } = this.constructorParameters;
+    const oldToken = this.getToken();
+    const getFeature = { ...vendorOpts.getFeature, token };
+    if (isNullOrEmpty(token)) delete getFeature.token;
+    vendorOpts.getFeature = getFeature;
+    this.unauthorizedNotified_ = false;
+    if (oldToken !== token) this.getImpl().setToken(token);
+  }
+
+  /**
+  * Notifica que la petición de la capa no está autorizada (HTTP 401/403).
+  * El aviso al usuario se muestra una única vez por token.
+  * @private
+  * @function
+  */
+  notifyUnauthorized_() {
+    this.fire(EventType.LOAD_UNAUTHORIZED, [this]);
+    if (!this.unauthorizedNotified_) {
+      this.unauthorizedNotified_ = true;
+      Dialog.error(getValue('dialog').dataidee_unauthorized);
     }
   }
 

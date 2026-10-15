@@ -18,6 +18,20 @@ import OGCAPIFeatures from './OGCAPIFeatures';
  */
 class DataIDEE extends OGCAPIFeatures {
   /**
+   * Cambia el token de autenticación y recarga la capa si está en un mapa.
+   * @param {String} token Token que se enviará como cabecera "Authorization: Bearer".
+   * @public
+   * @api
+   */
+  setToken(token) {
+    // eslint-disable-next-line no-unused-vars
+    const getFeature = { ...this.vendorOptions_.getFeature, token };
+    if (isNullOrEmpty(token)) delete getFeature.token;
+    this.vendorOptions_.getFeature = getFeature;
+    if (this.map) this.refresh(true);
+  }
+
+  /**
    * Loads GeoJSON from the OGC API Features items endpoint into the vector source.
    * @param {Boolean} forceNewSource Replaces the existing source when true.
    * @private
@@ -46,7 +60,9 @@ class DataIDEE extends OGCAPIFeatures {
       this.map,
       this.service_.getItemsUrl(),
       this.formater_,
+      this.service_.getRequestHeaders(),
     );
+    this.loader_.on(EventType.LOAD_UNAUTHORIZED, () => this.fire(EventType.LOAD_UNAUTHORIZED));
 
     const ol3LayerSource = this.olLayer.getSource();
     const requestedLayer = this.olLayer;
