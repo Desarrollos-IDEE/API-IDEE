@@ -3,7 +3,7 @@ import TemplateCustomizerImpl from '../../impl/ol/js/templateCustomizer';
 import templateCustomizer from '../../templates/templateCustomizer';
 import { getValue } from './i18n/language';
 import { createLoadingSpinner } from './utils';
-import { PREVIEW_MAP_ORIENTATION } from '../../constants';
+import { PREVIEW_MAP_ORIENTATION, PRINT_TEMPLATE_MARGIN_MM } from '../../constants';
 
 const ID_TEMPLATE_ORIENTATION = 'input[name="map-orientation"]';
 const ID_TEMPLATE_LAYOUT = '#template-layout';
@@ -1298,15 +1298,30 @@ export default class TemplateCustomizer extends IDEE.Control {
   }
 
   /**
-   * Inyecta CSS para que la plantilla ocupe el 100% de la página (preview y exportación).
+   * Inyecta CSS para que la plantilla ocupe la página con margen blanco
+   * (preview y exportación), dejando hueco en todos los bordes.
    * También ensancha un poco las columnas laterales del marco.
    * @returns {HTMLStyleElement} Nodo de estilo (hay que eliminarlo al terminar)
    */
   injectFullPageTemplateStyles() {
+    const pageMargin = `${PRINT_TEMPLATE_MARGIN_MM}mm`;
+    const contentSize = `calc(100% - ${2 * PRINT_TEMPLATE_MARGIN_MM}mm)`;
     const fullPageStyle = document.createElement('style');
     fullPageStyle.setAttribute('data-print-fullpage', 'true');
     fullPageStyle.textContent = `
-      ${ID_CONTAINER_DEFAULT_TEMPLATE},
+      ${CLASS_MAP_CONTAINER} {
+        background-color: #ffffff !important;
+        box-sizing: border-box !important;
+      }
+      ${CLASS_MAP_CONTAINER} > body {
+        width: 100% !important;
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+        background-color: #ffffff !important;
+        overflow: hidden !important;
+      }
       ${ID_CONTAINER_DEFAULT_TEMPLATE} .interior-container,
       ${ID_CONTAINER_DEFAULT_TEMPLATE} .superior-container,
       ${ID_CONTAINER_DEFAULT_TEMPLATE} .inferior-container,
@@ -1319,9 +1334,13 @@ export default class TemplateCustomizer extends IDEE.Control {
         right: 0 !important;
       }
       ${ID_CONTAINER_DEFAULT_TEMPLATE} {
-        width: 100% !important;
-        height: 100% !important;
+        position: relative !important;
+        width: ${contentSize} !important;
+        height: ${contentSize} !important;
+        max-width: ${contentSize} !important;
+        margin: ${pageMargin} !important;
         box-sizing: border-box !important;
+        background-color: #ffffff !important;
       }
       ${ID_CONTAINER_DEFAULT_TEMPLATE} .interior-container {
         grid-template-columns: 1.1fr 15.8fr 1.1fr !important;
@@ -1349,9 +1368,13 @@ export default class TemplateCustomizer extends IDEE.Control {
     const originalStyles = this.applyExportStyles(currentLayout);
 
     let previousTransform = '';
+    let previousBorder = '';
     if (pageContainer) {
       previousTransform = pageContainer.style.transform;
+      previousBorder = pageContainer.style.border;
       pageContainer.style.transform = 'translate(-50%, -50%) scale(1)';
+      // El borde solo sirve para delimitar el folio en preview; no debe salir en la exportación.
+      pageContainer.style.border = 'none';
     }
 
     let fullPageStyle = options.fullPageStyle || null;
@@ -1379,6 +1402,9 @@ export default class TemplateCustomizer extends IDEE.Control {
       }
       if (pageContainer && !keepFullPageStyles) {
         pageContainer.style.transform = previousTransform;
+        pageContainer.style.border = previousBorder;
+      } else if (pageContainer) {
+        pageContainer.style.border = previousBorder;
       }
       if (this.styleContainer_) {
         this.styleContainer_.textContent = originalStyles;
