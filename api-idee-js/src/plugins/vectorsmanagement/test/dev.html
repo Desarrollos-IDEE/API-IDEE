@@ -24,6 +24,107 @@
 </head>
 
 <body>
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form">
+            <div>
+                <label for="selectPosition" title="Posición del plugin sobre el mapa. Por defecto: right">Posición "position"</label>
+                <select name="position" id="selectPosition">
+                    <option value="" selected="selected"></option>
+                    <option value="left">Izquierda</option>
+                    <option value="right">Derecha</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectCollapsed" title="Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true">Colapsado "collapsed"</label>
+                <select name="selectCollapsed" id="selectCollapsed">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputOrder" title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Orden entre controles / plugins "order"</label>
+                <input type="number" name="order" id="inputOrder" value="-1">
+            </div>
+            <div>
+                <label for="selectSelection" title="Incluye la herramienta de selección de elementos (true/false). Por defecto: true">Herramienta de selección "selection"</label>
+                <select name="selectSelection" id="selectSelection">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectAddlayer" title="Incluye la herramienta de creación de capas vectoriales (true/false). Por defecto: true">Herramienta de creación capas "addlayer"</label>
+                <select name="selectAddlayer" id="selectAddlayer">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectAnalysis" title="Incluye la herramienta de análisis (true/false). Por defecto: true. Es necesario tener añadida la herramienta de selección.">Herramienta de análisis "analysis"</label>
+                <select name="selectAnalysis" id="selectAnalysis">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectCreation" title="Incluye la herramienta de dibujo (true/false). Por defecto: true. Es necesario tener añadida la herramienta de selección.">Herramienta de dibujo "creation"</label>
+                <select name="selectCreation" id="selectCreation">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectDownload" title="Incluye la herramienta de descarga (true/false). Por defecto: true. Es necesario tener añadida la herramienta de selección.">Herramienta de descarga "download"</label>
+                <select name="selectDownload" id="selectDownload">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectEdition" title="Incluye la herramienta de edición (true/false). Por defecto: true. Es necesario tener añadida la herramienta de selección.">Herramienta de edición "edition"</label>
+                <select name="selectEdition" id="selectEdition">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectHelp" title="Incluye la herramienta de ayuda (true/false). Por defecto: true">Herramienta de ayuda "help"</label>
+                <select name="selectHelp" id="selectHelp">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectStyle" title="Incluye la herramienta de edición de estilos (true/false). Por defecto: true. Es necesario tener añadida la herramienta de selección.">Herramienta de estilos "style"</label>
+                <select name="selectStyle" id="selectStyle">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputSnapping" title="Configuración del snapping de las herramientas de creación y edición: true, false, JSON o base64. Si se deja vacío se usan los valores por defecto">Configuración del snapping "snapping"</label>
+                <input type="text" name="snapping" id="inputSnapping" list="snappingSug">
+                <datalist id="snappingSug">
+                    <option value="true" label="Snapping activado con los valores por defecto"></option>
+                    <option value="false" label="Snapping desactivado"></option>
+                    <option value='{"vertex":true,"edge":false,"intersection":true,"allLayers":true,"guides":true,"pixelTolerance":15}' label="Configuración completa"></option>
+                </datalist>
+            </div>
+        </div>
+        <div class="m-test-buttons">
+            <button name="eliminar" class="m-test-button" id="removeButton">Eliminar Plugin</button>
+        </div>
+    </div>
+
     <div id="mapjs" class="container"></div>
     <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/js/apiidee.ol.min.js"></script>
     <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/js/configuration.js"></script>
