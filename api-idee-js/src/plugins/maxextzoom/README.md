@@ -5,7 +5,7 @@
 
 # Descripción
 
-Plugin que va a la extensión y posición original del mapa base.
+Plugin que añade un botón one-shot para ajustar la vista a la extensión máxima del mapa.
 
 ![Imagen1](img/maxExtZoom_1.png)
 
@@ -29,24 +29,27 @@ Para uso de implementación Cesium:
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.idee.es/api-idee/plugins/maxextzoom/maxextzoom-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/maxextzoom/maxextzoom-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/maxextzoom/maxextzoom-2.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/maxextzoom/maxextzoom-2.0.0.ol.min.js"></script>
 ```
 
 ## Parámetros
 
 El constructor se inicializa con un JSON con los siguientes atributos:
 
-- **position**. Indica la posición donde se mostrará el plugin
-  - 'TL':top left (por defecto)
-  - 'TR':top right 
-  - 'BL':bottom left
-  - 'BR':bottom right
+- **position**: Posición donde se muestra el botón del plugin en el mapa (por defecto `left`).
+  - `left`, `right`
+  - `center-bottom-left`, `center-bottom-right`
+  - `center-top-left`, `center-top-right`
+  - `down`
+  - También acepta valores legacy `TL`, `TR`, `BL`, `BR` (se convierten automáticamente).
+- **order**: Orden del botón respecto a otras herramientas en la misma posición.
+- **tooltip**: Texto del tooltip del botón.
 
 # API-REST
 
 ```javascript
-URL_API?maxextzoom=position
+URL_API?maxextzoom=position*order*tooltip
 ```
 
 <table>
@@ -57,18 +60,28 @@ URL_API?maxextzoom=position
     </tr>
   <tr>
     <td>position</td>
-    <td>TR/TL/BR/BL</td>
+    <td>left, right, down, center-top-left, center-top-right, center-bottom-left, center-bottom-right</td>
+    <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
+  <tr>
+    <td>order</td>
+    <td>número</td>
+    <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
+  <tr>
+    <td>tooltip</td>
+    <td>texto</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
 </table>
 
 ### Ejemplos de uso API-REST
 ```
-https://componentes.idee.es/api-idee?maxextzoom=position
+https://componentes.idee.es/api-idee?maxextzoom=left*1*Zoom%20a%20la%20extensi%C3%B3n%20del%20mapa
 ```
 
 ```
-https://componentes.idee.es/api-idee?maxextzoom=TR&maxextent=-3267535.078657374,2900457.9904398364,2248102.1864131317,5693133.810152115
+https://componentes.idee.es/api-idee?maxextzoom=left&maxextent=-3267535.078657374,2900457.9904398364,2248102.1864131317,5693133.810152115
 ```
 
 
@@ -78,15 +91,18 @@ Para la codificación en base64 del objeto con los parámetros del plugin podemo
 Ejemplo:
 ```javascript
 IDEE.utils.encodeBase64(obj_params);
+```
 
 Ejemplo de constructor:
 ```javascript
 {
-  position: 'TR'
+  position: 'left',
+  order: 1,
+  tooltip: 'Zoom a la extensión del mapa'
 }
 ```
 ```
-https://componentes.idee.es/api-idee?maxextzoom=base64=eyJwb3NpdGlvbiI6IlRSIn0=&maxextent=-3267535.078657374,2900457.9904398364,2248102.1864131317,5693133.810152115
+https://componentes.idee.es/api-idee?maxextzoom=base64=eyJwb3NpdGlvbiI6ImxlZnQiLCJvcmRlciI6MSwidG9vbHRpcCI6Ilpvb20gYSBsYSBleHRlbnNpw7NuIGRlbCBtYXBhIn0=&maxextent=-3267535.078657374,2900457.9904398364,2248102.1864131317,5693133.810152115
 ```
 
 ## Ejemplos de uso
@@ -99,7 +115,8 @@ https://componentes.idee.es/api-idee?maxextzoom=base64=eyJwb3NpdGlvbiI6IlRSIn0=&
   });
 
   const mp = new IDEE.plugin.MaxExtZoom({
-    position: 'TL',
+    position: 'left',
+    order: 1,
   });
 
   map.addPlugin(mp);
@@ -109,7 +126,7 @@ https://componentes.idee.es/api-idee?maxextzoom=base64=eyJwb3NpdGlvbiI6IlRSIn0=&
   const map = IDEE.map({
     container: 'map',
     maxExtent: [-3267535.078657374, 2900457.9904398364, 2248102.1864131317, 5693133.810152115],
-  }); 
+  });
 
   const mp = new IDEE.plugin.MaxExtZoom();
 
@@ -177,5 +194,5 @@ $ncu
 ```
 
 
-## Tabla de compatibilidad de versiones   
+## Tabla de compatibilidad de versiones
 [Consulta el api resourcePlugin](https://componentes.idee.es/api-idee/api/actions/resourcesPlugins?name=maxextzoom)

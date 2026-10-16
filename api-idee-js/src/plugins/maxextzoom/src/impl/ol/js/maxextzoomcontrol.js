@@ -1,5 +1,5 @@
 /**
- * @module M/impl/control/MaxExtZoomControl
+ * @module IDEE/impl/control/MaxExtZoomControl
  */
 export default class MaxExtZoomControl extends IDEE.impl.Control {
   /**
@@ -12,7 +12,22 @@ export default class MaxExtZoomControl extends IDEE.impl.Control {
    * @api stable
    */
   addTo(map, html) {
-    // const olMap = map.getMapImpl();
+    this.facadeMap_ = map;
+    this.map = map;
+    this.element = html;
     super.addTo(map, html);
+  }
+
+  /**
+   * This function destroys this control
+   *
+   * @public
+   * @function
+   * @api stable
+   */
+  destroy() {
+    this.facadeMap_ = null;
+    this.map = null;
+    this.element = null;
   }
 }

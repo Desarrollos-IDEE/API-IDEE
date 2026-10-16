@@ -1,54 +1,53 @@
 /**
- * @module M/control/MaxExtZoomControl
+ * @module IDEE/control/MaxExtZoomControl
  */
-
 import MaxExtZoomImplControl from 'impl/maxextzoomcontrol';
-import template from 'templates/maxextzoom';
 import { getValue } from './i18n/language';
 
-export default class MaxExtZoomControl extends IDEE.Control {
+/**
+ * @classdesc
+ * Control one-shot: al pulsar ajusta la vista a la extensión máxima.
+ */
+class MaxExtZoomControl extends IDEE.Control {
   /**
-   * @classdesc
-   * Main constructor of the class. Creates a PluginControl
-   * control
-   *
    * @constructor
    * @extends {IDEE.Control}
-   * @api stable
+   * @param {Object} options control options
+   * @api
    */
-  constructor() {
-    if (IDEE.utils.isUndefined(MaxExtZoomImplControl)) {
+  constructor(options = {}) {
+    if (IDEE.utils.isUndefined(MaxExtZoomImplControl)
+      || (IDEE.utils.isObject(MaxExtZoomImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(MaxExtZoomImplControl)))) {
       IDEE.exception(getValue('exception.impl'));
     }
     const impl = new MaxExtZoomImplControl();
-    super(impl, 'MaxExtZoom');
-  }
-
-  /**
-   * This function creates the view
-   *
-   * @public
-   * @function
-   * @param {IDEE.Map} map to add the control
-   * @api stable
-   */
-  createView(map) {
-    this.map = map;
-    return new Promise((success, fail) => {
-      const html = IDEE.template.compileSync(template, {
-        vars: {
-          translations: {
-            zoommapextend: getValue('zoommapextend'),
-          },
-        },
-      });
-      html.querySelector('#m-maxextzoom-button').addEventListener('click', this.zoomToDefaultBox.bind(this));
-      success(html);
+    super(MaxExtZoomControl.NAME, impl, {
+      tooltip: options.tooltip,
+      position: options.position,
+      order: options.order,
+      svgPath: options.svgPath,
     });
   }
 
-  zoomToDefaultBox() {
-    this.map.zoomToMaxExtent();
+  /**
+   * Activación one-shot: no permanece en modo toggle.
+   *
+   * @public
+   * @function
+   * @param {HTMLElement} html HTML del control
+   * @api
+   */
+  manageActivation(html) {
+    this.activationBtn = this.getActivationButton(this.element || html);
+    if (!IDEE.utils.isNullOrEmpty(this.activationBtn)) {
+      this.activationBtn.addEventListener('click', (evt) => {
+        evt.preventDefault();
+        if (this.map) {
+          this.map.zoomToMaxExtent();
+        }
+      }, false);
+    }
   }
 
   /**
@@ -57,9 +56,24 @@ export default class MaxExtZoomControl extends IDEE.Control {
    * @public
    * @function
    * @param {IDEE.Control} control to compare
-   * @api stable
+   * @api
    */
   equals(control) {
     return control instanceof MaxExtZoomControl;
   }
+
+  /**
+   * Limpia el control
+   *
+   * @public
+   * @function
+   * @api
+   */
+  destroy() {
+    this.activationBtn = null;
+    super.destroy();
+  }
 }
+
+MaxExtZoomControl.NAME = 'MaxExtZoom';
+export default MaxExtZoomControl;

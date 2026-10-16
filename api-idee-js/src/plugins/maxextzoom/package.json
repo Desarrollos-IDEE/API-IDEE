@@ -1,6 +1,6 @@
 {
   "name": "MaxExtZoom",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Plugin que permite realizar un zoom a la extensión del mapa",
   "keywords": [
     "map",
@@ -13,7 +13,7 @@
   "scripts": {
     "start": "webpack serve --config=webpack-config/webpack.development-ol.config.js",
     "start:ol": "webpack serve --config=webpack-config/webpack.development-ol.config.js",
-    "start:cesium": "webpack serve --config=webpack-config/webpack.development-cesiumconfig.js",
+    "start:cesium": "webpack serve --config=webpack-config/webpack.development-cesium.config.js",
     "prebuild": "npm run prebuild:ol && npm run prebuild:cesium",
     "prebuild:ol": "node task/create-entrypoint-ol.js",
     "prebuild:cesium": "node task/create-entrypoint-cesium.js",

@@ -4,20 +4,32 @@
     "separator": "*"
   },
   "constructor": "IDEE.plugin.MaxExtZoom",
-  "parameters": [{
-    "type": "object",
-    "properties": [{
+  "parameters": [
+    {
       "type": "simple",
       "name": "position",
       "position": 0,
       "possibleValues": [
-        "TL",
-        "TR",
-        "BL",
-        "BR"
+        "left",
+        "right",
+        "center-bottom-left",
+        "center-bottom-right",
+        "center-top-left",
+        "center-top-right",
+        "down"
       ]
-    }]
-  }],
+    },
+    {
+      "type": "number",
+      "name": "order",
+      "position": 1
+    },
+    {
+      "type": "string",
+      "name": "tooltip",
+      "position": 2
+    }
+  ],
   "files": {
     "ol": {
       "scripts": [
@@ -39,14 +51,16 @@
   "metadata": {
     "name": "MaxExtZoom",
     "description": "Zoom a la extensión del mapa",
-    "text": "Permite realizar un zoom a la extensión del mapa ",
-    "version": "1.0.0",
-    "date": "Diciembre, 2025",
-    "author": "",
-    "org": "",
-    "tags": "idee,plugin",
-    "icon": "./facade/assets/icons/icons.svg",
+    "text": "Permite realizar un zoom a la extensión del mapa",
+    "version": "2.0.0",
+    "date": "Septiembre, 2026",
+    "author": "API-IDEE",
+    "org": "Instituto Geográfico Nacional",
+    "tags": "api-idee,IDEE,plugin",
+    "icon": "https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_overview.svg",
     "centralized": true,
-    "compatibility": ["1"]
+    "compatibility": [
+      "2"
+    ]
   }
 }

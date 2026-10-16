@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="idee" content="yes">
+    <meta name="api-idee" content="yes">
     <title>MaxExtZoom TEST</title>
     <link href="https://componentes-beta.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
-    <link href="https://componentes.idee.es/api-idee/plugins/help/help.ol.min.css" rel="stylesheet" />
+    <link href="https://componentes-beta.idee.es/api-idee/plugins/help/help.ol.min.css" rel="stylesheet" />
     <style rel="stylesheet">
         html,
         body {
@@ -18,16 +18,50 @@
             overflow: hidden;
         }
     </style>
-
 </head>
 
 <body>
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form">
+            <div>
+                <label for="selectPosicion" title="Posición del plugin sobre el mapa">Posición del plugin
+                    "position"</label>
+                <select name="position" id="selectPosicion">
+                    <option value="left" selected="selected">left — barra lateral izquierda</option>
+                    <option value="right">right — barra lateral derecha</option>
+                    <option value="center-top-left">center-top-left — zona central superior izquierda</option>
+                    <option value="center-top-right">center-top-right — zona central superior derecha</option>
+                    <option value="center-bottom-left">center-bottom-left — zona central inferior izquierda</option>
+                    <option value="center-bottom-right">center-bottom-right — zona central inferior derecha</option>
+                    <option value="down">down — barra inferior</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputOrder"
+                    title="Define en que posición del panel debe aparecer en el conjunto de controles o plugins">Orden
+                    entre controles / plugins "order"</label>
+                <input type="number" name="order" id="inputOrder" value="0">
+            </div>
+            <div>
+                <label for="inputTooltip"
+                    title="Texto que se muestra al pasar el ratón sobre el botón del plugin.">Título de la herramienta
+                    "tooltip"</label>
+                <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="MaxExtZoom">
+                <datalist id="tooltipSug">
+                    <option value="Zoom a la extensión del mapa"></option>
+                </datalist>
+            </div>
+            <input type="hidden" id="buttonAPI" value="API Rest" />
+        </div>
+        <div class="m-test-buttons">
+            <button name="eliminar" class="m-test-button" id="botonEliminar">Eliminar Plugin</button>
+        </div>
+    </div>
     <div id="mapjs" class="container"></div>
     <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/js/apiidee.ol.min.js"></script>
     <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/js/configuration.js"></script>
-    <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/help/help.ol.min.js"></script>
+    <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/plugins/help/help.ol.min.js"></script>
     <script type="text/javascript" src="/main.js"></script>
-
 </body>
 
 </html>
