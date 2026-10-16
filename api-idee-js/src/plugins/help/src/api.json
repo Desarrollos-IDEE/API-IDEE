@@ -6,25 +6,33 @@
   "constructor": "IDEE.plugin.Help",
   "parameters": [
     {
-      "type": "object",
-      "properties": [
-        {
-          "type": "simple",
-          "name": "position",
-          "position": 0,
-          "possibleValues": [
-            "TL",
-            "TR",
-            "BR",
-            "BL"
-          ]
-        },
-        {
-          "type": "simple",
-          "name": "tooltip",
-          "position": 1
-        }
+      "type": "simple",
+      "name": "position",
+      "position": 0,
+      "possibleValues": [
+        "left",
+        "right",
+        "center-bottom-left",
+        "center-bottom-right",
+        "center-top-left",
+        "center-top-right",
+        "down"
       ]
+    },
+    {
+      "type": "number",
+      "name": "order",
+      "position": 1
+    },
+    {
+      "type": "string",
+      "name": "tooltip",
+      "position": 2
+    },
+    {
+      "type": "boolean",
+      "name": "extendInitialExtraContents",
+      "position": 3
     }
   ],
   "files": {
@@ -48,10 +56,15 @@
   "metadata": {
     "name": "Help",
     "description": "Shows help for plugins added to the map",
-    "version": "1.0.1",
-    "date": "15/02/24",
+    "text": "Abre una página HTML con la ayuda de los plugins y controles del visor.",
+    "version": "2.0.0",
+    "date": "Septiembre, 2026",
     "author": "Guadaltel",
     "org": "CNIG",
-    "tags": "plugin"
+    "icon": "https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ayuda.svg",
+    "tags": "plugin",
+    "compatibility": [
+      "2"
+    ]
   }
 }

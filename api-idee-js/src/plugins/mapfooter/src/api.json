@@ -43,6 +43,26 @@
           "position": 4
         }
       ]
+    },
+    {
+      "type": "boolean",
+      "name": "collapsed",
+      "position": 1
+    },
+    {
+      "type": "number",
+      "name": "order",
+      "position": 2
+    },
+    {
+      "type": "string",
+      "name": "tooltip",
+      "position": 3
+    },
+    {
+      "type": "boolean",
+      "name": "collapsible",
+      "position": 4
     }
   ],
   "files": {

@@ -1,7 +1,6 @@
 import Help from 'facade/help';
 
 IDEE.language.setLang('es');
-// IDEE.language.setLang('en');
 
 const map = IDEE.map({
   container: 'mapjs',
@@ -9,139 +8,84 @@ const map = IDEE.map({
 });
 window.map = map;
 
-const mp = new Help({
-  position: 'TR', // TR, BR, TL, BL
-  initialIndex: 3,
-  // tooltip: 'Mi ayuda',
-  header: {
-    images: [
-      'https://www.gravatar.com/avatar/586252adace7084ee98aa8977fe5cc2b?rating=PG&size=128&default=wavatar',
-      'https://www.gravatar.com/avatar/75df827b1b67c5f04f1715dd01016735?rating=PG&size=64x64&default=wavatar',
-    ],
-    // title: 'Título'
-    title: {
-      es: 'Título definido por el usuario',
-      en: 'User Defined Title',
-    },
-  },
-  extendInitialExtraContents: true,
-  /* / PRUEBA initialExtraContents 1
-  initialExtraContents: {es: [
-    { title: 'Índice 1', content: '<div><h2>Título 1</h2><div><p>Contenido 1</p> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Tyto_alba_close_up.jpg/200px-Tyto_alba_close_up.jpg" width="300" height="400"></div></div>',
-      subContents : [
-        { title: 'Índice 2', content: '<div><h2>Título 2</h2><div><p>Contenido 2</p></div></div>'},
-      ]
-    },
-    { title: 'Índice 3', content: '<div><h2>Título 3</h2><div><p>Contenido 3</p></div></div>'},
-    { title: 'Índice 4', content: '<div><h2>Título 4</h2><div><p>Contenido 4</p></div></div>',
-      subContents : [
-        { title: 'Índice 5', content: '<div><h2>Título 5</h2><div><p>Contenido 5</p></div></div>',
-          subContents : [{ title: 'Índice 6', content: '<div><h2>Título 6</h2><div><p>Contenido 6</p></div></div>',
-        subContents : [{ title: 'Índice 6 esp', content: '<div><h2>Título 6 esp</h2><div><p>Contenido 6 esp</p></div></div>' }], },
-      ]
-        },
-      ]
-    },
-  ], en: [
-    { title: 'Index 1', content: '<div><h2>Title 1</h2><div><p>Content 1</p> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Tyto_alba_close_up.jpg/200px-Tyto_alba_close_up.jpg" width="300" height="400"></div></div>',
-      subContents : [
-        { title: 'Index 2', content: '<div><h2>Title 2</h2><div><p>Content 2</p></div></div>'},
-      ]
-    },
-    { title: 'Index 3', content: '<div><h2>Title 3</h2><div><p>Content 3</p></div></div>'},
-    { title: 'Index 4', content: '<div><h2>Title 4</h2><div><p>Content 4</p></div></div>',
-      subContents : [
-        { title: 'Index 5', content: '<div><h2>Title 5</h2><div><p>Content 5</p></div></div>',
-          subContents : [{ title: 'Index 6', content: '<div><h2>Title 6</h2><div><p>Content 6</p></div></div>',
-        subContents : [{ title: 'Index 6 esp', content: '<div><h2>Title 6 esp</h2><div><p>Content 6 esp</p></div></div>' }], },
-      ]
-        },
-      ]
-    },
-  ]}, // */
-  // PRUEBA initialExtraContents 2
-  initialExtraContents: [
-    {
-      title: 'Índice 1',
-      content: '<div><h2 style="text-align: center; color: #fff; background-color: #364b5f; padding: 8px 10px;">Título 1</h2><div><p>Contenido 1</p> <img style="margin-left: 20%;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Tyto_alba_close_up.jpg/200px-Tyto_alba_close_up.jpg" width="300" height="400"></div></div>',
-      subContents: [
-        { title: 'Índice 2', content: '<div><h2 style="text-align: center; color: #fff; background-color: #364b5f; padding: 8px 10px;">Título 2</h2><div><p>Contenido 2</p></div></div>' },
-      ],
-    },
-    { title: 'Índice 3', content: '<div><h2 style="text-align: center; color: #fff; background-color: #364b5f; padding: 8px 10px;">Título 3</h2><div><p>Contenido 3</p></div></div>' },
-    {
-      title: 'Índice 4',
-      content: '<div><h2 style="text-align: center; color: #fff; background-color: #364b5f; padding: 8px 10px;">Título 4</h2><div><p>Contenido 4</p></div></div>',
-      subContents: [
-        {
-          title: 'Índice 5',
-          content: '<div><h2 style="text-align: center; color: #fff; background-color: #364b5f; padding: 8px 10px;">Título 5</h2><div><p>Contenido 5</p></div></div>',
-          subContents: [{
-            title: 'Índice 6',
-            content: '<div><h2 style="text-align: center; color: #fff; background-color: #364b5f; padding: 8px 10px;">Título 6</h2><div><p>Contenido 6</p></div></div>',
-            subContents: [{ title: 'Índice 6 esp', content: '<div><h2 style="text-align: center; color: #fff; background-color: #364b5f; padding: 8px 10px;">Título 6 esp</h2><div><p>Contenido 6 esp</p></div></div>' }],
-          },
-          ],
-        },
-      ],
-    },
-  ], // */
-  /* / PRUEBA finalExtraContents 1
-  finalExtraContents: { es: [
-    { title: 'Índice 7', content: '<div><h2>Título 7</h2><div><p>Contenido 7</p> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Tyto_alba_close_up.jpg/200px-Tyto_alba_close_up.jpg" width="300" height="400"></div></div>',
-      subContents : [
-        { title: 'Índice 8', content: '<div><h2>Título 8</h2><div><p>Contenido 8</p></div></div>'},
-      ]
-    },
-    { title: 'Índice 9', content: '<div><h2>Título 9</h2><div><p>Contenido 9</p></div></div>'},
-    { title: 'Índice 10', content: '<div><h2>Título 10</h2><div><p>Contenido 10</p></div></div>',
-      subContents : [
-        { title: 'Índice 11', content: '<div><h2>Título 11</h2><div><p>Contenido 11</p></div></div>',
-          subContents : [{ title: 'Índice 12', content: '<div><h2>Título 10</h2><div><p>Contenido 12</p></div></div>' },
-      ]
-        },
-      ]
-    },
-  ], en: [
-    { title: 'Index 7', content: '<div><h2>Title 7</h2><div><p>Content 7</p> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Tyto_alba_close_up.jpg/200px-Tyto_alba_close_up.jpg" width="300" height="400"></div></div>',
-      subContents : [
-        { title: 'Index 8', content: '<div><h2>Title 8</h2><div><p>Content 8</p></div></div>'},
-      ]
-    },
-    { title: 'Index 9', content: '<div><h2>Title 9</h2><div><p>Content 9</p></div></div>'},
-    { title: 'Index 10', content: '<div><h2>Title 10</h2><div><p>Content 10</p></div></div>',
-      subContents : [
-        { title: 'Index 11', content: '<div><h2>Title 11</h2><div><p>Content 11</p></div></div>',
-          subContents : [{ title: 'Index 12', content: '<div><h2>Title 10</h2><div><p>Content 12</p></div></div>' },
-      ]
-        },
-      ]
-    },
-  ]}, // */
-  // PRUEBA finalExtraContents 2
-  finalExtraContents: [
-    {
-      title: 'Índice 7',
-      content: '<div><h2 style="text-align: center; color: #fff; background-color: #364b5f; padding: 8px 10px;">Título 7</h2><div><p>Contenido 7</p> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Tyto_alba_close_up.jpg/200px-Tyto_alba_close_up.jpg" width="300" height="400"></div></div>',
-      subContents: [
-        { title: 'Índice 8', content: '<div><h2 style="text-align: center; color: #fff; background-color: #364b5f; padding: 8px 10px;">Título 8</h2><div><p>Contenido 8</p></div></div>' },
-      ],
-    },
-    { title: 'Índice 9', content: '<div><h2 style="text-align: center; color: #fff; background-color: #364b5f; padding: 8px 10px;">Título 9</h2><div><p>Contenido 9</p></div></div>' },
-    {
-      title: 'Índice 10',
-      content: '<div><h2 style="text-align: center; color: #fff; background-color: #364b5f; padding: 8px 10px;">Título 10</h2><div><p>Contenido 10</p></div></div>',
-      subContents: [
-        {
-          title: 'Índice 11',
-          content: '<div><h2 style="text-align: center; color: #fff; background-color: #364b5f; padding: 8px 10px;">Título 11</h2><div><p>Contenido 11</p></div></div>',
-          subContents: [{ title: 'Índice 12', content: '<div><h2 style="text-align: center; color: #fff; background-color: #364b5f; padding: 8px 10px;">Título 10</h2><div><p>Contenido 12</p></div></div>' },
-          ],
-        },
-      ],
-    },
-  ], // */
+let mp;
+
+const createPlugin = (options) => {
+  mp = new Help(options);
+  window.mp = mp;
+  map.addPlugin(mp);
+};
+
+const removePlugin = () => {
+  if (mp) {
+    map.removePlugins(mp);
+  }
+};
+
+const removeButton = document.getElementById('removeButton');
+removeButton.addEventListener('click', () => {
+  removePlugin();
 });
 
-map.addPlugin(mp);
-window.mp = mp;
+const selectPosition = document.getElementById('selectPosition');
+const inputOrder = document.getElementById('inputOrder');
+const inputTooltip = document.getElementById('inputTooltip');
+const selectExtend = document.getElementById('selectExtend');
+const inputInitialIndex = document.getElementById('inputInitialIndex');
+const inputHeaderTitle = document.getElementById('inputHeaderTitle');
+const textareaHeaderImages = document.getElementById('textareaHeaderImages');
+
+const parseBool = (val) => {
+  if (val === 'true') {
+    return true;
+  }
+  if (val === 'false') {
+    return false;
+  }
+  return undefined;
+};
+
+const parseHeaderImages = (raw) => {
+  return raw
+    .split(',')
+    .map((url) => url.trim())
+    .filter((url) => url.length > 0);
+};
+
+const updatePlugin = () => {
+  const options = {};
+  options.position = selectPosition.value;
+  options.order = Number(inputOrder.value);
+  options.tooltip = inputTooltip.value.trim();
+  options.extendInitialExtraContents = parseBool(selectExtend.value);
+  options.initialIndex = Number(inputInitialIndex.value);
+  options.header = {
+    title: inputHeaderTitle.value.trim(),
+    images: parseHeaderImages(textareaHeaderImages.value),
+  };
+  options.initialExtraContents = [
+    {
+      title: 'Índice 1',
+      content: '<div><h2 style="text-align: center; color: var(--idee-color-white, #fff); background-color: var(--idee-color-neutral-80, #364b5f); padding: 8px 10px;">Título 1</h2><div><p>Contenido 1</p></div></div>',
+    },
+  ];
+  options.finalExtraContents = [
+    {
+      title: 'Índice final',
+      content: '<div><h2 style="text-align: center; color: var(--idee-color-white, #fff); background-color: var(--idee-color-neutral-80, #364b5f); padding: 8px 10px;">Título final</h2><div><p>Contenido final</p></div></div>',
+    },
+  ];
+
+  removePlugin();
+  createPlugin(options);
+};
+
+selectPosition.addEventListener('change', updatePlugin);
+inputOrder.addEventListener('change', updatePlugin);
+inputTooltip.addEventListener('change', updatePlugin);
+selectExtend.addEventListener('change', updatePlugin);
+inputInitialIndex.addEventListener('change', updatePlugin);
+inputHeaderTitle.addEventListener('change', updatePlugin);
+textareaHeaderImages.addEventListener('change', updatePlugin);
+
+updatePlugin();
