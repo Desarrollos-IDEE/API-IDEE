@@ -5,10 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="api-idee" content="yes">
     <title>Mapfooter Production TEST</title>
     <link href="https://componentes-beta.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
+    <link href="https://componentes-beta.idee.es/api-idee/plugins/help/help.ol.min.css" rel="stylesheet" />
     <link href="../dist/mapfooter.ol.min.css" rel="stylesheet" />
-    <link href="https://componentes.idee.es/api-idee/plugins/help/help.ol.min.css" rel="stylesheet" />
     <style rel="stylesheet">
         html,
         body {
@@ -18,20 +19,27 @@
             overflow: hidden;
         }
     </style>
-
 </head>
 
 <body>
     <div id="mapjs" class="container"></div>
     <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/js/apiidee.ol.min.js"></script>
     <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/js/configuration.js"></script>
+    <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/plugins/help/help.ol.min.js"></script>
     <script type="text/javascript" src="../dist/mapfooter.ol.min.js"></script>
-    <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/help/help.ol.min.js"></script>
-    <script type="text/javascript">
+    <script>
         const map = IDEE.map({
             container: 'mapjs',
         });
-        const mp = new IDEE.plugin.Mapfooter();
+        map.addControls(['scaleline']);
+        const mp = new IDEE.plugin.Mapfooter({
+            position: 'down',
+            collapsed: false,
+            order: 0,
+            tooltip: 'Mapfooter',
+            htmlCode: '<div style="text-align:center;padding:8px;">© Organismo Autónomo Centro Nacional de Información Geográfica (CNIG)</div>',
+            cssList: [],
+        });
         map.addPlugin(mp);
         map.addPlugin(new IDEE.plugin.Help({}));
     </script>

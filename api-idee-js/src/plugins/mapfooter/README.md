@@ -5,10 +5,9 @@
 
 ## Descripción
 
- Plugin para la generación automática de pie de pagina. 
+Plugin para la generación de un pie de página HTML colapsable bajo el mapa.
 
-![Imagen](./docs/images//mapfooterPlugin.png)
-
+![Imagen](./docs/images/mapfooterPlugin.png)
 
 ## Dependencias
 
@@ -31,23 +30,33 @@ Para uso de implementación Cesium:
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.idee.es/api-idee/plugins/mapfooter/mapfooter-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/mapfooter/mapfooter-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/mapfooter/mapfooter-2.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/mapfooter/mapfooter-2.0.0.ol.min.js"></script>
 ```
 
 ## Parámetros
 
 El constructor se inicializa con un JSON con los siguientes atributos:
 
-- **open**. Parámetro que inicializa el plugin con el pie de página abierta o cerrada.
-- **htmlCode**. CÓdigo html a partir del cual se construye el pie de la página.
-- **cssList**. Listado de archivos css que se inyectan en el visor para su uso en el pie de página.
+- **position**: Posición donde se muestra el plugin (por defecto `down`).
+  - `left`, `right`
+  - `center-bottom-left`, `center-bottom-right`
+  - `center-top-left`, `center-top-right`
+  - `down`
+- **collapsed**: Si el pie aparece colapsado al inicio (por defecto `true`). Compatibilidad legacy: `open: true` equivale a `collapsed: false`.
+- **collapsible**: Si el panel puede abrirse y cerrarse (por defecto `true`).
+- **order**: Orden del panel respecto a otros controles/plugins.
+- **tooltip**: Texto del tooltip del botón.
+- **htmlCode**: Código HTML del pie de página.
+- **cssList**: Lista de URLs CSS (array o string separado por comas) que se inyectan en el visor.
 
 # API-REST
 
 ```javascript
-URL_API?mapheader=open*htmlCode*cssList
+URL_API?mapfooter=position*collapsed*order*tooltip*collapsible
 ```
+
+`htmlCode` y `cssList` deben enviarse mediante **base64** (demasiado largos para el separador `*`).
 
 <table>
     <tr>
@@ -56,92 +65,92 @@ URL_API?mapheader=open*htmlCode*cssList
         <th>Disponibilidad</th>
     </tr>
     <tr>
-        <td>open</td>
-        <td>Boolean</td>
+        <td>position</td>
+        <td>left, right, down, center-top-left, center-top-right, center-bottom-left, center-bottom-right</td>
+        <td>Base64 ✔️ | Separador ✔️</td>
+    </tr>
+    <tr>
+        <td>collapsed</td>
+        <td>true / false</td>
+        <td>Base64 ✔️ | Separador ✔️</td>
+    </tr>
+    <tr>
+        <td>order</td>
+        <td>número</td>
+        <td>Base64 ✔️ | Separador ✔️</td>
+    </tr>
+    <tr>
+        <td>tooltip</td>
+        <td>texto</td>
+        <td>Base64 ✔️ | Separador ✔️</td>
+    </tr>
+    <tr>
+        <td>collapsible</td>
+        <td>true / false</td>
         <td>Base64 ✔️ | Separador ✔️</td>
     </tr>
     <tr>
         <td>htmlCode</td>
-        <td>Elemento para mostrar en el pie de la página</td>
-        <td>Base64 ✔️ | Separador ✔️</td>
+        <td>HTML del pie</td>
+        <td>Base64 ✔️</td>
     </tr>
     <tr>
         <td>cssList</td>
-        <td>Links CSS para el pie de la página</td>
-        <td>Base64 ✔️ | Separador ✔️</td>
+        <td>URLs CSS</td>
+        <td>Base64 ✔️</td>
     </tr>
 </table>
 
 ### Ejemplos de uso API-REST
 ```
-https://componentes.idee.es/api-idee?mapfooter=open*htmlCode*cssList
-```
-
-```
-https://componentes.idee.es/api-idee?mapfooter=true*<p>Mi%20pie%20de%20página</p>*https://www.sevilla.org/++theme++aysevilla/styles/build/plonetheme.aysevilla.min.css
+https://componentes.idee.es/api-idee?mapfooter=down*false*0*Pie%20de%20página*true
 ```
 
 ### Ejemplo de uso API-REST en base64
 
-Para la codificación en base64 del objeto con los parámetros del plugin podemos hacer uso de la utilidad IDEE.utils.encodeBase64.
-Ejemplo:
 ```javascript
 IDEE.utils.encodeBase64(obj_params);
+```
 
 Ejemplo de constructor:
 ```javascript
 {
-  open: true,
-  htmlCode: `<p>mi pie de página</p>`,
+  position: 'down',
+  collapsed: false,
+  htmlCode: '<p>mi pie de página</p>',
   cssList: [
-    'https://www.sevilla.org/++theme++aysevilla/styles/build/plonetheme.aysevilla.min.css',
+    'https://centrodedescargas.cnig.es/CentroDescargas/css/estilos-css-cnig-2024.css',
   ],
 }
-```
-```
-https://componentes.idee.es/api-idee?mapfooter=base64=eyJvcGVuIjp0cnVlLCJodG1sQ29kZSI6IjxwPm1pIHBpZSBkZSBww6FnaW5hPC9wPiIsImNzc0xpc3QiOlsiaHR0cHM6Ly93d3cuc2V2aWxsYS5vcmcvKyt0aGVtZSsrYXlzZXZpbGxhL3N0eWxlcy9idWlsZC9wbG9uZXRoZW1lLmF5c2V2aWxsYS5taW4uY3NzIl19
 ```
 
 ## Ejemplos de uso
 
 ```javascript
-   const map = IDEE.map({
-     container: 'map'
-   });
+const map = IDEE.map({
+  container: 'map',
+});
 
-   const mp = new IDEE.plugin.Mapheader({
-  open: true,
+const mp = new IDEE.plugin.Mapfooter({
+  position: 'down',
+  collapsed: false,
   htmlCode: `<div class="col-12 col-m-12 displayInlineBlock txtCenter fontSize09em">
                 <p class="marginBottom0">© Organismo Autónomo Centro Nacional de Información Geográfica (CNIG)</p>
                 <div id="dirCnigPC" class="row paddingBottom1por">
                     <div class="col-12">
-                    Calle General Ibáñez de Ibero, 3. 28003 - Madrid - España.   
+                    Calle General Ibáñez de Ibero, 3. 28003 - Madrid - España.
                     </div>
                     <div class="col-12">
                         NIF: ES Q2817024I  - NIPO: 798-20-071-1 - DOI: 10.7419/162.09.2020
                     </div>
                 </div>
-                <div id="dirCnigMobile" class="row paddingBottom2por" style="display: none;">
-                    <div class="col-12">
-                        Calle General Ibáñez de Ibero, 3. 28003 - Madrid - España. 
-                    </div>
-                    <div class="col-12">
-                        NIF: ES Q2817024I 
-                    </div>
-                    <div class="col-12">
-                        NIPO: 798-20-071-1
-                    </div>
-                    <div class="col-12">
-                        DOI: 10.7419/162.09.2020
-                    </div>
-                </div>
               </div>`,
   cssList: [
-    'https://centrodedescargas.cnig.es/CentroDescargas/css/estilos-css-cnig-2024.css'
-  ]
+    'https://centrodedescargas.cnig.es/CentroDescargas/css/estilos-css-cnig-2024.css',
+  ],
 });
 
-   map.addPlugin(mp);
+map.addPlugin(mp);
 ```
 
 # 👨‍💻 Desarrollo
@@ -204,6 +213,5 @@ $npm i -g npm-check-updates
 $ncu
 ```
 
-## Tabla de compatibilidad de versiones   
+## Tabla de compatibilidad de versiones
 [Consulta el api resourcePlugin](https://componentes.idee.es/api-idee/api/actions/resourcesPlugins?name=mapfooter)
-

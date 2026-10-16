@@ -1,38 +1,42 @@
-/* eslint-disable no-console */
 /**
- * @module M/control/MapfooterControl
+ * @module IDEE/control/MapfooterControl
  */
-
 import MapfooterImplControl from 'impl/mapfootercontrol';
 import template from 'templates/mapfooter';
 import { getValue } from './i18n/language';
 
-export default class MapfooterControl extends IDEE.Control {
+class MapfooterControl extends IDEE.Control {
   /**
    * @classdesc
-   * Main constructor of the class. Creates a PluginControl
-   * control
+   * Control del pie HTML del mapa.
    *
    * @constructor
    * @extends {IDEE.Control}
-   * @api stable
+   * @param {Object} options control options
+   * @api
    */
-  constructor(config) {
-    // 1. checks if the implementation can create PluginControl
-    if (IDEE.utils.isUndefined(MapfooterImplControl)) {
+  constructor(options = {}) {
+    if (IDEE.utils.isUndefined(MapfooterImplControl)
+      || (IDEE.utils.isObject(MapfooterImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(MapfooterImplControl)))) {
       IDEE.exception(getValue('exception.impl'));
     }
-    // 2. implementation of this control
     const impl = new MapfooterImplControl();
-    super(impl, 'Mapfooter');
-    this.config = config;
-    this.htmlCode = this.config.htmlCode;
-    this.opened = this.config.open === true;
-    this.cssList = (IDEE.utils.isArray(this.config.cssList) ? this.config.cssList : this.config.cssList.split(',')).map((s) => s.trim());
-    this.injectCSS(this.cssList);
-    this.templateVars = { vars: { htmlCode: this.htmlCode } };
-    /** @type {number} altura del panel mapfooter (px). 0 hasta primera medición. */
+    super(MapfooterControl.NAME, impl, {
+      tooltip: options.tooltip,
+      position: options.position,
+      order: options.order,
+    });
+
+    this.htmlCode = options.htmlCode || '';
+    this.opened = options.open === true;
+    this.cssList = IDEE.utils.isArray(options.cssList) ? options.cssList : [];
+    this.injectedLinks = [];
     this.panelHeight = 0;
+    this.panel_ = null;
+    this.templateVars = { vars: { htmlCode: this.htmlCode } };
+
+    this.injectCSS(this.cssList);
   }
 
   /**
@@ -41,51 +45,136 @@ export default class MapfooterControl extends IDEE.Control {
    * @public
    * @function
    * @param {IDEE.Map} map to add the control
-   * @api stable
+   * @api
    */
   createView(map) {
-    return new Promise((success, fail) => {
+    this.map_ = map;
+    this.map = map;
+    return new Promise((success) => {
       const html = IDEE.template.compileSync(template, this.templateVars);
       this.html_ = html;
-      this.addEvents();
       success(html);
     });
   }
 
   /**
-   * This function is called on the control activation
+   * Enlaza eventos SHOW/HIDE del CollapsiblePanel
    *
    * @public
    * @function
-   * @api stable
+   * @param {IDEE.ui.panels.CollapsiblePanel} panel panel del plugin
+   * @api
    */
-  activate() {
-    // calls super to manage de/activation
-    super.activate();
+  bindPanelEvents(panel) {
+    this.panel_ = panel;
+    this.updateButtonTitle();
+    // Quitar bottom inline residual; la posición la marca el CSS
+    this.clearButtonInlineOffset();
+    this.scheduleFooterLayout();
+
+    panel.on(IDEE.evt.SHOW, () => {
+      this.opened = true;
+      this.updateButtonTitle();
+      this.clearButtonInlineOffset();
+      this.scheduleFooterLayout();
+    });
+
+    panel.on(IDEE.evt.HIDE, () => {
+      this.opened = false;
+      this.updateButtonTitle();
+      this.clearButtonInlineOffset();
+      this.scheduleFooterLayout();
+    });
   }
 
   /**
-   * This function is called on the control deactivation
+   * Recalcula layout tras el siguiente paint (altura real del panel)
    *
-   * @public
+   * @private
    * @function
-   * @api stable
    */
-  deactivate() {
-    // calls super to manage de/activation
-    super.deactivate();
+  scheduleFooterLayout() {
+    window.requestAnimationFrame(() => {
+      this.checkFooterheight();
+    });
   }
 
   /**
-   * This function gets activation button
+   * Elimina bottom inline para que gobierne el CSS (.opened/.collapsed)
+   *
+   * @private
+   * @function
+   */
+  clearButtonInlineOffset() {
+    const button = this.getPanelButton();
+    if (button) {
+      button.style.removeProperty('bottom');
+      button.style.removeProperty('top');
+    }
+  }
+
+  /**
+   * Actualiza el texto y title del botón del panel (Mostrar / Ocultar)
+   *
+   * @private
+   * @function
+   */
+  updateButtonTitle() {
+    const btn = this.getPanelButton();
+    if (btn) {
+      const label = (this.opened ? getValue('hide') : getValue('show') || '').trim();
+      btn.replaceChildren();
+      const inner = document.createElement('span');
+      inner.className = 'm-mapfooter-btn-inner';
+      const text = document.createElement('span');
+      text.className = 'm-mapfooter-btn-text';
+      text.textContent = label;
+      const icon = document.createElement('span');
+      icon.className = 'm-mapfooter-btn-icon g-cartografia-btn-mapfooter-chevron';
+      icon.setAttribute('aria-hidden', 'true');
+      inner.append(text, icon);
+      btn.append(inner);
+      btn.title = this.opened ? getValue('hidefooter') : getValue('showfooter');
+      btn.setAttribute('aria-label', btn.title);
+    }
+  }
+
+  /**
+   * Obtiene el botón del CollapsiblePanel
+   *
+   * @private
+   * @function
+   * @returns {HTMLElement|null}
+   */
+  getPanelButton() {
+    const panelEl = this.getPanelElement();
+    return panelEl ? panelEl.querySelector('button.m-control-panel-btn') : null;
+  }
+
+  /**
+   * Obtiene el elemento DOM del panel
+   *
+   * @private
+   * @function
+   * @returns {HTMLElement|null}
+   */
+  getPanelElement() {
+    if (this.panel_ && this.panel_.element) {
+      return this.panel_.element;
+    }
+    return document.querySelector('div.m-control-panel.m-plugin-mapfooter');
+  }
+
+  /**
+   * Sin botón de activación propio (usa el del CollapsiblePanel).
    *
    * @public
    * @function
-   * @param {HTML} html of control
-   * @api stable
+   * @param {HTMLElement} html HTML del control
+   * @api
    */
   getActivationButton(html) {
-    return html.querySelector('.m-mapfooter button');
+    return null;
   }
 
   /**
@@ -94,97 +183,121 @@ export default class MapfooterControl extends IDEE.Control {
    * @public
    * @function
    * @param {IDEE.Control} control to compare
-   * @api stable
+   * @api
    */
   equals(control) {
     return control instanceof MapfooterControl;
   }
 
-  // Add your own functions
+  /**
+   * Inyecta hojas de estilo externas
+   *
+   * @public
+   * @function
+   * @param {Array<string>} cssList URLs CSS
+   * @api
+   */
   injectCSS(cssList) {
     cssList.forEach((cssFile) => {
       const link = document.createElement('link');
       link.href = cssFile;
-      // link.type = "text/css";
       link.rel = 'stylesheet';
-      link.addEventListener('load', () => {
-        // console.log('se cargo el enlace: ' + cssList[index])
-        this.checkFooterheight();
-        // console.log(this.panelHeight)
-      });
       link.media = 'screen';
+      link.addEventListener('load', () => {
+        this.checkFooterheight();
+      });
       document.getElementsByTagName('head')[0].appendChild(link);
+      this.injectedLinks.push(link);
     });
   }
 
-  addEvents() {
-    this.checkFooterheight();
-
-    const panelMapfooter = document.querySelector('div.m-panel.m-mapfooter');
-    const btnMapFooter = panelMapfooter ? panelMapfooter.querySelector('button.m-panel-btn') : null;
-    if (!btnMapFooter) {
-      return;
-    }
-
-    btnMapFooter.title = this.opened ? getValue('hidefooter') : getValue('showfooter');
-    btnMapFooter.addEventListener('click', () => {
-      this.opened = !this.opened;
-      btnMapFooter.title = this.opened ? getValue('hidefooter') : getValue('showfooter');
-      this.checkFooterheight();
-    });
-  }
-
+  /**
+   * Mide la altura del panel y aplica márgenes
+   *
+   * @public
+   * @function
+   * @api
+   */
   checkFooterheight() {
-    const panel = document.querySelector('div.m-panel.m-mapfooter');
+    const panel = this.getPanelElement();
     if (panel) {
       this.panelHeight = panel.clientHeight;
     }
     this.setBottomMargin(this.opened);
   }
 
+  /**
+   * Aplica offsets al botón y a controles inferiores
+   *
+   * @public
+   * @function
+   * @param {boolean} opened si el pie está abierto
+   * @api
+   */
   setBottomMargin(opened) {
     const ph = this.panelHeight || 0;
-    this.applyButtonOffset(opened, ph);
-    this.applyBottomRightMargin(opened, ph);
-    this.applyBottomLeftSiblingsMargin(opened, ph);
+    this.clearButtonInlineOffset();
+    this.applyBottomContainersMargin(opened, ph);
   }
 
-  applyButtonOffset(opened, ph) {
-    const button = document.querySelector('div.m-panel.m-mapfooter>button');
-    if (!button) {
-      return;
-    }
-    if (opened) {
-      button.style.setProperty('bottom', `${ph}px`, 'important');
-    } else {
-      button.style.removeProperty('bottom');
-    }
-  }
+  /**
+   * Empuja contenedores inferiores al abrir el pie
+   *
+   * @private
+   * @function
+   * @param {boolean} opened
+   * @param {number} ph
+   */
+  applyBottomContainersMargin(opened, ph) {
+    const margin = opened ? `${ph + 10}px` : '';
+    const selectors = [
+      '.m-api-idee-center-panel-bottom-right',
+      '.m-api-idee-center-panel-bottom-left',
+      '.m-api-idee-down-panel',
+    ];
 
-  applyBottomRightMargin(opened, ph) {
-    const bottomRight = document.querySelector('div.m-area.m-bottom.m-right');
-    if (bottomRight) {
-      bottomRight.style.marginBottom = opened ? `${ph + 10}px` : '10px';
-    }
-  }
-
-  applyBottomLeftSiblingsMargin(opened, ph) {
-    const bottomLeft = document.querySelector('div.m-area.m-bottom.m-left');
-    if (!bottomLeft) {
-      return;
-    }
-    const firstMargin = opened ? `${ph + 10}px` : '10px';
-    let firstApplied = false;
-    Array.from(bottomLeft.children).forEach((element) => {
-      if (!element.classList || element.classList.contains('m-mapfooter')) {
+    selectors.forEach((selector) => {
+      const container = document.querySelector(selector);
+      if (!container) {
         return;
       }
-      const margin = firstApplied ? '10px' : firstMargin;
-      firstApplied = true;
-      element.style.setProperty('margin-bottom', margin, 'important');
-      if (element.classList.contains('m-scaleline')) {
-        element.style.setProperty('margin-left', '96px', 'important');
-      }
+      Array.from(container.children).forEach((element) => {
+        if (!element.classList || element.classList.contains('m-plugin-mapfooter')) {
+          return;
+        }
+        if (opened) {
+          element.style.setProperty('margin-bottom', margin, 'important');
+        } else {
+          element.style.removeProperty('margin-bottom');
+        }
+        if (element.classList.contains('m-scaleline')
+          || element.classList.contains('m-scale')) {
+          element.style.setProperty('margin-left', '96px', 'important');
+        }
+      });
     });
   }
+
+  /**
+   * Limpia CSS inyectado y márgenes
+   *
+   * @public
+   * @function
+   * @api
+   */
+  destroy() {
+    this.setBottomMargin(false);
+    this.injectedLinks.forEach((link) => {
+      if (link && link.parentNode) {
+        link.parentNode.removeChild(link);
+      }
+    });
+    this.injectedLinks = [];
+    this.panel_ = null;
+    this.html_ = null;
+    this.map = null;
+  }
 }
+
+MapfooterControl.NAME = 'Mapfooter';
+export default MapfooterControl;

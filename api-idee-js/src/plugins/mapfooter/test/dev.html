@@ -5,53 +5,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="idee" content="yes">
     <title>Mapfooter TEST</title>
     <link href="https://componentes-beta.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
-    <link href="https://componentes.idee.es/api-idee/plugins/help/help.ol.min.css" rel="stylesheet" />
-    <style rel="stylesheet">
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        .container {
-            width: 100% !important;
-            margin: 0px !important;
-            padding: 0px !important;
-        }
-
-        /* #footer {
-            margin-top: 0px !important;
-            padding-top: 0px !important;
-        }
-
-        .footer-copyright{
-            padding-top: 0px !important;
-
-        }
-
-        #footer p.h2 {
-            font-size: 1.1em;
-            margin-top: 10px;
-            margin-bottom: 5px;
-            letter-spacing: normal;
-            color: #FFF !important;
-            font-weight: 300;
-        } */
-    </style>
-
 </head>
 
 <body>
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form">
+            <div>
+                <label for="selectPosicion" title="Posición del plugin sobre el mapa. Por defecto: down">Posición "position"</label>
+                <select name="position" id="selectPosicion">
+                    <option value="down" selected="selected">Abajo</option>
+                    <option value="left">Izquierda</option>
+                    <option value="right">Derecha</option>
+                    <option value="center-top-left">Esquina superior izquierda</option>
+                    <option value="center-top-right">Esquina superior derecha</option>
+                    <option value="center-bottom-left">Esquina inferior izquierda</option>
+                    <option value="center-bottom-right">Esquina inferior derecha</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectCollapsed" title="Indica si el plugin aparece colapsado al inicio (true/false). Por defecto: true">Colapsado al inicio "collapsed"</label>
+                <select name="collapsed" id="selectCollapsed">
+                    <option value="true">true</option>
+                    <option value="false" selected="selected">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectCollapsible" title="Indica si el panel puede abrirse y cerrarse (true/false). Por defecto: true">Colapsable "collapsible"</label>
+                <select name="collapsible" id="selectCollapsible">
+                    <option value="true" selected="selected">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputOrder" title="Define en qué posición del panel debe aparecer en el conjunto de controles o plugins">Orden entre controles / plugins "order"</label>
+                <input type="number" name="order" id="inputOrder" value="0">
+            </div>
+            <div>
+                <label for="inputTooltip" title="Texto que se muestra al dejar el ratón encima del plugin">Título de la herramienta "tooltip"</label>
+                <input type="text" name="tooltip" id="inputTooltip" value="Mapfooter">
+            </div>
+            <div>
+                <label for="textareaHtmlCode" title="HTML del pie de página">Parámetro "htmlCode"</label>
+                <textarea name="htmlCode" id="textareaHtmlCode" rows="3"></textarea>
+            </div>
+            <div>
+                <label for="inputCssList" title="Lista de CSS externos (separados por coma). Vacío por defecto para no contaminar el test">Parámetro "cssList"</label>
+                <input type="text" name="cssList" id="inputCssList" list="cssListSug" value="">
+                <datalist id="cssListSug">
+                    <option value="https://centrodedescargas.cnig.es/CentroDescargas/css/estilos-css-cnig-2024.css"></option>
+                </datalist>
+            </div>
+            <input type="hidden" id="buttonAPI" value="API Rest" />
+        </div>
+        <div class="m-test-buttons">
+            <button name="eliminar" class="m-test-button" id="botonEliminar">Eliminar Plugin</button>
+        </div>
+    </div>
     <div id="mapjs" class="container"></div>
     <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/js/apiidee.ol.min.js"></script>
     <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/js/configuration.js"></script>
-    <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/help/help.ol.min.js"></script>
+    <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/plugins/help/help.ol.min.js"></script>
     <script type="text/javascript" src="/main.js"></script>
-
 </body>
 
 </html>
