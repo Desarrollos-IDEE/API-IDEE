@@ -107,6 +107,11 @@ class DataIDEE extends Vector {
    * - throttleMs: Intervalo mínimo entre inicios de peticiones; 0 lo desactiva.
    *   Durante la espera se conserva solo la última consulta pendiente.
    *   refresh() y refreshInterval descargan datos nuevos y renuevan la caché.
+   * - editingLimits: límites de zona con pageSize, maxFeatures, maxCoordinates
+   *   y maxBytes; por defecto 250, 1000, 100000 y 10485760.
+   * - transactionParameters / transactionHeaders: valores para escrituras y
+   *   comprobaciones de conflicto, independientes de los parámetros de lectura.
+   * - dataideeDefaultProperties: propiedades no vacías que se añaden a las altas.
    * @param {Object} vendorOpts Opciones para la biblioteca base.
    * - filter: Expresión CQL2 en texto o un objeto CQL2 JSON. Una cadena usa
    *   cql2-text por defecto y un objeto usa cql2-json.
@@ -470,6 +475,49 @@ class DataIDEE extends Vector {
    */
   clearCache() {
     this.getImpl().clearCache();
+  }
+
+  /** Returns advertised DataIDEE transaction capabilities for this collection. */
+  getEditingCapabilities() {
+    return this.getEditingImpl_().getEditingCapabilities();
+  }
+
+  /** Loads a complete, bounded CRS84 work area and pauses DataIDEE refreshes. */
+  beginEditing({ bbox }) {
+    return this.getEditingImpl_().beginEditing({ bbox });
+  }
+
+  /** Releases the DataIDEE edit-session refresh lock. */
+  endEditing(refresh = true) {
+    return this.getEditingImpl_().endEditing(refresh);
+  }
+
+  /** Creates a GeoJSON feature in the configured collection. */
+  createFeature(feature) {
+    return this.getEditingImpl_().createFeature(feature);
+  }
+
+  /** Reads one feature for optimistic conflict detection during an explicit save. */
+  getEditingFeature(id) {
+    return this.getEditingImpl_().getEditingFeature(id);
+  }
+
+  /** Updates a GeoJSON feature, preserving the caller's properties. */
+  updateFeature(id, feature, method, etag) {
+    return this.getEditingImpl_().updateFeature(id, feature, method, etag);
+  }
+
+  /** Deletes one feature by its server identifier. */
+  deleteFeature(id, etag) {
+    return this.getEditingImpl_().deleteFeature(id, etag);
+  }
+
+  getEditingImpl_() {
+    const impl = this.getImpl();
+    if (typeof impl.getEditingCapabilities !== 'function') {
+      throw new Error('DataIDEE spatial editing is only available in OpenLayers.');
+    }
+    return impl;
   }
 
   /**

@@ -85,7 +85,7 @@ export default class Editioncontrol extends IDEE.impl.Control {
       });
 
       this.edit.on('modifyend', (e) => {
-        this.facadeControl.onModify();
+        this.facadeControl.onModify(e);
       });
       olMap.addInteraction(this.edit);
     }
@@ -116,6 +116,7 @@ export default class Editioncontrol extends IDEE.impl.Control {
     this.drawHole = new DrawHole({
       layers: [this.facadeControl.getLayer().getImpl().getLayer()],
     });
+    this.drawHole.on('modifyend', (event) => this.facadeControl.onModify(event));
     olMap.addInteraction(this.drawHole);
   }
 
@@ -142,7 +143,7 @@ export default class Editioncontrol extends IDEE.impl.Control {
       selection: false,
     });
     this.rotate.on('rotateend', (evt) => {
-      this.facadeControl.onModify();
+      this.facadeControl.onModify(evt);
     });
     olMap.addInteraction(this.rotate);
     this.rotate.setSelection(collection);
@@ -183,7 +184,7 @@ export default class Editioncontrol extends IDEE.impl.Control {
       selection: false,
     });
     this.move.on('translateend', (evt) => {
-      this.facadeControl.onModify();
+      this.facadeControl.onModify(evt);
     });
     olMap.addInteraction(this.move);
     this.move.setSelection(collection);
@@ -224,7 +225,7 @@ export default class Editioncontrol extends IDEE.impl.Control {
       selection: false,
     });
     this.scale.on('scaleend', (evt) => {
-      this.facadeControl.onModify();
+      this.facadeControl.onModify(evt);
     });
     olMap.addInteraction(this.scale);
     this.scale.setSelection(collection);

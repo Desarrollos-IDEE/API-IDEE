@@ -59,6 +59,35 @@ Por defecto tendrá los valores snapToPointer: true, pixelTolerance: 30. Para mo
 
 # API-REST
 
+## Edición espacial DataIDEE (OpenLayers)
+
+La edición trabaja con una zona CRS84 fija. Antes de habilitarla carga todas las
+páginas y rechaza una preparación incompleta o que supere los límites
+configurables de la capa: por defecto 250 entidades por página, 1.000
+entidades, 100.000 coordenadas y 10 MiB de GeoJSON. Durante la sesión, navegar
+por el mapa no consulta ni sustituye los datos. Guardar envía cambios
+secuencialmente; los éxitos parciales permanecen confirmados y el resto puede
+descartarse o revisarse.
+
+Para probar los cambios sin dependencias adicionales, compila el núcleo y el
+plugin, y arranca el servicio local:
+
+```sh
+npm run build:ol-core
+npm run build --prefix src/plugins/vectorsmanagement
+node src/plugins/vectorsmanagement/test/demo/dataidee-server.js
+```
+
+Abre `http://127.0.0.1:8787`. El modo local incluye una colección editable en
+memoria con paginación, id `0`, geometrías múltiples y un polígono con hueco;
+los cambios duran hasta reiniciar el servicio. El selector también incluye
+TEUNESCO mediante un proxy local limitado a las tres colecciones del ejemplo
+de renderizado. El cliente muestra sus permisos reales y no activa escrituras
+si el servicio no las anuncia. El modo local también ofrece `readonly`,
+`dense`, `complex`, `conflict`, `partial`, `write-error` y `uncertain` para
+probar permisos, límites, conflictos, éxitos parciales, validación y respuestas
+de escritura perdidas. El ejemplo existente de renderizado no cambia.
+
 ```javascript
 URL_API?vectorsmanagement=position*!collapsed*!collapsible*!selection*!addlayer*!analysis*!creation*!download*!edition*!help*!style
 ```

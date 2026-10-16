@@ -5,7 +5,7 @@
             <span id="m-vectorsmanagement-layer-selected">{{translations.selectLayerDefault}}...</span>
             <div id="m-vectorsmanagement-layer-selector-options">
               {{#each layer}}
-                  <span value="{{value}}">{{text}}</span>
+                  <span data-value="{{value}}">{{text}}</span>
               {{/each}}
             </div>
         </div>
@@ -15,6 +15,14 @@
         {{#if help}}
         <button tabindex="0" id="m-vectorsmanagement-help" title="{{translations.help}}" class="vectorsmanagement-icon-ayuda"></button>
         {{/if}}
+    </section>
+
+    <section id="m-vectorsmanagement-dataidee-editing" class="m-vectorsmanagement-dataidee-editing" hidden aria-label="{{translations.dataidee_edit}}">
+        <p id="m-vectorsmanagement-dataidee-status" role="status" aria-live="polite"></p>
+        <button id="m-vectorsmanagement-dataidee-start" type="button">{{translations.dataidee_start}}</button>
+        <button id="m-vectorsmanagement-dataidee-save" type="button" hidden>{{translations.dataidee_save}}</button>
+        <button id="m-vectorsmanagement-dataidee-discard" type="button" hidden>{{translations.dataidee_discard}}</button>
+        <button id="m-vectorsmanagement-dataidee-end" type="button" hidden>{{translations.dataidee_end}}</button>
     </section>
     <!-- Contenedor de controles -->
     <section id="m-vectorsmanagement-previews" class="m-vectorsmanagement-previews closed">

@@ -885,9 +885,45 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
     padding: 1rem 0;
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center !important;
     column-gap: .2rem;
+}
+
+#plugin-panel-vectorsmanagement #creationBtns>button,
+#plugin-panel-vectorsmanagement #editionBtns>button {
+    box-sizing: border-box;
+    flex: 0 0 2rem;
+    min-width: 2rem;
+}
+
+#plugin-panel-vectorsmanagement #creationBtns>#multipointdrawing,
+#plugin-panel-vectorsmanagement #creationBtns>#multilinedrawing,
+#plugin-panel-vectorsmanagement #creationBtns>#multipolygondrawing,
+#plugin-panel-vectorsmanagement #creationBtns>#finishmultipledrawing {
+    flex: 1 1 calc(50% - .2rem);
+    min-width: 6.5rem;
+    height: auto;
+    padding: .35rem .25rem;
+    border: 1px solid #ced4da;
+    border-radius: 3px;
+    background-color: #f5f5f5 !important;
+    color: #343a40;
+    white-space: normal;
+}
+
+#plugin-panel-vectorsmanagement #creationBtns>#multipointdrawing:hover,
+#plugin-panel-vectorsmanagement #creationBtns>#multilinedrawing:hover,
+#plugin-panel-vectorsmanagement #creationBtns>#multipolygondrawing:hover,
+#plugin-panel-vectorsmanagement #creationBtns>#finishmultipledrawing:hover {
+    background-color: #e9f2fa !important;
+    color: var(--idee-color-primary, #71a7d3);
+}
+
+#plugin-panel-vectorsmanagement #creationBtns>#multiple-drawing-status {
+    flex: 1 0 100%;
+    text-align: center;
 }
 
 #plugin-panel-vectorsmanagement #creationBtns,
@@ -902,6 +938,26 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
     background-color: transparent !important;
 }
 
+#plugin-panel-vectorsmanagement .m-vectorsmanagement-previews>button,
+#plugin-panel-vectorsmanagement .m-vectorsmanagement-previews>div>button {
+    background-color: transparent !important;
+}
+
+#plugin-panel-vectorsmanagement .m-vectorsmanagement-previews>button:before,
+#plugin-panel-vectorsmanagement .m-vectorsmanagement-previews>div>button:before {
+    color: #757474 !important;
+}
+
+#plugin-panel-vectorsmanagement .m-vectorsmanagement-previews>button:hover:before,
+#plugin-panel-vectorsmanagement .m-vectorsmanagement-previews>div>button:hover:before {
+    color: var(--idee-color-primary, #71a7d3) !important;
+}
+
+#plugin-panel-vectorsmanagement .m-vectorsmanagement-previews>button.activated:before,
+#plugin-panel-vectorsmanagement .m-vectorsmanagement-previews>div>button.activated:before {
+    color: var(--idee-color-primary-dark, #1d5a9e) !important;
+}
+
 #plugin-panel-vectorsmanagement #creationBtns>button:before,
 #plugin-panel-vectorsmanagement #analysisBtns>div>button:before,
 #plugin-panel-vectorsmanagement #editionBtns>button:before {
@@ -911,13 +967,13 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
 #plugin-panel-vectorsmanagement #creationBtns>button:hover:before,
 #plugin-panel-vectorsmanagement #analysisBtns>div>button:hover:before,
 #plugin-panel-vectorsmanagement #editionBtns>button:hover:before {
-    color: var(--idee-color-primary) !important;
+    color: var(--idee-color-primary, #71a7d3) !important;
 }
 
 #plugin-panel-vectorsmanagement #creationBtns>button.activated:before,
 #plugin-panel-vectorsmanagement #analysisBtns>div>button.activated:before,
 #plugin-panel-vectorsmanagement #editionBtns>button.activated:before {
-    color: var(--idee-color-primary-dark) !important;
+    color: var(--idee-color-primary-dark, #1d5a9e) !important;
 }
 
 .m-vectorsmanagement-analysis-content {
@@ -1095,4 +1151,20 @@ div#popup-box {
 #options-content input[type=number],
 #edition-container div input[type=number] {
     width: 50px;
+}
+.m-vectorsmanagement-dataidee-editing {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.5rem;
+}
+
+.m-vectorsmanagement-dataidee-editing[hidden],
+.m-vectorsmanagement-dataidee-editing button[hidden] {
+  display: none;
+}
+
+.m-vectorsmanagement-dataidee-editing p {
+  flex-basis: 100%;
+  margin: 0;
 }
