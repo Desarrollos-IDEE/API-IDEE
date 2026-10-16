@@ -3,14 +3,13 @@
  */
 
 import HelpImplControl from '../../impl/ol/js/helpcontrol';
-import template from '../../templates/help';
 import helps from '../../templates/helps';
 import { getValue } from './i18n/language';
 
 const SVG_CLOSE = '<svg id="indexLink-top-arrow" fill="currentColor" height="18px" width="18px" viewBox="0 0 24 24" style="display: inline-block; vertical-align: middle;"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg>';
 const SVG_OPEN = '<svg fill="currentColor" height="18px" width="18px" viewBox="0 0 24 24" style="display: inline-block; vertical-align: middle;"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path></svg>';
 
-export default class HelpControl extends IDEE.Control {
+class HelpControl extends IDEE.Control {
   /**
    * @classdesc
    * Constructor
@@ -19,13 +18,13 @@ export default class HelpControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @api
    */
-  constructor(options) {
+  constructor(options = {}) {
     if (IDEE.utils.isUndefined(HelpImplControl) || (IDEE.utils.isObject(HelpImplControl)
       && IDEE.utils.isNullOrEmpty(Object.keys(HelpImplControl)))) {
       IDEE.exception(getValue('exception.impl'));
     }
     const impl = new HelpImplControl();
-    super('help', impl);
+    super(HelpControl.NAME, impl, options);
 
     // Opciones
     this.headerImages = options.headerImages;
@@ -65,7 +64,10 @@ export default class HelpControl extends IDEE.Control {
     }
 
     this.defaultInitialContents = [
-      { title: 'API-IDEE', content: `<div><h2 style="text-align: center; color: #fff; background-color: #364b5f; padding: 8px 10px;">API-IDEE</h2><div><p style='text-align: center'>${getValue('welcome0')}: <a tabindex="0" href='https://plataforma.idee.es/cnig-api' target='_blank'>https://plataforma.idee.es/cnig-api</a></p><p>${getValue('welcome1')}</p><h4>${getValue('welcome2')}</h4><p>${getValue('welcome3')}: <a tabindex="0" href="https://github.com/Desarrollos-IDEE/API-IDEE" target="_blank">https://github.com/Desarrollos-IDEE/API-IDEE</a></p><h4>${getValue('welcome4')}</h4><p>${getValue('welcome5')}: <a tabindex="0" href="http://componentes.idee.es/api-idee/test.html" target="_blank">http://componentes.idee.es/api-idee/test.html</a></p><h4>Wiki API-IDEE</h4><p>${getValue('welcome6')}: <a tabindex="0" href="https://github.com/Desarrollos-IDEE/API-IDEE/wiki" target="_blank">https://github.com/Desarrollos-IDEE/API-IDEE/wiki</a></p><h4>${getValue('welcome7')}</h4><p>${getValue('welcome8')}: <a tabindex="0" href="https://plataforma.idee.es/resources/GaleriaEjemplos_APICNIG/" target="_blank">https://plataforma.idee.es/resources/GaleriaEjemplos_APICNIG/</a></p><h4>${getValue('welcome9')}</h4><p>${getValue('welcome10')}: <a tabindex="0" href="https://plataforma.idee.es/cnig-api" target="_blank">https://plataforma.idee.es/cnig-api</a></p></div>` },
+      {
+        title: 'API-IDEE',
+        content: `<div><h2 style="text-align: center; color: (--idee-color-white, #fff); background-color: (--idee-color-neutral-80, #364b5f); padding: 8px 10px;">API-IDEE</h2><div><p style='text-align: center'>${getValue('welcome0')}: <a tabindex="0" href='https://plataforma.idee.es/cnig-api' target='_blank'>https://plataforma.idee.es/cnig-api</a></p><p>${getValue('welcome1')}</p><h4>${getValue('welcome2')}</h4><p>${getValue('welcome3')}: <a tabindex="0" href="https://github.com/Desarrollos-IDEE/API-IDEE" target="_blank">https://github.com/Desarrollos-IDEE/API-IDEE</a></p><h4>${getValue('welcome4')}</h4><p>${getValue('welcome5')}: <a tabindex="0" href="http://componentes.idee.es/api-idee/test.html" target="_blank">http://componentes.idee.es/api-idee/test.html</a></p><h4>Wiki API-IDEE</h4><p>${getValue('welcome6')}: <a tabindex="0" href="https://github.com/Desarrollos-IDEE/API-IDEE/wiki" target="_blank">https://github.com/Desarrollos-IDEE/API-IDEE/wiki</a></p><h4>${getValue('welcome7')}</h4><p>${getValue('welcome8')}: <a tabindex="0" href="https://plataforma.idee.es/resources/GaleriaEjemplos_APICNIG/" target="_blank">https://plataforma.idee.es/resources/GaleriaEjemplos_APICNIG/</a></p><h4>${getValue('welcome9')}</h4><p>${getValue('welcome10')}: <a tabindex="0" href="https://plataforma.idee.es/cnig-api" target="_blank">https://plataforma.idee.es/cnig-api</a></p></div>`,
+      },
     ];
 
     if (this.extendInitialExtraContents) {
@@ -100,18 +102,7 @@ export default class HelpControl extends IDEE.Control {
    */
   createView(map) {
     this.map = map;
-    return new Promise((success) => {
-      const html = IDEE.template.compileSync(template, {
-        vars: {
-          translations: {
-            tooltip: this.tooltip,
-          },
-          order: this.order || 0,
-        },
-      });
-      html.querySelector('#m-help-button').addEventListener('click', this.showHelp.bind(this, this.initialIndex));
-      success(html);
-    });
+    return Promise.resolve(document.createElement('div'));
   }
 
   /**
@@ -126,7 +117,7 @@ export default class HelpControl extends IDEE.Control {
     let allContents = [...this.initialExtraContents];
     allContents.push({
       title: getValue('tools'),
-      content: `<div><h2 style="text-align: center; color: #fff; background-color: #364b5f; padding: 8px 10px;">${getValue('tools')}</h2><div><p>${getValue('tools1')}</p><p>${getValue('tools2')}</p><p>${getValue('tools3')}</p><p>${getValue('tools4')}</p></div></div>`,
+      content: `<div><h2 style="text-align: center; color: var(--idee-color-white, #fff); background-color: var(--idee-color-neutral-80, #364b5f); padding: 8px 10px;">${getValue('tools')}</h2><div><p>${getValue('tools1')}</p><p>${getValue('tools2')}</p><p>${getValue('tools3')}</p><p>${getValue('tools4')}</p></div></div>`,
       subContents: this.getHelpsPluginsControls(),
     });
     allContents = [...allContents, ...this.finalExtraContents];
@@ -213,7 +204,7 @@ export default class HelpControl extends IDEE.Control {
   }
 
   /**
-   * Obtiene la ayuda de los plugins
+   * Obtiene la ayuda de los plugins y controles
    *
    * @public
    * @function
@@ -288,3 +279,14 @@ export default class HelpControl extends IDEE.Control {
     return control instanceof HelpControl;
   }
 }
+
+/**
+ * Name of the control
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+HelpControl.NAME = 'Help';
+
+export default HelpControl;

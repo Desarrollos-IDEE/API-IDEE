@@ -2,7 +2,6 @@
  * @module IDEE/plugin/Help
  */
 import '../assets/css/help';
-import '../assets/css/fonts';
 import api from '../../api';
 import HelpControl from './helpcontrol';
 
@@ -22,76 +21,43 @@ export default class Help extends IDEE.Plugin {
    * @param {Object} options Opciones para el plugin
    * @api stable
    */
-  constructor(options) {
-    super();
-
-    /**
-     * Fachada del mapa
-     * @private
-     * @type {IDEE.Map}
-     */
-    this.map_ = null;
-
-    /**
-     * Array de controles
-     * @private
-     * @type {Array<IDEE.Control>}
-     */
-    this.controls_ = [];
-
-    /**
-     * Posición del plugin
-     *
-     * @private
-     * @type {string} - TL | TR | BL | BR
-     */
-    this.position_ = options.position || 'TR';
-
-    /**
-     * Tooltip
-     *
-     * @private
-     * @type {string}
-     */
-    this.tooltip_ = options.tooltip || getValue('tooltip');
+  constructor(options = {}) {
+    super('help', {
+      position: options.position || 'right',
+      tooltip: options.tooltip || getValue('tooltip'),
+      order: options.order,
+    });
 
     const header = options.header || {};
 
     /**
      * Imágenes para la cabecera
-     *
      * @private
      * @type {Array}
      */
-    this.headerImages_ = header.images ? header.images : [`${IDEE.config.STATIC_RESOURCES_URL}/imagenes/logos/logo_ge.svg`, `${IDEE.config.STATIC_RESOURCES_URL}/imagenes/logos/ign.svg`];
+    this.headerImages = header.images
+      ? header.images
+      : [
+        `${IDEE.config.STATIC_RESOURCES_URL}/imagenes/logos/logo_ge.svg`,
+        `${IDEE.config.STATIC_RESOURCES_URL}/imagenes/logos/ign.svg`,
+      ];
 
     /**
      * Título
-     *
      * @private
-     * @type {String}
+     * @type {String|Object}
      */
-    this.headerTitle_ = header.title ? header.title : getValue('long_title');
+    this.headerTitle = header.title ? header.title : getValue('long_title');
 
     /**
-     * Nombre
-     *
+     * Contenido extra - Inicio
      * @private
-     * @type {string}
+     * @type {Array|Object}
      */
-    this.name_ = 'help';
+    this.initialExtraContents = options.initialExtraContents || [];
 
     /**
-     * Contenido extra para la ayuda - Inicio
-     *
-     * @private
-     * @type {Array}
-     */
-    this.initialExtraContents_ = options.initialExtraContents || [];
-
-    /**
-     * Define si se extiende el contenido inicial o no
-     *
+     * Extiende el contenido inicial con el de API-IDEE
      * @private
      * @type {Boolean}
      */
@@ -100,28 +66,28 @@ export default class Help extends IDEE.Plugin {
       : options.extendInitialExtraContents;
 
     /**
-     * Contenido extra para la ayuda - Final
-     *
+     * Contenido extra - Final
      * @private
-     * @type {Array}
+     * @type {Array|Object}
      */
-    this.finalExtraContents_ = options.finalExtraContents || [];
+    this.finalExtraContents = options.finalExtraContents || [];
 
     /**
      * Metadata api.json
      * @private
      * @type {Object}
      */
-    this.metadata_ = api.metadata;
+    this.metadata = api.metadata;
 
     /**
+     * Separador API REST
      * @private
-     * @type {Number}
+     * @type {String}
      */
-    this.order = options.order >= -1 ? options.order : null;
+    this.separatorApiJson = api.url.separator;
 
     /**
-     * Index de la sección a mostrar por defecto
+     * Índice de sección por defecto
      * @private
      * @type {Number}
      */
@@ -148,7 +114,10 @@ export default class Help extends IDEE.Plugin {
    */
   static getJSONTranslations(lang) {
     if (lang === 'en' || lang === 'es') {
-      return (lang === 'en') ? en : es;
+      if (lang === 'en') {
+        return en;
+      }
+      return es;
     }
     return IDEE.language.getTranslation(lang).help;
   }
@@ -162,53 +131,43 @@ export default class Help extends IDEE.Plugin {
    * @api stable
    */
   addTo(map) {
+    this.map = map;
+
     IDEE.remote.get(`${IDEE.config.API_IDEE_URL}api/actions/controls`).then((response) => {
       const controls = response.text.replace('[', '').replace(']', '').replaceAll('"', '').split(',');
-      this.ctrl = new HelpControl({
-        tooltip: this.tooltip_,
+
+      this.control = new HelpControl({
+        tooltip: this.tooltip,
         order: this.order,
-        initialExtraContents: this.initialExtraContents_,
-        finalExtraContents: this.finalExtraContents_,
+        initialExtraContents: this.initialExtraContents,
+        finalExtraContents: this.finalExtraContents,
         extendInitialExtraContents: this.extendInitialExtraContents,
-        headerImages: this.headerImages_,
-        headerTitle: this.headerTitle_,
+        headerImages: this.headerImages,
+        headerTitle: this.headerTitle,
         initialIndex: this.initialIndex,
         controls,
       });
-      this.controls_.push(this.ctrl);
-      this.map_ = map;
-      this.panel_ = new IDEE.ui.panels.PluginSidePanel('Help', {
-        className: 'm-plugin-help',
-        position: IDEE.ui.position[this.position_],
-        tooltip: this.tooltip_,
-        collapsed: this.options.collapsed,
-        collapsedButtonClass: 'm-help-icons-query-support',
+      this.controls = [this.control];
+      this.control.map = map;
+
+      this.button = new IDEE.ui.buttons.OverviewMapButton(this.name, {
+        position: this.position,
+        tooltip: this.tooltip,
+        svgPath: 'https://api-idee.juntadeandalucia.es/estaticos/Simbologia/svg/icons_cota/icn_ayuda.svg',
         order: this.order,
       });
-      this.panel_.addControls(this.controls_);
-      map.addPanels(this.panel_);
+      this.panel = null;
+
+      const superActivate = this.button.activate.bind(this.button);
+      this.button.activate = () => {
+        superActivate();
+        this.control.showHelp(this.initialIndex);
+        this.button.deactivate();
+      };
+
+      map.addButtons(this.button);
+      this.fire(IDEE.evt.ADDED_TO_MAP);
     });
-  }
-
-  /**
-   * Nombre del plugin
-   *
-   * @getter
-   * @function
-   */
-  get name() {
-    return 'help';
-  }
-
-  /**
-   * Posición del plugin
-   *
-   * @public
-   * @return {string}
-   * @api
-   */
-  get position() {
-    return this.position_;
   }
 
   /**
@@ -219,8 +178,7 @@ export default class Help extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    const cadena = `${this.name_}=${this.position_}*${this.tooltip_}*${this.extendInitialExtraContents}`;
-    return cadena;
+    return `${this.name}=${this.position}${this.separatorApiJson}${this.order}${this.separatorApiJson}${this.tooltip}${this.separatorApiJson}${this.extendInitialExtraContents}`;
   }
 
   /**
@@ -242,12 +200,15 @@ export default class Help extends IDEE.Plugin {
    * @api
    */
   getHelp() {
+    // eslint-disable-next-line global-require, import/no-dynamic-require
+    const imageHelp01 = require(`assets/images/${this.getMetadata().version}/help1.png`);
+
     return {
-      title: this.name_,
+      title: this.name,
       content: new Promise((success) => {
         const html = IDEE.template.compileSync(myhelp, {
           vars: {
-            urlImages: `${IDEE.config.API_IDEE_URL}plugins/help/images/`,
+            imageHelp01,
             translations: {
               help1: getValue('textHelp.help1'),
               help2: getValue('textHelp.help2'),
@@ -272,14 +233,14 @@ export default class Help extends IDEE.Plugin {
   }
 
   /**
-   * Matadata
+   * Metadata
    *
    * @public
    * @function
    * @api stable
    */
   getMetadata() {
-    return this.metadata_;
+    return this.metadata;
   }
 
   /**
@@ -290,7 +251,15 @@ export default class Help extends IDEE.Plugin {
    * @api
    */
   destroy() {
-    this.map_.removeControls(this.controls_);
-    [this.map_, this.controls_, this.panel_] = [null, null, null];
+    if (this.map) {
+      if (this.button) {
+        this.map.removeButton(this.button);
+      }
+    }
+    this.map = null;
+    this.control = null;
+    this.controls = [];
+    this.button = null;
+    this.panel = null;
   }
 }
