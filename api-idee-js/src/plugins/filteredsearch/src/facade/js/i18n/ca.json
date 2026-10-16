@@ -44,6 +44,7 @@
     "squemaTitle": "filteredsearch",
     "title": "FILTEREDSEARCH",
     "paragraph1": "Aquest plugin permet construir consultes per atributs sobre capes del mapa que admetin consulta, combinar operadors i valors, aplicar la selecció al mapa i gestionar consultes desades.",
+    "paragraph2": "Obriu el panell lateral, trieu capa i mètode, composeu l'expressió amb camps, valors i operadors, i premeu Acceptar per aplicar el filtre.",
     "screenshot1Alt": "Icona del plugin filteredsearch al mapa",
     "screenshot1Caption": "help-01.png",
     "screenshot2Alt": "Panell del gestor: capa, mètode, llistes de camps i valors, operadors i àrea d'expressió de filtratge",

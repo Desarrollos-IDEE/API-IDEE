@@ -4,7 +4,7 @@
         <select id="m-filteredsearch-layers-select">
             <option disabled="disabled" id="layers0" selected="selected">{{translations.select_layer}}</option>
             {{#each layers}}
-                <option name="{{this.name}}">{{this.name}}</option>
+            <option name="{{this.name}}">{{this.name}}</option>
             {{/each}}
         </select>
         <p class="m-filteredsearch-headers">{{translations.method}}</p>
@@ -35,6 +35,6 @@
 
     <div id="m-filteredsearch-query-container">
         <p class="m-filteredsearch-headers">{{translations.filter_exp}}</p>
-        <textarea id="m-filteredsearch-textArea" cols="90" rows="5" placeholder="{{translations.placeholder}}"></textarea>
+        <textarea id="m-filteredsearch-textArea" rows="5" placeholder="{{translations.placeholder}}"></textarea>
     </div>
 </div>
