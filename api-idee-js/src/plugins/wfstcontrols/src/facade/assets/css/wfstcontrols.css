@@ -1,118 +1,206 @@
-.m-clearfeature-container {
-   order: 3;
-   margin: 0;
-   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-   padding: 5px;
-   left: 580px;
-   font-weight: bold;
-   bottom: 2em;
-   display: block;
-   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-   font-size: smaller;
-   background-color: rgba(103, 175, 19, 0.5);
-   font-weight: normal;
-   border-top-left-radius: 2px;
-   border-bottom-left-radius: 2px;
+.m-control-panel.m-plugin-wfstcontrols {
+  background-color: transparent;
+  box-shadow: none;
+  align-items: center;
 }
 
-.m-deletefeature-container {
-   order: 5;
-   margin: 0;
-   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-   padding: 5px;
-   left: 450px;
-   font-weight: bold;
-   bottom: 2em;
-   display: block;
-   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-   font-size: smaller;
-   background-color: rgba(103, 175, 19, 0.5);
-   font-weight: normal;
-   border-top-left-radius: 2px;
-   border-bottom-left-radius: 2px;
+.m-control-panel.m-plugin-wfstcontrols.opened>div.m-controls-panel {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: max-content;
+  min-height: 44px;
+  margin: 0;
+  padding: 4px;
+  border-radius: 4px;
+  background-color: var(--idee-color-white);
+  box-shadow: 0 2px 4px color-mix(in srgb, var(--idee-color-black) 20%, transparent);
+  overflow: hidden;
 }
 
-.m-drawfeature-container {
-   order: 1;
-   margin: 0;
-   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-   padding: 5px;
-   left: 200px;
-   font-weight: bold;
-   bottom: 2em;
-   display: block;
-   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-   font-size: smaller;
-   background-color: rgba(103, 175, 19, 0.5);
-   font-weight: normal;
-   border-top-left-radius: 2px;
-   border-bottom-left-radius: 2px;
+.m-control-panel.m-plugin-wfstcontrols>button.m-control-panel-btn {
+  background-color: var(--idee-color-primary) !important;
+  color: var(--idee-color-white) !important;
+  box-shadow: 0 2px 4px color-mix(in srgb, var(--idee-color-black) 20%, transparent);
 }
 
-.m-editattribute-container {
-   order: 4;
-   margin: 0;
-   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-   padding: 5px;
-   left: 850px;
-   font-weight: bold;
-   bottom: 2em;
-   display: block;
-   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-   font-size: smaller;
-   background-color: rgba(103, 175, 19, 0.5);
-   font-weight: normal;
-   border-top-left-radius: 2px;
-   border-bottom-left-radius: 2px;
+.m-control-panel.m-plugin-wfstcontrols.collapsed>button.m-control-panel-btn {
+  box-shadow: none;
 }
 
-.m-modifyfeature-container {
-   order: 2;
-   margin: 0;
-   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-   padding: 5px;
-   left: 320px;
-   font-weight: bold;
-   bottom: 2em;
-   display: block;
-   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-   font-size: smaller;
-   background-color: rgba(103, 175, 19, 0.5);
-   font-weight: normal;
-   border-top-left-radius: 2px;
-   border-bottom-left-radius: 2px;
+.m-control-panel.m-plugin-wfstcontrols .m-control {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 2.5rem;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  min-height: 2.5rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  box-shadow: none;
 }
 
-.m-savefeature-container {
-   order: 6;
-   margin: 0;
-   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-   padding: 5px;
-   left: 710px;
-   font-weight: bold;
-   bottom: 2em;
-   display: block;
-   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-   font-size: smaller;
-   background-color: rgba(103, 175, 19, 0.5);
-   font-weight: normal;
-   border-top-left-radius: 2px;
-   border-bottom-left-radius: 2px;
+.m-control-panel.m-plugin-wfstcontrols .m-control>button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  width: 2.5rem !important;
+  min-width: 2.5rem !important;
+  height: 2.5rem !important;
+  min-height: 2.5rem !important;
+  margin: 0 !important;
+  padding: 0.25rem !important;
+  border: none !important;
+  border-radius: 4px !important;
+  color: var(--idee-color-neutral-70) !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  outline: none;
 }
 
-.m-savefeature-saving {
-   border: 2px solid red;
+.m-control-panel.m-plugin-wfstcontrols .m-control>button:hover,
+.m-control-panel.m-plugin-wfstcontrols .m-control>button:focus {
+  color: var(--idee-color-primary) !important;
+  background-color: var(--idee-color-neutral-10) !important;
+  outline: none;
 }
 
-.m-left .m-panel.m-edition.opened div.m-control button[class^=g-cartografia-],
-.m-left .m-panel.m-edition.opened div.m-control button[class*=" g-cartografia-"],
-.m-right .m-panel.m-edition.opened div.m-control button[class^=g-cartografia-],
-.m-right .m-panel.m-edition.opened div.m-control button[class*=" g-cartografia-"] {
-   color: #364b5f !important;
-   background-color: white !important;
-   opacity: 1;
+.m-control-panel.m-plugin-wfstcontrols .m-control.active>button,
+.m-control-panel.m-plugin-wfstcontrols .m-control.activated>button,
+.m-control-panel.m-plugin-wfstcontrols .m-control>button.active,
+.m-control-panel.m-plugin-wfstcontrols .m-control>button.activated {
+  color: var(--idee-color-primary) !important;
+  background-color: var(--idee-color-neutral-10) !important;
 }
 
-.m-areas>div.m-area>div.m-panel.m-edition>div.m-panel-controls>div.m-control.activated>button {
-   color: #67af13 !important;
+.m-control-panel.m-plugin-wfstcontrols .m-control>button:disabled {
+  color: var(--idee-color-neutral-40) !important;
+  background-color: transparent !important;
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.m-control-panel.m-plugin-wfstcontrols .m-savefeature-container {
+  position: relative;
+}
+
+.m-control-panel.m-plugin-wfstcontrols .m-savefeature-container::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 0;
+  width: 1px;
+  height: 24px;
+  background-color: var(--idee-color-neutral-40);
+}
+
+.m-control-panel.m-plugin-wfstcontrols .m-savefeature-saving {
+  color: var(--idee-color-danger) !important;
+  background-color: color-mix(in srgb, var(--idee-color-danger) 10%, var(--idee-color-white)) !important;
+}
+
+.m-editattribute-content {
+  box-sizing: border-box;
+  width: 100%;
+  font-family: Muli, sans-serif;
+  color: var(--idee-color-neutral-70);
+}
+
+.m-editattribute-content table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.m-editattribute-content td {
+  box-sizing: border-box;
+  padding: 6px;
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+}
+
+.m-editattribute-content td:first-child {
+  width: 40%;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.m-editattribute-content td:last-child {
+  width: 60%;
+}
+
+.m-editattribute-content input[type='text'] {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 36px;
+  margin: 0;
+  padding: 7px 9px;
+  border: 1px solid var(--idee-color-neutral-40);
+  border-radius: 4px;
+  font-family: Muli, sans-serif;
+  font-size: 13px;
+  color: var(--idee-color-neutral-70);
+  background-color: var(--idee-color-white);
+}
+
+.m-editattribute-content input[type='text']:focus {
+  border-color: var(--idee-color-primary);
+  outline: none;
+}
+
+.m-editattribute-content button.save {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-sizing: border-box;
+  min-height: 36px;
+  margin-top: 10px;
+  padding: 7px 14px;
+  border: 1px solid var(--idee-color-primary);
+  border-radius: 4px;
+  font-family: Muli, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--idee-color-white);
+  background-color: var(--idee-color-primary);
+  cursor: pointer;
+}
+
+.m-editattribute-content button.save:hover,
+.m-editattribute-content button.save:focus {
+  border-color: var(--idee-color-links);
+  background-color: var(--idee-color-links);
+  outline: none;
+}
+
+.m-editattribute-content button.save>i {
+  display: inline-flex;
+  color: inherit;
+}
+
+@media only screen and (max-width: 480px) {
+  .m-control-panel.m-plugin-wfstcontrols.opened>div.m-controls-panel {
+    max-width: calc(100vw - 60px);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+  }
+
+  .m-control-panel.m-plugin-wfstcontrols.opened>div.m-controls-panel::-webkit-scrollbar {
+    display: none;
+  }
 }

@@ -1,52 +1,53 @@
 /**
  * @module IDEE/control/SaveFeature
  */
-import SaveFeatureImpl from '../../impl/ol/js/savefeature';
+import SaveFeatureImpl from 'impl/savefeature';
 import savefeatureHTML from '../../templates/savefeature';
 import { getValue } from './i18n/language';
 
-export default class SaveFeature extends IDEE.Control {
+class SaveFeature extends IDEE.Control {
   /**
-   * @classdesc
-   * Main constructor of the class. Creates a SaveFeature
-   * control save changes to features
-   *
    * @constructor
-   * @param {IDEE.layer.WFS} layer - Layer for use in control
-   * @extends {IDEE.Control}
+   * @param {Object|IDEE.layer.WFS} options opciones del control o capa legacy
+   * @param {Object} proxy configuración proxy legacy
    * @api stable
    */
-  constructor(layer, proxy) {
-    // implementation of this control
-    const impl = new SaveFeatureImpl(layer, proxy);
-    // calls the super constructor
-    super(impl, SaveFeature.NAME);
-
-    /**
-     * Name of the control
-     * @public
-     * @type {String}
-     */
-
-    this.name = SaveFeature.NAME;
+  constructor(options = {}, proxy = {}) {
+    const controlOptions = options && options.layer
+      ? options
+      : { layer: options, proxy };
 
     if (IDEE.utils.isUndefined(SaveFeatureImpl)) {
-      IDEE.exception('exception.impl_save');
+      IDEE.exception(getValue('exception.impl_save'));
     }
+
+    const impl = new SaveFeatureImpl(
+      controlOptions.layer,
+      controlOptions.proxy || {},
+    );
+
+    super(SaveFeature.NAME, impl, {
+      tooltip: controlOptions.tooltip || getValue('save'),
+      position: controlOptions.position,
+      order: controlOptions.order,
+    });
+
+    this.facadeMap_ = null;
   }
 
   /**
-   * This function creates the view to the specified map
+   * Crea la vista del control.
    *
    * @public
    * @function
-   * @param {IDEE.Map} map - Map to add the control
-   * @returns {Promise} html response
+   * @param {IDEE.Map} map mapa
+   * @returns {HTMLElement} HTML
    * @api stable
    */
   createView(map) {
+    this.map_ = map;
     this.facadeMap_ = map;
-    return IDEE.template.compileSync(savefeatureHTML, {
+    this.element = IDEE.template.compileSync(savefeatureHTML, {
       jsonp: true,
       vars: {
         translations: {
@@ -54,41 +55,44 @@ export default class SaveFeature extends IDEE.Control {
         },
       },
     });
+    return this.element;
   }
 
   /**
-   * This function checks if an object is equals to this control
-   *
-   * @function
-   * @api stable
-   * @param {*} obj - Object to compare
-   * @returns {boolean} equals - Returns if they are equal or not
-   */
-  equals(obj) {
-    const equals = (obj instanceof SaveFeature);
-    return equals;
-  }
-
-  /**
-   * This function adds the click event to the button
+   * Gestiona el click del botón de guardar.
    *
    * @public
    * @function
-   * @param {HTMLElement} html - HTML control
+   * @param {HTMLElement} html HTML del control
    * @api stable
-   * @export
    */
   manageActivation(html) {
-    const button = html.querySelector('button#m-button-savefeature');
-    button.addEventListener('click', this.saveFeature_.bind(this));
+    const button = (html || this.element)
+      .querySelector('button#m-button-savefeature');
+    if (button) {
+      button.addEventListener('click', this.saveFeature_.bind(this));
+    }
   }
 
   /**
-   * This function saves changes
+   * Compara controles.
    *
    * @public
    * @function
-   * @param {goog.events.BrowserEvent} evt - Event
+   * @param {*} obj objeto
+   * @returns {boolean} igualdad
+   * @api stable
+   */
+  equals(obj) {
+    return obj instanceof SaveFeature;
+  }
+
+  /**
+   * Guarda los cambios.
+   *
+   * @public
+   * @function
+   * @param {Event} evt evento
    * @api stable
    */
   saveFeature_(evt) {
@@ -97,11 +101,11 @@ export default class SaveFeature extends IDEE.Control {
   }
 
   /**
-   * This function set layer for save features
+   * Cambia la capa del control.
    *
    * @public
    * @function
-   * @param {IDEE.layer.WFS} layer - Layer
+   * @param {IDEE.layer.WFS} layer capa
    * @api stable
    */
   setLayer(layer) {
@@ -109,20 +113,7 @@ export default class SaveFeature extends IDEE.Control {
   }
 }
 
-/**
- * Template for this controls - button
- * @const
- * @type {string}
- * @public
- * @api stable
- */
 SaveFeature.NAME = 'savefeature';
-
-/**
- * Template for this controls - button
- * @const
- * @type {string}
- * @public
- * @api stable
- */
 SaveFeature.TEMPLATE = 'savefeature.html';
+
+export default SaveFeature;

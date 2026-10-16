@@ -33,6 +33,7 @@ export default class ClearFeature extends IDEE.impl.Control {
    */
   addTo(map, element) {
     this.facadeMap_ = map;
+    this.element = element;
     super.addTo(map, element);
   }
 

@@ -1,44 +1,44 @@
 /**
  * @module IDEE/control/ClearFeature
  */
-import ClearFeatureImpl from '../../impl/ol/js/clearfeature';
+import ClearFeatureImpl from 'impl/clearfeature';
 import ClearFeatureHTML from '../../templates/clearfeature.html';
 import { getValue } from './i18n/language';
 
-export default class ClearFeature extends IDEE.Control {
+class ClearFeature extends IDEE.Control {
   /**
-   * @classdesc
-   * Main constructor of the class. Creates a ClearFeature
-   * control to clean deleted, created and modified unsaved features.
-   *
    * @constructor
-   * @param {IDEE.layer.WFS} layer - Layer for use in control
-   * @extends {IDEE.Control}
+   * @param {Object|IDEE.layer.WFS} options opciones del control o capa legacy
    * @api stable
    */
-  constructor(layer) {
-    // implementation of this control
-    const impl = new ClearFeatureImpl(layer);
-
-    // calls the super constructor
-    super(impl, ClearFeature.NAME);
+  constructor(options = {}) {
+    const controlOptions = options && options.layer ? options : { layer: options };
 
     if (IDEE.utils.isUndefined(ClearFeatureImpl)) {
       IDEE.exception(getValue('exception.impl_clear'));
     }
+
+    const impl = new ClearFeatureImpl(controlOptions.layer);
+
+    super(ClearFeature.NAME, impl, {
+      tooltip: controlOptions.tooltip || getValue('clear'),
+      position: controlOptions.position,
+      order: controlOptions.order,
+    });
   }
 
   /**
-   * This function creates the view to the specified map
+   * Crea la vista del control.
    *
    * @public
    * @function
-   * @param {IDEE.Map} map - Map to add the control
-   * @returns {HTMLElement} html response
+   * @param {IDEE.Map} map mapa
+   * @returns {HTMLElement} HTML
    * @api stable
    */
   createView(map) {
-    return IDEE.template.compileSync(ClearFeatureHTML, {
+    this.map_ = map;
+    this.element = IDEE.template.compileSync(ClearFeatureHTML, {
       jsonp: true,
       vars: {
         translations: {
@@ -46,41 +46,44 @@ export default class ClearFeature extends IDEE.Control {
         },
       },
     });
+    return this.element;
   }
 
   /**
-   * This function adds the click event to the button
+   * Gestiona el click del botón de limpiar.
    *
    * @public
    * @function
-   * @param {HTMLElement} element - HTML control
+   * @param {HTMLElement} element HTML del control
    * @api stable
-   * @export
    */
   manageActivation(element) {
-    const activationBtn = element.querySelector('button#m-button-clearfeature');
-    activationBtn.addEventListener('click', this.clear_.bind(this));
+    const activationBtn = (element || this.element)
+      .querySelector('button#m-button-clearfeature');
+    if (activationBtn) {
+      activationBtn.addEventListener('click', this.clear_.bind(this));
+    }
   }
 
   /**
-   * This function checks if an object is equals to this control
+   * Compara controles.
    *
+   * @public
    * @function
+   * @param {*} obj objeto
+   * @returns {boolean} igualdad
    * @api stable
-   * @param {*} obj - Object to compare
-   * @returns {boolean} equals - Returns if they are equal or not
    */
   equals(obj) {
-    const equals = (obj instanceof ClearFeature);
-    return equals;
+    return obj instanceof ClearFeature;
   }
 
   /**
-   * This function clean deleted, created and modified unsaved features
+   * Limpia cambios no guardados.
    *
    * @private
    * @function
-   * @param {goog.events.BrowserEvent} evt - Event
+   * @param {Event} evt evento
    */
   clear_(evt) {
     evt.preventDefault();
@@ -88,11 +91,11 @@ export default class ClearFeature extends IDEE.Control {
   }
 
   /**
-   * This function set layer for clear
+   * Cambia la capa del control.
    *
    * @public
    * @function
-   * @param {IDEE.layer.WFS} layer - Layer
+   * @param {IDEE.layer.WFS} layer capa
    * @api stable
    */
   setLayer(layer) {
@@ -100,20 +103,7 @@ export default class ClearFeature extends IDEE.Control {
   }
 }
 
-/**
- * Name for this controls
- * @const
- * @type {string}
- * @public
- * @api stable
- */
 ClearFeature.NAME = 'clearfeature';
-
-/**
- * Template for this controls - button
- * @const
- * @type {string}
- * @public
- * @api stable
- */
 ClearFeature.TEMPLATE = 'clearfeature.html';
+
+export default ClearFeature;

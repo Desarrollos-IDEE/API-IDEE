@@ -40,8 +40,8 @@ export default class SaveFeature extends IDEE.impl.Control {
    */
   addTo(map, element) {
     this.facadeMap_ = map;
+    this.element = element;
     super.addTo(map, element);
-    this.mapjs_ = map;
   }
 
   /**

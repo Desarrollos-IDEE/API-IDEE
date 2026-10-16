@@ -1,50 +1,44 @@
 /**
  * @module IDEE/control/DrawFeature
  */
-import DrawFeatureImpl from '../../impl/ol/js/drawfeature';
+import DrawFeatureImpl from 'impl/drawfeature';
 import drawfeatureHTML from '../../templates/drawfeature';
 import { getValue } from './i18n/language';
 
-export default class DrawFeature extends IDEE.Control {
+class DrawFeature extends IDEE.Control {
   /**
-   * @classdesc Main constructor of the class. Creates a DrawFeature
-   * control to draw features on the map.
-   *
    * @constructor
-   * @param {IDEE.layer.WFS} layer - Layer for use in control
-   * @extends {IDEE.Control}
+   * @param {Object|IDEE.layer.WFS} options opciones del control o capa legacy
    * @api stable
    */
-  constructor(layer) {
-    // implementation of this control
-    const impl = new DrawFeatureImpl(layer);
-
-    // calls the super constructor
-    super(impl, DrawFeature.NAME);
-
-    /**
-     * Name of the control
-     * @public
-     * @type {String}
-     */
-    this.name = DrawFeature.NAME;
+  constructor(options = {}) {
+    const controlOptions = options && options.layer ? options : { layer: options };
 
     if (IDEE.utils.isUndefined(DrawFeatureImpl)) {
-      IDEE.Exception(getValue('exception.impl_draw'));
+      IDEE.exception(getValue('exception.impl_draw'));
     }
+
+    const impl = new DrawFeatureImpl(controlOptions.layer);
+
+    super(DrawFeature.NAME, impl, {
+      tooltip: controlOptions.tooltip || getValue('draw'),
+      position: controlOptions.position,
+      order: controlOptions.order,
+    });
   }
 
   /**
-   * This function creates the view to the specified map
+   * Crea la vista del control.
    *
    * @public
    * @function
-   * @param {IDEE.Map} map - Map to add the control
-   * @returns {HTMLElement} html response
+   * @param {IDEE.Map} map mapa
+   * @returns {HTMLElement} HTML
    * @api stable
    */
   createView(map) {
-    return IDEE.template.compileSync(drawfeatureHTML, {
+    this.map_ = map;
+    this.element = IDEE.template.compileSync(drawfeatureHTML, {
       jsonp: true,
       vars: {
         translations: {
@@ -52,41 +46,41 @@ export default class DrawFeature extends IDEE.Control {
         },
       },
     });
+    return this.element;
   }
 
   /**
-   * This function returns the HTML button
+   * Devuelve el botón de activación.
    *
    * @public
    * @function
-   * @param {HTMLElement} element - HTML control
-   * @return {HTMLElement} return HTML button
+   * @param {HTMLElement} element HTML del control
+   * @returns {HTMLElement} botón
    * @api stable
-   * @export
    */
   getActivationButton(element) {
     return element.querySelector('button#m-button-drawfeature');
   }
 
   /**
-   * This function checks if an object is equals to this control
-   *
-   * @function
-   * @api stable
-   * @param {*} obj - Object to compare
-   * @returns {boolean} equals - Returns if they are equal or not
-   */
-  equals(obj) {
-    const equals = (obj instanceof DrawFeature);
-    return equals;
-  }
-
-  /**
-   * This function set layer for delete features
+   * Compara controles.
    *
    * @public
    * @function
-   * @param {IDEE.layer.WFS} layer - Layer
+   * @param {*} obj objeto
+   * @returns {boolean} igualdad
+   * @api stable
+   */
+  equals(obj) {
+    return obj instanceof DrawFeature;
+  }
+
+  /**
+   * Cambia la capa del control.
+   *
+   * @public
+   * @function
+   * @param {IDEE.layer.WFS} layer capa
    * @api stable
    */
   setLayer(layer) {
@@ -94,22 +88,7 @@ export default class DrawFeature extends IDEE.Control {
   }
 }
 
-/**
- * Name for this controls
- *
- * @const
- * @type {string}
- * @public
- * @api stable
- */
 DrawFeature.NAME = 'drawfeature';
-
-/**
- * Template for this controls - button
- *
- * @const
- * @type {string}
- * @public
- * @api stable
- */
 DrawFeature.TEMPLATE = 'drawfeature.html';
+
+export default DrawFeature;

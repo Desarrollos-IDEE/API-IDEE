@@ -1,32 +1,193 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="idee" content="yes">
-    <title>WFSTControls TEST</title>
-    <link href="https://componentes-beta.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
-    <link href="https://componentes.idee.es/api-idee/plugins/help/help.ol.min.css" rel="stylesheet" />
-    <style rel="stylesheet">
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="idee" content="yes">
 
+  <title>WFSTControls</title>
+
+  <link
+    href="https://componentes-beta.idee.es/api-idee/assets/css/apiidee.ol.min.css"
+    rel="stylesheet">
+
+  <style rel="stylesheet">
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: auto;
+    }
+
+    body
+    > .m-api-idee-test-form-frame
+    > .m-test-form {
+      flex-direction: row;
+      flex-wrap: wrap;
+      max-height: 32rem;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    body
+    > .m-api-idee-test-form-frame
+    > .m-test-form
+    > .m-test-features {
+      flex-grow: 1;
+      min-width: 20rem;
+    }
+
+    body
+    > .m-api-idee-test-form-frame
+    > .m-test-form
+    > .m-test-features
+    > input {
+      box-sizing: border-box;
+      width: 100%;
+    }
+  </style>
 </head>
 
 <body>
-    <div id="mapjs" class="container"></div>
-    <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/js/apiidee.ol.min.js"></script>
-    <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/js/configuration.js"></script>
-    <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/help/help.ol.min.js"></script>
-    <script type="text/javascript" src="/main.js"></script>
+
+  <div class="m-api-idee-test-form-frame">
+
+    <div class="m-test-form">
+
+      <div>
+        <label
+          for="selectPosition"
+          title="Posición del Plugin / Control">
+          Posición "position"
+        </label>
+
+        <select name="position" id="selectPosition">
+          <option value="center-top-left">center-top-left</option>
+          <option value="center-top-right">center-top-right</option>
+          <option value="center-bottom-left">center-bottom-left</option>
+          <option value="center-bottom-right">center-bottom-right</option>
+          <option value="left">left</option>
+          <option value="right" selected="selected">right</option>
+          <option value="down">down</option>
+        </select>
+      </div>
+
+      <div>
+        <label
+          for="selectCollapsed"
+          title="Muestra el panel desplegado o colapsado">
+          Colapsado "collapsed"
+        </label>
+
+        <select name="collapsed" id="selectCollapsed">
+          <option value="true" selected="selected">true</option>
+          <option value="false">false</option>
+        </select>
+      </div>
+
+      <div>
+        <label
+          for="inputOrder"
+          title="Orden del panel entre los controles">
+          Orden "order"
+        </label>
+
+        <input
+          type="number"
+          name="order"
+          id="inputOrder"
+          value="1">
+      </div>
+
+      <div>
+        <label
+          for="inputTooltip"
+          title="Título / tooltip de la herramienta">
+          Título "tooltip"
+        </label>
+
+        <input
+          type="text"
+          name="tooltip"
+          id="inputTooltip"
+          value="Herramientas de edición">
+      </div>
+
+      <div class="m-test-features">
+        <label
+          for="inputFeatures"
+          title="Controles WFST que se mostrarán">
+          Controles "features"
+        </label>
+
+        <input
+          type="text"
+          name="features"
+          id="inputFeatures"
+          value="drawfeature,modifyfeature,deletefeature,editattribute">
+      </div>
+
+      <div>
+        <label
+          for="inputLayername"
+          title="Nombre de la capa WFS editable">
+          Capa WFS "layername"
+        </label>
+
+        <input
+          type="text"
+          name="layername"
+          id="inputLayername"
+          value="RED_REGENTE">
+      </div>
+
+      <div>
+        <label
+          for="selectGeometry"
+          title="Tipo de geometría de la capa">
+          Geometría "geometry"
+        </label>
+
+        <select name="geometry" id="selectGeometry">
+          <option value="POINT" selected="selected">POINT</option>
+          <option value="LINE">LINE</option>
+          <option value="POLYGON">POLYGON</option>
+          <option value="MPOINT">MPOINT</option>
+          <option value="MLINE">MLINE</option>
+          <option value="MPOLYGON">MPOLYGON</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div class="m-test-buttons">
+      <button
+        name="eliminar"
+        class="m-test-button"
+        id="botonEliminar">
+        Eliminar Plugin
+      </button>
+    </div>
+
+  </div>
+
+  <div id="mapjs" class="m-container"></div>
+
+  <script
+    src="https://componentes-beta.idee.es/api-idee/js/apiidee.ol.min.js">
+  </script>
+
+  <script
+    src="https://componentes-beta.idee.es/api-idee/js/configuration.js">
+  </script>
+
+  <script src="/main.js"></script>
+
 </body>
 
 </html>

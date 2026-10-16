@@ -1,51 +1,44 @@
 /**
  * @module IDEE/control/EditAttribute
  */
-import EditAttributeImpl from '../../impl/ol/js/editattribute';
+import EditAttributeImpl from 'impl/editattribute';
 import editattributeHTML from '../../templates/editattribute';
 import { getValue } from './i18n/language';
 
-export default class EditAttribute extends IDEE.Control {
+class EditAttribute extends IDEE.Control {
   /**
-   * @classdesc
-   * Main constructor of the class. Creates a EditAttribute
-   * edit the attributes of the features
-   *
    * @constructor
-   * @param {IDEE.layer.WFS} layer - Layer for use in control
-   * @extends {IDEE.Control}
+   * @param {Object|IDEE.layer.WFS} options opciones del control o capa legacy
    * @api stable
    */
-  constructor(layer) {
-    // implementation of this control
-    const impl = new EditAttributeImpl(layer);
-
-    // calls the super constructor
-    super(impl, EditAttribute.NAME);
-
-    /**
-     * Name of the control
-     * @public
-     * @type {String}
-     */
-    this.name = EditAttribute.NAME;
+  constructor(options = {}) {
+    const controlOptions = options && options.layer ? options : { layer: options };
 
     if (IDEE.utils.isUndefined(EditAttributeImpl)) {
       IDEE.exception(getValue('exception.impl_edit'));
     }
+
+    const impl = new EditAttributeImpl(controlOptions.layer);
+
+    super(EditAttribute.NAME, impl, {
+      tooltip: controlOptions.tooltip || getValue('edit'),
+      position: controlOptions.position,
+      order: controlOptions.order,
+    });
   }
 
   /**
-   * This function creates the view to the specified map
+   * Crea la vista del control.
    *
    * @public
    * @function
-   * @param {IDEE.Map} map - Map to add the control
-   * @returns {Promise} html response
+   * @param {IDEE.Map} map mapa
+   * @returns {HTMLElement} HTML
    * @api stable
    */
   createView(map) {
-    return IDEE.template.compileSync(editattributeHTML, {
+    this.map_ = map;
+    this.element = IDEE.template.compileSync(editattributeHTML, {
       jsonp: true,
       vars: {
         translations: {
@@ -53,79 +46,52 @@ export default class EditAttribute extends IDEE.Control {
         },
       },
     });
+    return this.element;
   }
 
   /**
-   * This function returns the HTML button
+   * Devuelve el botón de activación.
    *
    * @public
    * @function
-   * @param {HTMLElement} element - HTML control
-   * @return {HTMLElement} return HTML button
+   * @param {HTMLElement} element HTML del control
+   * @returns {HTMLElement} botón
    * @api stable
-   * @export
    */
   getActivationButton(element) {
     return element.querySelector('button#m-button-editattribute');
   }
 
   /**
-   * This function checks if an object is equals to this control
-   *
-   * @function
-   * @api stable
-   * @param {*} obj - Object to compare
-   * @returns {boolean} equals - Returns if they are equal or not
-   */
-  equals(obj) {
-    const equals = (obj instanceof EditAttribute);
-    return equals;
-  }
-
-  /**
-   * This function set layer for edit attributes features
+   * Compara controles.
    *
    * @public
    * @function
-   * @param {IDEE.layer.WFS} layer - Layer
+   * @param {*} obj objeto
+   * @returns {boolean} igualdad
+   * @api stable
+   */
+  equals(obj) {
+    return obj instanceof EditAttribute;
+  }
+
+  /**
+   * Cambia la capa del control.
+   *
+   * @public
+   * @function
+   * @param {IDEE.layer.WFS} layer capa
    * @api stable
    */
   setLayer(layer) {
     this.getImpl().setLayer(layer);
   }
 }
-/**
- * Template for this controls - button
- * @const
- * @type {string}
- * @public
- * @api stable
- */
+
 EditAttribute.NAME = 'editattribute';
-
-/**
- * Title for the popup
- * @const
- * @type {string}
- * @public
- * @api stable
- */
-export const POPUP_TITLE = 'Editattribute';
-
-/**
- * Template for this controls - button
- * @const
- * @type {string}
- * @public
- * @api stable
- */
 EditAttribute.TEMPLATE = 'editattribute.html';
 
-/**
- * Template for this controls - button
- * @const
- * @type {string}
- * @public
- * @api stable
- */
+export const POPUP_TITLE = 'Editattribute';
 export const TEMPLATE_POPUP = 'editattribute_popup.html';
+
+export default EditAttribute;

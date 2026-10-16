@@ -1,26 +1,53 @@
 {
   "url": {
     "name": "wfstcontrols",
-    "separator": ","
+    "separator": "*"
   },
   "constructor": "IDEE.plugin.WFSTControls",
-  "parameters": [{
-    "type": "object",
-    "properties": [{
+  "parameters": [
+    {
       "type": "simple",
       "name": "position",
-      "possibleValues": ["TL", "TR", "BL", "BR"],
-      "value": "TL"
-    },{
-      "type": "simple",
+      "position": 0,
+      "possibleValues": [
+        "left",
+        "right",
+        "center-bottom-left",
+        "center-bottom-right",
+        "center-top-left",
+        "center-top-right",
+        "down"
+      ]
+    },
+    {
+      "type": "boolean",
+      "name": "collapsed",
+      "position": 1
+    },
+    {
+      "type": "number",
+      "name": "order",
+      "position": 2
+    },
+    {
+      "type": "string",
+      "name": "tooltip",
+      "position": 3
+    },
+    {
+      "type": "string",
       "name": "features",
-      "value": "drawfeature,modifyfeature,deletefeature,editattribute"
-    },{
-      "type": "simple",
-      "name": "layername"
-    },{
+      "position": 4
+    },
+    {
+      "type": "string",
+      "name": "layername",
+      "position": 5
+    },
+    {
       "type": "simple",
       "name": "geometry",
+      "position": 6,
       "possibleValues": [
         "POINT",
         "LINE",
@@ -29,21 +56,18 @@
         "MLINE",
         "MPOLYGON"
       ]
-    },{
-      "type": "object",
-      "name": "proxy",
-      "properties": [{
-        "type": "boolean",
-        "name": "status",
-        "value": "true"
-      },{
-        "type": "boolean",
-        "name": "disable",
-        "value": "false"
-      }]
-      }
-    ]
-  }],
+    },
+    {
+      "type": "boolean",
+      "name": "proxyStatus",
+      "position": 7
+    },
+    {
+      "type": "boolean",
+      "name": "proxyDisable",
+      "position": 8
+    }
+  ],
   "files": {
     "ol": {
       "scripts": [
@@ -63,27 +87,18 @@
     }
   },
   "metadata": {
-    "uuid_plugin": "",
-    "uuid_version_plugin": "",
-    "version_ficha_metadatos": "",
     "name": "WFSTControls",
-    "description": "Tool for editing WFST layers.",
-    "text": "",
-    "version": "1.0.0",
-    "date": "14/01/2026",
+    "description": "Herramientas de edición transaccional WFST sobre capas WFS.",
+    "text": "Permite dibujar, modificar, eliminar y editar atributos, además de guardar o limpiar cambios WFST.",
+    "version": "2.0.0",
+    "date": "Septiembre, 2026",
     "author": "Junta de Andalucía",
     "org": "Junta de Andalucía",
-    "tags": "mapea,plugin",
-    "icon": "./facade/assets/icons/icons.svg",
-    "buttons": [
-      { "title": "", "description": "", "querySelector": "" },
-      { "title": "", "description": "", "querySelector": "" }
-    ],
-    "dependencies": {
-      "modules": ["", ""],
-      "plugins": [{ "uuid": "", "name": "" }],
-      "services": [{ "name": "", "description": "" }]
-    },
-    "compatibility": ["1"]
+    "tags": "api-idee,IDEE,plugin,wfst,edition",
+    "icon": "https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_editarGeo.svg",
+    "centralized": false,
+    "compatibility": [
+      "2"
+    ]
   }
 }

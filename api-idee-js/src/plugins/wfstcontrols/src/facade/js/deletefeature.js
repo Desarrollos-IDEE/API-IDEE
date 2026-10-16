@@ -1,46 +1,44 @@
 /**
  * @module IDEE/control/DeleteFeature
  */
-import DeleteFeatureImpl from '../../impl/ol/js/deletefeature';
+import DeleteFeatureImpl from 'impl/deletefeature';
 import deletefeatureHTML from '../../templates/deletefeature.html';
 import { getValue } from './i18n/language';
 
-export default class DeleteFeature extends IDEE.Control {
+class DeleteFeature extends IDEE.Control {
   /**
-   * @classdesc
-   * Main constructor of the class. Creates a DeleteFeature
-   * control to remove features map
-   *
    * @constructor
-   * @param {IDEE.layer.WFS} layer - Layer for use in control
-   * @extends {IDEE.Control}
+   * @param {Object|IDEE.layer.WFS} options opciones del control o capa legacy
    * @api stable
    */
-  constructor(layer) {
-    // implementation of this control
-    const impl = new DeleteFeatureImpl(layer);
-
-    // calls the super constructor
-    super(impl, DeleteFeature.NAME);
-
-    this.name = DeleteFeature.NAME;
+  constructor(options = {}) {
+    const controlOptions = options && options.layer ? options : { layer: options };
 
     if (IDEE.utils.isUndefined(DeleteFeatureImpl)) {
       IDEE.exception(getValue('exception.impl_delete'));
     }
+
+    const impl = new DeleteFeatureImpl(controlOptions.layer);
+
+    super(DeleteFeature.NAME, impl, {
+      tooltip: controlOptions.tooltip || getValue('delete'),
+      position: controlOptions.position,
+      order: controlOptions.order,
+    });
   }
 
   /**
-   * This function creates the view to the specified map
+   * Crea la vista del control.
    *
    * @public
    * @function
-   * @param {IDEE.Map} map - Map to add the control
-   * @returns {HTMLElement} html response
+   * @param {IDEE.Map} map mapa
+   * @returns {HTMLElement} HTML
    * @api stable
    */
   createView(map) {
-    return IDEE.template.compileSync(deletefeatureHTML, {
+    this.map_ = map;
+    this.element = IDEE.template.compileSync(deletefeatureHTML, {
       jsonp: true,
       vars: {
         translations: {
@@ -48,61 +46,49 @@ export default class DeleteFeature extends IDEE.Control {
         },
       },
     });
+    return this.element;
   }
 
   /**
-   * This function returns the HTML button
+   * Devuelve el botón de activación.
    *
    * @public
    * @function
-   * @param {HTMLElement} element - HTML control
-   * @return {HTMLElement} return HTML button
+   * @param {HTMLElement} element HTML del control
+   * @returns {HTMLElement} botón
    * @api stable
-   * @export
    */
   getActivationButton(element) {
     return element.querySelector('button#m-button-deletefeature');
   }
 
   /**
-   * This function checks if an object is equals to this control
-   *
-   * @function
-   * @api stable
-   * @param {*} obj - Object to compare
-   * @returns {boolean} equals - Returns if they are equal or not
-   */
-  equals(obj) {
-    const equals = (obj instanceof DeleteFeature);
-    return equals;
-  }
-
-  /**
-   * This function set layer for delete features
+   * Compara controles.
    *
    * @public
    * @function
-   * @param {IDEE.layer.WFS} layer - Layer
+   * @param {*} obj objeto
+   * @returns {boolean} igualdad
+   * @api stable
+   */
+  equals(obj) {
+    return obj instanceof DeleteFeature;
+  }
+
+  /**
+   * Cambia la capa del control.
+   *
+   * @public
+   * @function
+   * @param {IDEE.layer.WFS} layer capa
    * @api stable
    */
   setLayer(layer) {
     this.getImpl().setLayer(layer);
   }
 }
-/**
- * Name for this controls
- * @const
- * @type {string}
- * @public
- * @api stable
- */
-DeleteFeature.NAME = 'deletefeature';
 
-/**
- * Template for this controls - button
- * @const
- * @type {string}
- * @public
- * @api stable
- */
+DeleteFeature.NAME = 'deletefeature';
 DeleteFeature.TEMPLATE = 'deletefeature.html';
+
+export default DeleteFeature;

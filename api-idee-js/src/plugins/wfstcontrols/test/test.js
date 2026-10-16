@@ -1,29 +1,131 @@
+/* eslint-disable */
 import WFSTControls from 'facade/wfstcontrols';
 
 IDEE.language.setLang('es');
-// IDEE.language.setLang('en');
 
 const map = IDEE.map({
   container: 'mapjs',
-  ticket: 'PWUMZ5MQTPUGAEWTHCXVXSFZLLAKXUNKBQSTBOWUDL4AZDOVZKN35B67X6SCPMMISIWNFHW7AAYH4MLGMG4G7NTD3HIALJ42K73PC7W7SQIUUCSKTEIXHCXP6VGOTNXJ4K2SAIEI2GAOURMWOMKWEDURE5K2H357Y35B5GI',
 });
 window.map = map;
 
 const wfsLayer = new IDEE.layer.WFS({
-  url: 'https://hcsigc-geoserver-sigc.desarrollo.guadaltel.es/geoserver/Global/wfs?',
-  legend: 'capa wfs',
-  name: 'superadmin_mispuntos_1758802353451',
-  geometry: 'LINE',
-  extract: false,
+  url: 'https://www.ign.es/wfs/redes-geodesicas?',
+  legend: 'Red Geodésica Nacional por Técnicas Espaciales (REGENTE)',
+  name: 'RED_REGENTE',
+  geometry: 'POINT',
+  extract: true,
 });
 
 map.addWFS(wfsLayer);
 
-const mp = new WFSTControls({
-  features: 'drawfeature,modifyfeature,deletefeature,editattribute',
-  position: 'BR',
-  proxy: {},
+let mp = null;
+let updateTimeout = null;
+
+const selectPosition = document.getElementById('selectPosition');
+const selectCollapsed = document.getElementById('selectCollapsed');
+const inputOrder = document.getElementById('inputOrder');
+const inputTooltip = document.getElementById('inputTooltip');
+const inputFeatures = document.getElementById('inputFeatures');
+const inputLayername = document.getElementById('inputLayername');
+const selectGeometry = document.getElementById('selectGeometry');
+const botonEliminar = document.getElementById('botonEliminar');
+
+const removePlugin = () => {
+  if (!mp) {
+    return;
+  }
+
+  try {
+    map.removePlugins(mp);
+  } catch (err) {
+    console.error(err);
+  }
+
+  mp = null;
+  window.mp = null;
+};
+
+const createPlugin = () => {
+  removePlugin();
+
+  const position = selectPosition?.value || 'right';
+  const collapsed = (selectCollapsed?.value || 'true') === 'true';
+  const orderValue = inputOrder?.value;
+  const tooltip = inputTooltip?.value || 'Herramientas de edición';
+  const features = inputFeatures?.value
+    || 'drawfeature,modifyfeature,deletefeature,editattribute';
+  const layername = inputLayername?.value || 'RED_REGENTE';
+  const geometry = selectGeometry?.value || 'POINT';
+
+  mp = new WFSTControls({
+    position,
+    collapsed,
+    order: orderValue === '' ? undefined : Number(orderValue),
+    tooltip,
+    features,
+    layername,
+    geometry,
+    proxy: {
+      status: true,
+      disable: false,
+    },
+  });
+
+  window.mp = mp;
+  map.addPlugin(mp);
+};
+
+const updatePluginImmediately = () => {
+  if (updateTimeout !== null) {
+    clearTimeout(updateTimeout);
+    updateTimeout = null;
+  }
+
+  createPlugin();
+};
+
+const schedulePluginUpdate = () => {
+  if (updateTimeout !== null) {
+    clearTimeout(updateTimeout);
+  }
+
+  updateTimeout = setTimeout(() => {
+    updateTimeout = null;
+    createPlugin();
+  }, 250);
+};
+
+[
+  selectPosition,
+  selectCollapsed,
+  selectGeometry,
+].forEach((control) => {
+  if (control) {
+    control.addEventListener('change', updatePluginImmediately);
+  }
 });
 
-map.addPlugin(mp); window.mp = mp;
-map.addPlugin(new IDEE.plugin.Help({}));
+[
+  inputOrder,
+  inputTooltip,
+  inputFeatures,
+  inputLayername,
+].forEach((control) => {
+  if (control) {
+    control.addEventListener('input', schedulePluginUpdate);
+    control.addEventListener('change', updatePluginImmediately);
+  }
+});
+
+if (botonEliminar) {
+  botonEliminar.addEventListener('click', () => {
+    if (updateTimeout !== null) {
+      clearTimeout(updateTimeout);
+      updateTimeout = null;
+    }
+
+    removePlugin();
+  });
+}
+
+createPlugin();

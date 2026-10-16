@@ -1,0 +1,48 @@
+/*********************
+    PANEL / TOOLS
+*********************/
+
+.g-cartografia-btn-wfstcontrols-main::before {
+  -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_editarGeo.svg');
+  mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_editarGeo.svg');
+}
+
+.g-cartografia-btn-wfstcontrols-draw::before {
+  -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lapiz.svg');
+  mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lapiz.svg');
+}
+
+.g-cartografia-btn-wfstcontrols-modify::before {
+  -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_mover.svg');
+  mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_mover.svg');
+}
+
+.g-cartografia-btn-wfstcontrols-delete::before {
+  -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_papelera.svg');
+  mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_papelera.svg');
+}
+
+.g-cartografia-btn-wfstcontrols-attributes::before {
+  -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lista.svg');
+  mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lista.svg');
+}
+
+.g-cartografia-btn-wfstcontrols-save::before {
+  -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_circle_check.svg');
+  mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_circle_check.svg');
+}
+
+.g-cartografia-btn-wfstcontrols-clear::before {
+  -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_reset.svg');
+  mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_reset.svg');
+}
+
+.g-cartografia-pin::before {
+  -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_posicion.svg');
+  mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_posicion.svg');
+}
+
+.g-cartografia-texto::before {
+  -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_texto.svg');
+  mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_texto.svg');
+}
