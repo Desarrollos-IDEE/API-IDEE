@@ -169,7 +169,6 @@
     "invalid_type_layer": "No se ha especificado un tipo válido para la capa",
     "vector_filter": "El filtro indicado no es correcto",
     "unauthorized_user": "Ha ocurrido un error al cargar la capa: Usuario no autorizado.",
-    "dataidee_unauthorized": "No se ha podido cargar la capa DataIDEE: el token de acceso no es válido o ha caducado. Inicie sesión de nuevo en el servicio.",
     "only_one_filter": "FeatureID y CQL son mutuamente excluyentes. Indicar sólo un tipo de filtrado.",
     "any_format": "TXT, ni HTML ni GML están soportados"
   },

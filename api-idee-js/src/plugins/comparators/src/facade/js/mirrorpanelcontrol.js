@@ -437,6 +437,7 @@ export default class MirrorpanelControl extends IDEE.Control {
     if (this.mapL.B !== null) { this.mapL.B.refresh(); }
     if (this.mapL.C !== null) { this.mapL.C.refresh(); }
     if (this.mapL.D !== null) { this.mapL.D.refresh(); }
+    this.syncMainViewportSize_();
   }
 
   /**
@@ -624,6 +625,7 @@ export default class MirrorpanelControl extends IDEE.Control {
     mainMap.classList = this.oldClass;
 
     lienzo.remove();
+    this.syncMainViewportSize_();
   }
 
   /**
@@ -721,6 +723,12 @@ export default class MirrorpanelControl extends IDEE.Control {
   equals(control) {
     // eslint-disable-next-line no-undef
     return control instanceof CompareMirrorpanel;
+  }
+
+  syncMainViewportSize_() {
+    const olMap = this.map_.getMapImpl();
+    olMap.updateSize();
+    olMap.getView().setViewportSize(olMap.getSize());
   }
 
   addEventKey_() {

@@ -1,5 +1,12 @@
 import { test, expect } from '@playwright/test';
 
+import registerRequestManagerTests from '../common/request-manager.spec';
+import registerDataIDEECacheLayerTests from '../common/dataidee-layer-cache';
+import registerDataIDEEViewportTests from '../common/dataidee-viewport';
+
+registerDataIDEECacheLayerTests('/test/playwright/ol/basic-ol.html');
+registerDataIDEEViewportTests('/test/playwright/ol/basic-ol.html');
+
 const geoJSON = {
   type: 'FeatureCollection',
   features: [{
@@ -107,6 +114,47 @@ test('DataIDEE preserves the shared public configuration and performs filtered G
     equalsMethod: 'function',
     setStyleMethod: 'function',
   });
+});
+
+test('DataIDEE caches an exact request, invalidates it, and refreshes from the network', async ({ page }) => {
+  let requestCount = 0;
+  await page.route('https://ogc.test/**', async (route) => {
+    requestCount += 1;
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/geo+json',
+      body: JSON.stringify(geoJSON),
+    });
+  });
+  await page.goto('/test/playwright/ol/basic-ol.html');
+  await page.evaluate(() => {
+    window.map = IDEE.map({ container: 'map' });
+  });
+  await page.waitForFunction(() => window.map.isFinished());
+  await page.evaluate(() => {
+    window.dataIdee = new IDEE.layer.DataIDEE({
+      url: 'https://ogc.test/collections/', name: 'roads',
+    }, { cache: { ttlMs: 60000 } });
+    window.map.addLayers(window.dataIdee);
+  });
+  await page.waitForFunction(() => window.dataIdee.getFeatures().length === 1);
+  await page.evaluate(async () => {
+    // This implementation entry point observes the exact same request path as layer loading.
+    // eslint-disable-next-line no-underscore-dangle
+    await window.dataIdee.getImpl().requestFeatures_();
+  });
+  expect(requestCount).toBe(1);
+
+  await page.evaluate(() => window.dataIdee.clearCache());
+  await page.evaluate(async () => {
+    // eslint-disable-next-line no-underscore-dangle
+    await window.dataIdee.getImpl().requestFeatures_();
+  });
+  expect(requestCount).toBe(2);
+  const refreshRequest = page.waitForRequest((request) => request.url().includes('_ideeRefresh='));
+  await page.evaluate(() => window.dataIdee.refresh());
+  await (await refreshRequest).response();
+  expect(requestCount).toBe(3);
 });
 
 test('DataIDEE requests an individual feature by ID', async ({ page }) => {
@@ -227,112 +275,4 @@ test('DataIDEE loads features and supports map add, get and remove methods', asy
   expect(state).toEqual({ featuresLoaded: 1, layerWasFound: true, layersAfterRemoval: 0 });
 });
 
-const CORS = {
-  'access-control-allow-origin': '*',
-  'access-control-allow-headers': 'Authorization',
-  'access-control-allow-methods': 'GET, OPTIONS',
-};
-
-const routeDataIDEE = (page, handler) => page.route('https://ogc.test/**', (route) => {
-  if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: CORS });
-  return handler(route);
-});
-
-const fulfillGeoJSON = (route) => route.fulfill({
-  status: 200,
-  headers: { ...CORS, 'content-type': 'application/geo+json' },
-  body: JSON.stringify(geoJSON),
-});
-
-const openBasicMap = async (page) => {
-  await page.goto('/test/playwright/ol/basic-ol.html');
-  await page.evaluate(() => {
-    window.map = IDEE.map({ container: 'map' });
-  });
-  await page.waitForFunction(() => window.map.isFinished());
-};
-
-const isItemsRequest = (request) => request.url().startsWith('https://ogc.test/') && request.method() === 'GET';
-
-test('DataIDEE sends getFeature.token as an Authorization Bearer header and never in the URL', async ({ page }) => {
-  await routeDataIDEE(page, fulfillGeoJSON);
-  await openBasicMap(page);
-
-  const requestPromise = page.waitForRequest(isItemsRequest);
-  await page.evaluate(() => {
-    window.map.addLayers(new IDEE.layer.DataIDEE({
-      url: 'https://ogc.test/data-idee-api',
-      name: 'roads',
-      limit: 5,
-    }, {}, { getFeature: { token: 'token-1' } }));
-  });
-  const request = await requestPromise;
-  const url = new URL(request.url());
-  expect(request.headers().authorization).toBe('Bearer token-1');
-  expect(url.searchParams.has('token')).toBe(false);
-  expect(url.searchParams.get('limit')).toBe('5');
-});
-
-test('DataIDEE setToken reloads the layer with the new token and clone keeps it', async ({ page }) => {
-  await routeDataIDEE(page, fulfillGeoJSON);
-  await openBasicMap(page);
-
-  await page.evaluate(() => {
-    window.ogcLayer = new IDEE.layer.DataIDEE({ url: 'https://ogc.test/data-idee-api', name: 'roads' });
-    window.map.addLayers(window.ogcLayer);
-  });
-  await page.waitForFunction(() => window.ogcLayer.getFeatures().length === 1);
-
-  const requestPromise = page.waitForRequest((request) => isItemsRequest(request)
-    && request.headers().authorization === 'Bearer token-2');
-  await page.evaluate(() => window.ogcLayer.setToken('token-2'));
-  await requestPromise;
-
-  const tokens = await page.evaluate(() => ({
-    token: window.ogcLayer.getToken(),
-    cloned: window.ogcLayer.clone().getToken(),
-  }));
-  expect(tokens).toEqual({ token: 'token-2', cloned: 'token-2' });
-});
-
-test('DataIDEE fires LOAD_UNAUTHORIZED on 401 and warns the user only once', async ({ page }) => {
-  await routeDataIDEE(page, (route) => route.fulfill({
-    status: 401,
-    headers: { ...CORS, 'content-type': 'application/json' },
-    body: '{"status":401}',
-  }));
-  await openBasicMap(page);
-
-  await page.evaluate(() => {
-    window.unauthorizedEvents = 0;
-    window.ogcLayer = new IDEE.layer.DataIDEE(
-      { url: 'https://ogc.test/data-idee-api', name: 'roads' },
-      {},
-      { getFeature: { token: 'expired' } },
-    );
-    window.ogcLayer.on(IDEE.evt.LOAD_UNAUTHORIZED, () => { window.unauthorizedEvents += 1; });
-    window.map.addLayers(window.ogcLayer);
-  });
-  await page.waitForFunction(() => window.unauthorizedEvents === 1);
-  await expect(page.locator('div.m-dialog.error')).toHaveCount(1);
-
-  await page.evaluate(() => window.ogcLayer.refresh());
-  await page.waitForFunction(() => window.unauthorizedEvents === 2);
-  await expect(page.locator('div.m-dialog.error')).toHaveCount(1);
-});
-
-test('DataIDEE object literals keep vendorOptions when added to the map', async ({ page }) => {
-  await routeDataIDEE(page, fulfillGeoJSON);
-  await openBasicMap(page);
-
-  const requestPromise = page.waitForRequest(isItemsRequest);
-  await page.evaluate(() => {
-    window.map.addLayers({
-      type: 'DataIDEE',
-      url: 'https://ogc.test/data-idee-api',
-      name: 'roads',
-      vendorOptions: { getFeature: { token: 'token-3' } },
-    });
-  });
-  expect((await requestPromise).headers().authorization).toBe('Bearer token-3');
-});
+registerRequestManagerTests('/test/playwright/ol/basic-ol.html');

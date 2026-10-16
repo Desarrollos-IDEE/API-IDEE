@@ -312,20 +312,12 @@ export const LEAVE_FEATURES = 'leave:features';
 export const LOAD = 'load';
 
 /**
- * Evento que se produce cuando falla la carga.
+ * Evento que se produce cuando falla la carga de una capa.
  * @public
  * @type {string}
  * @api
  */
 export const LOAD_ERROR = 'load:error';
-
-/**
- * Evento que se produce cuando falla la autorización.
- * @public
- * @type {string}
- * @api
- */
-export const LOAD_UNAUTHORIZED = 'load:unauthorized';
 
 /**
  * Evento que se produce al cargarse las capas.
