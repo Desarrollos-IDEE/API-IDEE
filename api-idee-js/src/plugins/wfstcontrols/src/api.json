@@ -6,66 +6,71 @@
   "constructor": "IDEE.plugin.WFSTControls",
   "parameters": [
     {
-      "type": "simple",
-      "name": "position",
-      "position": 0,
-      "possibleValues": [
-        "left",
-        "right",
-        "center-bottom-left",
-        "center-bottom-right",
-        "center-top-left",
-        "center-top-right",
-        "down"
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "position": 0,
+          "possibleValues": [
+            "left",
+            "right",
+            "center-bottom-left",
+            "center-bottom-right",
+            "center-top-left",
+            "center-top-right",
+            "down"
+          ]
+        },
+        {
+          "type": "boolean",
+          "name": "collapsed",
+          "position": 1
+        },
+        {
+          "type": "number",
+          "name": "order",
+          "position": 2
+        },
+        {
+          "type": "simple",
+          "name": "tooltip",
+          "position": 3
+        },
+        {
+          "type": "simple",
+          "name": "features",
+          "position": 4
+        },
+        {
+          "type": "simple",
+          "name": "layername",
+          "position": 5
+        },
+        {
+          "type": "simple",
+          "name": "geometry",
+          "position": 6,
+          "possibleValues": [
+            "POINT",
+            "LINE",
+            "POLYGON",
+            "MPOINT",
+            "MLINE",
+            "MPOLYGON"
+          ]
+        },
+        {
+          "type": "boolean",
+          "name": "proxyStatus",
+          "position": 7
+        },
+        {
+          "type": "boolean",
+          "name": "proxyDisable",
+          "position": 8
+        }
       ]
-    },
-    {
-      "type": "boolean",
-      "name": "collapsed",
-      "position": 1
-    },
-    {
-      "type": "number",
-      "name": "order",
-      "position": 2
-    },
-    {
-      "type": "string",
-      "name": "tooltip",
-      "position": 3
-    },
-    {
-      "type": "string",
-      "name": "features",
-      "position": 4
-    },
-    {
-      "type": "string",
-      "name": "layername",
-      "position": 5
-    },
-    {
-      "type": "simple",
-      "name": "geometry",
-      "position": 6,
-      "possibleValues": [
-        "POINT",
-        "LINE",
-        "POLYGON",
-        "MPOINT",
-        "MLINE",
-        "MPOLYGON"
-      ]
-    },
-    {
-      "type": "boolean",
-      "name": "proxyStatus",
-      "position": 7
-    },
-    {
-      "type": "boolean",
-      "name": "proxyDisable",
-      "position": 8
     }
   ],
   "files": {

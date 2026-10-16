@@ -6,43 +6,48 @@
   "constructor": "IDEE.plugin.Magnify",
   "parameters": [
     {
-      "type": "simple",
-      "name": "position",
-      "position": 0,
-      "possibleValues": [
-        "left",
-        "right"
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "position": 0,
+          "possibleValues": [
+            "left",
+            "right"
+          ]
+        },
+        {
+          "type": "boolean",
+          "name": "collapsed",
+          "position": 1
+        },
+        {
+          "type": "number",
+          "name": "order",
+          "position": 2
+        },
+        {
+          "type": "simple",
+          "name": "tooltip",
+          "position": 3
+        },
+        {
+          "type": "simple",
+          "name": "layers",
+          "position": 4
+        },
+        {
+          "type": "number",
+          "name": "zoomMax",
+          "position": 5
+        },
+        {
+          "type": "number",
+          "name": "zoom",
+          "position": 6
+        }
       ]
-    },
-    {
-      "type": "boolean",
-      "name": "collapsed",
-      "position": 1
-    },
-    {
-      "type": "number",
-      "name": "order",
-      "position": 2
-    },
-    {
-      "type": "string",
-      "name": "tooltip",
-      "position": 3
-    },
-    {
-      "type": "string",
-      "name": "layers",
-      "position": 4
-    },
-    {
-      "type": "number",
-      "name": "zoomMax",
-      "position": 5
-    },
-    {
-      "type": "number",
-      "name": "zoom",
-      "position": 6
     }
   ],
   "files": {

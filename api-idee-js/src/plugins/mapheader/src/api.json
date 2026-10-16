@@ -6,17 +6,42 @@
   "constructor": "IDEE.plugin.Mapheader",
   "parameters": [
     {
-      "type": "simple",
-      "name": "position",
-      "position": 0,
-      "possibleValues": [
-        "left",
-        "right",
-        "center-bottom-left",
-        "center-bottom-right",
-        "center-top-left",
-        "center-top-right",
-        "down"
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "position": 0,
+          "possibleValues": [
+            "left",
+            "right",
+            "center-bottom-left",
+            "center-bottom-right",
+            "center-top-left",
+            "center-top-right",
+            "down"
+          ]
+        },
+        {
+          "type": "boolean",
+          "name": "collapsed",
+          "position": 1
+        },
+        {
+          "type": "number",
+          "name": "order",
+          "position": 2
+        },
+        {
+          "type": "simple",
+          "name": "tooltip",
+          "position": 3
+        },
+        {
+          "type": "boolean",
+          "name": "collapsible",
+          "position": 4
+        }
       ]
     },
     {

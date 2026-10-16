@@ -6,28 +6,33 @@
   "constructor": "IDEE.plugin.MaxExtZoom",
   "parameters": [
     {
-      "type": "simple",
-      "name": "position",
-      "position": 0,
-      "possibleValues": [
-        "left",
-        "right",
-        "center-bottom-left",
-        "center-bottom-right",
-        "center-top-left",
-        "center-top-right",
-        "down"
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "position": 0,
+          "possibleValues": [
+            "left",
+            "right",
+            "center-bottom-left",
+            "center-bottom-right",
+            "center-top-left",
+            "center-top-right",
+            "down"
+          ]
+        },
+        {
+          "type": "number",
+          "name": "order",
+          "position": 1
+        },
+        {
+          "type": "simple",
+          "name": "tooltip",
+          "position": 2
+        }
       ]
-    },
-    {
-      "type": "number",
-      "name": "order",
-      "position": 1
-    },
-    {
-      "type": "string",
-      "name": "tooltip",
-      "position": 2
     }
   ],
   "files": {
