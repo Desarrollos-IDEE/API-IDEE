@@ -2,6 +2,7 @@
   "exception": {
     "impl": "La implementació usada no pot crear controls MapheaderControl"
   },
+  "tooltip": "Capçalera del mapa",
   "hideheader": "Amagar capçalera de pàgina",
   "showheader": "Mostrar capçalera de pàgina",
   "hide": " Amagar ",
@@ -10,6 +11,7 @@
     "squemaTitle": "mapheader",
     "title": "MAPHEADER",
     "paragraph1": "El plugin mapheader insereix una franja superior sobre el visor amb contingut HTML configurable: logotips institucionals, títol, subtítols i enllaços, habitual en portals de descàrregues o visors corporatius.",
+    "paragraph2": "Useu Mostrar/Amagar per plegar o desplegar la capçalera. Configureu htmlCode i cssList per personalitzar el contingut i l'estil.",
     "screenshot1Alt": "Mapa sense franja de capçalera institucional; controls estàndard del visor visibles",
     "screenshot1Caption": "help-01.png",
     "screenshot1Description": "Exemple amb la capçalera plegada: l'àrea cartogràfica arriba al costat superior i apareix l'acció per mostrar-la.",

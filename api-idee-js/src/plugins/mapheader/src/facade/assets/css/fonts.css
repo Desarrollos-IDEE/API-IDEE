@@ -1,0 +1,4 @@
+.g-cartografia-btn-mapheader-chevron::before {
+  -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_chevron.svg');
+  mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_chevron.svg');
+}

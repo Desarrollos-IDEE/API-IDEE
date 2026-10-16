@@ -30,23 +30,33 @@ Para uso de implementación Cesium:
 Existe un histórico de versiones de todos los plugins de API-IDEE en [api-idee-legacy](https://github.com/Desarrollos-IDEE/API-IDEE/tree/master/api-idee-legacy/plugins) para hacer uso de versiones anteriores.
 Ejemplo:
 ```html
- <link href="https://componentes.idee.es/api-idee/plugins/mapheader/mapheader-1.0.0.ol.min.css" rel="stylesheet" />
- <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/mapheader/mapheader-1.0.0.ol.min.js"></script>
+ <link href="https://componentes.idee.es/api-idee/plugins/mapheader/mapheader-2.0.0.ol.min.css" rel="stylesheet" />
+ <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/mapheader/mapheader-2.0.0.ol.min.js"></script>
 ```
 
 ## Parámetros
 
 El constructor se inicializa con un JSON con los siguientes atributos:
 
-- **open**. Parámetro que inicializa el plugin con la cabecera de página abierta o cerrada.
-- **htmlCode**. CÓdigo html a partir del cual se construye la cabecera de la página.
-- **cssList**. Listado de archivos css que se inyectan en el visor para su uso en la cabecera de página.
+- **position**: Posición donde se muestra el plugin (por defecto `center-top-left`).
+  - `left`, `right`
+  - `center-bottom-left`, `center-bottom-right`
+  - `center-top-left`, `center-top-right`
+  - `down`
+- **collapsed**: Si la cabecera aparece colapsada al inicio (por defecto `true`). Compatibilidad legacy: `open: true` equivale a `collapsed: false`.
+- **collapsible**: Si el panel puede abrirse y cerrarse (por defecto `true`).
+- **order**: Orden del panel respecto a otros controles/plugins.
+- **tooltip**: Texto del tooltip del botón.
+- **htmlCode**: Código HTML de la cabecera.
+- **cssList**: Lista de URLs CSS (array o string separado por comas) que se inyectan en el visor.
 
 # API-REST
 
 ```javascript
-URL_API?mapheader=open*htmlCode*cssList
+URL_API?mapheader=position*collapsed*order*tooltip*collapsible
 ```
+
+`htmlCode` y `cssList` deben enviarse mediante **base64** (demasiado largos para el separador `*`).
 
 <table>
     <tr>
@@ -55,29 +65,45 @@ URL_API?mapheader=open*htmlCode*cssList
         <th>Disponibilidad</th>
     </tr>
     <tr>
-        <td>open</td>
-        <td>Boolean</td>
+        <td>position</td>
+        <td>left, right, down, center-top-left, center-top-right, center-bottom-left, center-bottom-right</td>
+        <td>Base64 ✔️ | Separador ✔️</td>
+    </tr>
+    <tr>
+        <td>collapsed</td>
+        <td>true / false</td>
+        <td>Base64 ✔️ | Separador ✔️</td>
+    </tr>
+    <tr>
+        <td>order</td>
+        <td>número</td>
+        <td>Base64 ✔️ | Separador ✔️</td>
+    </tr>
+    <tr>
+        <td>tooltip</td>
+        <td>texto</td>
+        <td>Base64 ✔️ | Separador ✔️</td>
+    </tr>
+    <tr>
+        <td>collapsible</td>
+        <td>true / false</td>
         <td>Base64 ✔️ | Separador ✔️</td>
     </tr>
     <tr>
         <td>htmlCode</td>
-        <td>Elemento para mostrar en la cabecera</td>
-        <td>Base64 ✔️ | Separador ✔️</td>
+        <td>HTML de la cabecera</td>
+        <td>Base64 ✔️</td>
     </tr>
     <tr>
         <td>cssList</td>
-        <td>Links CSS para la cabecera</td>
-        <td>Base64 ✔️ | Separador ✔️</td>
+        <td>URLs CSS</td>
+        <td>Base64 ✔️</td>
     </tr>
 </table>
 
 ### Ejemplos de uso API-REST
 ```
-https://componentes.idee.es/api-idee?mapheader=open*htmlCode*cssList
-```
-
-```
-https://componentes.idee.es/api-idee?mapheader=true*<p>Mi%20cabecera</p>*https://centrodedescargas.cnig.es/CentroDescargas/css/estilos-css-cnig-2024.css
+https://componentes.idee.es/api-idee?mapheader=center-top-left*false*0*Cabecera*true
 ```
 
 ### Ejemplo de uso API-REST en base64
@@ -91,7 +117,8 @@ IDEE.utils.encodeBase64(obj_params);
 Ejemplo de constructor:
 ```javascript
 {
-  open: true,
+  position: 'center-top-left',
+  collapsed: false,
   htmlCode: `<p>mi cabecera</p>`,
   cssList: [
     'https://centrodedescargas.cnig.es/CentroDescargas/css/estilos-css-cnig-2024.css',
@@ -99,18 +126,19 @@ Ejemplo de constructor:
 }
 ```
 ```
-https://componentes.idee.es/api-idee?mapheader=base64=eyJvcGVuIjp0cnVlLCJodG1sQ29kZSI6IjxwPm1pIGNhYmVjZXJhPC9wPiIsImNzc0xpc3QiOlsiaHR0cHM6Ly9jZW50cm9kZWRlc2Nhcmdhcy5jbmlnLmVzL0NlbnRyb0Rlc2Nhcmdhcy9jc3MvZXN0aWxvcy1jc3MtY25pZy0yMDI0LmNzcyJdfQ==
+https://componentes.idee.es/api-idee?mapheader=base64=...
 ```
 
 ## Ejemplos de uso
 
 ```javascript
-   const map = IDEE.map({
-     container: 'map'
-   });
+const map = IDEE.map({
+  container: 'map'
+});
 
-   const mp = new IDEE.plugin.Mapheader({
-  open: true,
+const mp = new IDEE.plugin.Mapheader({
+  position: 'center-top-left',
+  collapsed: false,
   htmlCode: `
 <header>
 <div id="header-pc">
@@ -121,12 +149,11 @@ https://componentes.idee.es/api-idee?mapheader=base64=eyJvcGVuIjp0cnVlLCJodG1sQ2
     </div>
     <div class="col-6 col-m-12 marginTop20px">
       <div class="col-12 txtCenter"><a href="https://centrodedescargas.cnig.es/CentroDescargas/home" class="txtSupCdDCabenlace" title="Centro de Descargas">Centro de Descargas</a></div>
-      <div class="marginTop10px col-12 colorVerdeClaro   txtCenter paddingBottom10px ">Instituto Geográfico Nacional</div>
-      <div class="col-12 colorVerdeClaro   txtCenter  ">Organismo Autónomo Centro Nacional de Información Geográfica</div>
+      <div class="marginTop10px col-12 colorVerdeClaro txtCenter paddingBottom10px">Instituto Geográfico Nacional</div>
+      <div class="col-12 colorVerdeClaro txtCenter">Organismo Autónomo Centro Nacional de Información Geográfica</div>
     </div>
   </div>
-</div>  
-</div>  
+</div>
 </header>
   `,
   cssList: [
@@ -134,7 +161,7 @@ https://componentes.idee.es/api-idee?mapheader=base64=eyJvcGVuIjp0cnVlLCJodG1sQ2
   ],
 });
 
-   map.addPlugin(mp);
+map.addPlugin(mp);
 ```
 # 👨‍💻 Desarrollo
 
@@ -183,7 +210,7 @@ npm run start:cesium
 Metodologías y herramientas usadas en el proyecto para garantizar el Quality Assurance Code (QAC)
 
 * ESLint
-  * [NPM ESLint](https://www.npmjs.com/package/eslint) \
+  * [NPM ESLint](https://www.npmjs.com/package/eslint)
   * [NPM ESLint | Airbnb](https://www.npmjs.com/package/eslint-config-airbnb)
 
 ## ⛽️ Revisión e instalación de dependencias / *Review and Update Dependencies*
@@ -196,5 +223,5 @@ $npm i -g npm-check-updates
 $ncu
 ```
 
-## Tabla de compatibilidad de versiones   
+## Tabla de compatibilidad de versiones
 [Consulta el api resourcePlugin](https://componentes.idee.es/api-idee/api/actions/resourcesPlugins?name=mapheader)

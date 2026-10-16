@@ -1,139 +1,203 @@
-/* eslint-disable no-console */
 /**
- * @module M/control/MapheaderControl
+ * @module IDEE/control/MapheaderControl
  */
-
 import MapheaderImplControl from 'impl/mapheadercontrol';
 import template from 'templates/mapheader';
 import { getValue } from './i18n/language';
 
-export default class MapheaderControl extends IDEE.Control {
+class MapheaderControl extends IDEE.Control {
   /**
    * @classdesc
-   * Main constructor of the class. Creates a PluginControl
-   * control
+   * Control de la cabecera HTML del mapa.
    *
    * @constructor
    * @extends {IDEE.Control}
-   * @api stable
+   * @param {Object} options control options
+   * @api
    */
-  constructor(config) {
-    // 1. checks if the implementation can create PluginControl
-    if (IDEE.utils.isUndefined(MapheaderImplControl)) {
+  constructor(options = {}) {
+    if (IDEE.utils.isUndefined(MapheaderImplControl)
+      || (IDEE.utils.isObject(MapheaderImplControl)
+      && IDEE.utils.isNullOrEmpty(Object.keys(MapheaderImplControl)))) {
       IDEE.exception(getValue('exception.impl'));
     }
-    // 2. implementation of this control
     const impl = new MapheaderImplControl();
-    super(impl, 'Mapheader');
+    super(MapheaderControl.NAME, impl, {
+      tooltip: options.tooltip,
+      position: options.position,
+      order: options.order,
+    });
 
-    this.config = config;
-    this.htmlCode = this.config.htmlCode;
-    this.opened = config.open === true;
-    this.cssList = (IDEE.utils.isArray(this.config.cssList) ? this.config.cssList : this.config.cssList.split(',')).map((s) => s.trim());
-    this.injectCSS(this.cssList);
-    this.templateVars = { vars: { htmlCode: this.htmlCode } };
-    /** @type {number} altura del panel mapheader (px). 0 hasta primera medición. */
+    this.htmlCode = options.htmlCode || '';
+    this.opened = options.open === true;
+    this.cssList = IDEE.utils.isArray(options.cssList) ? options.cssList : [];
+    this.injectedLinks = [];
     this.panelHeight = 0;
+    this.panel_ = null;
+    this.templateVars = { vars: { htmlCode: this.htmlCode } };
+
+    this.injectCSS(this.cssList);
   }
 
-  /**
-   * This function creates the view
-   *
-   * @public
-   * @function
-   * @param {IDEE.Map} map to add the control
-   * @api stable
-   */
   createView(map) {
-    return new Promise((success, fail) => {
+    this.map_ = map;
+    this.map = map;
+    return new Promise((success) => {
       const html = IDEE.template.compileSync(template, this.templateVars);
-      this.addEvents();
+      this.html_ = html;
       success(html);
     });
   }
 
   /**
-   * This function is called on the control activation
+   * Enlaza eventos SHOW/HIDE del CollapsiblePanel
    *
    * @public
    * @function
-   * @api stable
+   * @param {IDEE.ui.panels.CollapsiblePanel} panel panel del plugin
+   * @api
    */
-  activate() {
-    // calls super to manage de/activation
-    super.activate();
+  bindPanelEvents(panel) {
+    this.panel_ = panel;
+    this.updateButtonTitle();
+    this.clearButtonInlineOffset();
+    this.bindTestFormOffset();
+    this.scheduleHeaderLayout();
+
+    panel.on(IDEE.evt.SHOW, () => {
+      this.opened = true;
+      this.updateButtonTitle();
+      this.clearButtonInlineOffset();
+      this.scheduleHeaderLayout();
+    });
+
+    panel.on(IDEE.evt.HIDE, () => {
+      this.opened = false;
+      this.updateButtonTitle();
+      this.clearButtonInlineOffset();
+      this.scheduleHeaderLayout();
+    });
   }
 
   /**
-   * This function is called on the control deactivation
+   * Si hay formulario de test encima del mapa, desplaza la cabecera
+   * para no taparlo (mantiene fixed + 100vw).
    *
-   * @public
+   * @private
    * @function
-   * @api stable
    */
-  deactivate() {
-    // calls super to manage de/activation
-    super.deactivate();
+  bindTestFormOffset() {
+    this.onViewportResize_ = () => {
+      this.scheduleHeaderLayout();
+    };
+    window.addEventListener('resize', this.onViewportResize_);
   }
 
   /**
-   * This function gets activation button
+   * Offset superior = altura del form de parámetros de test, si existe.
    *
-   * @public
+   * @private
    * @function
-   * @param {HTML} html of control
-   * @api stable
+   * @returns {number}
    */
-  getActivationButton(html) {
-    return html.querySelector('.m-mapheader button');
+  getTestFormOffset() {
+    const form = document.querySelector('body > .m-api-idee-test-form-frame');
+    if (!form) {
+      return 0;
+    }
+    return Math.ceil(form.getBoundingClientRect().height);
   }
 
   /**
-   * This function compares controls
+   * Aplica top al panel fixed para dejar el form de test encima.
    *
-   * @public
+   * @private
    * @function
-   * @param {IDEE.Control} control to compare
-   * @api stable
    */
+  applyPanelTopOffset() {
+    const panel = this.getPanelElement();
+    if (!panel) {
+      return;
+    }
+    const offset = this.getTestFormOffset();
+    if (offset > 0) {
+      panel.style.setProperty('top', `${offset}px`, 'important');
+    } else {
+      panel.style.removeProperty('top');
+    }
+  }
+
+  scheduleHeaderLayout() {
+    window.requestAnimationFrame(() => {
+      this.checkHeaderheight();
+    });
+  }
+
+  clearButtonInlineOffset() {
+    const button = this.getPanelButton();
+    if (button) {
+      button.style.removeProperty('top');
+      button.style.removeProperty('bottom');
+    }
+  }
+
+  updateButtonTitle() {
+    const btn = this.getPanelButton();
+    if (btn) {
+      const label = (this.opened ? getValue('hide') : getValue('show') || '').trim();
+      btn.replaceChildren();
+      const inner = document.createElement('span');
+      inner.className = 'm-mapheader-btn-inner';
+      const text = document.createElement('span');
+      text.className = 'm-mapheader-btn-text';
+      text.textContent = label;
+      const icon = document.createElement('span');
+      icon.className = 'm-mapheader-btn-icon g-cartografia-btn-mapheader-chevron';
+      icon.setAttribute('aria-hidden', 'true');
+      inner.append(text, icon);
+      btn.append(inner);
+      btn.title = this.opened ? getValue('hideheader') : getValue('showheader');
+      btn.setAttribute('aria-label', btn.title);
+    }
+  }
+
+  getPanelButton() {
+    const panelEl = this.getPanelElement();
+    return panelEl ? panelEl.querySelector('button.m-control-panel-btn') : null;
+  }
+
+  getPanelElement() {
+    if (this.panel_ && this.panel_.element) {
+      return this.panel_.element;
+    }
+    return document.querySelector('div.m-control-panel.m-plugin-mapheader');
+  }
+
+  getActivationButton() {
+    return null;
+  }
+
   equals(control) {
     return control instanceof MapheaderControl;
   }
 
-  // Add your own functions
   injectCSS(cssList) {
     cssList.forEach((cssFile) => {
       const link = document.createElement('link');
       link.href = cssFile;
       link.rel = 'stylesheet';
+      link.media = 'screen';
       link.addEventListener('load', () => {
         this.checkHeaderheight();
       });
-      link.media = 'screen';
       document.getElementsByTagName('head')[0].appendChild(link);
-    });
-  }
-
-  addEvents() {
-    this.checkHeaderheight();
-
-    // Selector del botón del panel mapheader
-    const panelMapheader = document.querySelector('div.m-panel.m-mapheader');
-    const btnMapHeader = panelMapheader ? panelMapheader.querySelector('button.m-panel-btn') : null;
-    if (!btnMapHeader) {
-      return;
-    }
-
-    btnMapHeader.title = this.opened ? getValue('hideheader') : getValue('showheader');
-    btnMapHeader.addEventListener('click', () => {
-      this.opened = !this.opened;
-      btnMapHeader.title = this.opened ? getValue('hideheader') : getValue('showheader');
-      this.checkHeaderheight();
+      this.injectedLinks.push(link);
     });
   }
 
   checkHeaderheight() {
-    const panel = document.querySelector('div.m-panel.m-mapheader');
+    this.applyPanelTopOffset();
+    const panel = this.getPanelElement();
     if (panel) {
       this.panelHeight = panel.clientHeight;
     }
@@ -142,56 +206,58 @@ export default class MapheaderControl extends IDEE.Control {
 
   setTopMargin(opened) {
     const ph = this.panelHeight || 0;
-    this.applyButtonOffset(opened, ph);
-    this.applyTopLeftMargin(opened, ph);
-    this.applyHeaderContainerVisibility(opened);
-    this.applyTopRightSiblingsMargin(opened, ph);
+    this.clearButtonInlineOffset();
+    this.applyTopContainersMargin(opened, ph);
   }
 
-  applyButtonOffset(opened, ph) {
-    const button = document.querySelector('div.m-panel.m-mapheader>button');
-    if (!button) {
-      return;
-    }
-    if (opened) {
-      button.style.setProperty('top', `${ph}px`, 'important');
-    } else {
-      button.style.removeProperty('top');
-    }
-  }
+  applyTopContainersMargin(opened, ph) {
+    const margin = opened ? `${ph + 10}px` : '';
+    const selectors = [
+      '.m-api-idee-center-panel-top-left',
+      '.m-api-idee-center-panel-top-right',
+      '.m-api-idee-left-buttons',
+      '.m-api-idee-right-buttons',
+    ];
 
-  applyTopLeftMargin(opened, ph) {
-    const topLeft = document.querySelector('div.m-area.m-top.m-left');
-    if (topLeft) {
-      topLeft.style.marginTop = opened ? `${ph + 30}px` : '30px';
-    }
-  }
-
-  applyHeaderContainerVisibility(opened) {
-    const panel = document.querySelector('div.m-panel.m-mapheader');
-    if (!panel) {
-      return;
-    }
-    const headerContainer = panel.querySelector('#div-contenedor, .m-control.m-container.m-mapheader');
-    if (headerContainer) {
-      headerContainer.style.display = opened ? 'block' : 'none';
-    }
-  }
-
-  applyTopRightSiblingsMargin(opened, ph) {
-    const topRight = document.querySelector('div.m-area.m-top.m-right');
-    if (!topRight) {
-      return;
-    }
-    const firstMargin = opened ? `${ph + 10}px` : '10px';
-    let firstApplied = false;
-    Array.from(topRight.children).forEach((element) => {
-      if (!element.classList || element.classList.contains('m-mapheader')) {
+    selectors.forEach((selector) => {
+      const container = document.querySelector(selector);
+      if (!container) {
         return;
       }
-      const margin = firstApplied ? '10px' : firstMargin;
-      element.style.setProperty('margin-top', margin, 'important');
-      firstApplied = true;
+      Array.from(container.children).forEach((element) => {
+        if (!element.classList || element.classList.contains('m-plugin-mapheader')) {
+          return;
+        }
+        if (opened) {
+          element.style.setProperty('margin-top', margin, 'important');
+        } else {
+          element.style.removeProperty('margin-top');
+        }
+      });
     });
   }
+
+  destroy() {
+    if (this.onViewportResize_) {
+      window.removeEventListener('resize', this.onViewportResize_);
+      this.onViewportResize_ = null;
+    }
+    const panel = this.getPanelElement();
+    if (panel) {
+      panel.style.removeProperty('top');
+    }
+    this.setTopMargin(false);
+    this.injectedLinks.forEach((link) => {
+      if (link && link.parentNode) {
+        link.parentNode.removeChild(link);
+      }
+    });
+    this.injectedLinks = [];
+    this.panel_ = null;
+    this.html_ = null;
+    this.map = null;
+  }
 }
+
+MapheaderControl.NAME = 'Mapheader';
+export default MapheaderControl;

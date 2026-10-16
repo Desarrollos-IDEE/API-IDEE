@@ -6,24 +6,38 @@
   "constructor": "IDEE.plugin.Mapheader",
   "parameters": [
     {
-      "type": "object",
-      "properties": [
-        {
-          "type": "boolean",
-          "name": "open",
-          "position": 0
-        },
-        {
-          "type": "simple",
-          "name": "htmlCode",
-          "position": 1
-        },
-        {
-          "type": "simple",
-          "name": "cssList",
-          "position": 2
-        }
+      "type": "simple",
+      "name": "position",
+      "position": 0,
+      "possibleValues": [
+        "left",
+        "right",
+        "center-bottom-left",
+        "center-bottom-right",
+        "center-top-left",
+        "center-top-right",
+        "down"
       ]
+    },
+    {
+      "type": "boolean",
+      "name": "collapsed",
+      "position": 1
+    },
+    {
+      "type": "number",
+      "name": "order",
+      "position": 2
+    },
+    {
+      "type": "string",
+      "name": "tooltip",
+      "position": 3
+    },
+    {
+      "type": "boolean",
+      "name": "collapsible",
+      "position": 4
     }
   ],
   "files": {
@@ -45,20 +59,18 @@
     }
   },
   "metadata": {
-    "uuid_plugin": "",
-    "uuid_version_plugin": "",
-    "version_ficha_metadatos": "",
     "name": "Mapheader",
-    "description": "Permite la generación automática de cabecera de pagina.",
-    "text": "Permite la generación automática de cabecera de pagina.",
-    "version": "1.0.0",
-    "date": "Diciembre 2025",
-    "author": "",
-    "org": "",
-    "tags": "idee,plugin",
-    "icon": "./facade/assets/icons/icons.svg",
+    "description": "Generador de Cabecera de Mapa",
+    "text": "Cabecera HTML colapsable sobre el mapa con CollapsiblePanel (API-IDEE v2)",
+    "version": "2.0.0",
+    "date": "Septiembre, 2026",
+    "author": "API-IDEE",
+    "org": "Instituto Geográfico Nacional",
+    "tags": "api-idee,IDEE,plugin",
+    "icon": "https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_info.svg",
+    "centralized": true,
     "compatibility": [
-      "1.0.0"
+      "2"
     ]
   }
 }
