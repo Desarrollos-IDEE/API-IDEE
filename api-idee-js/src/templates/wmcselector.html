@@ -1,7 +1,7 @@
 <div class="m-control m-wmcselector-container g-cartografia-mapa" title="{{title}}">
-    <select class="m-wmcselector-select" aria-label="Plugin wmc selector" tabindex="100">
+    <select class="m-wmcselector-select" aria-label="{{title}}" tabindex="{{order}}">
         {{#each layers}}
-            <option {{#if selected}}selected {{/if}}value="{{url}}">{{name}}</option>
+        <option {{#if selected}}selected {{/if}}value="{{url}}">{{name}}</option>
         {{/each}}
     </select>
 </div>

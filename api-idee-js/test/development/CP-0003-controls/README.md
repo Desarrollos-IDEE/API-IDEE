@@ -57,3 +57,6 @@ Control scale
 
 CP-020
 Control scaleline
+
+CP-021
+Control wmcselector

@@ -1,7 +1,13 @@
 /**
  * @module IDEE/impl/control/WMCSelector
  */
+import { isNullOrEmpty } from 'IDEE/util/Utils';
 import Control from './Control';
+
+/**
+ * @typedef {module:IDEE/impl/Control~Options} module:IDEE/impl/control/WMCSelector~Options
+ * @api
+ */
 
 /**
  * @classdesc
@@ -10,28 +16,54 @@ import Control from './Control';
  * diferentes contextos de mapas guardados, restaurando las capas, estilos y extensión
  * del mapa seleccionado.
  *
+ * @property {IDEE.Map} [facadeMap_] Referencia al mapa de fachada.
+ * @property {HTMLElement} [element] Elemento DOM del control.
+ *
  * @api
  * @extends {module:IDEE/impl/control/Control}
  */
 class WMCSelector extends Control {
+  /**
+   * Constructor principal de la clase.
+   *
+   * @constructor
+   * @param {module:IDEE/impl/control/WMCSelector~Options} options Opciones del control.
+   * @extends {ol.control.Control}
+   * @api stable
+   */
+  constructor(options = {}) {
+    super(options);
+    this.facadeMap_ = null;
+  }
+
   /**
    * Este método agrega el control al mapa.
    *
    * @public
    * @function
    * @param {IDEE.Map} map Mapa
-   * @param {function} template Plantilla del control.
+   * @param {HTMLElement} element Plantilla del control.
    * @api stable
    */
   addTo(map, element) {
+    this.facadeMap_ = map;
+    this.element = element;
+
     const select = element.getElementsByTagName('select')[0];
-    select.addEventListener('change', (e) => {
-      const selectedWMCLayer = map.getWMC(e.target.options[e.target.selectedIndex].text)[0];
-      const zoom = map.getZoom();
-      selectedWMCLayer.select();
-      map.setZoom(zoom);
-    });
-    super.addTo(map, element);
+    if (!isNullOrEmpty(select)) {
+      select.addEventListener('change', (e) => {
+        const selectedOption = e.target.options[e.target.selectedIndex];
+        const selectedWMCLayer = map.getWMC(selectedOption.text)[0];
+        if (isNullOrEmpty(selectedWMCLayer)) {
+          return;
+        }
+        const zoom = map.getZoom();
+        selectedWMCLayer.select();
+        map.setZoom(zoom);
+      });
+    }
+
+    map.getMapImpl().addControl(this);
   }
 }
 

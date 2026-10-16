@@ -1,62 +1,98 @@
-.m-wmcselector-container {
-   background-color: white !important;
-   padding: 5px 10px 3px 12px !important;
-   font-family: 'Muli', 'sans-serif' !important;
-   font-size: 12px !important;
-   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02) !important;
-   display: flex !important;
-   height: 17px;
+.m-control.m-wmcselector-container {
+   min-height: calc(28px - 1.6px * 2);
+   height: auto;
+   display: inline-flex !important;
+   align-items: center;
+   justify-content: flex-start;
+   flex-wrap: nowrap;
+   flex: 0 0 auto;
+   flex-shrink: 0;
+   border-radius: 20px;
+   gap: 4px;
+   padding: 0 8px 0 10px !important;
+   margin: 0;
+   width: max-content;
+   max-width: none;
+   min-width: max-content;
+   font-size: 12px;
+   font-weight: normal;
+   vertical-align: middle;
+   white-space: nowrap;
+   order: 2;
+   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
+   overflow: visible;
 }
 
-.m-wmcselector-container {
-   bottom: 8px;
-   right: 60px;
-   display: block;
-   /*box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);*/
-   padding: 0px;
-   margin: 0px;
-   border: 2px solid white;
-}
-
-.m-wmcselector-container:before {
-   color: #a35d38;
-   margin-right: 5px;
-   margin-top: 3px;
-}
-
-.m-wmcselector-container:before {
-   font-family: 'g-cartografia' !important;
-}
-
-.m-wmcselector-select {
-   padding-left: 5px;
-   padding-right: 5px;
+.m-control.m-wmcselector-container:before {
+   color: var(--font-color, #fff);
+   background-color: currentColor;
+   margin: 0;
+   flex-shrink: 0;
+   width: 16px;
+   height: 16px;
+   aspect-ratio: 1;
    border: none;
-   background-color: #FEFEFE;
-   color: #6C6C6C;
+   border-radius: 0;
+   padding: 0;
+}
+
+.m-control.m-wmcselector-container .m-wmcselector-select {
+   flex: 0 0 auto;
+   flex-shrink: 0;
+   width: max-content;
+   max-width: none;
+   min-width: max-content;
+   height: auto;
+   min-height: 24px;
+   padding: 2px 0;
+   margin: 0;
+   border: none;
+   border-radius: 0;
+   background-color: transparent !important;
+   color: var(--font-color, #fff);
+   font-family: inherit;
+   font-size: 12px;
    font-weight: normal;
    text-decoration: none;
    outline: none;
-   margin: 0px;
+   cursor: pointer;
    -webkit-appearance: none;
+   appearance: none;
+   field-sizing: content;
+   overflow: visible;
+   text-overflow: clip;
 }
 
-.m-wmcselector-select>option {
+.m-control.m-wmcselector-container .m-wmcselector-select:hover {
+   background-color: transparent !important;
+}
+
+.m-control.m-wmcselector-container .m-wmcselector-select>option {
    color: #6C6C6C;
+   background-color: #FEFEFE;
 }
 
-.m-panel.m-map-info>div.m-panel-controls>div.m-control.m-wmcselector-container {
+.m-panel.m-map-info>div.m-panel-controls>div.m-control.m-wmcselector-container,
+.m-control-panel.m-map-info>div.m-controls-panel>div.m-control.m-wmcselector-container {
    order: 2;
+   overflow: visible;
+   flex: 0 0 auto;
+   width: max-content;
+   min-width: max-content;
 }
 
 .m-panel.m-map-info.m-with-mouse>div.m-panel-controls>div.m-control.m-wmcselector-container,
-.m-panel.m-map-info.m-with-scale>div.m-panel-controls>div.m-control.m-wmcselector-container {
-   border-top-left-radius: 0px !important;
-   border-bottom-left-radius: 0px !important;
+.m-panel.m-map-info.m-with-scale>div.m-panel-controls>div.m-control.m-wmcselector-container,
+.m-control-panel.m-map-info.m-with-mouse>div.m-controls-panel>div.m-control.m-wmcselector-container,
+.m-control-panel.m-map-info.m-with-scale>div.m-controls-panel>div.m-control.m-wmcselector-container {
+   border-top-left-radius: 0 !important;
+   border-bottom-left-radius: 0 !important;
 }
 
 @media only screen and (max-width: 768px) {
-   .m-panel.m-map-info.m-with-mouse:not(.m-with-scale)>div.m-panel-controls>div.m-control.m-wmcselector-container {
+
+   .m-panel.m-map-info.m-with-mouse:not(.m-with-scale)>div.m-panel-controls>div.m-control.m-wmcselector-container,
+   .m-control-panel.m-map-info.m-with-mouse:not(.m-with-scale)>div.m-controls-panel>div.m-control.m-wmcselector-container {
       border-top-left-radius: 20px !important;
       border-bottom-left-radius: 20px !important;
    }

@@ -140,6 +140,11 @@
         -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_overview.svg');
         mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_overview.svg');
     }
+
+    .g-cartografia-mapa::before {
+        -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_map.svg');
+        mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_map.svg');
+    }
     
     .g-cartografia-poligono::before {
         -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_superficial.svg');
