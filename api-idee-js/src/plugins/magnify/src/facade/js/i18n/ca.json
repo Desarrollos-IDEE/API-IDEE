@@ -11,6 +11,7 @@
     "squemaTitle": "magnify",
     "title": "MAGNIFY",
     "paragraph1": "La lupa amplia una zona circular del mapa sobre la cartografia de fons, mantenint la resta del visor a escala normal per comparar el detall.",
+    "paragraph2": "Obriu el panell lateral, activeu la lupa i ajusteu el nivell de zoom. Moveu la lent sobre el mapa per veure el detall ampliat.",
     "screenshot1Alt": "Icona del plugin magnify al mapa",
     "screenshot1Caption": "help-01.png",
     "screenshot2Alt": "Panell de la lupa obert amb nivell de zoom i lupa circular ampliant un sector del mapa",

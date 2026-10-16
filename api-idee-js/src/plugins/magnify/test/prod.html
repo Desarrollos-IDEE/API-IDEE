@@ -1,57 +1,126 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="api-idee" content="yes">
     <title>Magnify Production TEST</title>
     <link href="https://componentes-beta.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
     <link href="../dist/magnify.ol.min.css" rel="stylesheet" />
-    <link href="https://componentes.idee.es/api-idee/plugins/help/help.ol.min.css" rel="stylesheet" />
-    <style rel="stylesheet">
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-        }
-    </style>
-
 </head>
 
 <body>
+    <div class="m-api-idee-test-form-frame">
+        <div class="m-test-form">
+            <div>
+                <label for="selectPosition" title="Posición del plugin sobre el mapa. Por defecto: right">Posición "position"</label>
+                <select name="position" id="selectPosition">
+                    <option value="left">left — barra lateral izquierda</option>
+                    <option value="right" selected="selected">right — barra lateral derecha</option>
+                </select>
+            </div>
+            <div>
+                <label for="selectCollapsed" title="Indica si el plugin viene colapsado de entrada (true/false). Por defecto: true">Colapsado "collapsed"</label>
+                <select name="collapsed" id="selectCollapsed">
+                    <option value="true" selected="selected">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputOrder" title="Define en qué posición del panel debe aparecer en el conjunto de controles o plugins">Orden entre controles / plugins "order"</label>
+                <input type="number" name="order" id="inputOrder" value="0">
+            </div>
+            <div>
+                <label for="inputTooltip" title="Texto que se muestra al dejar el ratón encima del plugin">Título de la herramienta "tooltip"</label>
+                <input type="text" name="tooltip" id="inputTooltip" value="Magnify">
+            </div>
+            <div>
+                <label for="inputLayers" title="Capas sobre las que aplica el efecto lupa">Capas "layers"</label>
+                <input type="text" name="layers" id="inputLayers" value="toporaster">
+            </div>
+            <div>
+                <label for="inputZoomMax" title="Zoom máximo de la lupa">Zoom máximo "zoomMax"</label>
+                <input type="number" name="zoomMax" id="inputZoomMax" value="19">
+            </div>
+            <div>
+                <label for="inputZoom" title="Factor de zoom de la lupa">Zoom "zoom"</label>
+                <input type="number" name="zoom" id="inputZoom" value="8">
+            </div>
+        </div>
+        <div class="m-test-buttons">
+            <button name="eliminar" class="m-test-button" id="removeButton">Eliminar Plugin</button>
+        </div>
+    </div>
     <div id="mapjs" class="container"></div>
     <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/js/apiidee.ol.min.js"></script>
     <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/js/configuration.js"></script>
     <script type="text/javascript" src="../dist/magnify.ol.min.js"></script>
-    <script type="text/javascript" src="https://componentes.idee.es/api-idee/plugins/help/help.ol.min.js"></script>
     <script type="text/javascript">
+        IDEE.language.setLang(window.localStorage.getItem('language') || 'es');
+
         const map = IDEE.map({
-            container: "mapjs",
+            container: 'mapjs',
             zoom: 1,
             center: {
                 x: 360020,
                 y: 4149045,
             },
         });
+        window.map = map;
 
         const wmts = new IDEE.layer.WMTS({
-            url: "http://www.ideandalucia.es/geowebcache/service/wmts",
-            name: "toporaster",
-            matrixSet: "EPSG:25830",
-            legend: "Toporaster"
+            url: 'http://www.ideandalucia.es/geowebcache/service/wmts',
+            name: 'toporaster',
+            matrixSet: 'EPSG:25830',
+            legend: 'Toporaster',
         }, {
-            format: 'image/png'
+            format: 'image/png',
         });
         map.addLayers([wmts]);
-        const mp = new IDEE.plugin.Magnify({
-            zoom: 8,
-            layers: 'toporaster'
-        });
-        map.addPlugin(mp);
-        map.addPlugin(new IDEE.plugin.Help({}));
+
+        let mp = null;
+
+        const createPlugin = (options) => {
+            mp = new IDEE.plugin.Magnify(options);
+            window.mp = mp;
+            map.addPlugin(mp);
+        };
+
+        const removePlugin = () => {
+            if (mp) {
+                map.removePlugins(mp);
+                mp = null;
+            }
+        };
+
+        const selectPosition = document.getElementById('selectPosition');
+        const selectCollapsed = document.getElementById('selectCollapsed');
+        const inputOrder = document.getElementById('inputOrder');
+        const inputTooltip = document.getElementById('inputTooltip');
+        const inputLayers = document.getElementById('inputLayers');
+        const inputZoomMax = document.getElementById('inputZoomMax');
+        const inputZoom = document.getElementById('inputZoom');
+
+        const updatePlugin = () => {
+            removePlugin();
+            createPlugin({
+                position: selectPosition.value,
+                collapsed: selectCollapsed.value === 'true',
+                order: Number(inputOrder.value),
+                tooltip: inputTooltip.value,
+                layers: inputLayers.value,
+                zoomMax: Number(inputZoomMax.value),
+                zoom: Number(inputZoom.value),
+            });
+        };
+
+        document.getElementById('removeButton').addEventListener('click', removePlugin);
+        [selectPosition, selectCollapsed, inputOrder, inputTooltip, inputLayers, inputZoomMax, inputZoom]
+            .forEach((ctrl) => ctrl.addEventListener('change', updatePlugin));
+
+        updatePlugin();
     </script>
 </body>
 

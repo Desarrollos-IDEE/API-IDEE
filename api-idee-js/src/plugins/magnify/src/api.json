@@ -4,44 +4,78 @@
     "separator": "*"
   },
   "constructor": "IDEE.plugin.Magnify",
-  "parameters": [{
-    "type": "object",
-    "properties": [{
+  "parameters": [
+    {
       "type": "simple",
       "name": "position",
       "position": 0,
-      "possibleValues": ["left", "right"]
-    }, {
-      "type": "simple",
-      "name": "layers",
+      "possibleValues": [
+        "left",
+        "right"
+      ]
+    },
+    {
+      "type": "boolean",
+      "name": "collapsed",
       "position": 1
-    }, {
+    },
+    {
+      "type": "number",
+      "name": "order",
+      "position": 2
+    },
+    {
+      "type": "string",
+      "name": "tooltip",
+      "position": 3
+    },
+    {
+      "type": "string",
+      "name": "layers",
+      "position": 4
+    },
+    {
       "type": "number",
       "name": "zoomMax",
-      "position": 2
-    }, {
+      "position": 5
+    },
+    {
       "type": "number",
       "name": "zoom",
-      "position": 3
-    }]
-  }],
+      "position": 6
+    }
+  ],
   "files": {
     "ol": {
-      "scripts": ["magnify.ol.min.js"],
-      "styles": ["magnify.ol.min.css"]
+      "scripts": [
+        "magnify.ol.min.js"
+      ],
+      "styles": [
+        "magnify.ol.min.css"
+      ]
+    },
+    "cesium": {
+      "scripts": [
+        "magnify.cesium.min.js"
+      ],
+      "styles": [
+        "magnify.cesium.min.css"
+      ]
     }
   },
   "metadata": {
-    "name": "magnify",
+    "name": "Magnify",
     "description": "Efecto lupa-zoom sobre capas",
-    "text": "Plugin que permite realizar un efecto de zoom o de lupa sobre una o varias capas",
-    "version": "1.0.0",
-    "date": "Diciembre, 2025",
-    "author": "",
-    "org": "",
-    "tags": "idee,plugin",
-    "icon": "./facade/assets/icons/icons.svg",
+    "text": "Plugin que permite realizar un efecto de zoom o de lupa sobre una o varias capas con SidePanel (API-IDEE v2)",
+    "version": "2.0.0",
+    "date": "Septiembre, 2026",
+    "author": "API-IDEE",
+    "org": "Instituto Geográfico Nacional",
+    "tags": "api-idee,IDEE,plugin",
+    "icon": "https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_zoom_recuad.svg",
     "centralized": true,
-    "compatibility":["1"]
+    "compatibility": [
+      "2"
+    ]
   }
 }

@@ -1,5 +1,5 @@
 /**
- * @module M/impl/control/ZoomInteraction
+ * @module IDEE/impl/control/ZoomInteraction
  */
 export default class ZoomInteraction extends ol.Overlay {
   /**

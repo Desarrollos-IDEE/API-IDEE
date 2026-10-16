@@ -1,3 +1,3 @@
 /**
- * @module M/impl/control/MagnifyControl
+ * @module IDEE/impl/control/MagnifyControl
  */

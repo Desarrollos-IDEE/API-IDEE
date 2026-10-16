@@ -1,95 +1,127 @@
-/* eslint-disable no-console */
 /**
- * @module M/plugin/Magnify
+ * @module IDEE/plugin/Magnify
  */
-import 'assets/css/magnify';
 import api from '../../api';
 import myhelp from '../../templates/myhelp.html';
+import '../assets/css/fonts';
+import '../assets/css/magnify';
 import en from './i18n/en';
 import es from './i18n/es';
 import { getValue } from './i18n/language';
 import MagnifyControl from './magnifycontrol';
 
+const SVG_PATH = 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_zoom_recuad.svg';
+
+const POSITION_LEGACY = {
+  TL: 'left',
+  BL: 'left',
+  TR: 'right',
+  BR: 'right',
+};
+
+/**
+ * Normaliza posiciones legacy TL/TR/BL/BR a left/right (API v2).
+ * @param {string} position
+ * @returns {string}
+ */
+const normalizePosition = (position) => {
+  if (!position) {
+    return 'right';
+  }
+  return POSITION_LEGACY[position] || position;
+};
+
+/**
+ * @classdesc
+ * Plugin de efecto lupa/zoom con SidePanelButton + PluginSidePanel (API-IDEE v2).
+ */
 export default class Magnify extends IDEE.Plugin {
   /**
-   * @classdesc
-   * Main facade plugin object. This class creates a plugin
-   * object which has an implementation Object
-   *
    * @constructor
    * @extends {IDEE.Plugin}
-   * @param {Object} impl implementation object
+   * @param {Object} options opciones del plugin
    * @api stable
    */
   constructor(options = {}) {
-    super();
+    super('magnify', {
+      position: normalizePosition(options.position) || 'right',
+      tooltip: options.tooltip || getValue('tooltip'),
+      order: options.order,
+    });
+
+    /**
+     * Plugin options
+     * @private
+     * @type {Object}
+     */
+    this.options = options;
+
     /**
      * Facade of the map
      * @private
      * @type {IDEE.Map}
      */
-    this.map_ = null;
+    this.map = null;
 
     /**
      * Array of controls
      * @private
      * @type {Array<IDEE.Control>}
      */
-    this.controls_ = [];
+    this.controls = [];
 
     /**
-     * This flag indicates if the plugin is collapsible
-     * @type {boolean}
-     */
-    this.collapsible = true;
-
-    /**
-     * Class name of the html view Plugin
+     * CSS class name for the panel
+     * @private
      * @type {string}
      */
     this.className = 'm-plugin-magnify';
 
     /**
-     * Position of the Plugin
-     * @type {string}
+     * Option to allow the plugin to be initially collapsed
+     * @private
+     * @type {boolean}
      */
-    this.position = options.position || 'TR';
-
-    /**
-     * Layer names that will have effects
-     * Value: the names separated with coma
-     * @type {string}
-     */
-    /* Al crear el plugin pueden darse tres casos:
-      1. que no se haya incluido el parámetro layers.
-      2. que el parámetro layers esté vacío (layers: '')
-      3. que el parámetro layers contenga una capa o varias separadas por comas */
-    if (options.layers === '' || options.layers === null || options.layers === undefined) {
-      this.layers = '';
-    } else {
-      this.layers = options.layers.split(',');
+    this.collapsed = true;
+    if (IDEE.utils.isBoolean(options.collapsed)) {
+      this.collapsed = options.collapsed;
     }
-
-    /**
-     * Max limit zoom
-     * Value: number
-     * @type {number}
-     */
-    this.zoomMax = options.zoomMax || 10;
-
-    /**
-     * Magnifying effect zoom
-     * Value: number in range 1 - zoomMax
-     * @type {number}
-     */
-    this.zoom = options.zoom || 1;
 
     /**
      * Metadata from api.json
      * @private
      * @type {Object}
      */
-    this.metadata_ = api.metadata;
+    this.metadata = api.metadata;
+
+    this.separatorApiJson = api.url.separator;
+
+    /**
+     * Layer names that will have effects
+     * @public
+     * @type {string|Array<string>}
+     */
+    if (options.layers === '' || options.layers === null || options.layers === undefined) {
+      this.layers = '';
+    } else if (Array.isArray(options.layers)) {
+      this.layers = options.layers;
+    } else {
+      this.layers = options.layers.split(',');
+    }
+
+    /**
+     * Max limit zoom
+     * @public
+     * @type {number}
+     */
+    this.zoomMax = options.zoomMax || 10;
+
+    /**
+     * Magnifying effect zoom
+     * @public
+     * @type {number}
+     */
+    this.zoom = options.zoom || 1;
   }
 
   /**
@@ -101,35 +133,56 @@ export default class Magnify extends IDEE.Plugin {
    * @api stable
    */
   addTo(map) {
-    const pluginOnLeft = !!(['TL', 'BL'].includes(this.position));
-    const values = {
-      pluginOnLeft,
+    this.map = map;
+    this.control = new MagnifyControl({
       layers: this.layers,
       zoom: this.zoom,
       zoomMax: this.zoomMax,
-    };
-    this.control_ = new MagnifyControl(values);
-    this.controls_.push(this.control_);
-
-    this.map_ = map;
-
-    // panel para agregar control - no obligatorio
-    this.panel_ = new IDEE.ui.panels.PluginSidePanel('panelMagnify', {
-      collapsible: this.collapsible,
+      tooltip: this.tooltip,
       position: this.position,
-      className: this.className,
-      collapsedButtonClass: 'g-cartografia-zoom-extension',
-      tooltip: getValue('tooltip'),
+      order: this.order,
     });
-    this.panel_.addControls(this.controls_);
-    this.panel_.on(IDEE.evt.SHOW, (evt) => {
-      if (map.getWFS().length === 0 && map.getKML().length === 0
-        && map.getKMZ().length === 0 && map.getGeoJSON() === 0) {
-        this.panel_.collapse();
+    this.controls = [this.control];
+
+    this.button = new IDEE.ui.buttons.SidePanelButton(this.name, {
+      position: this.position,
+      tooltip: this.tooltip,
+      svgPath: SVG_PATH,
+      order: this.order,
+    });
+    map.addButtons(this.button);
+
+    this.panel = new IDEE.ui.panels.PluginSidePanel(this.name, {
+      collapsed: this.collapsed,
+      position: this.position,
+      minWidth: this.minPanelWidth,
+      maxWidth: this.maxPanelWidth,
+      className: this.className,
+      tooltip: this.tooltip,
+      order: this.order,
+    });
+
+    this.control.setPanel(this.panel);
+
+    this.control.on(IDEE.evt.ADDED_TO_MAP, () => {
+      this.fire(IDEE.evt.ADDED_TO_MAP);
+    });
+
+    this.panel.on(IDEE.evt.ADDED_TO_MAP, (html) => {
+      IDEE.utils.enableTouchScroll(html);
+    });
+
+    this.panel.on(IDEE.evt.SHOW, () => {
+      if (map.getLayers().length === 0) {
+        this.panel.collapse();
         IDEE.dialog.info(getValue('exception.nolayersavai'));
       }
     });
-    map.addPanels(this.panel_);
+
+    this.panel.addControls(this.controls);
+    this.button.panel = this.panel;
+    this.panel.button = this.button;
+    map.addPanels(this.panel);
   }
 
   /**
@@ -140,50 +193,87 @@ export default class Magnify extends IDEE.Plugin {
    * @api stable
    */
   destroy() {
-    // Eliminar el efecto de magnificación (overlay de OL)
-    if (this.control_ && this.control_.getImpl()) {
-      this.control_.getImpl().removeEffects();
+    if (this.control && this.control.getImpl()) {
+      this.control.getImpl().removeEffects();
     }
-    // Eliminar también el elemento visual de la lupa del DOM
-    const magnifyElement = document.querySelector('.ol-magnify');
-    if (magnifyElement) {
-      magnifyElement.remove();
+    if (this.map) {
+      if (this.control) {
+        this.control.setPanel(null);
+      }
+      if (this.button) {
+        this.map.removeButton(this.button);
+      }
+      if (this.panel) {
+        this.map.removePanel(this.panel);
+      }
+      if (this.controls.length > 0) {
+        this.map.removeControls(this.controls);
+      }
     }
-    if (this.map_ && this.controls_) {
-      this.map_.getImpl().removeControls(this.controls_);
-    }
-    // Eliminar el panel del DOM por su clase CSS
-    const panelElement = document.querySelector('.m-plugin-magnify');
-    if (panelElement) {
-      panelElement.remove();
-    }
-    if (this.panel_ && this.map_) {
-      // Eliminar el panel del array de paneles del mapa
-      // eslint-disable-next-line no-underscore-dangle
-      this.map_._panels = this.map_._panels.filter((p) => !p.equals(this.panel_));
-    }
-    [this.control_, this.controls_, this.panel_, this.map_] = [null, null, null, null];
+    this.map = null;
+    this.control = null;
+    this.controls = [];
+    this.panel = null;
+    this.button = null;
   }
 
   /**
-   * This function return the control of plugin
+   * This function return the controls of plugin
    *
    * @public
    * @function
    * @api stable
    */
   getControls() {
-    const aControl = [];
-    aControl.push(this.control_);
-    return aControl;
+    return this.controls;
   }
 
   /**
-   * @getter
+   * Devuelve el panel del plugin
+   *
    * @public
+   * @function
+   * @returns {IDEE.ui.panels.PluginSidePanel}
+   * @api
    */
-  get name() {
-    return 'magnify';
+  getPanel() {
+    return this.panel;
+  }
+
+  /**
+   * Comprueba si el plugin recibido es instancia de Magnify
+   *
+   * @public
+   * @function
+   * @param {IDEE.Plugin} plugin Plugin a comparar
+   * @returns {boolean}
+   * @api
+   */
+  equals(plugin) {
+    return plugin instanceof Magnify;
+  }
+
+  /**
+   * Get the API REST Parameters of the plugin
+   *
+   * @function
+   * @public
+   * @api
+   */
+  getAPIRest() {
+    const layers = Array.isArray(this.layers) ? this.layers.join(',') : this.layers;
+    return `${this.name}=${this.position}${this.separatorApiJson}${this.collapsed}${this.separatorApiJson}${this.order}${this.separatorApiJson}${this.tooltip}${this.separatorApiJson}${layers}${this.separatorApiJson}${this.zoomMax}${this.separatorApiJson}${this.zoom}`;
+  }
+
+  /**
+   * Gets the API REST Parameters in base64 of the plugin
+   *
+   * @function
+   * @public
+   * @api
+   */
+  getAPIRestBase64() {
+    return `${this.name}=base64=${IDEE.utils.encodeBase64(this.options)}`;
   }
 
   /**
@@ -194,7 +284,7 @@ export default class Magnify extends IDEE.Plugin {
    * @api stable
    */
   getMetadata() {
-    return this.metadata_;
+    return this.metadata;
   }
 
   /**
@@ -220,15 +310,22 @@ export default class Magnify extends IDEE.Plugin {
    * @api
    */
   getHelp() {
+    // eslint-disable-next-line global-require, import/no-dynamic-require
+    const imageHelp01 = require(`assets/images/${this.getMetadata().version}/help-01.png`);
+    // eslint-disable-next-line global-require, import/no-dynamic-require
+    const imageHelp02 = require(`assets/images/${this.getMetadata().version}/help-02.png`);
+
     return {
       title: getValue('textHelp.squemaTitle'),
       content: new Promise((resolve) => {
         const html = IDEE.template.compileSync(myhelp, {
           vars: {
             title: getValue('textHelp.title'),
-            urlImages: `${IDEE.config.API_IDEE_URL}plugins/magnify/images/`,
+            imageHelp01,
+            imageHelp02,
             translations: {
               paragraph1: getValue('textHelp.paragraph1'),
+              paragraph2: getValue('textHelp.paragraph2'),
               screenshot1Alt: getValue('textHelp.screenshot1Alt'),
               screenshot1Caption: getValue('textHelp.screenshot1Caption'),
               screenshot2Alt: getValue('textHelp.screenshot2Alt'),
