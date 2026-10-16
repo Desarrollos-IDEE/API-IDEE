@@ -3,9 +3,11 @@ import { test, expect } from '@playwright/test';
 import registerRequestManagerTests from '../common/request-manager.spec';
 import registerDataIDEECacheLayerTests from '../common/dataidee-layer-cache';
 import registerDataIDEEViewportTests from '../common/dataidee-viewport';
+import registerDataIDEEAuthTests from '../common/dataidee-auth';
 
 registerDataIDEECacheLayerTests('/test/playwright/ol/basic-ol.html');
 registerDataIDEEViewportTests('/test/playwright/ol/basic-ol.html');
+registerDataIDEEAuthTests('/test/playwright/ol/basic-ol.html');
 
 const geoJSON = {
   type: 'FeatureCollection',
