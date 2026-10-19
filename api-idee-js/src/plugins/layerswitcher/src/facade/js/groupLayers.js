@@ -30,32 +30,82 @@ export const getAllLayersGroup = (map) => {
   return allLayers;
 };
 
+export const getAllLayersSection = (map) => {
+  const allLayers = [];
+
+  const processSection = (section) => {
+    allLayers.push(section);
+    section.getChildren().forEach((child) => {
+      if (child instanceof IDEE.layer.Section) {
+        processSection(child);
+      } else if (child.displayInLayerSwitcher !== false) {
+        allLayers.push(child);
+      }
+    });
+  };
+
+  map.getSections().forEach(processSection);
+  return allLayers;
+};
+
+export const findSectionById = (idSection, sections = []) => {
+  let result = null;
+  sections.forEach((section) => {
+    if (result !== null) {
+      return;
+    }
+    if (section.idSection === idSection) {
+      result = section;
+      return;
+    }
+    const nested = section.getChildren()
+      .filter((child) => child instanceof IDEE.layer.Section);
+    result = findSectionById(idSection, nested);
+  });
+  return result;
+};
+
+const togglePanelDisplay = (target, expand) => {
+  const panel = target.parentElement.parentElement.parentElement.children[1];
+  panel.hidden = !expand;
+  panel.style.display = '';
+
+  if (expand) {
+    target.classList.remove(CLASS_DISPLAY_DESPLEGAR);
+    target.classList.remove('g-cartografia-btn-layerswitcher-desplegar');
+    target.classList.add(CLASS_DISPLAY_COLAPSAR);
+    target.classList.add('g-cartografia-btn-layerswitcher-colapsar');
+    target.setAttribute('title', getValue('hide_group'));
+    target.setAttribute('aria-label', getValue('hide_group'));
+  } else {
+    target.classList.remove(CLASS_DISPLAY_COLAPSAR);
+    target.classList.remove('g-cartografia-btn-layerswitcher-colapsar');
+    target.classList.add(CLASS_DISPLAY_DESPLEGAR);
+    target.classList.add('g-cartografia-btn-layerswitcher-desplegar');
+    target.setAttribute('title', getValue('show_group'));
+    target.setAttribute('aria-label', getValue('show_group'));
+  }
+};
+
 export const displayLayers = ({ target }, layer, map) => {
   if (target.classList.contains(CLASS_DISPLAY_GROUP)) {
+    const expand = target.classList.contains(CLASS_DISPLAY_DESPLEGAR);
+
+    if (layer instanceof IDEE.layer.Section) {
+      const sectionLayer = findSectionById(layer.idSection, map.getSections());
+      if (sectionLayer === null || sectionLayer === undefined) {
+        return;
+      }
+      togglePanelDisplay(target, expand);
+      sectionLayer.collapsed = !expand;
+      return;
+    }
+
     const groupLayer = map.getLayerGroup()
       .find((layerGroup) => layerGroup.idLayer === layer.idLayer);
 
-    const group = target.parentElement.parentElement.parentElement.children[1];
-    group.style.display = group.style.display === 'none' ? 'block' : 'none';
-
-    if (target.classList.contains(CLASS_DISPLAY_DESPLEGAR)) {
-      target.classList.remove(CLASS_DISPLAY_DESPLEGAR);
-      target.classList.remove('g-cartografia-btn-layerswitcher-desplegar');
-      target.classList.add(CLASS_DISPLAY_COLAPSAR);
-      target.classList.add('g-cartografia-btn-layerswitcher-colapsar');
-      target.setAttribute('title', getValue('hide_group'));
-      target.setAttribute('aria-label', getValue('hide_group'));
-
-      groupLayer.display = true;
-    } else {
-      target.classList.remove(CLASS_DISPLAY_COLAPSAR);
-      target.classList.remove('g-cartografia-btn-layerswitcher-colapsar');
-      target.classList.add(CLASS_DISPLAY_DESPLEGAR);
-      target.classList.add('g-cartografia-btn-layerswitcher-desplegar');
-      target.setAttribute('title', getValue('show_group'));
-      target.setAttribute('aria-label', getValue('show_group'));
-      groupLayer.display = false;
-    }
+    togglePanelDisplay(target, expand);
+    groupLayer.display = expand;
   }
 };
 
@@ -113,6 +163,9 @@ export const filterGroups = (layers, inLayerGroup = true) => {
     });
   }
   return layers.filter((l) => {
+    if (l instanceof IDEE.layer.Section) {
+      return true;
+    }
     const isTransparent = (l.transparent === true);
     const displayInLayerSwitcher = (l.displayInLayerSwitcher === true);
     return isTransparent && displayInLayerSwitcher;

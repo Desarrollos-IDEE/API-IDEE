@@ -41,6 +41,7 @@ import { getValue } from '../i18n/language';
  * @property {Array<Number>} maxExtent_ Extensión máxima.
  * @property {Boolean} displayInLayerSwitcher Indica si la capa se muestra en el selector de capas.
  * @property {Boolean} isBase Define si la capa es base.
+ * @property {Boolean} extract Activa la consulta con GetFeatureInfo; por defecto falso.
  * @api
  * @extends {IDEE.layer}
  */
@@ -64,6 +65,7 @@ class TMS extends LayerBase {
    * - type: Tipo de la capa.
    * - tileGridMaxZoom: Zoom máximo de cuadrícula de mosaico.
    * - tileSize: Tamaño de la tesela
+   * - extract: Activa la consulta con GetFeatureInfo (color de píxel). Por defecto falso.
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
    * - opacity: Opacidad de capa, por defecto 1.
    * - minZoom: Zoom mínimo aplicable a la capa.
@@ -141,6 +143,15 @@ class TMS extends LayerBase {
     this.legend = parameters.legend;
 
     /**
+     * TMS extract: consulta de tesela y color de píxel con control GetFeatureInfo.
+     */
+    if (isUndefined(parameters.extract)) {
+      this.extract = false;
+    } else {
+      this.extract = parameters.extract;
+    }
+
+    /**
      * TMS tileGridMaxZoom. Zoom máximo de cuadrícula de mosaico.
      */
     this.tileGridMaxZoom = parameters.tileGridMaxZoom;
@@ -179,6 +190,42 @@ class TMS extends LayerBase {
       equals = equals && (this.idLayer === obj.idLayer);
     }
     return equals;
+  }
+
+  /**
+   * Obtiene el índice de tesela (z, x, y) en formato URL XYZ para una coordenada del mapa.
+   *
+   * @function
+   * @public
+   * @param {Array<number>} coordinate Coordenadas en la proyección del mapa.
+   * @returns {{z: number, x: number, y: number}|null}
+   * Índice de tesela o null si no está disponible.
+   * @api
+   */
+  getTileIndexAtCoordinate(coordinate) {
+    const impl = this.getImpl();
+    if (!impl || typeof impl.getTileIndexAtCoordinate !== 'function') {
+      return null;
+    }
+    return impl.getTileIndexAtCoordinate(coordinate);
+  }
+
+  /**
+   * Obtiene el color del píxel renderizado en coordenadas de pantalla del mapa.
+   * Delega en la implementación (OpenLayers Tile#getData).
+   *
+   * @function
+   * @public
+   * @param {Array<number>} pixel Coordenadas de píxel [x, y] del mapa.
+   * @returns {Uint8ClampedArray|Uint8Array|Float32Array|DataView|null} Componentes RGBA o null.
+   * @api
+   */
+  getData(pixel) {
+    const impl = this.getImpl();
+    if (!impl || typeof impl.getData !== 'function') {
+      return null;
+    }
+    return impl.getData(pixel);
   }
 }
 export default TMS;

@@ -307,7 +307,7 @@ export default class MouseSRSControl extends IDEE.impl.Control {
     // eslint-disable-next-line no-underscore-dangle
     const srsUnits = ol.proj.get(this.srs).units_;
 
-    if (srsUnits === 'd' && this.geoDecimalDigits !== undefined) {
+    if (['d', 'degrees'].includes(srsUnits) && this.geoDecimalDigits !== undefined) {
       decimalDigits = this.geoDecimalDigits;
     } else if (srsUnits === 'm' && this.utmDecimalDigits !== undefined) {
       decimalDigits = this.utmDecimalDigits;
