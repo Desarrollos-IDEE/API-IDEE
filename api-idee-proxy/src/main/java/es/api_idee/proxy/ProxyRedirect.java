@@ -97,11 +97,11 @@ public class ProxyRedirect extends HttpServlet {
 
   private final static Logger log = Logger.getLogger(ProxyRedirect.class);
   private static final Pattern GETINFO_PLAIN_REGEX = Pattern.compile(".*INFO_FORMAT=TEXT(\\/|\\%2F)PLAIN.*",
-  Pattern.CASE_INSENSITIVE);
+      Pattern.CASE_INSENSITIVE);
   private static final Pattern GETINFO_GML_REGEX = Pattern
-	.compile(".*INFO_FORMAT=APPLICATION(\\/|%2F)VND\\.OGC\\.GML.*", Pattern.CASE_INSENSITIVE);
+      .compile(".*INFO_FORMAT=APPLICATION(\\/|%2F)VND\\.OGC\\.GML.*", Pattern.CASE_INSENSITIVE);
   private static final Pattern GETINFO_HTML_REGEX = Pattern.compile(".*INFO_FORMAT=TEXT(\\/|\\%2F)HTML.*",
-  Pattern.CASE_INSENSITIVE);
+      Pattern.CASE_INSENSITIVE);
   private static final String WWW_AUTHENTICATE = "WWW-Authenticate"; // PATH
   private static final String AUTHORIZATION = "Authorization"; // PATH
   public ServletContext context_ = null;
@@ -110,8 +110,8 @@ public class ProxyRedirect extends HttpServlet {
   private boolean soap = false;
 
   /***************************************************************************
-  * Initialize variables called when context is initialized
-  ****************************************************************************/
+   * Initialize variables called when context is initialized
+   ****************************************************************************/
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
     context_ = config.getServletContext();
@@ -119,8 +119,8 @@ public class ProxyRedirect extends HttpServlet {
   }
 
   /***************************************************************************
-  * Process the HTTP Get request
-  ***************************************************************************/
+   * Process the HTTP Get request
+   ***************************************************************************/
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
     String serverUrl = request.getParameter("url");
     // manages a get request if it's the geoprint or getcapabilities operation
@@ -136,24 +136,23 @@ public class ProxyRedirect extends HttpServlet {
         url = url.replaceAll("\\&?\\??apiideeop=getcapabilities", "");
         url = url.replaceAll("\\&?\\??apiideeop=wmsinfo", "");
 
-				HttpClient client = HttpClientBuilder.create().build();
-				HttpGet httpget = null;
+        HttpClient client = HttpClientBuilder.create().build();
+        HttpGet httpget = null;
 
         try {
-          String decodedUrl = URLDecoder.decode(url,"UTF-8");
-          httpget = new HttpGet(decodedUrl);
+          httpget = new HttpGet(url);
           httpget.setConfig(RequestConfig.custom().setMaxRedirects(numMaxRedirects).build());
 
           HttpResponse httpResponse = client.execute(httpget);
 
           if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-           // PATH_SECURITY_PROXY - AG
-						Header[] respHeaders = httpResponse.getAllHeaders();
-						int compSize = (int) httpResponse.getEntity().getContentLength();
-						ArrayList<Header> headerList = new ArrayList<Header>(Arrays.asList(respHeaders));
-						String headersString = headerList.toString();
-						boolean checkedContent = checkContent(headersString, compSize, serverUrl);
-						// FIN_PATH_SECURITY_PROXY
+            // PATH_SECURITY_PROXY - AG
+            Header[] respHeaders = httpResponse.getAllHeaders();
+            int compSize = (int) httpResponse.getEntity().getContentLength();
+            ArrayList<Header> headerList = new ArrayList<Header>(Arrays.asList(respHeaders));
+            String headersString = headerList.toString();
+            boolean checkedContent = checkContent(headersString, compSize, serverUrl);
+            // FIN_PATH_SECURITY_PROXY
             if (checkedContent) {
               if (request.getProtocol().compareTo("HTTP/1.0") == 0) {
                 response.setHeader("Pragma", "no-cache");
@@ -168,9 +167,9 @@ public class ProxyRedirect extends HttpServlet {
                 response.setContentType("text/xml");
               }
               /*
-              * checks if it has requested an getfeatureinfo to modify the response content
-              * type.
-              */
+               * checks if it has requested an getfeatureinfo to modify the response content
+               * type.
+               */
               String requesteredUrl = request.getParameter("url");
               if (GETINFO_PLAIN_REGEX.matcher(requesteredUrl).matches()) {
                 response.setContentType("text/plain");
@@ -180,8 +179,8 @@ public class ProxyRedirect extends HttpServlet {
                 response.setContentType("text/html");
               }
               InputStream st = httpResponse.getEntity().getContent();
-							ServletOutputStream sos = response.getOutputStream();
-							IOUtils.copy(st, sos);
+              ServletOutputStream sos = response.getOutputStream();
+              IOUtils.copy(st, sos);
             } else {
               strErrorMessage += errorType;
               log.error(strErrorMessage);
@@ -193,9 +192,9 @@ public class ProxyRedirect extends HttpServlet {
         } catch (Exception e) {
           log.error("Error al tratar el contenido de la peticion: " + e.getMessage(), e);
         } finally {
-         if (httpget != null) {
-						httpget.releaseConnection();
-					}
+          if (httpget != null) {
+            httpget.releaseConnection();
+          }
         }
       } else {
         // String errorXML = strErrorMessage;
@@ -215,9 +214,9 @@ public class ProxyRedirect extends HttpServlet {
   }
 
   /***************************************************************************
-  * Process the HTTP Post request
-  ***************************************************************************/
-public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+   * Process the HTTP Post request
+   ***************************************************************************/
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
     boolean checkedContent = false;
     boolean legend = false;
     String strErrorMessage = "";
@@ -233,7 +232,7 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
     serverUrl = checkTypeRequest(serverUrl);
     if (!serverUrl.equals("ERROR")) {
       if (serverUrl.startsWith("http://") || serverUrl.startsWith("https://")) {
-        if (!serverUrl.contains("/processes/")) { 
+        if (!serverUrl.contains("/processes/")) {
           HttpPost httppost = null;
           try {
             String host = System.getProperty("https.proxyHost");
@@ -252,56 +251,55 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
                 clientBuilder.setDefaultCredentialsProvider(credsProvider);
               }
             }
-              HttpClient client = clientBuilder.build();
-              String decodedUrl = URLDecoder.decode(serverUrl,"UTF-8");
-              httppost = new HttpPost(decodedUrl);
+            HttpClient client = clientBuilder.build();
+            httppost = new HttpPost(serverUrl);
 
-              // PATH_apiideeDITA_SECURITY - AP
-              // PATCH_TICKET_MJM-20112405-POST
-              String authorizationValue = request.getHeader(AUTHORIZATION); // ADD_SECURITY_20091210
-              if (authorizationValue == null) {
-                String user = (String) request.getSession().getAttribute("user");
-                String pass = (String) request.getSession().getAttribute("pass");
-                if (user != null && pass != null) {
-                  String userAndPass = user + ":" + pass;
+            // PATH_apiideeDITA_SECURITY - AP
+            // PATCH_TICKET_MJM-20112405-POST
+            String authorizationValue = request.getHeader(AUTHORIZATION); // ADD_SECURITY_20091210
+            if (authorizationValue == null) {
+              String user = (String) request.getSession().getAttribute("user");
+              String pass = (String) request.getSession().getAttribute("pass");
+              if (user != null && pass != null) {
+                String userAndPass = user + ":" + pass;
                 String encodedLogin = new String(
                     org.apache.commons.codec.binary.Base64.encodeBase64(userAndPass.getBytes()));
-                  httppost.addHeader(AUTHORIZATION, "Basic " + encodedLogin);
-                } else {
-                  String ticketParameter = request.getParameter("ticket");
-                  if (ticketParameter != null) {
-                    ticketParameter = ticketParameter.trim();
-                    if (!ticketParameter.isEmpty()) {
-                      try {
-                    	httppost.addHeader("Authorization", "Bearer " + ticketParameter);
-                      } catch (Exception e) {
-                        log.info("-------------------------------------------");
-                        log.info("EXCEPCTION THROWED BY PROXYREDIRECT CLASS");
-                        log.info("METHOD: doPost");
-                        log.info("TICKET VALUE: " + ticketParameter);
-                        log.info("-------------------------------------------");
-                      }
+                httppost.addHeader(AUTHORIZATION, "Basic " + encodedLogin);
+              } else {
+                String ticketParameter = request.getParameter("ticket");
+                if (ticketParameter != null) {
+                  ticketParameter = ticketParameter.trim();
+                  if (!ticketParameter.isEmpty()) {
+                    try {
+                      httppost.addHeader("Authorization", "Bearer " + ticketParameter);
+                    } catch (Exception e) {
+                      log.info("-------------------------------------------");
+                      log.info("EXCEPCTION THROWED BY PROXYREDIRECT CLASS");
+                      log.info("METHOD: doPost");
+                      log.info("TICKET VALUE: " + ticketParameter);
+                      log.info("-------------------------------------------");
                     }
                   }
                 }
-              } else {
-                httppost.addHeader(AUTHORIZATION, authorizationValue);
               }
-              // FIN_PATH_TICKET_MJM-20112405-POST
-              // FIN_PATH_apiideeDITA_SECURITY - AP
+            } else {
+              httppost.addHeader(AUTHORIZATION, authorizationValue);
+            }
+            // FIN_PATH_TICKET_MJM-20112405-POST
+            // FIN_PATH_apiideeDITA_SECURITY - AP
 
-              // Build POST entity
-              String body = inputStreamAsString(request.getInputStream());
-              HttpEntity bodyEntity = new ByteArrayEntity(body.getBytes("UTF-8"));
-              httppost.setEntity(bodyEntity); // PATCH
+            // Build POST entity
+            String body = inputStreamAsString(request.getInputStream());
+            HttpEntity bodyEntity = new ByteArrayEntity(body.getBytes("UTF-8"));
+            httppost.setEntity(bodyEntity); // PATCH
 
-              if (!legend)
-                request.setCharacterEncoding("UTF-8");
-              if (soap) {
-                httppost.setHeader("SOAPAction", serverUrl);
-              }
+            if (!legend)
+              request.setCharacterEncoding("UTF-8");
+            if (soap) {
+              httppost.setHeader("SOAPAction", serverUrl);
+            }
 
-              HttpResponse httpResponse = client.execute(httppost);
+            HttpResponse httpResponse = client.execute(httppost);
 
             // PATH_FOLLOW_REDIRECT_POST
             int j = 0;
@@ -347,59 +345,59 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
               checkedContent = checkContent(headersString, compSize, serverUrl);
               // FIN_PATH_SECURITY_PROXY - AG
               if (checkedContent == true) {
-                  String requesteredUrl = request.getParameter("url");
-                  if (GETINFO_PLAIN_REGEX.matcher(requesteredUrl).matches()) {
-                    response.setContentType("text/plain");
-                  } else if (GETINFO_GML_REGEX.matcher(requesteredUrl).matches()) {
-                    response.setContentType("application/gml+xml");
-                  } else if (GETINFO_HTML_REGEX.matcher(requesteredUrl).matches()) {
-                    response.setContentType("text/html");
-                  } else if (requesteredUrl.toLowerCase().contains("apiideeop=geosearch")
-                          || requesteredUrl.toLowerCase().contains("apiideeop=geoprint")) {
-                    response.setContentType("application/json");
+                String requesteredUrl = request.getParameter("url");
+                if (GETINFO_PLAIN_REGEX.matcher(requesteredUrl).matches()) {
+                  response.setContentType("text/plain");
+                } else if (GETINFO_GML_REGEX.matcher(requesteredUrl).matches()) {
+                  response.setContentType("application/gml+xml");
+                } else if (GETINFO_HTML_REGEX.matcher(requesteredUrl).matches()) {
+                  response.setContentType("text/html");
+                } else if (requesteredUrl.toLowerCase().contains("apiideeop=geosearch")
+                    || requesteredUrl.toLowerCase().contains("apiideeop=geoprint")) {
+                  response.setContentType("application/json");
+                } else {
+                  response.setContentType("text/xml");
+                }
+                if (legend) {
+                  if (responseBody.contains("ServiceExceptionReport")
+                      && serverUrl.contains("LegendGraphic")) {
+                    response.sendRedirect("Componente/img/blank.gif");
                   } else {
-                    response.setContentType("text/xml");
-                  }
-                  if (legend) {
-                    if (responseBody.contains("ServiceExceptionReport")
-                        && serverUrl.contains("LegendGraphic")) {
-                      response.sendRedirect("Componente/img/blank.gif");
-                    } else {
-                      response.setContentLength(responseBody.length());
-                      final PrintWriter out = response.getWriter();
-                      out.print(responseBody);
-                      response.flushBuffer();
-                    }
-                  } else {
-                    // Patch_AGG 20112505 Prevents IE cache
-                    if (request.getProtocol().compareTo("HTTP/1.0") == 0) {
-                      response.setHeader("Pragma", "no-cache");
-                    } else if (request.getProtocol().compareTo("HTTP/1.1") == 0) {
-                      response.setHeader("Cache-Control", "no-cache");
-                    }
-                    response.setDateHeader("Expires", -1);
-                    // END patch
-                    // Copy response to output
+                    response.setContentLength(responseBody.length());
                     final PrintWriter out = response.getWriter();
                     out.print(responseBody);
                     response.flushBuffer();
                   }
                 } else {
-                  strErrorMessage += errorType.toString();
-                  log.error(strErrorMessage);
+                  // Patch_AGG 20112505 Prevents IE cache
+                  if (request.getProtocol().compareTo("HTTP/1.0") == 0) {
+                    response.setHeader("Pragma", "no-cache");
+                  } else if (request.getProtocol().compareTo("HTTP/1.1") == 0) {
+                    response.setHeader("Cache-Control", "no-cache");
+                  }
+                  response.setDateHeader("Expires", -1);
+                  // END patch
+                  // Copy response to output
+                  final PrintWriter out = response.getWriter();
+                  out.print(responseBody);
+                  response.flushBuffer();
                 }
-              } else if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-                response.setStatus(HttpStatus.SC_UNAUTHORIZED);
-                response.setHeader(WWW_AUTHENTICATE, httpResponse.getAllHeaders()[0].getName());
               } else {
-                strErrorMessage = "Unexpected failure: " + httpResponse.getStatusLine().getStatusCode()
-                    + "".concat(" ") + httppost.getEntity().getContent();
-                log.error("Unexpected failure: " + httpResponse.getStatusLine().getStatusCode());
+                strErrorMessage += errorType.toString();
+                log.error(strErrorMessage);
               }
-              httppost.releaseConnection();
-            } catch (Exception e) {
-              log.error("Error al tratar el contenido de la peticion: " + e.getMessage(), e);
-            } finally {
+            } else if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+              response.setStatus(HttpStatus.SC_UNAUTHORIZED);
+              response.setHeader(WWW_AUTHENTICATE, httpResponse.getAllHeaders()[0].getName());
+            } else {
+              strErrorMessage = "Unexpected failure: " + httpResponse.getStatusLine().getStatusCode()
+                  + "".concat(" ") + httppost.getEntity().getContent();
+              log.error("Unexpected failure: " + httpResponse.getStatusLine().getStatusCode());
+            }
+            httppost.releaseConnection();
+          } catch (Exception e) {
+            log.error("Error al tratar el contenido de la peticion: " + e.getMessage(), e);
+          } finally {
             httppost.releaseConnection();
           }
         } else {
@@ -407,9 +405,9 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
           HttpClient client = null;
           HttpResponse pmResp = null;
           HttpPost pm = null;
-          
+
           try {
-            pm = new HttpPost(URLDecoder.decode(serverUrl, "UTF-8"));
+            pm = new HttpPost(serverUrl);
             outputBody = inputStreamAsString(request.getInputStream());
             StringEntity requestEntity = new StringEntity(outputBody, "application/json", "UTF-8");
             pm.setEntity(requestEntity);
@@ -467,14 +465,15 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
       }
     }
     log.info("-------- End POST method --------");
-}
+  }
 
   /***************************************************************************
-  * inputStreamAsString
-  **************************************************************************/
+   * inputStreamAsString
+   **************************************************************************/
   public static String inputStreamAsString(InputStream stream) throws IOException {
     BufferedReader br = new BufferedReader(new InputStreamReader(stream));
-    // BufferedReader br = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+    // BufferedReader br = new BufferedReader(new InputStreamReader(stream,
+    // StandardCharsets.UTF_8));
     StringBuilder sb = new StringBuilder();
     String line = null;
     while ((line = br.readLine()) != null) {
@@ -485,18 +484,18 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
   }
 
   /*************************************************************************************
-  * checkContentMethodPost - Check content's type and content's length for post
-  * request
-  *************************************************************************************/
+   * checkContentMethodPost - Check content's type and content's length for post
+   * request
+   *************************************************************************************/
   private boolean checkContent(String headersString, int compSize, String serverUrl) {
     boolean resp;
     serverUrl = serverUrl.toUpperCase();
     // Check content's type is xml
     headersString = headersString.toLowerCase();
     if (headersString.contains("content-type") && (headersString.contains("xml")
-    || headersString.contains("image/png") || headersString.contains("gml")
-    || headersString.contains("plain") || headersString.contains("html") || headersString.contains("json")
-    || headersString.contains("wms_xml"))) {
+        || headersString.contains("image/png") || headersString.contains("gml")
+        || headersString.contains("plain") || headersString.contains("html") || headersString.contains("json")
+        || headersString.contains("wms_xml"))) {
       resp = true;
     } else if (serverUrl.contains("KML")) {
       // KML
@@ -525,8 +524,8 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
   }
 
   /***************************************************************************
-  * checkTypeRequest - Check the serverurl format.
-  **************************************************************************/
+   * checkTypeRequest - Check the serverurl format.
+   **************************************************************************/
   private String checkTypeRequest(String serverUrl) {
     String serverUrlChecked = "ERROR";
     if (serverUrl.contains("&apiideeop=wmc")) {
@@ -596,7 +595,7 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
     } else if (serverUrl.toLowerCase().contains("legendgraphic")) {
       serverUrlChecked = serverUrl;
     } else if ((serverUrl.toLowerCase().contains("wfst")) || (serverUrl.toLowerCase().contains("wfs"))
-    || (serverUrl.toLowerCase().contains("ows"))) {
+        || (serverUrl.toLowerCase().contains("ows"))) {
       serverUrlChecked = serverUrl;
     } else if (serverUrl.toLowerCase().contains("getcapabilities")) {
       serverUrlChecked = serverUrl;
@@ -607,8 +606,8 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
     } else if (serverUrl.toLowerCase().contains("apiideeop=geoprint")) {
       serverUrlChecked = serverUrl.replaceAll("\\&?\\??apiideeop=geoprint", "");
     } else if (serverUrl.toLowerCase().contains("/processes/")) {
-			serverUrlChecked = serverUrl;
-		} 
+      serverUrlChecked = serverUrl;
+    }
 
     return serverUrlChecked;
   }

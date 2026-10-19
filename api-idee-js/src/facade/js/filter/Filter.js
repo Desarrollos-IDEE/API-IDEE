@@ -99,7 +99,11 @@ export const EQUAL = (nameAtt, value) => {
   */
 export const LIKE = (nameAtt, value) => {
   return new FilterFunction((feature) => {
-    return (feature.getAttribute(nameAtt)).toString().match(new RegExp(value));
+    const attr = feature.getAttribute(nameAtt);
+    if (attr == null) {
+      return false;
+    }
+    return attr.toString().match(new RegExp(value));
   }, {
     cqlFilter: `${nameAtt} LIKE '%${value}%'`,
   });

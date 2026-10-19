@@ -85,8 +85,10 @@
     "text": "On hover over map shows cursor coordinates on given SRS",
     "version": "3.0.0",
     "date": "2019-07-01",
-    "author": "Guadaltel",
-    "org": "CNIG",
+    "author": "IDEE",
+    "org": "IDEE",
+    "homepage": "https://www.idee.es",
+    "funding": "Desarrollo financiado por los nodos participantes en el Grupo Técnico de Trabajo Desarrollos IDEE",
     "tags": "api-idee,plugin",
     "icon": "./facade/assets/icons/icons.svg"
   }

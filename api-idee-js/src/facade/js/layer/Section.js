@@ -295,10 +295,18 @@ class Section extends MObject {
    * @param {IDEE.Layer|IDEE.layer.Section} child Capa o sección a sacar.
    * @api
    */
-  ungroup(child) {
-    // eslint-disable-next-line no-underscore-dangle
-    child.setSection_(null);
-    this.children_.remove(child);
+  ungroup(child, upToMap = false) {
+    const childI = child;
+    this.children_.remove(childI);
+    if (childI instanceof Section) {
+      childI.parent = null;
+      if (upToMap) {
+        this.map.addSections(childI);
+      }
+    } else {
+      // eslint-disable-next-line no-underscore-dangle
+      childI.setSection_(null);
+    }
   }
 
   /**

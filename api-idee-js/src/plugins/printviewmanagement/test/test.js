@@ -154,12 +154,12 @@ const mapLibre2 = new IDEE.layer.MapLibre({
 }, { opacity: 0.7 });// , { mapLibreOptions: { style: 'https://vt-mapabase.idee.es/files/styles/mapaBase_scn_color1_CNIG.json', preserveDrawingBuffer: true } });
 map.addLayers(mapLibre2); window.mapLibre2 = mapLibre2;
 */
-const capaKML = new IDEE.layer.KML({
-  url: 'https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml',
-  name: 'Capa KML', legend: 'Capa KML',
-  extract: true,
-}, { crossOrigin: 'anonymous' });
-map.addLayers(capaKML); window.capaKML = capaKML;
+// const capaKML = new IDEE.layer.KML({
+//   url: 'https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo.kml',
+//   name: 'Capa KML', legend: 'Capa KML',
+//   extract: true,
+// }, { crossOrigin: 'anonymous' });
+// map.addLayers(capaKML); window.capaKML = capaKML;
 
 const layerinicial = new IDEE.layer.WMS({
   url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',

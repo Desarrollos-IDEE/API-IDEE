@@ -4,33 +4,44 @@
  */
 
 import LayerswitcherImplControl from 'impl/layerswitchercontrol';
-import template from '../../templates/layerswitcher';
-import templateAux from '../../templates/layerswitchercontent';
+import addServicesTemplate from '../../templates/addservices';
+import resultstemplate from '../../templates/addservicesresults';
+import customQueryFiltersTemplate from '../../templates/customqueryfilters';
 import templateEmpty from '../../templates/emptycontent';
-import { getValue } from './i18n/language';
 import infoTemplate from '../../templates/information';
 import infoTemplateOGC from '../../templates/informationogc';
 import infoTemplateOthers from '../../templates/informationothers';
 import layerGroupTemplate from '../../templates/layergroup';
 import layerGroupChildTemplate from '../../templates/layergroupchild';
-import addServicesTemplate from '../../templates/addservices';
-import resultstemplate from '../../templates/addservicesresults';
-import ogcModalTemplate from '../../templates/ogcmodal';
 import layerModalTemplate from '../../templates/layermodal';
-import customQueryFiltersTemplate from '../../templates/customqueryfilters';
+import template from '../../templates/layerswitcher';
+import templateAux from '../../templates/layerswitchercontent';
+import ogcModalTemplate from '../../templates/ogcmodal';
+import {
+  createSelectGroup,
+  displayLayers,
+  filterGroups,
+  getAllLayersGroup, getAllLayersSection,
+  getLayerSelectGroup,
+} from './groupLayers';
+import { getValue } from './i18n/language';
 import generateSortable from './sortable';
 import {
-  getAllLayersGroup, displayLayers, createSelectGroup, getLayerSelectGroup,
-  filterGroups,
-} from './groupLayers';
-import {
-  reorderLayers, removeLayersInLayerSwitcher, addAttributions, focusModal,
-} from './utils';
-import {
-  TRANSLATIONS_OGCAPIFEATURES_WMS_WMTS, TRANSLATIONS_INFO_LAYER, showModalChangeName,
-  showHideLayersEye, legendInfo, eventIconTarget, showHideLayersRadio, selectDefaultRange,
+  TRANSLATIONS_INFO_LAYER,
+  TRANSLATIONS_OGCAPIFEATURES_WMS_WMTS,
+  eventIconTarget,
+  legendInfo,
+  selectDefaultRange,
+  showHideLayersEye,
+  showHideLayersRadio,
+  showModalChangeName,
   styleLayers,
 } from './toolsLayers';
+import {
+  addAttributions, focusModal,
+  removeLayersInLayerSwitcher,
+  reorderLayers,
+} from './utils';
 
 const CATASTRO = '//ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx';
 const CODSI_CATALOG = 'https://www.idee.es/csw-inspire-idee/srv/spa/q?_content_type=json&bucket=s101&facet.q=type%2Fservice&fast=index&from=*1&keyword=WMS%20or%20Web%20Map%20Service%20or%20WMTS%20or%20Web%20Map%20Tile%20Service%20or%20TMS%20or%20MVT%20or%20Features%20WFS&resultType=details&sortBy=title&sortOrder=asc&to=*2';
@@ -211,6 +222,23 @@ export default class LayerswitcherControl extends IDEE.Control {
           }
         });
       }
+      this.refreshPanel_();
+    });
+
+    map.on(IDEE.evt.REMOVED_LAYER, () => {
+      this.refreshPanel_();
+    });
+
+    map.on(IDEE.evt.CHANGE_WMC, () => {
+      this.refreshPanel_();
+    });
+
+    map.on(IDEE.evt.CHANGE_PROJ, () => {
+      this.refreshPanel_();
+    });
+
+    map.on(IDEE.evt.COMPLETED, () => {
+      this.refreshPanel_();
     });
 
     return new Promise((success) => {
@@ -243,6 +271,21 @@ export default class LayerswitcherControl extends IDEE.Control {
     });
   }
 
+  /**
+   * Repinta el panel cuando el mapa cambia (WMC, proyección, capas…).
+   * Solo actúa si el plugin está abierto (rendercomplete activo).
+   *
+   * @private
+   */
+  refreshPanel_() {
+    if (IDEE.utils.isNullOrEmpty(this.template_)
+      || IDEE.utils.isNullOrEmpty(this.getImpl().fnRender)) {
+      return;
+    }
+    // this.statusShowHideAllLayers = undefined;
+    this.render();
+  }
+
   addEventPanel(panel) {
     if (panel.getButtonPanel().element.classList.contains('active')) {
       setTimeout(() => {
@@ -257,7 +300,7 @@ export default class LayerswitcherControl extends IDEE.Control {
   getTemplateVariables(map) {
     return new Promise((success, fail) => {
       if (!IDEE.utils.isNullOrEmpty(map)) {
-        this.overlayLayers = map.getLayers().filter((layer) => {
+        this.overlayLayers = map.getRootLayers().filter((layer) => {
           const isTransparent = (layer.transparent === true);
           const displayInLayerSwitcher = (layer.displayInLayerSwitcher === true);
           const isLayerGroup = (layer instanceof IDEE.layer.LayerGroup);
@@ -321,7 +364,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     return new Promise((success) => {
       let hasStyles = (Array.isArray(layer.capabilitiesMetadata?.style)
         && layer.capabilitiesMetadata.style.length > 1)
-        || (layer instanceof IDEE.layer.Vector
+        || ((layer instanceof IDEE.layer.Vector || layer instanceof IDEE.layer.GeoTIFF)
           && !IDEE.utils.isNullOrEmpty(layer.predefinedStyles)
           && layer.predefinedStyles.length > 1);
       if (layer.type === 'KML' || layer.type === 'KMZ') {
@@ -350,6 +393,29 @@ export default class LayerswitcherControl extends IDEE.Control {
     });
   }
 
+  parseSectionForTemplate_(section) {
+    const sectionLayers = section.getAllLayers();
+    let visible = false;
+    if (sectionLayers.length > 0) {
+      visible = sectionLayers.some((l) => l.isVisible() === true);
+    }
+
+    return Promise.resolve({
+      title: section.title,
+      type: 'Section',
+      dataOrder: section.getZIndex() || section.order || 0,
+      visible,
+      idLayer: section.idSection,
+      id: section.idSection,
+      url: '',
+      outOfRange: false,
+      checkedLayer: visible ? 'true' : 'false',
+      opacity: 1,
+      metadata: false,
+      hasStyles: false,
+    });
+  }
+
   async generateTemplateLayerGroup() {
     const layersFilter = filterGroups(this.map_.getLayers());
 
@@ -370,6 +436,72 @@ export default class LayerswitcherControl extends IDEE.Control {
         this.template_.querySelector('.layerswitcher-ul-layers').appendChild(layerGroupHTML);
       }
     }
+  }
+
+  async generateTemplateSection() {
+    const sections = this.map_.getSections();
+
+    if (sections.length === 0) {
+      return;
+    }
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const section of sections) {
+      // eslint-disable-next-line no-await-in-loop
+      const sectionHTML = await this.recursiveSectionTemplate_(section);
+
+      [...sectionHTML.querySelectorAll('.layerswitcher-ul-layersGroup')].forEach((group) => {
+        this.orderLayers(group);
+      });
+
+      this.template_.querySelector('.layerswitcher-ul-layers').appendChild(sectionHTML);
+    }
+  }
+
+  recursiveSectionTemplate_(section, parentSection = null) {
+    return new Promise((resolve, reject) => {
+      this.parseSectionForTemplate_(section)
+        .then((varsSection) => {
+          const html = IDEE.template.compileSync(layerGroupTemplate, {
+            vars: {
+              changeName: getValue('change_name'),
+              displayGroup: !section.collapsed,
+              show_group: getValue('show_group'),
+              hide_group: getValue('hide_group'),
+              nameRadio: parentSection === null
+                ? 'm-layerswitcher-radioLayers'
+                : parentSection.idSection,
+              ...varsSection,
+              ...this.getTemplateVariablesValues(),
+            },
+          });
+
+          const layerPromises = reorderLayers(filterGroups(section.getChildren(), false))
+            .map((child) => {
+              if (child instanceof IDEE.layer.Section) {
+                return this.recursiveSectionTemplate_(child, section).then((subSectionHTML) => {
+                  html.querySelector('.layerswitcher-ul-layersGroup').appendChild(subSectionHTML);
+                });
+              }
+              return this.parseLayerForTemplate_(child).then((varsSubLayer) => {
+                const li = IDEE.template.compileSync(layerGroupChildTemplate, {
+                  vars: {
+                    nameRadio: section.idSection,
+                    ...varsSubLayer,
+                    ...this.getTemplateVariablesValues(),
+                  },
+                });
+
+                html.querySelector('.layerswitcher-ul-layersGroup').appendChild(li);
+              });
+            });
+
+          Promise.all(layerPromises)
+            .then(() => resolve(html))
+            .catch(reject);
+        })
+        .catch(reject);
+    });
   }
 
   recursiveLayerGroupTemplate_(layer) {
@@ -420,7 +552,7 @@ export default class LayerswitcherControl extends IDEE.Control {
   async render() {
     const showLayers = this.map_.getLayers().findIndex((layer) => {
       return layer.isBase === false && layer.displayInLayerSwitcher;
-    }) > -1;
+    }) > -1 || this.map_.getSections().length > 0;
 
     if (showLayers) {
       const templateVars = await this.getTemplateVariables(this.map_);
@@ -433,6 +565,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       this.template_.querySelector('#layerswitcher-layers').innerHTML = html.innerHTML;
 
       await this.generateTemplateLayerGroup();
+      await this.generateTemplateSection();
 
       const ulContainer = this.template_.querySelector('.layerswitcher-ul-layers');
       this.orderLayers(ulContainer);
@@ -801,7 +934,7 @@ export default class LayerswitcherControl extends IDEE.Control {
         const tableRow = document.createElement('tr');
         att.properties.forEach((proper) => {
           const tableElement = document.createElement('td');
-          tableElement.innerHTML = proper;
+          tableElement.textContent = proper;
           tableRow.appendChild(tableElement);
         });
         tableBody.appendChild(tableRow);
@@ -877,8 +1010,13 @@ export default class LayerswitcherControl extends IDEE.Control {
 
     let result = [];
     if (!IDEE.utils.isNullOrEmpty(idLayers)) {
-      const allLayers = getAllLayersGroup(this.map_).concat(this.overlayLayers);
-      result = allLayers.filter((l) => l.idLayer === idLayers);
+      const allLayers = getAllLayersGroup(this.map_)
+        .concat(getAllLayersSection(this.map_))
+        .concat(this.overlayLayers);
+      result = allLayers.filter((l) => {
+        const layerId = l.idLayer || l.idSection;
+        return layerId === idLayers;
+      });
     }
 
     return result;
@@ -982,7 +1120,9 @@ export default class LayerswitcherControl extends IDEE.Control {
   // Esta función muestra/oculta todas las capas
   showHideAllLayers() {
     this.statusShowHideAllLayers = !this.statusShowHideAllLayers;
-    const allLayers = getAllLayersGroup(this.map_).concat(this.overlayLayers);
+    const allLayers = getAllLayersGroup(this.map_)
+      .concat(getAllLayersSection(this.map_))
+      .concat(this.overlayLayers);
     allLayers.forEach((layer) => {
       layer.setVisible(this.statusShowHideAllLayers);
     });
@@ -3155,7 +3295,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     span.setAttribute('tabindex', '0');
     span.setAttribute('class', CLASS_SPAN);
     span.setAttribute(ATTRIBUTE_DATA_URL, url);
-    span.innerHTML = title;
+    span.textContent = title;
 
     span.addEventListener('click', (evt) => {
       document.querySelector(SEARCH_INPUT).value = url;

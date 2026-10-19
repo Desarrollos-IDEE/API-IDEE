@@ -140,7 +140,7 @@ const proj25829 = {
  */
 const proj25830 = {
   def: '+proj=utm +zone=30 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs',
-  extent: [-729785.83, 3715125.82, 940929.67, 9518470.69],
+  extent: [-724379.27, 3680398.11, 4435351.66, 9553440.65],
   codes: ['EPSG:25830', 'urn:ogc:def:crs:EPSG::25830', 'http://www.opengis.net/gml/srs/epsg.xml#25830', 'http://www.opengis.net/gml/srs/epsg.xml#23030'],
   units: 'm',
   datum: 'GRS80 (ETRS89)',
@@ -467,6 +467,25 @@ const proj3395 = {
 };
 
 /**
+ * EPSG:3035 ETRS89-extended / LAEA Europe es una proyección acimutal equivalente de Lambert
+ * (centrada en 52°N, 10°E) que conserva las áreas.
+ * Esta proyección se basa en el elipsoide GRS80 (ETRS89) y se utiliza comúnmente para
+ * análisis estadísticos y cartografía temática a escala europea.
+ * @type {Object}
+ * @public
+ * @api
+ */
+const proj3035 = {
+  def: '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs',
+  extent: [1908523.29, 1137678.21, 6901611.5, 6872461.46],
+  codes: ['EPSG:3035', 'urn:ogc:def:crs:EPSG::3035', 'http://www.opengis.net/gml/srs/epsg.xml#3035'],
+  units: 'm',
+  datum: 'ETRS89-extended',
+  proj: 'LAEA Europe',
+  coordRefSys: 'http://www.opengis.net/def/crs/EPSG/0/3035',
+};
+
+/**
  * EPSG:4328 WGS84 geocéntricas
  * Sistema de coordenadas cartesiano, geocéntrico con ejes X,Y,Z.
  * Su orientación sería el plano XY como plano ecuatorial, el eje X
@@ -558,11 +577,37 @@ const projections = [
   proj4082,
   proj4083,
   proj3395,
+  proj3035,
   proj4328,
   proj4346,
   proj4979,
   crs84,
 ];
+
+/**
+ * Esta función refactoriza las unidades de una proyección devuelta
+ * por la API EPSG.io en formato WKT2 para que sea compatible
+ * con las unidades proj4 de OpenLayers.
+ * @param {String} units Unidades de la proyección en formato WKT2.
+ * @return {String} Unidades refactorizadas.
+ * @function
+ * @api
+ */
+const refactorUnits = (units) => {
+  switch (units) {
+    case 'metre':
+    case 'meters':
+      return 'm';
+    case 'd':
+    case 'degree':
+    case 'deg':
+      return 'degrees';
+    case 'foot':
+      return 'ft';
+    default:
+      return units;
+  }
+};
 
 /**
  * Este método registra un conjunto de proyecciones
@@ -598,7 +643,7 @@ const addProjections = (projs, checkDuplicates = true) => {
       return new OLProjection({
         code,
         extent: projection.extent,
-        units: projection.units,
+        units: refactorUnits(projection.units),
         metersPerUnit: projection.metersPerUnit,
         getPointResolution: projection.getPointResolution,
         axisOrientation: projection.axisOrientation,
@@ -633,30 +678,6 @@ const getSupportedProjs = () => {
  */
 const getCode = (projection) => {
   return projection.split(':')[1];
-};
-
-/**
- * Esta función refactoriza las unidades de una proyección devuelta
- * por la API EPSG.io en formato WKT2 para que sea compatible
- * con las unidades proj4 de OpenLayers.
- * @param {String} units Unidades de la proyección en formato WKT2.
- * @return {String} Unidades refactorizadas.
- * @function
- * @api
- */
-const refactorUnits = (units) => {
-  switch (units) {
-    case 'metre':
-    case 'meters':
-      return 'm';
-    case 'degree':
-    case 'deg':
-      return 'degrees';
-    case 'foot':
-      return 'ft';
-    default:
-      return units;
-  }
 };
 
 /**

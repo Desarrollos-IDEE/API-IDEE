@@ -53,8 +53,10 @@
     "text": "Permite realizar búsquedas y aplicar diferentes filtros. Da la posibilidad de poder exportar la consulta",
     "version": "1.1.0",
     "date": "Abril, 2020",
-    "author": "",
-    "org": "Guadaltel",
+    "author": "IDEE",
+    "org": "IDEE",
+    "homepage": "https://www.idee.es",
+    "funding": "Desarrollo financiado por los nodos participantes en el Grupo Técnico de Trabajo Desarrollos IDEE",
     "tags": "api-idee,plugin",
     "centralized": true
   }
