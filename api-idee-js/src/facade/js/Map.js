@@ -908,7 +908,12 @@ class Map extends Base {
           layer = new OGCAPIFeatures(layerParam, { style: parameterVariable.style });
           break;
         case 'DataIDEE':
-          layer = new DataIDEE(layerParam, { style: parameterVariable.style });
+          // Un objeto literal puede incluir vendorOptions (p. ej. { getFeature: { token } }).
+          layer = new DataIDEE(
+            layerParam,
+            { style: parameterVariable.style },
+            layerParam.vendorOptions,
+          );
           break;
         case 'GenericRaster':
           layer = new GenericRaster(layerParam);
@@ -2362,7 +2367,7 @@ class Map extends Base {
       const layers = layersParam.map((layerParam) => {
         if (layerParam instanceof DataIDEE) return layerParam;
         if (layerParam instanceof Layer) return null;
-        return new DataIDEE(layerParam, layerParam.options);
+        return new DataIDEE(layerParam, layerParam.options, layerParam.vendorOptions);
       }).filter((layer) => !isNullOrEmpty(layer));
 
       layers.forEach((layer) => {

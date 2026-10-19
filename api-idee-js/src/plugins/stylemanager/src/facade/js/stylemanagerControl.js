@@ -41,7 +41,7 @@ export default class StyleManagerControl extends IDEE.Control {
   createView(map) {
     this.facadeMap_ = map;
 
-    const filterLayersTyle = ['WFS', 'MVT', 'KML', 'KMZ', 'GeoJSON', 'Vector'];
+    const filterLayersTyle = ['WFS', 'MVT', 'KML', 'KMZ', 'GeoJSON', 'Vector', 'DataIDEE'];
     const allLayers = map.getLayers().concat(map.getImpl().getAllLayerInGroup());
     const layers = allLayers.filter((layer) => filterLayersTyle.includes(layer.type) && layer.name !== 'selectLayer' && layer.name !== '__draw__');
 
@@ -249,7 +249,7 @@ export default class StyleManagerControl extends IDEE.Control {
    */
   getLayerByName(layerName) {
     const map = this.facadeMap_;
-    const filterLayersTyle = ['WFS', 'MVT', 'KML', 'KMZ', 'GeoJSON', 'Vector'];
+    const filterLayersTyle = ['WFS', 'MVT', 'KML', 'KMZ', 'GeoJSON', 'Vector', 'DataIDEE'];
     const allLayers = map.getLayers().concat(map.getImpl().getAllLayerInGroup());
     const layers = allLayers.filter((layer) => filterLayersTyle.includes(layer.type) && layer.name !== 'selectLayer' && layer.name !== '__draw__');
 

@@ -184,6 +184,7 @@
     "invalid_type_layer": "A valid type was not specified for the layer",
     "vector_filter": "The indicated filter is not correct",
     "unauthorized_user": "An error occurred while loading the layer: Unauthorized user.",
+    "dataidee_unauthorized": "The DataIDEE layer could not be loaded: the access token is invalid or has expired. Please log in to the service again.",
     "only_one_filter": "FeatureID and CQL are mutually exclusive, indicate only one type of filtering.",
     "any_format": "TXT, HTML and GML are and unsupported"
   },

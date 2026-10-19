@@ -73,8 +73,26 @@ module.exports = {
     // open: true,
     port: 6123,
     open: 'test/dev.html',
-    static: {
-      directory: path.join(__dirname, '/../'),
+    static: [
+      {
+        directory: path.join(__dirname, '/../'),
+      },
+      // Núcleo compilado en local (npm run build:ol-core en api-idee-js)
+      {
+        directory: path.join(__dirname, '..', '..', '..', '..', 'dist'),
+        publicPath: '/api-idee-dist',
+      },
+    ],
+    // Servicio DataIDEE de pruebas sin CORS: se sirve a través de localhost
+    proxy: {
+      '/data-idee-api': {
+        target: process.env.DATAIDEE_PROXY_TARGET || 'https://teunescodes.grupotecopy.es',
+        changeOrigin: true,
+        secure: true,
+        // La raíz redirige a http://<servidor>/...: se reescribe a localhost
+        autoRewrite: true,
+        protocolRewrite: 'http',
+      },
     },
   },
   watchOptions: {

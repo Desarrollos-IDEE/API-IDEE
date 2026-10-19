@@ -11,6 +11,7 @@ import OGCAPIFeatures from './OGCAPIFeatures';
 import ImplUtils from '../util/Utils';
 import dataIDEEBbox from '../../../common/DataIDEEBbox';
 import RequestManager, { RequestCancelledError } from '../../../common/RequestManager';
+import { isUnauthorizedError } from '../../../common/DataIDEERequest';
 
 /**
  * OGC API Features JSON vector layer implementation.
@@ -30,6 +31,35 @@ class DataIDEE extends OGCAPIFeatures {
     this.bboxStrategy_ = options.bboxStrategy === true && isNullOrEmpty(vendorOptions.source);
     this.requestedViewport_ = null;
     this.removeViewportListeners_ = null;
+  }
+
+  /**
+   * Devuelve el token de autenticación de la capa. Es opcional: una capa
+   * pública no tiene token.
+   * @returns {String|undefined} Token enviado como parámetro "token".
+   * @public
+   * @api
+   */
+  getToken() {
+    const token = this.vendorOptions_.getFeature?.token;
+    return isNullOrEmpty(token) ? undefined : token;
+  }
+
+  /**
+   * Cambia el token de autenticación, descarta la caché del token anterior
+   * y recarga la capa si está en un mapa.
+   * @param {String} token Nuevo token. Si es vacío, se elimina.
+   * @public
+   * @api
+   */
+  setToken(token) {
+    const newToken = isNullOrEmpty(token) ? undefined : token;
+    if (newToken === this.getToken()) return;
+    const getFeature = { ...this.vendorOptions_.getFeature, token: newToken };
+    if (newToken === undefined) delete getFeature.token;
+    this.vendorOptions_.getFeature = getFeature;
+    this.clearCache();
+    if (this.map) this.refresh(true);
   }
 
   /**
@@ -73,7 +103,12 @@ class DataIDEE extends OGCAPIFeatures {
       this.requestManager_,
       () => !this.bboxStrategy_ || (this.map && this.cesiumLayer === requestedLayer
         && viewport === this.viewportKey_(this.getVisibleBbox_())),
+      this.getToken() !== undefined,
     );
+    const loader = this.loader_;
+    loader.on(EventType.LOAD_UNAUTHORIZED, (error) => {
+      if (this.loader_ === loader) this.fire(EventType.LOAD_UNAUTHORIZED, [error]);
+    });
 
     return this.requestFeatures_(force).then(async (features) => {
       if (!this.map || this.cesiumLayer !== requestedLayer
@@ -147,7 +182,8 @@ class DataIDEE extends OGCAPIFeatures {
     try {
       return await super.refreshSource(() => isCurrent() && revision === this.requestRevision_);
     } catch (error) {
-      if (!(error instanceof RequestCancelledError)) {
+      const tokenRejected = isUnauthorizedError(error) && this.getToken() !== undefined;
+      if (!(error instanceof RequestCancelledError) && !tokenRejected) {
         this.facadeVector_?.fire(EventType.LOAD_ERROR, [error]);
       }
       throw error;

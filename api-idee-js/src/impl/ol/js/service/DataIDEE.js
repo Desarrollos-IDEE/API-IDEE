@@ -53,7 +53,10 @@ class DataIDEE extends ServiceOGCAPIFeatures {
         });
       }
     }
-    Object.assign(params, this.getFeatureVendor_);
+    // El token es opcional: una capa pública no envía el parámetro.
+    const { token, ...getFeatureVendor } = this.getFeatureVendor_ || {};
+    Object.assign(params, getFeatureVendor);
+    if (!isNullOrEmpty(token)) params.token = token;
 
     let requestUrl = pathUrl;
     if (!isNullOrEmpty(existingQuery)) requestUrl += `?${existingQuery}`;

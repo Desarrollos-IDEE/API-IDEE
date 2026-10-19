@@ -275,6 +275,10 @@ input[type=range].layerswitcher-transparency {
     width: 100%;
 }
 
+.m-layerswitcher-groups-fields-container:empty {
+    display: none;
+}
+
 
 /**************************
     LAYERMODAL.HTML
@@ -557,9 +561,7 @@ input[type=range].layerswitcher-transparency {
     color: var(--idee-color-links);
 }
 
-.m-layerswitcher-add-services-add-button,
 .m-layerswitcher-style-change-button,
-.m-layerswitcher-btn-add-group,
 .layerswitcher-change-name-button {
     position: absolute;
     bottom: 16px;
@@ -652,6 +654,112 @@ input[type=range].layerswitcher-transparency {
     display: flex;
     gap: 16px;
     margin-top: 16px;
+}
+
+
+/**************************
+    ACCIONES DEL PIE DEL DIÁLOGO (dialogactions.js)
+**************************/
+div.m-dialog div.m-button > .m-layerswitcher-dialog-action {
+    margin-right: 8px;
+}
+
+
+/**************************
+    OGCMODE.HTML
+**************************/
+.m-layerswitcher-ogc-mode {
+    padding: 0 16px;
+}
+
+.m-layerswitcher-ogc-mode-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.m-layerswitcher-ogc-mode-label {
+    color: var(--idee-color-neutral-70);
+}
+
+.m-layerswitcher-ogc-mode-select {
+    flex: 1;
+    min-width: 0;
+}
+
+.m-layerswitcher-ogc-auth {
+    display: flex;
+}
+
+.m-api-idee-container button.m-layerswitcher-auth-btn {
+    width: 32px;
+    padding: 0;
+}
+
+.m-api-idee-container button.m-layerswitcher-auth-btn::before {
+    width: 18px;
+}
+
+.m-api-idee-container button.m-layerswitcher-auth-locked {
+    color: var(--idee-color-success);
+}
+
+.m-api-idee-container button.m-layerswitcher-auth-locked:hover {
+    color: var(--idee-color-white);
+}
+
+
+/**************************
+    AUTHLOGIN.HTML
+**************************/
+.m-layerswitcher-addservices {
+    position: relative;
+}
+
+.m-layerswitcher-auth-modal {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 16px;
+    background-color: color-mix(in srgb, var(--idee-color-white, #fff) 85%, transparent);
+}
+
+.m-layerswitcher-auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: min(320px, 100%);
+    padding: 16px;
+    background-color: var(--idee-color-white, #fff);
+    border: 2px solid var(--idee-color-neutral-40, #b3b3b3);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--idee-color-black, #000) 25%, transparent);
+}
+
+.m-layerswitcher-auth-title {
+    margin: 0;
+    font-weight: bold;
+    color: var(--idee-color-neutral-80);
+}
+
+.m-layerswitcher-auth-service {
+    margin: 0 0 8px;
+    overflow: hidden;
+    font-size: 12px;
+    color: var(--idee-color-neutral-60);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.m-layerswitcher-auth-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
 }
 
 

@@ -10,6 +10,8 @@ import Vector from './Vector';
 import * as LayerType from './Type';
 import * as parameter from '../parameter/parameter';
 import { getValue } from '../i18n/language';
+import * as EventType from '../event/eventtype';
+import * as Dialog from '../dialog';
 import RequestManager from '../../../impl/common/RequestManager';
 
 /**
@@ -113,11 +115,16 @@ class DataIDEE extends Vector {
    * - filterLang: Lenguaje CQL2 explícito para filter (por ejemplo, cql2-text
    *   o cql2-json).
    * - cql: Alias heredado para enviar un filtro mediante el parámetro filter.
+   * - getFeature: Parámetros adicionales de la petición de items. El token de
+   *   autenticación (token) es opcional: las capas públicas no lo necesitan. Si se
+   *   indica, se envía tal cual como parámetro "token" y, si el servicio lo rechaza
+   *   (HTTP 401/403), la capa queda vacía y se dispara LOAD_UNAUTHORIZED.
    * Ejemplo vendorOptions:
    * <pre><code>
    * {
    *   filter: { op: '=', args: [{ property: 'status' }, 'active'] },
    *   filterLang: 'cql2-json',
+   *   getFeature: { token: tokenAutenticacion },
    * }
    * </code></pre>
    * @api
@@ -258,6 +265,15 @@ class DataIDEE extends Vector {
      * DataIDEE opt: Opciones.
      */
     this.opt = opt;
+
+    /**
+     * Token del último aviso de acceso no autorizado.
+     * @private
+     * @type {String|null}
+     */
+    this.notifiedToken_ = null;
+
+    impl.on(EventType.LOAD_UNAUTHORIZED, this.notifyUnauthorized_, this);
   }
 
   /**
@@ -470,6 +486,44 @@ class DataIDEE extends Vector {
    */
   clearCache() {
     this.getImpl().clearCache();
+  }
+
+  /**
+   * Devuelve el token de autenticación de la capa.
+   *
+   * @function
+   * @returns {String|undefined} Token enviado como parámetro "token".
+   * @api
+   */
+  getToken() {
+    return this.getImpl().getToken();
+  }
+
+  /**
+   * Cambia el token de autenticación y recarga la capa. Las respuestas
+   * guardadas con el token anterior se descartan.
+   *
+   * @function
+   * @param {String} token Nuevo token. Si es vacío, se elimina.
+   * @api
+   */
+  setToken(token) {
+    this.getImpl().setToken(token);
+  }
+
+  /**
+   * Notifica que el servicio ha rechazado la petición de la capa (HTTP 401/403).
+   * El aviso al usuario se muestra una única vez por token.
+   * @private
+   * @function
+   */
+  notifyUnauthorized_() {
+    this.fire(EventType.LOAD_UNAUTHORIZED, [this]);
+    const token = this.getToken() || '';
+    if (this.notifiedToken_ !== token) {
+      this.notifiedToken_ = token;
+      Dialog.error(getValue('dialog').dataidee_unauthorized);
+    }
   }
 
   /**

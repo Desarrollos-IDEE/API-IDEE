@@ -328,6 +328,14 @@ export const LOAD = 'load';
 export const LOAD_ERROR = 'load:error';
 
 /**
+ * Evento que se produce cuando el servicio rechaza el token de una capa (HTTP 401/403).
+ * @public
+ * @type {string}
+ * @api
+ */
+export const LOAD_UNAUTHORIZED = 'load:unauthorized';
+
+/**
  * Evento que se produce al cargarse las capas.
  * @public
  * @type {string}
