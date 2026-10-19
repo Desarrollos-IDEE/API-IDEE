@@ -123,6 +123,7 @@
   "layers_wfs": "(Web Feature Service) is an OGC standard for the download and transfer of geographic information, where the geographic elements or features are transmitted in their entirety to the client.",
   "layers_kml": "(Keyhole Markup Language). KML is an XML-based markup language for representing geographic data in three dimensions.",
   "layer_OGCAPIFeatures": "(OGC API - FEATURES) is an OGC standard that provides the ability to create, modify, and query spatial data on the Web and specifies requirements and recommendations for APIs that want to follow a standard way of sharing feature data.",
+  "layer_DataIDEE": "Vector layer from DataIDEE OGC API Features services. It may require logging in to the service; the features loaded on the map are printed.",
   "tooltip_georefimageepsg": "EPSG code of the georeferenced image",
   "title_map": "Map printing",
   "title_view": "View georeferenced image download",

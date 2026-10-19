@@ -132,6 +132,7 @@ export const fiendLayerInGroup = (layer, map) => {
 export const createSelectGroup = (map) => {
   const groups = map.getLayerGroup()
     .filter((l) => l.isBase === false && l.displayInLayerSwitcher).reverse();
+  if (groups.length === 0) return;
 
   const select = IDEE.template.compileSync(addInGroupTemplate, {
     vars: {
@@ -144,11 +145,12 @@ export const createSelectGroup = (map) => {
   });
 
   const addGroup = document.querySelector(CONTAINER_LAYERGROUP);
-  addGroup.appendChild(select);
+  if (addGroup !== null) addGroup.appendChild(select);
 };
 
 export const getLayerSelectGroup = (map) => {
   const select = document.querySelector(CLASS_MODAL_LAYERGROUP);
+  if (select === null) return undefined;
   const groups = map.getLayerGroup();
   return groups.find((group) => group.getImpl().getLayer().ol_uid === select.value);
 };

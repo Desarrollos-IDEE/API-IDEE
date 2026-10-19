@@ -886,6 +886,7 @@ export default class FilteredSearchControl extends IDEE.Control {
   deleteAppliedFilters() {
     const vectorLayers = this.map.getWFS()
       .concat(this.map.getKMZ())
+      .concat(this.map.getDataIDEE ? this.map.getDataIDEE() : [])
       .concat(this.map.getKML()
         .concat(this.map.getLayers().filter((layer) => {
           return layer.type === 'GeoJSON';
