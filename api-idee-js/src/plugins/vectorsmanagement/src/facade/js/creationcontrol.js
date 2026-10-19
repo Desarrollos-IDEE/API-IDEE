@@ -4,6 +4,7 @@
 import CreationImplControl from 'impl/creationcontrol';
 import template from '../../templates/creation';
 import { getValue } from './i18n/language';
+import { renderSnapOptions, getToolSnapOptions } from './snapoptions';
 
 const DEFAULT_FONT_COLOR = '#71a7d3';
 const DEFAULT_FONT_FAMILY = 'Arial';
@@ -422,6 +423,8 @@ export default class CreationControl extends IDEE.Control {
       default:
     }
 
+    const tool = this.isFigureActive ? 'Figure' : this.geometry;
+    const snapOptions = getToolSnapOptions(tool, this.managementControl_.snapOptions);
     if (this.isPointActive || this.isLocatedPointActive || this.isLineActive
       || this.isPolygonActive || this.isFigureActive || this.isTextActive) {
       if (this.isTextActive) {
@@ -431,13 +434,39 @@ export default class CreationControl extends IDEE.Control {
         this.template.querySelector('#m-point-coordinates').classList.remove('closed');
       } else if (this.isFigureActive) {
         this.template.querySelector('#m-figuretools').classList.remove('closed');
-        this.getImpl().addFigureInteraction();
+        this.getImpl().addFigureInteraction(snapOptions);
       }
 
       if (geometry !== 'LocatedPoint' && geometry !== 'Figure') {
-        this.getImpl().addDrawInteraction();
+        this.getImpl().addDrawInteraction(snapOptions);
       }
     }
+
+    const snapPanel = this.template.querySelector('#m-vectorsmanagement-creation-snap');
+    if (this.isPointActive || this.isLineActive || this.isPolygonActive
+      || this.isFigureActive || this.isTextActive) {
+      this.renderSnapOptions(tool);
+      snapPanel.classList.remove('closed');
+    } else {
+      snapPanel.classList.add('closed');
+    }
+  }
+
+  /**
+   * Renders snap options panel for the active tool.
+   * @public
+   * @function
+   * @param {String} tool active tool (Point, LineString, Polygon, Figure)
+   * @api
+   */
+  renderSnapOptions(tool) {
+    const container = this.template.querySelector('#m-vectorsmanagement-creation-snap');
+    const { snapOptions } = this.managementControl_;
+    renderSnapOptions(container, 'creation', tool, snapOptions, (options) => {
+      if (typeof this.getImpl().updateSnap === 'function') {
+        this.getImpl().updateSnap(options);
+      }
+    });
   }
 
   /**

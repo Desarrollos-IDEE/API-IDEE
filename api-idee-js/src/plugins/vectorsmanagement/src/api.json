@@ -51,6 +51,10 @@
       "type": "boolean",
       "name": "style",
       "position": 10
+    }, {
+      "type": "simple",
+      "name": "snapping",
+      "position": 11
     }]
   }],
   "files": {

@@ -52,20 +52,43 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 - **analysis**: Indica si se incluye la herramienta de análisis (cálculo de perfil topografico y área de influencia) (true/false). Por defecto: true. Es necesario tener añadida la herramienta de selección para poder añadir esta.
 - **creation**: Indica si se incluye la herramienta de dibujo (true/false). Por defecto: true. Es necesario tener añadida la herramienta de selección para poder añadir esta.
 - **download**: Indica si se incluye la herramienta de descarga de elementos y capas vectoriales (true/false). Por defecto: true. Es necesario tener añadida la herramienta de selección para poder añadir esta.
-- **edition**: Indica si se incluye la herramienta de edición de elementos (true/false/Object). Por defecto: true. Es necesario tener añadida la herramienta de selección para poder añadir esta.
-Por defecto tendrá los valores snapToPointer: true, pixelTolerance: 30. Para modificarlo se tiene que pasar un objeto con los nuevos valores.
+- **edition**: Indica si se incluye la herramienta de edición de elementos (true/false). Por defecto: true. Es necesario tener añadida la herramienta de selección para poder añadir esta.
 - **help**: Indica si se incluye la herramienta de ayuda (true/false). Por defecto: true.
 - **style**: Indica si se incluye la herramienta de edición de estilos (true/false). Por defecto: true. Es necesario tener añadida la herramienta de selección para poder añadir esta.
+- **snapping**: Configuración inicial del ajuste (snapping) que usan las herramientas de dibujo (`creation`) y de edición (`edition`). El usuario puede modificarla después desde la interfaz del plugin. Si ambas herramientas están desactivadas (`false`), este parámetro no tiene efecto. Valores posibles:
+  - `true`: snapping activado con los valores por defecto. Es el valor por defecto.
+  - `false`: snapping desactivado (el usuario puede activarlo desde la interfaz).
+  - Objeto JavaScript, JSON o JSON en base64: snapping activado con esa configuración. Las propiedades que no se indiquen toman su valor por defecto y las que no estén contempladas se ignoran. Si el valor no es un JSON ni un base64 válido, se muestra un error y se usan los valores por defecto.
+
+  | Propiedad | Descripción | Por defecto |
+  |---|---|---|
+  | **vertex** | Ajuste a los vértices de las geometrías existentes (true/false). | true |
+  | **edge** | Ajuste a cualquier punto de las aristas de líneas y polígonos (true/false). | true |
+  | **intersection** | Ajuste a los puntos donde se cruzan dos segmentos (true/false). | false |
+  | **allLayers** | Ajuste a todas las capas vectoriales visibles y no solo a la capa seleccionada (true/false). | false |
+  | **guides** | Muestra guías ortogonales y paralelas y se ajusta a ellas. Solo al dibujar líneas, polígonos o agujeros (true/false). | false |
+  | **pixelTolerance** | Distancia en píxeles para realizar el ajuste. También es la distancia para seleccionar un vértice al editar una geometría. | 10 |
+
+  ```javascript
+  snapping: { intersection: true, allLayers: true, pixelTolerance: 12 },
+  ```
 
 # API-REST
 
 ```javascript
-URL_API?vectorsmanagement=position*!collapsed*!collapsible*!selection*!addlayer*!analysis*!creation*!download*!edition*!help*!style
+URL_API?vectorsmanagement=position*!collapsed*!order*!selection*!addlayer*!analysis*!creation*!download*!edition*!help*!style*!snapping
 ```
 Ejemplo:
 ```javascript
 https://componentes.idee.es/api-idee/?vectorsmanagement=RIGHT*true*true
 ```
+
+# Atajos de teclado
+
+| Atajo | Herramienta | Acción |
+|---|---|---|
+| Mantener pulsada **Ctrl** | Dibujo y edición | Desactiva temporalmente el snapping mientras se mantiene pulsada. |
+| **Alt + clic** sobre un vértice | Edición ("Editar geometría") | Elimina el vértice. |
 
 # Ejemplo de uso
 
@@ -87,6 +110,7 @@ const mp = new IDEE.plugin.VectorsManagement({
     analysis: true,
     download: true,
     help: true,
+    snapping: { intersection: true, allLayers: true },
 });
 
 map.addPlugin(mp);
