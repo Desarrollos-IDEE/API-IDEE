@@ -31,7 +31,8 @@ import * as EventType from '../event/eventtype';
  * @classdesc
  * Hereda de {@link module:IDEE/control/Control|Control}.
  * Agrega la herramienta de consulta de información de capas
- * WMS y WMTS a través de su servicio getFeatureInfo.
+ * WMS y WMTS a través de su servicio getFeatureInfo, capas GeoTIFF mediante consulta de bandas
+ * y capas XYZ/TMS mediante índice de tesela y color de píxel.
  *
  * @property {String} [position='right'] Posición del control en el mapa.
  * @property {String|null} [tooltip=null] Texto del tooltip del control.

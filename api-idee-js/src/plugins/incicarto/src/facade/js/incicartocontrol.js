@@ -253,7 +253,7 @@ export default class IncicartoControl extends IDEE.Control {
 
   renderLayers() {
     const filtered = this.map.getLayers().filter((layer) => {
-      return ['kml', 'kmz', 'geojson', 'wfs', 'vector'].indexOf(layer.type.toLowerCase()) > -1
+      return ['kml', 'kmz', 'geojson', 'wfs', 'vector', 'dataidee'].indexOf(layer.type.toLowerCase()) > -1
         && layer.name !== undefined && layer.name !== 'selectLayer' && layer.name !== '__draw__' && layer.name !== 'coordinateresult'
         && layer.name !== 'searchresult' && layer.name.indexOf('Coordenadas centro ') === -1 && layer.name !== 'infocoordinatesLayerFeatures';
     });
@@ -848,6 +848,8 @@ export default class IncicartoControl extends IDEE.Control {
       param = this.getGeoJSON(layer);
     } else if (layer.type === 'Vector') {
       param = this.getVector(layer);
+    } else if (layer.type === 'DataIDEE') {
+      param = this.getDataIDEE(layer);
     } else if (layer.type === 'TMS') {
       param = this.getTMS(layer);
     }
@@ -877,6 +879,24 @@ export default class IncicartoControl extends IDEE.Control {
     source = window.btoa(unescape(encodeURIComponent(JSON.stringify(source))));
     const style = (layer.getStyle()) ? layer.getStyle().serialize() : '';
     return `GeoJSON*${layer.name}*${source}**${style}`;
+  }
+
+  /**
+   * This method gets the DataIDEE layer parameter. A layer with an access
+   * token is sent as a GeoJSON copy of its features, so the token is never
+   * shared and the recipient sees the same data.
+   *
+   * @public
+   * @function
+   */
+  getDataIDEE(layer) {
+    const token = typeof layer.getToken === 'function' ? layer.getToken() : undefined;
+    if (!IDEE.utils.isNullOrEmpty(token)) {
+      return this.getVector(layer);
+    }
+    const style = (layer.getStyle()) ? layer.getStyle().serialize() : '';
+    const bbox = IDEE.utils.isNullOrEmpty(layer.bbox) ? '' : [].concat(layer.bbox).join(';');
+    return `DataIDEE*${this.normalizeString(layer.legend || layer.name)}*${layer.url}*${layer.name}*${layer.limit || ''}*${bbox}*${layer.id || ''}*${layer.offset || ''}*${layer.format || ''}*${style}*${layer.extract || ''}`;
   }
 
   /**

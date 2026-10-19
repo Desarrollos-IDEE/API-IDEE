@@ -72,13 +72,29 @@
     }
   },
   "getfeatureinfo": {
+    "band": "Banda",
+    "tile_z": "Tesela Z",
+    "tile_x": "Tesela X",
+    "tile_y": "Tesela Y",
+    "red": "Rojo",
+    "green": "Verde",
+    "blue": "Azul",
+    "alpha": "Alfa",
+    "hex": "Hexadecimal",
+    "elevation": "Elevación",
+    "elevation_unit": "m",
+    "elevation_nodata": "No hay dato de elevación en este píxel.",
+    "pixel_unavailable": "No se pudo leer el color del píxel.",
+    "geotiff_intro": "Valores del píxel en el punto seleccionado del mapa.",
+    "nir": "Infrarrojo cercano (NIR)",
+    "swir": "Infrarrojo de onda corta (SWIR)",
     "title": "Consultar capa",
     "info": "Información",
     "no_info": "No existe información asociada",
     "info_of": "Información de",
     "unsupported_format": "Formato no soportado",
     "textHelp": {
-      "text1": "La herramienta de obtener información permite obtener el GetFeatureInfo (la información asociada al punto clickado sobre el visualizador) en servicios WMS y WMTS."
+      "text1": "La herramienta de obtener información permite obtener el GetFeatureInfo (la información asociada al punto clickado sobre el visualizador) en servicios WMS y WMTS, los valores de banda de capas GeoTIFF, el índice de tesela con color de píxel en capas XYZ y TMS, y la elevación decodificada en el servicio XYZ MDT."
     }
   },
   "timeline": {
@@ -336,6 +352,8 @@
     "location_method": "La implementación usada no puede crear controles Location",
     "wms_method": "La implementación usada no puede crear capas WMS",
     "geotiff_method": "La implementación usada no puede crear capas GeoTIFF",
+    "geotiff_blob_fetch_error": "HTTP [replace1] al obtener GeoTIFF ([replace2])",
+    "geotiff_blob_invalid": "Parámetro blob GeoTIFF no válido",
     "mapLibre_method": "La implementación usada no puede crear capas MapLibre",
     "generic_method": "La implementación usada no puede crear capas Genéricas",
     "wmts_method": "La implementación usada no puede crear capas WMTS",
@@ -412,6 +430,13 @@
     "layergroup_method": "La implementación usada no puede crear grupos de capas.",
     "chart_method": "La implementación usada no puede crear estilos Chart.",
     "heatmap_method": "La implementación usada no puede crear estilos Heatmap.",
+    "raster_method": "La implementación usada no puede crear estilos Raster.",
+    "invalid_raster_gamma": "El valor gamma debe ser mayor o igual que 0.",
+    "invalid_raster_formula": "La fórmula del estilo Raster no es válida. Use 'ndvi', 'ndwi', 'nbr' o déjela vacía.",
+    "invalid_raster_ndvi_bands": "La fórmula NDVI requiere exactamente dos bandas: [nir, red].",
+    "invalid_raster_ndwi_bands": "La fórmula NDWI requiere exactamente dos bandas: [green, nir].",
+    "invalid_raster_nbr_bands": "La fórmula NBR requiere exactamente dos bandas: [nir, swir].",
+    "invalid_raster_options": "El estilo Raster debe incluir una rampa, un color, filtros distintos del valor por defecto o nodata.",
     "flowline_method": "La implementación usada no puede crear estilos FlowLine.",
     "id_exists": "El ID indicado ya existe.",
     "transparent_deprecated": "El parámetro 'transparent' ha quedado obsoleto, se recomienda usar en su lugar 'isBase'.",
@@ -446,6 +471,23 @@
     "impl_area": "La implementación usada no puede crear controles MeasureArea",
     "impl_overviewmap": "La implementación usada no puede crear controles OverviewMapControl.",
     "animated_method": "La implementación usada no podrá desactivar ni modificar la animación",
-    "deactivatechangeresolution_method": "La implementación usada no posee el método deactivateChangeResolutionEvent"
+    "deactivatechangeresolution_method": "La implementación usada no posee el método deactivateChangeResolutionEvent",
+    "invalid_user_password": "El nombre de usuario o la contraseña no son válidos.",
+    "catalog_token_error": "Error al obtener el token de autenticación para el catálogo",
+    "invalid_limit": "El límite debe ser un número mayor que 0.",
+    "no_catalog_url": "La URL del catálogo es obligatoria.",
+    "no_catalog_auth_url": "La URL de autenticación es obligatoria para catálogos privados.",
+    "no_catalog_username_password": "El nombre de usuario y la contraseña son obligatorios para autenticar el catálogo.",
+    "no_collection_id": "El identificador de la colección es obligatorio.",
+    "no_item_id": "El identificador del ítem es obligatorio.",
+    "catalog_collections_error": "Error al obtener las colecciones del catálogo.",
+    "catalog_queryable_fields_error": "Error al obtener los campos consultables del catálogo.",
+    "catalog_items_error": "Error al obtener los ítems del catálogo.",
+    "catalog_item_error": "Error al obtener el ítem del catálogo.",
+    "catalog_filtered_items_error": "Error al obtener los ítems filtrados del catálogo.",
+    "catalog_filtered_items_advanced_error": "Error al obtener los ítems filtrados avanzados del catálogo.",
+    "invalid_rel": "La relación indicada no es válida.",
+    "no_item_url": "No se ha encontrado el enlace correspondiente a la relación indicada.",
+    "unauthorized_collection": "No se tiene acceso a la colección."
   }
 }

@@ -178,7 +178,8 @@ class OGCAPIFeatures extends Vector {
       name: this.name,
       limit: this.limit,
       offset: this.offset,
-      format: this.format || 'json',
+      // null explícito: el servidor no admite el parámetro "f" y no se envía.
+      format: this.format === null ? undefined : (this.format || 'json'),
       id: this.id,
       bbox: this.bbox,
       conditional: this.conditional,

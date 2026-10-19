@@ -15,9 +15,31 @@ export const removeLayerGroup = (layer) => {
   });
 };
 
+const removeNestedSection = (section) => {
+  const parent = section.parent;
+  if (IDEE.utils.isNullOrEmpty(parent)) {
+    return;
+  }
+
+  if (!IDEE.utils.isNullOrEmpty(section.map)) {
+    section.map.removeLayers(section.getAllLayers());
+  }
+
+  parent.getChildren().remove(section);
+  // eslint-disable-next-line no-param-reassign
+  section.parent = null;
+};
+
 export const removeLayersInLayerSwitcher = (evt, layer, map) => {
   if (evt.target.className.indexOf('g-cartografia-btn-layerswitcher-delete') > -1) {
-    if (layer.getImpl().rootGroup) {
+    if (layer instanceof IDEE.layer.Section) {
+      if (layer.parent) {
+        removeNestedSection(layer);
+      } else {
+        map.removeSections(layer);
+      }
+      map.fire(IDEE.evt.REMOVED_LAYER, [layer]);
+    } else if (layer.getImpl().rootGroup) {
       removeLayerGroup(layer);
     } else {
       map.removeLayers(layer);
@@ -53,6 +75,8 @@ export const addAttributions = (layers) => {
 export const focusModal = (id) => {
   setTimeout(() => {
     const message = document.querySelector(id);
+    // El diálogo puede haberse cerrado antes de enfocarlo
+    if (message === null) return;
     message.focus();
     message.click();
   }, 100);

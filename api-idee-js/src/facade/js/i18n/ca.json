@@ -72,13 +72,29 @@
     }
   },
   "getfeatureinfo": {
+    "band": "Banda",
+    "tile_z": "Tessel·la Z",
+    "tile_x": "Tessel·la X",
+    "tile_y": "Tessel·la Y",
+    "red": "Vermell",
+    "green": "Verd",
+    "blue": "Blau",
+    "alpha": "Alfa",
+    "hex": "Hexadecimal",
+    "elevation": "Elevació",
+    "elevation_unit": "m",
+    "elevation_nodata": "No hi ha dada d'elevació en aquest píxel.",
+    "pixel_unavailable": "No s'ha pogut llegir el color del píxel.",
+    "geotiff_intro": "Valors del píxel en el punt seleccionat del mapa.",
+    "nir": "Infraroig proper (NIR)",
+    "swir": "Infraroig d'ona curta (SWIR)",
     "title": "Consulteu capa",
     "info": "Informació",
     "no_info": "No hi ha informació associada",
     "info_of": "Informació de",
     "unsupported_format": "Format no suportat",
     "textHelp": {
-      "text1": "L'eina d'obtenir informació permet obtenir el GetFeatureInfo (la informació associada al punt clicat sobre el visualitzador) en serveis WMS i WMTS."
+      "text1": "L'eina d'obtenir informació permet obtenir el GetFeatureInfo (la informació associada al punt clicat sobre el visualitzador) en serveis WMS i WMTS, els valors de banda de capes GeoTIFF, l'índex de tessel·la amb el color de píxel en capes XYZ i TMS, i l'elevació descodificada en el servei XYZ MDT."
     }
   },
   "timeline": {
@@ -336,6 +352,8 @@
     "location_method": "La implementació usada no pot crear controls Location",
     "wms_method": "La implementació usada no pot crear capes WMS",
     "geotiff_method": "La implementació usada no pot crear capes GeoTIFF",
+    "geotiff_blob_fetch_error": "HTTP [replace1] en obtenir el GeoTIFF ([replace2])",
+    "geotiff_blob_invalid": "Paràmetre blob GeoTIFF no vàlid",
     "mapLibre_method": "La implementació usada no pot crear capes MapLibre",
     "generic_method": "La implementació usada no pot crear capes Genèriques",
     "wmts_method": "La implementació usada no pot crear capes WMTS",
@@ -412,6 +430,13 @@
     "layergroup_method": "La implementació usada no pot crear grups de capes.",
     "chart_method": "La implementació usada no pot crear estils Chart.",
     "heatmap_method": "La implementació usada no pot crear estils Heatmap.",
+    "raster_method": "La implementació usada no pot crear estils Raster.",
+    "invalid_raster_gamma": "El valor gamma ha de ser més gran o igual que 0.",
+    "invalid_raster_formula": "La fórmula de l'estil Raster no és vàlida. Utilitzeu 'ndvi', 'ndwi', 'nbr' o deixeu-la buida.",
+    "invalid_raster_ndvi_bands": "La fórmula NDVI requereix exactament dues bandes: [nir, red].",
+    "invalid_raster_ndwi_bands": "La fórmula NDWI requereix exactament dues bandes: [green, nir].",
+    "invalid_raster_nbr_bands": "La fórmula NBR requereix exactament dues bandes: [nir, swir].",
+    "invalid_raster_options": "L'estil Raster ha d'incloure una rampa, un color, filtres diferents del valor per defecte o nodata.",
     "flowline_method": "La implementació usada no pot crear estils FlowLine.",
     "id_exists": "L'ID indicat ja existeix.",
     "transparent_deprecated": "El paràmetre 'transparent' ha quedat obsolet, es recomana usar en el seu lloc 'isBase'.",
@@ -446,6 +471,23 @@
     "impl_area": "La implementació usada no pot crear controls MeasureArea",
     "impl_overviewmap": "La implementació usada no pot crear controls OverviewMapControl.",
     "animated_method": "La implementació usada no podrà desactivar ni modificar l'animació",
-    "deactivatechangeresolution_method": "La implementació usada no posseeix el mètode deactivateChangeResolutionEvent"
+    "deactivatechangeresolution_method": "La implementació usada no posseeix el mètode deactivateChangeResolutionEvent",
+    "invalid_user_password": "El nom d'usuari o la contrasenya no són vàlids.",
+    "catalog_token_error": "Error en obtenir el testimoni d'autenticació per al catàleg",
+    "invalid_limit": "El límit ha de ser un nombre més gran que 0.",
+    "no_catalog_url": "L'URL del catàleg és obligatòria.",
+    "no_catalog_auth_url": "L'URL d'autenticació és obligatòria per a catàlegs privats.",
+    "no_catalog_username_password": "El nom d'usuari i la contrasenya són obligatoris per autenticar el catàleg.",
+    "no_collection_id": "L'identificador de la col·lecció és obligatori.",
+    "no_item_id": "L'identificador de l'ítem és obligatori.",
+    "catalog_collections_error": "Error en obtenir les col·leccions del catàleg.",
+    "catalog_queryable_fields_error": "Error en obtenir els camps consultables del catàleg.",
+    "catalog_items_error": "Error en obtenir els ítems del catàleg.",
+    "catalog_item_error": "Error en obtenir l'ítem del catàleg.",
+    "catalog_filtered_items_error": "Error en obtenir els ítems filtrats del catàleg.",
+    "catalog_filtered_items_advanced_error": "Error en obtenir els ítems filtrats avançats del catàleg.",
+    "invalid_rel": "La relació indicada no és vàlida.",
+    "no_item_url": "No s'ha trobat l'enllaç corresponent a la relació indicada.",
+    "unauthorized_collection": "No es té accés a la col·lecció."
   }
 }

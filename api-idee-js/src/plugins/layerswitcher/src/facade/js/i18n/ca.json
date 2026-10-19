@@ -14,7 +14,14 @@
     "codsi": "S'ha produït un error en consultar el catàleg CODSI",
     "codsi_no_results": "No hi ha resultats per a la vostra cerca",
     "not_layerGroup": "No s'ha pogut afegir la capa al grup",
-    "errorPrecharged": "El valor de 'precharged' no és un JSON ni un base64 vàlid"
+    "errorPrecharged": "El valor de 'precharged' no és un JSON ni un base64 vàlid",
+    "error_ogc": "S'ha produït un error en consultar el servei OGC API Features",
+    "url_not_valid": "L'URL indicada no és vàlida",
+    "auth_failed": "Usuari o contrasenya incorrectes",
+    "auth_unavailable": "No s'ha pogut contactar amb el servei d'autenticació",
+    "auth_refresh_failed": "La sessió del servei ha caducat. Torneu a iniciar la sessió",
+    "auth_required": "El servei requereix iniciar la sessió per consultar les seves capes",
+    "unreachable": "No s'ha pogut accedir al servei. Comproveu l'URL i que el servidor permeti peticions des d'altres dominis (CORS)"
   },
   "textHelp": {
     "help1": "L'extensió selector de capes permet gestionar les capes que es mostren en un visualitzador cartogràfic.",
@@ -139,5 +146,16 @@
   "next": "Següent",
   "separatedby": "Identificador separats per comes ','",
   "placeHolderLegend": "Text que es mostra en el TOC",
-  "upload_file": "Pujar fitxer"
+  "upload_file": "Pujar fitxer",
+  "ogc_mode": "Carrega com a",
+  "ogc_mode_ogcapifeatures": "OGC API Features (estàndard)",
+  "ogc_mode_dataidee": "DataIDEE",
+  "auth_login": "Inicia la sessió",
+  "auth_user": "Usuari",
+  "auth_password": "Contrasenya",
+  "auth_save": "Desa",
+  "auth_cancel": "Cancel·la",
+  "auth_unlocked_title": "Sense sessió. Feu clic per iniciar la sessió al servei",
+  "auth_locked_title": "Sessió iniciada. Feu clic per tancar la sessió",
+  "auth_pending": "Comprovant la sessió del servei..."
 }
