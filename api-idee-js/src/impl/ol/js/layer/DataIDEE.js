@@ -37,7 +37,7 @@ class DataIDEE extends OGCAPIFeatures {
   /**
    * Devuelve el token de autenticación de la capa. Es opcional: una capa
    * pública no tiene token.
-   * @returns {String|undefined} Token enviado como parámetro "token".
+   * @returns {String|undefined} Token configurado en getFeature.token.
    * @public
    * @api
    */
@@ -104,6 +104,7 @@ class DataIDEE extends OGCAPIFeatures {
       () => !this.bboxStrategy_ || (this.map && this.olLayer === requestedLayer
         && viewport === this.viewportKey_(this.getVisibleBbox_())),
       this.getToken() !== undefined,
+      this.service_.getRequestHeaders(),
     );
     const loader = this.loader_;
     loader.on(EventType.LOAD_UNAUTHORIZED, (error) => {
