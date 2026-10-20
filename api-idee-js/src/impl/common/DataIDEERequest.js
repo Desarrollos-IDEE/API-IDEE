@@ -5,10 +5,17 @@ import { RequestCancelledError } from './RequestManager';
 
 let refreshSequence = 0;
 
+/** True when the service rejected the request credentials (HTTP 401/403). */
+export function isUnauthorizedError(error) {
+  return error?.status === 401 || error?.status === 403;
+}
+
 function validateGeoJSON(response) {
   if (!response || !Number.isInteger(response.code) || response.code < 200
     || response.code >= 300 || typeof response.text !== 'string') {
-    throw new Error(`DataIDEE request failed${response ? ` (HTTP ${response.code})` : '.'}`);
+    const error = new Error(`DataIDEE request failed${response ? ` (HTTP ${response.code})` : '.'}`);
+    error.status = response?.code;
+    throw error;
   }
   if (isNullOrEmpty(response.text)) throw new Error(getValue('exception').no_service_response);
   const geoJSON = JSON.parse(response.text);

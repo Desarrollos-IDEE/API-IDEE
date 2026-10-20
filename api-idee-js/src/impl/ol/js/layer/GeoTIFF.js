@@ -3,7 +3,7 @@
  * @module IDEE/impl/layer/GeoTIFF
  */
 import {
-  addParameters, isUndefined, isNull, isNullOrEmpty, getResolutionFromScale, extend,
+  addParameters, isUndefined, isNull, isNullOrEmpty, isString, getResolutionFromScale, extend,
 } from 'IDEE/util/Utils';
 
 import * as LayerType from 'IDEE/layer/Type';
@@ -11,9 +11,130 @@ import * as EventType from 'IDEE/event/eventtype';
 import TileLayer from 'ol/layer/WebGLTile';
 import GeoTIFFSource from 'ol/source/GeoTIFF';
 import { get as getProj } from 'ol/proj';
+import { getValue } from 'IDEE/i18n/language';
 import ImplMap from '../Map';
 import LayerBase from './Layer';
 import ImplUtils from '../util/Utils';
+
+/**
+ * Valores habituales de COMMON_NAME (STAC) → rol canónico usado por la API.
+ * @constant
+ * @type {Object<string, string>}
+ */
+const COMMON_NAME_ROLES = {
+  red: 'red',
+  green: 'green',
+  blue: 'blue',
+  nir: 'nir',
+  nir08: 'nir',
+  nir09: 'nir',
+  swir: 'swir',
+  swir16: 'swir',
+  swir22: 'swir',
+};
+
+/**
+ * Resuelve el rol canónico a partir de COMMON_NAME.
+ *
+ * @param {Object|null} metadata Metadatos GDAL de la muestra
+ * @returns {string|null}
+ */
+function roleFromCommonName(metadata) {
+  if (!metadata || !metadata.COMMON_NAME) {
+    return null;
+  }
+  const key = String(metadata.COMMON_NAME).trim().toLowerCase();
+  if (COMMON_NAME_ROLES[key]) {
+    return COMMON_NAME_ROLES[key];
+  }
+  return null;
+}
+
+/**
+ * Obtiene la imagen GeoTIFF de mayor resolución disponible en la source OL
+ *
+ * @param {ol.source.GeoTIFF} source Fuente OpenLayers
+ * @returns {Object|null} GeoTIFFImage
+ */
+function getFullResolutionImage(source) {
+  if (!source || !source.sourceImagery_ || !source.sourceImagery_[0]) {
+    return null;
+  }
+  const images = source.sourceImagery_[0];
+  for (let i = images.length - 1; i >= 0; i -= 1) {
+    if (images[i]) {
+      return images[i];
+    }
+  }
+  return null;
+}
+
+/**
+ * Obtiene la imagen GeoTIFF de la capa cuando la fuente OpenLayers está lista.
+ *
+ * @param {IDEE.impl.layer.GeoTIFF} layerImpl Implementación de la capa
+ * @returns {Promise<Object|null>} GeoTIFFImage o null
+ */
+function getGeoTIFFImageWhenReady(layerImpl) {
+  if ((!layerImpl.olLayer || !layerImpl.olLayer.getSource)
+    || !layerImpl.olLayer.getSource().getView) {
+    return Promise.resolve(null);
+  }
+
+  const source = layerImpl.olLayer.getSource();
+  return source.getView()
+    .then(() => getFullResolutionImage(source))
+    .catch((err) => {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      return null;
+    });
+}
+
+/**
+ * Indica si el valor es una instancia Blob (datos GeoTIFF en memoria).
+ *
+ * @param {*} value Valor del parámetro blob.
+ * @returns {boolean}
+ */
+function isGeoTIFFBlobInstance(value) {
+  return typeof Blob !== 'undefined' && value instanceof Blob;
+}
+
+/**
+ * Descarga o lee una URL (http(s) o blob:...) y devuelve el GeoTIFF como Blob.
+ *
+ * @param {string} urlOrObjectUrl URL remota o URL objeto blob:...
+ * @returns {Promise<Blob>}
+ */
+function fetchGeoTIFFBlobFromUrl(urlOrObjectUrl) {
+  return window.fetch(urlOrObjectUrl).then((response) => {
+    if (!response.ok) {
+      const message = getValue('exception').geotiff_blob_fetch_error
+        .replace('[replace1]', String(response.status))
+        .replace('[replace2]', urlOrObjectUrl);
+      throw new Error(message);
+    }
+    return response.blob();
+  });
+}
+
+/**
+ * Obtiene un Blob listo para ol/source.GeoTIFF a partir del parámetro blob de la capa.
+ * Instancias Blob se usan directamente; blob:... y http(s) se resuelven con fetch.
+ *
+ * @param {string|Blob} blobParam Parámetro blob (cadena o Blob).
+ * @returns {Promise<Blob>}
+ */
+function resolveGeoTIFFBlobParam(blobParam) {
+  if (isGeoTIFFBlobInstance(blobParam)) {
+    return Promise.resolve(blobParam);
+  }
+  if (isString(blobParam) && blobParam.length > 0) {
+    return fetchGeoTIFFBlobFromUrl(blobParam);
+  }
+  return Promise.reject(new Error(getValue('exception').geotiff_blob_invalid));
+}
 
 /**
  * @classdesc
@@ -39,8 +160,8 @@ class GeoTIFF extends LayerBase {
    * @constructor
    * @implements {IDEE.impl.Layer}
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
-   * - url: url del servicio.
-   * - blob: url del blob.
+   * - url: url del servicio (COG remoto http(s)).
+   * - blob: instancia Blob, URL blob:... o URL http(s) (legacy).
    * - projection: SRS usado por la capa.
    * - legend: Nombre asociado en el árbol de contenidos, si usamos uno.
    * - transparent (deprecated): Falso si es una capa base, verdadero en caso contrario.
@@ -49,6 +170,12 @@ class GeoTIFF extends LayerBase {
    * - opacity: Opacidad de la capa de 0 a 1, por defecto 1.
    * - bands: Bandas a mostrar en forma de array y como numero, si el array esta vacio muestra todas
    *   por defecto [].
+   * - min: El valor minimo de los datos de las bandas. Si se proporciona un array,
+   *   los valores corresponden a las bandas en el archivo (no el option bands)
+   * - max: El valor maximo de los datos de las bandas. Si se proporciona un array,
+   *   los valores corresponden a las bandas en el archivo (no el option bands)
+   * - cacheSize: Tamaño de la cache de la capa.
+   * - blockSize: Tamaño de los bloques de la capa.
    * - nodata: Usado para sobreescribir el parametro nodata del dato original
    * - minZoom: Zoom mínimo aplicable a la capa.
    * - maxZoom: Zoom máximo aplicable a la capa.
@@ -57,6 +184,7 @@ class GeoTIFF extends LayerBase {
    * - minResolution: Resolución mínima.
    * - maxResolution: Resolución máxima.
    * - style: Estilo de las bandas.
+   * - predefinedStyles: Estilos predefinidos para la capa.
    * - visibility: Verdadero si la capa es visible, falso si queremos que no lo sea.
    *   En este caso la capa sería detectado por los plugins de tablas de contenidos
    *   y aparecería como no visible.
@@ -156,6 +284,28 @@ class GeoTIFF extends LayerBase {
     this.bands_ = options.bands ? options.bands : [];
 
     /**
+     * GeoTIFF min_. Valor minimo de los datos de las bandas. Si se proporciona un array,
+     * los valores corresponden a las bandas en el archivo (no el option bands)
+     */
+    this.min_ = options.min;
+
+    /**
+     * GeoTIFF max_. Valor maximo de los datos de las bandas. Si se proporciona un array,
+     * los valores corresponden a las bandas en el archivo (no el option bands)
+     */
+    this.max_ = options.max;
+
+    /**
+     * GeoTIFF cacheSize_. Tamaño de la cache de la capa.
+     */
+    this.cacheSize_ = options.cacheSize || 100;
+
+    /**
+     * GeoTIFF blockSize_. Tamaño de los bloques de la capa.
+     */
+    this.blockSize_ = options.blockSize || 65536;
+
+    /**
      * GeoTIFF nodata_. Bandas a renderizar.
      */
     this.nodata_ = options.nodata;
@@ -171,6 +321,11 @@ class GeoTIFF extends LayerBase {
     this.maxZoom = options.maxZoom || Number.POSITIVE_INFINITY;
 
     this.blob = options.blob;
+
+    /**
+     * GeoTIFF loaded_. Indica si la capa está cargada.
+     */
+    this.loaded_ = false;
   }
 
   /**
@@ -235,12 +390,18 @@ class GeoTIFF extends LayerBase {
     }
 
     if (this.blob) {
-      window.fetch(this.blob).then((response) => {
-        response.blob().then((blob) => {
-          const source = this.createOLSourceBlob_(blob);
+      resolveGeoTIFFBlobParam(this.blob)
+        .then((fileBlob) => {
+          const source = this.createOLSourceBlob_(fileBlob);
           this.createOLLayerBySource_(source);
+        })
+        .catch((err) => {
+          // eslint-disable-next-line no-console
+          console.error(err);
+          if (this.facadeLayer_) {
+            this.facadeLayer_.fire('error', [err]);
+          }
         });
-      });
     } else {
       const source = this.createOLSource_();
       this.createOLLayerBySource_(source);
@@ -253,7 +414,6 @@ class GeoTIFF extends LayerBase {
       opacity: this.opacity_,
       source,
       extent: this.maxExtent_,
-      style: this.style,
       minResolution: this.options.minResolution,
       maxResolution: this.options.maxResolution,
     }, this.vendorOptions_, true);
@@ -275,6 +435,9 @@ class GeoTIFF extends LayerBase {
     // activates animation for base layers or animated parameters
     this.olLayer.setMaxZoom(this.maxZoom);
     this.olLayer.setMinZoom(this.minZoom);
+
+    this.loaded_ = true;
+    this.facadeLayer_.fire(EventType.LOAD);
   }
 
   /**
@@ -304,6 +467,113 @@ class GeoTIFF extends LayerBase {
   }
 
   /**
+   * Devuelve los roles espectrales ya resueltos en caché, sin acceder a la fuente.
+   *
+   * @public
+   * @function
+   * @returns {Object<string, number>|null}
+   * @api stable
+   */
+  getCachedBandRoles() {
+    if (this.bandRoles_) {
+      return this.bandRoles_;
+    }
+    return null;
+  }
+
+  /**
+   * Obtiene el número de bandas (SamplesPerPixel) del GeoTIFF.
+   *
+   * @public
+   * @function
+   * @returns {Promise<number|null>} Número de bandas o null si no está disponible
+   * @api stable
+   */
+  getBandCount() {
+    if (typeof this.bandCount_ === 'number' && this.bandCount_ > 0) {
+      return Promise.resolve(this.bandCount_);
+    }
+
+    return getGeoTIFFImageWhenReady(this)
+      .then((image) => {
+        if (!image || typeof image.getSamplesPerPixel !== 'function') {
+          return null;
+        }
+        const sampleCount = image.getSamplesPerPixel();
+        if (!sampleCount || sampleCount < 1) {
+          return null;
+        }
+        this.bandCount_ = sampleCount;
+        return sampleCount;
+      });
+  }
+
+  /**
+   * Obtiene roles espectrales solo desde COMMON_NAME de metadatos GDAL.
+   * Si el GeoTIFF no declara COMMON_NAME, devuelve null.
+   * Ejemplo: `{ red: 1, green: 2, blue: 3, nir: 4, swir: 5 }`.
+   *
+   * @public
+   * @function
+   * @returns {Promise<Object<string, number>|null>}
+   * @api stable
+   */
+  getBandRoles() {
+    if (this.bandRoles_) {
+      return Promise.resolve(this.bandRoles_);
+    }
+
+    return getGeoTIFFImageWhenReady(this)
+      .then((image) => {
+        if (!image || typeof image.getSamplesPerPixel !== 'function'
+          || typeof image.getGDALMetadata !== 'function') {
+          return null;
+        }
+
+        const sampleCount = image.getSamplesPerPixel();
+        if (typeof this.bandCount_ !== 'number' || this.bandCount_ < 1) {
+          this.bandCount_ = sampleCount;
+        }
+
+        const roles = {};
+
+        for (let sample = 0; sample < sampleCount; sample += 1) {
+          const role = roleFromCommonName(image.getGDALMetadata(sample));
+          if (role && roles[role] === undefined) {
+            roles[role] = sample + 1;
+          }
+        }
+
+        if (Object.keys(roles).length === 0) {
+          return null;
+        }
+
+        this.bandRoles_ = roles;
+        return roles;
+      });
+  }
+
+  /**
+   * Obtiene los valores del ráster en un píxel de pantalla.
+   * Usa ol.layer.WebGLTile#getData.
+   *
+   * @public
+   * @function
+   * @param {Array<number>} pixel Coordenadas de píxel [x, y] del mapa.
+   * @returns {Uint8ClampedArray|Uint8Array|Float32Array|DataView|null}
+   * @api stable
+   */
+  getData(pixel) {
+    if (!this.olLayer || typeof this.olLayer.getData !== 'function') {
+      return null;
+    }
+    if (isNullOrEmpty(pixel) || !Array.isArray(pixel) || pixel.length < 2) {
+      return null;
+    }
+    return this.olLayer.getData(pixel);
+  }
+
+  /**
    * Este método crea la fuente ol para esta instancia.
    * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
    * @public
@@ -316,25 +586,47 @@ class GeoTIFF extends LayerBase {
     if (isNullOrEmpty(this.vendorOptions_.source)) {
       const convertToRGB = this.convertToRGB_;
       const bands = this.bands_;
+      const min = this.min_;
+      const max = this.max_;
       const nodata = this.nodata_;
+      const cacheSize = this.cacheSize_;
+      const blockSize = this.blockSize_;
       const projectionGeoTIFF = this.options.projection;
-      const sources = [
+      let sources = [
         {
           url,
           nodata,
         },
       ];
       if (bands.length !== 0) {
-        sources.forEach((src) => {
-          // eslint-disable-next-line no-param-reassign
-          src.bands = bands;
+        sources = [];
+        bands.forEach((band) => {
+          const source = {
+            url,
+            nodata,
+            bands: [band],
+          };
+          if (min && max) {
+            source.min = min[band - 1];
+            source.max = max[band - 1];
+          }
+          sources.push(source);
         });
+        /* sources[0].bands = bands;
+        if (min && max) {
+          sources[0].min = min;
+          sources[0].max = max;
+        } */
       }
       olSource = new GeoTIFFSource({
         sources,
         convertToRGB,
         projection: projectionGeoTIFF,
         normalize: this.normalize,
+        sourceOptions: {
+          cacheSize,
+          blockSize,
+        },
       });
     }
     return olSource;
@@ -455,6 +747,17 @@ class GeoTIFF extends LayerBase {
   }
 
   /**
+   * Devuelve si la capa está cargada o no.
+   *
+   * @function
+   * @returns {Boolean} Verdadero cargada, falso si no.
+   * @api stable
+   */
+  isLoaded() {
+    return this.loaded_;
+  }
+
+  /**
    * Este método establece la clase de fachada GeoTIFF.
    * La fachada se refiere a
    * un patrón estructural como una capa de abstracción con un patrón de diseño.
@@ -482,6 +785,8 @@ class GeoTIFF extends LayerBase {
       olMap.removeLayer(this.olLayer);
       this.olLayer = null;
     }
+    this.bandRoles_ = null;
+    this.bandCount_ = null;
     this.map = null;
   }
 

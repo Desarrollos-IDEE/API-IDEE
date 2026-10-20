@@ -66,8 +66,10 @@
     "text": "Plugin que muestra información en un modal.",
     "version": "2.0",
     "date": "1st June 2020",
-    "author": "CNIG",
-    "org": "CNIG",
+    "author": "IDEE",
+    "org": "IDEE",
+    "homepage": "https://www.idee.es",
+    "funding": "Desarrollo financiado por los nodos participantes en el Grupo Técnico de Trabajo Desarrollos IDEE",
     "tags": "api-idee,plugin",
     "icon": "./facade/assets/icons/icons.svg"
   }

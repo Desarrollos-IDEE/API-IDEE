@@ -2,8 +2,9 @@
  * @module IDEE/impl/loader/DataIDEE
  */
 import MObject from 'IDEE/Object';
+import * as EventType from 'IDEE/event/eventtype';
 import RequestManager from '../../../common/RequestManager';
-import createDataIDEERequest from '../../../common/DataIDEERequest';
+import createDataIDEERequest, { isUnauthorizedError } from '../../../common/DataIDEERequest';
 
 /**
   * @classdesc
@@ -24,6 +25,10 @@ class DataIDEE extends MObject {
     * @param {IDEE.Map} map Mapa
     * @param {String} url URL de la colección o entidad.
     * @param {IDEE.format.GeoJSON} format Formato.
+    * @param {RequestManager} requestManager Gestor de caché y throttling.
+    * @param {Function} shouldExecute Indica si la petición sigue vigente.
+    * @param {Boolean} authenticated La petición lleva token: un HTTP 401/403 se
+    * trata como fallo de autenticación.
     * @api
     */
   constructor(
@@ -32,6 +37,7 @@ class DataIDEE extends MObject {
     format,
     requestManager = new RequestManager({ pendingPolicy: 'latest' }),
     shouldExecute = () => true,
+    authenticated = false,
   ) {
     super();
 
@@ -63,6 +69,16 @@ class DataIDEE extends MObject {
     this.requestOptions_ = { jsonp: false };
     this.requestManager_ = requestManager;
     this.shouldExecute_ = shouldExecute;
+    this.authenticated_ = authenticated;
+  }
+
+  /**
+   * Indica si el error es un rechazo del token enviado (HTTP 401/403).
+   * Sin token, el error se trata como cualquier otro fallo de carga.
+   * @private
+   */
+  isAuthError_(error) {
+    return this.authenticated_ && isUnauthorizedError(error);
   }
 
   /**
@@ -89,11 +105,16 @@ class DataIDEE extends MObject {
    * @function
    */
   loadForRefresh(projection) {
-    return this.loadFeatures(projection, true).then((features) => ({ features }));
+    // En una recarga se rechaza para conservar los objetos geográficos actuales.
+    return this.loadInternal_(projection, this.url_, true).then(([features]) => ({ features }));
   }
 
   loadFeatures(projection, force = false) {
-    return this.loadInternal_(projection, this.url_, force).then((features) => features[0]);
+    return this.loadInternal_(projection, this.url_, force).then((features) => features[0])
+      .catch((error) => {
+        if (this.isAuthError_(error)) return [];
+        throw error;
+      });
   }
 
   /**
@@ -131,6 +152,9 @@ class DataIDEE extends MObject {
       // eslint-disable-next-line no-underscore-dangle
       await Promise.all(features.map((feature) => feature.getImpl().isLoadCesiumFeature_));
       return [features];
+    }).catch((error) => {
+      if (this.isAuthError_(error)) this.fire(EventType.LOAD_UNAUTHORIZED, [error]);
+      throw error;
     });
   }
 }

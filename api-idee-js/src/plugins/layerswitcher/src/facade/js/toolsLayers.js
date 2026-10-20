@@ -1,7 +1,7 @@
 import changeNameTemplate from 'templates/changename';
-import { getValue } from './i18n/language';
-import { fiendLayerInGroup } from './groupLayers';
 import configTemplate from '../../templates/config';
+import { fiendLayerInGroup } from './groupLayers';
+import { getValue } from './i18n/language';
 import { focusModal } from './utils';
 
 // I18N - Traducciones INFO LAYER
@@ -57,7 +57,7 @@ const CLASS_CHECK = 'm-layerswitcher-check';
 const I18N_LEGEND_ERROR = 'legend_error';
 
 /* TARGET LAYER */
-const layersTypesTarget = ['WMTS', 'WFS', 'MBTilesVector', 'MBTiles', 'OSM', 'XYZ', 'TMS', 'GeoJSON', 'GPX', 'KML', 'KMZ', 'OGCAPIFeatures', 'Vector', 'GenericRaster', 'GenericVector', 'MVT', 'GeoTIFF', 'MapLibre'];
+const layersTypesTarget = ['WMTS', 'WFS', 'MBTilesVector', 'MBTiles', 'OSM', 'XYZ', 'TMS', 'GeoJSON', 'GPX', 'KML', 'KMZ', 'OGCAPIFeatures', 'DataIDEE', 'Vector', 'GenericRaster', 'GenericVector', 'MVT', 'GeoTIFF', 'MapLibre'];
 
 /* TILE OPTIONS */
 const TILE_COORDS_REGEX = /\{z\}\/\{x\}\/\{(-?)y\}/;
@@ -105,7 +105,15 @@ export const showHideLayersEye = (evt, layer, self) => {
 
   if (evt.target.className.indexOf('m-layerswitcher-check') > -1 && selectLayer === 'eye') {
     if (evt.target.classList.contains(CLASS_CHECK)) {
-      if (layer.isBase === false || !layer.isVisible()) {
+      if (layer instanceof IDEE.layer.Section) {
+        const sectionLayers = layer.getAllLayers();
+        let isVisible = false;
+        if (sectionLayers.length > 0) {
+          isVisible = sectionLayers.some((l) => l.isVisible() === true);
+        }
+        layer.setVisible(!isVisible);
+        self.render();
+      } else if (layer.isBase === false || !layer.isVisible()) {
         layer.setVisible(!layer.isVisible());
         self.render();
       }
@@ -255,20 +263,22 @@ const showLayers = (layer) => {
 
 const showHideLayersInLayerGroup = (layer, map) => {
   const group = fiendLayerInGroup(layer, map);
-
-  if (!document.querySelector(`[data-layer-id="${group.idLayer}"]`).checked) {
-    document.querySelector(`[data-layer-id="${group.idLayer}"]`).click();
+  if (!group) {
+    return;
   }
 
-  if (group) {
-    group.getLayers().forEach((subLayer) => {
-      if (subLayer.idLayer === layer.idLayer) {
-        showLayers(subLayer);
-      } else {
-        hideLayers(subLayer);
-      }
-    });
+  const groupInput = document.querySelector(`[data-layer-id="${group.idLayer}"]`);
+  if (groupInput && !groupInput.checked) {
+    groupInput.click();
   }
+
+  group.getLayers().forEach((subLayer) => {
+    if (subLayer.idLayer === layer.idLayer) {
+      showLayers(subLayer);
+    } else {
+      hideLayers(subLayer);
+    }
+  });
 };
 
 export const showHideLayersRadio = (layer, map, target) => {
@@ -339,11 +349,13 @@ export const selectDefaultRange = (radioButtons, map) => {
 const changeLayerConfig = (layer, otherStyles) => {
   const styleSelected = document.querySelector('#m-layerswitcher-style-select').value;
   if (styleSelected !== '') {
-    if (layer instanceof IDEE.layer.Vector) {
+    const usesPredefinedStyles = !IDEE.utils.isNullOrEmpty(layer.predefinedStyles)
+      && (layer instanceof IDEE.layer.Vector || layer instanceof IDEE.layer.GeoTIFF);
+    if (usesPredefinedStyles) {
       if (!IDEE.utils.isNullOrEmpty(otherStyles)) {
         const filtered = otherStyles[styleSelected];
         layer.clearStyle();
-        if (styleSelected === 0) {
+        if (layer instanceof IDEE.layer.Vector && styleSelected === '0') {
           layer.setStyle();
         } else {
           layer.setStyle(filtered);
@@ -384,7 +396,8 @@ export const styleLayers = (layer, order, evt) => {
       otherStyles = layer.capabilitiesMetadata.style;
     }
 
-    if (layer instanceof IDEE.layer.Vector) {
+    if (!IDEE.utils.isNullOrEmpty(layer.predefinedStyles)
+      && (layer instanceof IDEE.layer.Vector || layer instanceof IDEE.layer.GeoTIFF)) {
       otherStyles = layer.predefinedStyles;
       isVectorLayer = true;
     }

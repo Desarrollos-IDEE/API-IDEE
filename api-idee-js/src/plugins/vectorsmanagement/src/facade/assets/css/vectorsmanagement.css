@@ -230,16 +230,130 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     font-size: 1em;
 }
 
-#edition-container .edition-container-snap-options {
+.m-vectorsmanagement-snap-container {
+    width: 100%;
+    border-top: solid 1px #ced4daFF;
+}
+
+.m-vectorsmanagement-snap-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 14px;
+    font-size: 1em;
+    text-align: left;
+}
+
+.m-vectorsmanagement-snap-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
 }
 
-#edition-container .edition-container-snap-options div {
+.m-vectorsmanagement-snap-title {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.m-vectorsmanagement-snap-options input.m-vectorsmanagement-snap-switch {
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    flex-shrink: 0;
+    width: 36px;
+    height: 20px;
+    margin: 0;
+    border-radius: 10px;
+    background-color: #ced4da;
+    cursor: pointer;
+    transform: none;
+    transition: background-color .2s;
+}
+
+.m-vectorsmanagement-snap-options input.m-vectorsmanagement-snap-switch::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .3);
+    transition: transform .2s;
+}
+
+.m-vectorsmanagement-snap-options input.m-vectorsmanagement-snap-switch:checked {
+    background-color: var(--idee-color-primary, #2c4458);
+}
+
+.m-vectorsmanagement-snap-options input.m-vectorsmanagement-snap-switch:checked::before {
+    transform: translateX(16px);
+}
+
+.m-vectorsmanagement-snap-options input.m-vectorsmanagement-snap-switch:focus-visible {
+    outline: 2px solid var(--idee-color-primary-dark, #2c4458);
+    outline-offset: 2px;
+}
+
+.m-vectorsmanagement-snap-group {
     display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    margin: 0;
+    padding: 15px;
+    border: 1px solid var(--idee-color-neutral-40);
+    border-radius: 5px;
+}
+
+.m-vectorsmanagement-snap-group:disabled {
+    opacity: .5;
+}
+
+.m-vectorsmanagement-snap-option {
+    display: flex;
+    justify-content: flex-start;
     align-items: center;
     gap: 8px;
+}
+
+.m-vectorsmanagement-snap-option label,
+.m-vectorsmanagement-snap-tolerance label {
+    cursor: pointer;
+    line-height: 1.25;
+}
+
+.m-vectorsmanagement-snap-option input:disabled,
+.m-vectorsmanagement-snap-option input:disabled+label {
+    cursor: not-allowed;
+}
+
+.m-vectorsmanagement-snap-group:not(:disabled) .m-vectorsmanagement-snap-option input:disabled+label {
+    opacity: .55;
+}
+
+.m-vectorsmanagement-snap-tolerance {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: 8px;
+    align-items: center;
+}
+
+.m-vectorsmanagement-snap-tolerance>div {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #757474;
+}
+
+.m-vectorsmanagement-snap-tolerance input[type=number] {
+    width: 56px;
+    padding: 2px 4px;
+    text-align: right;
+    border: solid 1px #ced4da;
+    border-radius: 4px;
 }
 
 #m-point-coordinates label {
@@ -1148,8 +1262,7 @@ div#popup-box {
     max-height: calc(100vh - 175px) !important;
 }
 
-#options-content input[type=number],
-#edition-container div input[type=number] {
+#options-content input[type=number] {
     width: 50px;
 }
 .m-vectorsmanagement-dataidee-editing {

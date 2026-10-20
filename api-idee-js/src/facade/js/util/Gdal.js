@@ -1,3 +1,9 @@
+/**
+ * Esta clase contiene funciones de utilidad
+ * para trabajar con librería GDAL.
+ * @module IDEE/gdalUtils
+ * @example import * from 'IDEE/gdalUtils';
+ */
 // eslint-disable-next-line import/no-extraneous-dependencies
 import initGdalJs from 'gdal3.js';
 

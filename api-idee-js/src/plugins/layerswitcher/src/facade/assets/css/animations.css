@@ -1,0 +1,48 @@
+/**************************
+    ANIMATIONS
+**************************/
+
+@keyframes m-layerswitcher-water-drop {
+    0% {
+        transform: scale(0);
+        opacity: 0.9;
+    }
+
+    70% {
+        opacity: 0.45;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
+
+.m-layerswitcher-anim-water-drop {
+    position: relative;
+    overflow: hidden;
+}
+
+.m-layerswitcher-anim-water-drop::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 140%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 2px solid var(--idee-color-success, #2e7d32);
+    box-shadow:
+        inset 0 0 6px color-mix(in srgb, var(--idee-color-success, #2e7d32) 45%, transparent),
+        0 0 0 6px color-mix(in srgb, var(--idee-color-success, #2e7d32) 20%, transparent);
+    pointer-events: none;
+    animation: m-layerswitcher-water-drop 1.4s cubic-bezier(0.2, 0.6, 0.35, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .m-layerswitcher-anim-water-drop::after {
+        animation: none;
+        transform: scale(1);
+        opacity: 0.6;
+    }
+}

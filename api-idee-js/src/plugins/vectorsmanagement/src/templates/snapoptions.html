@@ -1,0 +1,46 @@
+<div class="m-vectorsmanagement-snap-options{{#if options.active}}{{else}} m-vectorsmanagement-snap-off{{/if}}">
+    <div class="m-vectorsmanagement-snap-header">
+        <label class="m-vectorsmanagement-snap-title" for="m-vectorsmanagement-{{prefix}}-snap-active" title="{{translations.snapHelp}}">{{translations.snapTitle}}</label>
+        <input tabindex="0" type="checkbox" role="switch" class="m-vectorsmanagement-snap-switch" id="m-vectorsmanagement-{{prefix}}-snap-active" data-snap-option="active" aria-label="{{translations.snapActive}}" title="{{translations.snapHelp}}" {{#if options.active}}checked{{/if}}>
+    </div>
+
+    <fieldset class="m-vectorsmanagement-snap-group" {{#if options.active}}{{else}}disabled{{/if}}>
+        <legend>{{translations.snapTargetsTitle}}</legend>
+        <div class="m-vectorsmanagement-snap-option">
+            <input tabindex="0" type="checkbox" id="m-vectorsmanagement-{{prefix}}-snap-vertex" data-snap-option="vertex" {{#if options.vertex}}checked{{/if}} title="{{translations.snapVertexDesc}}">
+            <label for="m-vectorsmanagement-{{prefix}}-snap-vertex" title="{{translations.snapVertexDesc}}">{{translations.snapVertex}}</label>
+        </div>
+        <div class="m-vectorsmanagement-snap-option">
+            <input tabindex="0" type="checkbox" id="m-vectorsmanagement-{{prefix}}-snap-edge" data-snap-option="edge" {{#if options.edge}}checked{{/if}} title="{{translations.snapEdgeDesc}}">
+            <label for="m-vectorsmanagement-{{prefix}}-snap-edge" title="{{translations.snapEdgeDesc}}">{{translations.snapEdge}}</label>
+        </div>
+        <div class="m-vectorsmanagement-snap-option">
+            <input tabindex="0" type="checkbox" id="m-vectorsmanagement-{{prefix}}-snap-intersection" data-snap-option="intersection" {{#if options.intersection}}checked{{/if}} title="{{translations.snapIntersectionDesc}}">
+            <label for="m-vectorsmanagement-{{prefix}}-snap-intersection" title="{{translations.snapIntersectionDesc}}">{{translations.snapIntersection}}</label>
+        </div>
+    </fieldset>
+
+    <fieldset class="m-vectorsmanagement-snap-group" {{#if options.active}}{{else}}disabled{{/if}}>
+        <legend>{{translations.snapOptionsTitle}}</legend>
+        <div class="m-vectorsmanagement-snap-option">
+            <input tabindex="0" type="checkbox" id="m-vectorsmanagement-{{prefix}}-snap-allLayers" data-snap-option="allLayers" {{#if options.allLayers}}checked{{/if}} title="{{translations.snapAllLayersDesc}}">
+            <label for="m-vectorsmanagement-{{prefix}}-snap-allLayers" title="{{translations.snapAllLayersDesc}}">{{translations.snapAllLayers}}</label>
+        </div>
+        <div class="m-vectorsmanagement-snap-option">
+            {{#if guidesAvailable}}
+            <input tabindex="0" type="checkbox" id="m-vectorsmanagement-{{prefix}}-snap-guides" data-snap-option="guides" {{#if options.guides}}checked{{/if}} title="{{translations.snapGuidesDesc}}">
+            <label for="m-vectorsmanagement-{{prefix}}-snap-guides" title="{{translations.snapGuidesDesc}}">{{translations.snapGuides}}</label>
+            {{else}}
+            <input tabindex="0" type="checkbox" id="m-vectorsmanagement-{{prefix}}-snap-guides" data-snap-option="guides" disabled title="{{translations.snapGuidesUnavailable}}">
+            <label for="m-vectorsmanagement-{{prefix}}-snap-guides" title="{{translations.snapGuidesUnavailable}}">{{translations.snapGuides}}</label>
+            {{/if}}
+        </div>
+        <div class="m-vectorsmanagement-snap-tolerance">
+            <label for="m-vectorsmanagement-{{prefix}}-snap-pixelTolerance" title="{{translations.snapToleranceDesc}}">{{translations.snapTolerance}}</label>
+            <div>
+                <input tabindex="0" type="number" id="m-vectorsmanagement-{{prefix}}-snap-pixelTolerance" data-snap-option="pixelTolerance" title="{{translations.snapToleranceDesc}}" placeholder="{{defaultPixelTolerance}}" value="{{options.pixelTolerance}}" min="1" max="100" step="1">
+                <span>px</span>
+            </div>
+        </div>
+    </fieldset>
+</div>
