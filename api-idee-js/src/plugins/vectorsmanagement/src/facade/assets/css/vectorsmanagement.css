@@ -949,9 +949,11 @@ table#attribute-table>tr>th>button {
 
 .m-vectorsmanagement-toolsContent {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     gap: .5rem;
+    max-width: 100%;
 }
 
 table#attribute-table>tr>th>button,
