@@ -121,15 +121,17 @@ class DataIDEE extends Vector {
    *   o cql2-json).
    * - cql: Alias heredado para enviar un filtro mediante el parámetro filter.
    * - getFeature: Parámetros adicionales de la petición de items. El token de
-   *   autenticación (token) es opcional: las capas públicas no lo necesitan. Si se
-   *   indica, se envía tal cual como parámetro "token" y, si el servicio lo rechaza
-   *   (HTTP 401/403), la capa queda vacía y se dispara LOAD_UNAUTHORIZED.
+   *   autenticación (token) es opcional: las capas públicas no lo necesitan.
+   * - tokenLocation: Ubicación del token: 'header' (predeterminado), que envía
+   *   Authorization: Bearer <token>, o 'query', que lo envía como ?token=<token>.
+   *   Si se rechaza (HTTP 401/403), la capa queda vacía y dispara LOAD_UNAUTHORIZED.
    * Ejemplo vendorOptions:
    * <pre><code>
    * {
    *   filter: { op: '=', args: [{ property: 'status' }, 'active'] },
    *   filterLang: 'cql2-json',
    *   getFeature: { token: tokenAutenticacion },
+   *   // tokenLocation: 'query', // Alternativa de compatibilidad.
    * }
    * </code></pre>
    * @api
@@ -537,10 +539,10 @@ class DataIDEE extends Vector {
   }
 
   /**
-   * Devuelve el token de autenticación de la capa.
+   * Devuelve el token de autenticación de la capa, con independencia de dónde se envíe.
    *
    * @function
-   * @returns {String|undefined} Token enviado como parámetro "token".
+   * @returns {String|undefined} Token configurado en getFeature.token.
    * @api
    */
   getToken() {

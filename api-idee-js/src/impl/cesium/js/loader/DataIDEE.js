@@ -29,6 +29,7 @@ class DataIDEE extends MObject {
     * @param {Function} shouldExecute Indica si la petición sigue vigente.
     * @param {Boolean} authenticated La petición lleva token: un HTTP 401/403 se
     * trata como fallo de autenticación.
+    * @param {Object} requestHeaders Cabeceras de la petición.
     * @api
     */
   constructor(
@@ -38,6 +39,7 @@ class DataIDEE extends MObject {
     requestManager = new RequestManager({ pendingPolicy: 'latest' }),
     shouldExecute = () => true,
     authenticated = false,
+    requestHeaders = {},
   ) {
     super();
 
@@ -66,7 +68,7 @@ class DataIDEE extends MObject {
      * Optional settings forwarded to Remote.get.
      * @private
      */
-    this.requestOptions_ = { jsonp: false };
+    this.requestOptions_ = { jsonp: false, headers: requestHeaders };
     this.requestManager_ = requestManager;
     this.shouldExecute_ = shouldExecute;
     this.authenticated_ = authenticated;
@@ -129,6 +131,7 @@ class DataIDEE extends MObject {
     */
   loadInternal_(projection, requestUrl = this.url_, force = false) {
     const context = JSON.stringify({
+      headers: this.requestOptions_.headers,
       proxyUrl: IDEE.config.PROXY_URL || '',
       useProxy: IDEE.useproxy === true,
       jsonp: false,

@@ -79,7 +79,7 @@ El listado de capas aparece al pulsar sobre el botón añadir (Listado de alguna
 Al introducir la URL de un servicio OGC API Features (raíz, `/collections` o `/collections/{id}`), debajo del buscador aparece el selector **Cargar como**:
 
 - **OGC API Features (estándar)**: las capas se añaden como `IDEE.layer.OGCAPIFeatures`. El parámetro `f` se toma del enlace `items` que anuncia el servicio; si el servicio no lo usa, no se envía.
-- **DataIDEE**: las capas se añaden como `IDEE.layer.DataIDEE`. Si el servicio tiene `/auth/login`, aparece un candado para iniciar sesión con usuario y contraseña. El token se guarda en el `localStorage` del navegador, uno por URL de servicio, se refresca con `/auth/refresh` antes de caducar y se envía como cabecera `Authorization: Bearer` al listar las colecciones y en las capas (`{ getFeature: { token } }`).
+- **DataIDEE**: las capas se añaden como `IDEE.layer.DataIDEE`. Si el servicio tiene `/auth/login`, aparece un candado para iniciar sesión con usuario y contraseña. El token se guarda en el `localStorage` del navegador, uno por URL de servicio, se refresca con `/auth/refresh` antes de caducar y se envía como `Authorization: Bearer <token>` al listar las colecciones y en las capas (`{ getFeature: { token } }`). Las capas también admiten `tokenLocation: 'query'` para enviar el token como `?token=<token>`. La petición a `/auth/refresh` conserva `Authorization: Bearer <token>`.
 
 Se recuerda el último modo usado con cada servicio. Los servicios precargados con `type: 'DataIDEE'` se abren en modo DataIDEE.
 El servicio debe permitir CORS (cabeceras `Authorization` y `Content-Type`) para iniciar sesión y para consultar capas con token sin proxy.

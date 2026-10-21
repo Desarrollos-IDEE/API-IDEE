@@ -51,6 +51,7 @@ const mockService = async (page, {
     const request = route.request();
     const url = new URL(request.url());
     const authorization = request.headers().authorization;
+    if (request.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: CORS });
     calls.push({
       method: request.method(), path: decodeURIComponent(url.pathname), url, authorization,
     });
@@ -58,7 +59,6 @@ const mockService = async (page, {
       status, headers: { ...CORS, 'content-type': 'application/json' }, body: JSON.stringify(body),
     });
 
-    if (request.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: CORS });
     if (url.pathname === '/api/auth/login') {
       if (!login) return json(404, { status: 404 });
       if (request.method() !== 'POST') return json(405, { status: 405 });
@@ -74,6 +74,7 @@ const mockService = async (page, {
       if (authorization) collections.push(collection('local:privada', 'Privada'));
       return json(200, { links: [{ rel: 'self', href: `${ROOT}/collections` }], collections });
     }
+    if (url.pathname.endsWith('/queryables')) return json(200, { properties: {} });
     if (url.pathname.endsWith('/items')) {
       if (url.searchParams.has('f') || url.searchParams.has('token')) {
         return json(400, { detail: 'unknown query parameter' });
@@ -83,6 +84,9 @@ const mockService = async (page, {
         headers: { ...CORS, 'content-type': 'application/geo+json' },
         body: JSON.stringify(featureCollection),
       });
+    }
+    if (url.pathname.startsWith('/api/collections/')) {
+      return json(200, { title: 'Colección', description: 'Descripción de prueba' });
     }
     return json(404, { status: 404 });
   });
@@ -140,7 +144,7 @@ test('DataIDEE sin /auth/login: oculta el candado y crea una capa DataIDEE sin "
   expect((await readStorage(page))[ROOT].mode).toBe('dataidee');
 });
 
-test('DataIDEE con login: candado pendiente, token guardado y enviado como Bearer; cerrar sesión lo retira', async ({ page }) => {
+test('DataIDEE con login: envía Bearer a colecciones, items y metadatos; cerrar sesión lo retira', async ({ page }) => {
   const token = jwt(3600);
   const calls = await mockService(page, { login: true, tokens: { login: token }, loginDelay: 800 });
   await openService(page, `${ROOT}/collections`, { [ROOT]: { mode: 'dataidee' } });
@@ -182,6 +186,34 @@ test('DataIDEE con login: candado pendiente, token guardado y enviado como Beare
   await expect(page.locator(`${LAYER_SELECT} option[value="local:privada"]`)).toHaveCount(0);
   expect((await readStorage(page))[ROOT].session).toBeUndefined();
   expect(await page.evaluate(() => window.mapjs.getDataIDEE()[0].getToken())).toBeUndefined();
+});
+
+test('DataIDEE autenticado envía Bearer también en queryables, conteo y metadatos', async ({ page }) => {
+  const token = jwt(3600);
+  const calls = await mockService(page, { login: true, tokens: { login: token } });
+  await openService(page, `${ROOT}/collections`, {
+    [ROOT]: { mode: 'dataidee', session: { accessToken: token, refreshToken: 'refresh-1' } },
+  });
+
+  await expect(page.locator(`${LAYER_SELECT} option[value="local:privada"]`)).toHaveCount(1);
+  expect(calls.some((call) => call.path === '/api/collections'
+    && call.authorization === `Bearer ${token}`)).toBe(true);
+  await page.evaluate(async ({ root, authToken }) => {
+    // eslint-disable-next-line no-underscore-dangle
+    const mode = window.mp.controls[0].ogcModes_.dataidee;
+    await mode.getQueryables(root, 'local:privada');
+    await mode.countFeatures(root, { name: 'local:privada' });
+    const { url, options } = mode.getLayerInfoRequest({
+      url: `${root}/`, name: 'local:privada', getToken: () => authToken,
+    });
+    await IDEE.remote.get(url, null, options);
+  }, { root: ROOT, authToken: token });
+
+  expect(calls.find((call) => call.path.endsWith('/queryables')).authorization).toBe(`Bearer ${token}`);
+  expect(calls.find((call) => call.path.endsWith('/collections/local:privada/items')).authorization)
+    .toBe(`Bearer ${token}`);
+  expect(calls.find((call) => call.path === '/api/collections/local:privada').authorization)
+    .toBe(`Bearer ${token}`);
 });
 
 test('DataIDEE con credenciales incorrectas: el candado sigue abierto y se avisa al usuario', async ({ page }) => {
