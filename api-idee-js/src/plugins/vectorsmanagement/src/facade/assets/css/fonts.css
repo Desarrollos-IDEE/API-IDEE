@@ -118,6 +118,11 @@
     mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_escalar.svg');
 }
 
+.vectorsmanagement-icon-libro:before {
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_libro.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_libro.svg');
+}
+
 .vectorsmanagement-icon-scissors:before {
     -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_tijeras.svg');
     mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_tijeras.svg');

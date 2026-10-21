@@ -8,6 +8,7 @@
         "impl_selectioncontrol": "La implementació no pot crear controls de Selection.",
         "impl_analysiscontrol": "La implementació no pot crear controls d'anàlisi.",
         "impl_stylecontrol": "La implementació no pot crear controls d'estil.",
+        "impl_turfcontrol": "La implementació no pot crear controls de Turf.",
         "emptylayer": "La capa de dibuix està vacía.",
         "geometrianoencontrar": "Geometria no reconocida.",
         "formatocoord": "Les coordenades introduïdes no tenen el format correcte.",
@@ -72,6 +73,8 @@
         "analysis_content_3_1": "Permet mostrar l'extensió d'un objecte geogràfic.",
         "analysis_content_4": "GeoJSON",
         "analysis_content_4_1": "Permet veure el GeoJSON de la capa o elements seleccionats.",
+        "turf_title": "Geoprocessos (Turf.js)",
+        "turf_content": "Permet executar operacions de Turf.js sobre els elements seleccionats o, si no hi ha selecció, sobre tota la capa: mesurament (àrea, longitud, distància, extensió), centres, transformacions (àrea d'influència, simplificar, rotar, escalar, desplaçar…), superposició (unió, intersecció, diferència) i relacions espacials. Si l'operació necessita paràmetres, es demanen en un formulari abans d'executar-la. Les geometries resultants s'afegeixen al mapa en una capa nova; la resta de resultats es mostren en un missatge.",
         "download_title": "Descarrega",
         "download_content": "Aquesta eina permet descarregar la capa completa o els elements seleccionats en format GeoJSON, KML, GPX i Shapefile."
     },
@@ -193,5 +196,226 @@
     "stroke": "Trazo",
     "opts_point": "Opcions de punts",
     "readingAltitude": "Consultant...",
-    "info_remove_vertex": "Per eliminar el vèrtex, utilitza 'alt + clic' sobre el vèrtex a eliminar"
+    "info_remove_vertex": "Per eliminar el vèrtex, utilitza 'alt + clic' sobre el vèrtex a eliminar",
+    "turf": {
+        "title": "Geoprocessos (Turf.js)",
+        "hint": "Les operacions s'apliquen als elements seleccionats o, si no hi ha selecció, a tots els elements de la capa.",
+        "hintParams": "Les que mostren aquesta icona demanen paràmetres abans d'executar-se:",
+        "paramsTitle": "Cal configurar paràmetres.",
+        "run": "Executar",
+        "layerPrefix": "Turf:",
+        "categories": {
+            "measurement": "Mesurament",
+            "center": "Centres",
+            "transformation": "Transformació",
+            "overlay": "Superposició",
+            "relation": "Relació espacial"
+        },
+        "ops": {
+            "area": {
+                "name": "Àrea",
+                "desc": "Calcula l'àrea total dels polígons."
+            },
+            "length": {
+                "name": "Longitud",
+                "desc": "Calcula la longitud total de les línies."
+            },
+            "distance": {
+                "name": "Distància",
+                "desc": "Calcula la distància entre dos punts."
+            },
+            "bbox": {
+                "name": "Extensió (bbox)",
+                "desc": "Calcula l'extensió (caixa envolupant) dels elements en EPSG:4326."
+            },
+            "along": {
+                "name": "Punt sobre la línia",
+                "desc": "Crea un punt a la distància indicada des de l'inici de la línia."
+            },
+            "center": {
+                "name": "Centre",
+                "desc": "Crea el centre de l'extensió de cada element."
+            },
+            "centroid": {
+                "name": "Centroide",
+                "desc": "Crea el centroide (mitjana dels vèrtexs) de cada element."
+            },
+            "centerOfMass": {
+                "name": "Centre de masses",
+                "desc": "Crea el centre de masses de cada element."
+            },
+            "pointOnFeature": {
+                "name": "Punt a l'element",
+                "desc": "Crea un punt situat sempre sobre cada element."
+            },
+            "buffer": {
+                "name": "Àrea d'influència",
+                "desc": "Crea una àrea d'influència (buffer) al voltant dels elements."
+            },
+            "simplify": {
+                "name": "Simplificar",
+                "desc": "Simplifica les línies i polígons (algorisme de Douglas-Peucker)."
+            },
+            "convex": {
+                "name": "Envolupant convexa",
+                "desc": "Crea el polígon convex mínim que conté tots els elements."
+            },
+            "envelope": {
+                "name": "Rectangle envolupant",
+                "desc": "Crea el rectangle que conté tots els elements."
+            },
+            "bezierSpline": {
+                "name": "Suavitzar línia (Bézier)",
+                "desc": "Converteix cada línia en una corba de Bézier suavitzada."
+            },
+            "transformRotate": {
+                "name": "Rotar",
+                "desc": "Rota cada element sobre el seu centroide."
+            },
+            "transformScale": {
+                "name": "Escalar",
+                "desc": "Escala cada element respecte al seu centroide."
+            },
+            "transformTranslate": {
+                "name": "Desplaçar",
+                "desc": "Desplaça cada element una distància en una direcció."
+            },
+            "union": {
+                "name": "Unió",
+                "desc": "Uneix els polígons en una sola geometria."
+            },
+            "intersect": {
+                "name": "Intersecció",
+                "desc": "Crea la zona comuna a tots els polígons."
+            },
+            "difference": {
+                "name": "Diferència",
+                "desc": "Resta al primer polígon seleccionat la resta de polígons."
+            },
+            "booleanPointInPolygon": {
+                "name": "Punt en polígon",
+                "desc": "Comprova si el punt és dins del polígon."
+            },
+            "booleanIntersects": {
+                "name": "Intersequen",
+                "desc": "Comprova si els dos elements es toquen o es creuen."
+            },
+            "booleanContains": {
+                "name": "Conté",
+                "desc": "Comprova si el primer element seleccionat conté el segon."
+            },
+            "booleanWithin": {
+                "name": "És dins",
+                "desc": "Comprova si el primer element seleccionat és dins del segon."
+            }
+        },
+        "params": {
+            "units": "Unitats",
+            "distance": "Distància",
+            "radius": "Radi",
+            "steps": "Passos (resolució del contorn)",
+            "tolerance": "Tolerància",
+            "highQuality": "Alta qualitat",
+            "resolution": "Resolució",
+            "sharpness": "Suavitzat (0-1)",
+            "angle": "Angle (graus)",
+            "factor": "Factor d'escala",
+            "direction": "Direcció (graus)",
+            "areaUnits": "Unitats",
+            "concavity": "Concavitat",
+            "pivotLon": "Longitud del punt de gir",
+            "pivotLat": "Latitud del punt de gir",
+            "origin": "Punt d'origen",
+            "ignoreBoundary": "Ignorar la vora del polígon",
+            "ignoreSelfIntersections": "Ignorar autointerseccions"
+        },
+        "paramsHelp": {
+            "tolerance": "En graus (EPSG:4326). 0,001 equival aproximadament a 100 m.",
+            "direction": "Angle des del nord, en el sentit de les agulles del rellotge.",
+            "radius": "Un radi negatiu redueix els polígons.",
+            "concavity": "Buit: envolupant convexa. Com més baix (mínim 1), més s'ajusta als elements.",
+            "pivot": "En graus (EPSG:4326). Deixa-les buides per girar cada element sobre el seu centroide."
+        },
+        "units": {
+            "meters": "Metres",
+            "millimeters": "Mil·límetres",
+            "centimeters": "Centímetres",
+            "kilometers": "Quilòmetres",
+            "miles": "Milles",
+            "nauticalmiles": "Milles nàutiques",
+            "inches": "Polzades",
+            "yards": "Iardes",
+            "feet": "Peus",
+            "radians": "Radiants",
+            "degrees": "Graus"
+        },
+        "unitsShort": {
+            "meters": "m",
+            "millimeters": "mm",
+            "centimeters": "cm",
+            "kilometers": "km",
+            "miles": "mi",
+            "nauticalmiles": "nmi",
+            "inches": "in",
+            "yards": "yd",
+            "feet": "ft",
+            "radians": "rad",
+            "degrees": "°"
+        },
+        "areaUnits": {
+            "meters": "Metres quadrats",
+            "millimeters": "Mil·límetres quadrats",
+            "centimeters": "Centímetres quadrats",
+            "kilometers": "Quilòmetres quadrats",
+            "miles": "Milles quadrades",
+            "nauticalmiles": "Milles nàutiques quadrades",
+            "inches": "Polzades quadrades",
+            "yards": "Iardes quadrades",
+            "feet": "Peus quadrats",
+            "acres": "Acres",
+            "hectares": "Hectàrees"
+        },
+        "areaUnitsShort": {
+            "meters": "m²",
+            "millimeters": "mm²",
+            "centimeters": "cm²",
+            "kilometers": "km²",
+            "miles": "mi²",
+            "nauticalmiles": "nmi²",
+            "inches": "in²",
+            "yards": "yd²",
+            "feet": "ft²",
+            "acres": "ac",
+            "hectares": "ha"
+        },
+        "origins": {
+            "centroid": "Centroide",
+            "center": "Centre de l'extensió",
+            "sw": "Cantonada sud-oest",
+            "se": "Cantonada sud-est",
+            "nw": "Cantonada nord-oest",
+            "ne": "Cantonada nord-est"
+        },
+        "results": {
+            "yes": "Sí",
+            "no": "No",
+            "minX": "Longitud mínima",
+            "minY": "Latitud mínima",
+            "maxX": "Longitud màxima",
+            "maxY": "Latitud màxima",
+            "layerCreated": "S'ha creat la capa «{layer}» amb {n} geometria(es)."
+        },
+        "exception": {
+            "notLoaded": "Turf.js no està disponible. Cal una versió d'API-IDEE que l'inclogui.",
+            "min": "L'operació necessita almenys {n} elements.",
+            "max": "L'operació admet com a màxim {n} elements.",
+            "exact": "L'operació necessita exactament {n} elements.",
+            "types": "Tipus de geometria no admès. Aquesta operació admet: {types}.",
+            "pointPolygon": "Selecciona un punt i un polígon.",
+            "unsupportedGeometries": "Turf no pot comprovar aquesta relació entre els tipus de geometria seleccionats.",
+            "empty": "L'operació no ha retornat cap geometria.",
+            "error": "Error en executar l'operació: {msg}",
+            "pivot": "Indica la longitud i la latitud del punt de gir, o deixa-les totes dues buides."
+        }
+    }
 }
