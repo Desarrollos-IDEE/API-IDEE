@@ -1,7 +1,6 @@
 /**
  * @module IDEE/control/AnalysisControl
  */
-import buffer from '@turf/buffer';
 import AnalysisImplControl from 'impl/analysiscontrol';
 import template from '../../templates/analysis';
 import infoanalysis from '../../templates/infoanalysis';
@@ -275,7 +274,9 @@ export default class AnalysisControl extends IDEE.Control {
    */
   drawBuffer() {
     const selection = this.managementControl_.getSelection();
-    if (selection === 'feature' && this.managementControl_.getSelectedFeatures().length === 0) { // buffer de los features seleccionados
+    if (typeof turf === 'undefined') {
+      IDEE.dialog.error(getValue('turf.exception.notLoaded'));
+    } else if (selection === 'feature' && this.managementControl_.getSelectedFeatures().length === 0) { // buffer de los features seleccionados
       IDEE.dialog.info(getValue('exception.featuresel'));
     } else if (selection === 'layer' && this.layer_.getFeatures().length === 0) { // buffer de toda la capa
       IDEE.dialog.info(getValue('exception.emptylayer'));
@@ -371,7 +372,7 @@ export default class AnalysisControl extends IDEE.Control {
     const format = new ol.format.GeoJSON();
     olFeature.getGeometry().transform(this.map_.getProjection().code, 'EPSG:4326');
     const turfGeom = format.writeFeatureObject(olFeature);
-    const buffered = buffer(turfGeom, parseInt(distance, 10), { units: 'meters' });
+    const buffered = turf.buffer(turfGeom, parseInt(distance, 10), { units: 'meters' });
     olFeature.setGeometry(format.readFeature(buffered).getGeometry().transform('EPSG:4326', this.map_.getProjection().code));
     olFeature.set('parentID', layerID);
     const MFeature = IDEE.impl.Feature.feature2Facade(olFeature);

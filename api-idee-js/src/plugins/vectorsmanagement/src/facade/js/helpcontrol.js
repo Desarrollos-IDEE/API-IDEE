@@ -84,6 +84,8 @@ export default class HelpControl extends IDEE.Control {
           analysis_content_2_1: getValue('help_template').analysis_content_2_1,
           download_title: getValue('help_template').download_title,
           download_content: getValue('help_template').download_content,
+          turf_title: getValue('help_template').turf_title,
+          turf_content: getValue('help_template').turf_content,
           creation_content_1: getValue('help_template').creation_content_1,
           creation_content_1_1: getValue('help_template').creation_content_1_1,
           creation_content_2: getValue('help_template').creation_content_2,

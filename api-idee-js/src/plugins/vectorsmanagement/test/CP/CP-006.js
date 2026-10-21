@@ -17,23 +17,22 @@ const ogc = new IDEE.layer.OGCAPIFeatures({
 
 map.addLayers([ogc]);
 
+// probar funcionalidad de edición de features
 const mp = new VectorsManagement({
-  position: 'TL',
+  position: 'left',
   tooltip: 'Gestionar mis vectores',
-  // isDraggable => falta implementar
-  // useProxy => falta implementar
   collapsed: false,
-  collapsible: false,
   // Herramientas
-  // selection: false,
+  selection: true,
   // addlayer: false,
   // creation: false,
-  // edition: false,
+  edition: true,
   // style: false,
   // analysis: false,
   // download: false,
-  // help: false,
-  isDraggable: true,
+  // snapping: false,
+  // turf: false,
+  help: true,
 });
 
 map.addPlugin(mp);

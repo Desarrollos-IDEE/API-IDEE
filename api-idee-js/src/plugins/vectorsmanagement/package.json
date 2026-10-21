@@ -56,7 +56,6 @@
     "webpack-dev-server": "4.15.1"
   },
   "dependencies": {
-    "@turf/buffer": "^6.5.0",
     "ol-ext": "4.0.15",
     "shp-write": "^0.3.2",
     "shpjs": "^3.4.3",

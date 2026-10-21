@@ -55,6 +55,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 - **edition**: Indica si se incluye la herramienta de edición de elementos (true/false). Por defecto: true. Es necesario tener añadida la herramienta de selección para poder añadir esta.
 - **help**: Indica si se incluye la herramienta de ayuda (true/false). Por defecto: true.
 - **style**: Indica si se incluye la herramienta de edición de estilos (true/false). Por defecto: true. Es necesario tener añadida la herramienta de selección para poder añadir esta.
+- **turf**: Indica si se incluye la herramienta de geoprocesos con Turf.js (true/false). Por defecto: true. Es necesario tener añadida la herramienta de selección para poder añadir esta. Requiere una versión de API-IDEE que publique Turf.js (`window.turf`). Ver [Geoprocesos con Turf.js](#geoprocesos-con-turfjs).
 - **snapping**: Configuración inicial del ajuste (snapping) que usan las herramientas de dibujo (`creation`) y de edición (`edition`). El usuario puede modificarla después desde la interfaz del plugin. Si ambas herramientas están desactivadas (`false`), este parámetro no tiene efecto. Valores posibles:
   - `true`: snapping activado con los valores por defecto. Es el valor por defecto.
   - `false`: snapping desactivado (el usuario puede activarlo desde la interfaz).
@@ -109,11 +110,53 @@ a la extensión visible al iniciarla; guarda, descarta o cancela antes de
 finalizarla o cambiar de capa.
 
 ```javascript
-URL_API?vectorsmanagement=position*!collapsed*!order*!selection*!addlayer*!analysis*!creation*!download*!edition*!help*!style*!snapping
+URL_API?vectorsmanagement=position*!collapsed*!order*!selection*!addlayer*!analysis*!creation*!download*!edition*!help*!style*!snapping*!turf
 ```
 Ejemplo:
 ```javascript
 https://componentes.idee.es/api-idee/?vectorsmanagement=RIGHT*true*true
+```
+
+# Geoprocesos con Turf.js
+
+La herramienta de geoprocesos ejecuta operaciones de [Turf.js](https://turfjs.org/) sobre los elementos seleccionados o, si no hay selección, sobre todos los elementos de la capa seleccionada:
+
+- Si la operación necesita parámetros (marcada con «…»), se piden en un diálogo antes de ejecutarla.
+- Si devuelve geometría, cada ejecución añade al mapa su propia capa con la leyenda `Turf: <operación> (n)`, donde `n` es el número de orden de esa operación (1, 2, 3…). Su nombre interno es `turf_<operación>_<n>_<aleatorio>`.
+- Si no devuelve geometría, el resultado se muestra en un toast o en un diálogo.
+
+| Categoría | Operación | Entrada | Parámetros | Resultado |
+|---|---|---|---|---|
+| Medición | `area` | 1+ polígonos | unidades de área¹ | Área total |
+| Medición | `length` | 1+ líneas | unidades² | Longitud total |
+| Medición | `distance` | 2 puntos | unidades² | Distancia |
+| Medición | `bbox` | 1+ elementos | – | Extensión en EPSG:4326 |
+| Medición | `along` | 1 línea | distancia, unidades² | Punto |
+| Centros | `center`, `centroid`, `centerOfMass`, `pointOnFeature` | 1+ elementos | – | Un punto por elemento |
+| Transformación | `buffer` | 1+ elementos | radio (negativo reduce polígonos), unidades², pasos | Polígonos |
+| Transformación | `simplify` | 1+ líneas o polígonos | tolerancia (grados), alta calidad | Geometrías simplificadas |
+| Transformación | `convex` | 1+ elementos | concavidad (opcional; vacía = envolvente convexa) | Polígono |
+| Transformación | `envelope` | 1+ elementos | – | Polígono |
+| Transformación | `bezierSpline` | 1+ líneas | resolución, suavizado | Líneas suavizadas |
+| Transformación | `transformRotate` | 1+ elementos | ángulo, punto de giro opcional (longitud y latitud; vacío = centroide) | Geometrías rotadas |
+| Transformación | `transformScale` | 1+ elementos | factor, origen (centroide, centro o una esquina) | Geometrías escaladas |
+| Transformación | `transformTranslate` | 1+ elementos | distancia, unidades², dirección | Geometrías desplazadas |
+| Superposición | `union`, `intersect` | 2+ polígonos | – | Polígono |
+| Superposición | `difference` | 2+ polígonos | – | Primer polígono seleccionado menos el resto |
+| Relación | `booleanPointInPolygon` | 1 punto y 1 polígono | ignorar el borde | Sí / No |
+| Relación | `booleanIntersects` | 2 elementos | ignorar autointersecciones | Sí / No |
+| Relación | `booleanContains`, `booleanWithin` | 2 elementos (en orden de selección) | – | Sí / No |
+
+¹ Metros, milímetros, centímetros, kilómetros, millas, millas náuticas, pulgadas, yardas y pies cuadrados, acres y hectáreas.
+
+² Metros, milímetros, centímetros, kilómetros, millas, millas náuticas, pulgadas, yardas, pies, radianes y grados.
+
+Las operaciones se definen en `src/facade/js/turf/turfoperations.js`. Para añadir una nueva basta con añadir una entrada al catálogo y sus traducciones (`turf.ops.<id>`).
+
+Turf.js lo publica el núcleo de API-IDEE como variable global `turf`, igual que `ol` o `proj4`, por lo que también se puede usar directamente:
+
+```javascript
+const buffered = turf.buffer(turf.point([-3.7, 40.4]), 500, { units: 'meters' });
 ```
 
 # Atajos de teclado
@@ -143,6 +186,7 @@ const mp = new IDEE.plugin.VectorsManagement({
     analysis: true,
     download: true,
     help: true,
+    turf: true,
     snapping: { intersection: true, allLayers: true },
 });
 

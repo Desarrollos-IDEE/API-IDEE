@@ -8,6 +8,7 @@
     "impl_selectioncontrol": "La implementación no puede crear controles de Selection.",
     "impl_analysiscontrol": "La implementación no puede crear controles de Analysis.",
     "impl_stylecontrol": "La implementación no puede crear controles de Style.",
+    "impl_turfcontrol": "La implementación no puede crear controles de Turf.",
     "emptylayer": "La capa de dibujo está vacía.",
     "geometrianoencontrar": "Geometría no reconocida.",
     "formatocoord": "Las coordenadas introducidas no tienen el formato correcto.",
@@ -72,6 +73,8 @@
     "analysis_content_3_1": "Permite mostrar la extensión de un objeto geográfico.",
     "analysis_content_4": "GeoJSON",
     "analysis_content_4_1": "Permite ver el GeoJSON de la capa o elementos seleccionados.",
+    "turf_title": "Geoprocesos (Turf.js)",
+    "turf_content": "Permite ejecutar operaciones de Turf.js sobre los elementos seleccionados o, si no hay selección, sobre toda la capa: medición (área, longitud, distancia, extensión), centros, transformaciones (área de influencia, simplificar, rotar, escalar, desplazar…), superposición (unión, intersección, diferencia) y relaciones espaciales. Si la operación necesita parámetros, se piden en un formulario antes de ejecutarla. Las geometrías resultantes se añaden al mapa en una capa nueva; el resto de resultados se muestran en un mensaje.",
     "download_title": "Descarga",
     "download_content": "Esta herramienta permite descargar la capa completa o los elementos seleccionados en formato GeoJSON, KML, GPX y Shapefile."
   },
@@ -217,5 +220,226 @@
   "stroke": "Trazo",
   "opts_point": "Opciones de puntos",
   "readingAltitude": "Consultando...",
-  "info_remove_vertex": "Para eliminar el vértice, utiliza 'alt + clic' sobre el vértice a eliminar"
+  "info_remove_vertex": "Para eliminar el vértice, utiliza 'alt + clic' sobre el vértice a eliminar",
+  "turf": {
+    "title": "Geoprocesos (Turf.js)",
+    "hint": "Las operaciones se aplican a los elementos seleccionados o, si no hay selección, a todos los elementos de la capa.",
+    "hintParams": "Las que muestran este icono piden parámetros antes de ejecutarse:",
+    "paramsTitle": "Requiere configurar parámetros.",
+    "run": "Ejecutar",
+    "layerPrefix": "Turf:",
+    "categories": {
+      "measurement": "Medición",
+      "center": "Centros",
+      "transformation": "Transformación",
+      "overlay": "Superposición",
+      "relation": "Relación espacial"
+    },
+    "ops": {
+      "area": {
+        "name": "Área",
+        "desc": "Calcula el área total de los polígonos."
+      },
+      "length": {
+        "name": "Longitud",
+        "desc": "Calcula la longitud total de las líneas."
+      },
+      "distance": {
+        "name": "Distancia",
+        "desc": "Calcula la distancia entre dos puntos."
+      },
+      "bbox": {
+        "name": "Extensión (bbox)",
+        "desc": "Calcula la extensión (caja envolvente) de los elementos en EPSG:4326."
+      },
+      "along": {
+        "name": "Punto sobre la línea",
+        "desc": "Crea un punto a la distancia indicada desde el inicio de la línea."
+      },
+      "center": {
+        "name": "Centro",
+        "desc": "Crea el centro de la extensión de cada elemento."
+      },
+      "centroid": {
+        "name": "Centroide",
+        "desc": "Crea el centroide (media de los vértices) de cada elemento."
+      },
+      "centerOfMass": {
+        "name": "Centro de masas",
+        "desc": "Crea el centro de masas de cada elemento."
+      },
+      "pointOnFeature": {
+        "name": "Punto en el elemento",
+        "desc": "Crea un punto situado siempre sobre cada elemento."
+      },
+      "buffer": {
+        "name": "Área de influencia",
+        "desc": "Crea un área de influencia (buffer) alrededor de los elementos."
+      },
+      "simplify": {
+        "name": "Simplificar",
+        "desc": "Simplifica las líneas y polígonos (algoritmo de Douglas-Peucker)."
+      },
+      "convex": {
+        "name": "Envolvente convexa",
+        "desc": "Crea el polígono convexo mínimo que contiene todos los elementos."
+      },
+      "envelope": {
+        "name": "Rectángulo envolvente",
+        "desc": "Crea el rectángulo que contiene todos los elementos."
+      },
+      "bezierSpline": {
+        "name": "Suavizar línea (Bézier)",
+        "desc": "Convierte cada línea en una curva de Bézier suavizada."
+      },
+      "transformRotate": {
+        "name": "Rotar",
+        "desc": "Rota cada elemento sobre su centroide."
+      },
+      "transformScale": {
+        "name": "Escalar",
+        "desc": "Escala cada elemento respecto a su centroide."
+      },
+      "transformTranslate": {
+        "name": "Desplazar",
+        "desc": "Desplaza cada elemento una distancia en una dirección."
+      },
+      "union": {
+        "name": "Unión",
+        "desc": "Une los polígonos en una sola geometría."
+      },
+      "intersect": {
+        "name": "Intersección",
+        "desc": "Crea la zona común a todos los polígonos."
+      },
+      "difference": {
+        "name": "Diferencia",
+        "desc": "Resta al primer polígono seleccionado el resto de polígonos."
+      },
+      "booleanPointInPolygon": {
+        "name": "Punto en polígono",
+        "desc": "Comprueba si el punto está dentro del polígono."
+      },
+      "booleanIntersects": {
+        "name": "Intersecan",
+        "desc": "Comprueba si los dos elementos se tocan o se cruzan."
+      },
+      "booleanContains": {
+        "name": "Contiene",
+        "desc": "Comprueba si el primer elemento seleccionado contiene al segundo."
+      },
+      "booleanWithin": {
+        "name": "Está dentro",
+        "desc": "Comprueba si el primer elemento seleccionado está dentro del segundo."
+      }
+    },
+    "params": {
+      "units": "Unidades",
+      "distance": "Distancia",
+      "radius": "Radio",
+      "steps": "Pasos (resolución del contorno)",
+      "tolerance": "Tolerancia",
+      "highQuality": "Alta calidad",
+      "resolution": "Resolución",
+      "sharpness": "Suavizado (0-1)",
+      "angle": "Ángulo (grados)",
+      "factor": "Factor de escala",
+      "direction": "Dirección (grados)",
+      "areaUnits": "Unidades",
+      "concavity": "Concavidad",
+      "pivotLon": "Longitud del punto de giro",
+      "pivotLat": "Latitud del punto de giro",
+      "origin": "Punto de origen",
+      "ignoreBoundary": "Ignorar el borde del polígono",
+      "ignoreSelfIntersections": "Ignorar autointersecciones"
+    },
+    "paramsHelp": {
+      "tolerance": "En grados (EPSG:4326). 0,001 equivale aproximadamente a 100 m.",
+      "direction": "Ángulo desde el norte, en el sentido de las agujas del reloj.",
+      "radius": "Un radio negativo reduce los polígonos.",
+      "concavity": "Vacío: envolvente convexa. Cuanto más bajo (mínimo 1), más se ajusta a los elementos.",
+      "pivot": "En grados (EPSG:4326). Déjalas vacías para girar cada elemento sobre su centroide."
+    },
+    "units": {
+      "meters": "Metros",
+      "millimeters": "Milímetros",
+      "centimeters": "Centímetros",
+      "kilometers": "Kilómetros",
+      "miles": "Millas",
+      "nauticalmiles": "Millas náuticas",
+      "inches": "Pulgadas",
+      "yards": "Yardas",
+      "feet": "Pies",
+      "radians": "Radianes",
+      "degrees": "Grados"
+    },
+    "unitsShort": {
+      "meters": "m",
+      "millimeters": "mm",
+      "centimeters": "cm",
+      "kilometers": "km",
+      "miles": "mi",
+      "nauticalmiles": "nmi",
+      "inches": "in",
+      "yards": "yd",
+      "feet": "ft",
+      "radians": "rad",
+      "degrees": "°"
+    },
+    "areaUnits": {
+      "meters": "Metros cuadrados",
+      "millimeters": "Milímetros cuadrados",
+      "centimeters": "Centímetros cuadrados",
+      "kilometers": "Kilómetros cuadrados",
+      "miles": "Millas cuadradas",
+      "nauticalmiles": "Millas náuticas cuadradas",
+      "inches": "Pulgadas cuadradas",
+      "yards": "Yardas cuadradas",
+      "feet": "Pies cuadrados",
+      "acres": "Acres",
+      "hectares": "Hectáreas"
+    },
+    "areaUnitsShort": {
+      "meters": "m²",
+      "millimeters": "mm²",
+      "centimeters": "cm²",
+      "kilometers": "km²",
+      "miles": "mi²",
+      "nauticalmiles": "nmi²",
+      "inches": "in²",
+      "yards": "yd²",
+      "feet": "ft²",
+      "acres": "ac",
+      "hectares": "ha"
+    },
+    "origins": {
+      "centroid": "Centroide",
+      "center": "Centro de la extensión",
+      "sw": "Esquina suroeste",
+      "se": "Esquina sureste",
+      "nw": "Esquina noroeste",
+      "ne": "Esquina noreste"
+    },
+    "results": {
+      "yes": "Sí",
+      "no": "No",
+      "minX": "Longitud mínima",
+      "minY": "Latitud mínima",
+      "maxX": "Longitud máxima",
+      "maxY": "Latitud máxima",
+      "layerCreated": "Se ha creado la capa «{layer}» con {n} geometría(s)."
+    },
+    "exception": {
+      "notLoaded": "Turf.js no está disponible. Se necesita una versión de API-IDEE que lo incluya.",
+      "min": "La operación necesita al menos {n} elementos.",
+      "max": "La operación admite como máximo {n} elementos.",
+      "exact": "La operación necesita exactamente {n} elementos.",
+      "types": "Tipo de geometría no admitido. Esta operación admite: {types}.",
+      "pointPolygon": "Selecciona un punto y un polígono.",
+      "unsupportedGeometries": "Turf no puede comprobar esta relación entre los tipos de geometría seleccionados.",
+      "empty": "La operación no ha devuelto ninguna geometría.",
+      "error": "Error al ejecutar la operación: {msg}",
+      "pivot": "Indica la longitud y la latitud del punto de giro, o deja ambas vacías."
+    }
+  }
 }

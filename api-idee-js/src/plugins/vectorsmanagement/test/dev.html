@@ -111,6 +111,14 @@
                 </select>
             </div>
             <div>
+                <label for="selectTurf" title="Incluye la herramienta de geoprocesos con Turf.js (true/false). Por defecto: true. Es necesario tener añadida la herramienta de selección.">Herramienta de geoprocesos "turf"</label>
+                <select name="selectTurf" id="selectTurf">
+                    <option value="" selected="selected"></option>
+                    <option value="true">true</option>
+                    <option value="false">false</option>
+                </select>
+            </div>
+            <div>
                 <label for="inputSnapping" title="Configuración del snapping de las herramientas de creación y edición: true, false, JSON o base64. Si se deja vacío se usan los valores por defecto">Configuración del snapping "snapping"</label>
                 <input type="text" name="snapping" id="inputSnapping" list="snappingSug">
                 <datalist id="snappingSug">
