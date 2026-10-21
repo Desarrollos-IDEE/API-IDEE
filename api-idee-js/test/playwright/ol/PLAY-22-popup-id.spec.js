@@ -23,15 +23,15 @@ test.describe('IDEE.Popup', () => {
         extract: true,
       });
       window.ogc_001 = ogc_001;
-      window.map.addLayers(window.ogc_001);
-    });
-    await page.evaluate(() => {
-      return new Promise((resolve) => {
+      // El evento se escucha antes de añadir la capa: la respuesta puede llegar enseguida
+      window.ogc_001Loaded = new Promise((resolve) => {
         window.ogc_001.on(IDEE.evt.LOAD, () => {
           resolve();
         });
       });
+      window.map.addLayers(window.ogc_001);
     });
+    await page.evaluate(() => window.ogc_001Loaded);
     await page.click('#map', { position: { x: 562, y: 293 } });
     await page.waitForSelector('.m-popup');
     const idPopup = await page.evaluate(() => {

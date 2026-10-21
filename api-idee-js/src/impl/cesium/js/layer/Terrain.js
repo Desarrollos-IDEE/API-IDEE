@@ -160,6 +160,7 @@ class Terrain extends Layer {
 
       this.fire(EventType.LOAD_TERRAIN);
       this.isLoaded_ = true;
+      this.fireAddedToMap_();
     });
   }
 

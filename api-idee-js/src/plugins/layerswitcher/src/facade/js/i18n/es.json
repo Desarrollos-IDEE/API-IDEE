@@ -21,7 +21,9 @@
     "auth_unavailable": "No se ha podido contactar con el servicio de autenticación",
     "auth_refresh_failed": "La sesión del servicio ha caducado. Inicie sesión de nuevo",
     "auth_required": "El servicio requiere iniciar sesión para consultar sus capas",
-    "unreachable": "No se ha podido acceder al servicio. Compruebe la URL y que el servidor permita peticiones desde otros dominios (CORS)"
+    "unreachable": "No se ha podido acceder al servicio. Compruebe la URL y que el servidor permita peticiones desde otros dominios (CORS)",
+    "not_available_3d": "Este tipo de capa no está disponible en el mapa 3D.",
+    "only_3d": "Este tipo de capa solo está disponible en el mapa 3D."
   },
   "textHelp": {
     "help1": "La extensión selector de capas permite gestionar las capas que se muestran en un visualizador cartográfico.",

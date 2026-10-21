@@ -5,8 +5,8 @@
  * @example import utils from 'IDEE/loadFiles';
  */
 import * as shp from 'shpjs';
+import LoadFilesImpl from 'impl/util/LoadFiles';
 import * as Gdal from './Gdal';
-import LoadFilesImpl from '../../../impl/ol/js/util/LoadFiles';
 import * as Dialog from '../dialog';
 import { getValue } from '../i18n/language';
 import { isUrl } from './Utils';
@@ -141,7 +141,7 @@ export const loadGeotiffLayer = (
  */
 export const loadFeaturesFromSource = async (map, source, layerName, fileExt) => {
   try {
-    const projection = map.getProjection().code;
+    const projection = LoadFilesImpl.getFileProjection(map);
     if (fileExt === 'kmz') {
       const url = URL.createObjectURL(new Blob([source]));
       const layer = new KMZ({
@@ -155,24 +155,24 @@ export const loadFeaturesFromSource = async (map, source, layerName, fileExt) =>
       });
       map.addLayers(layer);
     } else if (fileExt === 'zip') {
-      shp.parseZip(source).then((data) => {
+      shp.parseZip(source).then(async (data) => {
         const geojsonArray = [].concat(data);
-        const features = LoadFilesImpl.loadAllInGeoJSONLayer(geojsonArray, projection);
+        const features = await LoadFilesImpl.loadAllInGeoJSONLayer(geojsonArray, projection);
         loadFeaturesLoadFilesImpl(map, layerName, features);
       });
     } else {
       let features = [];
       if (fileExt === 'kml') {
-        features = LoadFilesImpl.loadKMLLayer(source, projection, false);
+        features = await LoadFilesImpl.loadKMLLayer(source, projection, false);
       } else if (Gdal.extensionFiles.includes(fileExt)) {
         const { vectors } = await Gdal.processFile(source, projection);
-        features = LoadFilesImpl.loadAllInGeoJSONLayer(vectors ?? [], projection);
+        features = await LoadFilesImpl.loadAllInGeoJSONLayer(vectors ?? [], projection);
       } else if (fileExt === 'gpx') {
-        features = LoadFilesImpl.loadGPXLayer(source, projection);
+        features = await LoadFilesImpl.loadGPXLayer(source, projection);
       } else if (fileExt === 'geojson' || fileExt === 'json') {
-        features = LoadFilesImpl.loadGeoJSONLayer(source, projection);
+        features = await LoadFilesImpl.loadGeoJSONLayer(source, projection);
       } else if (fileExt === 'gml') {
-        features = LoadFilesImpl.loadGMLLayer(source, projection);
+        features = await LoadFilesImpl.loadGMLLayer(source, projection);
       } else {
         Dialog.error(getValue('exception').file_load);
       }

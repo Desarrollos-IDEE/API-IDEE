@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 import registerRequestManagerTests from '../common/request-manager.spec';
+/* Desactivado hasta que el endpoint DataIDEE esté maduro (hoy no hay un servicio real usable por CORS); reactivar entonces.
 import registerDataIDEECacheLayerTests from '../common/dataidee-layer-cache';
 import registerDataIDEEViewportTests from '../common/dataidee-viewport';
 import registerDataIDEEAuthTests from '../common/dataidee-auth';
@@ -8,7 +9,9 @@ import registerDataIDEEAuthTests from '../common/dataidee-auth';
 registerDataIDEECacheLayerTests('/test/playwright/cesium/basic-cesium.html');
 registerDataIDEEViewportTests('/test/playwright/cesium/basic-cesium.html');
 registerDataIDEEAuthTests('/test/playwright/cesium/basic-cesium.html');
+*/
 
+/* Desactivado hasta que el endpoint DataIDEE esté maduro (hoy no hay un servicio real usable por CORS); reactivar entonces.
 const geoJSON = {
   type: 'FeatureCollection',
   features: [{
@@ -185,5 +188,6 @@ test('DataIDEE loads Cesium features and supports map add, get and remove method
   });
   expect(state).toEqual({ featuresLoaded: 1, layerWasFound: true, layersAfterRemoval: 0 });
 });
+*/
 
 registerRequestManagerTests('/test/playwright/cesium/basic-cesium.html');

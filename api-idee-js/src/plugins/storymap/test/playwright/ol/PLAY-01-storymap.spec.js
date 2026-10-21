@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('Test plugin StoryMap', async ({ page }) => {
-    await page.goto('/src/plugins/storymap/test/playwright/ol/storymap-ol.html');
+    await page.goto('/src/plugins/storymap/test/playwright/ol/storymap-ol.html', { waitUntil: 'domcontentloaded' });
     await page.evaluate(() => {
         window.mapjs = IDEE.map({
             container: 'mapjs',

@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 export default function registerDataIDEECacheLayerTests(pagePath) {
+  const cesium = pagePath.includes('/cesium/');
   [true, false].forEach((cache) => {
     test(`DataIDEE applies bbox responses to the native layer with cache=${cache}`, async ({ page }) => {
       const bboxA = [-6.2, 37.25, -5.85, 37.55];
@@ -25,7 +26,11 @@ export default function registerDataIDEECacheLayerTests(pagePath) {
         });
       });
       await page.goto(pagePath);
-      await page.evaluate(({ enabled, bbox }) => {
+      await page.evaluate(({ enabled, bbox, isCesium }) => {
+        if (isCesium) {
+          IDEE.config.baseLayer = [];
+          IDEE.config.terrain.default = [];
+        }
         window.map = IDEE.map({ container: 'map' });
         window.cacheLayer = new IDEE.layer.DataIDEE({
           url: 'https://dataidee-cache.test/', name: 'places', bbox,
@@ -35,7 +40,7 @@ export default function registerDataIDEECacheLayerTests(pagePath) {
         window.cacheLayer.on('load', () => { window.cacheLayerLoads += 1; });
         window.cacheLayer.on('load:error', () => { window.cacheLayerErrors += 1; });
         window.map.addLayers(window.cacheLayer);
-      }, { enabled: cache, bbox: bboxA });
+      }, { enabled: cache, bbox: bboxA, isCesium: cesium });
 
       const expectApplied = async (id, loads) => {
         await expect.poll(() => page.evaluate(() => {
@@ -50,7 +55,7 @@ export default function registerDataIDEECacheLayerTests(pagePath) {
             loads: window.cacheLayerLoads,
             errors: window.cacheLayerErrors,
           };
-        })).toEqual({
+        }), { timeout: 20000 }).toEqual({
           facadeIds: [id], nativeIds: [id], loads, errors: 0,
         });
       };

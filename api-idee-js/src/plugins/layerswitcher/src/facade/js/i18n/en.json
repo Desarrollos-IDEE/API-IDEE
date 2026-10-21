@@ -21,7 +21,9 @@
     "auth_unavailable": "The authentication service could not be reached",
     "auth_refresh_failed": "The service session has expired. Please log in again",
     "auth_required": "The service requires you to log in to query its layers",
-    "unreachable": "The service could not be reached. Check the URL and that the server allows requests from other domains (CORS)"
+    "unreachable": "The service could not be reached. Check the URL and that the server allows requests from other domains (CORS)",
+    "not_available_3d": "This layer type is not available in the 3D map.",
+    "only_3d": "This layer type is only available in the 3D map."
   },
   "textHelp": {
     "help1": "The layer selector extension allows you to manage the layers displayed in a cartographic viewer.",

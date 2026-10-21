@@ -136,7 +136,7 @@ class KML extends Vector {
       if (visibility === true) {
         display = 'inherit';
       }
-      this.screenOverlayImg_.style[display] = display;
+      this.screenOverlayImg_.style.display = display;
     }
   }
 

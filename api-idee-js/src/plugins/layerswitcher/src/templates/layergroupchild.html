@@ -37,22 +37,22 @@
                 name="{{nameRadio}}" value="{{type}}-{{id}}">
             {{/if}}
         </div>
-        {{#if isTransparency}}
+        {{#if isTransparency}}{{#if transparencySupported}}
         <div class="m-layerswitcher-opacity">
             <input tabindex="0" type="range" data-layer-id="{{idLayer}}" data-layer-type="{{type}}" data-layer-name="{{id}}" data-layer-url="{{url}}" class="layerswitcher-transparency" min="0" max="1" step="0.1" value="{{opacity}}" {{#unless visible}} disabled {{/unless}} {{#if outOfRange}} disabled {{/if}} />
         </div>
-        {{/if}}
+        {{/if}}{{/if}}
         <div class="m-layerswitcher-actions">
         {{#if isLegend}}
             <button tabindex="0" title="{{translations.show_hide}}" data-layer-id="{{idLayer}}"
                 class="secondary m-layerswitcher-icons-image g-cartografia-btn-layerswitcher-image" {{#unless visible}} disabled {{/unless}}>
             </button>
         {{/if}}
-        {{#if isZoom}}
+        {{#if isZoom}}{{#if zoomSupported}}
             <button tabindex="0" title="{{translations.zoom}}" data-layer-id="{{idLayer}}" 
                 class="secondary m-layerswitcher-icons-target g-cartografia-btn-layerswitcher-target" {{#unless visible}} disabled {{/unless}}>
             </button>
-        {{/if}}
+        {{/if}}{{/if}}
         {{#if isInformation}}
             <button tabindex="0" title="{{translations.info_metadata}}" data-layer-id="{{idLayer}}" 
                 class="secondary g-cartografia-btn-layerswitcher-info" {{#unless visible}} disabled {{/unless}}>

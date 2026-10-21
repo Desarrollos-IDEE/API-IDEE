@@ -209,6 +209,7 @@ class GenericRaster extends LayerBase {
 
     const zIndex = this.facadeLayer_.isBase ? 0 : null;
     map.getMapImpl().imageryLayers.add(this.cesiumLayer, zIndex);
+    this.fireAddedToMap_();
   }
 
   /**

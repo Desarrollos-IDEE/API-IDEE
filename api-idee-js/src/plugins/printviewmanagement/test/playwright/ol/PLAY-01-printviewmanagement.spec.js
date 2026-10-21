@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('Test plugin PrintViewManagement', async ({ page }) => {
-  await page.goto('/src/plugins/printviewmanagement/test/playwright/ol/printviewmanagement-ol.html');
+  await page.goto('/src/plugins/printviewmanagement/test/playwright/ol/printviewmanagement-ol.html', { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => {
     window.mapjs = IDEE.map({
       container: 'mapjs',

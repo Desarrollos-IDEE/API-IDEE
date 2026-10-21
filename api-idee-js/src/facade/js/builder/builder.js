@@ -411,6 +411,61 @@ export const getPanelForControl = (control, map, params = {}) => {
 };
 
 /**
+ * Constructores de los controles del núcleo que se pueden crear por nombre.
+ * @function
+ * @param {Object} map Mapa (lo necesitan algunos controles al construirse).
+ * @returns {Object} Constructores por nombre de control.
+ */
+const getControlBuilders = (map) => ({
+  [Attributions.NAME]: (options) => {
+    const collectionsAttributions = options.collectionsAttributions ?? [];
+    // eslint-disable-next-line no-underscore-dangle, no-param-reassign
+    map._attributionsMap = [...map._attributionsMap, ...collectionsAttributions];
+    return new Attributions({
+      ...options,
+      collectionsAttributions: collectionsAttributions.map((l) => {
+        if (typeof l !== 'string') {
+          const attr = l;
+          attr.id = l.idLayer;
+          return attr;
+        }
+        return l;
+      }),
+    });
+  },
+  [Scale.NAME]: (options) => new Scale(options),
+  [ScaleLine.NAME]: (options) => new ScaleLine(options),
+  [MeasureBar.NAME]: (options) => new MeasureBar(options),
+  [OverviewMap.NAME]: (options) => new OverviewMap(options),
+  [Panzoombar.NAME]: (options) => new Panzoombar(options),
+  [Panzoom.NAME]: (options) => new Panzoom(options),
+  [Location.NAME]: (options) => new Location(options),
+  [GetFeatureInfo.NAME]: (options) => new GetFeatureInfo(options),
+  [Rotate.NAME]: (options) => new Rotate(options),
+  [BackgroundLayers.NAME]: (options) => new BackgroundLayers(options),
+  [ImplementationSwitcher.NAME]: (options) => new ImplementationSwitcher(options),
+  [WMCSelector.NAME]: (options) => new WMCSelector(options),
+  [Timeline.NAME]: (options) => new Timeline({
+    timelineType: 'absoluteSimple',
+    ...options,
+  }),
+});
+
+/**
+ * Indica si un nombre (con o sin parámetros "*") corresponde a un control del
+ * núcleo que se puede crear por nombre.
+ * @function
+ * @param {string} controlParam Nombre del control, p. ej. "scale*exactScale=true".
+ * @returns {boolean} Verdadero si el núcleo sabe construirlo.
+ * @api
+ */
+export const isKnownControl = (controlParam) => {
+  if (!isString(controlParam)) return false;
+  const controlName = normalize(controlParam).split('*')[0];
+  return Object.prototype.hasOwnProperty.call(getControlBuilders(null), controlName);
+};
+
+/**
  * This method create the mapea control from its name string.
  * @function
  * @param {string|Object} controlParam Control name or control instance.
@@ -424,41 +479,7 @@ export const buildControl = (controlParam, map) => {
   const controlName = normalizedControlParams[0];
 
   if (isString(controlParam)) {
-    const controls = {
-      [Attributions.NAME]: (options) => {
-        const collectionsAttributions = options.collectionsAttributions ?? [];
-        // eslint-disable-next-line no-underscore-dangle, no-param-reassign
-        map._attributionsMap = [...map._attributionsMap, ...collectionsAttributions];
-        return new Attributions({
-          ...options,
-          collectionsAttributions: collectionsAttributions.map((l) => {
-            if (typeof l !== 'string') {
-              const attr = l;
-              attr.id = l.idLayer;
-              return attr;
-            }
-            return l;
-          }),
-        });
-      },
-      [Scale.NAME]: (options) => new Scale(options),
-      [ScaleLine.NAME]: (options) => new ScaleLine(options),
-      [MeasureBar.NAME]: (options) => new MeasureBar(options),
-      [OverviewMap.NAME]: (options) => new OverviewMap(options),
-      [Panzoombar.NAME]: (options) => new Panzoombar(options),
-      [Panzoom.NAME]: (options) => new Panzoom(options),
-      [Location.NAME]: (options) => new Location(options),
-      [GetFeatureInfo.NAME]: (options) => new GetFeatureInfo(options),
-      [Rotate.NAME]: (options) => new Rotate(options),
-      [BackgroundLayers.NAME]: (options) => new BackgroundLayers(options),
-      [ImplementationSwitcher.NAME]: (options) => new ImplementationSwitcher(options),
-      [WMCSelector.NAME]: (options) => new WMCSelector(options),
-      [Timeline.NAME]: (options) => new Timeline({
-        timelineType: 'absoluteSimple',
-        ...options,
-      }),
-    };
-
+    const controls = getControlBuilders(map);
     const builderFunction = controls[controlName];
     if (isFunction(builderFunction)) {
       const controlParams = controlParam.split(controlNameSeparator).slice(1).join(controlNameSeparator);

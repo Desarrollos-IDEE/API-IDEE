@@ -1,7 +1,10 @@
 /* eslint-disable no-console */
 import { test, expect } from '@playwright/test';
+import { mockRest } from '../common/rest';
 
 test('Probamos añadir controles desde API 2.0', async ({ page }) => {
+  // La API REST (controles, plugins y sus ficheros) se simula: el servidor de pruebas no la tiene
+  await mockRest(page);
   await page.goto('/test/playwright/ol/basic-ol.html');
 
   await page.evaluate(() => {

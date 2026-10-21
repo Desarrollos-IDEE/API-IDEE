@@ -191,8 +191,9 @@ export class StandardMode extends OGCAPIMode {
 }
 
 /**
- * Modo DataIDEE: crea capas IDEE.layer.DataIDEE y envía el token de la sesión
- * como cabecera "Authorization: Bearer". No usa el parámetro "f".
+ * Modo DataIDEE: crea capas IDEE.layer.DataIDEE (que envían el token de la sesión
+ * como parámetro "token") y consulta el servicio (colecciones, queryables, recuento
+ * e información) con la cabecera "Authorization: Bearer". No usa el parámetro "f".
  */
 export class DataIDEEMode extends OGCAPIMode {
   /**

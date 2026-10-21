@@ -202,6 +202,8 @@
   "implementationswitcher": {
     "title": "Implementacions",
     "description": "Seleccionar implementació:",
+    "load_error": "No s'ha pogut carregar la implementació",
+    "mismatch": "El fitxer carregat no correspon a la implementació",
     "textHelp": {
       "text1": "Aquesta eina permet canviar la implementació del mapa.",
       "text2": "Al desplegable es mostren totes les implementacions disponibles (OpenLayers, Cesium, etc)."
@@ -211,6 +213,7 @@
     "msg": "Porta'm allà"
   },
   "exception": {
+    "implementationswitcher_method": "La implementació usada no pot crear controls ImplementationSwitcher.",
     "addgeojson_method": "La implementació usada no posseeix el mètode addGeoJSON.",
     "removegeojson_method": "La implementació usada no posseeix el mètode removeGeoJSON.",
     "getgpx_method": "La implementació usada no disposa del mètode getGPX",

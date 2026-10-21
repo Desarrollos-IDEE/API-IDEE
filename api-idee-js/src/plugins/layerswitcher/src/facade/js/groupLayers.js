@@ -15,7 +15,7 @@ const CONTAINER_LAYERGROUP = '#m-layerswitcher-groups-fields';
 
 export const getAllLayersGroup = (map) => {
   const allLayers = [];
-  const layersGroup = map.getImpl().getGroupedLayers();
+  const layersGroup = map.getLayerGroup();
 
   layersGroup.forEach((group) => {
     if (group.displayInLayerSwitcher) {
@@ -152,7 +152,7 @@ export const getLayerSelectGroup = (map) => {
   const select = document.querySelector(CLASS_MODAL_LAYERGROUP);
   if (select === null) return undefined;
   const groups = map.getLayerGroup();
-  return groups.find((group) => group.getImpl().getLayer().ol_uid === select.value);
+  return groups.find((group) => group.idLayer === select.value);
 };
 
 export const filterGroups = (layers, inLayerGroup = true) => {

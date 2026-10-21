@@ -9,9 +9,74 @@ const COLLECTION_BBOX = [
   43.88073491367543,
 ];
 
+const STAC_URL = 'https://stac-gneis.idee.es';
+const CORS = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-headers': '*',
+  'access-control-allow-methods': 'GET, POST, OPTIONS',
+};
+const ITEM = {
+  type: 'Feature',
+  stac_version: '1.0.0',
+  id: ITEM_ID,
+  collection: COLLECTION_ID,
+  bbox: COLLECTION_BBOX,
+  geometry: {
+    type: 'Polygon',
+    coordinates: [[[-18.2, 27.6], [4.8, 27.6], [4.8, 43.8], [-18.2, 43.8], [-18.2, 27.6]]],
+  },
+  properties: { 'eo:gsd': 60, platform: 'landsat-1', 'mosaic:reference_year': 1972 },
+  links: [],
+  assets: {},
+};
+const itemCollection = (features) => ({
+  type: 'FeatureCollection', features, numberMatched: features.length, numberReturned: features.length,
+});
+
+/**
+ * Catálogo STAC simulado (el servicio real no es estable desde el entorno de pruebas).
+ * Solo devuelve resultados cuando la petición lleva lo que el cliente debe enviar.
+ */
+const mockCatalog = (page) => page.route(`${STAC_URL}/**`, (route) => {
+  const request = route.request();
+  const url = new URL(request.url());
+  const json = (body, status = 200) => route.fulfill({
+    status, headers: { ...CORS, 'content-type': 'application/json' }, body: JSON.stringify(body),
+  });
+  if (request.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: CORS });
+  const path = url.pathname;
+  if (path === '/collections') {
+    return json({ collections: [{ id: COLLECTION_ID, type: 'Collection', links: [] }], links: [] });
+  }
+  if (path === `/collections/${COLLECTION_ID}/queryables`) {
+    return json({
+      type: 'object',
+      properties: {
+        'eo:gsd': { type: 'number' },
+        platform: { type: 'string' },
+        'mosaic:reference_year': { type: 'integer' },
+      },
+    });
+  }
+  if (path === `/collections/${COLLECTION_ID}/items`) return json(itemCollection([ITEM]));
+  if (path === `/collections/${COLLECTION_ID}/items/${ITEM_ID}`) return json(ITEM);
+  if (path === '/search' && request.method() === 'GET') {
+    const bbox = (url.searchParams.get('bbox') || '').split(',').map(Number);
+    const sameBbox = bbox.length === 4 && bbox.every((v, i) => Math.abs(v - COLLECTION_BBOX[i]) < 1e-9);
+    return json(itemCollection(sameBbox ? [ITEM] : []));
+  }
+  if (path === '/search' && request.method() === 'POST') {
+    const body = request.postDataJSON() || {};
+    const forCollection = (body.collections || []).includes(COLLECTION_ID);
+    const filtered = !!(body.query || body.filter);
+    return json(itemCollection(forCollection && filtered ? [ITEM] : []));
+  }
+  return json({ detail: 'not found' }, 404);
+});
+
 test.describe('IDEE.spec.Catalog', () => {
   test.beforeEach(async ({ page }) => {
-    // gneis no expone CORS; Playwright reenvía la petición desde Node sin restricción de origen.
+    await mockCatalog(page);
     await page.goto('/test/playwright/ol/basic-ol.html');
     await page.evaluate(() => {
       const catalog = new IDEE.stac.Catalog({

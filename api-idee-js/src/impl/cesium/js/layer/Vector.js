@@ -19,8 +19,6 @@ import {
   BillboardGraphics,
   Color,
   CustomDataSource,
-  GeoJsonDataSource,
-  ImageMaterialProperty,
   ModelGraphics,
   PathGraphics,
   PointGraphics,
@@ -40,6 +38,15 @@ import Feature from '../feature/Feature';
  * @api
  * @extends {IDEE.impl.layer.Layer}
  */
+/**
+ * Valor actual de una propiedad de Cesium, o el propio valor si no lo es.
+ * @param {Cesium.Property|*} property Propiedad.
+ * @returns {*} Valor.
+ */
+const valueOf = (property) => {
+  return property && typeof property.getValue === 'function' ? property.getValue() : property;
+};
+
 class Vector extends Layer {
   /**
    * Constructor principal de la clase. Crea una capa vectorial
@@ -148,7 +155,7 @@ class Vector extends Layer {
     const cesiumMap = this.map.getMapImpl();
     cesiumMap.dataSources.add(this.cesiumLayer);
     this.completeLoad_();
-    this.fire(EventType.ADDED_TO_MAP);
+    this.fireAddedToMap_();
   }
 
   /**
@@ -188,30 +195,33 @@ class Vector extends Layer {
       const f = !isNullOrEmpty(features) ? features : this.getLayer().entities.values;
       f.forEach((feature) => {
         const geometry = ImplUtils.getGeometryEntity(feature);
+        if (isNullOrEmpty(geometry)) return;
+        // Las entidades importadas (KML, GPX...) pueden no tener color, contorno o material
         if (geometry instanceof PointGraphics) {
-          const currentColor = geometry.color.getValue();
-          geometry.color = Color.fromAlpha(currentColor, opacityParsed);
-          const currentOutlineColor = geometry.outlineColor.getValue();
-          geometry.outlineColor = Color.fromAlpha(currentOutlineColor, opacityParsed);
+          geometry.color = Color.fromAlpha(valueOf(geometry.color) || Color.WHITE, opacityParsed);
+          geometry.outlineColor = Color.fromAlpha(
+            valueOf(geometry.outlineColor) || Color.BLACK,
+            opacityParsed,
+          );
         } else if (geometry instanceof BillboardGraphics || geometry instanceof ModelGraphics) {
-          geometry.color = new Color(1.0, 1.0, 1.0, opacity);
-        } else if (!isNullOrEmpty(geometry)) {
-          if (!(geometry instanceof PolylineGraphics) && !(geometry instanceof PathGraphics)
-            && !(geometry instanceof BillboardGraphics) && !(geometry instanceof ModelGraphics)) {
-            const currentOutlineColor = geometry.outlineColor.getValue();
-            geometry.outlineColor = Color.fromAlpha(currentOutlineColor, opacityParsed);
+          geometry.color = new Color(1.0, 1.0, 1.0, opacityParsed);
+        } else {
+          if (!(geometry instanceof PolylineGraphics) && !(geometry instanceof PathGraphics)) {
+            const outlineColor = valueOf(geometry.outlineColor);
+            if (outlineColor) geometry.outlineColor = Color.fromAlpha(outlineColor, opacityParsed);
           }
-
-          const currentColor = geometry.material.getValue().color;
-          if (!(geometry.material instanceof ImageMaterialProperty)
-            && !(geometry.material instanceof PolylineOutlineMaterialProperty)) {
-            geometry.material.color = Color.fromAlpha(currentColor, opacityParsed);
-          } else if (geometry.material instanceof PolylineOutlineMaterialProperty) {
-            geometry.material.color = Color.fromAlpha(currentColor, opacityParsed);
-            const currentOutlineColor = geometry.material.outlineColor.getValue();
-            geometry.material.outlineColor = Color.fromAlpha(currentOutlineColor, opacityParsed);
+          const { material } = geometry;
+          const currentColor = valueOf(material)?.color || Color.WHITE;
+          if (isNullOrEmpty(material)) {
+            geometry.material = Color.fromAlpha(currentColor, opacityParsed);
           } else {
-            geometry.material.color = Color.fromAlpha(currentColor, opacityParsed);
+            material.color = Color.fromAlpha(currentColor, opacityParsed);
+            if (material instanceof PolylineOutlineMaterialProperty) {
+              const outlineColor = valueOf(material.outlineColor);
+              if (outlineColor) {
+                material.outlineColor = Color.fromAlpha(outlineColor, opacityParsed);
+              }
+            }
           }
         }
       });
@@ -227,14 +237,12 @@ class Vector extends Layer {
    * @expose
    */
   getZIndex() {
-    if (!isNullOrEmpty(this.getLayer())) {
-      this.zIndex_ = this.map.getMapImpl().dataSources.indexOf(this.getLayer());
-    }
     return this.zIndex_;
   }
 
   /**
-   * Este método establece el índice z de esta capa.
+   * Este método establece el índice z de esta capa. El índice es la clave de
+   * orden de la capa en su colección del visor; el mapa reordena la colección.
    *
    * @function
    * @param {Number} zIndex Índice de la capa.
@@ -243,32 +251,9 @@ class Vector extends Layer {
    */
   setZIndex(zIndex) {
     this.zIndex_ = zIndex;
-    if (!isNullOrEmpty(this.getLayer())) {
-      const cesiumMap = this.map.getMapImpl();
+    if (!isNullOrEmpty(this.map) && !isNullOrEmpty(this.getLayer())) {
       // eslint-disable-next-line no-underscore-dangle
-      if ((cesiumMap.dataSources._dataSources.length - 1) >= zIndex) {
-        const oldIndex = cesiumMap.dataSources.indexOf(this.cesiumLayer);
-        const difIndex = zIndex - oldIndex;
-        for (let i = 0; i < Math.abs(difIndex); i += 1) {
-          if (difIndex < 0) {
-            cesiumMap.dataSources.lower(this.cesiumLayer);
-          } else {
-            cesiumMap.dataSources.raise(this.cesiumLayer);
-          }
-        }
-        this.map.getLayers().forEach((layer) => {
-          const layerImpl = layer.getImpl().getLayer();
-          if (layerImpl instanceof CustomDataSource || layerImpl instanceof GeoJsonDataSource) {
-            // eslint-disable-next-line
-            layer.zindex_ = this.map.getMapImpl().dataSources.indexOf(layerImpl);
-            // eslint-disable-next-line
-            layer.isBase = false;
-          }
-        });
-      } else {
-        // eslint-disable-next-line no-console
-        console.error(getValue('exception').index_error);
-      }
+      this.map.getImpl().sortLayers_();
     }
   }
 
@@ -416,22 +401,53 @@ class Vector extends Layer {
    * @api stable
    */
   addFeatures(features, update) {
-    if (!isNullOrEmpty(this.map)) {
-      const cesiumMap = this.map.getMapImpl();
-      const terrain = this.map.getTerrain();
-      // eslint-disable-next-line no-underscore-dangle
-      if (terrain.length === 1 && terrain[0].getImpl().isLoaded_
-        && cesiumMap.scene.globe.tilesLoaded) {
-        this.handlerAddFeatures_(features, update);
-      } else if (terrain.length === 0 && cesiumMap.scene.globe.tilesLoaded) {
-        this.handlerAddFeatures_(features, update);
-      } else {
-        this.tileLoadHandler = this.handlerAddFeatures_.bind(this, features, update);
-        cesiumMap.scene.globe.tileLoadProgressEvent.addEventListener(this.tileLoadHandler);
-      }
-    } else {
+    if (isNullOrEmpty(this.map)) {
       this.addFeatures_(features, update);
+      return;
     }
+    const cesiumMap = this.map.getMapImpl();
+    const terrain = this.map.getTerrain();
+    // eslint-disable-next-line no-underscore-dangle
+    const terrainLoaded = terrain.length === 0 || terrain[0].getImpl().isLoaded_;
+    if (terrainLoaded && cesiumMap.scene.globe.tilesLoaded) {
+      this.handlerAddFeatures_(features, update);
+      return;
+    }
+    // Se añaden cuando el globo termine de cargar, en el orden en que se pidieron y con
+    // un único escuchador (antes cada llamada sustituía al anterior sin darlo de baja)
+    this.pendingFeatures_ = (this.pendingFeatures_ || []).concat([[features, update]]);
+    if (isNullOrEmpty(this.tileLoadHandler)) {
+      this.tileLoadHandler = () => this.flushPendingFeatures_();
+      cesiumMap.scene.globe.tileLoadProgressEvent.addEventListener(this.tileLoadHandler);
+    }
+  }
+
+  /**
+   * Añade los objetos geográficos pendientes cuando el globo ha cargado sus teselas.
+   *
+   * @private
+   * @function
+   */
+  flushPendingFeatures_() {
+    if (isNullOrEmpty(this.map) || !this.map.getMapImpl().scene.globe.tilesLoaded) return;
+    const pending = this.pendingFeatures_ || [];
+    this.pendingFeatures_ = [];
+    this.removeTileLoadHandler_();
+    pending.forEach(([features, update]) => this.handlerAddFeatures_(features, update));
+  }
+
+  /**
+   * Da de baja el escuchador de carga de teselas.
+   *
+   * @private
+   * @function
+   */
+  removeTileLoadHandler_() {
+    if (!isNullOrEmpty(this.tileLoadHandler) && !isNullOrEmpty(this.map)) {
+      this.map.getMapImpl().scene.globe.tileLoadProgressEvent
+        .removeEventListener(this.tileLoadHandler);
+    }
+    this.tileLoadHandler = null;
   }
 
   /**
@@ -449,10 +465,7 @@ class Vector extends Layer {
     if (isNullOrEmpty(this.map)) {
       return;
     }
-    const cesiumMap = this.map.getMapImpl();
-    if (cesiumMap.scene.globe.tilesLoaded) {
-      this.addFeatures_(features, update);
-    }
+    this.addFeatures_(features, update);
   }
 
   /**
@@ -551,11 +564,6 @@ class Vector extends Layer {
 
       if (update) {
         this.updateLayer_();
-      }
-
-      if (!isNullOrEmpty(this.tileLoadHandler)) {
-        this.map.getMapImpl().scene.globe.tileLoadProgressEvent
-          .removeEventListener(this.tileLoadHandler);
       }
     });
     if (forRefresh) return loading;
@@ -878,11 +886,9 @@ class Vector extends Layer {
   destroy() {
     this.facadeVector_?.stopAutoRefresh();
     const cesiumMap = this.map.getMapImpl();
-    // Eliminar el listener de tileLoadProgressEvent si existe
-    if (!isNullOrEmpty(this.tileLoadHandler)) {
-      cesiumMap.scene.globe.tileLoadProgressEvent.removeEventListener(this.tileLoadHandler);
-      this.tileLoadHandler = null;
-    }
+    // Eliminar el listener de tileLoadProgressEvent y lo pendiente de añadir
+    this.removeTileLoadHandler_();
+    this.pendingFeatures_ = [];
     if (!isNullOrEmpty(this.cesiumLayer)) {
       cesiumMap.dataSources.remove(this.cesiumLayer, true);
       this.cesiumLayer = null;

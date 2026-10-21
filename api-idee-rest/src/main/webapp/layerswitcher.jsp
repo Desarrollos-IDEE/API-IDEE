@@ -180,6 +180,9 @@
         </div>
         <div class="m-test-buttons">
             <button name="eliminar" class="m-test-button" id="removeButton">Eliminar Plugin</button>
+            <select name="sampleLayer" id="selectSampleLayer" title="Capas de ejemplo para probar el plugin en 2D y 3D">
+                <option value="" selected="selected">Añadir capa de ejemplo…</option>
+            </select>
         </div>
     </div>
 
@@ -204,13 +207,13 @@
         const urlParams = new URLSearchParams(window.location.search);
         IDEE.language.setLang(urlParams.get('language') || 'es');
 
-        const map = IDEE.map({
+        let map = IDEE.map({
             container: 'mapjs',
             zoom: 5,
             maxZoom: 20,
             minZoom: 2,
             center: [-467062.8225, 4783459.6216],
-            controls: ['attributions']
+            controls: ['attributions', 'implementationswitcher']
         });
         window.map = map;
 
@@ -233,6 +236,118 @@
         const stylemanager = new IDEE.plugin.StyleManager();
         map.addPlugin(stylemanager);
 
+        // Capas de ejemplo de cada tipo; "only" limita las que solo admite una implementación
+        const SAMPLE_LAYERS = [
+            {
+                label: 'WMS',
+                create: () => new IDEE.layer.WMS({
+                    url: 'https://www.ign.es/wms-inspire/camino-santiago?',
+                    name: 'PS.ProtectedSite',
+                    legend: 'Camino de Santiago (WMS)',
+                }),
+            },
+            {
+                label: 'WMTS',
+                create: () => new IDEE.layer.WMTS({
+                    url: 'https://www.ign.es/wmts/ign-base?',
+                    name: 'IGNBaseTodo',
+                    legend: 'IGN Base (WMTS)',
+                    matrixSet: 'GoogleMapsCompatible',
+                    format: 'image/jpeg',
+                }),
+            },
+            {
+                label: 'XYZ',
+                create: () => new IDEE.layer.XYZ({
+                    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    name: 'OSM (XYZ)',
+                    legend: 'OpenStreetMap (XYZ)',
+                    transparent: true,
+                }),
+            },
+            { label: 'TMS', create: () => 'QUICK*RelieveSombreado_TMS' },
+            { label: 'MVT', create: () => 'QUICK*ViasVerdes_MVT' },
+            {
+                label: 'KML',
+                create: () => new IDEE.layer.KML({
+                    url: 'https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml',
+                    name: 'Delegaciones IGN',
+                    extract: false,
+                }),
+            },
+            {
+                label: 'Grupo de capas',
+                create: () => new IDEE.layer.LayerGroup({
+                    name: 'grupo_ejemplo',
+                    legend: 'Grupo de ejemplo',
+                    layers: [
+                        new IDEE.layer.WMS({
+                            url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
+                            name: 'AU.AdministrativeBoundary',
+                            legend: 'Límites (grupo)',
+                        }),
+                        new IDEE.layer.GeoJSON({
+                            name: 'GNSS (grupo)',
+                            url: 'https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json',
+                            extract: false,
+                        }),
+                    ],
+                }),
+            },
+            {
+                label: 'Sección',
+                add: () => map.addSections(new IDEE.layer.Section({
+                    title: 'Sección de ejemplo',
+                    children: [
+                        new IDEE.layer.WMS({
+                            url: 'https://www.ign.es/wms-inspire/hidrografia?',
+                            name: 'HY.PhysicalWaters.Waterbodies',
+                            legend: 'Hidrografía (sección)',
+                        }),
+                    ],
+                })),
+            },
+            { label: 'MapLibre', only: 'ol', create: () => 'QUICK*BTN_Completa_MapLibre' },
+            {
+                label: 'Tiles3D',
+                only: 'cesium',
+                create: () => new IDEE.layer.Tiles3D({
+                    url: 'https://raw.githubusercontent.com/CesiumGS/3d-tiles-samples/main/1.0/TilesetWithDiscreteLOD/tileset.json',
+                    name: 'Tiles3D de ejemplo',
+                    legend: 'Tiles3D de ejemplo',
+                }),
+            },
+            { label: 'Terrain', only: 'cesium', create: () => 'QUICK*MDT_TERRAIN' },
+        ];
+
+        const selectSampleLayer = document.getElementById('selectSampleLayer');
+        const fillSampleLayers = () => {
+            Array.from(selectSampleLayer.options).slice(1).forEach((option) => option.remove());
+            SAMPLE_LAYERS
+                .filter((sample) => !sample.only || sample.only === map.getImplementation())
+                .forEach((sample) => {
+                    const option = document.createElement('option');
+                    option.value = sample.label;
+                    option.textContent = sample.label;
+                    selectSampleLayer.appendChild(option);
+                });
+        };
+        selectSampleLayer.addEventListener('change', () => {
+            const sample = SAMPLE_LAYERS.find((s) => s.label === selectSampleLayer.value);
+            selectSampleLayer.value = '';
+            if (!sample) return;
+            try {
+                if (sample.add) {
+                    sample.add();
+                } else {
+                    map.addLayers(sample.create());
+                }
+            } catch (error) {
+                console.error(`No se pudo añadir la capa ${sample.label}`, error);
+                IDEE.dialog.error(`No se pudo añadir la capa ${sample.label}: ${error.message || error}`);
+            }
+        });
+
         let mp = null;
 
         const createPlugin = (options) => {
@@ -244,6 +359,15 @@
         const removePlugin = () => {
             if (mp) map.removePlugins(mp);
         };
+
+        // Tras cambiar de implementación el mapa y el plugin son otros: se toman los nuevos
+        window.addEventListener('idee:implementationchange', ({ detail }) => {
+            map = detail.map;
+            window.map = map;
+            mp = map.getPlugins().find((plugin) => plugin.name === 'layerswitcher') || null;
+            window.mp = mp;
+            fillSampleLayers();
+        });
 
         const removeButton = document.getElementById('removeButton');
         removeButton.addEventListener('click', () => { removePlugin(); });
@@ -318,6 +442,7 @@
             ctrl.addEventListener('change', updatePlugin);
         });
 
+        fillSampleLayers();
         updatePlugin();
         const mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",

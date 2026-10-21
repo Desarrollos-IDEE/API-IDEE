@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('Test plugin StyleManager', async ({ page }) => {
-  await page.goto('/src/plugins/stylemanager/test/playwright/ol/stylemanager-ol.html');
+  await page.goto('/src/plugins/stylemanager/test/playwright/ol/stylemanager-ol.html', { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => {
     window.mapjs = IDEE.map({
       container: 'mapjs',

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('Test plugin ShareMap', async ({ page }) => {
-    await page.goto('/src/plugins/sharemap/test/playwright/ol/sharemap-ol.html');
+    await page.goto('/src/plugins/sharemap/test/playwright/ol/sharemap-ol.html', { waitUntil: 'domcontentloaded' });
     await page.evaluate(() => {
     window.mapjs = IDEE.map({
         container: 'mapjs',

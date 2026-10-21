@@ -138,7 +138,10 @@ class GetCapabilities {
         if (isNullOrEmpty(layerName) || (layer.Name === layerName)
           || (isString(layer.Name) && isString(layerName)
             && layer.Name.toLowerCase() === layerName.toLowerCase())) {
-          if (!isNullOrEmpty(layer.BoundingBox)) {
+          if (!isNullOrEmpty(layer.EX_GeographicBoundingBox)) {
+            this.capabilitiesProj = 'CRS:84';
+            extent = layer.EX_GeographicBoundingBox;
+          } else if (!isNullOrEmpty(layer.BoundingBox)) {
             const bboxSameProj = layer.BoundingBox
               .find((bbox) => bbox.crs === this.projection_.code);
             if (!isNullOrEmpty(bboxSameProj)) {

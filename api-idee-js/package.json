@@ -100,6 +100,6 @@
     "test:playwright-ol": "playwright test --config=./playwright-config/playwright-ol.config.js",
     "test:playwright-ol-slow": "playwright test --config=./playwright-config/playwright-ol-slow.config.js",
     "test:playwright-cesium": "playwright test --config=./playwright-config/playwright-cesium.config.js",
-    "test:all": "npm run test:playwright-ol; npm run test:playwright-cesium"
+    "test:all": "npm run test:playwright-ol; ol=$?; npm run test:playwright-cesium; ce=$?; exit $((ol || ce))"
   }
 }

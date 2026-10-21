@@ -36,7 +36,9 @@ export const init = async () => {
   if (gdalPromise) {
     await gdalPromise;
   } else {
-    const path = 'https://cdn.jsdelivr.net/npm/gdal3.js@2.8.1/dist/package';
+    // IDEE.config.GDAL_URL permite servir GDAL desde otro origen (por defecto, la CDN)
+    const path = (IDEE.config.GDAL_URL || 'https://cdn.jsdelivr.net/npm/gdal3.js@2.8.1/dist/package')
+      .replace(/\/$/, '');
     const paths = {
       wasm: `${path}/gdal3WebAssembly.wasm`,
       data: `${path}/gdal3WebAssembly.data`,

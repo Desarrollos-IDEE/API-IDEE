@@ -346,7 +346,10 @@ class Map extends Base {
       this.addWMC(params.wmc);
     }
 
-    this.addQuickLayers(IDEE.config.terrain.default);
+    // El terreno por defecto solo se añade si la implementación admite capas Terrain (en 2D no)
+    if (!isUndefined(MapImpl.prototype.addTerrain)) {
+      this.addQuickLayers(IDEE.config.terrain.default);
+    }
 
     // layers
     if (!isNullOrEmpty(params.layers)) {
@@ -3667,7 +3670,8 @@ class Map extends Base {
   getMaxExtent() {
     let maxExtent = this.userMaxExtent;
     if (isNullOrEmpty(maxExtent)) {
-      const selectedWmc = this.getWMC().find((wmc) => wmc.selected);
+      const selectedWmc = !isUndefined(MapImpl.prototype.getWMC)
+        ? this.getWMC().find((wmc) => wmc.selected) : null;
       if (!isNullOrEmpty(selectedWmc)) {
         maxExtent = selectedWmc.getMaxExtent();
       }
@@ -4641,7 +4645,8 @@ class Map extends Base {
    */
   getEnvolvedExtent() {
     return new Promise((resolve) => {
-      const wmcLayer = this.getWMC().find((wmc) => wmc.selected);
+      const wmcLayer = !isUndefined(MapImpl.prototype.getWMC)
+        ? this.getWMC().find((wmc) => wmc.selected) : null;
       if (!isNullOrEmpty(wmcLayer)) {
         wmcLayer.getMaxExtent(resolve);
       } else {

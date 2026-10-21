@@ -83,6 +83,14 @@
 }
 
 
+/* Acciones añadidas con IDEE.dialog.addAction, delante del botón de cierre */
+
+.m-dialog div.m-button>button.m-dialog-action {
+   width: auto;
+   min-width: 64px;
+   margin-right: 8px;
+}
+
 /* OK */
 
 .m-dialog div.m-button {

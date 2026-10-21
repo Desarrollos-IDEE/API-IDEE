@@ -202,7 +202,7 @@ export default class DataIDEEAuthManager {
    */
   getServiceLayers_(root) {
     if (!this.map_) return [];
-    const groupLayers = this.map_.getImpl().getAllLayerInGroup?.() || [];
+    const groupLayers = this.map_.getLayerGroup().flatMap((group) => group.getLayers());
     return this.map_.getLayers().concat(groupLayers)
       .filter((layer) => layer.type === 'DataIDEE' && parseOGCAPIUrl(layer.url).root === root);
   }

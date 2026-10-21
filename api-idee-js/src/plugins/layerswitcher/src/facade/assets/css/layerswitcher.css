@@ -658,14 +658,6 @@ input[type=range].layerswitcher-transparency {
 
 
 /**************************
-    ACCIONES DEL PIE DEL DIÁLOGO (dialogactions.js)
-**************************/
-div.m-dialog div.m-button > .m-layerswitcher-dialog-action {
-    margin-right: 8px;
-}
-
-
-/**************************
     OGCMODE.HTML
 **************************/
 .m-layerswitcher-ogc-mode {

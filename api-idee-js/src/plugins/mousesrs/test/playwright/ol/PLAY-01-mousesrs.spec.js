@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('Test plugin MouseSRS', async ({ page }) => {
-  await page.goto('/src/plugins/mousesrs/test/playwright/ol/mousesrs-ol.html');
+  await page.goto('/src/plugins/mousesrs/test/playwright/ol/mousesrs-ol.html', { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => {
     window.mapjs = IDEE.map({
       container: 'mapjs',
