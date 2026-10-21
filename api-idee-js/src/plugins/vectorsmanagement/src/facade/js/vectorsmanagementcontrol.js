@@ -12,7 +12,6 @@ import DownloadControl from './downloadcontrol';
 import EditionControl from './editioncontrol';
 import HelpControl from './helpcontrol';
 import StyleControl from './stylecontrol';
-import DataIDEEEditingSession from './dataideeeditingsession';
 import { getSnapOptions } from './snapoptions';
 
 /**
@@ -50,7 +49,6 @@ export default class VectorsManagementControl extends IDEE.Control {
     super('VectorsManagement', impl, {});
 
     const allLayers = map.getLayers().concat(map.getImpl().getAllLayerInGroup());
-
     this.selection_ = selection;
     this.addlayer_ = addlayer;
     this.analysis_ = analysis;
@@ -105,16 +103,16 @@ export default class VectorsManagementControl extends IDEE.Control {
             selection: getValue('selection'),
             style: getValue('style'),
             selectLayerDefault: getValue('selectLayerDefault'),
-            dataidee_edit: getValue('dataidee_edit'),
-            dataidee_start: getValue('dataidee_start'),
-            dataidee_save: getValue('dataidee_save'),
-            dataidee_discard: getValue('dataidee_discard'),
-            dataidee_end: getValue('dataidee_end'),
+            editing_edit: getValue('editing_edit'),
+            editing_start: getValue('editing_start'),
+            editing_save: getValue('editing_save'),
+            editing_discard: getValue('editing_discard'),
+            editing_end: getValue('editing_end'),
           },
         },
       });
       this.html = html;
-      this.initializeDataIDEEEditing(html);
+      this.initializeEditing(html);
 
       if (this.selection_) { this.addSelectionControl(html); }
 
@@ -176,14 +174,14 @@ export default class VectorsManagementControl extends IDEE.Control {
 
     this.layerSelectorWrapper.addEventListener('selectLayer', (event) => {
       const { selected } = event.detail;
-      if (this.dataIDEEPreparing_
+      if (this.editingPreparing_
         && selected.dataset.value !== this.selectedLayer?.idLayer) {
-        this.dataIDEEStatus_.textContent = getValue('dataidee_prepare_wait');
+        this.editingStatus_.textContent = getValue('editing_prepare_wait');
         return;
       }
-      if (this.dataIDEEEditingSession_
+      if (this.editingSession_
         && selected.dataset.value !== this.selectedLayer?.idLayer) {
-        this.requestEndDataIDEEEditing().then((canSwitch) => {
+        this.requestEndEditing().then((canSwitch) => {
           if (canSwitch) {
             this.layerSelectorWrapper.dispatchEvent(new CustomEvent('selectLayer', {
               detail: { selected },
@@ -279,52 +277,88 @@ export default class VectorsManagementControl extends IDEE.Control {
     if (this.download_) {
       this.downloadControl.setLayer(this.selectedLayer);
     }
-    this.updateDataIDEEEditingAvailability();
+    this.updateEditingAvailability();
   }
 
-  initializeDataIDEEEditing(html) {
-    this.dataIDEEPanel_ = html.querySelector('#m-vectorsmanagement-dataidee-editing');
-    this.dataIDEEStatus_ = html.querySelector('#m-vectorsmanagement-dataidee-status');
-    html.querySelector('#m-vectorsmanagement-dataidee-start').addEventListener('click', () => this.startDataIDEEEditing());
-    html.querySelector('#m-vectorsmanagement-dataidee-save').addEventListener('click', () => this.saveDataIDEEChanges());
-    html.querySelector('#m-vectorsmanagement-dataidee-discard').addEventListener('click', () => this.discardDataIDEEChanges());
-    html.querySelector('#m-vectorsmanagement-dataidee-end').addEventListener('click', () => this.requestEndDataIDEEEditing());
+  initializeEditing(html) {
+    this.editingPanel_ = html.querySelector('#m-vectorsmanagement-editing');
+    this.editingStatus_ = html.querySelector('#m-vectorsmanagement-editing-status');
+    html.querySelector('#m-vectorsmanagement-editing-start').addEventListener('click', () => this.startEditing());
+    html.querySelector('#m-vectorsmanagement-editing-save').addEventListener('click', () => this.saveEditingChanges());
+    html.querySelector('#m-vectorsmanagement-editing-discard').addEventListener('click', () => this.discardEditingChanges());
+    html.querySelector('#m-vectorsmanagement-editing-end').addEventListener('click', () => this.requestEndEditing());
   }
 
-  updateDataIDEEEditingAvailability() {
-    const isDataIDEE = this.selectedLayer?.type === 'DataIDEE'
+  isSessionLayer_(layer = this.selectedLayer) {
+    return Boolean(layer && typeof layer.getEditingCapabilities === 'function'
+      && typeof layer.beginEditing === 'function' && typeof layer.endEditing === 'function');
+  }
+
+  hasActiveEditingSession() { return Boolean(this.editingSession_); }
+
+  getActiveEditingSession() { return this.editingSession_; }
+
+  getEditingFields() { return this.editingPanel_; }
+
+  prepareNewFeature(feature, values) {
+    try {
+      this.editingSession_.prepareFeature(feature, values);
+      return true;
+    } catch (error) {
+      this.editingStatus_.textContent = error.message;
+      return false;
+    }
+  }
+
+  updateEditingAvailability() {
+    const isEditing = this.isSessionLayer_(this.selectedLayer)
       && this.map_.getImplementation() === 'ol';
-    this.dataIDEEPanel_.hidden = !isDataIDEE;
-    const isEditable = !isDataIDEE || Boolean(this.dataIDEEEditingSession_);
+    this.editingPanel_.hidden = !isEditing;
+    const isEditable = !isEditing || Boolean(this.editingSession_);
     ['creation', 'edition'].forEach((id) => {
       const button = this.html.querySelector(`#m-vectorsmanagement-${id}`);
       if (button) button.disabled = !isEditable;
     });
     const creationTemplate = this.creationControl?.template;
     if (creationTemplate) {
-      creationTemplate.querySelectorAll('button').forEach((button) => {
-        button.toggleAttribute('disabled', isDataIDEE
-          && (!this.dataIDEEEditingSession_ || !this.dataIDEECapabilities_?.create));
+      const geometryTypes = this.editingCapabilities_?.geometryTypes;
+      const geometryButtons = {
+        pointdrawing: 'point',
+        pointlocateddrawing: 'point',
+        linedrawing: 'linestring',
+        polygondrawing: 'polygon',
+        figuredrawing: 'polygon',
+        multipointdrawing: 'multipoint',
+        multilinedrawing: 'multilinestring',
+        multipolygondrawing: 'multipolygon',
+      };
+      Object.entries(geometryButtons).forEach(([id, type]) => {
+        const button = creationTemplate.querySelector(`#${id}`);
+        if (button) {
+          button.disabled = isEditing
+            && (!this.editingSession_ || !this.editingCapabilities_?.create);
+          if (geometryTypes?.length) button.hidden = isEditing && !geometryTypes.includes(type);
+        }
       });
       const textButton = creationTemplate.querySelector('#textdrawing');
-      if (textButton) textButton.disabled = isDataIDEE || !isEditable;
+      if (textButton) textButton.disabled = isEditing || !isEditable;
       ['multipointdrawing', 'multilinedrawing', 'multipolygondrawing', 'finishmultipledrawing']
         .forEach((id) => {
           const button = creationTemplate.querySelector(`#${id}`);
           if (button) {
-            button.hidden = !isDataIDEE || !this.dataIDEEEditingSession_;
-            button.disabled = isDataIDEE
-              && (!this.dataIDEEEditingSession_ || !this.dataIDEECapabilities_?.create);
+            button.hidden = !isEditing || !this.editingSession_;
+            button.disabled = isEditing
+              && (!this.editingSession_ || !this.editingCapabilities_?.create);
           }
         });
     }
     const editionTemplate = this.editionControl?.template;
     if (editionTemplate) {
       editionTemplate.querySelectorAll('button').forEach((button) => {
-        button.toggleAttribute('disabled', isDataIDEE && !this.dataIDEEEditingSession_);
+        button.toggleAttribute('disabled', isEditing && !this.editingSession_);
       });
-      const updateAllowed = !isDataIDEE || Boolean(
-        this.dataIDEEEditingSession_ && this.dataIDEECapabilities_?.update,
+      const updateAllowed = !isEditing || Boolean(
+        this.editingSession_ && this.editingCapabilities_?.update,
       );
       ['edit', 'holedrawing', 'rotatedrawing', 'scaledrawing', 'movedrawing']
         .forEach((id) => {
@@ -334,28 +368,57 @@ export default class VectorsManagementControl extends IDEE.Control {
       ['cleanAll', 'm-vectorsmanagement-deletegeom-btn'].forEach((id) => {
         const button = editionTemplate.querySelector(`#${id}`);
         if (button) {
-          button.disabled = isDataIDEE
-            && (!this.dataIDEEEditingSession_ || !this.dataIDEECapabilities_?.delete);
+          button.disabled = isEditing
+            && (!this.editingSession_ || !this.editingCapabilities_?.delete);
         }
       });
       const attributes = editionTemplate.querySelector('#editattribute');
-      if (attributes) attributes.hidden = isDataIDEE;
+      if (attributes) attributes.hidden = isEditing;
     }
-    if (!isDataIDEE || this.dataIDEEEditingSession_) return;
+    const fields = this.editingPanel_.querySelector('#m-vectorsmanagement-editing-fields');
+    if (fields) {
+      const previousValues = new Map([...fields.querySelectorAll('input')]
+        .map((input) => [input.name, input.value]));
+      fields.replaceChildren();
+      if (this.editingSession_) {
+        const creationFields = [...(this.editingCapabilities_?.creationFields || [])];
+        if (this.editingCapabilities_?.clientAssignedId) {
+          creationFields.unshift({ name: 'id', type: this.editingCapabilities_.idType || 'string', required: true });
+        }
+        creationFields.forEach((field) => {
+          const label = document.createElement('label');
+          label.textContent = field.name;
+          const input = document.createElement('input');
+          input.name = field.name;
+          input.type = field.type === 'integer' ? 'number' : 'text';
+          if (field.type === 'integer') input.step = '1';
+          input.required = field.required;
+          if (previousValues.has(field.name)) input.value = previousValues.get(field.name);
+          label.appendChild(input);
+          fields.appendChild(label);
+        });
+      }
+    }
+    if (!isEditing || this.editingSession_) return;
+    const targetLayer = this.selectedLayer;
+    const revision = (this.capabilityRevision_ || 0) + 1;
+    this.capabilityRevision_ = revision;
     this.selectedLayer.getEditingCapabilities().then((capabilities) => {
-      this.dataIDEEPanel_.querySelector('#m-vectorsmanagement-dataidee-start').disabled = !(
+      if (this.selectedLayer !== targetLayer || this.capabilityRevision_ !== revision) return;
+      this.editingPanel_.querySelector('#m-vectorsmanagement-editing-start').disabled = !(
         capabilities.create || capabilities.update || capabilities.delete
       );
-      this.dataIDEECapabilities_ = capabilities;
+      this.editingCapabilities_ = capabilities;
     }).catch(() => {
-      this.dataIDEEPanel_.querySelector('#m-vectorsmanagement-dataidee-start').disabled = true;
-      this.dataIDEEStatus_.textContent = getValue('dataidee_capability_error');
+      if (this.selectedLayer !== targetLayer || this.capabilityRevision_ !== revision) return;
+      this.editingPanel_.querySelector('#m-vectorsmanagement-editing-start').disabled = true;
+      this.editingStatus_.textContent = getValue('editing_capability_error');
     });
   }
 
-  async startDataIDEEEditing() {
-    if (this.dataIDEEPreparing_) return;
-    this.dataIDEEPreparing_ = true;
+  async startEditing() {
+    if (this.editingPreparing_) return;
+    this.editingPreparing_ = true;
     let prepared = null;
     const targetLayer = this.selectedLayer;
     try {
@@ -364,132 +427,107 @@ export default class VectorsManagementControl extends IDEE.Control {
       const view = nativeMap.getView();
       const bbox = ol.proj.transformExtent(view.calculateExtent(size), view.getProjection(), 'EPSG:4326');
       prepared = await targetLayer.beginEditing({ bbox });
-      const format = new ol.format.GeoJSON();
-      this.dataIDEEEditingSession_ = new DataIDEEEditingSession(targetLayer, {
-        ...prepared, format, projection: view.getProjection(),
+      if (targetLayer !== this.selectedLayer) {
+        targetLayer.endEditing(false);
+        return;
+      }
+      this.editingSession_ = prepared.session || targetLayer.getEditingSession();
+      if (!this.editingSession_) throw new Error('The selected layer did not provide an editing session.');
+      this.editingCapabilities_ = prepared.capabilities;
+      this.editingUnsubscribe_ = this.editingSession_.subscribe((state) => {
+        this.editingStatus_.textContent = state.error?.message || getValue('editing_pending')
+          .replace('{count}', String(state.count));
       });
-      this.dataIDEECapabilities_ = prepared.capabilities;
-      this.dataIDEESource_ = targetLayer.getImpl().getLayer().getSource();
-      this.dataIDEEAddListener_ = (event) => this.recordDataIDEEFeature(event.feature, true);
-      this.dataIDEERemoveListener_ = (event) => this.dataIDEEEditingSession_?.remove(event.feature);
-      this.dataIDEEClearListener_ = (event) => {
-        (event.features || []).forEach((feature) => this.dataIDEEEditingSession_?.remove(feature));
-      };
-      this.dataIDEESource_.on('addfeature', this.dataIDEEAddListener_);
-      this.dataIDEESource_.on('removefeature', this.dataIDEERemoveListener_);
-      this.dataIDEESource_.on('clear', this.dataIDEEClearListener_);
-      this.addDataIDEEBoundary_(nativeMap, bbox, view.getProjection());
-      this.dataIDEEStatus_.textContent = getValue('dataidee_fixed_area')
+      this.addEditingBoundary_(nativeMap, bbox, view.getProjection());
+      this.editingStatus_.textContent = getValue('editing_fixed_area')
         .replace('{count}', String(prepared.features.length));
-      this.toggleDataIDEEActions(true);
-      this.updateDataIDEEEditingAvailability();
+      this.toggleEditingActions(true);
+      this.updateEditingAvailability();
     } catch (error) {
-      if (this.dataIDEEEditingSession_) this.finishDataIDEEEditing();
+      if (this.editingSession_) this.finishEditing();
       else if (prepared) targetLayer.endEditing();
-      this.dataIDEEStatus_.textContent = error.message;
+      this.editingStatus_.textContent = error.message;
     } finally {
-      this.dataIDEEPreparing_ = false;
+      this.editingPreparing_ = false;
     }
   }
 
-  toggleDataIDEEActions(active) {
-    this.dataIDEEPanel_.querySelector('#m-vectorsmanagement-dataidee-start').hidden = active;
+  toggleEditingActions(active) {
+    this.editingPanel_.querySelector('#m-vectorsmanagement-editing-start').hidden = active;
     ['save', 'discard', 'end'].forEach((name) => {
-      this.dataIDEEPanel_.querySelector(`#m-vectorsmanagement-dataidee-${name}`).hidden = !active;
+      this.editingPanel_.querySelector(`#m-vectorsmanagement-editing-${name}`).hidden = !active;
     });
   }
 
-  async saveDataIDEEChanges() {
-    if (!this.dataIDEEEditingSession_) return;
+  async saveEditingChanges() {
+    if (!this.editingSession_ || this.editingSession_.saving) return;
+    const saveButton = this.editingPanel_.querySelector('#m-vectorsmanagement-editing-save');
+    saveButton.disabled = true;
     try {
-      const result = await this.dataIDEEEditingSession_.save();
-      this.dataIDEEStatus_.textContent = getValue('dataidee_save_done')
+      const result = await this.editingSession_.save();
+      this.editingStatus_.textContent = getValue('editing_save_done')
         .replace('{completed}', String(result.completed.length))
         .replace('{pending}', String(result.pending));
     } catch (error) {
-      this.dataIDEEStatus_.textContent = getValue('dataidee_save_error')
+      this.editingStatus_.textContent = getValue('editing_save_error')
         .replace('{error}', error.message);
-      if (this.dataIDEEEditingSession_?.requiresReview) {
-        this.dataIDEEPanel_.querySelector('#m-vectorsmanagement-dataidee-save').disabled = true;
-      }
+    } finally {
+      saveButton.disabled = Boolean(this.editingSession_?.requiresReview);
     }
   }
 
-  discardDataIDEEChanges() {
-    if (!this.dataIDEEEditingSession_) return;
-    const count = this.dataIDEEEditingSession_.count;
-    const requiresReview = this.dataIDEEEditingSession_.requiresReview;
-    this.dataIDEEEditingSession_.discard();
-    this.dataIDEEPanel_.querySelector('#m-vectorsmanagement-dataidee-save').disabled = requiresReview;
-    this.dataIDEEStatus_.textContent = getValue(requiresReview
-      ? 'dataidee_discarded_uncertain' : 'dataidee_discarded')
+  discardEditingChanges() {
+    if (!this.editingSession_) return;
+    const count = this.editingSession_.count;
+    const requiresReview = this.editingSession_.requiresReview;
+    this.editingSession_.discard();
+    this.editingPanel_.querySelector('#m-vectorsmanagement-editing-save').disabled = requiresReview;
+    this.editingStatus_.textContent = getValue(requiresReview
+      ? 'editing_discarded_uncertain' : 'editing_discarded')
       .replace('{count}', String(count));
   }
 
-  async requestEndDataIDEEEditing() {
-    if (!this.dataIDEEEditingSession_) return true;
-    if (this.dataIDEEEditingSession_.count > 0) {
+  async requestEndEditing() {
+    if (!this.editingSession_) return true;
+    if (this.editingSession_.count > 0) {
       // Native prompt provides save, discard and cancel without a second UI dependency.
       // eslint-disable-next-line no-alert
-      const choice = window.prompt(getValue('dataidee_end_prompt'))?.trim().toLowerCase();
+      const choice = window.prompt(getValue('editing_end_prompt'))?.trim().toLowerCase();
       if (choice === 'guardar' || choice === 'save' || choice === 'desar') {
-        await this.saveDataIDEEChanges();
-        if (this.dataIDEEEditingSession_?.count > 0) return false;
-      } else if (choice === 'descartar' || choice === 'discard') this.discardDataIDEEChanges();
+        await this.saveEditingChanges();
+        if (this.editingSession_?.count > 0) return false;
+      } else if (choice === 'descartar' || choice === 'discard') this.discardEditingChanges();
       else return false;
     }
-    this.finishDataIDEEEditing();
+    this.finishEditing();
     return true;
   }
 
-  finishDataIDEEEditing(refresh = true) {
-    if (!this.dataIDEEEditingSession_) return;
-    this.dataIDEESource_?.un('addfeature', this.dataIDEEAddListener_);
-    this.dataIDEESource_?.un('removefeature', this.dataIDEERemoveListener_);
-    this.dataIDEESource_?.un('clear', this.dataIDEEClearListener_);
-    this.dataIDEEEditingSession_ = null;
+  finishEditing(refresh = true) {
+    if (!this.editingSession_) return;
+    this.editingUnsubscribe_?.();
+    this.editingUnsubscribe_ = null;
+    this.editingSession_ = null;
     this.selectedLayer.endEditing(refresh);
-    if (this.dataIDEEBoundary_) this.map_.getMapImpl().removeLayer(this.dataIDEEBoundary_);
-    this.dataIDEEBoundary_ = null;
-    this.toggleDataIDEEActions(false);
-    this.updateDataIDEEEditingAvailability();
-    this.dataIDEEStatus_.textContent = '';
+    if (this.editingBoundary_) this.map_.getMapImpl().removeLayer(this.editingBoundary_);
+    this.editingBoundary_ = null;
+    this.toggleEditingActions(false);
+    this.updateEditingAvailability();
+    this.editingStatus_.textContent = '';
   }
 
-  recordDataIDEEFeature(feature, isNew = false) {
-    if (!this.dataIDEEEditingSession_ || !feature) return;
-    try {
-      const count = this.dataIDEEEditingSession_.record(feature);
-      this.dataIDEEStatus_.textContent = `Zona fija. Cambios pendientes: ${count}.`;
-    } catch (error) {
-      if (isNew) this.dataIDEESource_.removeFeature(feature);
-      this.dataIDEEStatus_.textContent = error.message;
-    }
-  }
-
-  recordDataIDEERemovals(features) {
-    if (!this.dataIDEEEditingSession_ || !this.dataIDEESource_) return;
-    const candidates = this.dataIDEESource_.getFeatures();
-    features.forEach((feature) => {
-      const id = feature.getId?.();
-      const nativeFeature = candidates.find((candidate) => candidate.getId() === id);
-      if (nativeFeature) this.dataIDEEEditingSession_.remove(nativeFeature);
-    });
-    this.dataIDEEStatus_.textContent = `Zona fija. Cambios pendientes: ${this.dataIDEEEditingSession_.count}.`;
-  }
-
-  addDataIDEEBoundary_(nativeMap, bbox, projection) {
+  addEditingBoundary_(nativeMap, bbox, projection) {
     const extent = ol.proj.transformExtent(bbox, 'EPSG:4326', projection);
     const feature = new ol.Feature(ol.geom.Polygon.fromExtent(extent));
-    this.dataIDEEBoundary_ = new ol.layer.Vector({
+    this.editingBoundary_ = new ol.layer.Vector({
       source: new ol.source.Vector({ features: [feature] }),
       style: new ol.style.Style({
         fill: new ol.style.Fill({ color: 'rgba(0, 0, 0, 0)' }),
         stroke: new ol.style.Stroke({ color: '#e67e22', width: 2, lineDash: [8, 5] }),
       }),
     });
-    this.dataIDEEBoundary_.setZIndex(20000);
-    nativeMap.addLayer(this.dataIDEEBoundary_);
+    this.editingBoundary_.setZIndex(20000);
+    nativeMap.addLayer(this.editingBoundary_);
   }
 
   /**
@@ -692,6 +730,8 @@ export default class VectorsManagementControl extends IDEE.Control {
       }
       if (active.id === 'layerdrawing') {
         this.addLayerControl.deactivate();
+      } else if (active.id === 'm-vectorsmanagement-selection') {
+        this.selectionControl.deactivate();
       } else if (active.id === 'm-vectorsmanagement-analysis') {
         this.analysisControl.deactivate();
       } else if (active.id === 'm-vectorsmanagement-creation') {
@@ -842,11 +882,12 @@ export default class VectorsManagementControl extends IDEE.Control {
    * @api stable
    */
   refreshLayers() {
-    if (this.dataIDEEEditingSession_ && !this.getAllLayers().includes(this.selectedLayer)) {
-      const pending = this.dataIDEEEditingSession_.count;
-      this.finishDataIDEEEditing(false);
+    if (this.selectedLayer && !this.getAllLayers().includes(this.selectedLayer)) {
+      const pending = this.editingSession_?.count || 0;
+      this.deactive(this.html, '');
+      if (this.editingSession_) this.finishEditing(false);
       if (pending > 0) {
-        IDEE.toast.warning(getValue('dataidee_removed_notice'), null, 6000);
+        IDEE.toast.warning(getValue('editing_removed_notice'), null, 6000);
       }
       this.selectedLayer = null;
     }
@@ -915,7 +956,9 @@ export default class VectorsManagementControl extends IDEE.Control {
 
   destroy() {
     document.removeEventListener('click', this.handleDocumentClick);
-    this.analysisControl.destroy();
+    if (this.editingSession_) this.finishEditing(false);
+    if (this.html) this.deactive(this.html, '');
+    if (this.analysisControl) this.analysisControl.destroy();
   }
 
   /**

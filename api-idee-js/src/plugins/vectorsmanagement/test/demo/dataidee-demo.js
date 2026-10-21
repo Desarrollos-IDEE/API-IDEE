@@ -1,7 +1,6 @@
 const modeSelect = document.getElementById('demo-mode');
 const status = document.getElementById('demo-status');
 const mode = new URLSearchParams(window.location.search).get('mode') || 'local';
-const isTeunesco = mode.startsWith('teunesco-');
 modeSelect.value = mode;
 IDEE.config('terrain', { ...IDEE.config.terrain, default: '' });
 IDEE.config('baseLayer', []);
@@ -9,29 +8,21 @@ IDEE.config('baseLayer', []);
 const map = IDEE.map({
   container: 'map',
   projection: 'EPSG:3857',
-  bbox: isTeunesco ? [-750000, 4400000, -600000, 5000000]
-    : [-1000000, -1000000, 1000000, 1000000],
+  bbox: [-500000, -500000, 500000, 500000],
 });
-const serviceUrl = isTeunesco ? `${window.location.origin}/teunesco/data-idee-api`
-  : `${window.location.origin}/local`;
-const collections = {
-  local: 'demo',
-  'teunesco-farmacias': 'farmacias',
-  'teunesco-rutas': 'eurovelo_rutas',
-  'teunesco-terminos': 'terminosmunicipales',
-};
-const collection = collections[mode] || mode;
+const serviceUrl = `${window.location.origin}/local`;
+const collection = mode === 'local' ? 'demo' : mode;
 const layer = new IDEE.layer.DataIDEE({
   url: serviceUrl,
   name: collection,
-  legend: isTeunesco ? `Colección ${collection} TEUNESCO` : `Colección local ${collection}`,
+  legend: `Colección local ${collection}`,
   limit: 250,
 }, {
   bboxStrategy: false,
   editingLimits: {
     pageSize: 2, maxFeatures: 1000, maxCoordinates: 100000, maxBytes: 10 * 1024 * 1024,
   },
-  dataideeDefaultProperties: mode === 'local' ? { category: 'demo' } : {},
+  dataideeDefaultProperties: { category: 'demo' },
 });
 
 layer.on('load', () => {

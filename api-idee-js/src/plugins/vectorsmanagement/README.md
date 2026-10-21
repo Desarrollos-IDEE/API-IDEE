@@ -94,15 +94,19 @@ npm run build --prefix src/plugins/vectorsmanagement
 node src/plugins/vectorsmanagement/test/demo/dataidee-server.js
 ```
 
-Abre `http://127.0.0.1:8787`. El modo local incluye una colección editable en
-memoria con paginación, id `0`, geometrías múltiples y un polígono con hueco;
-los cambios duran hasta reiniciar el servicio. El selector también incluye
-TEUNESCO mediante un proxy local limitado a las tres colecciones del ejemplo
-de renderizado. El cliente muestra sus permisos reales y no activa escrituras
-si el servicio no las anuncia. El modo local también ofrece `readonly`,
-`dense`, `complex`, `conflict`, `partial`, `write-error` y `uncertain` para
-probar permisos, límites, conflictos, éxitos parciales, validación y respuestas
-de escritura perdidas. El ejemplo existente de renderizado no cambia.
+Abre `http://127.0.0.1:8787` para editar la colección local. Los cambios se
+mantienen mientras el proceso esté activo; restaura la colección con
+`POST /local/reset`. Los modos `readonly`, `dense`, `complex`, `conflict`,
+`partial`, `write-error` y `uncertain` sirven para comprobar permisos, límites,
+conflictos, éxitos parciales, validación y respuestas de escritura perdidas.
+
+Abre `http://127.0.0.1:8787/teunesco.html` para iniciar sesión y editar las
+colecciones `externa:puntos` y `externa:estaciones` directamente. El token se
+mantiene solo en memoria. Usa el selector de capas de VectorsManagement; para
+crear entidades, introduce `nombre` y, en estaciones, un identificador entero.
+Los puntos reciben su identificador del servidor. La sesión limita los cambios
+a la extensión visible al iniciarla; guarda, descarta o cancela antes de
+finalizarla o cambiar de capa.
 
 ```javascript
 URL_API?vectorsmanagement=position*!collapsed*!order*!selection*!addlayer*!analysis*!creation*!download*!edition*!help*!style*!snapping

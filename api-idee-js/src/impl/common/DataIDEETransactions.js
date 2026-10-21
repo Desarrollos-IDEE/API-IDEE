@@ -1,7 +1,17 @@
 /** DataIDEE-only OGC API Features transaction client. */
+const normalizedPath = (pathname) => pathname.split('/').map((part) => {
+  try { return decodeURIComponent(part); } catch (error) { return part; }
+}).join('/').replace(/\/$/, '');
+
 export default class DataIDEETransactions {
   constructor({
-    url, collection, parameters = {}, headers = {}, defaultProperties = {},
+    url,
+    collection,
+    parameters = {},
+    headers = {},
+    defaultProperties = {},
+    getToken = () => undefined,
+    tokenLocation = 'header',
   }) {
     const base = new URL(url, window.location?.href || 'http://localhost/');
     ['bbox', 'limit', 'offset', 'f', 'filter', 'filter-lang', '_ideeRefresh']
@@ -21,6 +31,8 @@ export default class DataIDEETransactions {
     )));
     this.headers_ = headers;
     this.defaultProperties_ = defaultProperties;
+    this.getToken_ = getToken;
+    this.tokenLocation_ = tokenLocation;
   }
 
   async request(url, options = {}) {
@@ -30,10 +42,18 @@ export default class DataIDEETransactions {
     if (ticket && target.origin === new URL(this.collectionUrl_).origin) {
       target.searchParams.set('ticket', ticket);
     }
+    const token = this.getToken_();
+    if (token && this.tokenLocation_ === 'query') target.searchParams.set('token', token);
     const response = await window.fetch(target.href, {
       cache: 'no-store',
       ...options,
-      headers: { Accept: 'application/geo+json, application/json', ...this.headers_, ...options.headers },
+      headers: {
+        Accept: 'application/geo+json, application/json, application/schema+json, application/vnd.oai.openapi+json',
+        ...this.headers_,
+        ...options.headers,
+        ...(token && this.tokenLocation_ !== 'query'
+          ? { Authorization: `Bearer ${token}` } : {}),
+      },
     });
     if (!response.ok) {
       const error = new Error(`DataIDEE transaction failed (HTTP ${response.status}).`);
@@ -52,15 +72,88 @@ export default class DataIDEETransactions {
     const [conformance, collection] = await Promise.all([
       conformanceResponse.json(), collectionResponse.json(),
     ]);
-    const conforms = (conformance.conforms || []).join(' ').toLowerCase();
-    const writable = collection.writable === true;
+    const conformanceValues = conformance.conformsTo || conformance.conforms || [];
+    const conforms = conformanceValues.join(' ').toLowerCase();
+    const writable = collection.writable !== false;
+    const collectionBase = new URL(this.collectionUrl_);
+    const collectionRoot = `${collectionBase.origin}${collectionBase.pathname.split('/collections/')[0]}/`;
+    let operations = null;
+    try {
+      const serviceResponse = await this.request(collectionRoot);
+      const service = await serviceResponse.json();
+      const descriptionLink = service.links?.find((link) => link.rel === 'service-desc');
+      if (descriptionLink) {
+        const descriptionUrl = new URL(descriptionLink.href, collectionRoot);
+        if (descriptionUrl.origin !== collectionBase.origin) {
+          throw new Error('DataIDEE service description escaped the configured origin.');
+        }
+        const response = await this.request(descriptionUrl.href);
+        const document = await response.json();
+        const collectionPath = new URL(this.collectionUrl_).pathname;
+        const servicePath = new URL(collectionRoot).pathname.replace(/\/$/, '');
+        const relativeCollectionPath = collectionPath.startsWith(`${servicePath}/`)
+          ? collectionPath.slice(servicePath.length) : collectionPath;
+        const itemsPath = Object.keys(document.paths || {}).find((path) => (
+          [collectionPath, relativeCollectionPath].some((candidate) => (
+            decodeURIComponent(path.replace(/\/$/, ''))
+              === `${decodeURIComponent(candidate)}/items`
+          ))
+        ));
+        const featurePath = Object.keys(document.paths || {}).find((path) => (
+          [collectionPath, relativeCollectionPath].some((candidate) => (
+            decodeURIComponent(path.replace(/\/$/, ''))
+              === `${decodeURIComponent(candidate)}/items/{featureId}`
+          ))
+        ));
+        operations = itemsPath ? {
+          items: document.paths[itemsPath],
+          feature: featurePath ? document.paths[featurePath] : {},
+        } : null;
+      }
+    } catch (error) {
+      if (error.status !== 404) throw error;
+    }
+    const methods = new Set(Object.keys(operations?.items || {})
+      .map((method) => method.toUpperCase()));
+    const featureMethods = new Set(Object.keys(operations?.feature || {})
+      .map((method) => method.toUpperCase()));
+    const queryablesResponse = queryables;
+    let schemaResponse = null;
+    try {
+      schemaResponse = await this.request(`${this.collectionUrl_}/schema`);
+    } catch (error) {
+      if (error.status !== 404) throw error;
+    }
+    const schema = schemaResponse ? await schemaResponse.json() : null;
+    const writableFromApi = operations !== null;
+    const capability = (method, standard) => writable && (writableFromApi
+      ? methods.has(method) : new RegExp(standard).test(conforms));
     return {
-      create: writable && /create|transactions/.test(conforms),
-      update: writable && /update|replace|transactions/.test(conforms),
-      delete: writable && /delete|transactions/.test(conforms),
-      updateMethod: /patch/.test(conforms) ? 'PATCH' : 'PUT',
+      create: capability('POST', 'create|transactions'),
+      update: writable && (operations !== null
+        ? featureMethods.has('PATCH') || featureMethods.has('PUT')
+        : /update|replace|transactions/.test(conforms)),
+      delete: writable && (operations !== null
+        ? featureMethods.has('DELETE') : /delete|transactions/.test(conforms)),
+      updateMethod: featureMethods.has('PATCH') || /patch/.test(conforms) ? 'PATCH' : 'PUT',
       collection,
-      queryables,
+      queryables: queryablesResponse,
+      schema,
+      geometryTypes: schema?.['x-ogc-geometry-types'] || (schema
+        ? Object.values(schema.properties || {})
+          .filter((property) => property['x-ogc-role'] === 'primary-geometry')
+          .map((property) => property.format?.replace('geometry-', '')) : null),
+      creationFields: schema ? Object.entries(schema.properties || {})
+        .filter(([name, property]) => name !== 'id' && !property.readOnly
+          && property['x-ogc-role'] !== 'primary-geometry')
+        .map(([name, property]) => ({
+          name,
+          type: property.type || 'string',
+          required: (schema.required || []).includes(name),
+        })) : [],
+      clientAssignedId: schema?.properties?.id?.readOnly !== true
+        && schema?.properties?.id !== undefined,
+      idType: schema?.properties?.id?.type || null,
     };
   }
 
@@ -97,7 +190,7 @@ export default class DataIDEETransactions {
       const itemUrl = new URL(location, response.url);
       const collectionUrl = new URL(this.collectionUrl_);
       if (itemUrl.origin !== collectionUrl.origin
-        || !itemUrl.pathname.startsWith(`${collectionUrl.pathname}/items/`)) {
+        || !normalizedPath(itemUrl.pathname).startsWith(`${normalizedPath(collectionUrl.pathname)}/items/`)) {
         throw new Error('DataIDEE returned a Location outside the configured collection.');
       }
       const itemResponse = await this.request(itemUrl.href);

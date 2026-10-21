@@ -14,6 +14,7 @@ import dataIDEEBbox from '../../../common/DataIDEEBbox';
 import RequestManager, { RequestCancelledError } from '../../../common/RequestManager';
 import DataIDEETransactions from '../../../common/DataIDEETransactions';
 import { isUnauthorizedError } from '../../../common/DataIDEERequest';
+import DataIDEEEditingSession from '../../../common/DataIDEEEditingSession';
 
 /**
  * OGC API Features JSON vector layer implementation.
@@ -307,8 +308,12 @@ class DataIDEE extends OGCAPIFeatures {
         if (seen.has(nextUrl.href)) throw new Error('DataIDEE pagination contains a repeated link.');
         seen.add(nextUrl.href);
         const expectedCollection = new URL(collectionUrl);
-        const validPath = nextUrl.pathname === expectedCollection.pathname
-          || nextUrl.pathname.startsWith(`${expectedCollection.pathname}/`);
+        const normalizedPath = (pathname) => pathname.split('/').map((part) => {
+          try { return decodeURIComponent(part); } catch (error) { return part; }
+        }).join('/').replace(/\/$/, '');
+        const expectedPath = normalizedPath(expectedCollection.pathname);
+        const nextPath = normalizedPath(nextUrl.pathname);
+        const validPath = nextPath === expectedPath || nextPath.startsWith(`${expectedPath}/`);
         if (nextUrl.origin !== expectedCollection.origin || !validPath) {
           throw new Error('DataIDEE pagination link escaped the collection.');
         }
@@ -327,7 +332,10 @@ class DataIDEE extends OGCAPIFeatures {
         // eslint-disable-next-line no-await-in-loop
         const response = await window.fetch(pageUrl.href, {
           cache: 'no-store',
-          headers: { Accept: 'application/geo+json, application/json' },
+          headers: {
+            Accept: 'application/geo+json, application/json',
+            ...(this.getToken() ? { Authorization: `Bearer ${this.getToken()}` } : {}),
+          },
         });
         if (!response.ok) throw new Error(`DataIDEE preparation failed (HTTP ${response.status}).`);
         // eslint-disable-next-line no-await-in-loop
@@ -390,11 +398,22 @@ class DataIDEE extends OGCAPIFeatures {
       this.facadeVector_.addFeatures(features);
       const source = this.olLayer.getSource();
       this.loaded_ = true;
+      const session = new DataIDEEEditingSession(this.facadeVector_, {
+        features: source.getFeatures(),
+        capabilities,
+        format: new FormatGeoJSON(),
+        projection: this.map.getMapImpl().getView().getProjection(),
+        limits: { ...this.editingLimits_ },
+        layerImpl: this,
+        schema: capabilities.schema,
+      });
+      this.editingSession_ = session;
       return {
         features: source.getFeatures(),
         capabilities,
         bbox: bbox.slice(),
         limits: { ...this.editingLimits_ },
+        session,
       };
     } catch (error) {
       this.editing_ = false;
@@ -404,12 +423,16 @@ class DataIDEE extends OGCAPIFeatures {
   }
 
   endEditing(refresh = true) {
+    this.editingSession_?.destroy();
+    this.editingSession_ = null;
     this.editing_ = false;
     this.requestedViewport_ = null;
     this.requestRevision_ += 1;
     if (refresh && this.bboxStrategy_) return this.updateSource_(false, true);
     return Promise.resolve();
   }
+
+  getEditingSession() { return this.editingSession_ || null; }
 
   getTransactions_() {
     const collectionUrl = `${this.url}/collections/${encodeURIComponent(this.name)}`;
@@ -420,6 +443,8 @@ class DataIDEE extends OGCAPIFeatures {
         parameters: this.options.transactionParameters,
         headers: this.options.transactionHeaders,
         defaultProperties: this.options.dataideeDefaultProperties,
+        getToken: () => this.getToken(),
+        tokenLocation: this.vendorOptions_.tokenLocation,
       });
       this.transactionCollectionUrl_ = collectionUrl;
     }
@@ -478,6 +503,8 @@ class DataIDEE extends OGCAPIFeatures {
 
   destroy() {
     this.destroyed_ = true;
+    this.editingSession_?.destroy();
+    this.editingSession_ = null;
     this.editing_ = false;
     this.preparingEditing_ = false;
     this.removeViewportListeners_?.();

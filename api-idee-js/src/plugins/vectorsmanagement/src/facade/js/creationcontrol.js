@@ -165,7 +165,7 @@ export default class CreationControl extends IDEE.Control {
     this.initializeLayers();
     this.addEvents();
     this.managementControl_.accessibilityTab(this.template);
-    this.managementControl_.updateDataIDEEEditingAvailability();
+    this.managementControl_.updateEditingAvailability();
     this.template.querySelector('#multipointdrawing').addEventListener('click', this.onMultiPointSelected.bind(this));
     this.template.querySelector('#multilinedrawing').addEventListener('click', this.onMultiLineSelected.bind(this));
     this.template.querySelector('#multipolygondrawing').addEventListener('click', this.onMultiPolygonSelected.bind(this));
@@ -260,6 +260,14 @@ export default class CreationControl extends IDEE.Control {
     this.feature = IDEE.impl.Feature.feature2Facade(new ol.Feature({ geometry }));
     this.geometry = this.multipleGeometryType_;
     this.addAttributesToFeature();
+    if (this.managementControl_.hasActiveEditingSession()) {
+      const values = {};
+      this.managementControl_.getEditingFields()
+        .querySelectorAll('#m-vectorsmanagement-editing-fields input').forEach((input) => {
+          values[input.name] = input.value;
+        });
+      if (!this.managementControl_.prepareNewFeature(this.feature, values)) return;
+    }
     this.layer_.addFeatures(this.feature);
     this.getImpl().getVectorSource().clear(true);
     this.multipleGeometryType_ = null;
@@ -594,6 +602,17 @@ export default class CreationControl extends IDEE.Control {
       this.setFeatureStyle(this.feature, this.geometry);
     } */
     this.addAttributesToFeature();
+    if (this.managementControl_.hasActiveEditingSession()) {
+      const values = {};
+      this.managementControl_.getEditingFields()
+        .querySelectorAll('#m-vectorsmanagement-editing-fields input').forEach((input) => {
+          values[input.name] = input.value;
+        });
+      if (!this.managementControl_.prepareNewFeature(this.feature, values)) {
+        this.deactivateDrawing();
+        return;
+      }
+    }
     this.layer_.addFeatures(this.feature);
 
     this.emphasizeSelectedFeature();
@@ -606,7 +625,6 @@ export default class CreationControl extends IDEE.Control {
    * @api
    */
   addAttributesToFeature() {
-    if (this.layer_.type === 'DataIDEE') return;
     const features = this.layer_.getFeatures();
     if (features.length > 0 && features[0].getAttributes()) {
       const keys = Object.keys(features[0].getAttributes());

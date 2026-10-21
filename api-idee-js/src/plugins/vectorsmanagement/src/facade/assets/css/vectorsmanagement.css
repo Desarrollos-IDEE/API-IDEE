@@ -1265,19 +1265,53 @@ div#popup-box {
 #options-content input[type=number] {
     width: 50px;
 }
-.m-vectorsmanagement-dataidee-editing {
+.m-vectorsmanagement-editing {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
   padding: 0.5rem;
 }
 
-.m-vectorsmanagement-dataidee-editing[hidden],
-.m-vectorsmanagement-dataidee-editing button[hidden] {
+.m-vectorsmanagement-editing[hidden],
+.m-vectorsmanagement-editing button[hidden] {
   display: none;
 }
 
-.m-vectorsmanagement-dataidee-editing p {
+.m-vectorsmanagement-editing p {
   flex-basis: 100%;
   margin: 0;
+}
+
+.m-vectorsmanagement-editing #m-vectorsmanagement-editing-fields {
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.m-vectorsmanagement-editing #m-vectorsmanagement-editing-fields label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.m-vectorsmanagement-editing #m-vectorsmanagement-editing-fields input {
+  box-sizing: border-box;
+  max-width: 9rem;
+  min-width: 4.5rem;
+}
+
+.m-vectorsmanagement-editing button {
+  flex: 1 1 auto;
+  min-height: 2rem;
+  color: #263746;
+  background: #fff;
+  border: 1px solid #7c8994;
+  border-radius: 0.2rem;
+  cursor: pointer;
+}
+
+.m-vectorsmanagement-editing button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }

@@ -505,6 +505,9 @@ class DataIDEE extends Vector {
     return this.getEditingImpl_().beginEditing({ bbox });
   }
 
+  /** Returns the active editing session for generic editing controls. */
+  getEditingSession() { return this.getEditingImpl_().getEditingSession(); }
+
   /** Releases the DataIDEE edit-session refresh lock. */
   endEditing(refresh = true) {
     return this.getEditingImpl_().endEditing(refresh);

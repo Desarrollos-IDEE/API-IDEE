@@ -133,7 +133,7 @@ export default class EditionControl extends IDEE.Control {
     html.querySelector('#m-vectorsmanagement-controls').appendChild(this.template);
     this.addEvents();
     this.managementControl_.accessibilityTab(this.template);
-    this.managementControl_.updateDataIDEEEditingAvailability();
+    this.managementControl_.updateEditingAvailability();
   }
 
   /**
@@ -408,13 +408,7 @@ export default class EditionControl extends IDEE.Control {
    */
   showModalCleanGeometries() {
     const total = this.layer_.getFeatures().length;
-    // eslint-disable-next-line no-underscore-dangle
-    const isDataIDEEEditing = this.layer_.type === 'DataIDEE'
-      // eslint-disable-next-line no-underscore-dangle
-      && this.managementControl_.dataIDEEEditingSession_;
-    const cleanMessage = isDataIDEEEditing
-      ? getValue('dataidee_clear_geometries_msg').replace('{count}', String(total))
-      : getValue('clear_geometries_msg');
+    const cleanMessage = getValue('clear_geometries_msg').replace('{count}', String(total));
     const templateModal = IDEE.template.compileSync(removeLayerTemplate, {
       vars: {
         translations: {
@@ -465,11 +459,10 @@ export default class EditionControl extends IDEE.Control {
   cleanGeometries() {
     this.selectionLayer.removeFeatures(this.selectionLayer.getFeatures());
     const features = this.layer_.getFeatures();
-    this.managementControl_.recordDataIDEERemovals(features);
     this.layer_.removeFeatures(features);
 
     // remove buffer
-    this.managementControl_.analysisControl.removeBufferFeatures();
+    this.managementControl_.analysisControl?.removeBufferFeatures();
   }
 
   /**
@@ -480,7 +473,6 @@ export default class EditionControl extends IDEE.Control {
    */
   deleteSingleFeature() {
     if (this.feature) {
-      this.managementControl_.recordDataIDEERemovals([this.feature]);
       this.layer_.removeFeatures(this.feature);
       this.selectionLayer.removeFeatures(this.selectionLayer.getFeatures());
       this.template.querySelector('#edition-container').classList.add('closed');
@@ -611,10 +603,6 @@ export default class EditionControl extends IDEE.Control {
    * @api
    */
   onModify(event) {
-    const changed = event?.features?.getArray?.() || event?.features || [];
-    if (changed.length) {
-      changed.forEach((feature) => this.managementControl_.recordDataIDEEFeature(feature));
-    } else this.managementControl_.recordDataIDEEFeature(this.feature?.getImpl?.().getFeature?.());
     this.refreshEmphasizedFeatures();
     this.layer_.redraw();
   }

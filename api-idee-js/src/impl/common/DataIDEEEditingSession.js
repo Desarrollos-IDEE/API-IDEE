@@ -1,9 +1,12 @@
 /** Local transaction journal for one bounded DataIDEE edit session. */
 export default class DataIDEEEditingSession {
   constructor(layer, {
-    features, capabilities, format, projection, limits,
+    features, capabilities, format, projection, limits, layerImpl, schema,
   }) {
     this.layer_ = layer;
+    this.layerImpl_ = layerImpl;
+    this.schema_ = schema;
+    this.source_ = layerImpl.olLayer.getSource();
     this.capabilities_ = capabilities;
     this.format_ = format;
     this.projection_ = projection;
@@ -22,10 +25,34 @@ export default class DataIDEEEditingSession {
       this.original_.set(String(id), this.serialize_(feature));
       this.currentCosts_.set(String(id), this.cost_(this.original_.get(String(id))));
     });
+    this.listeners_ = new Set();
+    this.onAdd_ = (event) => {
+      try {
+        this.record(event.feature, true);
+      } catch (error) {
+        this.replaying_ = true;
+        this.source_.removeFeature(event.feature);
+        this.replaying_ = false;
+        this.notify_(error);
+      }
+    };
+    this.onChange_ = (event) => {
+      try {
+        this.record(event.feature);
+      } catch (error) {
+        this.notify_(error);
+      }
+    };
+    this.onRemove_ = (event) => this.remove(event.feature);
+    this.onClear_ = (event) => (event.features || []).forEach((feature) => this.remove(feature));
+    this.source_.on('addfeature', this.onAdd_);
+    this.source_.on('changefeature', this.onChange_);
+    this.source_.on('removefeature', this.onRemove_);
+    this.source_.on('clear', this.onClear_);
   }
 
   serialize_(feature) {
-    return this.format_.writeFeatureObject(feature, {
+    return this.format_.getImpl().writeFeatureObject(feature, {
       featureProjection: this.projection_, defaultDataProjection: 'EPSG:4326',
     });
   }
@@ -79,7 +106,7 @@ export default class DataIDEEEditingSession {
       || coordinates > this.limits_.maxCoordinates || bytes > this.limits_.maxBytes) {
       const previousDraft = this.pending_.get(key)?.current || this.original_.get(key);
       if (previousDraft) {
-        const restored = this.format_.readFeature(JSON.stringify(previousDraft), {
+        const restored = this.format_.getImpl().readFeature(JSON.stringify(previousDraft), {
           featureProjection: this.projection_, dataProjection: 'EPSG:4326',
         });
         const featureRef = this.pending_.get(key)?.feature;
@@ -91,13 +118,19 @@ export default class DataIDEEEditingSession {
   }
 
   findFeature_(key) {
-    return this.layer_.getImpl().getLayer().getSource().getFeatureById(key);
+    return this.source_.getFeatureById(key);
+  }
+
+  getFeatureKey_(feature) {
+    const localKey = this.localIds_.get(feature);
+    if (localKey) return localKey;
+    const id = feature.getId();
+    return id === undefined || id === null ? null : String(id);
   }
 
   record(feature) {
     if (this.replaying_) return this.pending_.size;
-    const id = feature.getId();
-    let key = id === undefined || id === null ? this.localIds_.get(feature) : String(id);
+    let key = this.getFeatureKey_(feature);
     if (!key) {
       key = `new:${this.nextLocalId_}`;
       this.nextLocalId_ += 1;
@@ -106,13 +139,13 @@ export default class DataIDEEEditingSession {
     if (this.saving_) {
       const fallback = this.pending_.get(key)?.current || this.original_.get(key);
       if (fallback) {
-        const restored = this.format_.readFeature(JSON.stringify(fallback), {
+        const restored = this.format_.getImpl().readFeature(JSON.stringify(fallback), {
           featureProjection: this.projection_, dataProjection: 'EPSG:4326',
         });
         feature.setGeometry(restored.getGeometry());
       } else {
         this.replaying_ = true;
-        this.layer_.getImpl().getLayer().getSource().removeFeature(feature);
+        this.source_.removeFeature(feature);
         this.replaying_ = false;
       }
       return this.pending_.size;
@@ -122,6 +155,7 @@ export default class DataIDEEEditingSession {
     this.validateCost_(key, current);
     if (original && this.equivalent_(original, current)) this.pending_.delete(key);
     else this.pending_.set(key, { type: original ? 'update' : 'create', feature, current });
+    this.notify_();
     return this.pending_.size;
   }
 
@@ -129,38 +163,90 @@ export default class DataIDEEEditingSession {
     if (this.replaying_) return this.pending_.size;
     if (this.saving_) {
       this.replaying_ = true;
-      this.layer_.getImpl().getLayer().getSource().addFeature(feature);
+      this.source_.addFeature(feature);
       this.replaying_ = false;
       return this.pending_.size;
     }
-    const id = feature.getId();
-    const key = id === undefined || id === null ? this.localIds_.get(feature) : String(id);
+    const key = this.getFeatureKey_(feature);
     if (!key) return this.pending_.size;
     if (this.pending_.get(key)?.type === 'create') this.pending_.delete(key);
     else if (this.original_.has(key)) this.pending_.set(key, { type: 'delete', feature });
     this.currentCosts_.delete(key);
+    this.notify_();
     return this.pending_.size;
   }
 
   get count() { return this.pending_.size; }
 
+  get saving() { return this.saving_; }
+
   get requiresReview() { return this.uncertain_; }
+
+  get state() {
+    return { count: this.count, saving: this.saving_, requiresReview: this.uncertain_ };
+  }
+
+  subscribe(listener) {
+    this.listeners_.add(listener);
+    return () => this.listeners_.delete(listener);
+  }
+
+  notify_(error = null) {
+    const state = { ...this.state, error };
+    this.listeners_.forEach((listener) => listener(state));
+  }
+
+  prepareFeature(feature, values = {}) {
+    const nativeFeature = feature?.getImpl?.().getFeature?.();
+    if (!nativeFeature) throw new TypeError('A valid vector feature is required.');
+    const required = this.schema_?.required || [];
+    const properties = { ...feature.getAttributes?.(), ...values };
+    delete properties.id;
+    Object.entries(this.schema_?.properties || {}).forEach(([name, property]) => {
+      if (name === 'id' || property.readOnly || property['x-ogc-role'] === 'primary-geometry') return;
+      if (Object.hasOwn(properties, name) && properties[name] !== '') return;
+      if (required.includes(name)) throw new Error(`'${name}' is required.`);
+      delete properties[name];
+    });
+    const geometry = nativeFeature.getGeometry()?.getType()?.toLowerCase();
+    if (this.capabilities_.geometryTypes?.length
+      && !this.capabilities_.geometryTypes.includes(geometry)) {
+      throw new Error(`Geometry type '${geometry}' is not supported by this collection.`);
+    }
+    if (this.capabilities_.clientAssignedId) {
+      const idValue = values.id;
+      if (idValue === undefined || idValue === '') throw new Error('An identifier is required.');
+      if (this.capabilities_.idType === 'integer' && !/^-?\d+$/.test(String(idValue))) {
+        throw new Error('A valid integer identifier is required.');
+      }
+      if (this.original_.has(String(idValue)) || [...this.pending_.values()].some((item) => (
+        String(item.feature.getId()) === String(idValue)
+      ))) throw new Error('That identifier is already in the editing area.');
+      nativeFeature.setId(this.capabilities_.idType === 'integer' ? Number(idValue) : idValue);
+    } else nativeFeature.setId(undefined);
+    feature.setAttributes(properties);
+    return feature;
+  }
 
   discard() {
     this.replaying_ = true;
     try {
       this.pending_.forEach((change, key) => {
-        const source = this.layer_.getImpl().getLayer().getSource();
+        const source = this.source_;
         if (change.type === 'create') source.removeFeature(change.feature);
         else if (change.type === 'delete') source.addFeature(change.feature);
         else {
           const serialized = JSON.stringify(this.original_.get(key));
-          const originalFeature = this.format_.readFeature(serialized, {
+          const originalFeature = this.format_.getImpl().readFeature(serialized, {
             featureProjection: this.projection_, dataProjection: 'EPSG:4326',
           });
-          originalFeature.setId(change.feature.getId());
-          source.removeFeature(change.feature);
-          source.addFeature(originalFeature);
+          const target = change.feature || this.findFeature_(key);
+          if (target) {
+            const properties = originalFeature.getProperties();
+            delete properties[originalFeature.getGeometryName()];
+            target.setProperties(properties);
+            target.setGeometry(originalFeature.getGeometry());
+          }
         }
       });
       this.pending_.clear();
@@ -169,6 +255,7 @@ export default class DataIDEEEditingSession {
       return 0;
     } finally {
       this.replaying_ = false;
+      this.notify_();
     }
   }
 
@@ -198,9 +285,12 @@ export default class DataIDEEEditingSession {
           const saved = result.feature;
           const serverId = saved?.id ?? (saved?.properties?.id);
           if (serverId !== undefined && serverId !== null) {
+            this.replaying_ = true;
             change.feature.setId(serverId);
             if (saved.properties) change.feature.setProperties(saved.properties);
+            this.replaying_ = false;
             committedKey = String(serverId);
+            this.localIds_.set(change.feature, committedKey);
             committedFeature = saved;
             const cost = this.currentCosts_.get(key);
             this.currentCosts_.delete(key);
@@ -251,6 +341,15 @@ export default class DataIDEEEditingSession {
       return { completed, pending: this.pending_.size };
     } finally {
       this.saving_ = false;
+      this.notify_();
     }
+  }
+
+  destroy() {
+    this.source_.un('addfeature', this.onAdd_);
+    this.source_.un('changefeature', this.onChange_);
+    this.source_.un('removefeature', this.onRemove_);
+    this.source_.un('clear', this.onClear_);
+    this.listeners_.clear();
   }
 }
