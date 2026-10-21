@@ -2,7 +2,7 @@
 
 .m-plugin-vectorsmanagement.opened .m-panel-btn.g-cartografia-flecha-derecha,
 .m-plugin-vectorsmanagement.opened .m-panel-btn.g-cartografia-flecha-izquierda {
-    background-color: white !important;
+    background-color: var(--idee-color-white) !important;
     color: var(--idee-color-primary) !important;
 }
 
@@ -40,7 +40,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 }
 
 .m-panel.m-plugin-vectorsmanagement.opened .m-control.m-container.m-vectorsmanagement>div#m-vectorsmanagement-previews>div[id^="m-vectorsmanagement-"] {
-    border: 5px solid #e9e8e8;
+    border: 5px solid var(--idee-color-neutral-20);
     box-sizing: border-box;
     float: left;
     font-size: 0.9em;
@@ -48,7 +48,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     position: relative;
     width: 110px;
     cursor: pointer;
-    background-color: #e9e8e8;
+    background-color: var(--idee-color-neutral-20);
 }
 
 .flex {
@@ -95,7 +95,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     top: 10px;
     right: 7px;
     border: none;
-    color: #8b8b8b;
+    color: var(--idee-color-neutral-60);
 }
 
 #m-vectorsmanagement-layer-selector span,
@@ -116,10 +116,10 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     position: absolute;
     top: calc(100% + 3px);
     left: -1px;
-    border: 1px solid #ced4daFF;
+    border: 1px solid var(--idee-color-neutral-40);
     border-bottom: none;
     border-radius: 0 0 4px 4px;
-    background: #fff;
+    background: var(--idee-color-white);
     max-height: 200px;
     overflow-y: auto;
     z-index: 1000;
@@ -134,10 +134,10 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 
 #m-vectorsmanagement-layer-selector-options span {
     text-align: start;
-    background-color: #ffffff;
+    background-color: var(--idee-color-white);
     padding: .5rem;
     max-width: calc(100% - 1rem);
-    border-bottom: 1px solid #ced4daFF;
+    border-bottom: 1px solid var(--idee-color-neutral-40);
 }
 
 #m-vectorsmanagement-layer-selector-options span:hover,
@@ -156,11 +156,11 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 #m-vectorsmanagement-layer-selector,
 #m-point-coordinates-srs,
 #figuresSelector {
-    background-color: #fff;
+    background-color: var(--idee-color-white);
     height: 30px;
-    border: 1px solid #ced4da;
+    border: 1px solid var(--idee-color-neutral-40);
     border-radius: 2px;
-    color: #6c6c6c;
+    color: var(--idee-color-neutral-60);
     font-family: 'Roboto';
     font-style: normal;
     font-weight: 400;
@@ -172,7 +172,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 #m-point-coordinates-srs.dropdown:hover,
 #m-point-coordinates input:hover,
 #figuresSelector:hover {
-    border-color: #0f0f0f;
+    border-color: var(--idee-color-black);
 }
 
 #m-point-coordinates-srs:hover {
@@ -193,17 +193,17 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 
 .m-vectorsmanagement-analysis-featureInfo table th,
 .m-vectorsmanagement-analysis-featureInfo table td {
-    border: 2px solid #8b8b8b;
+    border: 2px solid var(--idee-color-neutral-60);
     padding: .5rem;
     text-align: center;
 }
 
 .m-vectorsmanagement-analysis-featureInfo table th {
-    color: #000000a3;
+    color: var(--idee-color-black);
 }
 
 .m-vectorsmanagement-analysis-featureInfo table td {
-    color: #000000d7;
+    color: var(--idee-color-black);
 }
 
 .m-vectorsmanagement-analysis-featureInfo table th:empty {
@@ -232,7 +232,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 
 .m-vectorsmanagement-snap-container {
     width: 100%;
-    border-top: solid 1px #ced4daFF;
+    border-top: solid 1px var(--idee-color-neutral-40);
 }
 
 .m-vectorsmanagement-snap-options {
@@ -265,7 +265,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     height: 20px;
     margin: 0;
     border-radius: 10px;
-    background-color: #ced4da;
+    background-color: var(--idee-color-neutral-40);
     cursor: pointer;
     transform: none;
     transition: background-color .2s;
@@ -279,13 +279,13 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background-color: #fff;
+    background-color: var(--idee-color-white);
     box-shadow: 0 1px 2px rgba(0, 0, 0, .3);
     transition: transform .2s;
 }
 
 .m-vectorsmanagement-snap-options input.m-vectorsmanagement-snap-switch:checked {
-    background-color: var(--idee-color-primary, #2c4458);
+    background-color: var(--idee-color-primary, var(--idee-color-primary-dark));
 }
 
 .m-vectorsmanagement-snap-options input.m-vectorsmanagement-snap-switch:checked::before {
@@ -293,7 +293,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 }
 
 .m-vectorsmanagement-snap-options input.m-vectorsmanagement-snap-switch:focus-visible {
-    outline: 2px solid var(--idee-color-primary-dark, #2c4458);
+    outline: 2px solid var(--idee-color-primary-dark, var(--idee-color-primary-dark));
     outline-offset: 2px;
 }
 
@@ -345,14 +345,14 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     display: flex;
     align-items: center;
     gap: 4px;
-    color: #757474;
+    color: var(--idee-color-neutral-60);
 }
 
 .m-vectorsmanagement-snap-tolerance input[type=number] {
     width: 56px;
     padding: 2px 4px;
     text-align: right;
-    border: solid 1px #ced4da;
+    border: solid 1px var(--idee-color-neutral-40);
     border-radius: 4px;
 }
 
@@ -370,7 +370,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     margin: .35rem 0 .5rem 0;
     padding: 4px;
     border-radius: 4px;
-    border-color: #ced4da;
+    border-color: var(--idee-color-neutral-40);
     width: 100%;
     height: 2rem;
 }
@@ -446,6 +446,7 @@ button#cancel-clear-btn {
 #m-vectorsmanagement-edition,
 #m-vectorsmanagement-style,
 #m-vectorsmanagement-analysis,
+#m-vectorsmanagement-turf,
 #m-vectorsmanagement-download {
     height: 2rem;
     width: 2rem;
@@ -453,13 +454,13 @@ button#cancel-clear-btn {
 
 #layerdrawing,
 #m-vectorsmanagement-help {
-    background: #e9ecefFF;
+    background: var(--idee-color-neutral-20);
     border-radius: 4px;
 }
 
 #layerdrawing.activate,
 #m-vectorsmanagement-help.activate {
-    background: #e9ecefFF;
+    background: var(--idee-color-neutral-20);
     border-radius: 4px;
 }
 
@@ -469,6 +470,7 @@ button#cancel-clear-btn {
 .m-vectorsmanagement-style-container,
 .m-container.m-selection.m-selection-container,
 .m-vectorsmanagement-analysis,
+.m-vectorsmanagement-turf,
 #vectorsmanagement-analysis-btn-container,
 .m-vectorsmanagement-analysis-featureInfo,
 #m-vectorsmanagement-download-container,
@@ -478,7 +480,7 @@ button#cancel-clear-btn {
 #m-figuretools,
 #edition-attributes-container {
     width: 100%;
-    border-top: solid 1px #ced4daFF;
+    border-top: solid 1px var(--idee-color-neutral-40);
 }
 
 .m-vectorsmanagement-text-draw {
@@ -518,7 +520,7 @@ button#cancel-clear-btn {
 }
 
 #m-vectorsmanagement-download-btn:disabled {
-    background-color: #757474 !important;
+    background-color: var(--idee-color-neutral-60) !important;
 }
 
 div#edition-container #featureInfo {
@@ -547,8 +549,8 @@ table#attribute-table>tr>th {
     position: sticky;
     top: -1px;
     font-weight: 700;
-    background-color: #9dc6e8;
-    color: #fff;
+    background-color: var(--idee-color-primary);
+    color: var(--idee-color-white);
     min-width: 130px !important;
     border: 1px solid var(--idee-color-primary);
     padding: 8px;
@@ -618,7 +620,7 @@ table#attribute-table>tr>th>button {
 }
 
 .m-vectorsmanagement-style-container .row-container-title {
-    color: white;
+    color: var(--idee-color-white);
     margin: 0 0 .5rem 0;
     background-color: var(--idee-color-primary);
     padding: .25rem 0;
@@ -738,7 +740,7 @@ table#attribute-table>tr>th>button {
 
 .ol-control-vector.ol-profil .ol-inner {
     display: block;
-    background-color: hsl(0deg 0% 100%);
+    background-color: var(--idee-color-white);
 }
 
 .ol-control-vector.ol-profil.ol-collapsed .ol-inner {
@@ -760,7 +762,7 @@ table#attribute-table>tr>th>button {
     right: 2px;
     top: 0px;
     display: block !important;
-    color: #c40000;
+    color: var(--idee-color-danger);
     margin-top: 3px;
     margin-right: 3px;
     margin: 3px 3px 0 0;
@@ -781,7 +783,7 @@ table#attribute-table>tr>th>button {
     right: 1rem;
     top: 0px;
     display: block !important;
-    color: #000000;
+    color: var(--idee-color-black);
     margin-top: 3px;
     margin-right: 8px;
     border: none;
@@ -793,7 +795,7 @@ table#attribute-table>tr>th>button {
     left: 5px;
     top: 0px;
     display: block !important;
-    color: #000000;
+    color: var(--idee-color-black);
     margin-top: 5px;
     margin-right: 8px;
     border: none;
@@ -813,8 +815,8 @@ table#attribute-table>tr>th>button {
 
 .ol-profil button.profile-move-button img,
 .ol-profil button.profile-close-button:after,
-ol-profil button.profile-download-button::before {
-    color: #adb5bd;
+.ol-profil button.profile-download-button::before {
+    color: var(--idee-color-neutral-50);
 }
 
 .ol-profil.ol-collapsed button {
@@ -845,7 +847,7 @@ ol-profil button.profile-download-button::before {
 
 .ol-profil .ol-profilbar,
 .ol-profil .ol-profilcursor:before {
-    background: red;
+    background: var(--idee-color-danger);
 }
 
 .ol-profil table {
@@ -854,7 +856,7 @@ ol-profil button.profile-download-button::before {
 
     margin-top: 10px;
     font-size: 13px;
-    color: black;
+    color: var(--idee-color-black);
     font-weight: 600;
 }
 
@@ -863,7 +865,7 @@ ol-profil button.profile-download-button::before {
 
     padding: 8px 0;
     font-size: 16px;
-    background-color: #ffffffb5;
+    background-color: var(--idee-color-white);
 }
 
 .ol-profilpopup {
@@ -908,7 +910,7 @@ ol-profil button.profile-download-button::before {
     color: var(--idee-color-primary-dark);
     padding: 10px 0;
     font-size: 16px;
-    background-color: hsl(0deg 0% 100%)
+    background-color: var(--idee-color-white);
 }
 
 .m-vectorsmanagement-previews {
@@ -932,7 +934,7 @@ ol-profil button.profile-download-button::before {
 }
 
 .m-vectorsmanagement-selection-layer>button[class^="vectorsmanagement-icon-"]:before {
-    color: #757474;
+    color: var(--idee-color-neutral-60);
 }
 
 .m-vectorsmanagement-selection-layer>button[class^="vectorsmanagement-icon-"]:hover:before {
@@ -942,19 +944,21 @@ ol-profil button.profile-download-button::before {
 .m-vectorsmanagement-previews>button,
 .m-vectorsmanagement-previews>div>button,
 [class^="vectorsmanagement-icon-"]:before {
-    color: white;
+    color: var(--idee-color-white);
 }
 
 .m-vectorsmanagement-toolsContent {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     gap: .5rem;
+    max-width: 100%;
 }
 
 table#attribute-table>tr>th>button,
 table#attribute-table>tr>th>button[class^="vectorsmanagement-icon-"]:before {
-    color: rgb(44 68 88);
+    color: var(--idee-color-primary-dark);
     font-size: 20px;
     border: none;
     background-color: transparent;
@@ -963,7 +967,7 @@ table#attribute-table>tr>th>button[class^="vectorsmanagement-icon-"]:before {
 }
 
 div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:before {
-    color: #fff;
+    color: var(--idee-color-white);
     font-size: 20px;
     border: none;
     background-color: transparent;
@@ -990,7 +994,7 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
 .m-vectorsmanagement-previews>div>button.activated,
 .m-vectorsmanagement-selection-layer>button.activated,
 [class^="vectorsmanagement-icon-"].activated:before {
-    color: #fff !important;
+    color: var(--idee-color-white) !important;
 }
 
 #plugin-panel-vectorsmanagement #creationBtns,
@@ -1019,7 +1023,7 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
 #plugin-panel-vectorsmanagement #creationBtns>button:before,
 #plugin-panel-vectorsmanagement #analysisBtns>div>button:before,
 #plugin-panel-vectorsmanagement #editionBtns>button:before {
-    color: #757474 !important;
+    color: var(--idee-color-neutral-60) !important;
 }
 
 #plugin-panel-vectorsmanagement #creationBtns>button:hover:before,
@@ -1070,12 +1074,12 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
 .m-control.m-container.m-modal>button.m-panel-btn.vectorsmanagement-icon-cancelar {
     font-size: 20px;
     border: none;
-    background-color: #fff;
+    background-color: var(--idee-color-white);
 }
 
 #vectorsmanagement-point-profile-container>button.m-panel-btn.vectorsmanagement-icon-cancelar,
 #edition-attributes-container>button.m-panel-btn.vectorsmanagement-icon-cancelar {
-    color: #fff;
+    color: var(--idee-color-white);
     position: fixed !important;
     right: 0 !important;
     top: 5px;
@@ -1100,7 +1104,7 @@ th .vectorsmanagement-icon-papelera {
     right: 1%;
     transform: translate(-50%, -50%) !important;
     z-index: 999999;
-    background-color: #fff;
+    background-color: var(--idee-color-white);
     max-width: 63vw;
     min-width: 200px;
     width: fit-content;
@@ -1114,7 +1118,7 @@ th .vectorsmanagement-icon-papelera {
     right: calc(50vw - 370px);
     transform: translate(-50%, -50%) !important;
     z-index: 999999;
-    background-color: #fff;
+    background-color: var(--idee-color-white);
     width: fit-content;
     height: fit-content;
 }
@@ -1148,15 +1152,15 @@ th .vectorsmanagement-icon-papelera {
 .m-plugin-vectorsmanagement.opened #popup-box>div>div.popup-title {
     background-color: var(--idee-color-primary);
     border-radius: 5px;
-    color: white;
+    color: var(--idee-color-white);
     padding: 7px 10px 5px 10px;
     font-weight: bold;
 }
 
 .m-plugin-vectorsmanagement.opened #popup-box>div>a {
-    background-color: #b5b6b8;
+    background-color: var(--idee-color-neutral-50);
     border-radius: 5px;
-    color: white;
+    color: var(--idee-color-white);
     display: block;
     margin: auto;
     padding: 10px;
@@ -1195,7 +1199,7 @@ th .vectorsmanagement-icon-papelera {
     transform: translate(-50%, -50%) !important;
     height: auto !important;
     z-index: 999999;
-    background-color: #fff;
+    background-color: var(--idee-color-white);
 }
 
 #vectorsmanagement-point-profile-container {
@@ -1208,4 +1212,125 @@ div#popup-box {
 
 #options-content input[type=number] {
     width: 50px;
+}
+
+/**************************
+    TURF.HTML
+**************************/
+.m-vectorsmanagement-turf {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    padding: 1rem 0;
+    font-size: 14px;
+}
+
+.m-vectorsmanagement-turf-hint {
+    margin: 0;
+    color: var(--idee-color-neutral-60);
+    font-size: 13px;
+}
+
+.m-vectorsmanagement-turf-category {
+    border: 1px solid var(--idee-color-neutral-40);
+    border-radius: 4px;
+}
+
+.m-vectorsmanagement-turf-category>summary {
+    cursor: pointer;
+    padding: .5rem;
+    font-weight: 700;
+    color: var(--idee-color-primary);
+}
+
+.m-vectorsmanagement-turf-ops {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    padding: 0 .5rem .5rem .5rem;
+}
+
+.m-vectorsmanagement-turf-ops>button {
+    flex: 1 1 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2rem;
+    padding: .25rem .5rem;
+    border: 1px solid var(--idee-color-primary);
+    border-radius: 2px;
+    background-color: var(--idee-color-white);
+    color: var(--idee-color-primary);
+    text-align: left;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+}
+
+.m-vectorsmanagement-turf .vectorsmanagement-icon-libro:before {
+    width: 1rem;
+    color: inherit;
+}
+
+.m-vectorsmanagement-turf-ops>button:hover,
+.m-vectorsmanagement-turf-ops>button:focus-visible {
+    background-color: var(--idee-color-primary);
+    color: var(--idee-color-white);
+}
+
+/**************************
+    TURFPARAMS.HTML
+**************************/
+.m-vectorsmanagement-turf-form {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+    min-width: 260px;
+}
+
+.m-vectorsmanagement-turf-form-desc {
+    margin: 0;
+}
+
+.m-vectorsmanagement-turf-field {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+}
+
+.m-vectorsmanagement-turf-field>label {
+    font-weight: 700;
+}
+
+.m-vectorsmanagement-turf-field>input[type=number],
+.m-vectorsmanagement-turf-field>select {
+    height: 2rem;
+    border-radius: 2px;
+}
+
+.m-vectorsmanagement-turf-field>input:invalid {
+    border-color: var(--idee-color-danger);
+}
+
+.m-vectorsmanagement-turf-field.m-vectorsmanagement-turf-field-check {
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.m-vectorsmanagement-turf-field-help {
+    color: var(--idee-color-neutral-60);
+}
+
+.m-vectorsmanagement-turf-result {
+    border-collapse: collapse;
+}
+
+.m-vectorsmanagement-turf-result th,
+.m-vectorsmanagement-turf-result td {
+    padding: .25rem .5rem;
+    text-align: left;
 }

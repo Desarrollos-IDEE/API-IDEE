@@ -12,13 +12,15 @@ import DownloadControl from './downloadcontrol';
 import EditionControl from './editioncontrol';
 import HelpControl from './helpcontrol';
 import StyleControl from './stylecontrol';
+import TurfControl from './turfcontrol';
 import { getSnapOptions } from './snapoptions';
 
 /**
  * @classdesc
  * Vector layers management api-idee control.
  * This control can create vector layers, draw and edit features, edit styles,
- * calculate topographic profiles and buffers, and download a layer or feature.
+ * calculate topographic profiles and buffers, run Turf.js operations,
+ * and download a layer or feature.
  */
 export default class VectorsManagementControl extends IDEE.Control {
   get layerSelectorWrapper() {
@@ -43,7 +45,8 @@ export default class VectorsManagementControl extends IDEE.Control {
    * @api stable
    */
   constructor({
-    map, selection, addlayer, analysis, creation, download, edition, help, style, snapping, order,
+    map, selection, addlayer, analysis, creation, download, edition, help, style, turf, snapping,
+    order,
   }) {
     const impl = new IDEE.impl.Control();
     super('VectorsManagement', impl, {});
@@ -59,6 +62,7 @@ export default class VectorsManagementControl extends IDEE.Control {
     this.snapOptions = getSnapOptions(snapping);
     this.help_ = help;
     this.style_ = style;
+    this.turf_ = turf;
     this.layers_ = allLayers.filter((l) => (l instanceof IDEE.layer.Vector
         || l instanceof IDEE.layer.GenericVector) && l.displayInLayerSwitcher).map((l) => {
       return { value: l.idLayer, text: l.legend || l.idLayer, zIndex: l.getZIndex() };
@@ -93,6 +97,7 @@ export default class VectorsManagementControl extends IDEE.Control {
           edition: !!this.edition_,
           help: this.help_,
           style: this.style_,
+          turf: this.turf_,
           layer: this.layers_,
           translations: {
             headertitle: getValue('tooltip'),
@@ -103,6 +108,7 @@ export default class VectorsManagementControl extends IDEE.Control {
             help: getValue('help'),
             selection: getValue('selection'),
             style: getValue('style'),
+            turf: getValue('turf.title'),
             selectLayerDefault: getValue('selectLayerDefault'),
           },
         },
@@ -124,6 +130,8 @@ export default class VectorsManagementControl extends IDEE.Control {
       if (this.help_) { this.addHelpControl(html); }
 
       if (this.style_) { this.addStyleControl(html); }
+
+      if (this.turf_) { this.addTurfControl(html); }
 
       this.initLayerSelect();
 
@@ -258,6 +266,9 @@ export default class VectorsManagementControl extends IDEE.Control {
     }
     if (this.download_) {
       this.downloadControl.setLayer(this.selectedLayer);
+    }
+    if (this.turf_) {
+      this.turfControl.setLayer(this.selectedLayer);
     }
   }
 
@@ -439,6 +450,25 @@ export default class VectorsManagementControl extends IDEE.Control {
   }
 
   /**
+   * This function create Turf.js control.
+   *
+   * @public
+   * @function
+   * @param {Node} html plugin template
+   * @api stable
+   */
+  addTurfControl(html) {
+    this.turfControl = new TurfControl(this.map_, this);
+    html.querySelector('#m-vectorsmanagement-turf').addEventListener('click', (event) => {
+      const clickActivate = this.deactive(html, 'turf');
+      if (!clickActivate) {
+        this.turfControl.active(html);
+        event.target.classList.add('activated');
+      }
+    });
+  }
+
+  /**
    * This function deactivates the activated control
    * before activating another
    *
@@ -473,6 +503,8 @@ export default class VectorsManagementControl extends IDEE.Control {
         this.helpControl.deactivate();
       } else if (active.id === 'm-vectorsmanagement-style') {
         this.styleControl.deactivate();
+      } else if (active.id === 'm-vectorsmanagement-turf') {
+        this.turfControl.deactivate();
       }
 
       active.classList.remove('activated');
