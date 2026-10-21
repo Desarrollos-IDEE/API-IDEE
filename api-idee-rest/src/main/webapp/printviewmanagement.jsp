@@ -71,8 +71,8 @@
                         </div>
                         <div>
                             <label for="inputDefaultOpenControl"
-                                title="Índice del modo de impresión que aparecerá abierto al inicio: 0=ninguno, 1=printermap, 2=georefImage, 3=georefImageEpsg. Por defecto: 0">Modo por defecto "defaultOpenControl"</label>
-                            <input type="number" id="inputDefaultOpenControl" value="0" min="0" max="3" step="1">
+                                title="Índice del modo de impresión que aparecerá abierto al inicio: 0=ninguno, 1=printermap, 2=georefImage, 3=georefImageEpsg. Por defecto: 1">Modo por defecto "defaultOpenControl"</label>
+                            <input type="number" id="inputDefaultOpenControl" value="1" min="0" max="3" step="1">
                         </div>
                         <div>
                             <label for="inputGeorefImageEpsg"
@@ -171,7 +171,9 @@
                                 options.collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value === '' || selectCollapsed.options[selectCollapsed.selectedIndex].value === 'true';
                                 options.order = Number(inputOrder.value);
                                 options.tooltip = inputTooltip.value !== '' ? options.tooltip = inputTooltip.value : '';
-                                options.defaultOpenControl = Number(inputDefaultOpenControl.value) || 0;
+                                if (inputDefaultOpenControl.value !== '') {
+                                    options.defaultOpenControl = Number(inputDefaultOpenControl.value);
+                                }
 
                                 options.georefImageEpsg = safeParseJSON(inputGeorefImageEpsg.value, true);
                                 options.georefImage = safeParseJSON(inputGeorefImage.value, true);
