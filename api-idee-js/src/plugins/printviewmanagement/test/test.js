@@ -203,7 +203,9 @@ const updatePlugin = () => {
   options.collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value === '' || selectCollapsed.options[selectCollapsed.selectedIndex].value === 'true';
   options.order = Number(inputOrder.value);
   options.tooltip = inputTooltip.value !== '' ? options.tooltip = inputTooltip.value : '';
-  options.defaultOpenControl = Number(inputDefaultOpenControl.value) || 0;
+  if (inputDefaultOpenControl.value !== '') {
+    options.defaultOpenControl = Number(inputDefaultOpenControl.value);
+  }
   options.georefImageEpsg = safeParseJSON(inputGeorefImageEpsg.value, true);
   options.georefImage = safeParseJSON(inputGeorefImage.value, true);
   options.printermap = safeParseJSON(inputPrintermap.value, true);

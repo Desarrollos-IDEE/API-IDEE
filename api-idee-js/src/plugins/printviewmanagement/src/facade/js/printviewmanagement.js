@@ -116,7 +116,7 @@ export default class PrintViewManagement extends IDEE.Plugin {
       this.printermap = false;
     }
 
-    this.defaultOpenControl = options.defaultOpenControl || 0;
+    this.defaultOpenControl = options.defaultOpenControl ?? 1;
   }
 
   /**

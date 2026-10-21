@@ -190,7 +190,7 @@ export default class PrinterMapControl extends IDEE.Control {
 
     // Segundo clic: cerrar sin recompilar ni recargar plantillas
     if (button.classList.contains('activated')) {
-      this.template_.remove();
+      this.deactive();
       button.classList.remove('activated');
       return;
     }
@@ -487,7 +487,7 @@ export default class PrinterMapControl extends IDEE.Control {
     });
 
     if (nameExists) {
-      IDEE.dialog.error(`${getValue('templateSameName')} "${templateName}"`);
+      IDEE.dialog.error(`${getValue('invalidTemplateName')} "${templateName}"`);
       return false;
     }
 
@@ -642,7 +642,7 @@ export default class PrinterMapControl extends IDEE.Control {
     );
 
     if (nameExists) {
-      IDEE.toast.error(`${getValue('templateSameName')} "${templateName}"`, null, 3000);
+      IDEE.toast.error(`${getValue('invalidTemplateName')} "${templateName}"`, null, 3000);
     }
 
     const contentExists = this.uploadedTemplates.some(
@@ -650,7 +650,7 @@ export default class PrinterMapControl extends IDEE.Control {
     );
 
     if (contentExists) {
-      IDEE.toast.error(getValue('templateSameContent'), null, 3000);
+      IDEE.toast.error(getValue('invalidTemplateContent'), null, 3000);
     }
     return !nameExists && !contentExists;
   }

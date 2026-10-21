@@ -23,13 +23,6 @@ const ID_CONTAINER_DEFAULT_TEMPLATE = '#api-idee-template-container';
 const ID_DOWNLOAD_TEMPLATE_BUTTON = '#m-templateCustomizer-download-button';
 // Resolución CSS (px/pulgada) con la que se maqueta la plantilla en mm → px
 const LAYOUT_DPI = 96;
-// Capas del plugin Locator cuyo estilo SVG no se puede clonar
-const LOCATOR_LAYER_NAMES = [
-  'coordinatexylocator',
-  'searchresult',
-  'coordinatecatastro',
-  'coordinateparcel',
-];
 
 export default class TemplateCustomizer extends IDEE.Control {
   /**
@@ -363,26 +356,10 @@ export default class TemplateCustomizer extends IDEE.Control {
 
     this.previewMap.addLayers(this.map.getLayers().map((layer) => layer.clone()));
     this.previewMap.getLayers().forEach((layer) => {
-      if (typeof layer.getStyle !== 'function' || !layer.getStyle()) {
-        return;
+      const style = typeof layer.getStyle === 'function' ? layer.getStyle() : null;
+      if (style) {
+        layer.setStyle(style instanceof IDEE.style.Simple ? style.clone() : style);
       }
-      // El estilo SVG del Locator no sobrevive al clone (canvas_ → Illegal invocation).
-      if (LOCATOR_LAYER_NAMES.includes(layer.name)) {
-        layer.setStyle(new IDEE.style.Point({
-          radius: 5,
-          fill: {
-            color: '#71a7d3',
-            opacity: 0.9,
-          },
-          stroke: {
-            color: '#71a7d3',
-            opacity: 1,
-            width: 3,
-          },
-        }));
-        return;
-      }
-      layer.setStyle(layer.getStyle());
     });
     const previewContainer = document.querySelector(ID_CONTAINER_DEFAULT_TEMPLATE);
     this.templateElementsContainer_ = previewContainer;
