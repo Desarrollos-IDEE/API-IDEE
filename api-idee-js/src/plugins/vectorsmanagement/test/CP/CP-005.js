@@ -17,23 +17,22 @@ const mvt = new IDEE.layer.MVT({
 
 map.addLayers([mvt]);
 
+// probar funcionalidad de descarga
 const mp = new VectorsManagement({
-  position: 'TL',
+  position: 'left',
   tooltip: 'Gestionar mis vectores',
-  // isDraggable => falta implementar
-  // useProxy => falta implementar
   collapsed: false,
-  collapsible: false,
   // Herramientas
-  // selection: false,
+  selection: true,
   // addlayer: false,
   // creation: false,
   // edition: false,
   // style: false,
   // analysis: false,
-  // download: false,
-  // help: false,
-  isDraggable: true,
+  // snapping: false,
+  // turf: false,
+  download: true,
+  help: true,
 });
 
 map.addPlugin(mp);
@@ -41,7 +40,7 @@ map.addPlugin(mp);
 const mp1 = new IDEE.plugin.StyleManager({
   collapsed: true,
   collapsible: true,
-  position: 'TL',
+  position: 'left',
 });
 map.addPlugin(mp1);
 
