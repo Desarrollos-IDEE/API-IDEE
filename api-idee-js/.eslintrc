@@ -8,6 +8,7 @@
     "proj4": true,
     "ActiveXObject": true,
     "jsts": true,
+    "turf": true,
     "document": true,
     "window": true,
     "DOMParser": true,
