@@ -69,7 +69,7 @@
     "name": "Timeline",
     "description": "Línea de tiempo por intervalos",
     "text": "Plugin que permite mostrar la progresión del tiempo sobre un mapa",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "date": "Junio, 2020",
     "author": "IDEE",
     "org": "IDEE",
