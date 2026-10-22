@@ -39,6 +39,6 @@ test('Capa MVT - tileLoadFunction', async ({ page }) => {
       window.osm.setVisible(true);
     });
   });
-  await page.waitForTimeout(2000);
-  expect(hasTileLog).toBe(true);
+  // Con varios navegadores a la vez el primer pintado con teselas puede tardar varios segundos
+  await expect.poll(() => hasTileLog, { timeout: 15000 }).toBe(true);
 });

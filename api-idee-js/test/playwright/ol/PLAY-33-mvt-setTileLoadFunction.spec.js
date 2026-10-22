@@ -44,6 +44,6 @@ test('Capa MVT - tileLoadFunction', async ({ page }) => {
     });
     window.mapjs.addLayers([mvt]);
   });
-  await page.waitForTimeout(4000);
-  expect(hasTileLog).toBe(true);
+  // Con varios navegadores a la vez el primer pintado con teselas puede tardar varios segundos
+  await expect.poll(() => hasTileLog, { timeout: 15000 }).toBe(true);
 });

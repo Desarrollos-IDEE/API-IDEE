@@ -59,10 +59,12 @@ test.describe('popup muentra nombre de capa', () => {
       window.map.addLayers(window.capaPrueba);
     });
 
-    await page.waitForTimeout(2000);
-    await await page.click('#map', { position: { x: 640, y: 360 } });
-    const popup = await page.locator('.m-popup .m-body');
-    const text = await popup.innerText({ timeout: 2000 });
-    expect(text).toContain('feature que cubre Andalucía');
+    // El mapa encuadra la capa tras su primer rendercomplete, que espera a las teselas de
+    // la capa base: se pulsa hasta que el objeto está pintado en el centro y abre el popup
+    const popup = page.locator('.m-popup .m-body');
+    await expect(async () => {
+      await page.click('#map', { position: { x: 640, y: 360 }, timeout: 2000 });
+      await expect(popup).toContainText('feature que cubre Andalucía', { timeout: 2000 });
+    }).toPass({ timeout: 20000 });
   });
 });

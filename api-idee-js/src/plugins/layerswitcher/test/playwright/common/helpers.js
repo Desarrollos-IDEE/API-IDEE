@@ -49,6 +49,37 @@ export const mockTiles = async (page) => {
   }));
 };
 
+/** Tiempo máximo de la navegación, menor que el del test para que falle con su propio error. */
+const NAVIGATION_TIMEOUT = { ol: 30000, cesium: 60000 };
+
+/**
+ * Abre la página de la implementación. Espera a DOMContentLoaded: los scripts del
+ * núcleo y del plugin ya se han ejecutado y no hace falta esperar al resto de
+ * recursos (fuentes, imágenes...). Si la navegación no termina, el error indica
+ * las peticiones que seguían pendientes.
+ *
+ * @param {Page} page Página de Playwright.
+ * @param {String} impl 'ol' o 'cesium'.
+ */
+export const openPage = async (page, impl) => {
+  const pending = new Set();
+  const onRequest = (request) => pending.add(request);
+  const onDone = (request) => pending.delete(request);
+  page.on('request', onRequest);
+  page.on('requestfinished', onDone);
+  page.on('requestfailed', onDone);
+  try {
+    await page.goto(PAGES[impl], { waitUntil: 'domcontentloaded', timeout: NAVIGATION_TIMEOUT[impl] });
+  } catch (err) {
+    const urls = [...pending].map((request) => request.url()).join(', ') || 'ninguna';
+    throw new Error(`${err.message}\nPeticiones sin terminar: ${urls}`);
+  } finally {
+    page.off('request', onRequest);
+    page.off('requestfinished', onDone);
+    page.off('requestfailed', onDone);
+  }
+};
+
 /**
  * Abre la página de la implementación, crea un mapa sin capa base ni terreno
  * (sin red) y añade el plugin abierto.
@@ -58,7 +89,7 @@ export const mockTiles = async (page) => {
  * @param {Object} pluginOptions Opciones adicionales del plugin.
  */
 export const openMap = async (page, impl, pluginOptions = {}) => {
-  await page.goto(PAGES[impl]);
+  await openPage(page, impl);
   await page.evaluate(({ options, center }) => {
     IDEE.config.baseLayer = [];
     if (IDEE.config.terrain) IDEE.config.terrain.default = [];

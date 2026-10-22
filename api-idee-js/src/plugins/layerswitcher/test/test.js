@@ -16,13 +16,13 @@ const createMap = (is3D = IDEE.impl.Map.prototype.getImplementation() === 'cesiu
   });
   window.map = map;
 
-  const capaGeoJSON = new IDEE.layer.GeoJSON({
-    name: 'Capa GeoJSON',
-    url: 'https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json',
-    extract: false,
-  });
+  // const capaGeoJSON = new IDEE.layer.GeoJSON({
+  //   name: 'Capa GeoJSON',
+  //   url: 'https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json',
+  //   extract: false,
+  // });
 
-  map.addLayers(capaGeoJSON);
+  // map.addLayers(capaGeoJSON);
 
   const capaWMS = new IDEE.layer.WMS({
     url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',

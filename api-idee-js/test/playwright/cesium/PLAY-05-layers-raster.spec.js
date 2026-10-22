@@ -52,14 +52,17 @@ const mockServer = async (page) => {
   return requests;
 };
 
-/** Datos de una capa ráster en el visor. */
+/**
+ * Datos de una capa ráster en el visor. La capa nativa puede no existir aún:
+ * el WMS la crea al recibir las capacidades.
+ */
 const imageryState = (page, name) => page.evaluate((layerName) => {
   const layer = window.map.getLayers().find((l) => l.name === layerName);
   const native = layer.getImpl().getLayer();
   return {
-    inViewer: window.map.getMapImpl().imageryLayers.contains(native),
-    show: native.show,
-    alpha: native.alpha,
+    inViewer: !!native && window.map.getMapImpl().imageryLayers.contains(native),
+    show: native?.show,
+    alpha: native?.alpha,
     visible: layer.isVisible(),
     opacity: layer.getOpacity(),
   };

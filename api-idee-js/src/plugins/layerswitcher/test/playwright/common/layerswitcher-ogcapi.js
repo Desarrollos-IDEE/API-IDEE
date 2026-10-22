@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { PAGES, CENTER, configureEngine } from './helpers';
+import { openPage, CENTER, configureEngine } from './helpers';
 
 const ROOT = 'https://dataidee.test/api';
 const STORAGE_KEY = 'idee.layerswitcher.ogcapi';
@@ -126,7 +126,7 @@ const mockService = async (page, {
  * @param {Object} arg Argumento de setup.
  */
 const openMap = async (page, impl, setup = () => {}, arg = undefined) => {
-  await page.goto(PAGES[impl]);
+  await openPage(page, impl);
   await page.evaluate(({ center }) => {
     window.localStorage.clear();
     IDEE.config.baseLayer = [];
@@ -464,8 +464,9 @@ export const registerOGCAPITests = (impl) => {
 
       await expect(page.locator('#m-layerswitcher-all')).toBeVisible();
       await expect(page.locator(FOOTER_BUTTONS)).toHaveText(['Añadir', 'Cerrar']);
-      // Sin grupos de capas en el mapa no se muestra el selector de grupo
-      await expect(page.locator('.m-layerswitcher-groups-fields')).toHaveCount(0);
+      const destination = page.locator('select.m-layerswitcher-groups-fields');
+      await expect(destination).toBeVisible();
+      await expect(destination.locator('option')).toHaveText(['Añadir al mapa']);
 
       // Una búsqueda nueva quita la acción; un servicio sin respuesta muestra un aviso claro
       await searchService(page, 'https://unreachable.test/collections');
