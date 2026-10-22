@@ -18,6 +18,7 @@
 - Plugin CatalogManager: se hace uso de las propiedades cacheSize y blockSize para que las imágenes pesadas se carguen sin huecos. Además el tamaño de cacheSize es configurable en el plugin.
 - Plugin Layerswitcher: mejoras en la ordenación de secciones y mejoras sobre la gestión de borrar grupos.
 - Se solucionan problemas con plugin PrintViewManagement: inconsistencia entre la escala y el mapa, coordenadas en las esquinas del mapa impreso, error de impresión cuando de utiliza el plugin Locator y enlaces rotos de los logos en la plantilla “Mapa completo”.
+- En el plugin printviewmanagement se le añade un margen de seguridad a las plantillas.
 
 
 01/07/26 - Versión 1.1.0
