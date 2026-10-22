@@ -5,8 +5,8 @@ IDEE.language.setLang('es');
 
 const map = IDEE.map({
   container: 'mapjs',
-  controls: ['scale']
-  // bbox: [3226511.5398818217, 1735204.4920150614, 4207995.393869615, 2056231.5025902353],
+  controls: ['scale'],
+  bbox: [3286044.0109101767, 1536078.520418901, 4345428.893081813, 2083979.1391670443]
  });
 window.map = map;
 
@@ -15,6 +15,17 @@ map.addLayers(new IDEE.layer.GeoTIFF({
   name: 'Sentinel TCI',
 }, {
 }));
+
+setTimeout(() => {
+  map.getGeoTIFF()[0].setStyle(new IDEE.style.Raster({
+    bands: 1,
+    min: 0.2,
+    max: 1,
+    ramp: ['#000080', '#0000ff', '#00ff00', '#ffff00', '#ff0000'],
+  },{
+    normalize: true,
+  }));
+}, 5000);
 
 // map.addLayers(new IDEE.layer.GeoTIFF({
 //   // url: 'https://mantenimiento-cnig-wps.desarrollo.guadaltel.es/jobs/e0b8b536-b202-11f1-8e09-8ad8591c4530/results',
@@ -86,15 +97,24 @@ map.addLayers(new IDEE.layer.GeoTIFF({
 
 
 
-
 const mp = new RasterManagement({
   position: 'TR', // TR, BR, TL, BL
   collapsed: false,
   collapsible: true,
   tooltip: 'Gestión de capas ráster',
-  showGeoprocesses: false,
+  showGeoprocesses: true,
   // order: 1, //
 });
 window.mp = mp;
 
-map.addPlugin(mp);
+
+map.addPlugins([mp]);
+
+
+map.addPlugins([new IDEE.plugin.Help({
+  position: 'TR',
+  collapsed: false,
+  collapsible: true,
+  tooltip: 'Ayuda',
+  content: 'Ayuda',
+})]);
