@@ -62,7 +62,7 @@ export default class DataIDEEAuthManager {
 
   /**
    * Calcula el estado de autenticación del servicio. Si hay un token caducado
-   * intenta refrescarlo; si no hay token, comprueba si existe /auth/login.
+   * intenta refrescarlo; si no hay token, comprueba si el servicio tiene login.
    * @param {String} root Raíz del servicio.
    * @returns {Promise<String>} AUTH_HIDDEN, AUTH_UNLOCKED o AUTH_LOCKED.
    */
@@ -80,7 +80,7 @@ export default class DataIDEEAuthManager {
 
   /**
    * @param {String} root Raíz del servicio.
-   * @returns {Promise<Boolean>} Verdadero si el servicio tiene /auth/login.
+   * @returns {Promise<Boolean>} Verdadero si el servicio tiene login (ver AuthClient).
    */
   isLoginAvailable(root) {
     if (!(root in this.loginAvailable_)) {
@@ -103,14 +103,32 @@ export default class DataIDEEAuthManager {
   }
 
   /**
+   * Inicia sesión con un token introducido por el usuario, tras comprobarlo con el
+   * servicio. Se renueva antes de caducar como cualquier otra sesión.
+   * @param {String} root Raíz del servicio.
+   * @param {String} token Token de acceso.
+   * @returns {Promise<Object>} Sesión.
+   */
+  async useToken(root, token) {
+    await this.client_.verifyToken(root, token);
+    const session = { accessToken: token };
+    this.setSession_(root, session);
+    return session;
+  }
+
+  /**
    * Cierra la sesión del servicio y retira el token de sus capas.
    * @param {String} root Raíz del servicio.
+   * @param {Boolean} remote Cierra también la sesión en el servicio (si su contrato
+   * lo permite). Falso cuando el token ya no es válido.
    */
-  logout(root) {
+  logout(root, remote = true) {
+    const session = this.getSession(root);
     this.clearTimer_(root);
     delete this.sessions_[root];
     this.store_.removeSession(root);
     this.notify_(root, undefined);
+    if (remote && session?.accessToken) this.client_.logout(root, session).catch(() => {});
   }
 
   /**
@@ -130,7 +148,7 @@ export default class DataIDEEAuthManager {
           return true;
         })
         .catch(() => {
-          this.logout(root);
+          this.logout(root, false);
           return false;
         })
         .finally(() => {
@@ -202,7 +220,7 @@ export default class DataIDEEAuthManager {
    */
   getServiceLayers_(root) {
     if (!this.map_) return [];
-    const groupLayers = this.map_.getImpl().getAllLayerInGroup?.() || [];
+    const groupLayers = this.map_.getLayerGroup().flatMap((group) => group.getLayers());
     return this.map_.getLayers().concat(groupLayers)
       .filter((layer) => layer.type === 'DataIDEE' && parseOGCAPIUrl(layer.url).root === root);
   }

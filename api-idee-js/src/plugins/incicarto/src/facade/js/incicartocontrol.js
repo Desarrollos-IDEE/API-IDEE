@@ -545,7 +545,7 @@ export default class IncicartoControl extends IDEE.Control {
         document.querySelector('#m-plugin-incicarto-send-email').disabled = true;
       });
 
-      document.getElementById('fileUpload').onchange = function () {
+      document.getElementById('fileUpload').onchange = function updateUploadLabel() {
         let fileName = 'Adjuntar fichero &hellip;';
         if (this.files) {
           if (this.files.length > 1) {
@@ -614,7 +614,7 @@ export default class IncicartoControl extends IDEE.Control {
         }
       });
 
-      document.getElementById('fileUpload').onchange = function () {
+      document.getElementById('fileUpload').onchange = function updateUploadLabel() {
         let fileName = 'Adjuntar fichero &hellip;';
         if (this.files) {
           if (this.files.length > 1) {

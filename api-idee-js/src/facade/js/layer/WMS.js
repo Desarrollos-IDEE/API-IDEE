@@ -376,7 +376,8 @@ class WMS extends LayerBase {
     if (isNullOrEmpty(this.userMaxExtent)) {
       if (isNullOrEmpty(this.options.wmcMaxExtent)) {
         if (isNullOrEmpty(this.map_.userMaxExtent)) {
-          const selectedWMC = this.map_.getWMC().find((wmc) => wmc.selected);
+          const selectedWMC = isFunction(this.map_.getImpl().getWMC)
+            ? this.map_.getWMC().find((wmc) => wmc.selected) : null;
           if (isNullOrEmpty(selectedWMC)) {
             if (this.useCapabilities && !this.isReset_) {
               // maxExtent provided by the service

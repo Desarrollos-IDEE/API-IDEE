@@ -68,6 +68,28 @@ class WMTSCapabilities extends XML {
      * @private
      */
     this.owsParser_ = new OWS();
+
+    /**
+     * Capacidades leídas con "read", como en la implementación de OL.
+     * @public
+     * @type {Object|null}
+     */
+    this.capabilities = null;
+  }
+
+  /**
+   * Este método lee las capacidades del WMTS. Además de devolverlas, las guarda
+   * en la propiedad "capabilities" del formateador, igual que en OL.
+   *
+   * @function
+   * @param {Document|Element|string} source XML.
+   * @return {Object|null} Capacidades del WMTS.
+   * @public
+   * @api
+   */
+  read(source) {
+    this.capabilities = super.read(source);
+    return this.capabilities;
   }
 
   /**

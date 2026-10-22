@@ -12,6 +12,12 @@
     {{#eq type 'xyz'}}
         <p>{{translations.data_layer}} XYZ</p>
     {{/eq}}
+    {{#eq type 'tiles3d'}}
+        <p>{{translations.data_layer}} 3D Tiles</p>
+    {{/eq}}
+    {{#eq type 'terrain'}}
+        <p>{{translations.data_layer}} Terrain</p>
+    {{/eq}}
     {{#eq type 'mvt'}}
         <p>{{translations.data_layer}} MVT</p>
         {{#gt layers.length 0}}

@@ -15,7 +15,7 @@ const CONTAINER_LAYERGROUP = '#m-layerswitcher-groups-fields';
 
 export const getAllLayersGroup = (map) => {
   const allLayers = [];
-  const layersGroup = map.getImpl().getGroupedLayers();
+  const layersGroup = map.getLayerGroup();
 
   layersGroup.forEach((group) => {
     if (group.displayInLayerSwitcher) {
@@ -129,10 +129,11 @@ export const fiendLayerInGroup = (layer, map) => {
   return group;
 };
 
+// Selector de destino de la capa: siempre visible con «Añadir al mapa» (valor vacío)
+// y una opción por cada grupo de capas del mapa
 export const createSelectGroup = (map) => {
   const groups = map.getLayerGroup()
     .filter((l) => l.isBase === false && l.displayInLayerSwitcher).reverse();
-  if (groups.length === 0) return;
 
   const select = IDEE.template.compileSync(addInGroupTemplate, {
     vars: {
@@ -152,7 +153,7 @@ export const getLayerSelectGroup = (map) => {
   const select = document.querySelector(CLASS_MODAL_LAYERGROUP);
   if (select === null) return undefined;
   const groups = map.getLayerGroup();
-  return groups.find((group) => group.getImpl().getLayer().ol_uid === select.value);
+  return groups.find((group) => group.idLayer === select.value);
 };
 
 export const filterGroups = (layers, inLayerGroup = true) => {

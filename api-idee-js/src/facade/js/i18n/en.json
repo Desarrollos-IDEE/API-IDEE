@@ -201,6 +201,8 @@
   "implementationswitcher": {
     "title": "Implementations",
     "description": "Select implementation:",
+    "load_error": "The implementation could not be loaded",
+    "mismatch": "The loaded file does not match the implementation",
     "textHelp": {
       "text1": "This tool allows you to change the implementation of the map.",
       "text2": "In the dropdown you can see all the available implementations (OpenLayers, Cesium, etc)."
@@ -210,6 +212,7 @@
     "msg": "Take me there"
   },
   "exception": {
+    "implementationswitcher_method": "The used implementation cannot create ImplementationSwitcher controls.",
     "addgeojson_method": "The used implementation does not have the addGeoJSON method.",
     "removegeojson_method": "The used implementation does not have the removeGeoJSON method.",
     "getgpx_method": "The implementation does not provide the getGPX method",

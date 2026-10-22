@@ -12,7 +12,7 @@ test.describe('IDEE.layer.WMTS', () => {
   test.describe('Method setName', () => {
     test('With useCapabilities: true', async ({ page }) => {
       await page.evaluate(() => {
-        const wmts_001 = new IDEE.layer.WMTS({
+        const wmts001 = new IDEE.layer.WMTS({
           url: 'http://www.ign.es/wmts/ign-base?',
           name: 'IGNBaseTodo',
           legend: 'Mapa IGN',
@@ -20,19 +20,19 @@ test.describe('IDEE.layer.WMTS', () => {
           useCapabilities: true,
           format: 'image/jpeg',
         }, {});
-        window.wmts_001 = wmts_001;
+        window.wmts001 = wmts001;
 
-        window.map.addLayers(wmts_001);
+        window.map.addLayers(wmts001);
       });
 
-      await page.evaluate(() => window.wmts_001.setName('IGNBaseOrto'));
-      const nameWMTS = await page.evaluate(() => window.wmts_001.name);
+      await page.evaluate(() => window.wmts001.setName('IGNBaseOrto'));
+      const nameWMTS = await page.evaluate(() => window.wmts001.name);
       expect(nameWMTS).toEqual('IGNBaseOrto');
     });
 
     test('With useCapabilities: false', async ({ page }) => {
       await page.evaluate(() => {
-        const wmts_002 = new IDEE.layer.WMTS({
+        const wmts002 = new IDEE.layer.WMTS({
           url: 'http://www.ign.es/wmts/ign-base?',
           name: 'IGNBaseTodo',
           legend: 'Mapa IGN',
@@ -40,13 +40,13 @@ test.describe('IDEE.layer.WMTS', () => {
           useCapabilities: false,
           format: 'image/jpeg',
         }, {});
-        window.wmts_002 = wmts_002;
+        window.wmts002 = wmts002;
 
-        window.map.addLayers(wmts_002);
+        window.map.addLayers(wmts002);
       });
 
-      await page.evaluate(() => window.wmts_002.setName('IGNBaseOrto'));
-      const nameWMTS = await page.evaluate(() => window.wmts_002.name);
+      await page.evaluate(() => window.wmts002.setName('IGNBaseOrto'));
+      const nameWMTS = await page.evaluate(() => window.wmts002.name);
       expect(nameWMTS).toEqual('IGNBaseOrto');
     });
   });
@@ -61,16 +61,16 @@ test.describe('IDEE.layer.WMTS', () => {
           4530032.790401306,
         ]);
 
-        const wmts_001 = new IDEE.layer.WMTS({
+        const wmts001 = new IDEE.layer.WMTS({
           url: 'https://www.ign.es/wmts/ign-base?',
           name: 'IGNBaseTodo',
           legend: 'Mapa IGN',
           matrixSet: 'GoogleMapsCompatible',
           isBase: true,
         });
-        window.wmts_001 = wmts_001;
+        window.wmts001 = wmts001;
 
-        const wmts_002 = new IDEE.layer.WMTS({
+        const wmts002 = new IDEE.layer.WMTS({
           legend: 'Capa WMTS',
           url: 'https://www.ign.es/wmts/pnoa-ma?',
           name: 'OI.OrthoimageCoverage',
@@ -78,12 +78,12 @@ test.describe('IDEE.layer.WMTS', () => {
           format: 'image/png',
           isBase: true,
         });
-        window.wmts_002 = wmts_002;
+        window.wmts002 = wmts002;
 
-        window.map.addLayers([wmts_001, wmts_002]);
+        window.map.addLayers([wmts001, wmts002]);
       });
 
-      await page.evaluate(() => window.wmts_002.setVisible(true));
+      await page.evaluate(() => window.wmts002.setVisible(true));
       await expect(page).toHaveScreenshot('snapshot.png', { maxDiffPixelRatio: 0.5 });
     });
   });

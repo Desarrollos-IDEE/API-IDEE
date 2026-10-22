@@ -18,10 +18,13 @@
     "error_ogc": "An error occurred while querying the OGC API Features service",
     "url_not_valid": "The URL provided is not valid",
     "auth_failed": "Incorrect username or password",
+    "auth_token_rejected": "The service did not accept the token",
     "auth_unavailable": "The authentication service could not be reached",
     "auth_refresh_failed": "The service session has expired. Please log in again",
     "auth_required": "The service requires you to log in to query its layers",
-    "unreachable": "The service could not be reached. Check the URL and that the server allows requests from other domains (CORS)"
+    "unreachable": "The service could not be reached. Check the URL and that the server allows requests from other domains (CORS)",
+    "not_available_3d": "This layer type is not available in the 3D map.",
+    "only_3d": "This layer type is only available in the 3D map."
   },
   "textHelp": {
     "help1": "The layer selector extension allows you to manage the layers displayed in a cartographic viewer.",
@@ -153,6 +156,12 @@
   "auth_login": "Log in",
   "auth_user": "Username",
   "auth_password": "Password",
+  "auth_or": "or",
+  "auth_token": "Access token",
+  "auth_token_valid_until": "Token valid until",
+  "auth_token_no_expiration": "Valid token (no expiration date)",
+  "auth_token_expired": "The token has expired",
+  "auth_token_invalid": "The token does not have a valid format",
   "auth_save": "Save",
   "auth_cancel": "Cancel",
   "auth_unlocked_title": "Not logged in. Click to log in to the service",

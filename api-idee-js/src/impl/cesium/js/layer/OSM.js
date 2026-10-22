@@ -127,7 +127,7 @@ class OSM extends Layer {
    */
   addTo(map) {
     this.map = map;
-    this.fire(EventType.ADDED_TO_MAP);
+    this.fireAddedToMap_();
 
     const source = this.updateSource_();
     const extent = this.facadeLayer_.getMaxExtent();

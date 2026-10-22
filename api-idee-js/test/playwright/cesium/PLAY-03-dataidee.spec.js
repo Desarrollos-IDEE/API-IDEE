@@ -5,6 +5,9 @@ import registerDataIDEECacheLayerTests from '../common/dataidee-layer-cache';
 import registerDataIDEEViewportTests from '../common/dataidee-viewport';
 import registerDataIDEEAuthTests from '../common/dataidee-auth';
 
+// Cesium inserta las entidades cuando el globo ha cargado sus teselas: varios segundos
+test.describe.configure({ timeout: 60000 });
+
 registerDataIDEECacheLayerTests('/test/playwright/cesium/basic-cesium.html');
 registerDataIDEEViewportTests('/test/playwright/cesium/basic-cesium.html');
 registerDataIDEEAuthTests('/test/playwright/cesium/basic-cesium.html');

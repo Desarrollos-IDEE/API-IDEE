@@ -25,7 +25,7 @@ test.describe('IDEE.layer.Section', () => {
         url: 'https://hcsigc.juntadeandalucia.es/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=IECA:sigc_campamentos_1724753464727&outputFormat=application/json',
       });
 
-      const wms_001 = new IDEE.layer.WMS({
+      const wms001 = new IDEE.layer.WMS({
         url: 'https://www.ideandalucia.es/services/andalucia/wms?',
         name: '05_Red_Viaria',
         legend: 'Red Viaria',
@@ -33,21 +33,21 @@ test.describe('IDEE.layer.Section', () => {
         tiled: false,
       });
 
-      const section_001 = new IDEE.layer.Section({
+      const section001 = new IDEE.layer.Section({
         idSection: 'id_section_1',
         title: 'Sección 1',
         zIndex: 1000,
-        children: [provincias, campamentos, wms_001],
+        children: [provincias, campamentos, wms001],
       });
-      window.section_001 = section_001;
+      window.section001 = section001;
     });
 
     await page.evaluate(() => {
       return new Promise((resolve) => {
-        window.section_001.on(IDEE.evt.ADDED_TO_MAP, () => {
+        window.section001.on(IDEE.evt.ADDED_TO_MAP, () => {
           resolve();
         });
-        window.map.addSections(window.section_001);
+        window.map.addSections(window.section001);
       });
     });
     await page.waitForTimeout(3000);

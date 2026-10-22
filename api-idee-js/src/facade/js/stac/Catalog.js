@@ -190,6 +190,11 @@ class Catalog extends Base {
    * @api
    */
   refreshTokenAuth() {
+    // Sin servicio de autenticación (catálogo público) no hay token que renovar: se
+    // rechaza para que el llamante termine con su error en vez de quedarse esperando
+    if (!this.authUrl || !this.refreshToken) {
+      return Promise.reject(new Error(getValue('exception').catalog_token_error));
+    }
     const url = `${this.authUrl.substring(0, this.authUrl.lastIndexOf('/'))}/refresh-token`;
     return new Promise((success, fail) => {
       post(url, {

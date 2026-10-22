@@ -2,8 +2,21 @@ import { test, expect } from '@playwright/test';
 
 test.describe.configure({ mode: 'serial' });
 
+// Necesita el servidor de demostración, que no arranca la configuración de Playwright
+const DEMO_URL = 'http://127.0.0.1:8787/';
+let demoAvailable = false;
+
+test.beforeAll(async ({ request }) => {
+  demoAvailable = await request.get(DEMO_URL, { timeout: 2000 })
+    .then((response) => response.ok(), () => false);
+});
+
+test.beforeEach(() => {
+  test.skip(!demoAvailable, 'Requiere el servidor de demostración: node src/plugins/vectorsmanagement/test/demo/dataidee-server.js');
+});
+
 test.afterEach(async ({ request }) => {
-  await request.post('http://127.0.0.1:8787/local/reset');
+  if (demoAvailable) await request.post(`${DEMO_URL}local/reset`);
 });
 
 test('local DataIDEE editing uses the shared VectorsManagement controls and persists a new feature', async ({ page }) => {

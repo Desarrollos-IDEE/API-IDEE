@@ -22,6 +22,26 @@ export const getExpiration = (token) => {
 };
 
 /**
+ * Comprueba un token introducido por el usuario: debe ser un JWT y no haber caducado.
+ * @param {String} token Token.
+ * @returns {Object} { valid, reason, expiresAt }: reason es 'format' (no es un JWT) o
+ * 'expired' (caducado); expiresAt es la caducidad en ms, si el token la indica.
+ */
+export const checkToken = (token) => {
+  let payload;
+  try {
+    payload = jwtDecode(token);
+  } catch (err) {
+    return { valid: false, reason: 'format' };
+  }
+  const expiresAt = Number.isFinite(payload?.exp) ? payload.exp * 1000 : undefined;
+  if (Number.isFinite(expiresAt) && expiresAt <= Date.now()) {
+    return { valid: false, reason: 'expired', expiresAt };
+  }
+  return { valid: true, expiresAt };
+};
+
+/**
  * Fecha de caducidad de una sesión: la del JWT o, para tokens opacos, la
  * calculada con "expires_in" al iniciar sesión.
  * @param {Object} session Sesión { accessToken, expiresAt }.

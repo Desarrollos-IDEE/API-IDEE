@@ -20,13 +20,6 @@ test.beforeEach(async ({ page }) => {
       });
     });
   }
-  await page.route('**/gdal3WebAssembly.*', (route) => {
-    const file = path.basename(new URL(route.request().url()).pathname);
-    return route.fulfill({
-      path: require.resolve(`gdal3.js/dist/package/${file}`),
-      contentType: file.endsWith('.wasm') ? 'application/wasm' : 'application/octet-stream',
-    });
-  });
   await prepareGeoPackagePage(page);
   await page.addScriptTag({ url: '/src/plugins/layerswitcher/dist/layerswitcher.ol.min.js' });
   await page.addStyleTag({ url: '/src/plugins/layerswitcher/dist/layerswitcher.ol.min.css' });
@@ -61,9 +54,10 @@ test.beforeEach(async ({ page }) => {
         await page.locator(search).fill(fileUrl);
         await page.locator(submit).click();
       }
-      await expect(page.locator(search)).toHaveCount(0, {
-        timeout: kind === 'curves' ? 30000 : undefined,
-      });
+      await expect(page.locator(search)).toHaveCount(
+        0,
+        { timeout: kind === 'curves' ? 30000 : 5000 },
+      );
       const count = {
         curves: 4, mixed: 2, vector: 1, raster: 1,
       }[kind];

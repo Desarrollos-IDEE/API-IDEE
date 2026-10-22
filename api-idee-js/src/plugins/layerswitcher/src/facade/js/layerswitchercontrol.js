@@ -20,6 +20,7 @@ import ogcModalTemplate from '../../templates/ogcmodal';
 import {
   createSelectGroup,
   displayLayers,
+  fiendLayerInGroup,
   filterGroups,
   getAllLayersGroup, getAllLayersSection,
   getLayerSelectGroup,
@@ -35,7 +36,6 @@ import {
 import TokenStore from './auth/tokenstore';
 import DataIDEEAuthManager, { AUTH_LOCKED, AUTH_UNLOCKED } from './auth/authmanager';
 import AuthButton from './auth/authbutton';
-import { CLOSE_BUTTON, setDialogAction, removeDialogActions } from './dialogactions';
 import {
   TRANSLATIONS_INFO_LAYER,
   TRANSLATIONS_OGCAPIFEATURES_WMS_WMTS,
@@ -83,7 +83,8 @@ const ADDSERVICES_SUGGESTIONS = '#m-layerswitcher-addservices-suggestions';
 const SEARCH_BTN = '#m-layerswitcher-addservices-search-btn';
 
 // - Modal
-const BT_CLOSE_MODAL = CLOSE_BUTTON;
+// Diálogo de información en el que se muestran los modales del plugin
+const INFO_DIALOG = 'div.m-dialog.info';
 
 const SPINER_FATHER = '.m-layerswitcher-search-panel';
 
@@ -294,7 +295,7 @@ export default class LayerswitcherControl extends IDEE.Control {
         this.template_.addEventListener('click', this.clickLayer.bind(this), false);
         this.template_.addEventListener('input', this.inputLayer.bind(this), false);
 
-        this.getImpl().registerEvent(map);
+        this.syncRenderEvent_();
         this.template_.querySelector('#layerswitcher-add-layer').addEventListener('click', this.openAddServices.bind(this), false);
         this.template_.querySelector('#layerswitcher-add-layer').addEventListener('touchstart', this.openAddServices.bind(this), false);
         this.accessibilityTab(this.template_);
@@ -322,7 +323,7 @@ export default class LayerswitcherControl extends IDEE.Control {
    */
   refreshPanel_() {
     if (IDEE.utils.isNullOrEmpty(this.template_)
-      || IDEE.utils.isNullOrEmpty(this.getImpl().fnRender)) {
+      || !this.getImpl().isRenderEventRegistered()) {
       return;
     }
     // this.statusShowHideAllLayers = undefined;
@@ -330,13 +331,23 @@ export default class LayerswitcherControl extends IDEE.Control {
   }
 
   addEventPanel(panel) {
-    if (panel.getButtonPanel().element.classList.contains('active')) {
-      setTimeout(() => {
-        this.getImpl().removeRenderComplete();
-      }, 501);
-    }
+    this.panel_ = panel;
+    panel.on(IDEE.evt.SHOW, () => this.collapsedPlugin());
+    panel.on(IDEE.evt.HIDE, () => this.collapsedPlugin());
+    this.syncRenderEvent_();
+  }
 
-    panel.getButtonPanel().element.addEventListener('click', this.collapsedPlugin.bind(this), false);
+  /**
+   * El control solo se repinta con los cambios del mapa mientras el panel está
+   * abierto (sin panel conocido, siempre).
+   *
+   * @private
+   */
+  syncRenderEvent_() {
+    this.getImpl().removeRenderComplete();
+    if (IDEE.utils.isNullOrEmpty(this.panel_) || !this.panel_.isCollapsed()) {
+      this.getImpl().registerEvent(this.map_);
+    }
   }
 
   // Esta función devuelve las variables para la plantilla
@@ -418,7 +429,12 @@ export default class LayerswitcherControl extends IDEE.Control {
           hasStyles = false;
         }
       }
+      // Herramientas que la implementación no admite para esta capa
+      const toolsSupport = this.getImpl().getLayerToolsSupport(layer) || {};
+      if (toolsSupport.style === false) hasStyles = false;
       const layerVarTemplate = {
+        transparencySupported: toolsSupport.transparency !== false,
+        zoomSupported: toolsSupport.zoom !== false,
         title: layerTitle,
         type: layer.type,
         dataOrder: layer.getZIndex(),
@@ -459,7 +475,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     });
   }
 
-  async generateTemplateLayerGroup() {
+  async generateTemplateLayerGroup(root = this.template_) {
     const layersFilter = filterGroups(this.map_.getLayers());
 
     if (layersFilter.length === 0) {
@@ -476,12 +492,12 @@ export default class LayerswitcherControl extends IDEE.Control {
           this.orderLayers(group);
         });
 
-        this.template_.querySelector('.layerswitcher-ul-layers').appendChild(layerGroupHTML);
+        root.querySelector('.layerswitcher-ul-layers').appendChild(layerGroupHTML);
       }
     }
   }
 
-  async generateTemplateSection() {
+  async generateTemplateSection(root = this.template_) {
     const sections = this.map_.getSections();
 
     if (sections.length === 0) {
@@ -497,7 +513,7 @@ export default class LayerswitcherControl extends IDEE.Control {
         this.orderLayers(group);
       });
 
-      this.template_.querySelector('.layerswitcher-ul-layers').appendChild(sectionHTML);
+      root.querySelector('.layerswitcher-ul-layers').appendChild(sectionHTML);
     }
   }
 
@@ -557,7 +573,7 @@ export default class LayerswitcherControl extends IDEE.Control {
               displayGroup: layer.display === undefined ? true : layer.display,
               show_group: getValue('show_group'),
               hide_group: getValue('hide_group'),
-              nameRadio: layer.getImpl().rootGroup === null ? 'm-layerswitcher-radioLayers' : layer.getImpl().rootGroup.idLayer,
+              nameRadio: fiendLayerInGroup(layer, this.map_)?.idLayer || 'm-layerswitcher-radioLayers',
               ...varsGroup,
               ...this.getTemplateVariablesValues(),
             },
@@ -604,19 +620,25 @@ export default class LayerswitcherControl extends IDEE.Control {
         vars: templateVars,
       });
 
-      this.template_.querySelector('#layerswitcher-layers-empty').innerHTML = '';
-      this.template_.querySelector('#layerswitcher-layers').innerHTML = html.innerHTML;
+      // La lista se construye fuera del documento y solo se sustituye si ha cambiado:
+      // repintar sin cambios rehacía las filas bajo el puntero y se perdían clics
+      const content = document.createElement('div');
+      content.innerHTML = html.innerHTML;
+      await this.generateTemplateLayerGroup(content);
+      await this.generateTemplateSection(content);
+      const ulContainer = content.querySelector('.layerswitcher-ul-layers');
+      if (ulContainer !== null) this.orderLayers(ulContainer);
 
-      await this.generateTemplateLayerGroup();
-      await this.generateTemplateSection();
+      const empty = this.template_.querySelector('#layerswitcher-layers-empty');
+      const layers = this.template_.querySelector('#layerswitcher-layers');
+      if (empty.innerHTML !== '' || layers.innerHTML !== content.innerHTML) {
+        empty.innerHTML = '';
+        layers.replaceChildren(...content.childNodes);
 
-      const ulContainer = this.template_.querySelector('.layerswitcher-ul-layers');
-      this.orderLayers(ulContainer);
-
-      const layerList = this.template_.querySelector('.layerswitcher-ul-layers');
-
-      if (layerList !== null && this.isMoveLayers) {
-        generateSortable(this.map_, this.overlayLayers);
+        const layerList = this.template_.querySelector('.layerswitcher-ul-layers');
+        if (layerList !== null && this.isMoveLayers) {
+          generateSortable(this.map_, this.overlayLayers);
+        }
       }
 
       this.defaultRangeSelect_();
@@ -652,15 +674,12 @@ export default class LayerswitcherControl extends IDEE.Control {
     items.forEach((item) => ulContainer.appendChild(item));
   }
 
-  // Controla el registro de evento rendercomplete si está abierto o cerrado el plugin
-  collapsedPlugin(e) {
-    if (!e.target.parentElement.classList.contains('collapsed')) {
+  // Al abrir o cerrar el panel: repinta al abrirlo y activa o quita el repintado automático
+  collapsedPlugin() {
+    if (!IDEE.utils.isNullOrEmpty(this.template_) && !this.panel_?.isCollapsed()) {
       this.render();
-      this.getImpl().removeRenderComplete();
-      this.getImpl().registerEvent(this.map_);
-    } else {
-      this.getImpl().removeRenderComplete();
     }
+    this.syncRenderEvent_();
   }
 
   // Esta función detecta cuando se hace click en la plantilla y efectúa la acción correspondiente
@@ -674,7 +693,7 @@ export default class LayerswitcherControl extends IDEE.Control {
 
       if (layer) {
         // ? Cambiar nombre de la capa
-        showModalChangeName(layer, evt.target, this.order);
+        showModalChangeName(layer, evt.target, this.order, () => this.render());
         // ? Mostrar/Ocultar capa (modo eye)
         showHideLayersEye(evt, layer, this);
         // ? Mostrar/Ocultar capa (modo radio)
@@ -682,7 +701,7 @@ export default class LayerswitcherControl extends IDEE.Control {
         // ? Leyenda de la capa
         legendInfo(evt, layer, this.useProxy, this.statusProxy);
         // ? Zoom a la capa
-        eventIconTarget(layer, this.map_, this.order, evt);
+        eventIconTarget(layer, this.map_, this.order, evt, this.getImpl());
         // ? Cambiar estilo de la capa
         styleLayers(layer, this.order, evt);
 
@@ -1045,7 +1064,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     }
 
     this.inputLayerTimeID = setTimeout(() => {
-      this.getImpl().registerEvent(this.map_);
+      this.syncRenderEvent_();
     }, 500);
   }
 
@@ -1098,7 +1117,7 @@ export default class LayerswitcherControl extends IDEE.Control {
 
     IDEE.dialog.info(info, getValue('layer_info'), this.order);
     setTimeout(() => {
-      const button = document.querySelector(BT_CLOSE_MODAL);
+      const button = IDEE.dialog.getCloseButton(INFO_DIALOG);
       button.innerHTML = getValue('close');
     }, 10);
   }
@@ -1282,6 +1301,15 @@ export default class LayerswitcherControl extends IDEE.Control {
             });
             return undefined;
           }
+          // Teselas 3D y terreno de Cesium (solo en 3D)
+          if (/\/tileset\.json$/i.test(url)) {
+            this.printLayerModal(searchInput.value.trim(), 'tiles3d');
+            return undefined;
+          }
+          if (/\/layer\.json$/i.test(url)) {
+            this.printLayerModal(url.replace(/layer\.json$/i, ''), 'terrain');
+            return undefined;
+          }
           // MVT
           const pbf = url.indexOf('.pbf') >= 0;
           const json = url.indexOf('.json') >= 0;
@@ -1297,7 +1325,7 @@ export default class LayerswitcherControl extends IDEE.Control {
 
             if (url.indexOf('{z}/{x}/{-y}') >= 0) {
               this.printLayerModal(url, 'tms');
-            } else if (url.indexOf('{z}/{x}/{y}' && !url.indexOf('.pbf')) >= 0) {
+            } else if (url.indexOf('{z}/{x}/{y}') >= 0 && url.indexOf('.pbf') === -1) {
               this.printLayerModal(url, 'xyz');
             } else {
               // IDEE.proxy(this.useProxy);
@@ -1380,13 +1408,15 @@ export default class LayerswitcherControl extends IDEE.Control {
 
             promise.then((response) => {
               if (response.text && !IDEE.utils.isNullOrEmpty(response.text) && response.text.indexOf('<TileMatrixSetLink>') >= 0 && response.text.indexOf('Operation name="GetTile"') >= 0) {
+                // El lector deja las capacidades en "capabilities" en todas las implementaciones
                 const getCapabilitiesParser = new IDEE.impl.format.WMTSCapabilities();
-                const getCapabilities = getCapabilitiesParser.read(response.xml);
-                this.serviceCapabilities = getCapabilities.capabilities || {};
+                getCapabilitiesParser.read(response.xml);
+                const { capabilities } = getCapabilitiesParser;
+                this.serviceCapabilities = capabilities || {};
                 const layers = IDEE.impl.util.wmtscapabilities.getLayers(
-                  getCapabilities.capabilities,
+                  capabilities,
                   url,
-                  this.map_.getProjection().code,
+                  this.getImpl().getCapabilitiesProjectionCode(this.map_),
                 );
                 this.capabilities = this.filterResults(layers);
                 this.showResults();
@@ -1431,14 +1461,9 @@ export default class LayerswitcherControl extends IDEE.Control {
                         const getCapabilitiesUtils = new IDEE.impl.GetCapabilities(
                           getCapabilities,
                           url,
-                          this.map_.getProjection().code,
+                          this.getImpl().getCapabilitiesProjectionCode(this.map_),
                         );
                         this.capabilities = this.filterResults(getCapabilitiesUtils.getLayers());
-                        this.capabilities.forEach((layer) => {
-                          try {
-                            this.getParents(getCapabilities, layer);
-                          } catch (err) { /* Continue */ }
-                        });
                       }
                       // WFS
                       let wfsDatas;
@@ -1647,7 +1672,7 @@ export default class LayerswitcherControl extends IDEE.Control {
 
   changeClodeButtonModal() {
     // Elements
-    const button = document.querySelector(BT_CLOSE_MODAL);
+    const button = IDEE.dialog.getCloseButton(INFO_DIALOG);
     button.innerHTML = getValue('close');
   }
 
@@ -1703,7 +1728,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     }
     IDEE.loadFiles.addFileToMap(this.map_, file);
     inputFile.value = '';
-    const buttonClose = document.querySelector(BT_CLOSE_MODAL);
+    const buttonClose = IDEE.dialog.getCloseButton(INFO_DIALOG);
     buttonClose.click();
   }
 
@@ -1733,8 +1758,8 @@ export default class LayerswitcherControl extends IDEE.Control {
         } else {
           IDEE.remote.get(url).then((response) => {
             const source = response.text;
-            IDEE.utils.loadFeaturesFromSource(this.map_, source, fileName, extension);
-            const buttonClose = document.querySelector(BT_CLOSE_MODAL);
+            IDEE.loadFiles.loadFeaturesFromSource(this.map_, source, fileName, extension);
+            const buttonClose = IDEE.dialog.getCloseButton(INFO_DIALOG);
             buttonClose.click();
           });
         }
@@ -1754,7 +1779,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     if (this.loadingActive) return;
     const searchInput = document.querySelector(SEARCH_INPUT);
     const fileInput = document.querySelector('#m-layerswitcher-addservices-file-input');
-    const closeButton = document.querySelector(BT_CLOSE_MODAL);
+    const closeButton = IDEE.dialog.getCloseButton(INFO_DIALOG);
     this.showLoading();
     searchInput.disabled = true;
     fileInput.disabled = true;
@@ -1787,8 +1812,8 @@ export default class LayerswitcherControl extends IDEE.Control {
       }).then((blob) => {
         if (blob) {
           blob.arrayBuffer().then((buffer) => {
-            IDEE.utils.loadFeaturesFromSource(this.map_, buffer, fileName, 'zip');
-            const buttonClose = document.querySelector(BT_CLOSE_MODAL);
+            IDEE.loadFiles.loadFeaturesFromSource(this.map_, buffer, fileName, 'zip');
+            const buttonClose = IDEE.dialog.getCloseButton(INFO_DIALOG);
             buttonClose.click();
           });
         } else {
@@ -1831,7 +1856,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     const addServicesSuggestions = document.querySelector(ADDSERVICES_SUGGESTIONS);
     document.querySelector(LAYERS_CONTAINER).innerHTML = '';
     this.hideOGCModeSelector_();
-    removeDialogActions();
+    IDEE.dialog.removeActions(INFO_DIALOG);
 
     if (codsi !== null) {
       codsi.style.display = 'none';
@@ -1953,7 +1978,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     }
 
     this.hideOGCModeSelector_();
-    removeDialogActions();
+    IDEE.dialog.removeActions(INFO_DIALOG);
 
     if (document.querySelector(LAYERS_CONTAINER) !== null) {
       document.querySelector(LAYERS_CONTAINER).style.display = 'none';
@@ -2074,10 +2099,12 @@ export default class LayerswitcherControl extends IDEE.Control {
     let serviceType = 'WMS';
     if (!IDEE.utils.isUndefined(this.capabilities)) {
       this.capabilities.forEach((capability) => {
-        const add = capability.getImpl();
-        add.abstract = capability.capabilitiesMetadata.abstract.trim();
         serviceType = capability.type;
-        result.push(add);
+        result.push({
+          name: capability.name,
+          legend: capability.legend,
+          abstract: (capability.capabilitiesMetadata?.abstract || '').trim(),
+        });
       });
     }
 
@@ -2197,12 +2224,13 @@ export default class LayerswitcherControl extends IDEE.Control {
       if (!IDEE.utils.isNull(selAllWFS)) {
         selAllWFS.addEventListener('click', (evt) => this.registerCheckWFS(evt));
       }
-      setDialogAction({
+      IDEE.dialog.removeActions(INFO_DIALOG);
+      IDEE.dialog.addAction({
         id: 'm-layerswitcher-addservices-add-btn',
         label: getValue('add'),
         onClick: (evt) => this.addSelected_WMS_WMTS_WFS(evt),
         order: this.order,
-      });
+      }, INFO_DIALOG);
       const elem = container.querySelector('.m-layerswitcher-show-capabilities');
       if (!IDEE.utils.isNull(elem)) {
         elem.addEventListener('click', () => {
@@ -2424,7 +2452,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       const useAttributions = (this.useAttributions_) ? addAttributions(layers) : layers;
       useAttributions.forEach((layer) => this.addLayer({ existingLayer: layer }));
 
-      const buttonClose = document.querySelector(BT_CLOSE_MODAL);
+      const buttonClose = IDEE.dialog.getCloseButton(INFO_DIALOG);
       buttonClose.click();
     }
   }
@@ -2483,6 +2511,16 @@ export default class LayerswitcherControl extends IDEE.Control {
 
   // Plantilla para añadir capas (Generales)
   printLayerModal(url, type, layers) {
+    if (!this.getImpl().isLayerTypeSupported(type)) {
+      this.removeLoading();
+      const only3D = ['tiles3d', 'terrain'].includes(type);
+      IDEE.dialog.info(
+        getValue(only3D ? 'exception.only_3d' : 'exception.not_available_3d'),
+        getValue('info'),
+        this.order,
+      );
+      return;
+    }
     const modal = IDEE.template.compileSync(layerModalTemplate, {
       jsonp: true,
       parseToHtml: false,
@@ -2541,12 +2579,13 @@ export default class LayerswitcherControl extends IDEE.Control {
 
       document.querySelector('div.m-dialog.info').parentNode.removeChild(document.querySelector('div.m-dialog.info'));
     };
-    setDialogAction({
+    IDEE.dialog.removeActions(INFO_DIALOG);
+    IDEE.dialog.addAction({
       id: 'm-layerswitcher-layer-button',
       label: getValue('add_btn'),
       onClick: addLayerFromModal,
       order: this.order,
-    });
+    }, INFO_DIALOG);
     this.removeLoading();
   }
 
@@ -2645,6 +2684,18 @@ export default class LayerswitcherControl extends IDEE.Control {
         legend,
         url,
         extract: true,
+      });
+    } else if (type === 'tiles3d') {
+      layer = new IDEE.layer.Tiles3D({
+        name,
+        legend,
+        url,
+      });
+    } else if (type === 'terrain') {
+      layer = new IDEE.layer.Terrain({
+        name,
+        legend,
+        url,
       });
     } else if (type === 'layerGroup') {
       layer = new IDEE.layer.LayerGroup({
@@ -2804,7 +2855,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     this.ogcRequestId_ += 1;
     const requestId = this.ogcRequestId_;
     const { root, mode } = this.ogcState_;
-    removeDialogActions();
+    IDEE.dialog.removeActions(INFO_DIALOG);
     this.showOGCLoading_();
     this.ogcModes_[mode].getCollections(root).then(({ collections, unauthorized }) => {
       if (requestId !== this.ogcRequestId_) return;
@@ -2964,7 +3015,7 @@ export default class LayerswitcherControl extends IDEE.Control {
   }
 
   setOnClickCloseBtn() {
-    const button = document.querySelector(BT_CLOSE_MODAL);
+    const button = IDEE.dialog.getCloseButton(INFO_DIALOG);
     button.innerHTML = getValue('close');
     button.addEventListener('click', () => {
       try {
@@ -2990,31 +3041,46 @@ export default class LayerswitcherControl extends IDEE.Control {
     const btnCheck = document.querySelector('#m-layerswitcher-ogcCContainer #m-layerswitcher-ogc-check-button');
     const btnCustomQuery = document.querySelector('#m-layerswitcher-ogc-custom-query-button');
 
+    // La colección elegida se lee al pulsar. Sin colecciones (p. ej. un servicio
+    // DataIDEE sin sesión) o sin elegir ninguna se avisa en lugar de seguir.
+    const getSelectedCollection = () => {
+      const select = document.querySelector('#m-layerswitcher-ogc-vectors-select');
+      const hasCollections = Array.from(select.options).some((option) => option.value !== '');
+      if (!hasCollections) {
+        IDEE.dialog.error(getValue('exception.no_results'), undefined, this.order);
+        return null;
+      }
+      if (select.value === '') {
+        IDEE.dialog.error(getValue('select_service'), undefined, this.order);
+        return null;
+      }
+      return select.value;
+    };
+
     // "Añadir" va en el pie del diálogo, junto a "Cerrar", solo si hay capas que añadir
     if (layers.length > 0) {
-      setDialogAction({
+      IDEE.dialog.removeActions(INFO_DIALOG);
+      IDEE.dialog.addAction({
         id: 'm-layerswitcher-ogc-select-button',
         label: getValue('add_btn'),
         order: this.order,
         onClick: () => {
-          if (selectValue === getValue('select_service')) {
-            IDEE.dialog.error(getValue('no_results'), undefined, this.order);
-          } else {
+          selectValue = getSelectedCollection();
+          if (selectValue !== null) {
             properties = this.getProperties(selectValue, summary);
 
             this.addOGCAPILayer_(properties);
 
-            const buttonClose = document.querySelector(BT_CLOSE_MODAL);
+            const buttonClose = IDEE.dialog.getCloseButton(INFO_DIALOG);
             buttonClose.click();
           }
         },
-      });
+      }, INFO_DIALOG);
     }
 
     btnCheck.addEventListener('click', () => {
-      if (selectValue === getValue('select_service')) {
-        IDEE.dialog.error(getValue('no_results'), undefined, this.order);
-      } else {
+      selectValue = getSelectedCollection();
+      if (selectValue !== null) {
         properties = this.getProperties(selectValue, summary);
         this.countOGCAPIFeatures_(properties).then((numberFeatures) => {
           let results1;
@@ -3043,8 +3109,9 @@ export default class LayerswitcherControl extends IDEE.Control {
     btnCustomQuery.addEventListener('click', () => {
       let filtersList;
 
+      selectValue = getSelectedCollection();
+      if (selectValue === null) return;
       const previousModal = document.querySelector('.m-content').innerHTML;
-      selectValue = document.querySelector('#m-layerswitcher-ogc-vectors-select').value;
       const limit = document.querySelector('#m-layerswitcher-ogc-limit-items').value;
       const checked = document.querySelector('#m-layerswitcher-ogc-search-bbox').checked;
       // IDEE.proxy(this.useProxy);
@@ -3093,30 +3160,7 @@ export default class LayerswitcherControl extends IDEE.Control {
         const msg = `${getValue('custom_query_btn')}`;
         IDEE.dialog.remove(ogcModalTemplate, undefined, this.order);
         IDEE.dialog.info(customQueryTemplate, msg, this.order);
-        const btnApplyFilters = document.createElement('button');
-        const btnBack = document.createElement('button');
-        setTimeout(() => {
-          const button = document.querySelector(BT_CLOSE_MODAL);
-          button.innerHTML = getValue('close');
-          button.style.display = 'none';
-          const buttons = document.querySelector('div.m-dialog.info div.m-button');
-
-          btnBack.textContent = getValue('close');
-          // btnBack.style.width = '75px'; // 75pxfix
-          // btnBack.style.backgroundColor = '#71a7d3';
-          btnBack.style.marginLeft = '4px';
-          btnBack.setAttribute('data-link', urlInput);
-          btnBack.setAttribute('data-service-type', 'OGCAPIFeatures');
-          buttons.insertBefore(btnBack, buttons.firstChild);
-
-          btnApplyFilters.textContent = getValue('apply_btn');
-          btnApplyFilters.style.width = '75px'; // 75pxfix
-          // btnApplyFilters.style.backgroundColor = '#71a7d3';
-          btnApplyFilters.setAttribute('data-link', urlInput);
-          btnApplyFilters.setAttribute('data-service-type', 'OGCAPIFeatures');
-          buttons.insertBefore(btnApplyFilters, buttons.firstChild);
-        }, 10);
-        btnApplyFilters.addEventListener('click', () => {
+        const applyFilters = () => {
           let filterByIDTemp = false;
           let filterByOtherFiltersTemp = false;
 
@@ -3155,8 +3199,8 @@ export default class LayerswitcherControl extends IDEE.Control {
               filterByOtherFiltersTemp,
             );
           }
-        });
-        btnBack.addEventListener('click', () => {
+        };
+        const back = () => {
           const modalActual = document.querySelector('.m-content');
           modalActual.innerHTML = previousModal;
           indexCurrentLayer = layers.findIndex((capa) => {
@@ -3171,7 +3215,28 @@ export default class LayerswitcherControl extends IDEE.Control {
             filterByID,
             filterByOtherFilters,
           );
-        });
+        };
+        setTimeout(() => {
+          // "Aplicar" y "Cerrar" sustituyen al botón de cierre del diálogo
+          const button = IDEE.dialog.getCloseButton(INFO_DIALOG);
+          button.innerHTML = getValue('close');
+          button.style.display = 'none';
+          [
+            {
+              id: 'm-layerswitcher-ogc-apply-filters-button',
+              label: getValue('apply_btn'),
+              onClick: applyFilters,
+            },
+            { id: 'm-layerswitcher-ogc-back-button', label: getValue('close'), onClick: back },
+          ].forEach((action) => {
+            const actionButton = IDEE.dialog.addAction(
+              { ...action, order: this.order },
+              INFO_DIALOG,
+            );
+            actionButton.setAttribute('data-link', urlInput);
+            actionButton.setAttribute('data-service-type', 'OGCAPIFeatures');
+          });
+        }, 10);
       }).catch((err) => {
         IDEE.dialog.error(getValue('no_results'), undefined, this.order);
       });
@@ -3179,26 +3244,23 @@ export default class LayerswitcherControl extends IDEE.Control {
     });
   }
 
-  // Parámetros de la capa OGC API del formulario. La URL y el formato los
-  // añade el modo de carga (OGCAPIFeatures o DataIDEE).
+  /**
+   * Parámetros de la capa OGC API del formulario. La URL y el formato los
+   * añade el modo de carga (OGCAPIFeatures o DataIDEE).
+   * @param {HTMLElement} selectValue
+   * @param {*} summary
+   * @returns
+   */
   getProperties(selectValue, summary) {
-    const selectValueText = document.querySelector('#m-layerswitcher-ogc-vectors-select').selectedOptions[0].text;
+    const selectValueText = document.querySelector('#m-layerswitcher-ogc-vectors-select').selectedOptions[0]?.text;
     selectValue = document.querySelector('#m-layerswitcher-ogc-vectors-select').value;
     const limit = document.querySelector('#m-layerswitcher-ogc-limit-items').value;
     const checked = document.querySelector('#m-layerswitcher-ogc-search-bbox').checked;
     const limitValue = limit;
     let bboxString;
     if (checked) {
-      const bbox = this.map_.getBbox();
-      const min = this.getImpl().getTransformedCoordinates(
-        this.map_.getProjection().code,
-        [bbox.x.min, bbox.y.min],
-      );
-      const max = this.getImpl().getTransformedCoordinates(
-        this.map_.getProjection().code,
-        [bbox.x.max, bbox.y.max],
-      );
-      bboxString = `${min[0]};${min[1]};${max[0]};${max[1]}`;
+      const bbox = this.getImpl().getBbox4326(this.map_);
+      if (!IDEE.utils.isNullOrEmpty(bbox)) bboxString = bbox.join(';');
     }
     const properties = {};
     properties.name = selectValue;
@@ -3539,7 +3601,7 @@ export default class LayerswitcherControl extends IDEE.Control {
     document.querySelector(ADDSERVICES_RESULTS).innerHTML = '';
     document.querySelector(LAYERS_CONTAINER).innerHTML = '';
     this.hideOGCModeSelector_();
-    removeDialogActions();
+    IDEE.dialog.removeActions(INFO_DIALOG);
     document.querySelector(CODSI).style.display = 'block';
     document.querySelector(ADDSERVICES_SUGGESTIONS).style.display = 'none';
 

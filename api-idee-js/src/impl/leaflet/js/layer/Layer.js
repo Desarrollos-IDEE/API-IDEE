@@ -1,6 +1,5 @@
 import MObject from 'IDEE/Object';
-import { isNullOrEmpty, concatUrlPaths } from 'IDEE/util/Utils';
-import MConfig from 'IDEE/configuration';
+import { isNullOrEmpty } from 'IDEE/util/Utils';
 import FacadeLayer from 'IDEE/layer/Layer';
 
 export default class Layer extends MObject {
@@ -185,7 +184,7 @@ export default class Layer extends MObject {
    * @expose
    */
   getLegendURL() {
-    returnFacadeLayer.LEGEND_DEFAULT;
+    return FacadeLayer.LEGEND_DEFAULT;
   }
 
   /**

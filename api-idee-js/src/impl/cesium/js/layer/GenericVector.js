@@ -103,6 +103,7 @@ class GenericVector extends Vector {
       this.cesiumLayer.show = this.visibility;
 
       this.map.getMapImpl().dataSources.add(this.cesiumLayer);
+      this.fireAddedToMap_();
 
       // ? Capas con features ya cargados
       if (this.cesiumLayer && !this.loaded_) {

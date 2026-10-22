@@ -2,10 +2,12 @@ import { test, expect } from '@playwright/test';
 
 test.describe('IDEE.map', () => {
   test.describe('constructor', () => {
+    const warnings = [];
+
     test.beforeEach(async ({ page }) => {
+      warnings.length = 0;
       page.on('console', (msg) => {
-        // eslint-disable-next-line no-console
-        console.log(`[BROWSER:${msg.type()}] ${msg.text()}`);
+        if (msg.type() === 'warning') warnings.push(msg.text());
       });
       await page.goto('/test/playwright/ol/basic-ol.html');
       await page.evaluate(() => {
@@ -17,6 +19,12 @@ test.describe('IDEE.map', () => {
     test('Creates a new map', async ({ page }) => {
       const isInstance = await page.evaluate(() => window.map instanceof IDEE.Map);
       expect(isInstance).toBe(true);
+    });
+
+    test('En 2D no intenta crear el terreno por defecto', async ({ page }) => {
+      const terrainMethod = await page.evaluate(() => IDEE.language.getValue('exception').terrain_method);
+      expect(warnings).not.toContain(terrainMethod);
+      expect(await page.evaluate(() => window.map.getLayers().some((l) => l.type === 'Terrain'))).toBe(false);
     });
 
     test('Destroys the map', async ({ page }) => {
@@ -84,8 +92,8 @@ test.describe('IDEE.map', () => {
       await page.goto('/test/playwright/ol/basic-ol.html');
 
       // MAX Y MIN ZOOM
-      await page.evaluate(() => IDEE.config.MAX_ZOOM = 19);
-      await page.evaluate(() => IDEE.config.MIN_ZOOM = 10);
+      await page.evaluate(() => { IDEE.config.MAX_ZOOM = 19; });
+      await page.evaluate(() => { IDEE.config.MIN_ZOOM = 10; });
 
       await page.evaluate(() => {
         window.map = IDEE.map({ container: 'map' });

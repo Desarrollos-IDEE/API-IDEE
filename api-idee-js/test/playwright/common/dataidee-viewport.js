@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 export default function registerDataIDEEViewportTests(pagePath) {
+  // En Cesium las entidades se insertan cuando el globo ha cargado: sin capas remotas por defecto
+  const cesium = pagePath.includes('/cesium/');
   const payload = (id) => ({
     type: 'FeatureCollection',
     features: [{
@@ -12,7 +14,11 @@ export default function registerDataIDEEViewportTests(pagePath) {
   });
   const setup = async (page, options = {}, controlledClock = false) => {
     await page.goto(pagePath);
-    await page.evaluate(() => {
+    await page.evaluate((isCesium) => {
+      if (isCesium) {
+        IDEE.config.baseLayer = [];
+        IDEE.config.terrain.default = [];
+      }
       window.map = IDEE.map({ container: 'map' });
       window.moveView = (offset, zoom = 0, notify = false) => {
         const native = window.map.getMapImpl();
@@ -33,7 +39,7 @@ export default function registerDataIDEEViewportTests(pagePath) {
           if (notify) camera.moveEnd.raiseEvent();
         }
       };
-    });
+    }, cesium);
     await page.waitForFunction(() => !window.map.getMapImpl().getView || window.map.isFinished());
     await page.evaluate(() => window.moveView(0));
     if (controlledClock) await page.clock.install();
@@ -58,7 +64,7 @@ export default function registerDataIDEEViewportTests(pagePath) {
           ? (native.getSource()?.getFeatures() || []).map((feature) => feature.getId())
           : native.entities.values.map((entity) => entity.id),
       };
-    })).toEqual({ facade: ids, native: ids });
+    }), { timeout: 20000 }).toEqual({ facade: ids, native: ids });
   };
   const move = (page, offset, zoom = 0, notify = false) => (
     page.evaluate((args) => window.moveView(...args), [offset, zoom, notify])
@@ -151,7 +157,8 @@ export default function registerDataIDEEViewportTests(pagePath) {
     });
     await setup(page, {}, true);
     await applied(page, ['response-1']);
-    await move(page, 1);
+    // Con el reloj controlado, el fin de movimiento se notifica como en el resto de pruebas
+    await move(page, 1, 0, true);
     await applied(page, ['response-2']);
     await page.evaluate(() => { window.viewportLayer.refresh(); window.viewportLayer.refresh(); });
     await applied(page, ['response-3']);

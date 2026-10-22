@@ -16,18 +16,18 @@ test.describe('IDEE.layer.KML', () => {
   test.describe('Method setURL', () => {
     test('Change URL', async ({ page }) => {
       await page.evaluate(() => {
-        const kml_001 = new IDEE.layer.KML({
+        const kml001 = new IDEE.layer.KML({
           url: 'https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml',
           name: 'Delegaciones-IGN',
           legend: 'Delegaciones IGN',
         });
-        window.kml_001 = kml_001;
-        window.map.addLayers(kml_001);
+        window.kml001 = kml001;
+        window.map.addLayers(kml001);
       });
 
       await page.waitForTimeout(5000);
-      await page.evaluate(() => window.kml_001.setURL('https://componentes.idee.es/estaticos/Datos/KML/las_huertas_n1.kml'));
-      const urlKML = await page.evaluate(() => window.kml_001.url);
+      await page.evaluate(() => window.kml001.setURL('https://componentes.idee.es/estaticos/Datos/KML/las_huertas_n1.kml'));
+      const urlKML = await page.evaluate(() => window.kml001.url);
       expect(urlKML).toEqual('https://componentes.idee.es/estaticos/Datos/KML/las_huertas_n1.kml');
     });
   });

@@ -13,7 +13,6 @@ import {
   isFunction,
   includes,
 } from 'IDEE/util/Utils';
-import { getValue } from 'IDEE/i18n/language';
 import { compileSync as compileTemplate } from 'IDEE/util/Template';
 import Popup from 'IDEE/Popup';
 
@@ -136,6 +135,7 @@ class Tiles3D extends Layer {
       this.map.getMapImpl().scene.primitives.add(tile3d);
       this.setStyle(this.style);
       this.setOpacity(this.opacity_);
+      this.fireAddedToMap_();
 
       // this.map.getMapImpl().zoomTo(this.cesiumLayer);
     });
@@ -247,15 +247,12 @@ class Tiles3D extends Layer {
    * @expose
    */
   getZIndex() {
-    if (!isNullOrEmpty(this.getLayer())) {
-      this.zIndex_ = this.map.getMapImpl().scene.primitives._primitives
-        .findIndex((l) => this.getLayer() === l);
-    }
     return this.zIndex_;
   }
 
   /**
-   * Este método establece el índice z de esta capa.
+   * Este método establece el índice z de esta capa. El índice es la clave de
+   * orden de la capa en su colección del visor; el mapa reordena la colección.
    *
    * @function
    * @param {Number} zIndex Índice de la capa.
@@ -264,25 +261,9 @@ class Tiles3D extends Layer {
    */
   setZIndex(zIndex) {
     this.zIndex_ = zIndex;
-    if (!isNullOrEmpty(this.getLayer())) {
-      const cesiumMap = this.map.getMapImpl();
-      /* eslint-disable no-underscore-dangle */
-      if ((cesiumMap.scene.primitives._primitives.length - 1) >= zIndex) {
-        cesiumMap.scene.primitives.destroyPrimitives = false;
-        cesiumMap.scene.primitives.remove(this.cesiumLayer);
-        cesiumMap.scene.primitives.add(this.cesiumLayer, zIndex);
-      } else {
-        // eslint-disable-next-line no-console
-        console.error(getValue('exception').index_error);
-      }
-      this.map.getLayers().forEach((layer) => {
-        const layerImpl = layer.getImpl().getLayer();
-        if (layerImpl instanceof Cesium3DTileset) {
-          /* eslint-disable no-param-reassign */
-          layer.zindex_ = cesiumMap.scene.primitives._primitives.findIndex((l) => layerImpl === l);
-          layer.isBase = false;
-        }
-      });
+    if (!isNullOrEmpty(this.map) && !isNullOrEmpty(this.getLayer())) {
+      // eslint-disable-next-line no-underscore-dangle
+      this.map.getImpl().sortLayers_();
     }
   }
 

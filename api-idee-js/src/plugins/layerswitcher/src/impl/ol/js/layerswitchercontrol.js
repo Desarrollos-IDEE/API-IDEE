@@ -30,6 +30,47 @@ export default class LayerswitcherControl extends IDEE.impl.Control {
     }
   }
 
+  // Indica si el control se repinta al terminar de pintarse el mapa
+  isRenderEventRegistered() {
+    return !IDEE.utils.isNullOrEmpty(this.fnRender);
+  }
+
+  /**
+   * Encuadre actual del mapa en EPSG:4326.
+   * @public
+   * @function
+   * @param {IDEE.Map} map Mapa.
+   * @returns {Array<Number>|null} [minX, minY, maxX, maxY].
+   */
+  getBbox4326(map) {
+    const bbox = map.getBbox();
+    if (IDEE.utils.isNullOrEmpty(bbox)) return null;
+    const { code } = map.getProjection();
+    const min = this.getTransformedCoordinates(code, [bbox.x.min, bbox.y.min]);
+    const max = this.getTransformedCoordinates(code, [bbox.x.max, bbox.y.max]);
+    return [min[0], min[1], max[0], max[1]];
+  }
+
+  // Proyección con la que se leen las capas de las capacidades WMS y WMTS
+  getCapabilitiesProjectionCode(map) {
+    return map.getProjection().code;
+  }
+
+  // Las teselas 3D y el terreno solo existen en la implementación de Cesium
+  isLayerTypeSupported(type) {
+    return !['tiles3d', 'terrain'].includes(String(type).toLowerCase());
+  }
+
+  // Herramientas no disponibles para la capa (ninguna en OpenLayers)
+  getLayerToolsSupport() {
+    return {};
+  }
+
+  // El encuadre de la capa lo resuelve la fachada con su extensión
+  zoomToLayer() {
+    return false;
+  }
+
   /**
    * Transforms x,y coordinates to 4326 on coordinates array.
    * @public

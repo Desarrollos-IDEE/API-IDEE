@@ -658,14 +658,6 @@ input[type=range].layerswitcher-transparency {
 
 
 /**************************
-    ACCIONES DEL PIE DEL DIÁLOGO (dialogactions.js)
-**************************/
-div.m-dialog div.m-button > .m-layerswitcher-dialog-action {
-    margin-right: 8px;
-}
-
-
-/**************************
     OGCMODE.HTML
 **************************/
 .m-layerswitcher-ogc-mode {
@@ -760,6 +752,37 @@ div.m-dialog div.m-button > .m-layerswitcher-dialog-action {
     justify-content: flex-end;
     gap: 8px;
     margin-top: 8px;
+}
+
+.m-layerswitcher-auth-or {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: var(--idee-color-neutral-60);
+    text-align: center;
+}
+
+.m-layerswitcher-auth-token-status {
+    margin: 0;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+.m-layerswitcher-auth-token-status:empty {
+    display: none;
+}
+
+.m-layerswitcher-auth-token-ok {
+    color: var(--idee-color-success, #2e7d32);
+}
+
+.m-layerswitcher-auth-token-error {
+    color: var(--idee-color-danger, #c62828);
+}
+
+.m-layerswitcher-auth-form input:disabled,
+.m-layerswitcher-auth-save:disabled {
+    opacity: .5;
+    cursor: not-allowed;
 }
 
 

@@ -45,8 +45,13 @@ const routeService = async (page, { validTokens = [], publicAccess = true } = {}
 
 const addAuthLayer = (page, pagePath, vendorOptions, options = {}, layerParams = {}) => (
   page.goto(pagePath).then(() => page.evaluate(({
-    vendor, opts, root, layerParams: params,
+    vendor, opts, root, layerParams: params, isCesium,
   }) => {
+    // En Cesium las entidades se insertan cuando el globo ha cargado: sin capas remotas por defecto
+    if (isCesium) {
+      IDEE.config.baseLayer = [];
+      IDEE.config.terrain.default = [];
+    }
     window.map = IDEE.map({ container: 'map' });
     window.authLayer = new IDEE.layer.DataIDEE({
       url: `${root}/`,
@@ -58,7 +63,11 @@ const addAuthLayer = (page, pagePath, vendorOptions, options = {}, layerParams =
     window.authLayer.on(IDEE.evt.LOAD_ERROR, () => { window.authEvents.errors += 1; });
     window.map.addLayers(window.authLayer);
   }, {
-    vendor: vendorOptions, opts: options, root: ROOT, layerParams,
+    vendor: vendorOptions,
+    opts: options,
+    root: ROOT,
+    layerParams,
+    isCesium: pagePath.includes('/cesium/'),
   }))
 );
 
