@@ -1,3 +1,4 @@
+/* eslint-disable max-len -- test comentado con contenido HTML de ejemplo */
 // import { test, expect } from '@playwright/test';
 
 // test('Click help', async ({ page }) => {

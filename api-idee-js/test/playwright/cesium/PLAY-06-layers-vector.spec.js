@@ -13,8 +13,12 @@ const WAIT = { timeout: 25000 };
 const FEATURES = {
   type: 'FeatureCollection',
   features: [
-    { type: 'Feature', id: 'p1', geometry: { type: 'Point', coordinates: [-3.7, 40.4] }, properties: { nombre: 'Uno' } },
-    { type: 'Feature', id: 'p2', geometry: { type: 'Point', coordinates: [-3.6, 40.5] }, properties: { nombre: 'Dos' } },
+    {
+      type: 'Feature', id: 'p1', geometry: { type: 'Point', coordinates: [-3.7, 40.4] }, properties: { nombre: 'Uno' },
+    },
+    {
+      type: 'Feature', id: 'p2', geometry: { type: 'Point', coordinates: [-3.6, 40.5] }, properties: { nombre: 'Dos' },
+    },
   ],
 };
 const DESCRIBE_FEATURE_TYPE = `<?xml version="1.0" encoding="UTF-8"?>
@@ -88,10 +92,10 @@ const createLayer = (page, type) => page.evaluate(({ layerType, host }) => {
       url: `${host}/ogc/collections/`, name: 'puntos', legend: 'OGC API',
     }),
     GenericVector: () => {
-      const source = new Cesium.CustomDataSource('generica');
+      const source = new window.Cesium.CustomDataSource('generica');
       source.entities.add({
         id: 'g1',
-        position: Cesium.Cartesian3.fromDegrees(-3.7, 40.4),
+        position: window.Cesium.Cartesian3.fromDegrees(-3.7, 40.4),
         point: { pixelSize: 8 },
       });
       return new IDEE.layer.GenericVector({ name: 'generica', legend: 'Genérica' }, {}, source);
@@ -190,8 +194,8 @@ test.describe('Capas vectoriales y 3D en Cesium', () => {
     // Los nombres de clase están minificados: se compara con las clases de Cesium
     const provider = () => page.evaluate(() => {
       const { terrainProvider } = window.map.getMapImpl();
-      if (terrainProvider instanceof Cesium.CesiumTerrainProvider) return 'CesiumTerrainProvider';
-      if (terrainProvider instanceof Cesium.EllipsoidTerrainProvider) return 'EllipsoidTerrainProvider';
+      if (terrainProvider instanceof window.Cesium.CesiumTerrainProvider) return 'CesiumTerrainProvider';
+      if (terrainProvider instanceof window.Cesium.EllipsoidTerrainProvider) return 'EllipsoidTerrainProvider';
       return 'otro';
     });
     expect(await provider()).toBe('CesiumTerrainProvider');

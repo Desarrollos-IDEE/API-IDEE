@@ -109,6 +109,11 @@ class DataIDEE extends Vector {
    * - throttleMs: Intervalo mínimo entre inicios de peticiones; 0 lo desactiva.
    *   Durante la espera se conserva solo la última consulta pendiente.
    *   refresh() y refreshInterval descargan datos nuevos y renuevan la caché.
+   * - editingLimits: límites de zona con pageSize, maxFeatures, maxCoordinates
+   *   y maxBytes; por defecto 250, 1000, 100000 y 10485760.
+   * - transactionParameters / transactionHeaders: valores para escrituras y
+   *   comprobaciones de conflicto, independientes de los parámetros de lectura.
+   * - dataideeDefaultProperties: propiedades no vacías que se añaden a las altas.
    * @param {Object} vendorOpts Opciones para la biblioteca base.
    * - filter: Expresión CQL2 en texto o un objeto CQL2 JSON. Una cadena usa
    *   cql2-text por defecto y un objeto usa cql2-json.
@@ -116,15 +121,17 @@ class DataIDEE extends Vector {
    *   o cql2-json).
    * - cql: Alias heredado para enviar un filtro mediante el parámetro filter.
    * - getFeature: Parámetros adicionales de la petición de items. El token de
-   *   autenticación (token) es opcional: las capas públicas no lo necesitan. Si se
-   *   indica, se envía tal cual como parámetro "token" y, si el servicio lo rechaza
-   *   (HTTP 401/403), la capa queda vacía y se dispara LOAD_UNAUTHORIZED.
+   *   autenticación (token) es opcional: las capas públicas no lo necesitan.
+   * - tokenLocation: Ubicación del token: 'header' (predeterminado), que envía
+   *   Authorization: Bearer <token>, o 'query', que lo envía como ?token=<token>.
+   *   Si se rechaza (HTTP 401/403), la capa queda vacía y dispara LOAD_UNAUTHORIZED.
    * Ejemplo vendorOptions:
    * <pre><code>
    * {
    *   filter: { op: '=', args: [{ property: 'status' }, 'active'] },
    *   filterLang: 'cql2-json',
    *   getFeature: { token: tokenAutenticacion },
+   *   // tokenLocation: 'query', // Alternativa de compatibilidad.
    * }
    * </code></pre>
    * @api
@@ -488,11 +495,57 @@ class DataIDEE extends Vector {
     this.getImpl().clearCache();
   }
 
+  /** Returns advertised DataIDEE transaction capabilities for this collection. */
+  getEditingCapabilities() {
+    return this.getEditingImpl_().getEditingCapabilities();
+  }
+
+  /** Loads a complete, bounded CRS84 work area and pauses DataIDEE refreshes. */
+  beginEditing({ bbox }) {
+    return this.getEditingImpl_().beginEditing({ bbox });
+  }
+
+  /** Returns the active editing session for generic editing controls. */
+  getEditingSession() { return this.getEditingImpl_().getEditingSession(); }
+
+  /** Releases the DataIDEE edit-session refresh lock. */
+  endEditing(refresh = true) {
+    return this.getEditingImpl_().endEditing(refresh);
+  }
+
+  /** Creates a GeoJSON feature in the configured collection. */
+  createFeature(feature) {
+    return this.getEditingImpl_().createFeature(feature);
+  }
+
+  /** Reads one feature for optimistic conflict detection during an explicit save. */
+  getEditingFeature(id) {
+    return this.getEditingImpl_().getEditingFeature(id);
+  }
+
+  /** Updates a GeoJSON feature, preserving the caller's properties. */
+  updateFeature(id, feature, method, etag) {
+    return this.getEditingImpl_().updateFeature(id, feature, method, etag);
+  }
+
+  /** Deletes one feature by its server identifier. */
+  deleteFeature(id, etag) {
+    return this.getEditingImpl_().deleteFeature(id, etag);
+  }
+
+  getEditingImpl_() {
+    const impl = this.getImpl();
+    if (typeof impl.getEditingCapabilities !== 'function') {
+      throw new Error('DataIDEE spatial editing is only available in OpenLayers.');
+    }
+    return impl;
+  }
+
   /**
-   * Devuelve el token de autenticación de la capa.
+   * Devuelve el token de autenticación de la capa, con independencia de dónde se envíe.
    *
    * @function
-   * @returns {String|undefined} Token enviado como parámetro "token".
+   * @returns {String|undefined} Token configurado en getFeature.token.
    * @api
    */
   getToken() {

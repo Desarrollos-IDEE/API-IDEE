@@ -2,7 +2,7 @@
  * Botón de candado para iniciar o cerrar sesión en un servicio DataIDEE.
  *
  * Estados:
- * - hidden: el servicio no ofrece /auth/login.
+ * - hidden: el servicio no tiene login (ver AuthClient).
  * - unlocked: candado abierto, sin token. Al pulsar abre el formulario de login.
  * - pending: consulta en curso. Deshabilitado y con animación de onda.
  * - locked: candado cerrado, con token. Al pulsar cierra la sesión.
@@ -71,7 +71,7 @@ export default class AuthButton {
 
   /**
    * Calcula el estado del servicio: comprueba el token guardado (refrescándolo
-   * si ha caducado) o si el servicio tiene /auth/login.
+   * si ha caducado) o si el servicio tiene login.
    * @returns {Promise<String>} Estado final.
    */
   refresh() {

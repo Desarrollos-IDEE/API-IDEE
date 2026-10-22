@@ -3,6 +3,7 @@ import { readFileSync } from 'fs';
 import path from 'path';
 import { createGeoTIFF } from './fixtures/geotiff';
 import { createGeoPackage } from '../ol/fixtures/geopackage';
+import { CORS, PNG_1PX } from '../common/mocks';
 
 /*
  * Tipos de capa que se han implementado en Cesium: GeoTIFF, MVT, MBTilesVector,
@@ -13,11 +14,6 @@ import { createGeoPackage } from '../ol/fixtures/geopackage';
 const PAGE = '/test/playwright/cesium/basic-cesium.html';
 const MVT_HOST = 'https://mvt.cesium.test';
 const WMC_HOST = 'https://wmc.cesium.test';
-const CORS = { 'access-control-allow-origin': '*' };
-const PNG_1PX = Buffer.from(
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
-  'base64',
-);
 const FIXTURES = path.join(__dirname, '..', 'fixtures');
 const POINT_PBF = readFileSync(path.join(FIXTURES, 'refresh', 'point.pbf'));
 const WAIT = { timeout: 20000 };
@@ -138,7 +134,7 @@ test.describe('Capas nuevas en Cesium', () => {
         const provider = layer.getImpl().getLayer().imageryProvider;
         const { tilingScheme } = provider;
         return Promise.all(points.map(async ([lon, lat]) => {
-          const position = Cesium.Cartographic.fromDegrees(lon, lat);
+          const position = window.Cesium.Cartographic.fromDegrees(lon, lat);
           const { x, y } = tilingScheme.positionToTileXY(position, level);
           const canvas = await provider.requestImage(x, y, level);
           const rect = tilingScheme.tileXYToRectangle(x, y, level);
@@ -252,7 +248,8 @@ test.describe('Capas nuevas en Cesium', () => {
     expect(defaults.mvts).toEqual(['mvt']);
     expect(defaults.style).toBe(true);
     // Estilo por defecto: relleno blanco al 60 % (Firefox redondea a 254 al premultiplicar el alfa)
-    defaults.pixels[0].slice(0, 3).forEach((channel) => expect(channel).toBeGreaterThanOrEqual(250));
+    defaults.pixels[0].slice(0, 3)
+      .forEach((channel) => expect(channel).toBeGreaterThanOrEqual(250));
     expect(defaults.pixels[0][3]).toBeGreaterThan(140);
     expect(defaults.pixels[0][3]).toBeLessThan(165);
     expect(defaults.pixels[1]).toEqual([0, 0, 0, 0]);
@@ -309,7 +306,8 @@ test.describe('Capas nuevas en Cesium', () => {
         events: window.events.slice(),
         layers: window.map.getMBTilesVector().map((l) => l.name),
         maximumLevel: provider.maximumLevel,
-        rectangle: [rect.west, rect.south, rect.east, rect.north].map((r) => Cesium.Math.toDegrees(r)),
+        rectangle: [rect.west, rect.south, rect.east, rect.north]
+          .map((r) => window.Cesium.Math.toDegrees(r)),
         pixels: await window.tilePixels(window.layer, [1, 1, 2], [[128, 128], [10, 10]]),
       };
     });
@@ -317,7 +315,8 @@ test.describe('Capas nuevas en Cesium', () => {
     expect(state.layers).toEqual(['mbtv']);
     expect(state.maximumLevel).toBe(3);
     // Los límites del MBTiles, recortados al esquema Web Mercator (±85,05º)
-    [-180, -85.05, 180, 85.05].forEach((value, i) => expect(state.rectangle[i]).toBeCloseTo(value, 1));
+    [-180, -85.05, 180, 85.05]
+      .forEach((value, i) => expect(state.rectangle[i]).toBeCloseTo(value, 1));
     expect(state.pixels[0][3]).toBeGreaterThan(0);
     expect(state.pixels[1]).toEqual([0, 0, 0, 0]);
 

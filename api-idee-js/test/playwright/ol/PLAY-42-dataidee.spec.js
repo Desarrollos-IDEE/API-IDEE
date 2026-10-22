@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 
 import registerRequestManagerTests from '../common/request-manager.spec';
-/* Desactivado hasta que el endpoint DataIDEE esté maduro (hoy no hay un servicio real usable por CORS); reactivar entonces.
 import registerDataIDEECacheLayerTests from '../common/dataidee-layer-cache';
 import registerDataIDEEViewportTests from '../common/dataidee-viewport';
 import registerDataIDEEAuthTests from '../common/dataidee-auth';
@@ -9,7 +8,6 @@ import registerDataIDEEAuthTests from '../common/dataidee-auth';
 registerDataIDEECacheLayerTests('/test/playwright/ol/basic-ol.html');
 registerDataIDEEViewportTests('/test/playwright/ol/basic-ol.html');
 registerDataIDEEAuthTests('/test/playwright/ol/basic-ol.html');
-*/
 
 const geoJSON = {
   type: 'FeatureCollection',
@@ -50,7 +48,6 @@ test('OGCAPIFeatures keeps the previous GetFeatureUrl request by default', async
   expect(new URL(request.url()).searchParams.has('filter-lang')).toBe(false);
 });
 
-/* Desactivado hasta que el endpoint DataIDEE esté maduro (hoy no hay un servicio real usable por CORS); reactivar entonces.
 test('DataIDEE preserves the shared public configuration and performs filtered GET requests', async ({ page }) => {
   await page.route('https://ogc.test/**', (route) => route.fulfill({
     status: 200,
@@ -279,6 +276,5 @@ test('DataIDEE loads features and supports map add, get and remove methods', asy
   });
   expect(state).toEqual({ featuresLoaded: 1, layerWasFound: true, layersAfterRemoval: 0 });
 });
-*/
 
 registerRequestManagerTests('/test/playwright/ol/basic-ol.html');

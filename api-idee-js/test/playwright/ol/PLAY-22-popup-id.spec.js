@@ -16,20 +16,20 @@ test.describe('IDEE.Popup', () => {
 
   test('ID Popup', async ({ page }) => {
     await page.evaluate(() => {
-      const ogc_001 = new IDEE.layer.OGCAPIFeatures({
+      const ogc001 = new IDEE.layer.OGCAPIFeatures({
         url: 'https://api-features.idee.es/collections/',
         name: 'falls',
         legend: 'Capa OGCAPIFeatures',
         extract: true,
       });
-      window.ogc_001 = ogc_001;
+      window.ogc001 = ogc001;
       // El evento se escucha antes de añadir la capa: la respuesta puede llegar enseguida
       window.ogc_001Loaded = new Promise((resolve) => {
-        window.ogc_001.on(IDEE.evt.LOAD, () => {
+        window.ogc001.on(IDEE.evt.LOAD, () => {
           resolve();
         });
       });
-      window.map.addLayers(window.ogc_001);
+      window.map.addLayers(window.ogc001);
     });
     await page.evaluate(() => window.ogc_001Loaded);
     await page.click('#map', { position: { x: 562, y: 293 } });

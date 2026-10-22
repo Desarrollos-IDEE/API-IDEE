@@ -1,18 +1,39 @@
 /**
  * Cliente HTTP de autenticación de servicios OGC API Features DataIDEE.
  *
- * Contrato (tolerante con los nombres de los campos):
- * - POST {root}/auth/login    { username, password }
- * - POST {root}/auth/refresh  { refresh_token } + Authorization: Bearer <token actual>
- * - Respuesta: { access_token | accessToken | token, refresh_token | refreshToken,
- *   expires_in | expiresIn } (también dentro de "data").
+ * Contratos admitidos, detectados por servicio (el primero que responde):
+ * - API de autenticación de DataIDEE ("auth-api"):
+ *   - GET  {root}/auth-api/auth/me       sin token responde 401: hay login
+ *   - POST {root}/auth-api/auth/login    { username, password } → { token, userId }
+ *   - GET  {root}/auth-api/auth/refresh  + Authorization: Bearer <token actual> → { token }
+ *   - POST {root}/auth-api/auth/logout   + Authorization: Bearer <token actual>
+ * - Contrato anterior:
+ *   - POST {root}/auth/login    { username, password }
+ *   - POST {root}/auth/refresh  { refresh_token } + Authorization: Bearer <token actual>
+ *
+ * Respuestas tolerantes con los nombres de los campos: { access_token | accessToken |
+ * token, refresh_token | refreshToken, expires_in | expiresIn } (también dentro de "data").
  *
  * Las peticiones van siempre directas al servicio (sin proxy), para que las
  * credenciales no pasen por terceros. El servicio debe permitir CORS.
  */
 
-const LOGIN_PATH = 'auth/login';
-const REFRESH_PATH = 'auth/refresh';
+const CONTRACTS = [
+  {
+    // Un 401 sin token (o un 200) indica que la API de autenticación existe
+    detect: { path: 'auth-api/auth/me', isAvailable: (code) => code === 200 || code === 401 },
+    login: 'auth-api/auth/login',
+    refresh: { path: 'auth-api/auth/refresh', method: 'get' },
+    logout: 'auth-api/auth/logout',
+  },
+  {
+    // Cualquier respuesta salvo 404 (405, 400, 401...) indica que el endpoint existe
+    detect: { path: 'auth/login', isAvailable: (code) => code !== 404 },
+    login: 'auth/login',
+    refresh: { path: 'auth/refresh', method: 'post' },
+    logout: null,
+  },
+];
 const ACCESS_TOKEN_KEYS = ['access_token', 'accessToken', 'token', 'jwt'];
 const REFRESH_TOKEN_KEYS = ['refresh_token', 'refreshToken'];
 const EXPIRES_IN_KEYS = ['expires_in', 'expiresIn'];
@@ -62,19 +83,37 @@ export const parseTokenResponse = (text, previous = {}) => {
 
 const isSuccess = (response) => response.code >= 200 && response.code < 300;
 
+const bearer = (session) => ({ ...JSON_HEADERS, Authorization: `Bearer ${session.accessToken}` });
+
 export default class AuthClient {
+  constructor() {
+    // Contrato de autenticación de cada servicio (promesa), detectado una sola vez
+    this.contracts_ = {};
+  }
+
   /**
-   * Comprueba si el servicio ofrece login haciendo una petición de prueba a
-   * /auth/login. Un 404, un error de red o de CORS indican que no hay login;
-   * cualquier otra respuesta (405, 400, 401...) indica que el endpoint existe.
+   * Contrato de autenticación del servicio: el primero cuya petición de prueba
+   * indica que existe. Un 404, un error de red o de CORS indican que no lo tiene.
+   * @param {String} root Raíz del servicio.
+   * @returns {Promise<Object|null>} Contrato o null si el servicio no tiene login.
+   */
+  getContract(root) {
+    if (!(root in this.contracts_)) {
+      this.contracts_[root] = CONTRACTS.reduce((previous, contract) => previous
+        .then((found) => found || IDEE.remote.get(`${root}/${contract.detect.path}`, null, DIRECT)
+          .then((response) => (response.code !== 0 && contract.detect.isAvailable(response.code)
+            ? contract : null))
+          .catch(() => null)), Promise.resolve(null));
+    }
+    return this.contracts_[root];
+  }
+
+  /**
    * @param {String} root Raíz del servicio.
    * @returns {Promise<Boolean>} Verdadero si hay login.
    */
-  // eslint-disable-next-line class-methods-use-this
   isLoginAvailable(root) {
-    return IDEE.remote.get(`${root}/${LOGIN_PATH}`, null, DIRECT)
-      .then((response) => response.code !== 0 && response.code !== 404)
-      .catch(() => false);
+    return this.getContract(root).then((contract) => contract !== null);
   }
 
   /**
@@ -83,31 +122,51 @@ export default class AuthClient {
    * @param {String} password Contraseña.
    * @returns {Promise<Object>} Sesión.
    */
-  // eslint-disable-next-line class-methods-use-this
-  login(root, username, password) {
-    return IDEE.remote.post(`${root}/${LOGIN_PATH}`, { username, password }, {
+  async login(root, username, password) {
+    const contract = await this.getContract(root);
+    if (contract === null) throw new AuthError(404);
+    const response = await IDEE.remote.post(`${root}/${contract.login}`, { username, password }, {
       ...DIRECT,
       headers: JSON_HEADERS,
-    }).then((response) => {
-      if (!isSuccess(response)) throw new AuthError(response.code);
-      return parseTokenResponse(response.text);
     });
+    if (!isSuccess(response)) throw new AuthError(response.code);
+    return parseTokenResponse(response.text);
   }
 
   /**
+   * Renueva el token con el actual: por GET en la API de autenticación de DataIDEE
+   * y por POST, con el refresh token si lo hay, en el contrato anterior.
    * @param {String} root Raíz del servicio.
    * @param {Object} session Sesión actual.
    * @returns {Promise<Object>} Nueva sesión.
    */
-  // eslint-disable-next-line class-methods-use-this
-  refresh(root, session) {
-    const body = session.refreshToken ? { refresh_token: session.refreshToken } : {};
-    return IDEE.remote.post(`${root}/${REFRESH_PATH}`, body, {
-      ...DIRECT,
-      headers: { ...JSON_HEADERS, Authorization: `Bearer ${session.accessToken}` },
-    }).then((response) => {
-      if (!isSuccess(response)) throw new AuthError(response.code);
-      return parseTokenResponse(response.text, session);
-    });
+  async refresh(root, session) {
+    const contract = await this.getContract(root);
+    if (contract === null) throw new AuthError(404);
+    const url = `${root}/${contract.refresh.path}`;
+    const options = { ...DIRECT, headers: bearer(session) };
+    let response;
+    if (contract.refresh.method === 'get') {
+      response = await IDEE.remote.get(url, null, options);
+    } else {
+      const body = session.refreshToken ? { refresh_token: session.refreshToken } : {};
+      response = await IDEE.remote.post(url, body, options);
+    }
+    if (!isSuccess(response)) throw new AuthError(response.code);
+    return parseTokenResponse(response.text, session);
+  }
+
+  /**
+   * Cierra la sesión en el servicio si su contrato lo permite. No falla: la sesión
+   * local se borra igualmente.
+   * @param {String} root Raíz del servicio.
+   * @param {Object} session Sesión que se cierra.
+   * @returns {Promise} Se resuelve al terminar.
+   */
+  async logout(root, session) {
+    const contract = await this.getContract(root);
+    if (contract === null || !contract.logout || !session?.accessToken) return;
+    await IDEE.remote.post(`${root}/${contract.logout}`, {}, { ...DIRECT, headers: bearer(session) })
+      .catch(() => {});
   }
 }

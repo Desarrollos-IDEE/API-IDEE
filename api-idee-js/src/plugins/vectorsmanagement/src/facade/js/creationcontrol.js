@@ -154,6 +154,10 @@ export default class CreationControl extends IDEE.Control {
           triangulo: getValue('triangulo'),
           pentagono: getValue('pentagono'),
           hexagono: getValue('hexagono'),
+          multiplePoint: getValue('multiplePoint'),
+          multipleLine: getValue('multipleLine'),
+          multiplePolygon: getValue('multiplePolygon'),
+          finishMultiple: getValue('finishMultiple'),
         },
       },
     });
@@ -161,6 +165,11 @@ export default class CreationControl extends IDEE.Control {
     this.initializeLayers();
     this.addEvents();
     this.managementControl_.accessibilityTab(this.template);
+    this.managementControl_.updateEditingAvailability();
+    this.template.querySelector('#multipointdrawing').addEventListener('click', this.onMultiPointSelected.bind(this));
+    this.template.querySelector('#multilinedrawing').addEventListener('click', this.onMultiLineSelected.bind(this));
+    this.template.querySelector('#multipolygondrawing').addEventListener('click', this.onMultiPolygonSelected.bind(this));
+    this.template.querySelector('#finishmultipledrawing').addEventListener('click', this.onFinishMultipleSelected.bind(this));
   }
 
   /**
@@ -209,6 +218,63 @@ export default class CreationControl extends IDEE.Control {
     this.template.querySelector('#m-vectormanagement-coordinates-draw').addEventListener('click', this.drawPointCoords.bind(this));
 
     this.template.querySelector('#figuresSelector').addEventListener('change', (e) => this.getImpl().changeFigure(e));
+  }
+
+  startMultipleGeometry(multipleType, drawType) {
+    this.deactivateDrawing();
+    this.multipleGeometryType_ = multipleType;
+    this.multipleCoordinates_ = [];
+    this.template.querySelector('#multiple-drawing-status').textContent = getValue('multiple_start_status');
+    this.template.querySelector('#finishmultipledrawing').hidden = false;
+    const drawing = {
+      Point: { flag: 'isPointActive', button: 'multipointdrawing' },
+      LineString: { flag: 'isLineActive', button: 'multilinedrawing' },
+      Polygon: { flag: 'isPolygonActive', button: 'multipolygondrawing' },
+    }[drawType];
+    this[drawing.flag] = true;
+    this.geometry = drawType;
+    this.template.querySelector(`#${drawing.button}`).classList.add('activated');
+    this.getImpl().addDrawInteraction();
+  }
+
+  onMultiPointSelected() { this.startMultipleGeometry('MultiPoint', 'Point'); }
+
+  onMultiLineSelected() { this.startMultipleGeometry('MultiLineString', 'LineString'); }
+
+  onMultiPolygonSelected() { this.startMultipleGeometry('MultiPolygon', 'Polygon'); }
+
+  onFinishMultipleSelected() { this.finishMultipleGeometry(); }
+
+  finishMultipleGeometry() {
+    if (!this.multipleCoordinates_?.length) {
+      this.template.querySelector('#multiple-drawing-status').textContent = getValue('multiple_no_parts');
+      return;
+    }
+    const geometryConstructors = {
+      MultiPoint: ol.geom.MultiPoint,
+      MultiLineString: ol.geom.MultiLineString,
+      MultiPolygon: ol.geom.MultiPolygon,
+    };
+    const Geometry = geometryConstructors[this.multipleGeometryType_];
+    const geometry = new Geometry(this.multipleCoordinates_);
+    this.feature = IDEE.impl.Feature.feature2Facade(new ol.Feature({ geometry }));
+    this.geometry = this.multipleGeometryType_;
+    this.addAttributesToFeature();
+    if (this.managementControl_.hasActiveEditingSession()) {
+      const values = {};
+      this.managementControl_.getEditingFields()
+        .querySelectorAll('#m-vectorsmanagement-editing-fields input').forEach((input) => {
+          values[input.name] = input.value;
+        });
+      if (!this.managementControl_.prepareNewFeature(this.feature, values)) return;
+    }
+    this.layer_.addFeatures(this.feature);
+    this.getImpl().getVectorSource().clear(true);
+    this.multipleGeometryType_ = null;
+    this.multipleCoordinates_ = [];
+    this.template.querySelector('#multiple-drawing-status').textContent = getValue('multiple_done');
+    this.template.querySelector('#finishmultipledrawing').hidden = true;
+    this.deactivateDrawing();
   }
 
   /**
@@ -334,6 +400,13 @@ export default class CreationControl extends IDEE.Control {
    * @api
    */
   deactivateDrawing() {
+    if (this.multipleGeometryType_) {
+      this.multipleGeometryType_ = null;
+      this.multipleCoordinates_ = [];
+      this.getImpl().getVectorSource().clear(true);
+      this.template.querySelector('#finishmultipledrawing').hidden = true;
+      this.template.querySelector('#multiple-drawing-status').textContent = '';
+    }
     if (this.isPointActive || this.isLocatedPointActive || this.isLineActive
       || this.isPolygonActive || this.isTextActive || this.isFigureActive) {
       if (this.isLocatedPointActive) {
@@ -502,6 +575,15 @@ export default class CreationControl extends IDEE.Control {
    * @param {Event} event - 'drawend' triggering event
    */
   onDraw(event) {
+    if (this.multipleGeometryType_) {
+      const coordinates = event.feature.getGeometry().getCoordinates();
+      if (this.multipleGeometryType_ === 'MultiPoint') {
+        this.multipleCoordinates_.push(coordinates);
+      } else this.multipleCoordinates_.push(coordinates);
+      this.template.querySelector('#multiple-drawing-status').textContent = getValue('multiple_part_count')
+        .replace('{count}', String(this.multipleCoordinates_.length));
+      return;
+    }
     // const lastFeature = this.feature;
     this.hideTextPoint();
     this.feature = IDEE.impl.Feature.feature2Facade(event.feature);
@@ -520,6 +602,17 @@ export default class CreationControl extends IDEE.Control {
       this.setFeatureStyle(this.feature, this.geometry);
     } */
     this.addAttributesToFeature();
+    if (this.managementControl_.hasActiveEditingSession()) {
+      const values = {};
+      this.managementControl_.getEditingFields()
+        .querySelectorAll('#m-vectorsmanagement-editing-fields input').forEach((input) => {
+          values[input.name] = input.value;
+        });
+      if (!this.managementControl_.prepareNewFeature(this.feature, values)) {
+        this.deactivateDrawing();
+        return;
+      }
+    }
     this.layer_.addFeatures(this.feature);
 
     this.emphasizeSelectedFeature();

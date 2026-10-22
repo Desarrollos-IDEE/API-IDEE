@@ -115,13 +115,6 @@ export default class PrintViewManagementControl extends IDEE.Control {
     });
   }
 
-  addTo(map) {
-    super.addTo(map);
-    if (this.defaultOpenControl === 0 && this.printermap_ && this.printMapButton_) {
-      this.printMapButton_.click();
-    }
-  }
-
   selectElementHTML() {
     // IDs
     const ID_PRINT_BUTTON = '#m-printviewmanagement-print';
@@ -207,8 +200,7 @@ export default class PrintViewManagementControl extends IDEE.Control {
       this.printermap_,
       this.map_,
     );
-    this.printMapButton_ = html.querySelector('#m-printviewmanagement-printermap');
-    this.printMapButton_.addEventListener('click', () => {
+    html.querySelector('#m-printviewmanagement-printermap').addEventListener('click', () => {
       this.deactive(html, 'printermap');
       this.printerMapControl.active(html);
     });

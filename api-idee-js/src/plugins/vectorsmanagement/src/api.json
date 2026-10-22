@@ -55,6 +55,10 @@
       "type": "simple",
       "name": "snapping",
       "position": 11
+    }, {
+      "type": "boolean",
+      "name": "turf",
+      "position": 12
     }]
   }],
   "files": {

@@ -26,6 +26,7 @@ test('Capa MVT - tileLoadFunction', async ({ page }) => {
     }, {
     }, {
       tileLoadFunction: async (tile, url) => {
+        // eslint-disable-next-line no-console -- el test escucha este mensaje en la consola
         console.log('tile cargada');
         tile.setLoader((extent, resolution, projection) => {
           fetch(url).then((response) => {

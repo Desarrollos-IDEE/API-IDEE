@@ -9,7 +9,7 @@ test('Test plugin Layerswitcher', async ({ page }) => {
     window.mp = new IDEE.plugin.Layerswitcher();
     window.mapjs.addPlugin(window.mp);
   });
-  
+
   const nPlugins = await page.evaluate(() => window.mapjs.getPlugins(window.mp.name).length);
   expect(nPlugins).toBe(1);
 });

@@ -11,21 +11,20 @@ test('Capa MVT - tileLoadFunction', async ({ page }) => {
     }
   });
 
-  let mapjs;
   await page.evaluate(() => {
-    mapjs = IDEE.map({
+    window.mapjs = IDEE.map({
       container: 'map',
     });
   });
 
-  let osm;
   await page.evaluate(() => {
-    osm = new IDEE.layer.OSM({
+    const osm = new IDEE.layer.OSM({
     }, {
     }, {
       tileLoadFunction: (imageTile, src) => {
         // eslint-disable-next-line no-param-reassign
         imageTile.getImage().src = src;
+        // eslint-disable-next-line no-console -- el test escucha este mensaje en la consola
         console.log('tile cargada');
       },
     });

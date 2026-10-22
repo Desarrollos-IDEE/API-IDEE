@@ -7,10 +7,10 @@ test('Test plugin Incicarto', async ({ page }) => {
     window.mapjs = IDEE.map({
       container: 'mapjs',
     });
-      window.mp = new IDEE.plugin.Incicarto();
+    window.mp = new IDEE.plugin.Incicarto();
     window.mapjs.addPlugin(window.mp);
   });
-  
+
   const nPlugins = await page.evaluate(() => window.mapjs.getPlugins(window.mp.name).length);
   expect(nPlugins).toBe(1);
 });

@@ -17,7 +17,7 @@ test('Probamos añadir controles desde API 2.0', async ({ page }) => {
   // Hacer petición a la API para obtener los controles
   const apiAvaliableControls = await page.evaluate(async () => {
     const res = await fetch(`${IDEE.config.API_IDEE_URL}api/actions/controls`);
-    return await res.json();
+    return res.json();
   });
 
   // Añadir los controles al mapa

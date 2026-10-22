@@ -21,13 +21,13 @@ test.describe('IDEE.layer.WMC', () => {
 
   test('Add layer', async ({ page }) => {
     await page.evaluate(() => {
-      const wmc_001 = new IDEE.layer.WMC({
+      const wmc001 = new IDEE.layer.WMC({
         url: `${IDEE.config.STATIC_RESOURCES_URL}/Datos/WMC/wmc_grupos.xml`,
         name: 'Secciones',
       });
-      window.wmc_001 = wmc_001;
+      window.wmc001 = wmc001;
 
-      window.map.addWMC(wmc_001);
+      window.map.addWMC(wmc001);
     });
 
     await expect.poll(() => page.evaluate(() => window.map.getLayers().length), {
@@ -37,21 +37,21 @@ test.describe('IDEE.layer.WMC', () => {
 
   test('Add two WMC', async ({ page }) => {
     await page.evaluate(() => {
-      const wmc_001 = new IDEE.layer.WMC({
+      const wmc001 = new IDEE.layer.WMC({
         url: `${IDEE.config.STATIC_RESOURCES_URL}/Datos/WMC/satelite.xml`,
         name: 'Satelite',
       });
-      window.wmc_001 = wmc_001;
+      window.wmc001 = wmc001;
 
-      window.map.addWMC(wmc_001);
+      window.map.addWMC(wmc001);
 
-      const wmc_002 = new IDEE.layer.WMC({
+      const wmc002 = new IDEE.layer.WMC({
         url: `${IDEE.config.STATIC_RESOURCES_URL}/Datos/WMC/context_cdau_hibrido_25830_no_cache.xml`,
         name: 'Híbrido',
       });
-      window.wmc_002 = wmc_002;
+      window.wmc002 = wmc002;
 
-      window.map.addWMC(wmc_002);
+      window.map.addWMC(wmc002);
     });
 
     const selector = page.locator('select.m-wmcselector-select');

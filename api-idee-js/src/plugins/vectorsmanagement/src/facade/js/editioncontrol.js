@@ -133,6 +133,7 @@ export default class EditionControl extends IDEE.Control {
     html.querySelector('#m-vectorsmanagement-controls').appendChild(this.template);
     this.addEvents();
     this.managementControl_.accessibilityTab(this.template);
+    this.managementControl_.updateEditingAvailability();
   }
 
   /**
@@ -406,11 +407,13 @@ export default class EditionControl extends IDEE.Control {
    * @api
    */
   showModalCleanGeometries() {
+    const total = this.layer_.getFeatures().length;
+    const cleanMessage = getValue('clear_geometries_msg').replace('{count}', String(total));
     const templateModal = IDEE.template.compileSync(removeLayerTemplate, {
       vars: {
         translations: {
           title_clear_geometries: getValue('title_clear_geometries'),
-          clear_geometries_msg: getValue('clear_geometries_msg'),
+          clear_geometries_msg: cleanMessage,
           confirm: getValue('confirm'),
           cancel: getValue('cancel'),
         },
@@ -455,10 +458,11 @@ export default class EditionControl extends IDEE.Control {
    */
   cleanGeometries() {
     this.selectionLayer.removeFeatures(this.selectionLayer.getFeatures());
-    this.layer_.removeFeatures(this.layer_.getFeatures());
+    const features = this.layer_.getFeatures();
+    this.layer_.removeFeatures(features);
 
     // remove buffer
-    this.managementControl_.analysisControl.removeBufferFeatures();
+    this.managementControl_.analysisControl?.removeBufferFeatures();
   }
 
   /**
@@ -598,7 +602,7 @@ export default class EditionControl extends IDEE.Control {
    * @function
    * @api
    */
-  onModify() {
+  onModify(event) {
     this.refreshEmphasizedFeatures();
     this.layer_.redraw();
   }

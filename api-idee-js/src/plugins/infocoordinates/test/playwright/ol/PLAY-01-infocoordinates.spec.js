@@ -10,7 +10,7 @@ test('Test plugin Infocoordinates', async ({ page }) => {
     window.mp = new IDEE.plugin.Infocoordinates();
     window.mapjs.addPlugin(window.mp);
   });
-  
+
   const nPlugins = await page.evaluate(() => window.mapjs.getPlugins(window.mp.name).length);
   expect(nPlugins).toBe(1);
 });

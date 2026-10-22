@@ -26,6 +26,7 @@ test.describe('Eventos', () => {
       });
       // Evento ROTATION
       map.on(IDEE.evt.CHANGE_ROTATION, (rot) => {
+        // eslint-disable-next-line no-console -- el test escucha este mensaje en la consola
         console.log(`Rotation: ${rot}`);
       });
       const popup = new IDEE.Popup();

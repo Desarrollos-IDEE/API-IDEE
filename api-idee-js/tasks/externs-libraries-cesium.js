@@ -17,6 +17,9 @@ const libraries = [{
 {
   name: 'jsts',
   path: 'jsts',
+}, {
+  name: 'turf',
+  path: '@turf/turf',
 }];
 
 module.exports = libraries;

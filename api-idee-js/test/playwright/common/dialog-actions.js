@@ -20,7 +20,7 @@ export default (pagePath) => {
     test('el diálogo de siempre no cambia: un botón OK que lo cierra', async ({ page }) => {
       const returned = await page.evaluate(() => {
         const dialog = IDEE.dialog.info('Mensaje', 'Título');
-        return dialog instanceof HTMLElement && dialog.classList.contains('m-dialog');
+        return dialog instanceof window.HTMLElement && dialog.classList.contains('m-dialog');
       });
       expect(returned).toBe(true);
       await expect(page.locator('div.m-dialog.info div.m-button > button')).toHaveCount(1);

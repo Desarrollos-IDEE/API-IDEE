@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { routePng } from '../common/mocks';
 
 /*
  * Mapa Cesium: ciclo de vida, encuadres, extensiones, orden de capas y eventos.
@@ -6,19 +7,13 @@ import { test, expect } from '@playwright/test';
  */
 const PAGE = '/test/playwright/cesium/basic-cesium.html';
 const TILES = 'https://tiles.cesium.test';
-const PNG_1PX = Buffer.from(
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
-  'base64',
-);
 const WAIT = { timeout: 20000 };
 
 test.describe.configure({ timeout: 60000 });
 
 test.describe('IDEE.Map en Cesium', () => {
   test.beforeEach(async ({ page }) => {
-    await page.route(`${TILES}/**`, (route) => route.fulfill({
-      status: 200, headers: { 'access-control-allow-origin': '*' }, contentType: 'image/png', body: PNG_1PX,
-    }));
+    await routePng(page, `${TILES}/**`);
     await page.goto(PAGE);
     await page.evaluate(() => {
       IDEE.config.baseLayer = [];
@@ -56,7 +51,8 @@ test.describe('IDEE.Map en Cesium', () => {
       window.map.setBbox([-4, 39, -3, 40]);
       const before = window.map.getBbox();
       const { camera } = window.map.getMapImpl();
-      camera.setView({ orientation: { heading: 0, pitch: Cesium.Math.toRadians(30), roll: 0 } });
+      const pitch = window.Cesium.Math.toRadians(30);
+      camera.setView({ orientation: { heading: 0, pitch, roll: 0 } });
       const visible = camera.computeViewRectangle();
       const after = window.map.getBbox();
       return { sky: visible === undefined, same: JSON.stringify(after) === JSON.stringify(before) };

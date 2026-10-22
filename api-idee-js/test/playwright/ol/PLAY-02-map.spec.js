@@ -92,8 +92,8 @@ test.describe('IDEE.map', () => {
       await page.goto('/test/playwright/ol/basic-ol.html');
 
       // MAX Y MIN ZOOM
-      await page.evaluate(() => IDEE.config.MAX_ZOOM = 19);
-      await page.evaluate(() => IDEE.config.MIN_ZOOM = 10);
+      await page.evaluate(() => { IDEE.config.MAX_ZOOM = 19; });
+      await page.evaluate(() => { IDEE.config.MIN_ZOOM = 10; });
 
       await page.evaluate(() => {
         window.map = IDEE.map({ container: 'map' });

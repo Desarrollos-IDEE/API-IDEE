@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { CORS, routePng } from '../common/mocks';
 
 /*
  * Control ImplementationSwitcher: cambia el mapa entre OpenLayers y Cesium en la misma
@@ -11,21 +12,12 @@ const TILES = 'https://tiles.switcher.test';
 const WMS = 'https://wms.switcher.test/wms';
 const TILESET = 'https://tiles3d.switcher.test/tileset.json';
 const CHANGE_TIMEOUT = 60000;
-const PNG_1PX = Buffer.from(
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
-  'base64',
-);
-const CORS = { 'access-control-allow-origin': '*' };
 
 test.describe.configure({ timeout: 180000 });
 
 const mockServices = async (page) => {
-  await page.route(`${TILES}/**`, (route) => route.fulfill({
-    status: 200, headers: CORS, contentType: 'image/png', body: PNG_1PX,
-  }));
-  await page.route(`${WMS}**`, (route) => route.fulfill({
-    status: 200, headers: CORS, contentType: 'image/png', body: PNG_1PX,
-  }));
+  await routePng(page, `${TILES}/**`);
+  await routePng(page, `${WMS}**`);
   await page.route(TILESET, (route) => route.fulfill({
     status: 200,
     headers: CORS,
@@ -65,7 +57,9 @@ const openMap = async (page) => {
       source: {
         type: 'FeatureCollection',
         features: [
-          { type: 'Feature', id: 'a', geometry: { type: 'Point', coordinates: [-3.7, 40.4] }, properties: {} },
+          {
+            type: 'Feature', id: 'a', geometry: { type: 'Point', coordinates: [-3.7, 40.4] }, properties: {},
+          },
         ],
       },
     });

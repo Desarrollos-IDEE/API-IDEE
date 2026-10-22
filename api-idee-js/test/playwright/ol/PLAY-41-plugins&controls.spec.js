@@ -61,12 +61,13 @@ test('Probamos añadir controles y plugins desde API 2.0', async ({ page }) => {
   }, REFACTOR_PLUGINS);
 
   // Añadir los plugins al mapa
-  for (const pluginInfo of pluginInfoList) {
-    await page.addScriptTag({ url: pluginInfo.scriptUrl });
-    await page.evaluate((constructorStr) => {
-      window.mapjs.addPlugin(eval(`new ${constructorStr}()`));
-    }, pluginInfo.constructor);
-  }
+  // De uno en uno: cada plugin se crea cuando su script ya está cargado
+  await pluginInfoList.reduce((previous, pluginInfo) => previous
+    .then(() => page.addScriptTag({ url: pluginInfo.scriptUrl }))
+    .then(() => page.evaluate((constructorPath) => {
+      const PluginClass = constructorPath.split('.').reduce((owner, key) => owner[key], window);
+      window.mapjs.addPlugin(new PluginClass());
+    }, pluginInfo.constructor)), Promise.resolve());
 
   // Verificar que todos los controles están en el mapa y no están repetidos
   const isControlListCorrect = await page.evaluate((controlNames) => {

@@ -98,6 +98,7 @@ const selectDownload = document.getElementById('selectDownload');
 const selectEdition = document.getElementById('selectEdition');
 const selectHelp = document.getElementById('selectHelp');
 const selectStyle = document.getElementById('selectStyle');
+const selectTurf = document.getElementById('selectTurf');
 const inputSnapping = document.getElementById('inputSnapping');
 
 const boolVal = (select, defaultVal = true) => {
@@ -120,6 +121,7 @@ const updatePlugin = () => {
   options.edition = boolVal(selectEdition);
   options.help = boolVal(selectHelp);
   options.style = boolVal(selectStyle);
+  options.turf = boolVal(selectTurf);
   // true, false, JSON o base64 (lo valida el plugin)
   options.snapping = inputSnapping.value.trim() || undefined;
 
@@ -139,6 +141,7 @@ const updatePlugin = () => {
   selectEdition,
   selectHelp,
   selectStyle,
+  selectTurf,
   inputSnapping,
 ].forEach((ctrl) => {
   ctrl.addEventListener('change', updatePlugin);
@@ -146,4 +149,4 @@ const updatePlugin = () => {
 
 updatePlugin();
 
-// vectorsmanagement=position*!collapsed*!order*!selection*!addlayer*!analysis*!creation*!download*!edition*!help*!style*!snapping
+// vectorsmanagement=position*!collapsed*!order*!selection*!addlayer*!analysis*!creation*!download*!edition*!help*!style*!snapping*!turf

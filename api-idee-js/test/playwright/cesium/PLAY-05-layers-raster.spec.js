@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { CORS, PNG_1PX } from '../common/mocks';
 
 /*
  * Capas ráster en Cesium: alta, visibilidad, opacidad, extensión, leyenda,
@@ -6,11 +7,6 @@ import { test, expect } from '@playwright/test';
  */
 const PAGE = '/test/playwright/cesium/basic-cesium.html';
 const HOST = 'https://raster.cesium.test';
-const CORS = { 'access-control-allow-origin': '*' };
-const PNG_1PX = Buffer.from(
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
-  'base64',
-);
 const WAIT = { timeout: 20000 };
 
 const BBOX = `<EX_GeographicBoundingBox>
@@ -138,7 +134,8 @@ test.describe('Capas ráster en Cesium', () => {
       expect(await imageryState(page, name)).toMatchObject({ show: false, visible: false });
       await page.evaluate(() => window.layer.setVisible(true));
       await page.evaluate(() => window.layer.setOpacity(0.4));
-      expect(await imageryState(page, name)).toMatchObject({ show: true, alpha: 0.4, opacity: 0.4 });
+      expect(await imageryState(page, name))
+        .toMatchObject({ show: true, alpha: 0.4, opacity: 0.4 });
 
       const extentAndLegend = await page.evaluate(async () => ({
         extent: await window.layer.calculateMaxExtent(),

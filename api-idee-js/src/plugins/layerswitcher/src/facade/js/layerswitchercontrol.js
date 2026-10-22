@@ -3041,6 +3041,22 @@ export default class LayerswitcherControl extends IDEE.Control {
     const btnCheck = document.querySelector('#m-layerswitcher-ogcCContainer #m-layerswitcher-ogc-check-button');
     const btnCustomQuery = document.querySelector('#m-layerswitcher-ogc-custom-query-button');
 
+    // La colección elegida se lee al pulsar. Sin colecciones (p. ej. un servicio
+    // DataIDEE sin sesión) o sin elegir ninguna se avisa en lugar de seguir.
+    const getSelectedCollection = () => {
+      const select = document.querySelector('#m-layerswitcher-ogc-vectors-select');
+      const hasCollections = Array.from(select.options).some((option) => option.value !== '');
+      if (!hasCollections) {
+        IDEE.dialog.error(getValue('exception.no_results'), undefined, this.order);
+        return null;
+      }
+      if (select.value === '') {
+        IDEE.dialog.error(getValue('select_service'), undefined, this.order);
+        return null;
+      }
+      return select.value;
+    };
+
     // "Añadir" va en el pie del diálogo, junto a "Cerrar", solo si hay capas que añadir
     if (layers.length > 0) {
       IDEE.dialog.removeActions(INFO_DIALOG);
@@ -3049,9 +3065,8 @@ export default class LayerswitcherControl extends IDEE.Control {
         label: getValue('add_btn'),
         order: this.order,
         onClick: () => {
-          if (selectValue === getValue('select_service')) {
-            IDEE.dialog.error(getValue('no_results'), undefined, this.order);
-          } else {
+          selectValue = getSelectedCollection();
+          if (selectValue !== null) {
             properties = this.getProperties(selectValue, summary);
 
             this.addOGCAPILayer_(properties);
@@ -3064,9 +3079,8 @@ export default class LayerswitcherControl extends IDEE.Control {
     }
 
     btnCheck.addEventListener('click', () => {
-      if (selectValue === getValue('select_service')) {
-        IDEE.dialog.error(getValue('no_results'), undefined, this.order);
-      } else {
+      selectValue = getSelectedCollection();
+      if (selectValue !== null) {
         properties = this.getProperties(selectValue, summary);
         this.countOGCAPIFeatures_(properties).then((numberFeatures) => {
           let results1;
@@ -3095,8 +3109,9 @@ export default class LayerswitcherControl extends IDEE.Control {
     btnCustomQuery.addEventListener('click', () => {
       let filtersList;
 
+      selectValue = getSelectedCollection();
+      if (selectValue === null) return;
       const previousModal = document.querySelector('.m-content').innerHTML;
-      selectValue = document.querySelector('#m-layerswitcher-ogc-vectors-select').value;
       const limit = document.querySelector('#m-layerswitcher-ogc-limit-items').value;
       const checked = document.querySelector('#m-layerswitcher-ogc-search-bbox').checked;
       // IDEE.proxy(this.useProxy);
@@ -3229,10 +3244,15 @@ export default class LayerswitcherControl extends IDEE.Control {
     });
   }
 
-  // Parámetros de la capa OGC API del formulario. La URL y el formato los
-  // añade el modo de carga (OGCAPIFeatures o DataIDEE).
+  /**
+   * Parámetros de la capa OGC API del formulario. La URL y el formato los
+   * añade el modo de carga (OGCAPIFeatures o DataIDEE).
+   * @param {HTMLElement} selectValue
+   * @param {*} summary
+   * @returns
+   */
   getProperties(selectValue, summary) {
-    const selectValueText = document.querySelector('#m-layerswitcher-ogc-vectors-select').selectedOptions[0].text;
+    const selectValueText = document.querySelector('#m-layerswitcher-ogc-vectors-select').selectedOptions[0]?.text;
     selectValue = document.querySelector('#m-layerswitcher-ogc-vectors-select').value;
     const limit = document.querySelector('#m-layerswitcher-ogc-limit-items').value;
     const checked = document.querySelector('#m-layerswitcher-ogc-search-bbox').checked;

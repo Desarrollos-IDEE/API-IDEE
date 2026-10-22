@@ -1,3 +1,4 @@
+/* global L */
 import Control from './Control';
 
 /**

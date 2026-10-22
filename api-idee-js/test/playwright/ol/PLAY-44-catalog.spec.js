@@ -62,7 +62,8 @@ const mockCatalog = (page) => page.route(`${STAC_URL}/**`, (route) => {
   if (path === `/collections/${COLLECTION_ID}/items/${ITEM_ID}`) return json(ITEM);
   if (path === '/search' && request.method() === 'GET') {
     const bbox = (url.searchParams.get('bbox') || '').split(',').map(Number);
-    const sameBbox = bbox.length === 4 && bbox.every((v, i) => Math.abs(v - COLLECTION_BBOX[i]) < 1e-9);
+    const sameBbox = bbox.length === 4
+      && bbox.every((v, i) => Math.abs(v - COLLECTION_BBOX[i]) < 1e-9);
     return json(itemCollection(sameBbox ? [ITEM] : []));
   }
   if (path === '/search' && request.method() === 'POST') {
@@ -89,7 +90,7 @@ test.describe('IDEE.spec.Catalog', () => {
 
   test('getCollections (public)', async ({ page }) => {
     const collections = await page.evaluate(async () => {
-      return await catalog.getCollections();
+      return window.catalog.getCollections();
     });
     await expect(collections.length).toBeGreaterThan(0);
     const ids = collections.map((collection) => collection.id);
@@ -98,7 +99,7 @@ test.describe('IDEE.spec.Catalog', () => {
 
   test('getQueryableFields (public)', async ({ page }) => {
     const fields = await page.evaluate(async (collectionId) => {
-      return await catalog.getQueryableFields(collectionId);
+      return window.catalog.getQueryableFields(collectionId);
     }, COLLECTION_ID);
     await expect(fields['eo:gsd']).toBeDefined();
     await expect(fields.platform).toBeDefined();
@@ -106,7 +107,7 @@ test.describe('IDEE.spec.Catalog', () => {
 
   test('getItems (public)', async ({ page }) => {
     const items = await page.evaluate(async (collectionId) => {
-      return await catalog.getItems(collectionId);
+      return window.catalog.getItems(collectionId);
     }, COLLECTION_ID);
     const matched = items.numberMatched ?? items.context?.matched;
     await expect(matched).toBeGreaterThan(0);
@@ -114,14 +115,14 @@ test.describe('IDEE.spec.Catalog', () => {
 
   test('getItem (public)', async ({ page }) => {
     const item = await page.evaluate(async ({ collectionId, itemId }) => {
-      return await catalog.getItem(collectionId, itemId);
+      return window.catalog.getItem(collectionId, itemId);
     }, { collectionId: COLLECTION_ID, itemId: ITEM_ID });
     await expect(item.id).toEqual(ITEM_ID);
   });
 
   test('getFilteredItems (public)', async ({ page }) => {
     const items = await page.evaluate(async ({ collectionId, bbox }) => {
-      return await catalog.getFilteredItems(collectionId, { bbox });
+      return window.catalog.getFilteredItems(collectionId, { bbox });
     }, { collectionId: COLLECTION_ID, bbox: COLLECTION_BBOX });
     const matched = items.numberMatched ?? items.context?.matched;
     await expect(matched).toBeGreaterThan(0);
@@ -136,7 +137,7 @@ test.describe('IDEE.spec.Catalog', () => {
         },
         limit: 10,
       };
-      return await catalog.getFilteredItemsAdvanced(collectionId, filter);
+      return window.catalog.getFilteredItemsAdvanced(collectionId, filter);
     }, COLLECTION_ID);
     const matched = items.numberMatched ?? items.context?.matched;
     await expect(matched).toBeGreaterThan(0);
@@ -144,7 +145,7 @@ test.describe('IDEE.spec.Catalog', () => {
 
   test('getFilteredItemsAdvanced (public - cql-json)', async ({ page }) => {
     const filterBody = await page.evaluate(async (collectionId) => {
-      return catalog.getFilterData(collectionId, {
+      return window.catalog.getFilterData(collectionId, {
         format: 'cql-json',
         filter: {
           op: 'and',
@@ -174,7 +175,7 @@ test.describe('IDEE.spec.Catalog', () => {
         },
         limit: 10,
       };
-      return await catalog.getFilteredItemsAdvanced(collectionId, filter);
+      return window.catalog.getFilteredItemsAdvanced(collectionId, filter);
     }, COLLECTION_ID);
     const matched = items.numberMatched ?? items.context?.matched;
     await expect(matched).toBeGreaterThan(0);

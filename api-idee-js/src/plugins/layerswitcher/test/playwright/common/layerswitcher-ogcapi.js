@@ -38,19 +38,30 @@ const featureCollection = {
   }],
 };
 
+/** Rutas de la API de autenticación de DataIDEE (como el servicio real). */
+const AUTH_API = '/api/auth-api/auth';
+
 /**
- * Servicio OGC API Features DataIDEE simulado. Responde 400 al parámetro "f" en
- * /items, acepta el token de la capa como parámetro "token" y solo lista la
- * colección privada si recibe la cabecera Authorization.
+ * Servicio OGC API Features DataIDEE simulado. Todo el token va en la cabecera
+ * Authorization: responde 400 a los parámetros "f" y "token" en /items y solo lista
+ * la colección privada si recibe la cabecera.
+ *
+ * Autenticación (con `login`): por defecto la API de DataIDEE del servicio real
+ * (`/auth-api/auth/me`, `/login`, `GET /refresh` → { token }, `/logout`); con `legacy`,
+ * el contrato anterior (`/auth/login` → { access_token, refresh_token }, `POST /auth/refresh`).
+ * Con `publicCollections: false`, sin sesión no lista ninguna colección (como el servicio real).
  */
 const mockService = async (page, {
-  login = false, tokens = {}, loginDelay = 0, refreshOk = true, loginGate = null,
+  login = false, legacy = false, tokens = {}, loginDelay = 0, refreshOk = true, loginGate = null,
+  publicCollections = true,
 } = {}) => {
   const calls = [];
+  const authPath = legacy ? '/api/auth' : AUTH_API;
   await page.route(`${ROOT}/**`, async (route) => {
     const request = route.request();
     const url = new URL(request.url());
     const authorization = request.headers().authorization;
+    if (request.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: CORS });
     calls.push({
       method: request.method(), path: decodeURIComponent(url.pathname), url, authorization,
     });
@@ -58,26 +69,37 @@ const mockService = async (page, {
       status, headers: { ...CORS, 'content-type': 'application/json' }, body: JSON.stringify(body),
     });
 
-    if (request.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: CORS });
-    if (url.pathname === '/api/auth/login') {
+    if (url.pathname === `${AUTH_API}/me` && !legacy) {
+      if (!login) return json(404, { status: 404 });
+      return authorization ? json(200, { username: 'usuario' }) : json(401, { status: 401 });
+    }
+    if (url.pathname === `${authPath}/login`) {
       if (!login) return json(404, { status: 404 });
       if (request.method() !== 'POST') return json(405, { status: 405 });
       if (request.postDataJSON().password !== 'secret') return json(401, { status: 401 });
       await new Promise((resolve) => { setTimeout(resolve, loginDelay); });
       // El test puede retener la respuesta para comprobar los estados intermedios
       if (loginGate) await loginGate;
-      return json(200, { access_token: tokens.login, refresh_token: 'refresh-1', token_type: 'Bearer' });
+      return json(200, legacy
+        ? { access_token: tokens.login, refresh_token: 'refresh-1', token_type: 'Bearer' }
+        : { token: tokens.login, userId: 1 });
     }
-    if (url.pathname === '/api/auth/refresh') {
-      return refreshOk ? json(200, { access_token: tokens.refresh }) : json(401, { status: 401 });
+    if (url.pathname === `${authPath}/refresh`) {
+      if (!refreshOk) return json(401, { status: 401 });
+      return json(200, legacy ? { access_token: tokens.refresh } : { token: tokens.refresh });
+    }
+    if (url.pathname === `${AUTH_API}/logout` && !legacy) {
+      return route.fulfill({ status: 204, headers: CORS });
     }
     if (url.pathname === '/api/collections') {
-      const collections = [collection('local:farmacias', 'Farmacias'), collection('local:rutas', 'Rutas')];
+      const collections = authorization || publicCollections
+        ? [collection('local:farmacias', 'Farmacias'), collection('local:rutas', 'Rutas')] : [];
       if (authorization) collections.push(collection('local:privada', 'Privada'));
       return json(200, { links: [{ rel: 'self', href: `${ROOT}/collections` }], collections });
     }
+    if (url.pathname.endsWith('/queryables')) return json(200, { properties: {} });
     if (url.pathname.endsWith('/items')) {
-      if (url.searchParams.has('f')) {
+      if (url.searchParams.has('f') || url.searchParams.has('token')) {
         return json(400, { detail: 'unknown query parameter' });
       }
       return route.fulfill({
@@ -85,6 +107,9 @@ const mockService = async (page, {
         headers: { ...CORS, 'content-type': 'application/geo+json' },
         body: JSON.stringify(featureCollection),
       });
+    }
+    if (url.pathname.startsWith('/api/collections/')) {
+      return json(200, { title: 'Colección', description: 'Descripción de prueba' });
     }
     return json(404, { status: 404 });
   });
@@ -192,13 +217,12 @@ export const registerOGCAPITests = (impl) => {
       expect(await page.evaluate(() => window.mapjs.getOGCAPIFeatures().map((l) => l.name))).toEqual(['local:rutas']);
     });
 
-    /* Desactivado hasta que el endpoint DataIDEE esté maduro (hoy no hay un servicio real usable por CORS); reactivar entonces.
-    test('DataIDEE sin /auth/login: oculta el candado y crea una capa DataIDEE sin "f" ni token', async ({ page }) => {
+    test('DataIDEE sin login: oculta el candado y crea una capa DataIDEE sin "f" ni token', async ({ page }) => {
       const calls = await mockService(page, { login: false });
       await openService(page, impl, `${ROOT}/collections`);
 
       await page.selectOption(MODE_SELECT, 'dataidee');
-      await expect.poll(() => calls.some((c) => c.path === '/api/auth/login' && c.method === 'GET')).toBe(true);
+      await expect.poll(() => calls.some((c) => c.path === `${AUTH_API}/me` && c.method === 'GET')).toBe(true);
       await expect(page.locator(AUTH_CONTAINER)).toBeHidden();
       await expect(page.locator(`${LAYER_SELECT} option[value]:not([value=""])`)).toHaveCount(2);
 
@@ -213,7 +237,21 @@ export const registerOGCAPITests = (impl) => {
       expect((await readStorage(page))[ROOT].mode).toBe('dataidee');
     });
 
-    test('DataIDEE con login: candado pendiente, token guardado (Bearer en el servicio, "token" en la capa); cerrar sesión lo retira', async ({ page }) => {
+    test('DataIDEE sin colecciones visibles: «Comprobar» avisa y no falla', async ({ page }) => {
+      const errors = [];
+      page.on('pageerror', (error) => errors.push(error.message));
+      await mockService(page, { login: true, publicCollections: false });
+      await openService(page, impl, `${ROOT}/collections`, { [ROOT]: { mode: 'dataidee' } });
+
+      await expect(page.locator(AUTH_BUTTON)).toHaveClass(/m-layerswitcher-auth-unlocked/);
+      await expect(page.locator(`${LAYER_SELECT} option[value]:not([value=""])`)).toHaveCount(0);
+      await page.click('#m-layerswitcher-ogcCContainer #m-layerswitcher-ogc-check-button');
+      await expect(page.locator('div.m-dialog.error'))
+        .toContainText('No se han encontrado capas en este servicio');
+      expect(errors).toEqual([]);
+    });
+
+    test('DataIDEE con login: envía Bearer a colecciones, items y metadatos; cerrar sesión lo retira', async ({ page }) => {
       const token = jwt(3600);
       let releaseLogin;
       const loginGate = new Promise((resolve) => { releaseLogin = resolve; });
@@ -237,19 +275,22 @@ export const registerOGCAPITests = (impl) => {
       await expect(lock).toHaveClass(/m-layerswitcher-auth-locked/);
       await expect(lock).toBeEnabled();
 
+      // Login en la API de autenticación de DataIDEE: su respuesta ({ token }) no trae
+      // refresh token
+      expect(calls.some((c) => c.path === `${AUTH_API}/login` && c.method === 'POST')).toBe(true);
       await expect(page.locator(`${LAYER_SELECT} option[value="local:privada"]`)).toHaveCount(1);
       expect(calls.some((c) => c.path === '/api/collections' && c.authorization === `Bearer ${token}`)).toBe(true);
-      expect((await readStorage(page))[ROOT].session).toEqual({ accessToken: token, refreshToken: 'refresh-1' });
+      expect((await readStorage(page))[ROOT].session).toEqual({ accessToken: token });
 
       await page.selectOption(LAYER_SELECT, 'local:privada');
       await page.click(ADD_BUTTON);
       await expect.poll(() => itemsCall(calls, 'local:privada')).toBeTruthy();
-      // La capa DataIDEE envía el token como parámetro de la petición, sin cabecera
-      expect(itemsCall(calls, 'local:privada').url.searchParams.get('token')).toBe(token);
-      expect(itemsCall(calls, 'local:privada').authorization).toBeUndefined();
+      // La capa DataIDEE envía el token en la cabecera, no como parámetro
+      expect(itemsCall(calls, 'local:privada').authorization).toBe(`Bearer ${token}`);
+      expect(itemsCall(calls, 'local:privada').url.searchParams.has('token')).toBe(false);
       expect(await page.evaluate(() => window.mapjs.getDataIDEE()[0].getToken())).toBe(token);
 
-      // Cerrar sesión desde el candado cerrado
+      // Cerrar sesión desde el candado cerrado: también se cierra en el servicio
       await page.click('#layerswitcher-add-layer');
       await page.fill('#m-layerswitcher-addservices-search-input', `${ROOT}/collections`);
       await page.press('#m-layerswitcher-addservices-search-input', 'Enter');
@@ -259,6 +300,56 @@ export const registerOGCAPITests = (impl) => {
       await expect(page.locator(`${LAYER_SELECT} option[value="local:privada"]`)).toHaveCount(0);
       expect((await readStorage(page))[ROOT].session).toBeUndefined();
       expect(await page.evaluate(() => window.mapjs.getDataIDEE()[0].getToken())).toBeUndefined();
+      await expect.poll(() => calls.find((c) => c.path === `${AUTH_API}/logout`)?.authorization)
+        .toBe(`Bearer ${token}`);
+    });
+
+    test('DataIDEE autenticado envía Bearer también en queryables, conteo y metadatos', async ({ page }) => {
+      const token = jwt(3600);
+      const calls = await mockService(page, { login: true, tokens: { login: token } });
+      await openService(page, impl, `${ROOT}/collections`, {
+        [ROOT]: { mode: 'dataidee', session: { accessToken: token } },
+      });
+
+      await expect(page.locator(`${LAYER_SELECT} option[value="local:privada"]`)).toHaveCount(1);
+      expect(calls.some((call) => call.path === '/api/collections'
+        && call.authorization === `Bearer ${token}`)).toBe(true);
+      await page.evaluate(async ({ root, authToken }) => {
+        // eslint-disable-next-line no-underscore-dangle
+        const mode = window.mp.controls[0].ogcModes_.dataidee;
+        await mode.getQueryables(root, 'local:privada');
+        await mode.countFeatures(root, { name: 'local:privada' });
+        const { url, options } = mode.getLayerInfoRequest({
+          url: `${root}/`, name: 'local:privada', getToken: () => authToken,
+        });
+        await IDEE.remote.get(url, null, options);
+      }, { root: ROOT, authToken: token });
+
+      expect(calls.find((call) => call.path.endsWith('/queryables')).authorization).toBe(`Bearer ${token}`);
+      expect(calls.find((call) => call.path.endsWith('/collections/local:privada/items')).authorization)
+        .toBe(`Bearer ${token}`);
+      expect(calls.find((call) => call.path === '/api/collections/local:privada').authorization)
+        .toBe(`Bearer ${token}`);
+    });
+
+    test('DataIDEE con el contrato anterior (/auth/login): detecta el login e inicia sesión', async ({ page }) => {
+      const token = jwt(3600);
+      const calls = await mockService(page, {
+        login: true, legacy: true, tokens: { login: token },
+      });
+      await openService(page, impl, `${ROOT}/collections`, { [ROOT]: { mode: 'dataidee' } });
+
+      const lock = page.locator(AUTH_BUTTON);
+      await expect(lock).toHaveClass(/m-layerswitcher-auth-unlocked/);
+      await lock.click();
+      await page.fill('#m-layerswitcher-auth-user', 'usuario');
+      await page.fill('#m-layerswitcher-auth-password', 'secret');
+      await page.click('.m-layerswitcher-auth-save');
+      await expect(lock).toHaveClass(/m-layerswitcher-auth-locked/);
+
+      expect(calls.some((c) => c.path === '/api/auth/login' && c.method === 'POST')).toBe(true);
+      await expect(page.locator(`${LAYER_SELECT} option[value="local:privada"]`)).toHaveCount(1);
+      expect((await readStorage(page))[ROOT].session).toEqual({ accessToken: token, refreshToken: 'refresh-1' });
     });
 
     test('DataIDEE con credenciales incorrectas: el candado sigue abierto y se avisa al usuario', async ({ page }) => {
@@ -275,33 +366,34 @@ export const registerOGCAPITests = (impl) => {
       expect((await readStorage(page))[ROOT].session).toBeUndefined();
     });
 
-    test('DataIDEE con token caducado: se refresca antes de listar las colecciones', async ({ page }) => {
+    test('DataIDEE con token caducado: se renueva antes de listar las colecciones', async ({ page }) => {
       const expired = jwt(-60);
       const refreshed = jwt(3600);
       const calls = await mockService(page, { login: true, tokens: { refresh: refreshed } });
       await openService(page, impl, `${ROOT}/collections`, {
-        [ROOT]: { mode: 'dataidee', session: { accessToken: expired, refreshToken: 'refresh-1' } },
+        [ROOT]: { mode: 'dataidee', session: { accessToken: expired } },
       });
 
       await expect(page.locator(AUTH_BUTTON)).toHaveClass(/m-layerswitcher-auth-locked/);
-      const refreshCall = calls.find((c) => c.path === '/api/auth/refresh');
+      // La API de autenticación de DataIDEE renueva por GET con el token actual
+      const refreshCall = calls.find((c) => c.path === `${AUTH_API}/refresh`);
+      expect(refreshCall.method).toBe('GET');
       expect(refreshCall.authorization).toBe(`Bearer ${expired}`);
       await expect(page.locator(`${LAYER_SELECT} option[value="local:privada"]`)).toHaveCount(1);
       expect(calls.some((c) => c.path === '/api/collections' && c.authorization === `Bearer ${refreshed}`)).toBe(true);
       expect((await readStorage(page))[ROOT].session.accessToken).toBe(refreshed);
     });
 
-    test('DataIDEE con refresh fallido: se cierra la sesión y se avisa al usuario', async ({ page }) => {
+    test('DataIDEE con renovación fallida: se cierra la sesión y se avisa al usuario', async ({ page }) => {
       await mockService(page, { login: true, refreshOk: false });
       await openService(page, impl, `${ROOT}/collections`, {
-        [ROOT]: { mode: 'dataidee', session: { accessToken: jwt(-60), refreshToken: 'refresh-1' } },
+        [ROOT]: { mode: 'dataidee', session: { accessToken: jwt(-60) } },
       });
 
       await expect(page.locator(AUTH_BUTTON)).toHaveClass(/m-layerswitcher-auth-unlocked/);
       await expect(page.locator('div.m-dialog.error')).toContainText('La sesión del servicio ha caducado');
       expect((await readStorage(page))[ROOT].session).toBeUndefined();
     });
-    */
 
     test('Resultados de un servicio: «Añadir» va en el pie junto a «Cerrar» y se quita con una búsqueda nueva', async ({ page }) => {
       await mockWMS(page);
@@ -326,15 +418,25 @@ export const registerOGCAPITests = (impl) => {
       expect(await page.evaluate(() => window.mapjs.getWMS().map((l) => l.name))).toEqual(['capa1']);
     });
 
-    test('Selector de grupo: solo aparece si el mapa tiene grupos de capas', async ({ page }) => {
+    test('Selector de destino: siempre visible con «Añadir al mapa» y con los grupos del mapa si los hay', async ({ page }) => {
+      const destination = page.locator('select.m-layerswitcher-groups-fields');
       await mockWMS(page);
+
+      // Sin grupos: solo «Añadir al mapa», visible y habilitado
+      await openMap(page, impl);
+      await page.click('#layerswitcher-add-layer');
+      await searchService(page, WMS_URL);
+      await expect(destination).toBeVisible();
+      await expect(destination).toBeEnabled();
+      await expect(destination.locator('option')).toHaveText(['Añadir al mapa']);
+
+      // Con un grupo: también el grupo
       await openMap(page, impl, () => {
         window.mapjs.addLayers(new IDEE.layer.LayerGroup({ name: 'grupo', legend: 'Grupo de prueba' }));
       });
       await page.click('#layerswitcher-add-layer');
       await searchService(page, WMS_URL);
-
-      await expect(page.locator('.m-layerswitcher-groups-fields option')).toHaveText(['Añadir al mapa', 'Grupo de prueba']);
+      await expect(destination.locator('option')).toHaveText(['Añadir al mapa', 'Grupo de prueba']);
     });
   });
 };

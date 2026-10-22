@@ -99,6 +99,16 @@
    height: 32px;
 }
 
+/* Acciones añadidas con IDEE.dialog.addAction */
+.m-dialog div.m-button>button.m-dialog-action {
+   margin-right: 8px;
+}
+
+.m-dialog div.m-button>button.m-dialog-action:disabled {
+   opacity: .5;
+   cursor: not-allowed;
+}
+
 
 /**************************
          SEVERITY

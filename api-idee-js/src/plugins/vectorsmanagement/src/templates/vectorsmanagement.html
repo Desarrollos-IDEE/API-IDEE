@@ -5,7 +5,7 @@
             <span id="m-vectorsmanagement-layer-selected">{{translations.selectLayerDefault}}...</span>
             <div id="m-vectorsmanagement-layer-selector-options">
               {{#each layer}}
-                  <span value="{{value}}">{{text}}</span>
+                  <span data-value="{{value}}">{{text}}</span>
               {{/each}}
             </div>
         </div>
@@ -15,6 +15,15 @@
         {{#if help}}
         <button tabindex="0" id="m-vectorsmanagement-help" title="{{translations.help}}" class="vectorsmanagement-icon-ayuda"></button>
         {{/if}}
+    </section>
+
+    <section id="m-vectorsmanagement-editing" class="m-vectorsmanagement-editing" hidden aria-label="{{translations.editing_edit}}">
+        <p id="m-vectorsmanagement-editing-status" role="status" aria-live="polite"></p>
+        <div id="m-vectorsmanagement-editing-fields"></div>
+        <button id="m-vectorsmanagement-editing-start" type="button">{{translations.editing_start}}</button>
+        <button id="m-vectorsmanagement-editing-save" type="button" hidden>{{translations.editing_save}}</button>
+        <button id="m-vectorsmanagement-editing-discard" type="button" hidden>{{translations.editing_discard}}</button>
+        <button id="m-vectorsmanagement-editing-end" type="button" hidden>{{translations.editing_end}}</button>
     </section>
     <!-- Contenedor de controles -->
     <section id="m-vectorsmanagement-previews" class="m-vectorsmanagement-previews closed">
@@ -33,6 +42,9 @@
              {{/if}}
              {{#if analysis}}
              <button tabindex="0" id="m-vectorsmanagement-analysis" title="{{translations.analysis}}" class="vectorsmanagement-icon-analisis"></button>
+             {{/if}}
+             {{#if turf}}
+             <button tabindex="0" id="m-vectorsmanagement-turf" title="{{translations.turf}}" class="vectorsmanagement-icon-scissors"></button>
              {{/if}}
              {{#if download}}
              <button tabindex="0" id="m-vectorsmanagement-download" title="{{translations.download}}" class="vectorsmanagement-icon-descargar"></button>

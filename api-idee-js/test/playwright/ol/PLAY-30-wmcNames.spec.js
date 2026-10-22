@@ -19,10 +19,10 @@ test.describe('IDEE.layer.WMC', () => {
 
   test('Add layer', async ({ page }) => {
     await page.evaluate(() => {
-      const wmc_001 = new IDEE.layer.WMC('callejero');
-      window.wmc_001 = wmc_001;
+      const wmc001 = new IDEE.layer.WMC('callejero');
+      window.wmc001 = wmc001;
 
-      window.map.addWMC(wmc_001);
+      window.map.addWMC(wmc001);
     });
 
     await expect.poll(() => page.evaluate(() => window.map.getLayers().length), {
@@ -32,15 +32,15 @@ test.describe('IDEE.layer.WMC', () => {
 
   test('Add two WMC', async ({ page }) => {
     await page.evaluate(() => {
-      const wmc_001 = new IDEE.layer.WMC('callejero');
-      window.wmc_001 = wmc_001;
+      const wmc001 = new IDEE.layer.WMC('callejero');
+      window.wmc001 = wmc001;
 
-      window.map.addWMC(wmc_001);
+      window.map.addWMC(wmc001);
 
-      const wmc_002 = new IDEE.layer.WMC('ortofoto');
-      window.wmc_002 = wmc_002;
+      const wmc002 = new IDEE.layer.WMC('ortofoto');
+      window.wmc002 = wmc002;
 
-      window.map.addWMC(wmc_002);
+      window.map.addWMC(wmc002);
     });
 
     const selector = page.locator('select.m-wmcselector-select');

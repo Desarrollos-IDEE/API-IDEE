@@ -8,6 +8,7 @@
     "impl_selectioncontrol": "The implementation used cannot create Selectioncontrols.",
     "impl_analysiscontrol": "The implementation used cannot create Analysis controls.",
     "impl_stylecontrol": "The implementation used cannot create Style controls.",
+    "impl_turfcontrol": "The implementation used cannot create Turf controls.",
     "emptylayer": "The drawing layer is empty.",
     "geometrianoencontrar": "Unrecognized geometry.",
     "formatocoord": "The entered coordinates are not in the correct format.",
@@ -72,6 +73,8 @@
     "analysis_content_3_1": "Allows you to show the extension of a geographical object.",
     "analysis_content_4": "GeoJSON",
     "analysis_content_4_1": "Allows you to view the GeoJSON of the layer or selected elements.",
+    "turf_title": "Geoprocessing (Turf.js)",
+    "turf_content": "Runs Turf.js operations on the selected features or, if nothing is selected, on the whole layer: measurement (area, length, distance, extent), centers, transformations (buffer, simplify, rotate, scale, translate…), overlay (union, intersection, difference) and spatial relations. If the operation needs parameters, a form asks for them before running it. Resulting geometries are added to the map in a new layer; other results are shown in a message.",
     "download_title": "Download",
     "download_content": "This tool allows you to download the complete layer or selected elements in GeoJSON, KML and Shapefile format."
   },
@@ -97,6 +100,30 @@
     "help19": "A use case for its parameters can be found in:"
   },
   "tooltip": "Vector Management",
+  "editing_edit": "Server layer editing",
+  "editing_start": "Start editing",
+  "editing_save": "Save",
+  "editing_discard": "Discard",
+  "editing_end": "End editing",
+  "multiplePoint": "MultiPoint",
+  "multipleLine": "MultiLineString",
+  "multiplePolygon": "MultiPolygon",
+  "finishMultiple": "Finish multipart geometry",
+  "editing_prepare_wait": "Wait for preparation to finish before changing layers.",
+  "editing_switch_wait": "End the session and resolve pending changes before changing layers.",
+  "editing_capability_error": "Could not determine editing permissions.",
+  "editing_pending": "Fixed area. Pending changes: {count}.",
+  "editing_fixed_area": "Fixed area: {count} features. Map navigation will not load data.",
+  "editing_save_done": "Saved {completed} operations; {pending} remain pending.",
+  "editing_save_error": "{error} Remaining changes are pending; review the server before resending.",
+  "editing_discarded": "Discarded {count} pending changes.",
+  "editing_discarded_uncertain": "Discarded {count} local changes. End and reload the area before editing again.",
+  "editing_end_prompt": "There are pending changes. Type save, discard, or cancel.",
+  "editing_removed_notice": "The server layer was removed; pending local changes were discarded.",
+  "multiple_start_status": "Draw the parts, then finish the geometry.",
+  "multiple_no_parts": "Draw at least one part.",
+  "multiple_part_count": "Completed parts: {count}",
+  "multiple_done": "Multipart geometry created locally.",
   "selection": "Selection",
   "analysis": "Analysis",
   "creation": "Creation",
@@ -179,7 +206,7 @@
   "point_profile_geographic_coordinates": "Geographic coordinates",
   "calculate": "Calculate",
   "title_clear_geometries": "Clear layer",
-  "clear_geometries_msg": "Are you sure you want to remove all elements from the layer?",
+  "clear_geometries_msg": "Are you sure you want to remove all features from the layer?",
   "confirm": "Ok",
   "accept": "Accept",
   "cancel": "Cancel",
@@ -192,6 +219,227 @@
   "fill": "Fill",
   "stroke": "Stroke",
   "opts_point": "Point Options",
-  "readingAltitude": "Consultando...",
-  "info_remove_vertex": "To delete the vertex, use ‘alt + click’ on the vertex to be deleted"
+  "readingAltitude": "Consulting...",
+  "info_remove_vertex": "To delete the vertex, use ‘alt + click’ on the vertex to be deleted",
+  "turf": {
+    "title": "Geoprocessing (Turf.js)",
+    "hint": "Operations apply to the selected features or, if nothing is selected, to every feature in the layer.",
+    "hintParams": "Those showing this icon ask for parameters before running:",
+    "paramsTitle": "Requires setting parameters.",
+    "run": "Run",
+    "layerPrefix": "Turf:",
+    "categories": {
+      "measurement": "Measurement",
+      "center": "Centers",
+      "transformation": "Transformation",
+      "overlay": "Overlay",
+      "relation": "Spatial relation"
+    },
+    "ops": {
+      "area": {
+        "name": "Area",
+        "desc": "Calculates the total area of the polygons."
+      },
+      "length": {
+        "name": "Length",
+        "desc": "Calculates the total length of the lines."
+      },
+      "distance": {
+        "name": "Distance",
+        "desc": "Calculates the distance between two points."
+      },
+      "bbox": {
+        "name": "Extent (bbox)",
+        "desc": "Calculates the extent (bounding box) of the features in EPSG:4326."
+      },
+      "along": {
+        "name": "Point along line",
+        "desc": "Creates a point at the given distance from the start of the line."
+      },
+      "center": {
+        "name": "Center",
+        "desc": "Creates the center of the extent of each feature."
+      },
+      "centroid": {
+        "name": "Centroid",
+        "desc": "Creates the centroid (mean of the vertices) of each feature."
+      },
+      "centerOfMass": {
+        "name": "Center of mass",
+        "desc": "Creates the center of mass of each feature."
+      },
+      "pointOnFeature": {
+        "name": "Point on feature",
+        "desc": "Creates a point that is always on each feature."
+      },
+      "buffer": {
+        "name": "Buffer",
+        "desc": "Creates a buffer around the features."
+      },
+      "simplify": {
+        "name": "Simplify",
+        "desc": "Simplifies lines and polygons (Douglas-Peucker algorithm)."
+      },
+      "convex": {
+        "name": "Convex hull",
+        "desc": "Creates the smallest convex polygon that contains every feature."
+      },
+      "envelope": {
+        "name": "Envelope",
+        "desc": "Creates the rectangle that contains every feature."
+      },
+      "bezierSpline": {
+        "name": "Smooth line (Bézier)",
+        "desc": "Turns each line into a smoothed Bézier curve."
+      },
+      "transformRotate": {
+        "name": "Rotate",
+        "desc": "Rotates each feature around its centroid."
+      },
+      "transformScale": {
+        "name": "Scale",
+        "desc": "Scales each feature from its centroid."
+      },
+      "transformTranslate": {
+        "name": "Translate",
+        "desc": "Moves each feature a distance in a direction."
+      },
+      "union": {
+        "name": "Union",
+        "desc": "Merges the polygons into a single geometry."
+      },
+      "intersect": {
+        "name": "Intersection",
+        "desc": "Creates the area shared by every polygon."
+      },
+      "difference": {
+        "name": "Difference",
+        "desc": "Subtracts the other polygons from the first selected polygon."
+      },
+      "booleanPointInPolygon": {
+        "name": "Point in polygon",
+        "desc": "Checks whether the point is inside the polygon."
+      },
+      "booleanIntersects": {
+        "name": "Intersect",
+        "desc": "Checks whether the two features touch or cross."
+      },
+      "booleanContains": {
+        "name": "Contains",
+        "desc": "Checks whether the first selected feature contains the second."
+      },
+      "booleanWithin": {
+        "name": "Within",
+        "desc": "Checks whether the first selected feature is inside the second."
+      }
+    },
+    "params": {
+      "units": "Units",
+      "distance": "Distance",
+      "radius": "Radius",
+      "steps": "Steps (outline resolution)",
+      "tolerance": "Tolerance",
+      "highQuality": "High quality",
+      "resolution": "Resolution",
+      "sharpness": "Sharpness (0-1)",
+      "angle": "Angle (degrees)",
+      "factor": "Scale factor",
+      "direction": "Direction (degrees)",
+      "areaUnits": "Units",
+      "concavity": "Concavity",
+      "pivotLon": "Pivot longitude",
+      "pivotLat": "Pivot latitude",
+      "origin": "Origin",
+      "ignoreBoundary": "Ignore polygon boundary",
+      "ignoreSelfIntersections": "Ignore self-intersections"
+    },
+    "paramsHelp": {
+      "tolerance": "In degrees (EPSG:4326). 0.001 is roughly 100 m.",
+      "direction": "Angle from north, clockwise.",
+      "radius": "A negative radius shrinks polygons.",
+      "concavity": "Empty: convex hull. The lower it is (minimum 1), the closer it fits the features.",
+      "pivot": "In degrees (EPSG:4326). Leave both empty to rotate each feature around its centroid."
+    },
+    "units": {
+      "meters": "Meters",
+      "millimeters": "Millimeters",
+      "centimeters": "Centimeters",
+      "kilometers": "Kilometers",
+      "miles": "Miles",
+      "nauticalmiles": "Nautical miles",
+      "inches": "Inches",
+      "yards": "Yards",
+      "feet": "Feet",
+      "radians": "Radians",
+      "degrees": "Degrees"
+    },
+    "unitsShort": {
+      "meters": "m",
+      "millimeters": "mm",
+      "centimeters": "cm",
+      "kilometers": "km",
+      "miles": "mi",
+      "nauticalmiles": "nmi",
+      "inches": "in",
+      "yards": "yd",
+      "feet": "ft",
+      "radians": "rad",
+      "degrees": "°"
+    },
+    "areaUnits": {
+      "meters": "Square meters",
+      "millimeters": "Square millimeters",
+      "centimeters": "Square centimeters",
+      "kilometers": "Square kilometers",
+      "miles": "Square miles",
+      "nauticalmiles": "Square nautical miles",
+      "inches": "Square inches",
+      "yards": "Square yards",
+      "feet": "Square feet",
+      "acres": "Acres",
+      "hectares": "Hectares"
+    },
+    "areaUnitsShort": {
+      "meters": "m²",
+      "millimeters": "mm²",
+      "centimeters": "cm²",
+      "kilometers": "km²",
+      "miles": "mi²",
+      "nauticalmiles": "nmi²",
+      "inches": "in²",
+      "yards": "yd²",
+      "feet": "ft²",
+      "acres": "ac",
+      "hectares": "ha"
+    },
+    "origins": {
+      "centroid": "Centroid",
+      "center": "Center of the extent",
+      "sw": "Southwest corner",
+      "se": "Southeast corner",
+      "nw": "Northwest corner",
+      "ne": "Northeast corner"
+    },
+    "results": {
+      "yes": "Yes",
+      "no": "No",
+      "minX": "Minimum longitude",
+      "minY": "Minimum latitude",
+      "maxX": "Maximum longitude",
+      "maxY": "Maximum latitude",
+      "layerCreated": "Layer «{layer}» created with {n} geometry(ies)."
+    },
+    "exception": {
+      "notLoaded": "Turf.js is not available. A version of API-IDEE that includes it is required.",
+      "min": "The operation needs at least {n} features.",
+      "max": "The operation accepts at most {n} features.",
+      "exact": "The operation needs exactly {n} features.",
+      "types": "Geometry type not supported. This operation accepts: {types}.",
+      "pointPolygon": "Select a point and a polygon.",
+      "unsupportedGeometries": "Turf cannot check this relation between the selected geometry types.",
+      "empty": "The operation did not return any geometry.",
+      "error": "Error running the operation: {msg}",
+      "pivot": "Enter both the longitude and latitude of the pivot, or leave both empty."
+    }
+  }
 }

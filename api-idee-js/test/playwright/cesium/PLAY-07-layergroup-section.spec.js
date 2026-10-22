@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { routePng } from '../common/mocks';
 
 /*
  * Grupos de capas y secciones en Cesium (grupo emulado: las hijas van directas al
@@ -6,19 +7,13 @@ import { test, expect } from '@playwright/test';
  */
 const PAGE = '/test/playwright/cesium/basic-cesium.html';
 const TILES = 'https://group.cesium.test';
-const PNG_1PX = Buffer.from(
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
-  'base64',
-);
 const WAIT = { timeout: 20000 };
 
 test.describe.configure({ timeout: 60000 });
 
 test.describe('Grupos y secciones en Cesium', () => {
   test.beforeEach(async ({ page }) => {
-    await page.route(`${TILES}/**`, (route) => route.fulfill({
-      status: 200, headers: { 'access-control-allow-origin': '*' }, contentType: 'image/png', body: PNG_1PX,
-    }));
+    await routePng(page, `${TILES}/**`);
     await page.goto(PAGE);
     await page.evaluate((tiles) => {
       IDEE.config.baseLayer = [];
@@ -87,7 +82,8 @@ test.describe('Grupos y secciones en Cesium', () => {
       .every((l) => window.inViewer(l))), WAIT).toBe(true);
     const state = await page.evaluate(() => {
       window.grupo.setVisible(false);
-      const hidden = window.grupo.getLayers().map((l) => [l.isVisible(), l.getImpl().getLayer().show]);
+      const hidden = window.grupo.getLayers()
+        .map((l) => [l.isVisible(), l.getImpl().getLayer().show]);
       window.grupo.setVisible(true);
       window.grupo.setOpacity(0.5);
       const opacity = window.grupo.getLayers().map((l) => l.getImpl().getLayer().alpha);
@@ -150,7 +146,9 @@ test.describe('Grupos y secciones en Cesium', () => {
       window.c = window.xyz('c');
       window.grupo.addLayers([window.b, window.c]);
     });
-    await expect.poll(() => page.evaluate(() => [window.inViewer(window.b), window.inViewer(window.c)]), WAIT)
+    await expect.poll(() => page.evaluate(() => [
+      window.inViewer(window.b), window.inViewer(window.c),
+    ]), WAIT)
       .toEqual([true, true]);
     const state = await page.evaluate(() => {
       window.grupo.removeLayers(window.b);
@@ -174,7 +172,9 @@ test.describe('Grupos y secciones en Cesium', () => {
   test('quitar el grupo retira sus capas del visor', async ({ page }) => {
     await page.evaluate(() => {
       window.removed = [];
-      window.map.on(IDEE.evt.REMOVED_LAYER, (layers) => window.removed.push(...[].concat(layers).map((l) => l.name)));
+      window.map.on(IDEE.evt.REMOVED_LAYER, (layers) => {
+        window.removed.push(...[].concat(layers).map((l) => l.name));
+      });
       window.grupo = new IDEE.layer.LayerGroup({ name: 'grupo', layers: [window.xyz('a'), window.puntos('p')] });
       window.map.addLayers(window.grupo);
     });

@@ -4,6 +4,8 @@ import path from 'path';
 import {
   TIMEOUT, configureEngine, mockTiles, openMap, layerRow,
 } from '../common/helpers';
+// Generador de GeoPackage compartido con los tests del núcleo
+// eslint-disable-next-line import/no-relative-packages
 import { createGeoPackage } from '../../../../../../test/playwright/ol/fixtures/geopackage';
 
 /*
@@ -37,8 +39,12 @@ const TERRAIN = {
 const FEATURES = {
   type: 'FeatureCollection',
   features: [
-    { type: 'Feature', id: 'p1', geometry: { type: 'Point', coordinates: [-3.7, 40.4] }, properties: { nombre: 'Uno' } },
-    { type: 'Feature', id: 'p2', geometry: { type: 'Point', coordinates: [-3.6, 40.5] }, properties: { nombre: 'Dos' } },
+    {
+      type: 'Feature', id: 'p1', geometry: { type: 'Point', coordinates: [-3.7, 40.4] }, properties: { nombre: 'Uno' },
+    },
+    {
+      type: 'Feature', id: 'p2', geometry: { type: 'Point', coordinates: [-3.6, 40.5] }, properties: { nombre: 'Dos' },
+    },
   ],
 };
 
@@ -129,6 +135,7 @@ test.describe('Layerswitcher: submenús de añadir capas (cesium)', () => {
     await layerCheck.check();
     await addFromModal(page, 'Teselas vectoriales');
     await expect.poll(() => page.evaluate(() => window.mapjs.getMVT()
+      // eslint-disable-next-line no-underscore-dangle -- capas MVT pedidas (sin getter público)
       .map((l) => [l.legend, l.getImpl().layers_])), { timeout })
       .toEqual([['Teselas vectoriales', ['points']]]);
     await expect.poll(() => page.evaluate(() => {

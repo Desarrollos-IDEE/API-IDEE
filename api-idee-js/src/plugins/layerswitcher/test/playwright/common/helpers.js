@@ -87,8 +87,12 @@ export const addSampleLayers = async (page) => {
       source: {
         type: 'FeatureCollection',
         features: [
-          { type: 'Feature', id: 'a', geometry: { type: 'Point', coordinates: [2.1, 41.4] }, properties: { nombre: 'A' } },
-          { type: 'Feature', id: 'b', geometry: { type: 'Point', coordinates: [2.2, 41.5] }, properties: { nombre: 'B' } },
+          {
+            type: 'Feature', id: 'a', geometry: { type: 'Point', coordinates: [2.1, 41.4] }, properties: { nombre: 'A' },
+          },
+          {
+            type: 'Feature', id: 'b', geometry: { type: 'Point', coordinates: [2.2, 41.5] }, properties: { nombre: 'B' },
+          },
         ],
       },
     });
@@ -120,8 +124,9 @@ export const layerRow = (page, name) => page.locator(`#layerswitcher-layers li[d
  */
 export const setOpacitySlider = async (page, name, value) => {
   await layerRow(page, name).locator('input.layerswitcher-transparency').evaluate((input, v) => {
-    input.value = String(v);
-    input.dispatchEvent(new Event('input', { bubbles: true }));
+    const slider = input;
+    slider.value = String(v);
+    slider.dispatchEvent(new Event('input', { bubbles: true }));
   }, value);
 };
 

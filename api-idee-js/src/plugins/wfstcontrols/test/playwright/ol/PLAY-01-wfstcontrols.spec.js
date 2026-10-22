@@ -22,7 +22,7 @@ test('Test WFSTControls', async ({ page }) => {
     });
     window.mapjs.addPlugin(window.mp);
   });
-  
+
   const nPlugins = await page.evaluate(() => window.mapjs.getPlugins().length);
   // expect(nPlugins).toBe(1);
   expect(nPlugins).toBe(0); // Todavía no se ha implementado en esta version del API 2.0

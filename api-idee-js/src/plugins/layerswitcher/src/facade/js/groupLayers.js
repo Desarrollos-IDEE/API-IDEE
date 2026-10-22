@@ -129,10 +129,11 @@ export const fiendLayerInGroup = (layer, map) => {
   return group;
 };
 
+// Selector de destino de la capa: siempre visible con «Añadir al mapa» (valor vacío)
+// y una opción por cada grupo de capas del mapa
 export const createSelectGroup = (map) => {
   const groups = map.getLayerGroup()
     .filter((l) => l.isBase === false && l.displayInLayerSwitcher).reverse();
-  if (groups.length === 0) return;
 
   const select = IDEE.template.compileSync(addInGroupTemplate, {
     vars: {

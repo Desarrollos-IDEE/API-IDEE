@@ -62,7 +62,7 @@ export default class DataIDEEAuthManager {
 
   /**
    * Calcula el estado de autenticación del servicio. Si hay un token caducado
-   * intenta refrescarlo; si no hay token, comprueba si existe /auth/login.
+   * intenta refrescarlo; si no hay token, comprueba si el servicio tiene login.
    * @param {String} root Raíz del servicio.
    * @returns {Promise<String>} AUTH_HIDDEN, AUTH_UNLOCKED o AUTH_LOCKED.
    */
@@ -80,7 +80,7 @@ export default class DataIDEEAuthManager {
 
   /**
    * @param {String} root Raíz del servicio.
-   * @returns {Promise<Boolean>} Verdadero si el servicio tiene /auth/login.
+   * @returns {Promise<Boolean>} Verdadero si el servicio tiene login (ver AuthClient).
    */
   isLoginAvailable(root) {
     if (!(root in this.loginAvailable_)) {
@@ -105,12 +105,16 @@ export default class DataIDEEAuthManager {
   /**
    * Cierra la sesión del servicio y retira el token de sus capas.
    * @param {String} root Raíz del servicio.
+   * @param {Boolean} remote Cierra también la sesión en el servicio (si su contrato
+   * lo permite). Falso cuando el token ya no es válido.
    */
-  logout(root) {
+  logout(root, remote = true) {
+    const session = this.getSession(root);
     this.clearTimer_(root);
     delete this.sessions_[root];
     this.store_.removeSession(root);
     this.notify_(root, undefined);
+    if (remote && session?.accessToken) this.client_.logout(root, session).catch(() => {});
   }
 
   /**
@@ -130,7 +134,7 @@ export default class DataIDEEAuthManager {
           return true;
         })
         .catch(() => {
-          this.logout(root);
+          this.logout(root, false);
           return false;
         })
         .finally(() => {
