@@ -264,11 +264,10 @@ export default class VectorsManagementControl extends IDEE.Control {
       selectionLayer.textContent = selected.textContent;
       selectionLayer.title = selected.textContent;
 
-      // eslint-disable-next-line no-plusplus
       for (
         let i = 0;
         i < this.layerSelectorOptionsContainer.children.length;
-        i++
+        i += 1
       ) {
         const option = this.layerSelectorOptionsContainer.children[i];
         option.selected = option.dataset.value === selected.dataset.value;
@@ -312,9 +311,9 @@ export default class VectorsManagementControl extends IDEE.Control {
    * @api stable
    */
   selectLayerEvent() {
-    // eslint-disable-next-line no-underscore-dangle
     if (
       this.selectionControl
+      // eslint-disable-next-line no-underscore-dangle
       && this.selectionControl.selectedFeatures_.length > 0
     ) {
       document
