@@ -103,6 +103,20 @@ export default class DataIDEEAuthManager {
   }
 
   /**
+   * Inicia sesión con un token introducido por el usuario, tras comprobarlo con el
+   * servicio. Se renueva antes de caducar como cualquier otra sesión.
+   * @param {String} root Raíz del servicio.
+   * @param {String} token Token de acceso.
+   * @returns {Promise<Object>} Sesión.
+   */
+  async useToken(root, token) {
+    await this.client_.verifyToken(root, token);
+    const session = { accessToken: token };
+    this.setSession_(root, session);
+    return session;
+  }
+
+  /**
    * Cierra la sesión del servicio y retira el token de sus capas.
    * @param {String} root Raíz del servicio.
    * @param {Boolean} remote Cierra también la sesión en el servicio (si su contrato

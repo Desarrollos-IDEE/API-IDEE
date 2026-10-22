@@ -125,13 +125,20 @@ export default class AuthButton {
     const credentials = await showLoginForm(this.formParent_, this.root_);
     if (!credentials) return;
     this.setState(AUTH_PENDING);
+    const withToken = !!credentials.token;
     try {
-      await this.manager_.login(this.root_, credentials.username, credentials.password);
+      if (withToken) {
+        await this.manager_.useToken(this.root_, credentials.token);
+      } else {
+        await this.manager_.login(this.root_, credentials.username, credentials.password);
+      }
       this.setState(AUTH_LOCKED);
     } catch (err) {
       this.setState(AUTH_UNLOCKED);
-      const badCredentials = err instanceof AuthError && BAD_CREDENTIALS_CODES.includes(err.code);
-      IDEE.dialog.error(getValue(badCredentials ? 'exception.auth_failed' : 'exception.auth_unavailable'), undefined, this.order_);
+      const rejected = err instanceof AuthError && BAD_CREDENTIALS_CODES.includes(err.code);
+      let message = 'exception.auth_unavailable';
+      if (rejected) message = withToken ? 'exception.auth_token_rejected' : 'exception.auth_failed';
+      IDEE.dialog.error(getValue(message), undefined, this.order_);
     }
     if (this.button_?.isConnected) this.button_.focus();
   }

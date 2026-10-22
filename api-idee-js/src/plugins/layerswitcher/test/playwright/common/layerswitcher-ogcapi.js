@@ -50,10 +50,11 @@ const AUTH_API = '/api/auth-api/auth';
  * (`/auth-api/auth/me`, `/login`, `GET /refresh` → { token }, `/logout`); con `legacy`,
  * el contrato anterior (`/auth/login` → { access_token, refresh_token }, `POST /auth/refresh`).
  * Con `publicCollections: false`, sin sesión no lista ninguna colección (como el servicio real).
+ * Con `rejectToken`, `/auth-api/auth/me` rechaza cualquier token introducido por el usuario.
  */
 const mockService = async (page, {
   login = false, legacy = false, tokens = {}, loginDelay = 0, refreshOk = true, loginGate = null,
-  publicCollections = true,
+  publicCollections = true, rejectToken = false,
 } = {}) => {
   const calls = [];
   const authPath = legacy ? '/api/auth' : AUTH_API;
@@ -71,7 +72,8 @@ const mockService = async (page, {
 
     if (url.pathname === `${AUTH_API}/me` && !legacy) {
       if (!login) return json(404, { status: 404 });
-      return authorization ? json(200, { username: 'usuario' }) : json(401, { status: 401 });
+      return authorization && !rejectToken
+        ? json(200, { username: 'usuario' }) : json(401, { status: 401 });
     }
     if (url.pathname === `${authPath}/login`) {
       if (!login) return json(404, { status: 404 });
@@ -363,6 +365,66 @@ export const registerOGCAPITests = (impl) => {
 
       await expect(page.locator(AUTH_BUTTON)).toHaveClass(/m-layerswitcher-auth-unlocked/);
       await expect(page.locator('div.m-dialog.error')).toContainText('Usuario o contraseña incorrectos');
+      expect((await readStorage(page))[ROOT].session).toBeUndefined();
+    });
+
+    test('Formulario de sesión: «Guardar» solo con usuario y contraseña o un token válido', async ({ page }) => {
+      await mockService(page, { login: true });
+      await openService(page, impl, `${ROOT}/collections`, { [ROOT]: { mode: 'dataidee' } });
+      await page.click(AUTH_BUTTON);
+
+      const save = page.locator('.m-layerswitcher-auth-save');
+      const status = page.locator('.m-layerswitcher-auth-token-status');
+      await expect(save).toBeDisabled();
+      await page.fill('#m-layerswitcher-auth-user', 'usuario');
+      await expect(save).toBeDisabled();
+      await page.fill('#m-layerswitcher-auth-password', 'secret');
+      await expect(save).toBeEnabled();
+
+      // Con algo en el token se usa el token: usuario y contraseña quedan deshabilitados
+      await page.fill('#m-layerswitcher-auth-token', 'no-es-un-jwt');
+      await expect(save).toBeDisabled();
+      await expect(status).toHaveText('El token no tiene un formato válido');
+      await expect(page.locator('#m-layerswitcher-auth-user')).toBeDisabled();
+      await expect(page.locator('#m-layerswitcher-auth-password')).toBeDisabled();
+
+      await page.fill('#m-layerswitcher-auth-token', jwt(-60));
+      await expect(save).toBeDisabled();
+      await expect(status).toContainText('El token ha caducado');
+
+      await page.fill('#m-layerswitcher-auth-token', jwt(3600));
+      await expect(save).toBeEnabled();
+      await expect(status).toContainText('Token válido hasta');
+
+      await page.click('.m-layerswitcher-auth-cancel');
+      await expect(page.locator('.m-layerswitcher-auth-modal')).toHaveCount(0);
+    });
+
+    test('DataIDEE con token: se comprueba con /auth-api/auth/me y se usa como Bearer', async ({ page }) => {
+      const token = jwt(3600);
+      const calls = await mockService(page, { login: true });
+      await openService(page, impl, `${ROOT}/collections`, { [ROOT]: { mode: 'dataidee' } });
+      await page.click(AUTH_BUTTON);
+      await page.fill('#m-layerswitcher-auth-token', token);
+      await page.click('.m-layerswitcher-auth-save');
+
+      await expect(page.locator(AUTH_BUTTON)).toHaveClass(/m-layerswitcher-auth-locked/);
+      expect(calls.some((c) => c.path === `${AUTH_API}/me` && c.authorization === `Bearer ${token}`))
+        .toBe(true);
+      expect(calls.some((c) => c.path === `${AUTH_API}/login`)).toBe(false);
+      await expect(page.locator(`${LAYER_SELECT} option[value="local:privada"]`)).toHaveCount(1);
+      expect((await readStorage(page))[ROOT].session).toEqual({ accessToken: token });
+    });
+
+    test('DataIDEE con token rechazado por el servicio: avisa y no inicia sesión', async ({ page }) => {
+      await mockService(page, { login: true, rejectToken: true });
+      await openService(page, impl, `${ROOT}/collections`, { [ROOT]: { mode: 'dataidee' } });
+      await page.click(AUTH_BUTTON);
+      await page.fill('#m-layerswitcher-auth-token', jwt(3600));
+      await page.click('.m-layerswitcher-auth-save');
+
+      await expect(page.locator(AUTH_BUTTON)).toHaveClass(/m-layerswitcher-auth-unlocked/);
+      await expect(page.locator('div.m-dialog.error')).toContainText('El servicio no ha aceptado el token');
       expect((await readStorage(page))[ROOT].session).toBeUndefined();
     });
 

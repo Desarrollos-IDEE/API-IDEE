@@ -7,6 +7,7 @@
  *   - POST {root}/auth-api/auth/login    { username, password } → { token, userId }
  *   - GET  {root}/auth-api/auth/refresh  + Authorization: Bearer <token actual> → { token }
  *   - POST {root}/auth-api/auth/logout   + Authorization: Bearer <token actual>
+ *   - GET  {root}/auth-api/auth/me       + Authorization: Bearer <token>: comprueba un token
  * - Contrato anterior:
  *   - POST {root}/auth/login    { username, password }
  *   - POST {root}/auth/refresh  { refresh_token } + Authorization: Bearer <token actual>
@@ -25,6 +26,8 @@ const CONTRACTS = [
     login: 'auth-api/auth/login',
     refresh: { path: 'auth-api/auth/refresh', method: 'get' },
     logout: 'auth-api/auth/logout',
+    // Comprobación de un token introducido por el usuario
+    verify: 'auth-api/auth/me',
   },
   {
     // Cualquier respuesta salvo 404 (405, 400, 401...) indica que el endpoint existe
@@ -32,6 +35,7 @@ const CONTRACTS = [
     login: 'auth/login',
     refresh: { path: 'auth/refresh', method: 'post' },
     logout: null,
+    verify: null,
   },
 ];
 const ACCESS_TOKEN_KEYS = ['access_token', 'accessToken', 'token', 'jwt'];
@@ -131,6 +135,25 @@ export default class AuthClient {
     });
     if (!isSuccess(response)) throw new AuthError(response.code);
     return parseTokenResponse(response.text);
+  }
+
+  /**
+   * Comprueba con el servicio un token introducido por el usuario. La API de
+   * autenticación de DataIDEE lo valida con GET /auth-api/auth/me; el contrato
+   * anterior no tiene comprobación y se acepta (su formato y caducidad ya se han
+   * comprobado en el formulario).
+   * @param {String} root Raíz del servicio.
+   * @param {String} token Token de acceso.
+   * @returns {Promise} Se resuelve si el servicio acepta el token.
+   */
+  async verifyToken(root, token) {
+    const contract = await this.getContract(root);
+    if (contract === null) throw new AuthError(404);
+    if (!contract.verify) return;
+    const response = await IDEE.remote.get(`${root}/${contract.verify}`, null, {
+      ...DIRECT, headers: bearer({ accessToken: token }),
+    });
+    if (!isSuccess(response)) throw new AuthError(response.code);
   }
 
   /**

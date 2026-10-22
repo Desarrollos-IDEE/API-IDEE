@@ -70,8 +70,6 @@
   },
   "overrides": [
     {
-      // Tests de Playwright y su configuración: importan @playwright/test, dependencia de
-      // desarrollo de la raíz (los plugins la usan sin declararla en su package.json)
       "files": [
         "test/playwright/**/*.js",
         "src/plugins/*/test/playwright/**/*.js",
