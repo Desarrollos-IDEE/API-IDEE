@@ -28,7 +28,6 @@ test.describe('IDEE.Popup', () => {
         extract: true,
       });
       window.ogc001 = ogc001;
-      // El evento se escucha antes de añadir la capa: la respuesta puede llegar enseguida
       window.ogc_001Loaded = new Promise((resolve) => {
         window.ogc001.on(IDEE.evt.LOAD, () => {
           resolve();
