@@ -1,5 +1,12 @@
 import { test, expect } from '@playwright/test';
 
+/** Espera a que el mapa termine de pintar (imagen del WMS incluida) antes de la captura. */
+const rendered = (page) => page.evaluate(() => new Promise((resolve) => {
+  const olMap = window.mapjs.getMapImpl();
+  olMap.once('rendercomplete', () => resolve());
+  olMap.render();
+}));
+
 test('Comprobamos que funciona styles en WMS', async ({ page }) => {
   await page.goto('/test/playwright/ol/basic-ol.html');
   await page.evaluate(() => {
@@ -27,5 +34,6 @@ test('Comprobamos que funciona styles en WMS', async ({ page }) => {
       window.mapjs.addLayers(window.wms);
     });
   });
+  await rendered(page);
   await expect(page).toHaveScreenshot('snapshot.png', { maxDiffPixelRatio: 0.5 });
 });

@@ -51,6 +51,14 @@
       "type": "boolean",
       "name": "style",
       "position": 10
+    }, {
+      "type": "simple",
+      "name": "snapping",
+      "position": 11
+    }, {
+      "type": "boolean",
+      "name": "turf",
+      "position": 12
     }]
   }],
   "files": {
@@ -77,8 +85,10 @@
     "text": "Geometry management and downloading",
     "version": "2.0",
     "date": "3rd February 2024",
-    "author": "CNIG",
-    "org": "CNIG",
+    "author": "IDEE",
+    "org": "IDEE",
+    "homepage": "https://www.idee.es",
+    "funding": "Desarrollo financiado por los nodos participantes en el Grupo Técnico de Trabajo Desarrollos IDEE",
     "tags": "api-idee,plugin",
     "icon": "./facade/assets/icons/icons.svg"
   }

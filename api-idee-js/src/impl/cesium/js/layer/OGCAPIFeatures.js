@@ -116,7 +116,7 @@ class OGCAPIFeatures extends Vector {
     this.facadeVector_.resetAutoRefresh();
     this.facadeVector_.userMaxExtent = null;
     this.map = map;
-    this.fire(EventType.ADDED_TO_MAP);
+    this.fireAddedToMap_();
     map.on(EventType.CHANGE_PROJ, this.setProjection_.bind(this), this);
     this.cesiumLayer = new GeoJsonDataSource(this.name);
     this.updateSource_();
@@ -178,7 +178,8 @@ class OGCAPIFeatures extends Vector {
       name: this.name,
       limit: this.limit,
       offset: this.offset,
-      format: this.format || 'json',
+      // null explícito: el servidor no admite el parámetro "f" y no se envía.
+      format: this.format === null ? undefined : (this.format || 'json'),
       id: this.id,
       bbox: this.bbox,
       conditional: this.conditional,

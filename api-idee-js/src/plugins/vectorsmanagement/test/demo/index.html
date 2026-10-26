@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Edición espacial DataIDEE</title>
+    <link rel="stylesheet" href="/assets/apiidee.css">
+    <link rel="stylesheet" href="/assets/vectorsmanagement.css">
+    <style>
+      html, body { width: 100%; height: 100%; margin: 0; }
+      body { display: flex; flex-direction: column; overflow: hidden; }
+      .demo-mode { box-sizing: border-box; flex: 0 0 auto; min-height: 3.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; padding: .5rem 1rem; background: white; }
+      #map { flex: 1 1 auto; min-height: 0; width: 100%; }
+      .demo-mode label { margin-right: .5rem; }
+      .demo-mode #demo-status { flex: 1 1 100%; }
+    </style>
+  </head>
+  <body>
+    <div class="demo-mode">
+      <label for="demo-mode">Servicio</label>
+      <select id="demo-mode">
+        <option value="local">Local (escritura disponible)</option>
+        <option value="readonly">Local (solo lectura)</option>
+        <option value="dense">Local (zona que supera entidades)</option>
+        <option value="complex">Local (geometría que supera coordenadas)</option>
+        <option value="conflict">Local (conflicto al guardar)</option>
+        <option value="partial">Local (fallo tras un éxito)</option>
+        <option value="write-error">Local (validación rechazada)</option>
+        <option value="uncertain">Local (respuesta de escritura incierta)</option>
+      </select>
+      <span id="demo-status" role="status" aria-live="polite"></span>
+    </div>
+    <div id="map"></div>
+    <script src="/assets/apiidee.js"></script>
+    <script src="/assets/configuration.js"></script>
+    <script src="/assets/vectorsmanagement.js"></script>
+    <script src="/demo.js"></script>
+  </body>
+</html>

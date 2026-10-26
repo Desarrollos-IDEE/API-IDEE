@@ -123,9 +123,26 @@
                                 <option value="false">false</option>
                             </select>
                         </div>
+                        <div>
+                            <label for="turf" title="Es necesario tener añadida la herramienta de selección">Control de geoprocesos (Turf.js) habilitado "turf"</label>
+                            <select name="selectTurf" id="turf">
+                                <option value=""></option>
+                                <option value="true" selected="selected">true</option>
+                                <option value="false">false</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="snapping" title="Configuración del snapping de las herramientas de creación y edición: true, false, JSON o base64. Si se deja vacío se usan los valores por defecto">Configuración del snapping "snapping"</label>
+                            <input type="text" name="snapping" id="snapping" list="snappingSug">
+                            <datalist id="snappingSug">
+                                <option value="true" label="Snapping activado con los valores por defecto"></option>
+                                <option value="false" label="Snapping desactivado"></option>
+                                <option value='{"vertex":true,"edge":false,"intersection":true,"allLayers":true,"guides":true,"pixelTolerance":15}' label="Configuración completa"></option>
+                            </datalist>
+                        </div>
                     </div>
                     <div class="m-test-buttons">
-                        <button id="removeButton">Eliminar</button>
+                        <button name="eliminar" class="m-test-button" id="removeButton">Eliminar plugin</button>
                     </div>
                 </div>
                 <div id="mapjs" class="m-container"></div>
@@ -161,6 +178,8 @@
                             const editionInput = document.getElementById("edition");
                             const helpInput = document.getElementById("help");
                             const styleInput = document.getElementById("style");
+                            const turfInput = document.getElementById("turf");
+                            const snappingInput = document.getElementById("snapping");
 
                             [
                                 selectPosicion,
@@ -175,6 +194,8 @@
                                 editionInput,
                                 helpInput,
                                 styleInput,
+                                turfInput,
+                                snappingInput,
                             ].forEach((elm) => { elm.addEventListener('change', changeTest); });
 
                             function changeTest() {
@@ -221,6 +242,14 @@
                                 let styleValor = styleInput.options[styleInput.selectedIndex].value;
                                 if (styleValor) {
                                     options.style = styleValor === "true" ? true : false;
+                                }
+                                let turfValor = turfInput.options[turfInput.selectedIndex].value;
+                                if (turfValor) {
+                                    options.turf = turfValor === "true" ? true : false;
+                                }
+                                const snappingValor = snappingInput.value.trim();
+                                if (snappingValor) {
+                                    options.snapping = snappingValor;
                                 }
 
                                 map.removePlugins(mp);

@@ -104,6 +104,14 @@ export const ADDED_LAYERGROUP = 'added:layergroup';
 export const ADDED_TO_LAYERGROUP = 'added:tolayergroup';
 
 /**
+ * Evento que se produce al eliminar una capa de un LayerGroup.
+ * @public
+ * @type {string}
+ * @api
+ */
+export const REMOVED_FROM_LAYERGROUP = 'removed:fromlayergroup';
+
+/**
  * Evento que se produce al añadir WFS.
  * @public
  * @type {string}
@@ -318,6 +326,14 @@ export const LOAD = 'load';
  * @api
  */
 export const LOAD_ERROR = 'load:error';
+
+/**
+ * Evento que se produce cuando el servicio rechaza el token de una capa (HTTP 401/403).
+ * @public
+ * @type {string}
+ * @api
+ */
+export const LOAD_UNAUTHORIZED = 'load:unauthorized';
 
 /**
  * Evento que se produce al cargarse las capas.

@@ -26,6 +26,7 @@ test.describe('Eventos', () => {
       });
       // Evento ROTATION
       map.on(IDEE.evt.CHANGE_ROTATION, (rot) => {
+        // eslint-disable-next-line no-console -- el test escucha este mensaje en la consola
         console.log(`Rotation: ${rot}`);
       });
       const popup = new IDEE.Popup();
@@ -66,8 +67,7 @@ test.describe('Eventos', () => {
       return [hitPOP, hitREM];
     });
     expect(res[0]).toBe(6);// Eventos POPUP
-    await page.waitForTimeout(1000);
-    expect(hitROT).toBe(1);// Evento ROTATION
+    await expect.poll(() => hitROT).toBe(1);// Evento ROTATION
     expect(res[1]).toBe(1);// Evento REMOVED_FROM_MAP
   });
 });

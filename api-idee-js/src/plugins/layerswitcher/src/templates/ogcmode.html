@@ -1,0 +1,9 @@
+<div class="m-layerswitcher-ogc-mode-bar">
+    <label for="m-layerswitcher-ogc-mode-select" class="m-layerswitcher-ogc-mode-label">{{translations.ogc_mode}}</label>
+    <select tabindex="0" id="m-layerswitcher-ogc-mode-select" class="m-layerswitcher-ogc-mode-select">
+        {{#each modes}}
+            <option value="{{this.key}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
+        {{/each}}
+    </select>
+    <div id="m-layerswitcher-ogc-auth" class="m-layerswitcher-ogc-auth" style="display: none;"></div>
+</div>

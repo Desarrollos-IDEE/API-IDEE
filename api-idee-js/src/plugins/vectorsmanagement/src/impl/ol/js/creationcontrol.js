@@ -1,4 +1,5 @@
 import DrawRegular from 'ol-ext/interaction/DrawRegular';
+import SnapManager from './snapmanager';
 
 /**
  * @module IDEE/impl/control/Creationcontrol
@@ -21,6 +22,13 @@ export default class Creationcontrol extends IDEE.impl.Control {
       * @type {IDEE.Map}
       */
     this.facadeMap_ = map;
+
+    /**
+     * Snap manager for draw interactions
+     * @private
+     * @type {SnapManager}
+     */
+    this.snapManager_ = new SnapManager(map);
   }
 
   /**
@@ -77,13 +85,15 @@ export default class Creationcontrol extends IDEE.impl.Control {
    * This function adds draw interaction to map.
    * @public
    * @function
+   * @param {Object} snapOptions - snap options
    * @api
    */
-  addDrawInteraction() {
+  addDrawInteraction(snapOptions) {
     const olMap = this.facadeMap_.getMapImpl();
     this.draw = this.newDrawInteraction(this.vectorSource_, this.facadeControl.geometry);
     this.addDrawEvent();
     olMap.addInteraction(this.draw);
+    this.snapManager_.enable(this.draw, () => this.facadeControl.getLayer(), snapOptions);
   }
 
   /**
@@ -103,13 +113,26 @@ export default class Creationcontrol extends IDEE.impl.Control {
    * This function adds figure interaction to map.
    * @public
    * @function
+   * @param {Object} snapOptions snap options
    * @api
    */
-  addFigureInteraction() {
+  addFigureInteraction(snapOptions) {
     const olMap = this.facadeMap_.getMapImpl();
     this.drawRegular = this.newDrawFigureInteraction(this.vectorSource_);
     this.addDrawFigureEvent();
     olMap.addInteraction(this.drawRegular);
+    this.snapManager_.enable(this.drawRegular, () => this.facadeControl.getLayer(), snapOptions);
+  }
+
+  /**
+   * This function updates snap options of active interaction.
+   * @public
+   * @function
+   * @param {Object} snapOptions snap options
+   * @api
+   */
+  updateSnap(snapOptions) {
+    this.snapManager_.update(snapOptions);
   }
 
   /**
@@ -161,6 +184,7 @@ export default class Creationcontrol extends IDEE.impl.Control {
    * @api
    */
   removeFigureDrawInteraction() {
+    this.snapManager_.disable();
     this.facadeMap_.getMapImpl().removeInteraction(this.drawRegular);
   }
 
@@ -171,6 +195,7 @@ export default class Creationcontrol extends IDEE.impl.Control {
    * @api
    */
   removeDrawInteraction() {
+    this.snapManager_.disable();
     this.facadeMap_.getMapImpl().removeInteraction(this.draw);
   }
 

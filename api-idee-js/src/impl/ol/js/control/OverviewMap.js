@@ -340,7 +340,7 @@ class OverviewMap extends OlControlOverviewMap {
       return null;
     }
 
-    const { userParameters, options = {}, vendorOptions = {} } = parameters;
+    const [userParameters, options = {}, vendorOptions = {}] = Object.values(parameters);
     let copyParameters = userParameters;
     if (layer.type === 'LayerGroup') {
       const layers = (userParameters.layers || [])

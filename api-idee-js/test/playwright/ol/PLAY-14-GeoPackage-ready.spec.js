@@ -76,7 +76,9 @@ test('GeoPackage: addLayers delega la incorporación al addTo del paquete', asyn
       attached: gpkg.getLayers().every((layer) => map.getLayers().includes(layer)),
     };
   });
-  expect(result).toEqual({ added: 1, loaded: 1, registered: true, attached: true });
+  expect(result).toEqual({
+    added: 1, loaded: 1, registered: true, attached: true,
+  });
 });
 
 ['pending', 'ready'].forEach((state) => {

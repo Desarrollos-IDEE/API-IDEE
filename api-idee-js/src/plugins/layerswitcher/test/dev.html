@@ -7,9 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="idee" content="yes">
     <title>Layerswitcher TEST</title>
-    <link href="https://componentes-beta.idee.es/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
-    <link href="https://componentes-beta.idee.es/api-idee/plugins/information/information.ol.min.css" rel="stylesheet" />
-    <link href="https://componentes-beta.idee.es/api-idee/plugins/vectors/vectors.ol.min.css" rel="stylesheet" />
+    <link href="http://localhost:8080/api-idee/assets/css/apiidee.ol.min.css" rel="stylesheet" />
+    <!-- <link href="http://localhost:8080/api-idee/assets/css/apiidee.cesium.min.css" rel="stylesheet" /> -->
 </head>
 
 <body>
@@ -153,16 +152,17 @@
         </div>
         <div class="m-test-buttons">
             <button name="eliminar" class="m-test-button" id="removeButton">Eliminar Plugin</button>
+            <select name="sampleLayer" id="selectSampleLayer" title="Capas de ejemplo para probar el plugin en 2D y 3D">
+                <option value="" selected="selected">Añadir capa de ejemplo…</option>
+            </select>
         </div>
     </div>
 
     <div id="mapjs" class="container"></div>
-    <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/js/apiidee.ol.min.js"></script>
-    <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/js/configuration.js"></script>
-    <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/plugins/information/information.ol.min.js"></script>
-    <script type="text/javascript" src="https://componentes-beta.idee.es/api-idee/plugins/vectors/vectors.ol.min.js"></script>
+    <script type="text/javascript" src="http://localhost:8080/api-idee/js/apiidee.ol.min.js"></script>
+    <!-- <script type="text/javascript" src="http://localhost:8080/api-idee/js/apiidee.cesium.min.js"></script> -->
+    <script type="text/javascript" src="http://localhost:8080/api-idee/js/configuration.js"></script>
     <script type="text/javascript" src="/main.js"></script>
-
 </body>
 
 </html>

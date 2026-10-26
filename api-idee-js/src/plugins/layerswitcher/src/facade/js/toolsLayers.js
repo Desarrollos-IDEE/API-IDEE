@@ -1,7 +1,7 @@
 import changeNameTemplate from 'templates/changename';
-import { getValue } from './i18n/language';
-import { fiendLayerInGroup } from './groupLayers';
 import configTemplate from '../../templates/config';
+import { fiendLayerInGroup } from './groupLayers';
+import { getValue } from './i18n/language';
 import { focusModal } from './utils';
 
 // I18N - Traducciones INFO LAYER
@@ -48,7 +48,7 @@ const SELECTOR_DIALOG = 'div.m-api-idee-container div.m-dialog';
 const ID_SELECTOR_CHANGE_NAME_BUTTON = '#layer-change-name button';
 
 // Botón de cerrar diálogo
-const ID_SELECTOR_CLOSE_DIALOG = 'div.m-dialog.info div.m-button > button';
+const INFO_DIALOG = 'div.m-dialog.info';
 
 /* EYE SELECT LAYER */
 const CLASS_CHECK = 'm-layerswitcher-check';
@@ -57,23 +57,29 @@ const CLASS_CHECK = 'm-layerswitcher-check';
 const I18N_LEGEND_ERROR = 'legend_error';
 
 /* TARGET LAYER */
-const layersTypesTarget = ['WMTS', 'WFS', 'MBTilesVector', 'MBTiles', 'OSM', 'XYZ', 'TMS', 'GeoJSON', 'GPX', 'KML', 'KMZ', 'OGCAPIFeatures', 'Vector', 'GenericRaster', 'GenericVector', 'MVT', 'GeoTIFF', 'MapLibre'];
+const layersTypesTarget = ['WMTS', 'WFS', 'MBTilesVector', 'MBTiles', 'OSM', 'XYZ', 'TMS', 'GeoJSON', 'GPX', 'KML', 'KMZ', 'OGCAPIFeatures', 'DataIDEE', 'Vector', 'GenericRaster', 'GenericVector', 'MVT', 'GeoTIFF', 'MapLibre'];
 
 /* TILE OPTIONS */
 const TILE_COORDS_REGEX = /\{z\}\/\{x\}\/\{(-?)y\}/;
 
+// Teselas de OSM cuando la capa no indica URL (las de la fuente OSM por defecto)
+const OSM_DEFAULT_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+
 /* CHANGE NAME */
-const changeLayerLegend = (layer, target) => {
+const changeLayerLegend = (layer, target, onChange) => {
   const element = target;
   const newValue = document.querySelector(SELECTOR_CHANGE_NAME).value.trim();
   if (newValue.length > 0) {
     layer.setLegend(newValue);
     document.querySelector(SELECTOR_DIALOG).remove();
     element.lastChild.textContent = ` ${newValue} `;
+    // El panel puede haberse repintado mientras el diálogo estaba abierto (el elemento ya
+    // no estaría en el documento): se repinta con la leyenda nueva
+    if (typeof onChange === 'function') onChange();
   }
 };
 
-export const showModalChangeName = (layer, target, order) => {
+export const showModalChangeName = (layer, target, order, onChange) => {
   if (target.className.indexOf('m-layerswitcher-title-box') > -1
   || target.className.indexOf('m-layerswitcher-layergroup-name') > -1) {
     const changeName = IDEE.template.compileSync(changeNameTemplate, {
@@ -91,10 +97,10 @@ export const showModalChangeName = (layer, target, order) => {
     IDEE.dialog.info(changeName, getValue('change_name'), order);
 
     document.querySelector(ID_SELECTOR_CHANGE_NAME_BUTTON).addEventListener('click', () => {
-      changeLayerLegend(layer, target);
+      changeLayerLegend(layer, target, onChange);
     });
 
-    const button = document.querySelector(ID_SELECTOR_CLOSE_DIALOG);
+    const button = IDEE.dialog.getCloseButton(INFO_DIALOG);
     button.innerHTML = getValue('close');
   }
 };
@@ -105,7 +111,15 @@ export const showHideLayersEye = (evt, layer, self) => {
 
   if (evt.target.className.indexOf('m-layerswitcher-check') > -1 && selectLayer === 'eye') {
     if (evt.target.classList.contains(CLASS_CHECK)) {
-      if (layer.isBase === false || !layer.isVisible()) {
+      if (layer instanceof IDEE.layer.Section) {
+        const sectionLayers = layer.getAllLayers();
+        let isVisible = false;
+        if (sectionLayers.length > 0) {
+          isVisible = sectionLayers.some((l) => l.isVisible() === true);
+        }
+        layer.setVisible(!isVisible);
+        self.render();
+      } else if (layer.isBase === false || !layer.isVisible()) {
         layer.setVisible(!layer.isVisible());
         self.render();
       }
@@ -122,10 +136,7 @@ const errorLegendLayer = (layer, useProxy, statusProxy) => {
     } else if (layer.type === 'XYZ') {
       legend = layer.url.replace(TILE_COORDS_REGEX, '0/0/0');
     } else if (layer.type === 'OSM') {
-      let url = layer.getImpl().getLayer().getSource().getUrls();
-      if (url.length > 0) {
-        url = url[0];
-      }
+      const url = layer.url || OSM_DEFAULT_URL;
       legend = url.replace(TILE_COORDS_REGEX, '0/0/0');
     }
     if (legend !== '') {
@@ -200,8 +211,10 @@ export const legendInfo = (evt, layer, useProxy, statusProxy) => {
 };
 
 /* TARGET LAYER */
-export const eventIconTarget = (layer, map, order, evt) => {
+export const eventIconTarget = (layer, map, order, evt, impl) => {
   if (evt.target.className.indexOf('m-layerswitcher-icons-target') > -1) {
+    // Capas que la implementación encuadra por su cuenta (p. ej. teselas 3D)
+    if (impl && impl.zoomToLayer(map, layer)) return;
     const mapView = map;
     const layerType = layer.type;
     if (layerType === 'WMS') {
@@ -217,7 +230,7 @@ export const eventIconTarget = (layer, map, order, evt) => {
               if (ext.length > 0) {
                 mapView.setBbox(ext);
               } else {
-                mapView.setBbox(mapView.getExtent());
+                mapView.setBbox(mapView.getMaxExtent());
               }
             })
             .catch((err) => {
@@ -225,7 +238,7 @@ export const eventIconTarget = (layer, map, order, evt) => {
               console.error(err);
             });
         } else {
-          mapView.setBbox(mapView.getExtent());
+          mapView.setBbox(mapView.getMaxExtent());
         }
       } else {
         mapView.setBbox(extent);
@@ -255,20 +268,22 @@ const showLayers = (layer) => {
 
 const showHideLayersInLayerGroup = (layer, map) => {
   const group = fiendLayerInGroup(layer, map);
-
-  if (!document.querySelector(`[data-layer-id="${group.idLayer}"]`).checked) {
-    document.querySelector(`[data-layer-id="${group.idLayer}"]`).click();
+  if (!group) {
+    return;
   }
 
-  if (group) {
-    group.getLayers().forEach((subLayer) => {
-      if (subLayer.idLayer === layer.idLayer) {
-        showLayers(subLayer);
-      } else {
-        hideLayers(subLayer);
-      }
-    });
+  const groupInput = document.querySelector(`[data-layer-id="${group.idLayer}"]`);
+  if (groupInput && !groupInput.checked) {
+    groupInput.click();
   }
+
+  group.getLayers().forEach((subLayer) => {
+    if (subLayer.idLayer === layer.idLayer) {
+      showLayers(subLayer);
+    } else {
+      hideLayers(subLayer);
+    }
+  });
 };
 
 export const showHideLayersRadio = (layer, map, target) => {
@@ -339,33 +354,30 @@ export const selectDefaultRange = (radioButtons, map) => {
 const changeLayerConfig = (layer, otherStyles) => {
   const styleSelected = document.querySelector('#m-layerswitcher-style-select').value;
   if (styleSelected !== '') {
-    if (layer instanceof IDEE.layer.Vector) {
+    const usesPredefinedStyles = !IDEE.utils.isNullOrEmpty(layer.predefinedStyles)
+      && (layer instanceof IDEE.layer.Vector || layer instanceof IDEE.layer.GeoTIFF);
+    if (usesPredefinedStyles) {
       if (!IDEE.utils.isNullOrEmpty(otherStyles)) {
         const filtered = otherStyles[styleSelected];
         layer.clearStyle();
-        if (styleSelected === 0) {
+        if (layer instanceof IDEE.layer.Vector && styleSelected === '0') {
           layer.setStyle();
         } else {
           layer.setStyle(filtered);
         }
       }
     } else {
-      let styleProcessed = styleSelected;
-      if (layer instanceof IDEE.layer.WMS) {
-        const layerImpl = layer.getImpl();
-        const layerNames = IDEE.utils.isNullOrEmpty(layerImpl.layers)
-          ? layerImpl.name
-          : layerImpl.layers;
-        styleProcessed = layer.getImpl().processStyles(styleProcessed, layerNames);
+      // Cada implementación aplica el estilo WMS a su manera (parámetro STYLES)
+      if (typeof layer.setStyles === 'function') {
+        layer.setStyles(styleSelected);
       }
-      layer.getImpl().getLayer().getSource().updateParams({ STYLES: styleProcessed });
       const cm = layer.capabilitiesMetadata;
       if (!IDEE.utils.isNullOrEmpty(cm) && !IDEE.utils.isNullOrEmpty(cm.style)) {
         const filtered = layer.capabilitiesMetadata.style.filter((style) => {
-          return style.Name === styleProcessed;
+          return style.Name === styleSelected;
         });
 
-        if (filtered.length > 0 && filtered[0].LegendURL.length > 0) {
+        if (filtered.length > 0 && filtered[0].LegendURL?.length > 0) {
           const newURL = filtered[0].LegendURL[0].OnlineResource;
           layer.setLegendURL(newURL);
         }
@@ -384,7 +396,8 @@ export const styleLayers = (layer, order, evt) => {
       otherStyles = layer.capabilitiesMetadata.style;
     }
 
-    if (layer instanceof IDEE.layer.Vector) {
+    if (!IDEE.utils.isNullOrEmpty(layer.predefinedStyles)
+      && (layer instanceof IDEE.layer.Vector || layer instanceof IDEE.layer.GeoTIFF)) {
       otherStyles = layer.predefinedStyles;
       isVectorLayer = true;
     }
@@ -412,7 +425,7 @@ export const styleLayers = (layer, order, evt) => {
       document.querySelector(selector).addEventListener('click', () => {
         changeLayerConfig(layer, otherStyles);
       });
-      const button = document.querySelector('div.m-dialog.info div.m-button > button');
+      const button = IDEE.dialog.getCloseButton(INFO_DIALOG);
       button.innerHTML = getValue('close');
       setTimeout(() => {
         document.querySelector('.m-layerswitcher-style-container').focus();

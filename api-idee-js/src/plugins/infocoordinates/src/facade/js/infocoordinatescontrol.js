@@ -211,9 +211,11 @@ export default class InfocoordinatesControl extends IDEE.Control {
     });
 
     selector.addEventListener('mousedown', (event) => {
+      // Evita el blur del input al elegir opción o usar la barra de scroll.
+      // Sin esto, el blur cierra la lista al interactuar con el scrollbar.
+      event.preventDefault();
       const { target } = event;
       if (target.tagName === 'A') {
-        event.preventDefault();
         const value = target.getAttribute('value');
         if (value === 'default') {
           isEditable = true;

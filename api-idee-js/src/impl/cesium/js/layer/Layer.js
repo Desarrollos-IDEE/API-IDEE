@@ -6,7 +6,7 @@
 import MObject from 'IDEE/Object';
 import { isNullOrEmpty, isString } from 'IDEE/util/Utils';
 import FacadeLayer from 'IDEE/layer/Layer';
-import { getValue } from 'IDEE/i18n/language';
+import * as EventType from 'IDEE/event/eventtype';
 import { ImageryLayer, Resource } from 'cesium';
 import ImplUtils from '../util/Utils';
 
@@ -257,7 +257,27 @@ class LayerBase extends MObject {
    * @expose
    */
   inRange() {
-    return true;
+    if (isNullOrEmpty(this.map) || typeof this.map.getZoom !== 'function') return true;
+    const zoom = this.map.getZoom();
+    if (isNullOrEmpty(zoom)) return true;
+    return zoom >= this.minZoom && zoom <= this.maxZoom;
+  }
+
+  /**
+   * Notifica que la capa se ha añadido al mapa a la implementación y a la
+   * fachada (en OL el evento se emite sobre la fachada).
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @function
+   * @param {Array} args Argumentos del evento.
+   * @api stable
+   */
+  fireAddedToMap_(args = []) {
+    this.fire(EventType.ADDED_TO_MAP, args);
+    const facadeLayer = this.facadeLayer_ || this.facadeVector_;
+    if (!isNullOrEmpty(facadeLayer) && facadeLayer !== this) {
+      facadeLayer.fire(EventType.ADDED_TO_MAP, args);
+    }
   }
 
   /**
@@ -352,14 +372,13 @@ class LayerBase extends MObject {
    * @expose
    */
   getZIndex() {
-    if (!isNullOrEmpty(this.getLayer())) {
-      this.zIndex_ = this.getLayer()._layerIndex;
-    }
     return this.zIndex_;
   }
 
   /**
-   * Este método establece el índice z de esta capa.
+   * Este método establece el índice z de esta capa. El índice es la clave de
+   * orden de la capa en su colección del visor (imágenes, fuentes de datos...),
+   * no su posición: el mapa reordena la colección.
    *
    * @function
    * @param {Number} zIndex Índice de la capa.
@@ -368,23 +387,8 @@ class LayerBase extends MObject {
    */
   setZIndex(zIndex) {
     this.zIndex_ = zIndex;
-    if (!isNullOrEmpty(this.getLayer())) {
-      const cesiumMap = this.map.getMapImpl();
-      if ((cesiumMap.imageryLayers._layers.length - 1) >= zIndex) {
-        cesiumMap.imageryLayers.remove(this.cesiumLayer, false);
-        cesiumMap.imageryLayers.add(this.cesiumLayer, zIndex);
-      } else {
-        // eslint-disable-next-line no-console
-        console.error(getValue('exception').index_error);
-      }
-      this.map.getLayers().forEach((layer) => {
-        const layerImpl = layer.getImpl().getLayer();
-        if (layerImpl instanceof ImageryLayer) {
-          /* eslint-disable no-param-reassign */
-          layer.zindex_ = layerImpl._layerIndex;
-          layer.isBase = layerImpl.isBaseLayer();
-        }
-      });
+    if (!isNullOrEmpty(this.map) && !isNullOrEmpty(this.getLayer())) {
+      this.map.getImpl().sortLayers_();
     }
   }
 
@@ -463,6 +467,25 @@ class LayerBase extends MObject {
    */
   getMap() {
     return this.map;
+  }
+
+  /**
+   * Si la capa eliminada era la capa base, hace visible la primera capa base
+   * que quede en el mapa (como en la implementación de OL).
+   *
+   * @function
+   * @param {IDEE.Layer} layer Capa eliminada.
+   * @param {IDEE.Map} facadeMap Mapa.
+   * @api stable
+   * @expose
+   */
+  activateBaseLayer(layer, facadeMap) {
+    if (layer.isBase === true) {
+      const baseLayers = facadeMap.getBaseLayers();
+      if (baseLayers.length > 0) {
+        baseLayers[0].setVisible(true);
+      }
+    }
   }
 
   /**

@@ -7,6 +7,7 @@ import removeLayerTemplate from '../../templates/clearlayer';
 import editiontableTemplate from '../../templates/editiontable';
 
 import { getValue } from './i18n/language';
+import { renderSnapOptions, getToolSnapOptions } from './snapoptions';
 
 export default class EditionControl extends IDEE.Control {
   /**
@@ -97,17 +98,6 @@ export default class EditionControl extends IDEE.Control {
      * @type {*}
      */
     this.selectionLayer = null;
-
-    /**
-     * Snap object with snapToPointer and pixelTolerance properties
-     * @private
-     * @type {Object}
-     */
-    // eslint-disable-next-line no-underscore-dangle
-    this.defaultSnap = this.managementControl_.edition_ instanceof Object
-      // eslint-disable-next-line no-underscore-dangle
-      ? this.managementControl_.edition_
-      : { snapToPointer: true, pixelTolerance: 30 };
   }
 
   /**
@@ -121,8 +111,6 @@ export default class EditionControl extends IDEE.Control {
   active(html) {
     this.template = IDEE.template.compileSync(template, {
       vars: {
-        defaultSnapToPointer: this.defaultSnap.snapToPointer,
-        defaultPixelTolerance: this.defaultSnap.pixelTolerance,
         translations: {
           editgeometria: getValue('editgeometria'),
           clean: getValue('clean'),
@@ -131,8 +119,6 @@ export default class EditionControl extends IDEE.Control {
           scale: getValue('scale'),
           move: getValue('move'),
           delete: getValue('delete'),
-          snapToPointer: getValue('snapToPointer'),
-          pixelTolerance: getValue('pixelTolerance'),
           attributes: getValue('attributes'),
           newcolumn: getValue('newcolumn'),
           title_attribute_table: getValue('title_attribute_table'),
@@ -147,6 +133,7 @@ export default class EditionControl extends IDEE.Control {
     html.querySelector('#m-vectorsmanagement-controls').appendChild(this.template);
     this.addEvents();
     this.managementControl_.accessibilityTab(this.template);
+    this.managementControl_.updateEditingAvailability();
   }
 
   /**
@@ -193,16 +180,6 @@ export default class EditionControl extends IDEE.Control {
     this.template.querySelector('#editattribute').addEventListener('click', () => this.editionBtnClick('editattribute'));
 
     this.template.querySelector('#cleanAll').addEventListener('click', () => this.showModalCleanGeometries());
-
-    this.template.querySelector('#m-vectorsmanagement-snapToPointer-input').addEventListener('change', (evt) => {
-      this.defaultSnap.snapToPointer = evt.target.checked;
-      this.getImpl().updateModifyOptions(this.defaultSnap);
-    });
-
-    this.template.querySelector('#m-vectorsmanagement-pixelTolerance-input').addEventListener('change', (evt) => {
-      this.defaultSnap.pixelTolerance = parseInt(evt.target.value, 10);
-      this.getImpl().updateModifyOptions(this.defaultSnap);
-    });
 
     this.template.querySelector('#m-vectorsmanagement-deletegeom-btn').addEventListener('click', () => this.deleteSingleFeature());
   }
@@ -308,6 +285,31 @@ export default class EditionControl extends IDEE.Control {
     } else if (this.isEditAttributeActive) {
       this.activateEditAttributes();
     }
+
+    const snapPanel = this.template.querySelector('#m-vectorsmanagement-edition-snap');
+    if (this.isEditActive || this.isHoleActive) {
+      this.renderSnapOptions(this.isHoleActive ? 'Hole' : 'Modify');
+      snapPanel.classList.remove('closed');
+    } else {
+      snapPanel.classList.add('closed');
+    }
+  }
+
+  /**
+   * Renders snap options panel for the active tool.
+   * @public
+   * @function
+   * @param {String} tool active tool
+   * @api
+   */
+  renderSnapOptions(tool) {
+    const container = this.template.querySelector('#m-vectorsmanagement-edition-snap');
+    const { snapOptions } = this.managementControl_;
+    renderSnapOptions(container, 'edition', tool, snapOptions, (options) => {
+      if (typeof this.getImpl().updateSnap === 'function') {
+        this.getImpl().updateSnap(options);
+      }
+    });
   }
 
   openModalEditAttribute() {
@@ -405,11 +407,13 @@ export default class EditionControl extends IDEE.Control {
    * @api
    */
   showModalCleanGeometries() {
+    const total = this.layer_.getFeatures().length;
+    const cleanMessage = getValue('clear_geometries_msg').replace('{count}', String(total));
     const templateModal = IDEE.template.compileSync(removeLayerTemplate, {
       vars: {
         translations: {
           title_clear_geometries: getValue('title_clear_geometries'),
-          clear_geometries_msg: getValue('clear_geometries_msg'),
+          clear_geometries_msg: cleanMessage,
           confirm: getValue('confirm'),
           cancel: getValue('cancel'),
         },
@@ -454,10 +458,11 @@ export default class EditionControl extends IDEE.Control {
    */
   cleanGeometries() {
     this.selectionLayer.removeFeatures(this.selectionLayer.getFeatures());
-    this.layer_.removeFeatures(this.layer_.getFeatures());
+    const features = this.layer_.getFeatures();
+    this.layer_.removeFeatures(features);
 
     // remove buffer
-    this.managementControl_.analysisControl.removeBufferFeatures();
+    this.managementControl_.analysisControl?.removeBufferFeatures();
   }
 
   /**
@@ -497,7 +502,8 @@ export default class EditionControl extends IDEE.Control {
    */
   activateEdition() {
     IDEE.toast.info(getValue('info_remove_vertex'), null, 6000);
-    this.getImpl().activateSelection(this.defaultSnap);
+    const snapOptions = getToolSnapOptions('Modify', this.managementControl_.snapOptions);
+    this.getImpl().activateSelection(snapOptions);
   }
 
   /**
@@ -519,7 +525,7 @@ export default class EditionControl extends IDEE.Control {
    * @api stable
    */
   activateHole() {
-    this.getImpl().addHoleDrawInteraction();
+    this.getImpl().addHoleDrawInteraction(getToolSnapOptions('Hole', this.managementControl_.snapOptions));
   }
 
   /**
@@ -596,7 +602,7 @@ export default class EditionControl extends IDEE.Control {
    * @function
    * @api
    */
-  onModify() {
+  onModify(event) {
     this.refreshEmphasizedFeatures();
     this.layer_.redraw();
   }

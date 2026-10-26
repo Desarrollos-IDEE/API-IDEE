@@ -23,7 +23,7 @@ test('Parámetro transparent en capas WFS', async ({ page }) => {
   });
   await page.waitForFunction(() => window.mapjs.isFinished());
   await page.evaluate(() => {
-    lyProvincias = new IDEE.layer.WFS({
+    const lyProvincias = new IDEE.layer.WFS({
       url: 'https://hcsigc.juntadeandalucia.es/geoserver/wfs?',
       namespace: 'IECA',
       name: 'sigc_provincias_pob_centroides_1724756847583',

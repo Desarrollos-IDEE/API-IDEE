@@ -172,6 +172,7 @@ class XYZ extends Layer {
 
     const zIndex = this.facadeLayer_.isBase ? 0 : null;
     this.map.getMapImpl().imageryLayers.add(this.cesiumLayer, zIndex);
+    this.fireAddedToMap_();
   }
 
   /**

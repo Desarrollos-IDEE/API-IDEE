@@ -66,8 +66,10 @@
     "text": "Plantilla de plugin básico",
     "version": "2.0",
     "date": "Agosto 2024",
-    "author": "Guadaltel",
-    "org": "",
+    "author": "IDEE",
+    "org": "IDEE",
+    "homepage": "https://www.idee.es",
+    "funding": "Desarrollo financiado por los nodos participantes en el Grupo Técnico de Trabajo Desarrollos IDEE",
     "tags": "cnig,plugin",
     "icon": "./facade/assets/icons/icons.svg"
   }

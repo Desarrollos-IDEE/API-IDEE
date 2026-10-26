@@ -2,7 +2,7 @@
 import { test, expect } from '@playwright/test';
 
 test('Test Plugin VectorsManagement', async ({ page }) => {
-  await page.goto('/src/plugins/vectorsmanagement/test/playwright/ol/vectorsmanagement-ol.html');
+  await page.goto('/src/plugins/vectorsmanagement/test/playwright/ol/vectorsmanagement-ol.html', { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => {
     window.mapjs = IDEE.map({
       container: 'mapjs',

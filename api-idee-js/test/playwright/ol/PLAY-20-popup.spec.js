@@ -21,22 +21,21 @@ test.describe('IDEE.Popup', () => {
       IDEE.Popup.options.textMode = true;
       IDEE.Popup.options.msg = msg;
 
-      const ogc_001 = new IDEE.layer.OGCAPIFeatures({
+      const ogc001 = new IDEE.layer.OGCAPIFeatures({
         url: 'https://api-features.idee.es/collections/',
         name: 'falls',
         legend: 'Capa OGCAPIFeatures',
         extract: true,
       });
-      window.ogc_001 = ogc_001;
-      window.map.addLayers(window.ogc_001);
-    }, text);
-    await page.evaluate(() => {
-      return new Promise((resolve) => {
-        window.ogc_001.on(IDEE.evt.LOAD, () => {
+      window.ogc001 = ogc001;
+      window.ogc_001Loaded = new Promise((resolve) => {
+        window.ogc001.on(IDEE.evt.LOAD, () => {
           resolve();
         });
       });
-    });
+      window.map.addLayers(window.ogc001);
+    }, text);
+    await page.evaluate(() => window.ogc_001Loaded);
     await await page.click('#map', { position: { x: 562, y: 293 } });
     await page.waitForSelector('.m-popup .m-footer');
 

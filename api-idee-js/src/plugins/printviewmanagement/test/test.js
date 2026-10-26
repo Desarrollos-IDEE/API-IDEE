@@ -154,12 +154,12 @@ const mapLibre2 = new IDEE.layer.MapLibre({
 }, { opacity: 0.7 });// , { mapLibreOptions: { style: 'https://vt-mapabase.idee.es/files/styles/mapaBase_scn_color1_CNIG.json', preserveDrawingBuffer: true } });
 map.addLayers(mapLibre2); window.mapLibre2 = mapLibre2;
 */
-const capaKML = new IDEE.layer.KML({
-  url: 'https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml',
-  name: 'Capa KML', legend: 'Capa KML',
-  extract: true,
-}, { crossOrigin: 'anonymous' });
-map.addLayers(capaKML); window.capaKML = capaKML;
+// const capaKML = new IDEE.layer.KML({
+//   url: 'https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo.kml',
+//   name: 'Capa KML', legend: 'Capa KML',
+//   extract: true,
+// }, { crossOrigin: 'anonymous' });
+// map.addLayers(capaKML); window.capaKML = capaKML;
 
 const layerinicial = new IDEE.layer.WMS({
   url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
@@ -203,7 +203,9 @@ const updatePlugin = () => {
   options.collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value === '' || selectCollapsed.options[selectCollapsed.selectedIndex].value === 'true';
   options.order = Number(inputOrder.value);
   options.tooltip = inputTooltip.value !== '' ? options.tooltip = inputTooltip.value : '';
-  options.defaultOpenControl = Number(inputDefaultOpenControl.value) || 0;
+  if (inputDefaultOpenControl.value !== '') {
+    options.defaultOpenControl = Number(inputDefaultOpenControl.value);
+  }
   options.georefImageEpsg = safeParseJSON(inputGeorefImageEpsg.value, true);
   options.georefImage = safeParseJSON(inputGeorefImage.value, true);
   options.printermap = safeParseJSON(inputPrintermap.value, true);

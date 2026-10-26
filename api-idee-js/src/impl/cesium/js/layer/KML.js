@@ -129,7 +129,7 @@ class KML extends Vector {
       if (visibility === true) {
         display = 'inherit';
       }
-      this.screenOverlayImg_.style[display] = display;
+      this.screenOverlayImg_.style.display = display;
     }
   }
 
@@ -152,7 +152,7 @@ class KML extends Vector {
    */
   addTo(map) {
     this.map = map;
-    this.fire(EventType.ADDED_TO_MAP);
+    this.fireAddedToMap_();
     this.changeProjectionHandler_ = this.setProjection_.bind(this);
     map.on(EventType.CHANGE_PROJ, this.changeProjectionHandler_, this);
     this.facadeVector_.userMaxExtent = null;
@@ -359,11 +359,6 @@ class KML extends Vector {
 
       if (update) {
         this.updateLayer_();
-      }
-
-      if (!isNullOrEmpty(this.tileLoadHandler)) {
-        this.map.getMapImpl().scene.globe.tileLoadProgressEvent
-          .removeEventListener(this.tileLoadHandler);
       }
 
       // this.fire(EventType.LOAD, [this.features_]);

@@ -1,5 +1,6 @@
 import DrawHole from 'ol-ext/interaction/DrawHole';
 import Transform from 'ol-ext/interaction/Transform';
+import SnapManager from './snapmanager';
 // import DrawRegular from 'ol-ext/interaction/DrawRegular';
 
 /**
@@ -23,6 +24,13 @@ export default class Editioncontrol extends IDEE.impl.Control {
       * @type {IDEE.Map}
       */
     this.facadeMap_ = map;
+
+    /**
+     * Snap manager for edit and hole interactions
+     * @private
+     * @type {SnapManager}
+     */
+    this.snapManager_ = new SnapManager(map);
   }
 
   /**
@@ -56,9 +64,10 @@ export default class Editioncontrol extends IDEE.impl.Control {
    * Activates selection mode.
    * @public
    * @function
+   * @param {Object} snapOptions snap options
    * @api
    */
-  activateSelection(snap) {
+  activateSelection(snapOptions) {
     const olMap = this.facadeMap_.getMapImpl();
     const drawingLayer = this.facadeControl.getLayer().getImpl().getLayer();
 
@@ -77,46 +86,60 @@ export default class Editioncontrol extends IDEE.impl.Control {
       });
 
       olMap.addInteraction(this.select);
-
-      this.edit = new ol.interaction.Modify({
-        features: this.select.getFeatures(),
-        snapToPointer: snap.snapToPointer,
-        pixelTolerance: snap.pixelTolerance,
-      });
-
-      this.edit.on('modifyend', (e) => {
-        this.facadeControl.onModify();
-      });
-      olMap.addInteraction(this.edit);
+      this.addModifyInteraction_(snapOptions);
     }
   }
 
   /**
-   * This function updates modify interaction options.
+   * Creates the modify interaction over the selected features and enables snap.
+   * @private
+   * @function
+   * @param {Object} snapOptions snap options
+   */
+  addModifyInteraction_(snapOptions) {
+    this.modifyTolerance_ = snapOptions.pixelTolerance;
+    this.edit = new ol.interaction.Modify({
+      features: this.select.getFeatures(),
+      pixelTolerance: snapOptions.pixelTolerance,
+    });
+    this.edit.on('modifyend', () => {
+      this.facadeControl.onModify();
+    });
+    this.facadeMap_.getMapImpl().addInteraction(this.edit);
+    this.snapManager_.enable(this.edit, () => this.facadeControl.getLayer(), snapOptions);
+  }
+
+  /**
+   * This function updates snap options of active interaction.
    * @public
    * @function
-   * @param {Object} snap - snap options
+   * @param {Object} snapOptions snap options
    * @api
    */
-  updateModifyOptions(snap) {
-    // eslint-disable-next-line no-underscore-dangle
-    this.edit.snapToPointer_ = snap.snapToPointer;
-    // eslint-disable-next-line no-underscore-dangle
-    this.edit.pixelTolerance_ = snap.pixelTolerance;
+  updateSnap(snapOptions) {
+    const toleranceChanged = this.modifyTolerance_ !== snapOptions.pixelTolerance;
+    if (this.edit && this.edit.getMap() && toleranceChanged) {
+      this.removeEditInteraction();
+      this.addModifyInteraction_(snapOptions);
+    } else {
+      this.snapManager_.update(snapOptions);
+    }
   }
 
   /**
    * This function adds hole draw interaction to map.
    * @public
    * @function
-   * @api
+   * @param {Object} snapOptions snap options
    */
-  addHoleDrawInteraction() {
+  addHoleDrawInteraction(snapOptions) {
     const olMap = this.facadeMap_.getMapImpl();
     this.drawHole = new DrawHole({
       layers: [this.facadeControl.getLayer().getImpl().getLayer()],
     });
+    this.drawHole.on('modifyend', (event) => this.facadeControl.onModify(event));
     olMap.addInteraction(this.drawHole);
+    this.snapManager_.enable(this.drawHole, () => this.facadeControl.getLayer(), snapOptions);
   }
 
   /**
@@ -142,7 +165,7 @@ export default class Editioncontrol extends IDEE.impl.Control {
       selection: false,
     });
     this.rotate.on('rotateend', (evt) => {
-      this.facadeControl.onModify();
+      this.facadeControl.onModify(evt);
     });
     olMap.addInteraction(this.rotate);
     this.rotate.setSelection(collection);
@@ -183,7 +206,7 @@ export default class Editioncontrol extends IDEE.impl.Control {
       selection: false,
     });
     this.move.on('translateend', (evt) => {
-      this.facadeControl.onModify();
+      this.facadeControl.onModify(evt);
     });
     olMap.addInteraction(this.move);
     this.move.setSelection(collection);
@@ -224,7 +247,7 @@ export default class Editioncontrol extends IDEE.impl.Control {
       selection: false,
     });
     this.scale.on('scaleend', (evt) => {
-      this.facadeControl.onModify();
+      this.facadeControl.onModify(evt);
     });
     olMap.addInteraction(this.scale);
     this.scale.setSelection(collection);
@@ -249,6 +272,7 @@ export default class Editioncontrol extends IDEE.impl.Control {
    * @function
    */
   removeDrawHoleInteraction() {
+    this.snapManager_.disable();
     this.facadeMap_.getMapImpl().removeInteraction(this.drawHole);
   }
 
@@ -289,6 +313,7 @@ export default class Editioncontrol extends IDEE.impl.Control {
    * @function
    */
   removeEditInteraction() {
+    this.snapManager_.disable();
     this.facadeMap_.getMapImpl().removeInteraction(this.edit);
   }
 

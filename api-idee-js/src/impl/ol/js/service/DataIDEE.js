@@ -12,12 +12,14 @@ class DataIDEE extends ServiceOGCAPIFeatures {
   /**
    * @param {Object} layerParameters Shared OGC API Features layer parameters.
    * @param {Object} [vendorOpts={}] Provider options. Supports `filter` as CQL2
-   * text or JSON and optional `filterLang` to select the CQL2 encoding.
+   * text or JSON, optional `filterLang`, and `tokenLocation` (`header` by default
+   * or `query`) for the optional `getFeature.token`.
    */
   constructor(layerParameters, vendorOpts = {}) {
     super(layerParameters, vendorOpts);
     this.filter_ = vendorOpts.filter;
     this.filterLang_ = vendorOpts.filterLang;
+    this.tokenLocation_ = vendorOpts.tokenLocation || 'header';
   }
 
   /**
@@ -53,12 +55,25 @@ class DataIDEE extends ServiceOGCAPIFeatures {
         });
       }
     }
-    Object.assign(params, this.getFeatureVendor_);
+    // El token es opcional: una capa pública no envía credenciales.
+    const { token, ...getFeatureVendor } = this.getFeatureVendor_ || {};
+    Object.assign(params, getFeatureVendor);
+    if (this.tokenLocation_ === 'query' && !isNullOrEmpty(token)) params.token = token;
 
     let requestUrl = pathUrl;
     if (!isNullOrEmpty(existingQuery)) requestUrl += `?${existingQuery}`;
     if (Object.keys(params).length) requestUrl = addParameters(requestUrl, params);
     return requestUrl.replaceAll(' ', '%20');
+  }
+
+  /**
+   * Returns the authentication headers for item requests.
+   * @returns {Object} Request headers.
+   */
+  getRequestHeaders() {
+    const token = this.getFeatureVendor_?.token;
+    return this.tokenLocation_ === 'header' && !isNullOrEmpty(token)
+      ? { Authorization: `Bearer ${token}` } : {};
   }
 }
 

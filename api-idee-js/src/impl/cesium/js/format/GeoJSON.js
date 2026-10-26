@@ -68,7 +68,9 @@ class GeoJSON {
       geoJSONFeature.id = generateRandom('geojson_');
     }
 
-    const is2D = this.is2D(geoJSONFeature.geometry.coordinates);
+    // GeoJSON admite objetos sin geometría (geometry: null): Cesium los crea vacíos
+    const is2D = isNullOrEmpty(geoJSONFeature.geometry)
+      || this.is2D(geoJSONFeature.geometry.coordinates);
     if (isUndefined(options.clampToGround) && is2D) {
       opts.clampToGround = true;
     } else if (isUndefined(options.clampToGround) && !is2D) {
@@ -228,9 +230,10 @@ class GeoJSON {
     const properties = feature.properties;
     if (!isNullOrEmpty(properties)) {
       // eslint-disable-next-line no-return-assign
-      object.properties = properties.propertyNames.reduce((acc, curr) =>
-        // eslint-disable-next-line
-        (acc[curr] = properties[curr].getValue(), acc), {});
+      object.properties = properties.propertyNames.reduce((acc, curr) => {
+        acc[curr] = properties[curr] ? properties[curr].getValue() : undefined;
+        return acc;
+      }, {});
     } else {
       object.properties = null;
     }

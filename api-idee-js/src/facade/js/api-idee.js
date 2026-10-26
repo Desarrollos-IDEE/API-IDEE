@@ -22,6 +22,7 @@ import { addConfigAccessors } from './util/ConfigAccessor';
 import './util/Window';
 import './util/polyfills';
 import { getValue } from './i18n/language';
+import { loadImplementation as loadImplementationModule } from './util/ImplementationLoader';
 
 /**
  * Esta función establece las variables de configuración.
@@ -62,6 +63,23 @@ export const map = (parameters, options, viewOptions) => {
   const mapa = new Map(parameters, options, viewOptions);
   return mapa;
 };
+
+/**
+ * Esta función deja activa una implementación (p. ej. 'cesium') antes de crear el mapa,
+ * cargando su núcleo si la página no lo tiene. Las implementaciones disponibles salen de
+ * `IDEE.config.implementationswitcher`; cada núcleo se carga una sola vez y recibe la
+ * configuración y el idioma del actual. Al terminar, `IDEE` es el de esa implementación.
+ *
+ * @function
+ * @param {String} type Implementación: 'ol' o 'cesium'.
+ * @param {Object} options Opciones: plugins (Array<String>) plugins que cargar para ella.
+ * @returns {Promise<Object>} Espacio de nombres IDEE de la implementación.
+ * @example
+ * await IDEE.loadImplementation('cesium');
+ * const map = IDEE.map({ container: 'map' });
+ * @api
+ */
+export const loadImplementation = (type, options) => loadImplementationModule(type, options);
 
 /**
  * Indica si el proxy es habilitado para usar.

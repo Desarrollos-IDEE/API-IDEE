@@ -346,7 +346,10 @@ class Map extends Base {
       this.addWMC(params.wmc);
     }
 
-    this.addQuickLayers(IDEE.config.terrain.default);
+    // El terreno por defecto solo se añade si la implementación admite capas Terrain (en 2D no)
+    if (!isUndefined(MapImpl.prototype.addTerrain)) {
+      this.addQuickLayers(IDEE.config.terrain.default);
+    }
 
     // layers
     if (!isNullOrEmpty(params.layers)) {
@@ -908,7 +911,12 @@ class Map extends Base {
           layer = new OGCAPIFeatures(layerParam, { style: parameterVariable.style });
           break;
         case 'DataIDEE':
-          layer = new DataIDEE(layerParam, { style: parameterVariable.style });
+          // Un objeto literal puede incluir vendorOptions (p. ej. { getFeature: { token } }).
+          layer = new DataIDEE(
+            layerParam,
+            { style: parameterVariable.style },
+            layerParam.vendorOptions,
+          );
           break;
         case 'GenericRaster':
           layer = new GenericRaster(layerParam);
@@ -2362,7 +2370,7 @@ class Map extends Base {
       const layers = layersParam.map((layerParam) => {
         if (layerParam instanceof DataIDEE) return layerParam;
         if (layerParam instanceof Layer) return null;
-        return new DataIDEE(layerParam, layerParam.options);
+        return new DataIDEE(layerParam, layerParam.options, layerParam.vendorOptions);
       }).filter((layer) => !isNullOrEmpty(layer));
 
       layers.forEach((layer) => {
@@ -3662,7 +3670,8 @@ class Map extends Base {
   getMaxExtent() {
     let maxExtent = this.userMaxExtent;
     if (isNullOrEmpty(maxExtent)) {
-      const selectedWmc = this.getWMC().find((wmc) => wmc.selected);
+      const selectedWmc = !isUndefined(MapImpl.prototype.getWMC)
+        ? this.getWMC().find((wmc) => wmc.selected) : null;
       if (!isNullOrEmpty(selectedWmc)) {
         maxExtent = selectedWmc.getMaxExtent();
       }
@@ -4636,7 +4645,8 @@ class Map extends Base {
    */
   getEnvolvedExtent() {
     return new Promise((resolve) => {
-      const wmcLayer = this.getWMC().find((wmc) => wmc.selected);
+      const wmcLayer = !isUndefined(MapImpl.prototype.getWMC)
+        ? this.getWMC().find((wmc) => wmc.selected) : null;
       if (!isNullOrEmpty(wmcLayer)) {
         wmcLayer.getMaxExtent(resolve);
       } else {

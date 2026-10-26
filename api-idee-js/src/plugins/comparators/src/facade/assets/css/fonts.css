@@ -51,20 +51,6 @@
 }
 
 /*********************
-    TRANSPARENCY BUTTONS
-*********************/
-
-.g-cartografia-btn-comparators-candadoCerrado::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_candado_cerrado.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_candado_cerrado.svg');
-}
-
-.g-cartografia-btn-comparators-candado::before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_candado.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_candado.svg');
-}
-
-/*********************
     WINDOWSYNC BUTTONS
 *********************/
 

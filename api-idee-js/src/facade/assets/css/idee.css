@@ -79,6 +79,7 @@
 
 .m-api-idee-up-panel {
     grid-area: up;
+    contain: inline-size;
 }
 
 .m-api-idee-left-panel {
@@ -283,6 +284,7 @@
     align-items: flex-end;
     flex-wrap: wrap;
     gap: 0.5em;
+    contain: inline-size;
 }
 
 @layer base {

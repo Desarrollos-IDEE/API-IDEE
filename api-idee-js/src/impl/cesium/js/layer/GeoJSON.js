@@ -128,7 +128,7 @@ class GeoJSON extends Vector {
     }
 
     this.map = map;
-    this.fire(EventType.ADDED_TO_MAP);
+    this.fireAddedToMap_();
     map.on(EventType.CHANGE_PROJ, this.setProjection_.bind(this), this);
     this.cesiumLayer = new GeoJsonDataSource(this.name);
     this.updateSource_();

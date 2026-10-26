@@ -95,7 +95,7 @@ class GeoJSON extends OLFormatGeoJSON {
     };
 
     const id = feature.getId();
-    if (id) {
+    if (id !== undefined && id !== null) {
       object.id = id;
     }
     const geometry = feature.getGeometry();

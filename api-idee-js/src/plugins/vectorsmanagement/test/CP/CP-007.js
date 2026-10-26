@@ -24,23 +24,22 @@ const mbtileVector = new IDEE.layer.MBTilesVector({
 
 map.addLayers([mbtileVector]);
 
+// probar funcionalidad de estilado de features
 const mp = new VectorsManagement({
-  position: 'TL',
+  position: 'left',
   tooltip: 'Gestionar mis vectores',
-  // isDraggable => falta implementar
-  // useProxy => falta implementar
   collapsed: false,
-  collapsible: false,
   // Herramientas
-  // selection: false,
+  selection: true,
   // addlayer: false,
   // creation: false,
   // edition: false,
-  // style: false,
+  style: true,
   // analysis: false,
   // download: false,
-  // help: false,
-  isDraggable: true,
+  // snapping: false,
+  // turf: false,
+  help: true,
 });
 
 map.addPlugin(mp);

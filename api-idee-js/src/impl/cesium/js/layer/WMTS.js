@@ -260,7 +260,7 @@ class WMTS extends LayerBase {
       const zIndex = this.facadeLayer_.isBase ? 0 : null;
       this.map.getMapImpl().imageryLayers.add(this.cesiumLayer, zIndex);
 
-      this.fire(EventType.ADDED_TO_MAP, this);
+      this.fireAddedToMap_([this]);
     }
   }
 
@@ -308,7 +308,7 @@ class WMTS extends LayerBase {
       const zIndex = this.facadeLayer_.isBase ? 0 : null;
       this.map.getMapImpl().imageryLayers.add(this.cesiumLayer, zIndex);
 
-      this.fire(EventType.ADDED_TO_MAP, this);
+      this.fireAddedToMap_([this]);
     }
   }
 
