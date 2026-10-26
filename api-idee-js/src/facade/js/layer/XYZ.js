@@ -4,7 +4,7 @@
 import XYZImpl from 'impl/layer/XYZ';
 import LayerBase from './Layer';
 import {
-  isUndefined, isObject, isNullOrEmpty, isString, isIdeeMdtRasterDemUrl,
+  isUndefined, isObject, isNullOrEmpty, isString,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import * as parameter from '../parameter/parameter';
@@ -33,8 +33,9 @@ import { getValue } from '../i18n/language';
  * @property {Boolean} transparent (deprecated) Falso si es una capa base,
  * verdadero en caso contrario.
  * @property {Array} maxExtent La medida en que restringe la visualización a una región específica.
- * @property {Boolean} extract Activa la consulta con GetFeatureInfo; por defecto falso
- * (verdadero por defecto en el servicio MDT IDEE raster-dem).
+ * @property {Boolean|String} extract Activa la consulta con GetFeatureInfo; por defecto falso.
+ * Puede ser true/false, cadena vacía (equivalente a true), o lista tiles/colors/elevation.
+ * En elevation se admite `elevation` (zoom mínimo 15) o `elevation:16`.
  *
  * @api
  * @extends {IDEE.layer}
@@ -58,8 +59,9 @@ class XYZ extends LayerBase {
    * - type: Tipo de la capa.
    * - tileGridMaxZoom: Zoom máximo de cuadrícula de mosaico.
    * - tileSize: Tamaño de la tesela
-   * - extract: Activa la consulta con GetFeatureInfo (color de píxel o elevación MDT).
-   *   Por defecto falso; verdadero por defecto solo en MDT.
+   * - extract: Activa GetFeatureInfo. Por defecto falso. true o cadena vacía: teselas y colores.
+   *   Cadena con tiles, colors y/o elevation. `elevation` usa zoom mínimo 15;
+   *   `elevation:16` (o elevation=16) fija ese zoom mínimo de consulta.
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
    * - opacity: Opacidad de capa, por defecto 1.
    * - minZoom: Zoom mínimo aplicable a la capa.
@@ -130,15 +132,12 @@ class XYZ extends LayerBase {
     this.legend = parameters.legend;
 
     /**
-     * XYZ extract: consulta de tesela y color de píxel con control GetFeatureInfo.
-     * En el servicio MDT IDEE (raster-dem) se activa por defecto para mostrar elevación.
+     * XYZ extract: consulta GetFeatureInfo (teselas, colores y/o elevación).
+     * elevation o elevation:N (zoom mínimo de consulta; por defecto 15).
+     * @type {boolean|string}
      */
     if (isUndefined(parameters.extract)) {
-      if (isIdeeMdtRasterDemUrl(parameters.url)) {
-        this.extract = true;
-      } else {
-        this.extract = false;
-      }
+      this.extract = false;
     } else {
       this.extract = parameters.extract;
     }
@@ -191,16 +190,17 @@ class XYZ extends LayerBase {
    * @function
    * @public
    * @param {Array<number>} coordinate Coordenadas en la proyección del mapa.
+   * @param {number} [zoom] Nivel de zoom de tesela; si se omite, el de la vista.
    * @returns {{z: number, x: number, y: number}|null}
    * Índice de tesela o null si no está disponible.
    * @api
    */
-  getTileIndexAtCoordinate(coordinate) {
+  getTileIndexAtCoordinate(coordinate, zoom) {
     const impl = this.getImpl();
     if (!impl || typeof impl.getTileIndexAtCoordinate !== 'function') {
       return null;
     }
-    return impl.getTileIndexAtCoordinate(coordinate);
+    return impl.getTileIndexAtCoordinate(coordinate, zoom);
   }
 
   /**
@@ -219,6 +219,29 @@ class XYZ extends LayerBase {
       return null;
     }
     return impl.getData(pixel);
+  }
+
+  /**
+   * Índice de tesela y color de píxel para GetFeatureInfo con elevación.
+   * Por debajo del zoom mínimo de consulta carga la tesela a ese nivel.
+   *
+   * @function
+   * @public
+   * @param {Array<number>} coordinate Coordenadas del clic.
+   * @param {Array<number>} pixel Coordenadas de píxel [x, y] del mapa.
+   * @param {number} [minQueryZoom] Zoom mínimo de tesela para la consulta.
+   * @returns {Promise<{tileIndex: Object|null, data: Uint8ClampedArray|null}|null>}
+   * @api
+   */
+  getFeatureInfoPixelData(coordinate, pixel, minQueryZoom) {
+    const impl = this.getImpl();
+    if (!impl || typeof impl.getFeatureInfoPixelData !== 'function') {
+      return Promise.resolve({
+        tileIndex: this.getTileIndexAtCoordinate(coordinate),
+        data: this.getData(pixel),
+      });
+    }
+    return impl.getFeatureInfoPixelData(coordinate, pixel, minQueryZoom);
   }
 }
 
