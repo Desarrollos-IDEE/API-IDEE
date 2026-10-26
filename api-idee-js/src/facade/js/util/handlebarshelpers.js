@@ -4,6 +4,7 @@
  * @example import handlebarshelpers from 'IDEE/handlebarshelpers';
  */
 import Handlebars from 'handlebars';
+import { getLang as getApiLang } from '../i18n/language';
 import { getTextFromHtml } from './Utils';
 
 /**
@@ -245,6 +246,17 @@ const helpers = () => {
    */
   Handlebars.registerHelper('lowercase', (string) => {
     return string.toLowerCase();
+  });
+
+  /**
+   * Devuelve el idioma activo de la API-IDEE (p. ej. es, en).
+   * Equivalente a IDEE.language.getLang() en plantillas Handlebars.
+   *
+   * @function
+   * @returns {String} Código de idioma.
+   */
+  Handlebars.registerHelper('getLang', () => {
+    return getApiLang();
   });
 };
 
