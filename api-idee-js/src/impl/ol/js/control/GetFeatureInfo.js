@@ -560,7 +560,7 @@ class GetFeatureInfo extends Control {
       if (layer.getImpl().getLayer().getSource() instanceof WMTS) {
         urlsWMTS.push(layer);
       } else if (layer.getImpl().getLayer().getSource() instanceof TileWMS
-      || layer.getImpl().getLayer().getSource() instanceof ImageWMS) {
+        || layer.getImpl().getLayer().getSource() instanceof ImageWMS) {
         urlsWMS.push(layer);
       }
     });
