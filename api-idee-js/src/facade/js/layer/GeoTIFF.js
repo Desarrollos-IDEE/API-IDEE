@@ -332,8 +332,8 @@ class GeoTIFF extends LayerBase {
    * @function
    * @public
    * @param {Array<number>} pixel Coordenadas de píxel [x, y] del mapa.
-   * @returns {Uint8ClampedArray|Uint8Array|Float32Array|DataView|null}
-   * Datos por banda en ese píxel, o null si no hay dato.
+   * @returns {Uint8ClampedArray|Uint8Array|Float32Array|null}
+   * Datos por banda espectral en ese píxel (sin la banda alpha de nodata de OpenLayers), o null.
    * @api
    */
   getData(pixel) {

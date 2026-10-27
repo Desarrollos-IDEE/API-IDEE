@@ -91,6 +91,33 @@ function getGeoTIFFImageWhenReady(layerImpl) {
 }
 
 /**
+ * Elimina la banda alpha sintética de nodata que OpenLayers añade en ol/source/GeoTIFF
+ * (no forma parte de las bandas espectrales del fichero).
+ *
+ * @param {ol.source.GeoTIFF|null|undefined} source Fuente OpenLayers.
+ * @param {Uint8ClampedArray|Uint8Array|Float32Array|null} data Valores del píxel.
+ * @returns {Uint8ClampedArray|Uint8Array|Float32Array|null}
+ */
+function stripGeoTIFFNodataAlpha(source, data) {
+  if (!data || !(source instanceof GeoTIFFSource) || !source.addAlpha_) {
+    return data;
+  }
+  const totalBands = source.bandCount;
+  if (typeof totalBands !== 'number' || totalBands < 2) {
+    return data;
+  }
+  const spectralBands = totalBands - 1;
+
+  if (typeof data.length !== 'number' || typeof data.slice !== 'function') {
+    return data;
+  }
+  if (data.length <= spectralBands) {
+    return data;
+  }
+  return data.slice(0, spectralBands);
+}
+
+/**
  * Indica si el valor es una instancia Blob (datos GeoTIFF en memoria).
  *
  * @param {*} value Valor del parámetro blob.
@@ -560,7 +587,8 @@ class GeoTIFF extends LayerBase {
    * @public
    * @function
    * @param {Array<number>} pixel Coordenadas de píxel [x, y] del mapa.
-   * @returns {Uint8ClampedArray|Uint8Array|Float32Array|DataView|null}
+   * @returns {Uint8ClampedArray|Uint8Array|Float32Array|null}
+   * Sin la banda alpha sintética de nodata de OpenLayers cuando exista.
    * @api stable
    */
   getData(pixel) {
@@ -570,7 +598,9 @@ class GeoTIFF extends LayerBase {
     if (isNullOrEmpty(pixel) || !Array.isArray(pixel) || pixel.length < 2) {
       return null;
     }
-    return this.olLayer.getData(pixel);
+    const data = this.olLayer.getData(pixel);
+    const source = this.olLayer.getSource();
+    return stripGeoTIFFNodataAlpha(source, data);
   }
 
   /**
