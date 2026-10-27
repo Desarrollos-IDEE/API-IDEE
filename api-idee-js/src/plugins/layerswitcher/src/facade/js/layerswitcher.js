@@ -58,7 +58,10 @@ export default class Layerswitcher extends IDEE.Plugin {
     this.statusLayers = options.statusLayers;
 
     // Servicios precargados
-    this.precharged = options.precharged || `${IDEE.config.STATIC_RESOURCES_URL}/Datos/json/precharged_layerswitcher_cnig.json`;
+    this.precharged = options.precharged || `${IDEE.config.LIST_PRECHARGED_URL}`;
+    // URL del JSON para probar en local
+    // this.precharged = options.precharged || 'http://localhost:6123/test/precharged.json';
+
     this.loadPrecharged_();
 
     // Mostrar tipo de capa

@@ -54,7 +54,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 - **precharged**: Catálogo de servicios precargados. Puede ser:
   - un **objeto** con la estructura de servicios/grupos (y `white_list` opcional por servicio),
   - una **URL** (string) a un fichero JSON con esa misma estructura.
-  Si no se informa, se usa el JSON por defecto de recursos estaticos.
+  Si no se informa, se usa la URL definida en `configuration.js` (`LIST_PRECHARGED_URL`).
 El listado de capas aparece al pulsar sobre el botón añadir (Listado de algunas capas disponibles).
 - **isMoveLayers**: Permite mover las capas en el árbol de contenidos para cambiar el orden de visualización. Por defecto: false.
 - **modeSelectLayers**: Permite cambiar el modo de selección de las capas para su visualización.
