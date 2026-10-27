@@ -127,6 +127,15 @@ params.forEach((param) => {
   IDEE.config('STATIC_RESOURCES_URL', '${api-idee.static_resources.url}');
 
   /**
+   * URL del JSON de capas precargadas
+   * @const
+   * @type {string}
+   * @public
+   * @api stable
+   */
+  IDEE.config('LIST_PRECHARGED_URL', '${list.precharged.url}');
+
+  /**
    * The path to the api-idee theme
    * @const
    * @type {string}

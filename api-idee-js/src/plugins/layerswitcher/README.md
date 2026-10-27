@@ -51,7 +51,10 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 - **http**: Si es *true* se permite la carga de capas de servicios desplegados con http, si se le da valor *false* no se permitirá la carga de servicios http. Por defecto: true.
 - **https**: Si es *true* sólo se permite la carga de capas de servicios desplegados con https, si no se rellena o se le da valor *false* se permite la carga de cualquier servicio. Por defecto: true.
 - **showCatalog**: Si es *true* se habilitará una nueva funcionalidad que permitirá la carga de servicios del catálogo habilitando un listado con buscador de dichos servicios. Disponible al pulsar sobre el botón añadir del plugin, apareciendo unos prismáticos para realizar la búsqueda. Por defecto: false.
-- **precharged**: Aquí debemos definir la estructura de los servicios predefinidos que queremos que tenga el plugin (árbol de contenido, servicios sin nodo padre, etc.). También podremos definir un parámetro para cada servicio con el que restringiremos qué capas de cada servicio queremos que sea posible cargar (white_list).
+- **precharged**: Catálogo de servicios precargados. Puede ser:
+  - un **objeto** con la estructura de servicios/grupos (y `white_list` opcional por servicio),
+  - una **URL** (string) a un fichero JSON con esa misma estructura.
+  Si no se informa, se usa la URL definida en `configuration.js` (`LIST_PRECHARGED_URL`).
 El listado de capas aparece al pulsar sobre el botón añadir (Listado de algunas capas disponibles).
 - **isMoveLayers**: Permite mover las capas en el árbol de contenidos para cambiar el orden de visualización. Por defecto: false.
 - **modeSelectLayers**: Permite cambiar el modo de selección de las capas para su visualización.
@@ -110,8 +113,8 @@ https://componentes.idee.es/api-idee/?layerswitcher=position*collapsed*collapsib
   <tr>
   <tr>
     <td>precharged</td>
-    <td>Objeto</td>
-    <td>Base64 ✔️ | Separador ❌</td>
+    <td>Objeto JSON o URL string</td>
+    <td>Base64 ✔️ | Separador ✔️ (solo URL)</td>
   </tr>
   <tr>
     <td>isMoveLayers</td>

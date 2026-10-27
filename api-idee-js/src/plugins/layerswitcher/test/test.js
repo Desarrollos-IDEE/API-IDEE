@@ -146,5 +146,6 @@ mapajs.addPlugins(
     displayLabel: true,
     addLayers: true,
     statusLayers: true,
+    // precharged: 'http://localhost:6123/test/precharged.json',
   }),
 );
