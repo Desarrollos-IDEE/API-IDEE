@@ -599,24 +599,29 @@ class GeoTIFF extends LayerBase {
         },
       ];
       if (bands.length !== 0) {
-        sources = [];
-        bands.forEach((band) => {
-          const source = {
+        // convertToRGB === true: 1 source con todas las bandas (COGs RGB 8bits / mosaicos).
+        // En caso contrario: N sources (1 por banda) para min/max por canal (p.ej. UInt16).
+        if (convertToRGB === true) {
+          sources = [{
             url: this.url,
             nodata,
-            bands: [band],
-          };
-          if (min && max) {
-            source.min = min[band - 1];
-            source.max = max[band - 1];
-          }
-          sources.push(source);
-        });
-        /* sources[0].bands = bands;
-        if (min && max) {
-          sources[0].min = min;
-          sources[0].max = max;
-        } */
+            bands,
+          }];
+        } else {
+          sources = [];
+          bands.forEach((band) => {
+            const source = {
+              url: this.url,
+              nodata,
+              bands: [band],
+            };
+            if (min && max) {
+              source.min = min[band - 1];
+              source.max = max[band - 1];
+            }
+            sources.push(source);
+          });
+        }
       }
       olSource = new GeoTIFFSource({
         sources,
