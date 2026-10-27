@@ -79,31 +79,32 @@
 	transform: rotate(180deg);
 }
 .g-cartografia-catalog-right-big:before {
-	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lineaFlujo.svg');
-	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lineaFlujo.svg');
+	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_chevron.svg');
+	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_chevron.svg');
+	transform: rotate(-90deg);
 }
 .g-cartografia-catalog-left-big:before {
-	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lineaFlujo.svg');
-	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lineaFlujo.svg');
-	transform: rotate(180deg);
+	-webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_chevron.svg');
+	mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_chevron.svg');
+	transform: rotate(90deg);
 }
 .g-cartografia-catalog-sort-name-up:before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_orden_az.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_orden_az.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_catalog_sort_name_up.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_catalog_sort_name_up.svg');
 }
 .g-cartografia-catalog-sort-name-down:before  {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_orden_za.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_orden_za.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_catalog_sort_name_down.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_catalog_sort_name_down.svg');
 }
 .g-cartografia-catalog-sort-alt-up:before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_orden_ascendente.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_orden_ascendente.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_catalog_sort_alt_up.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_catalog_sort_alt_up.svg');
 }
 .g-cartografia-catalog-sort-alt-down:before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_orden_descendente.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_orden_descendente.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_catalog_sort_alt_down.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_catalog_sort_alt_down.svg');
 }
 .g-cartografia-catalog-calendar:before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_calendario.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_calendario.svg');
+    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_catalog_calendar.svg');
+    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_catalog_calendar.svg');
 }

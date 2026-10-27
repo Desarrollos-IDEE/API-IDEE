@@ -338,6 +338,8 @@ export default class CatalogmanagerControl extends IDEE.Control {
       totalItems: 0,
     };
 
+    this.waitingSearch_ = false;
+
     /**
      * Instancias Flatpickr de los campos temporales
      * @private
@@ -2663,6 +2665,10 @@ export default class CatalogmanagerControl extends IDEE.Control {
    */
   changeItemsPage(event, rel) {
     event.stopPropagation();
+    if (this.waitingSearch_) {
+      return;
+    }
+    this.waitingSearch_ = true;
     const catalogIndex = this.selectedCatalogIndex_;
     const collectionIndex = this.selectedCollectionIndex_;
     const catalog = this.catalogs_[catalogIndex];
@@ -2685,6 +2691,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
         this.pagination_.currentPage -= 1;
       }
       this.renderCollectionItems(catalogIndex, collectionIndex, items);
+      this.waitingSearch_ = false;
     });
   }
 
@@ -3656,11 +3663,10 @@ export default class CatalogmanagerControl extends IDEE.Control {
     let options = {};
     if (spec.indice) {
       options = INDICES_STYLES[spec.indice];
-      options.nodata = 0;
+      // options.nodata = 0;
     } else {
       options.exposure = 0.2;
     }
-    // options.nodata = 0;
     options.bands = bands;
     return new IDEE.style.Raster(options);
   }

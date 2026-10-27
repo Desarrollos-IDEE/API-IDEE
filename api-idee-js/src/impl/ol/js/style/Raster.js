@@ -351,13 +351,21 @@ class Raster extends Style {
       }
       const valueExpression = this.getValueExpression_();
       const colorExpression = ['interpolate', interpolateMode, valueExpression];
+      const alpha = this.getPassthroughAlphaExpression_();
 
       ramp.forEach((color, index) => {
+        const rgb = chroma(color).rgb();
         colorExpression.push(stops[index]);
-        colorExpression.push(chroma(color).rgb());
+        colorExpression.push(rgb);
       });
+      const withAlpha = [
+        'case',
+        ['==', alpha, 0],
+        [0, 0, 0, 0],
+        colorExpression,
+      ];
 
-      return this.wrapNodataCase_(colorExpression);
+      return this.wrapNodataCase_(withAlpha);
     }
 
     const hasNodata = !isNullOrEmpty(nodata) || nodata === 0;
