@@ -8,7 +8,7 @@ const map = IDEE.map({
   container: 'mapjs',
   projection: 'EPSG:3857',
   center: [-443729, 4860856],
-  controls: ['scale', 'rotate'],
+  controls: ['scale', "rotate*position='left'"],
   zoom: 8,
 });
 window.map = map;

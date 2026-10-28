@@ -1,3 +1,4 @@
+/* global L */
 import MObject from 'IDEE/Object';
 import {
   isArray, isNullOrEmpty, isObject, isString, includes,

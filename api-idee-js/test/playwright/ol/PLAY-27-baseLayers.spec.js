@@ -42,7 +42,9 @@ test.describe('IDEE.Layer', () => {
       map.removeLayers(map.getLayers()[0]);
 
       const nombreBase4 = map.getBaseLayers()[0].name;
-      return [nombreBase1, nombreBase2, nombreBase3, nombreBase4, map.getBaseLayers()[0].isVisible()];
+      return [
+        nombreBase1, nombreBase2, nombreBase3, nombreBase4, map.getBaseLayers()[0].isVisible(),
+      ];
     });
     expect(res[0]).not.toBe(res[1]);
     expect(res[1]).not.toBe(res[2]);

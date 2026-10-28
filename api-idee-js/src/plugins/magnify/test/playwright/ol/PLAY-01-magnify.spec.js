@@ -17,7 +17,7 @@
 //     }, {
 //       format: 'image/png'
 //     });
-    
+
 //     mapjs.addLayers([wmts]);
 
 //     window.mp = new IDEE.plugin.Magnify({
@@ -28,7 +28,7 @@
 //     });
 //     window.mapjs.addPlugin(window.mp);
 //   });
-  
+
 //   const nPlugins = await page.evaluate(() => window.mapjs.getPlugins().length);
 //   expect(nPlugins).toBe(1);
 // });

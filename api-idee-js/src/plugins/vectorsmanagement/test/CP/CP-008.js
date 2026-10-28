@@ -19,13 +19,11 @@ const generic002 = new IDEE.layer.GenericVector({}, {}, new ol.layer.Vector({
 
 map.addLayers(generic002);
 
+// probar funcionalidad de snapping
 const mp = new VectorsManagement({
-  position: 'TL',
+  position: 'left',
   tooltip: 'Gestionar mis vectores',
-  // isDraggable => falta implementar
-  // useProxy => falta implementar
   collapsed: false,
-  collapsible: false,
   // Herramientas
   // selection: false,
   // addlayer: false,
@@ -34,8 +32,16 @@ const mp = new VectorsManagement({
   // style: false,
   // analysis: false,
   // download: false,
-  // help: false,
-  isDraggable: true,
+  // snapping: true,
+  snapping: {
+    vertex: true,
+    edge: false,
+    intersection: true,
+    allLayers: true,
+    guides: true,
+    pixelTolerance: 15
+  },
+  help: true,
 });
 
 map.addPlugin(mp);

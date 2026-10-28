@@ -1,3 +1,4 @@
+/* eslint-disable max-len -- test comentado con contenido HTML de ejemplo */
 // import { test, expect } from '@playwright/test';
 
 // test('Test Plugin Mapheader', async ({ page }) => {
@@ -19,10 +20,9 @@
 //           <div class="col-12 colorVerdeClaro   txtCenter  ">Organismo Autónomo Centro Nacional de Información Geográfica</div>
 //         </div>
 //       </div>
-//     </div>  
-//     </div>  
-    
-      
+//     </div>
+//     </div>
+
 //     </header>
 //       `,
 //       cssList: [
@@ -36,7 +36,7 @@
 //     window.mp = new IDEE.plugin.Mapheader(config);
 //     window.mapjs.addPlugin(window.mp);
 //   });
-  
+
 //   const nPlugins = await page.evaluate(() => window.mapjs.getPlugins().length);
 //   expect(nPlugins).toBe(1);
 // });

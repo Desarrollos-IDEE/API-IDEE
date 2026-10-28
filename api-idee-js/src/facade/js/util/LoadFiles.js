@@ -5,13 +5,53 @@
  * @example import utils from 'IDEE/loadFiles';
  */
 import * as shp from 'shpjs';
+import LoadFilesImpl from 'impl/util/LoadFiles';
 import * as Gdal from './Gdal';
-import LoadFilesImpl from '../../../impl/ol/js/util/LoadFiles';
 import * as Dialog from '../dialog';
 import { getValue } from '../i18n/language';
+import { isUrl } from './Utils';
+import * as EventType from '../event/eventtype';
 import Vector from '../layer/Vector';
 import GeoTIFF from '../layer/GeoTIFF';
 import KMZ from '../layer/KMZ';
+
+/**
+ * Valor para el parámetro blob de GeoTIFF según el origen (URL, File/Blob u otro).
+ *
+ * @param {string | Blob | File} source Origen del GeoTIFF.
+ * @returns {string | Blob}
+ */
+function resolveGeotiffBlobParam(source) {
+  if (typeof source === 'string' && isUrl(source)) {
+    return source;
+  }
+  if (typeof Blob !== 'undefined' && source instanceof Blob) {
+    return source;
+  }
+  return URL.createObjectURL(source);
+}
+
+/**
+ * Centra el mapa en la extensión de la capa GeoTIFF cuando termina de cargar.
+ *
+ * @param {IDEE.Map} map Mapa.
+ * @param {IDEE.layer.GeoTIFF} geoTiffLayer Capa GeoTIFF.
+ */
+function fitMapToGeotiffLayerWhenReady(map, geoTiffLayer) {
+  geoTiffLayer.once(EventType.LOAD, () => {
+    setTimeout(() => {
+      try {
+        const extent = geoTiffLayer.getMaxExtent();
+        if (Array.isArray(extent) && extent.length === 4) {
+          LoadFilesImpl.fitMapToExtent(map, extent);
+        }
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.warn(getValue('exception').invalid_maxextent_param);
+      }
+    }, 200);
+  });
+}
 
 /**
  * Esta función añade al mapa una capa vector con los features
@@ -75,7 +115,7 @@ export const loadGeotiffLayer = (
   legend = name,
 ) => {
   const geoTiffLayer = new GeoTIFF({
-    blob: IDEE.utils.isUrl(source) ? source : URL.createObjectURL(source),
+    blob: resolveGeotiffBlobParam(source),
     name,
     legend,
     visibility: true,
@@ -85,20 +125,7 @@ export const loadGeotiffLayer = (
   }, {
     opacity: 1,
   });
-  map.once(IDEE.evt.ADDED_GEOTIFF, async () => {
-    // Get some time to load geotiff
-    setTimeout(() => {
-      try {
-        const extent = geoTiffLayer.getMaxExtent();
-        if (Array.isArray(extent) && extent.length === 4) {
-          IDEE.impl.loadFiles.fitMapToExtent(map, extent);
-        }
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.warn(getValue('exception').invalid_maxextent_param);
-      }
-    }, 200);
-  });
+  fitMapToGeotiffLayerWhenReady(map, geoTiffLayer);
   map.addLayers(geoTiffLayer);
 };
 
@@ -114,7 +141,7 @@ export const loadGeotiffLayer = (
  */
 export const loadFeaturesFromSource = async (map, source, layerName, fileExt) => {
   try {
-    const projection = map.getProjection().code;
+    const projection = LoadFilesImpl.getFileProjection(map);
     if (fileExt === 'kmz') {
       const url = URL.createObjectURL(new Blob([source]));
       const layer = new KMZ({
@@ -128,24 +155,24 @@ export const loadFeaturesFromSource = async (map, source, layerName, fileExt) =>
       });
       map.addLayers(layer);
     } else if (fileExt === 'zip') {
-      shp.parseZip(source).then((data) => {
+      shp.parseZip(source).then(async (data) => {
         const geojsonArray = [].concat(data);
-        const features = LoadFilesImpl.loadAllInGeoJSONLayer(geojsonArray, projection);
+        const features = await LoadFilesImpl.loadAllInGeoJSONLayer(geojsonArray, projection);
         loadFeaturesLoadFilesImpl(map, layerName, features);
       });
     } else {
       let features = [];
       if (fileExt === 'kml') {
-        features = LoadFilesImpl.loadKMLLayer(source, projection, false);
+        features = await LoadFilesImpl.loadKMLLayer(source, projection, false);
       } else if (Gdal.extensionFiles.includes(fileExt)) {
         const { vectors } = await Gdal.processFile(source, projection);
-        features = LoadFilesImpl.loadAllInGeoJSONLayer(vectors ?? [], projection);
+        features = await LoadFilesImpl.loadAllInGeoJSONLayer(vectors ?? [], projection);
       } else if (fileExt === 'gpx') {
-        features = LoadFilesImpl.loadGPXLayer(source, projection);
+        features = await LoadFilesImpl.loadGPXLayer(source, projection);
       } else if (fileExt === 'geojson' || fileExt === 'json') {
-        features = LoadFilesImpl.loadGeoJSONLayer(source, projection);
+        features = await LoadFilesImpl.loadGeoJSONLayer(source, projection);
       } else if (fileExt === 'gml') {
-        features = LoadFilesImpl.loadGMLLayer(source, projection);
+        features = await LoadFilesImpl.loadGMLLayer(source, projection);
       } else {
         Dialog.error(getValue('exception').file_load);
       }

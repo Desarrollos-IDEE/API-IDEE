@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { mockRest } from '../common/rest';
 
 const REFACTOR_PLUGINS = [
   'vectormanagement',
@@ -22,6 +23,8 @@ const REFACTOR_PLUGINS = [
 ];
 
 test('Probamos añadir plugins desde API 2.0', async ({ page }) => {
+  // La API REST (controles, plugins y sus ficheros) se simula: el servidor de pruebas no la tiene
+  await mockRest(page);
   await page.goto('/test/playwright/ol/basic-ol.html');
 
   await page.evaluate(() => {
@@ -47,12 +50,13 @@ test('Probamos añadir plugins desde API 2.0', async ({ page }) => {
   }, REFACTOR_PLUGINS);
 
   // Añadir los plugins al mapa
-  for (const pluginInfo of pluginInfoList) {
-    await page.addScriptTag({ url: pluginInfo.scriptUrl });
-    const addResult = await page.evaluate((constructorStr) => {
-      window.mapjs.addPlugin(eval(`new ${constructorStr}()`));
-    }, pluginInfo.constructor);
-  }
+  // De uno en uno: cada plugin se crea cuando su script ya está cargado
+  await pluginInfoList.reduce((previous, pluginInfo) => previous
+    .then(() => page.addScriptTag({ url: pluginInfo.scriptUrl }))
+    .then(() => page.evaluate((constructorPath) => {
+      const PluginClass = constructorPath.split('.').reduce((owner, key) => owner[key], window);
+      window.mapjs.addPlugin(new PluginClass());
+    }, pluginInfo.constructor)), Promise.resolve());
 
   // Verificar que todos los plugins cargados están en el mapa y no están repetidos
   const pluginResults = await page.evaluate((pluginNames) => {

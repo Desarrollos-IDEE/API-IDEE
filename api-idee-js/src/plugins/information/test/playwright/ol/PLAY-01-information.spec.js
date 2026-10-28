@@ -1,3 +1,4 @@
+/* eslint-disable max-len -- test comentado con contenido HTML de ejemplo */
 // import { test, expect } from '@playwright/test';
 
 // test('Plugin Test Information', async ({ page }) => {
@@ -10,13 +11,13 @@
 //       position: 'TR', // TL | TR | BL | BR
 //       buffer: 100,
 //       opened: 'all', // 'one' | 'all' | 'closed'
-//       featureCount: 3, // 10, 
+//       featureCount: 3, // 10,
 //       format: 'text/html', //  'text/html' como default || ('text/plain'|'plain') | ('application/vnd.ogc.gml'|'gml')
 //       outputDownloadFormat: 'csv',
 //     });
 //     window.mapjs.addPlugin(window.mp);
 //   });
-  
+
 //   const nPlugins = await page.evaluate(() => window.mapjs.getPlugins().length);
 //   expect(nPlugins).toBe(1);
 // });

@@ -74,6 +74,16 @@ El listado de capas aparece al pulsar sobre el botón añadir (Listado de alguna
 - **addLayers**: Permite añadir la funcionalidad de añadir capas. Por defecto: true.
 - **statusLayers**: Permite añadir la funcionalidad de mostrar/ocultar todas las capas. Por defecto: true.
 
+## Servicios OGC API Features y DataIDEE
+
+Al introducir la URL de un servicio OGC API Features (raíz, `/collections` o `/collections/{id}`), debajo del buscador aparece el selector **Cargar como**:
+
+- **OGC API Features (estándar)**: las capas se añaden como `IDEE.layer.OGCAPIFeatures`. El parámetro `f` se toma del enlace `items` que anuncia el servicio; si el servicio no lo usa, no se envía.
+- **DataIDEE**: las capas se añaden como `IDEE.layer.DataIDEE`. Si el servicio tiene login, aparece un candado para iniciar sesión con usuario y contraseña o pegando directamente un token de acceso (debe ser un JWT sin caducar; con la API de autenticación de DataIDEE se comprueba además con `GET /auth-api/auth/me`). El botón «Guardar» solo se habilita con usuario y contraseña o con un token válido. Se admite la API de autenticación de DataIDEE (`/auth-api/auth/login`, renovación con `GET /auth-api/auth/refresh` y cierre con `/auth-api/auth/logout`; se detecta con `GET /auth-api/auth/me`, que sin token responde 401) y, como alternativa, el contrato anterior (`/auth/login` y `POST /auth/refresh`). El token se guarda en el `localStorage` del navegador, uno por URL de servicio, se renueva antes de caducar y se envía siempre como `Authorization: Bearer <token>`: al listar las colecciones, en las consultas (queryables, recuento, información) y en las capas (`{ getFeature: { token } }`). Las capas también admiten `tokenLocation: 'query'` para enviar el token como `?token=<token>`.
+
+Se recuerda el último modo usado con cada servicio. Los servicios precargados con `type: 'DataIDEE'` se abren en modo DataIDEE.
+El servicio debe permitir CORS (cabeceras `Authorization` y `Content-Type`) para iniciar sesión y para consultar capas con token sin proxy.
+
 # API-REST
 
 ```javascript
@@ -267,6 +277,14 @@ npm i
 npm start:ol
 npm start:cesium
 ```
+
+La página de pruebas (`test/dev.html`) usa el núcleo compilado en local, así que antes hay que compilarlo una vez desde `api-idee-js`:
+
+```bash
+npm run build:ol-core
+```
+
+El servidor de desarrollo reenvía `/data-idee-api` al servicio DataIDEE de pruebas (configurable con la variable de entorno `DATAIDEE_PROXY_TARGET`). Así se puede probar aunque el servicio no permita CORS, introduciendo en el buscador `http://localhost:6123/data-idee-api/collections`.
 
 ## 📂 Estructura del código / *Code scaffolding*
 

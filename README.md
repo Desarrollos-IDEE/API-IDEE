@@ -45,6 +45,7 @@ Se ha creado una [Wiki](https://github.com/Desarrollos-IDEE/API-IDEE/wiki/1.3.-P
 <ul>
 <li><a target="_blank" href="https://openlayers.org/en/v10.7.0/apidoc/">OpenLayers v10.7.0</a></li>
 <li><a target="_blank" href="https://cesium.com/learn/cesiumjs/ref-doc/">Cesium v1.118.0</a></li>
+<li><a target="_blank" href="https://turfjs.org/docs/">Turf.js v7.4.0</a></li>
 </ul>
 
 ## Bugs

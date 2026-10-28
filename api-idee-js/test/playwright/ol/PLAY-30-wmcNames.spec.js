@@ -1,7 +1,11 @@
 import { test, expect } from '@playwright/test';
+import { mockProxy } from '../common/proxy';
 
 test.describe('IDEE.layer.WMC', () => {
   test.beforeEach(async ({ page }) => {
+    // Los contextos se piden por el proxy de la API REST (no existe en el servidor de pruebas):
+    // el proxy simulado descarga el WMC real
+    await mockProxy(page);
     await page.goto('/test/playwright/ol/basic-ol.html');
     await page.evaluate(() => {
       IDEE.proxy(true);
@@ -15,31 +19,30 @@ test.describe('IDEE.layer.WMC', () => {
 
   test('Add layer', async ({ page }) => {
     await page.evaluate(() => {
-      const wmc_001 = new IDEE.layer.WMC('callejero');
-      window.wmc_001 = wmc_001;
+      const wmc001 = new IDEE.layer.WMC('callejero');
+      window.wmc001 = wmc001;
 
-      window.map.addWMC(wmc_001);
+      window.map.addWMC(wmc001);
     });
 
-    await page.waitForTimeout(5000);
-    const numLayers = await page.evaluate(() => { return window.map.getLayers().length; });
-    await expect(numLayers).toEqual(47);
+    await expect.poll(() => page.evaluate(() => window.map.getLayers().length), {
+      timeout: 15000,
+    }).toEqual(47);
   });
 
   test('Add two WMC', async ({ page }) => {
     await page.evaluate(() => {
-      const wmc_001 = new IDEE.layer.WMC('callejero');
-      window.wmc_001 = wmc_001;
+      const wmc001 = new IDEE.layer.WMC('callejero');
+      window.wmc001 = wmc001;
 
-      window.map.addWMC(wmc_001);
+      window.map.addWMC(wmc001);
 
-      const wmc_002 = new IDEE.layer.WMC('ortofoto');
-      window.wmc_002 = wmc_002;
+      const wmc002 = new IDEE.layer.WMC('ortofoto');
+      window.wmc002 = wmc002;
 
-      window.map.addWMC(wmc_002);
+      window.map.addWMC(wmc002);
     });
 
-    await page.waitForTimeout(5000);
     const selector = page.locator('select.m-wmcselector-select');
     await expect(selector).toBeVisible();
     const opciones = selector.locator('option');

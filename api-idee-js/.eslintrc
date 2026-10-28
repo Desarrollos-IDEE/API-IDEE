@@ -8,6 +8,7 @@
     "proj4": true,
     "ActiveXObject": true,
     "jsts": true,
+    "turf": true,
     "document": true,
     "window": true,
     "DOMParser": true,
@@ -66,5 +67,17 @@
     "consistent-return": "off",
     "array-callback-return": "off",
     "grouped-accessor-pairs": "off"
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "test/playwright/**/*.js",
+        "src/plugins/*/test/playwright/**/*.js",
+        "playwright-config/*.js"
+      ],
+      "rules": {
+        "import/no-extraneous-dependencies": "off"
+      }
+    }
+  ]
 }

@@ -89,6 +89,20 @@ class GeoPackageTile extends AbstractProvider {
   }
 
   /**
+   * Este método obtiene la proyección (SRS) de la matriz de teselas, en la que
+   * está expresada la extensión de getExtent.
+   *
+   * @function
+   * @public
+   * @returns {String} Código EPSG, p. ej. "EPSG:3857".
+   * @api
+   */
+  getProjection() {
+    const dao = this.connector_.getTileDao(this.tableName_);
+    return `EPSG:${dao.tileMatrixSet.srs_id}`;
+  }
+
+  /**
    * Este método obtiene el nivel de zoom mínimo de la capa.
    *
    * @function

@@ -166,7 +166,7 @@ class OGCAPIFeatures extends Vector {
         name: this.name,
         limit: this.limit,
         offset: this.offset,
-        format: this.format || 'json',
+        format: this.format === null ? undefined : (this.format || 'json'),
         id: this.id,
         bbox: this.bbox,
         conditional: this.conditional,

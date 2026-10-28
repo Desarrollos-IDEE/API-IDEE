@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('Test plugin Locatorscn', async ({ page }) => {
-  await page.goto('/src/plugins/locatorscn/test/playwright/ol/locatorscn-ol.html');
+  await page.goto('/src/plugins/locatorscn/test/playwright/ol/locatorscn-ol.html', { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => {
     window.mapjs = IDEE.map({
       container: 'mapjs',
@@ -9,7 +9,7 @@ test('Test plugin Locatorscn', async ({ page }) => {
     window.mp = new IDEE.plugin.Locatorscn();
     window.mapjs.addPlugin(window.mp);
   });
-  
+
   const nPlugins = await page.evaluate(() => window.mapjs.getPlugins(window.mp.name).length);
   expect(nPlugins).toBe(1);
 });

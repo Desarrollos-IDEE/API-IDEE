@@ -8,18 +8,9 @@
         <button tabindex="0" id="editattribute" class="vectorsmanagement-icon-table" title="{{translations.attributes}}"></button>
         <button tabindex="0" id="cleanAll" class="vectorsmanagement-icon-papelera" title="{{translations.clean}}"></button>
     </div>
+    <div id="m-vectorsmanagement-edition-snap" class="m-vectorsmanagement-snap-container closed"></div>
     <div id="edition-container" class="closed">
         <div>
-            <div class="edition-container-snap-options">
-                <div>
-                    <input type="checkbox" id="m-vectorsmanagement-snapToPointer-input" name="snapToPointer" checked="{{defaultSnapToPointer}}">
-                    <label for="m-vectorsmanagement-snapToPointer-input">{{translations.snapToPointer}}</label>
-                </div>
-                <div>
-                    <label for="m-vectorsmanagement-pixelTolerance-input">{{translations.pixelTolerance}}</label>
-                    <input type="number" id="m-vectorsmanagement-pixelTolerance-input" name="pixelTolerance" value="{{defaultPixelTolerance}}" min="0" max="100" step="1">
-                </div>
-            </div>
             <button tabindex="0" id="m-vectorsmanagement-deletegeom-btn">{{translations.delete}}</button>
         </div>
     </div>

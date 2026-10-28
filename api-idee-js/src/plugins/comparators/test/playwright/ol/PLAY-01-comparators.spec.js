@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 test('Test plugin Comparators', async ({ page }) => {
-  await page.goto('/src/plugins/comparators/test/playwright/ol/comparators-ol.html');
+  // Sin esperar al evento load: depende de iconos y fuentes remotos que la prueba no necesita
+  await page.goto('/src/plugins/comparators/test/playwright/ol/comparators-ol.html', { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => {
     window.mapjs = IDEE.map({
       container: 'mapjs',

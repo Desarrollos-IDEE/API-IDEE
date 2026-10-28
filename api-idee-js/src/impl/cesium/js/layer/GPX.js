@@ -39,8 +39,7 @@ class GPX extends GeoJSON {
     if (addLayer) map.getMapImpl().dataSources.add(this.cesiumLayer);
     this.setVisible(this.visibility);
     this.updateSource_();
-    this.fire(EventType.ADDED_TO_MAP);
-    this.facadeVector_.fire(EventType.ADDED_TO_MAP);
+    this.fireAddedToMap_();
   }
 
   /**

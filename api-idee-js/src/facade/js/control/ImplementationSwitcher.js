@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * @module IDEE/control/ImplementationSwitcher
  */
@@ -6,7 +5,6 @@ import 'assets/css/controls/implementationswitcher';
 import ImplementationSwitcherImpl from 'impl/control/ImplementationSwitcher';
 import template from 'templates/implementationswitcher';
 import myhelp from 'templates/implementationswitcherhelp';
-import { transform } from 'ol/proj';
 import ControlBase from './Control';
 import { compileSync as compileTemplate } from '../util/Template';
 import Exception from '../exception/exception';
@@ -16,6 +14,21 @@ import {
   isBoolean,
 } from '../util/Utils';
 import * as Dialog from '../dialog';
+import { getRegistry, captureState, restoreState } from '../util/ImplementationState';
+import {
+  activateImplementation,
+  getImplementations,
+  loadPlugins,
+  toggleStylesheets,
+} from '../util/ImplementationLoader';
+
+/**
+ * Evento de `window` que avisa del mapa nuevo tras cambiar de implementación.
+ * `event.detail`: { map, implementation, previous }.
+ * @const
+ * @type {string}
+ */
+const CHANGE_EVENT = 'idee:implementationchange';
 
 /**
  * @typedef {Object} module:IDEE/control/ImplementationSwitcher~Options
@@ -30,7 +43,20 @@ import * as Dialog from '../dialog';
 
 /**
  * @classdesc
- * Agrega la herramienta de cambio de implementación.
+ * Agrega la herramienta de cambio de implementación (p. ej. OpenLayers ⇄ Cesium).
+ *
+ * Como ol-cesium, cada núcleo se carga una sola vez y se conserva: al volver a una
+ * implementación no se recarga nada. En cada cambio se guarda un estado del mapa
+ * independiente de la implementación (vista, capas, grupos, secciones, controles, plugins
+ * con sus opciones, configuración e idioma) y se recrea el mapa con el núcleo de destino.
+ * Lo que el destino no admite se conserva y se recupera al volver.
+ *
+ * Las implementaciones disponibles salen de `IDEE.config.implementationswitcher`:
+ * `[{ id, type, title, js, css, plugins: { <nombre>: { js, css } } }]`. Sin `plugins`, los
+ * ficheros de cada plugin se buscan en `${API_IDEE_URL}plugins/<nombre>/<nombre>.<type>.min.js`.
+ *
+ * Tras el cambio se lanza en `window` el evento `idee:implementationchange` con el mapa nuevo.
+ *
  * @property {Boolean} [collapsible=true] Indica si el control es colapsable.
  * @property {Boolean} [collapsed=true] Indica si el control está colapsado.
  *
@@ -63,16 +89,28 @@ class ImplementationSwitcher extends ControlBase {
 
     super(ImplementationSwitcher.NAME, implementationSwitcherImpl, options);
 
-    if (!window.implementations) {
-      window.implementations = (IDEE.config.implementationswitcher || []).map((impl) => ({
-        ...impl,
-        epsg: impl.type === 'cesium' ? 'EPSG:4979' : impl.epsg,
-      }));
-    }
-
     this.collapsible = isBoolean(options.collapsible) ? options.collapsible : true;
 
     this.collapsed = isBoolean(options.collapsed) ? options.collapsed : this.collapsible;
+
+    this.switching_ = false;
+  }
+
+  /**
+   * Implementaciones configuradas, marcando la del mapa actual.
+   *
+   * @public
+   * @function
+   * @param {IDEE.Map} map Mapa actual.
+   * @returns {Array<Object>} Implementaciones.
+   * @api
+   */
+  getImplementations(map) {
+    const current = map ? map.getImplementation() : undefined;
+    return getImplementations().map((implementation) => ({
+      ...implementation,
+      selected: implementation.type === current,
+    }));
   }
 
   /**
@@ -86,13 +124,11 @@ class ImplementationSwitcher extends ControlBase {
    */
   createView(map) {
     return new Promise((resolve) => {
-      this.selectCurrentImplementation(map);
-
       this.html = compileTemplate(template, {
         vars: {
           title: this.tooltip ?? getValue(ImplementationSwitcher.NAME).title,
           description: getValue(ImplementationSwitcher.NAME).description,
-          implementations: window.implementations,
+          implementations: this.getImplementations(map),
         },
       });
 
@@ -100,35 +136,6 @@ class ImplementationSwitcher extends ControlBase {
 
       resolve(this.html);
     });
-  }
-
-  /**
-   * Selecciona en el desplegable la implementación del mapa actual.
-   *
-   * @public
-   * @function
-   * @param {IDEE.Map} map Mapa actual.
-   * @api
-   */
-  selectCurrentImplementation(map) {
-    const currentImplementation = map?.getImplementation?.();
-    const implementations = window.implementations || [];
-
-    if (implementations.length > 0) {
-      const currentIndex = implementations.findIndex((impl) => impl.type === currentImplementation);
-      const selectedIndex = implementations.findIndex((impl) => impl.selected);
-      const targetIndex = currentIndex >= 0 ? currentIndex : Math.max(selectedIndex, 0);
-
-      window.implementations = implementations.map((impl, index) => {
-        const nextImpl = { ...impl };
-        if (index === targetIndex) {
-          nextImpl.selected = true;
-        } else {
-          delete nextImpl.selected;
-        }
-        return nextImpl;
-      });
-    }
   }
 
   /**
@@ -141,138 +148,119 @@ class ImplementationSwitcher extends ControlBase {
   listen(html) {
     html.querySelectorAll('select#m-implementationswitcher-select').forEach((element) => {
       element.addEventListener('change', (e) => {
-        this.loadImplementation(window.implementations[e.target.selectedIndex]);
+        const implementation = this.getImplementations(this.map)[e.target.selectedIndex];
+        this.switchTo(implementation).catch((error) => {
+          // eslint-disable-next-line no-console
+          console.error(error);
+        });
       });
     });
   }
 
   /**
-   * Carga la implementación seleccionada
+   * Cambia el mapa a otra implementación conservando su estado.
    *
-   * @function
    * @public
+   * @function
+   * @param {Object} implementation Entrada de `IDEE.config.implementationswitcher`.
+   * @returns {Promise<IDEE.Map>} Mapa nuevo (el actual si no hay cambio).
    * @api
    */
-  loadImplementation(implementation) {
-    const API_IDEE_URL = IDEE.config.API_IDEE_URL || '';
-    const baseUrl = API_IDEE_URL.endsWith('/') ? API_IDEE_URL : `${API_IDEE_URL}/`;
-    const resolveUrl = (value) => {
-      if (!value) return '';
-      if (/^(?:https?:)?\/\//i.test(value)) {
-        return value;
-      }
-      try {
-        return new URL(value.replace(/^\/+/, ''), baseUrl || document.baseURI).href;
-      } catch (error) {
-        return `${baseUrl}${value.replace(/^\/+/, '')}`;
-      }
-    };
-
-    const implementationUrl = resolveUrl(implementation.js);
-    const implementationCssUrl = resolveUrl(implementation.css);
-    const existingConfigScript = document
-      .querySelector('script[src$="/config.js"], script[src$="config.js"], script[src$="/configuration.js"], script[src$="configuration.js"]');
-
-    const configurationUrl = existingConfigScript ? existingConfigScript.src : resolveUrl('js/configuration.js');
-
-    if (existingConfigScript) {
-      existingConfigScript.remove();
+  async switchTo(implementation) {
+    const map = this.map;
+    const previous = map.getImplementation();
+    if (isNullOrEmpty(implementation) || implementation.type === previous || this.switching_) {
+      return map;
     }
+    this.switching_ = true;
 
-    window.implementations.forEach((impl) => {
-      // eslint-disable-next-line no-param-reassign
-      delete impl.selected;
-
-      Array.from(document.querySelectorAll('script'))
-        .filter((script) => script.src.endsWith(impl.js))
-        .forEach((script) => script.remove());
-
-      Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
-        .filter((style) => style.href.endsWith(impl.css))
-        .forEach((style) => style.remove());
-    });
-
-    // remove duplicate configuration scripts, keep only the first one
-    if (configurationUrl) {
-      const configurationScripts = Array.from(document.querySelectorAll('script'))
-        .filter((configuration) => configuration.src === configurationUrl);
-      configurationScripts.slice(1).forEach((configuration) => configuration.remove());
-    }
-
-    // eslint-disable-next-line no-param-reassign
-    implementation.selected = true;
-
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = implementationUrl;
-    script.onload = () => {
-      const existingConfig = configurationUrl && document.querySelector(`script[src="${configurationUrl}"]`);
-      if (configurationUrl && !existingConfig) {
-        const configScript = document.createElement('script');
-        configScript.type = 'text/javascript';
-        configScript.src = configurationUrl;
-        configScript.onload = () => {
-          this.loadMap(implementation);
-        };
-        configScript.onerror = (error) => {
-          console.error('CONFIGURATION LOAD ERROR', configurationUrl, error);
-          this.loadMap(implementation);
-        };
-        document.body.appendChild(configScript);
-      } else {
-        this.loadMap(implementation);
-      }
-    };
-    script.onerror = (err) => {
+    const registry = getRegistry();
+    const source = window.IDEE;
+    const message = `${getValue(ImplementationSwitcher.NAME).load_error} ${implementation.title || implementation.type}`;
+    const fail = (error) => {
       // eslint-disable-next-line no-console
-      console.error('SCRIPT ERROR', script.src, err);
-      Dialog.error(script.src, 'La implementación no se pudo cargar:');
+      console.error(error);
+      window.IDEE = source;
+      toggleStylesheets(registry, previous);
+      Dialog.error(message, getValue(ImplementationSwitcher.NAME).title);
     };
-    document.body.appendChild(script);
 
-    const style = document.createElement('link');
-    style.type = 'text/css';
-    style.href = implementationCssUrl;
-    style.rel = 'stylesheet';
-    document.head.appendChild(style);
+    let state;
+    let target;
+    try {
+      state = captureState(map);
+      target = await activateImplementation(implementation);
+      await loadPlugins(implementation, state.plugins);
+    } catch (error) {
+      fail(error);
+      this.resetSelect_(previous);
+      this.switching_ = false;
+      return map;
+    }
+
+    const container = map.getFrameContainer();
+    try {
+      map.removePlugins(map.getPlugins());
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.warn(error);
+    }
+    try {
+      map.destroy();
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.warn(error);
+    }
+
+    let newMap;
+    try {
+      // Código del núcleo de destino: crea el mapa con sus propias clases
+      newMap = target.control.ImplementationSwitcher.restoreState(state, container);
+    } catch (error) {
+      // Sin mapa en destino: se recupera el de origen
+      fail(error);
+      newMap = ImplementationSwitcher.restoreState(state, container);
+    }
+
+    this.switching_ = false;
+    window.dispatchEvent(new CustomEvent(CHANGE_EVENT, {
+      detail: { map: newMap, implementation: newMap.getImplementation(), previous },
+    }));
+    return newMap;
   }
 
-  loadMap(implementation) {
-    const zoom = this.map.getZoom();
-    const sourceProjection = this.map.getProjection().code;
-    const projection = implementation.epsg ?? IDEE.config.DEFAULT_PROJ;
-    const { x, y } = this.map.getCenter();
-    const center = (typeof ol !== 'undefined' && ol !== null)
-      ? ol.proj.transform([x, y], sourceProjection, projection)
-      : transform([x, y], sourceProjection, projection);
-    const controls = Array.from(this.map.getControls()).map(
-      (control) => control.name ?? control.NAME,
-    );
-    const plugins = this.map.getPlugins();
-    /** Layers has an error on change cesium to open layers */
-    const layers = this.map.getLayers();
+  /** Vuelve a marcar en el desplegable la implementación actual. @private */
+  resetSelect_(type) {
+    const select = this.html && this.html.querySelector('select#m-implementationswitcher-select');
+    const index = this.getImplementations(this.map).findIndex((impl) => impl.type === type);
+    if (select && index >= 0) select.selectedIndex = index;
+  }
 
-    this.map.removeControls(this);
+  /**
+   * Captura el estado del mapa independiente de la implementación.
+   *
+   * @public
+   * @function
+   * @param {IDEE.Map} map Mapa.
+   * @returns {Object} Estado.
+   * @api
+   */
+  static captureState(map) {
+    return captureState(map);
+  }
 
-    /** @type {HTMLDivElement} */
-    const mapFrameContainer = this.map.getFrameContainer();
-
-    try {
-      this.map.destroy();
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.warn('Error destroying previous map', e);
-    }
-
-    IDEE.map({
-      container: mapFrameContainer.id,
-      zoom,
-      projection,
-      center,
-      controls,
-      plugins,
-      layers,
-    });
+  /**
+   * Recrea un mapa a partir de un estado capturado, con el núcleo actual.
+   *
+   * @public
+   * @function
+   * @param {Object} state Estado capturado.
+   * @param {HTMLElement} container Contenedor del mapa.
+   * @returns {IDEE.Map} Mapa.
+   * @api
+   */
+  static restoreState(state, container) {
+    return restoreState(state, container);
   }
 
   /**
@@ -315,5 +303,14 @@ class ImplementationSwitcher extends ControlBase {
  * @api
  */
 ImplementationSwitcher.NAME = 'implementationswitcher';
+
+/**
+ * Evento de `window` que avisa del mapa nuevo tras cambiar de implementación.
+ * @const
+ * @type {string}
+ * @public
+ * @api
+ */
+ImplementationSwitcher.CHANGE_EVENT = CHANGE_EVENT;
 
 export default ImplementationSwitcher;

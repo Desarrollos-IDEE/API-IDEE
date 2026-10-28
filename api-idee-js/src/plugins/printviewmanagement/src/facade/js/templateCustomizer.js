@@ -21,6 +21,8 @@ const CLASS_MAP_CONTAINER = '.m-templateCustomizer-map-preview';
 const MAP_CONTAINER = 'm-templateCustomizer-map-preview';
 const ID_CONTAINER_DEFAULT_TEMPLATE = '#api-idee-template-container';
 const ID_DOWNLOAD_TEMPLATE_BUTTON = '#m-templateCustomizer-download-button';
+// Resolución CSS (px/pulgada) con la que se maqueta la plantilla en mm → px
+const LAYOUT_DPI = 96;
 
 export default class TemplateCustomizer extends IDEE.Control {
   /**
@@ -344,6 +346,7 @@ export default class TemplateCustomizer extends IDEE.Control {
       container: containerTemplate.id,
       zoom: this.map.getImpl().getZoom(),
       center: Object.values(this.map.getImpl().getCenter()),
+      projection: `${this.map.getProjection().code}*${this.map.getProjection().units}`,
       containerTemplate,
     });
 
@@ -353,8 +356,9 @@ export default class TemplateCustomizer extends IDEE.Control {
 
     this.previewMap.addLayers(this.map.getLayers().map((layer) => layer.clone()));
     this.previewMap.getLayers().forEach((layer) => {
-      if (typeof layer.getStyle === 'function' && layer.getStyle()) {
-        layer.setStyle(layer.getStyle());
+      const style = typeof layer.getStyle === 'function' ? layer.getStyle() : null;
+      if (style) {
+        layer.setStyle(style instanceof IDEE.style.Simple ? style.clone() : style);
       }
     });
     const previewContainer = document.querySelector(ID_CONTAINER_DEFAULT_TEMPLATE);
@@ -376,10 +380,11 @@ export default class TemplateCustomizer extends IDEE.Control {
   setupViewScaleListener() {
     const view = this.previewMap.getMapImpl().getView();
     const resolution = view.getResolution();
+    // Escala respecto al papel (LAYOUT_DPI), no DPI_OGC de pantalla
     const scale = IDEE.impl.utils.getScaleForResolution(
       resolution,
       view,
-      IDEE.config.DPI_OGC,
+      LAYOUT_DPI,
       true,
     );
     const scaleEl = document.querySelector(ID_TEMPLATE_SCALE);
@@ -502,17 +507,31 @@ export default class TemplateCustomizer extends IDEE.Control {
   }
 
   /**
-   * Convierte coordenadas decimales a grados, minutos y segundos (DMS)
+   * Convierte coordenadas decimales a grados, minutos y segundos (DMS).
+   * Segundos con dos decimales para reducir el error del truncado.
    * @param {Number} coord Coordenada
    * @returns {String} Coordenadas en formato DMS
    */
   toDMS(coord) {
+    const sign = coord < 0 ? '-' : '';
     const absolute = Math.abs(coord);
     const degrees = Math.floor(absolute);
     const minutesNotTruncated = (absolute - degrees) * 60;
     const minutes = Math.floor(minutesNotTruncated);
-    const seconds = Math.floor((minutesNotTruncated - minutes) * 60);
-    return `${degrees}º${minutes}'${seconds}"`;
+    let seconds = (minutesNotTruncated - minutes) * 60;
+    seconds = Math.round(seconds * 100) / 100;
+    let finalDegrees = degrees;
+    let finalMinutes = minutes;
+    if (seconds >= 60) {
+      seconds = 0;
+      finalMinutes += 1;
+    }
+    if (finalMinutes === 60) {
+      finalMinutes = 0;
+      finalDegrees += 1;
+    }
+    const secondsText = seconds.toFixed(2);
+    return `${sign}${finalDegrees}º${finalMinutes}'${secondsText}"`;
   }
 
   /**
@@ -795,7 +814,7 @@ export default class TemplateCustomizer extends IDEE.Control {
     if (!scale || Number.isNaN(scale)) return;
 
     const view = this.previewMap.getMapImpl().getView();
-    const resolution = IDEE.impl.utils.getCurrentScale(view, `${scale}`, IDEE.config.DPI_OGC);
+    const resolution = IDEE.impl.utils.getCurrentScale(view, `${scale}`, LAYOUT_DPI);
     view.setResolution(resolution);
 
     const scaleElement = document.querySelector(ID_TEMPLATE_SCALE);
@@ -1112,8 +1131,8 @@ export default class TemplateCustomizer extends IDEE.Control {
       [widthMm, heightMm] = [Math.min(widthMm, heightMm), Math.max(widthMm, heightMm)];
     }
 
-    const widthPx = Math.round((widthMm * 96) / 25.4);
-    const heightPx = Math.round((heightMm * 96) / 25.4);
+    const widthPx = Math.round((widthMm * LAYOUT_DPI) / 25.4);
+    const heightPx = Math.round((heightMm * LAYOUT_DPI) / 25.4);
 
     const wrapperRect = mapContainer.parentNode.getBoundingClientRect();
     const availableWidth = wrapperRect.width - 40;
@@ -1162,15 +1181,17 @@ export default class TemplateCustomizer extends IDEE.Control {
     templateBody.style.width = clone.style.width;
     templateBody.style.height = clone.style.height;
 
-    const targetElement = clone.querySelector(ID_CONTAINER_DEFAULT_TEMPLATE) || clone;
-    const screenshotScale = this.getScreenshotScale(this.dpi);
-    const canvas = await domToCanvas(targetElement, {
-      backgroundColor: 'white',
-      scale: screenshotScale,
-    });
-
-    document.body.removeChild(clone);
-    return canvas.toDataURL('image/png', 1.0);
+    try {
+      const targetElement = clone.querySelector(ID_CONTAINER_DEFAULT_TEMPLATE) || clone;
+      const screenshotScale = this.getScreenshotScale(this.dpi);
+      const canvas = await domToCanvas(targetElement, {
+        backgroundColor: 'white',
+        scale: screenshotScale,
+      });
+      return canvas.toDataURL('image/png', 1.0);
+    } finally {
+      clone.remove();
+    }
   }
 
   /**
@@ -1181,7 +1202,7 @@ export default class TemplateCustomizer extends IDEE.Control {
    */
   getScreenshotScale(dpi) {
     const deviceScale = window.devicePixelRatio || 1;
-    return Math.max(Number(dpi) / 96, deviceScale);
+    return Math.max(Number(dpi) / LAYOUT_DPI, deviceScale);
   }
 
   /**
@@ -1210,7 +1231,7 @@ export default class TemplateCustomizer extends IDEE.Control {
     const originalSize = map.getSize();
     const originalResolution = map.getView().getResolution();
 
-    const scaleFactor = this.dpi / 96;
+    const scaleFactor = this.dpi / LAYOUT_DPI;
     const newWidth = Math.round(originalSize[0] * scaleFactor);
     const newHeight = Math.round(originalSize[1] * scaleFactor);
     const maskImageContainer = document.querySelector(`${ID_MAP_CONTAINER_TEMPLATE} #mapPanel`) || document.querySelector(`.${MAP_CONTAINER} #mapPanel`);
@@ -1218,56 +1239,89 @@ export default class TemplateCustomizer extends IDEE.Control {
     const parentNode = originalMapViewport.parentNode;
 
     map.once('rendercomplete', async () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = newWidth;
-      canvas.height = newHeight;
-      const context = canvas.getContext('2d');
-      Array.prototype.forEach.call(
-        map.getViewport().querySelectorAll('.ol-layer canvas'),
-        (layerCanvas) => {
-          if (layerCanvas.width > 0) {
-            const opacity = layerCanvas.parentNode.style.opacity || '1';
-            context.globalAlpha = Number(opacity);
-            const transform = layerCanvas.style.transform;
-
-            if (transform) {
-              const matrix = transform
-                .match(/^matrix\(([^(]*)\)$/)[1]
-                .split(',')
-                .map(Number);
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+        const context = canvas.getContext('2d');
+        // Las capas WebGL (p. ej. GeoTIFF) llevan la clase ol-layer en el propio canvas
+        Array.prototype.forEach.call(
+          map.getViewport().querySelectorAll('.ol-layer canvas, canvas.ol-layer'),
+          (layerCanvas) => {
+            if (layerCanvas.width > 0) {
+              const opacity = layerCanvas.parentNode.style.opacity
+                || layerCanvas.style.opacity
+                || '1';
+              context.globalAlpha = Number(opacity);
+              const transform = layerCanvas.style.transform;
+              let matrix;
+              if (transform) {
+                matrix = transform
+                  .match(/^matrix\(([^(]*)\)$/)[1]
+                  .split(',')
+                  .map(Number);
+              } else {
+                matrix = [
+                  parseFloat(layerCanvas.style.width) / layerCanvas.width,
+                  0,
+                  0,
+                  parseFloat(layerCanvas.style.height) / layerCanvas.height,
+                  0,
+                  0,
+                ];
+              }
               context.setTransform(...matrix);
+              context.drawImage(layerCanvas, 0, 0);
             }
+          },
+        );
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.globalAlpha = 1;
 
-            context.drawImage(layerCanvas, 0, 0);
-          }
-        },
-      );
-      map.setSize(originalSize);
-      map.getView().setResolution(originalResolution);
+        map.setSize(originalSize);
+        map.getView().setResolution(originalResolution);
 
-      this.insertMapImageIntoTemplate(canvas.toDataURL('image/png'));
-      const templateImage64 = await this.generateTemplateImage64();
-      const event = new CustomEvent('templateConfigApplied', {
-        detail: { templateImage64, config },
-      });
-      document.dispatchEvent(event);
-
-      if (this.onApplyCallback) {
-        this.onApplyCallback({
-          instancePreviewMap: this.previewMap.getMapImpl(),
-          imagePreviewMap: templateImage64,
-          layout: this.layout,
-          orientation: this.mapOrientation,
-          margin: this.margin,
+        this.insertMapImageIntoTemplate(canvas.toDataURL('image/png'));
+        const exportImg = maskImageContainer && maskImageContainer.querySelector('img');
+        if (exportImg && !exportImg.complete) {
+          await new Promise((resolve) => {
+            exportImg.onload = resolve;
+            exportImg.onerror = resolve;
+          });
+        }
+        const templateImage64 = await this.generateTemplateImage64();
+        const event = new CustomEvent('templateConfigApplied', {
+          detail: { templateImage64, config },
         });
-      }
-      if (this.loadingOverlay_) {
-        this.loadingOverlay_.remove();
-        this.loadingOverlay_ = null;
-      }
+        document.dispatchEvent(event);
 
-      maskImageContainer.innerHTML = '';
-      parentNode.appendChild(originalMapViewport);
+        if (this.onApplyCallback) {
+          this.onApplyCallback({
+            instancePreviewMap: this.previewMap.getMapImpl(),
+            imagePreviewMap: templateImage64,
+            layout: this.layout,
+            orientation: this.mapOrientation,
+            margin: this.margin,
+          });
+        }
+      } catch (error) {
+        map.setSize(originalSize);
+        map.getView().setResolution(originalResolution);
+        IDEE.toast.error(getValue('exception.printError'), null, 6000);
+        // eslint-disable-next-line no-console
+        console.error(error);
+      } finally {
+        if (this.loadingOverlay_) {
+          this.loadingOverlay_.remove();
+          this.loadingOverlay_ = null;
+        }
+        if (maskImageContainer) {
+          maskImageContainer.innerHTML = '';
+        }
+        if (parentNode && !parentNode.contains(originalMapViewport)) {
+          parentNode.appendChild(originalMapViewport);
+        }
+      }
     });
     map.setSize([newWidth, newHeight]);
     const scaling = Math.min(newWidth / originalSize[0], newHeight / originalSize[1]);
@@ -1302,6 +1356,7 @@ export default class TemplateCustomizer extends IDEE.Control {
         bar: true,
         text: false,
         minWidth: 140,
+        dpi: LAYOUT_DPI,
         // eslint-disable-next-line no-prototype-builtins
         ...(options.hasOwnProperty('vendorOptions') ? options.vendorOptions : {}),
       },

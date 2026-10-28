@@ -25,6 +25,16 @@ import ImplUtils from '../util/Utils';
  * @classdesc
  * Crea un objeto geográfico.
  */
+/**
+ * Transparencia de un color de Cesium (propiedad o color), si lo hay.
+ * @param {Cesium.Property|Cesium.Color} property Color.
+ * @returns {Number|undefined} Valor alfa.
+ */
+const alphaOf = (property) => {
+  const color = property && typeof property.getValue === 'function' ? property.getValue() : property;
+  return color ? color.alpha : undefined;
+};
+
 class Feature {
   /**
    * Contructor para generar un objeto geográfico de Cesium.
@@ -513,17 +523,17 @@ class Feature {
       const geometry = ImplUtils.getGeometryEntity(this.cesiumFeature_);
       if (geometry instanceof PointGraphics) {
         if (geometry.color) {
-          opacity = geometry.color.getValue().alpha;
+          opacity = alphaOf(geometry.color);
         } else if (geometry.outlineColor) {
-          opacity = geometry.outlineColor.getValue().alpha;
+          opacity = alphaOf(geometry.outlineColor);
         } else if (this.cesiumFeature_.billboard) {
-          opacity = this.cesiumFeature_.billboard.color.getValue().alpha;
+          opacity = alphaOf(this.cesiumFeature_.billboard.color);
         } else if (this.cesiumFeature_.model) {
-          opacity = this.cesiumFeature_.model.color.getValue().alpha;
+          opacity = alphaOf(this.cesiumFeature_.model.color);
         }
       } else if (geometry instanceof BillboardGraphics || geometry instanceof ModelGraphics) {
         if (geometry.color) {
-          opacity = geometry.color.getValue().alpha;
+          opacity = alphaOf(geometry.color);
         }
       } else if (geometry instanceof PolylineGraphics || geometry instanceof PolygonGraphics) {
         if (geometry.material) {
@@ -531,22 +541,22 @@ class Feature {
           if (geometry.material instanceof PolylineOutlineMaterialProperty) {
             if (geometry.material.color) {
               // fill
-              opacity = geometry.material.color.getValue().alpha;
+              opacity = alphaOf(geometry.material.color);
             } else if (geometry.material.outlineColor) {
               // stroke
-              opacity = geometry.material.outlineColor.getValue().alpha;
+              opacity = alphaOf(geometry.material.outlineColor);
             }
           } else if (geometry.material instanceof ImageMaterialProperty) {
             if (geometry.material.color) {
               // fill
-              opacity = geometry.material.color.getValue().alpha;
+              opacity = alphaOf(geometry.material.color);
             }
           } else {
-            opacity = geometry.material.color.getValue().alpha;
+            opacity = alphaOf(geometry.material.color);
           }
         } else if (geometry instanceof PolygonGraphics && geometry.outlineColor) {
           // stroke
-          opacity = geometry.outlineColor.getValue().alpha;
+          opacity = alphaOf(geometry.outlineColor);
         }
       }
     }

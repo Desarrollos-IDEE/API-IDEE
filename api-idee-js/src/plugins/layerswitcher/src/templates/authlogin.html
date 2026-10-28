@@ -1,0 +1,18 @@
+<div class="m-layerswitcher-auth-modal" role="dialog" aria-modal="true" aria-labelledby="m-layerswitcher-auth-title">
+    <form class="m-layerswitcher-auth-form" autocomplete="on">
+        <p tabindex="0" id="m-layerswitcher-auth-title" class="m-layerswitcher-auth-title">{{translations.auth_login}}</p>
+        <p class="m-layerswitcher-auth-service" title="{{root}}">{{root}}</p>
+        <label for="m-layerswitcher-auth-user">{{translations.auth_user}}</label>
+        <input tabindex="0" type="text" id="m-layerswitcher-auth-user" name="username" autocomplete="username">
+        <label for="m-layerswitcher-auth-password">{{translations.auth_password}}</label>
+        <input tabindex="0" type="password" id="m-layerswitcher-auth-password" name="password" autocomplete="current-password">
+        <p class="m-layerswitcher-auth-or">{{translations.auth_or}}</p>
+        <label for="m-layerswitcher-auth-token">{{translations.auth_token}}</label>
+        <input tabindex="0" type="password" id="m-layerswitcher-auth-token" name="token" autocomplete="off" spellcheck="false">
+        <p class="m-layerswitcher-auth-token-status" aria-live="polite"></p>
+        <div class="m-layerswitcher-auth-buttons">
+            <button tabindex="0" type="submit" class="m-layerswitcher-auth-save" disabled>{{translations.auth_save}}</button>
+            <button tabindex="0" type="button" class="secondary m-layerswitcher-auth-cancel">{{translations.auth_cancel}}</button>
+        </div>
+    </form>
+</div>

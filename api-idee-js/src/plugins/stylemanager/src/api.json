@@ -45,8 +45,10 @@
     "text": "Plugin para la gestión de la simbología de las capas vectoriales del mapa.",
     "version": "2.0",
     "date": "Diciembre, 2022",
-    "author": "",
-    "org": "CNIG",
+    "author": "IDEE",
+    "org": "IDEE",
+    "homepage": "https://www.idee.es",
+    "funding": "Desarrollo financiado por los nodos participantes en el Grupo Técnico de Trabajo Desarrollos IDEE",
     "tags": "cnig,plugin",
     "icon": "./facade/assets/icons/icons.svg"
   }

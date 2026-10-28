@@ -359,6 +359,38 @@ function getOGCAPIFeatures(layer) {
 }
 
 /**
+ * This method gets the DataIDEE layer parameter. Without token it uses the
+ * string format; with token it returns an object with vendorOptions, so the
+ * token travels only inside the new window script and never in a URL.
+ *
+ * @public
+ * @function
+ */
+function getDataIDEE(layer) {
+  const style = (layer.getStyle()) ? layer.getStyle().serialize() : '';
+  const token = typeof layer.getToken === 'function' ? layer.getToken() : undefined;
+  if (IDEE.utils.isNullOrEmpty(token)) {
+    // El formato de cadena separa las coordenadas del bbox con ';'
+    const bbox = IDEE.utils.isNullOrEmpty(layer.bbox) ? '' : [].concat(layer.bbox).join(';');
+    return `DataIDEE*${layer.legend || layer.name}*${layer.url}*${layer.name}*${layer.limit || ''}*${bbox}*${layer.id || ''}*${layer.offset || ''}*${layer.format || ''}*${style}*${layer.extract || ''}`;
+  }
+  return {
+    type: 'DataIDEE',
+    legend: layer.legend || layer.name,
+    url: layer.url,
+    name: layer.name,
+    limit: layer.limit,
+    bbox: layer.bbox,
+    id: layer.id,
+    offset: layer.offset,
+    format: layer.format,
+    extract: layer.extract,
+    style: style || undefined,
+    vendorOptions: { getFeature: { token } },
+  };
+}
+
+/**
  * This method gets the geojson url parameter
  *
  * @public
@@ -483,6 +515,8 @@ function layerToParam(layer, map) {
     param = getMVT(layer);
   } else if (layer.type === 'OGCAPIFeatures') {
     param = getOGCAPIFeatures(layer);
+  } else if (layer.type === 'DataIDEE') {
+    param = getDataIDEE(layer);
   } else if (layer.type === 'GenericRaster' || layer.type === 'GenericVector') {
     handlerErrorGenericLayer();
     return '';

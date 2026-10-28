@@ -117,10 +117,10 @@
                 <input type="text" name="precharged" id="inputPrecharged" list="prechargedSug">
                 <datalist id="prechargedSug">
                     <option value='Un grupo de servicios y un servicio individual' data-precharged='{"services": [{"type":"WMS","name":"Camino de Santiago","url":"https://www.ign.es/wms-inspire/camino-santiago"}],"groups":[{"name":"Cartografía","services":{"type":"WMTS","name": "Mapas","url":"https://www.ign.es/wmts/mapa-raster?"}}]}'></option>
-                    <option value='Dos servicios con estilos únicos sin serializar' data-precharged='{"services":[{"type":"WMS","name":"Unidades administrativas","url":"https://www.ign.es/wms-inspire/unidades-administrativas?","styles":["ua-comparador"]},{"type":"GeoJSON","name":"Estaciones GNSS","url":"https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json","styles":[{"name":"Rojo","point":{"radius":6,"fill":{"color":"red"},"stroke":{"color":"white","width":1}}}]}]}'></option>
+                    <!-- <option value='Dos servicios con estilos únicos sin serializar' data-precharged='{"services":[{"type":"WMS","name":"Unidades administrativas","url":"https://www.ign.es/wms-inspire/unidades-administrativas?","styles":["ua-comparador"]},{"type":"GeoJSON","name":"Estaciones GNSS","url":"https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json","styles":[{"name":"Rojo","point":{"radius":6,"fill":{"color":"red"},"stroke":{"color":"white","width":1}}}]}]}'></option>
                     <option value='Dos servicios con estilos únicos serializados' data-precharged='{"services":[{"type":"WMS","name":"Unidades administrativas","url":"https://www.ign.es/wms-inspire/unidades-administrativas?","styles":["ua-EscalaGris"]},{"type":"GeoJSON","name":"Estaciones GNSS","url":"https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json","styles":["eyJwYXJhbWV0ZXJzIjpbeyJuYW1lIjoiQXp1bCBzZXJpYWxpemFkbyIsInBvaW50Ijp7InJhZGl1cyI6NiwiZmlsbCI6eyJjb2xvciI6ImJsdWUifSwic3Ryb2tlIjp7ImNvbG9yIjoid2hpdGUiLCJ3aWR0aCI6MX19fV0sImRlc2VyaWFsaXplZE1ldGhvZCI6Iigoc2VyaWFsaXplZFBhcmFtZXRlcnMpID0+IElERUUuc3R5bGUuU2ltcGxlLmRlc2VyaWFsaXplKHNlcmlhbGl6ZWRQYXJhbWV0ZXJzLCAnSURFRS5zdHlsZS5HZW5lcmljJykpIn0="]}]}'></option>
                     <option value='Dos servicios con varios estilos sin serializar' data-precharged='{"services":[{"type":"WMS","name":"Unidades administrativas","url":"https://www.ign.es/wms-inspire/unidades-administrativas?","styles":["UnidadesAdministrativas","ua-comparador","ua-EscalaGris"]},{"type":"GeoJSON","name":"Estaciones GNSS","url":"https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json","styles":[{"name":"Rojo","point":{"radius":6,"fill":{"color":"red"},"stroke":{"color":"white","width":1}}},{"name":"Verde","point":{"radius":8,"fill":{"color":"green"},"stroke":{"color":"white","width":1}}},{"name":"Naranja","point":{"radius":10,"fill":{"color":"orange"},"stroke":{"color":"white","width":1}}}]}]}'></option>
-                    <option value='Dos servicios con varios estilos serializados' data-precharged='{"services":[{"type":"WMS","name":"Unidades administrativas","url":"https://www.ign.es/wms-inspire/unidades-administrativas?","styles":["ccaa-gris","provincias-gris","municipios-gris"]},{"type":"GeoJSON","name":"Estaciones GNSS","url":"https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json","styles":["eyJwYXJhbWV0ZXJzIjpbeyJuYW1lIjoiQXp1bCBzZXJpYWxpemFkbyIsInBvaW50Ijp7InJhZGl1cyI6NiwiZmlsbCI6eyJjb2xvciI6ImJsdWUifSwic3Ryb2tlIjp7ImNvbG9yIjoid2hpdGUiLCJ3aWR0aCI6MX19fV0sImRlc2VyaWFsaXplZE1ldGhvZCI6Iigoc2VyaWFsaXplZFBhcmFtZXRlcnMpID0+IElERUUuc3R5bGUuU2ltcGxlLmRlc2VyaWFsaXplKHNlcmlhbGl6ZWRQYXJhbWV0ZXJzLCAnSURFRS5zdHlsZS5HZW5lcmljJykpIn0=","eyJwYXJhbWV0ZXJzIjpbeyJuYW1lIjoiTW9yYWRvIHNlcmlhbGl6YWRvIiwicG9pbnQiOnsicmFkaXVzIjo4LCJmaWxsIjp7ImNvbG9yIjoicHVycGxlIn0sInN0cm9rZSI6eyJjb2xvciI6IndoaXRlIiwid2lkdGgiOjF9fX1dLCJkZXNlcmlhbGl6ZWRNZXRob2QiOiIoKHNlcmlhbGl6ZWRQYXJhbWV0ZXJzKSA9PiBJREVFLnN0eWxlLlNpbXBsZS5kZXNlcmlhbGl6ZShzZXJpYWxpemVkUGFyYW1ldGVycywgJ0lERUUuc3R5bGUuR2VuZXJpYycpKSJ9","eyJwYXJhbWV0ZXJzIjpbeyJuYW1lIjoiTmVncm8gc2VyaWFsaXphZG8iLCJwb2ludCI6eyJyYWRpdXMiOjQsImZpbGwiOnsiY29sb3IiOiJibGFjayJ9LCJzdHJva2UiOnsiY29sb3IiOiJ3aGl0ZSIsIndpZHRoIjoxfX19XSwiZGVzZXJpYWxpemVkTWV0aG9kIjoiKChzZXJpYWxpemVkUGFyYW1ldGVycykgPT4gSURFRS5zdHlsZS5TaW1wbGUuZGVzZXJpYWxpemUoc2VyaWFsaXplZFBhcmFtZXRlcnMsICdJREVFLnN0eWxlLkdlbmVyaWMnKSkifQ=="]}]}'></option>
+                    <option value='Dos servicios con varios estilos serializados' data-precharged='{"services":[{"type":"WMS","name":"Unidades administrativas","url":"https://www.ign.es/wms-inspire/unidades-administrativas?","styles":["ccaa-gris","provincias-gris","municipios-gris"]},{"type":"GeoJSON","name":"Estaciones GNSS","url":"https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json","styles":["eyJwYXJhbWV0ZXJzIjpbeyJuYW1lIjoiQXp1bCBzZXJpYWxpemFkbyIsInBvaW50Ijp7InJhZGl1cyI6NiwiZmlsbCI6eyJjb2xvciI6ImJsdWUifSwic3Ryb2tlIjp7ImNvbG9yIjoid2hpdGUiLCJ3aWR0aCI6MX19fV0sImRlc2VyaWFsaXplZE1ldGhvZCI6Iigoc2VyaWFsaXplZFBhcmFtZXRlcnMpID0+IElERUUuc3R5bGUuU2ltcGxlLmRlc2VyaWFsaXplKHNlcmlhbGl6ZWRQYXJhbWV0ZXJzLCAnSURFRS5zdHlsZS5HZW5lcmljJykpIn0=","eyJwYXJhbWV0ZXJzIjpbeyJuYW1lIjoiTW9yYWRvIHNlcmlhbGl6YWRvIiwicG9pbnQiOnsicmFkaXVzIjo4LCJmaWxsIjp7ImNvbG9yIjoicHVycGxlIn0sInN0cm9rZSI6eyJjb2xvciI6IndoaXRlIiwid2lkdGgiOjF9fX1dLCJkZXNlcmlhbGl6ZWRNZXRob2QiOiIoKHNlcmlhbGl6ZWRQYXJhbWV0ZXJzKSA9PiBJREVFLnN0eWxlLlNpbXBsZS5kZXNlcmlhbGl6ZShzZXJpYWxpemVkUGFyYW1ldGVycywgJ0lERUUuc3R5bGUuR2VuZXJpYycpKSJ9","eyJwYXJhbWV0ZXJzIjpbeyJuYW1lIjoiTmVncm8gc2VyaWFsaXphZG8iLCJwb2ludCI6eyJyYWRpdXMiOjQsImZpbGwiOnsiY29sb3IiOiJibGFjayJ9LCJzdHJva2UiOnsiY29sb3IiOiJ3aGl0ZSIsIndpZHRoIjoxfX19XSwiZGVzZXJpYWxpemVkTWV0aG9kIjoiKChzZXJpYWxpemVkUGFyYW1ldGVycykgPT4gSURFRS5zdHlsZS5TaW1wbGUuZGVzZXJpYWxpemUoc2VyaWFsaXplZFBhcmFtZXRlcnMsICdJREVFLnN0eWxlLkdlbmVyaWMnKSkifQ=="]}]}'></option> -->
                     <option value='Dos servicios en base64, cada uno con estilo único sin serializar' data-precharged='eyJzZXJ2aWNlcyI6W3sidHlwZSI6IldNUyIsIm5hbWUiOiJVbmlkYWRlcyBhZG1pbmlzdHJhdGl2YXMiLCJ1cmwiOiJodHRwczovL3d3dy5pZ24uZXMvd21zLWluc3BpcmUvdW5pZGFkZXMtYWRtaW5pc3RyYXRpdmFzPyIsInN0eWxlcyI6WyJ1YS1jb21wYXJhZG9yIl19LHsidHlwZSI6Ikdlb0pTT04iLCJuYW1lIjoiRXN0YWNpb25lcyBHTlNTIiwidXJsIjoiaHR0cHM6Ly93d3cuaWduLmVzL3Jlc291cmNlcy9nZW9kZXNpYS9HTlNTL1NQVFJfZ2VvLmpzb24iLCJzdHlsZXMiOlt7Im5hbWUiOiJSb2pvIiwicG9pbnQiOnsicmFkaXVzIjo2LCJmaWxsIjp7ImNvbG9yIjoicmVkIn0sInN0cm9rZSI6eyJjb2xvciI6IndoaXRlIiwid2lkdGgiOjF9fX1dfV19'></option>
                     <option value='Dos servicios en base64, cada uno con varios estilos serializados' data-precharged='eyJzZXJ2aWNlcyI6W3sidHlwZSI6IldNUyIsIm5hbWUiOiJVbmlkYWRlcyBhZG1pbmlzdHJhdGl2YXMiLCJ1cmwiOiJodHRwczovL3d3dy5pZ24uZXMvd21zLWluc3BpcmUvdW5pZGFkZXMtYWRtaW5pc3RyYXRpdmFzPyIsInN0eWxlcyI6WyJjY2FhLWdyaXMiLCJwcm92aW5jaWFzLWdyaXMiLCJtdW5pY2lwaW9zLWdyaXMiXX0seyJ0eXBlIjoiR2VvSlNPTiIsIm5hbWUiOiJFc3RhY2lvbmVzIEdOU1MiLCJ1cmwiOiJodHRwczovL3d3dy5pZ24uZXMvcmVzb3VyY2VzL2dlb2Rlc2lhL0dOU1MvU1BUUl9nZW8uanNvbiIsInN0eWxlcyI6WyJleUp3WVhKaGJXVjBaWEp6SWpwYmV5SnVZVzFsSWpvaVFYcDFiQ0J6WlhKcFlXeHBlbUZrYnlJc0luQnZhVzUwSWpwN0luSmhaR2wxY3lJNk5pd2labWxzYkNJNmV5SmpiMnh2Y2lJNkltSnNkV1VpZlN3aWMzUnliMnRsSWpwN0ltTnZiRzl5SWpvaWQyaHBkR1VpTENKM2FXUjBhQ0k2TVgxOWZWMHNJbVJsYzJWeWFXRnNhWHBsWkUxbGRHaHZaQ0k2SWlnb2MyVnlhV0ZzYVhwbFpGQmhjbUZ0WlhSbGNuTXBJRDArSUVsRVJVVXVjM1I1YkdVdVUybHRjR3hsTG1SbGMyVnlhV0ZzYVhwbEtITmxjbWxoYkdsNlpXUlFZWEpoYldWMFpYSnpMQ0FuU1VSRlJTNXpkSGxzWlM1SFpXNWxjbWxqSnlrcEluMD0iLCJleUp3WVhKaGJXVjBaWEp6SWpwYmV5SnVZVzFsSWpvaVRXOXlZV1J2SUhObGNtbGhiR2w2WVdSdklpd2ljRzlwYm5RaU9uc2ljbUZrYVhWeklqbzRMQ0ptYVd4c0lqcDdJbU52Ykc5eUlqb2ljSFZ5Y0d4bEluMHNJbk4wY205clpTSTZleUpqYjJ4dmNpSTZJbmRvYVhSbElpd2lkMmxrZEdnaU9qRjlmWDFkTENKa1pYTmxjbWxoYkdsNlpXUk5aWFJvYjJRaU9pSW9LSE5sY21saGJHbDZaV1JRWVhKaGJXVjBaWEp6S1NBOVBpQkpSRVZGTG5OMGVXeGxMbE5wYlhCc1pTNWtaWE5sY21saGJHbDZaU2h6WlhKcFlXeHBlbVZrVUdGeVlXMWxkR1Z5Y3l3Z0owbEVSVVV1YzNSNWJHVXVSMlZ1WlhKcFl5Y3BLU0o5IiwiZXlKd1lYSmhiV1YwWlhKeklqcGJleUp1WVcxbElqb2lUbVZuY204Z2MyVnlhV0ZzYVhwaFpHOGlMQ0p3YjJsdWRDSTZleUp5WVdScGRYTWlPalFzSW1acGJHd2lPbnNpWTI5c2IzSWlPaUppYkdGamF5SjlMQ0p6ZEhKdmEyVWlPbnNpWTI5c2IzSWlPaUozYUdsMFpTSXNJbmRwWkhSb0lqb3hmWDE5WFN3aVpHVnpaWEpwWVd4cGVtVmtUV1YwYUc5a0lqb2lLQ2h6WlhKcFlXeHBlbVZrVUdGeVlXMWxkR1Z5Y3lrZ1BUNGdTVVJGUlM1emRIbHNaUzVUYVcxd2JHVXVaR1Z6WlhKcFlXeHBlbVVvYzJWeWFXRnNhWHBsWkZCaGNtRnRaWFJsY25Nc0lDZEpSRVZGTG5OMGVXeGxMa2RsYm1WeWFXTW5LU2tpZlE9PSJdfV19'></option>
                     <option value='Servicio MVT con estilo único sin serializar' data-precharged='{"services":[{"type":"MVT","name":"Unidades administrativas (MVT)","url":"https://vt-unidades-administrativas.ign.es/1.0.0/uadministrativa/{z}/{x}/{y}.pbf","styles":[{"name":"Contorno rojo","polygon":{"fill":{"color":"red","opacity":0.1},"stroke":{"color":"red","width":2}}}]}]}'></option>
@@ -180,6 +180,9 @@
         </div>
         <div class="m-test-buttons">
             <button name="eliminar" class="m-test-button" id="removeButton">Eliminar Plugin</button>
+            <select name="sampleLayer" id="selectSampleLayer" title="Capas de ejemplo para probar el plugin en 2D y 3D">
+                <option value="" selected="selected">Añadir capa de ejemplo…</option>
+            </select>
         </div>
     </div>
 
@@ -204,23 +207,23 @@
         const urlParams = new URLSearchParams(window.location.search);
         IDEE.language.setLang(urlParams.get('language') || 'es');
 
-        const map = IDEE.map({
+        let map = IDEE.map({
             container: 'mapjs',
             zoom: 5,
             maxZoom: 20,
             minZoom: 2,
             center: [-467062.8225, 4783459.6216],
-            controls: ['attributions']
+            controls: ['attributions', 'implementationswitcher']
         });
         window.map = map;
 
-        const capaGeoJSON = new IDEE.layer.GeoJSON({
-            name: 'Capa GeoJSON',
-            url: 'https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json',
-            extract: false,
-        });
+        // const capaGeoJSON = new IDEE.layer.GeoJSON({
+        //     name: 'Capa GeoJSON',
+        //     url: 'https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json',
+        //     extract: false,
+        // });
 
-        map.addLayers(capaGeoJSON);
+        // map.addLayers(capaGeoJSON);
 
         const capaWMS = new IDEE.layer.WMS({
             url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
@@ -233,6 +236,118 @@
         const stylemanager = new IDEE.plugin.StyleManager();
         map.addPlugin(stylemanager);
 
+        // Capas de ejemplo de cada tipo; "only" limita las que solo admite una implementación
+        const SAMPLE_LAYERS = [
+            {
+                label: 'WMS',
+                create: () => new IDEE.layer.WMS({
+                    url: 'https://www.ign.es/wms-inspire/camino-santiago?',
+                    name: 'PS.ProtectedSite',
+                    legend: 'Camino de Santiago (WMS)',
+                }),
+            },
+            {
+                label: 'WMTS',
+                create: () => new IDEE.layer.WMTS({
+                    url: 'https://www.ign.es/wmts/ign-base?',
+                    name: 'IGNBaseTodo',
+                    legend: 'IGN Base (WMTS)',
+                    matrixSet: 'GoogleMapsCompatible',
+                    format: 'image/jpeg',
+                }),
+            },
+            {
+                label: 'XYZ',
+                create: () => new IDEE.layer.XYZ({
+                    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    name: 'OSM (XYZ)',
+                    legend: 'OpenStreetMap (XYZ)',
+                    transparent: true,
+                }),
+            },
+            { label: 'TMS', create: () => 'QUICK*RelieveSombreado_TMS' },
+            { label: 'MVT', create: () => 'QUICK*ViasVerdes_MVT' },
+            {
+                label: 'KML',
+                create: () => new IDEE.layer.KML({
+                    url: 'https://www.ign.es/web/resources/delegaciones/delegacionesIGN.kml',
+                    name: 'Delegaciones IGN',
+                    extract: false,
+                }),
+            },
+            {
+                label: 'Grupo de capas',
+                create: () => new IDEE.layer.LayerGroup({
+                    name: 'grupo_ejemplo',
+                    legend: 'Grupo de ejemplo',
+                    layers: [
+                        new IDEE.layer.WMS({
+                            url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
+                            name: 'AU.AdministrativeBoundary',
+                            legend: 'Límites (grupo)',
+                        }),
+                        new IDEE.layer.GeoJSON({
+                            name: 'GNSS (grupo)',
+                            url: 'https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json',
+                            extract: false,
+                        }),
+                    ],
+                }),
+            },
+            {
+                label: 'Sección',
+                add: () => map.addSections(new IDEE.layer.Section({
+                    title: 'Sección de ejemplo',
+                    children: [
+                        new IDEE.layer.WMS({
+                            url: 'https://www.ign.es/wms-inspire/hidrografia?',
+                            name: 'HY.PhysicalWaters.Waterbodies',
+                            legend: 'Hidrografía (sección)',
+                        }),
+                    ],
+                })),
+            },
+            { label: 'MapLibre', only: 'ol', create: () => 'QUICK*BTN_Completa_MapLibre' },
+            {
+                label: 'Tiles3D',
+                only: 'cesium',
+                create: () => new IDEE.layer.Tiles3D({
+                    url: 'https://raw.githubusercontent.com/CesiumGS/3d-tiles-samples/main/1.0/TilesetWithDiscreteLOD/tileset.json',
+                    name: 'Tiles3D de ejemplo',
+                    legend: 'Tiles3D de ejemplo',
+                }),
+            },
+            { label: 'Terrain', only: 'cesium', create: () => 'QUICK*MDT_TERRAIN' },
+        ];
+
+        const selectSampleLayer = document.getElementById('selectSampleLayer');
+        const fillSampleLayers = () => {
+            Array.from(selectSampleLayer.options).slice(1).forEach((option) => option.remove());
+            SAMPLE_LAYERS
+                .filter((sample) => !sample.only || sample.only === map.getImplementation())
+                .forEach((sample) => {
+                    const option = document.createElement('option');
+                    option.value = sample.label;
+                    option.textContent = sample.label;
+                    selectSampleLayer.appendChild(option);
+                });
+        };
+        selectSampleLayer.addEventListener('change', () => {
+            const sample = SAMPLE_LAYERS.find((s) => s.label === selectSampleLayer.value);
+            selectSampleLayer.value = '';
+            if (!sample) return;
+            try {
+                if (sample.add) {
+                    sample.add();
+                } else {
+                    map.addLayers(sample.create());
+                }
+            } catch (error) {
+                console.error(`No se pudo añadir la capa ${sample.label}`, error);
+                IDEE.dialog.error(`No se pudo añadir la capa ${sample.label}: ${error.message || error}`);
+            }
+        });
+
         let mp = null;
 
         const createPlugin = (options) => {
@@ -244,6 +359,15 @@
         const removePlugin = () => {
             if (mp) map.removePlugins(mp);
         };
+
+        // Tras cambiar de implementación el mapa y el plugin son otros: se toman los nuevos
+        window.addEventListener('idee:implementationchange', ({ detail }) => {
+            map = detail.map;
+            window.map = map;
+            mp = map.getPlugins().find((plugin) => plugin.name === 'layerswitcher') || null;
+            window.mp = mp;
+            fillSampleLayers();
+        });
 
         const removeButton = document.getElementById('removeButton');
         removeButton.addEventListener('click', () => { removePlugin(); });
@@ -318,6 +442,7 @@
             ctrl.addEventListener('change', updatePlugin);
         });
 
+        fillSampleLayers();
         updatePlugin();
         const mp2 = new IDEE.plugin.ShareMap({
             baseUrl: window.location.href.substring(0, window.location.href.indexOf('api-idee')) + "api-idee/",

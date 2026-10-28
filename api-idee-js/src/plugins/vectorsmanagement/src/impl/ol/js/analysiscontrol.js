@@ -366,7 +366,7 @@ export default class Analysiscontrol extends IDEE.impl.Control {
     const unitsProj = this.facadeMap_.getProjection().units;
     if (codeProj === 'EPSG:3857') {
       length = ol.sphere.getLength(geometry);
-    } else if (unitsProj === 'd') {
+    } else if (['d', 'degrees'].includes(unitsProj)) {
       const coordinates = geometry.getCoordinates();
       for (let i = 0; i < coordinates.length - 1; i += 1) {
         length += ol.sphere.getDistance(ol.proj.transform(coordinates[i], codeProj, 'EPSG:4326'), ol.proj.transform(coordinates[i + 1], codeProj, 'EPSG:4326'));

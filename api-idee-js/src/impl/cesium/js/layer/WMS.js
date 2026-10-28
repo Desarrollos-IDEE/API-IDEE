@@ -10,13 +10,35 @@ import {
 } from 'IDEE/util/Utils';
 import FacadeLayerBase from 'IDEE/layer/Layer';
 import { get as getRemote } from 'IDEE/util/Remote';
-import * as EventType from 'IDEE/event/eventtype';
 import { ImageryLayer, Rectangle, WebMapServiceImageryProvider } from 'cesium';
 import { getValue } from 'IDEE/i18n/language';
 import LayerBase from './Layer';
 import GetCapabilities from '../util/WMSCapabilities';
 import FormatWMS from '../format/WMS';
 import ImplUtils from '../util/Utils';
+
+/**
+ * Ajusta los estilos al número de capas del servicio: si hay más capas que
+ * estilos se repite el último y si hay más estilos que capas se recortan.
+ *
+ * @param {String|Array<String>} styles Estilos.
+ * @param {String|Array<String>} layerNames Nombres de las capas.
+ * @returns {String} Estilos procesados.
+ */
+const processStyles = (styles, layerNames) => {
+  if (isNullOrEmpty(styles) || isNullOrEmpty(layerNames)) {
+    return styles;
+  }
+  const layerNamesArray = isArray(layerNames) ? layerNames : layerNames.split(',');
+  const stylesArray = isArray(styles) ? [...styles] : styles.split(',');
+  if (layerNamesArray.length > stylesArray.length) {
+    const lastStyle = stylesArray[stylesArray.length - 1] || '';
+    while (stylesArray.length < layerNamesArray.length) {
+      stylesArray.push(lastStyle);
+    }
+  }
+  return stylesArray.slice(0, layerNamesArray.length).join(',');
+};
 
 /**
  * @classdesc
@@ -205,7 +227,7 @@ class WMS extends LayerBase {
    */
   addTo(map) {
     this.map = map;
-    this.fire(EventType.ADDED_TO_MAP);
+    this.fireAddedToMap_();
 
     if (this.useCapabilities || this.isWMSfull) {
       // just one WMS layer and useCapabilities
@@ -530,6 +552,47 @@ class WMS extends LayerBase {
     }
 
     return this.getCapabilitiesPromise;
+  }
+
+  /**
+   * Devuelve el estilo de la capa.
+   *
+   * @public
+   * @function
+   * @returns {string | Array} Estilo de la capa.
+   * @api stable
+   */
+  getStyles() {
+    return this.styles;
+  }
+
+  /**
+   * Esta función aplica estilos a la capa: recrea el proveedor con el nuevo
+   * parámetro STYLES manteniendo la capa y sus opciones de representación.
+   *
+   * Leyenda del estilo elegido según las capacidades
+   * @public
+   * @function
+   * @param {String|Array<String>} newStyles Nuevo estilo a aplicar.
+   * @api stable
+   */
+  setStyles(newStyles) {
+    const layerNames = isNullOrEmpty(this.layers) ? this.name : this.layers;
+    this.styles = processStyles(newStyles, layerNames);
+
+    const capabilitiesStyles = this.facadeLayer_?.capabilitiesMetadata?.style;
+    if (isArray(capabilitiesStyles)) {
+      const styleName = isArray(newStyles) ? newStyles[0] : String(newStyles).split(',')[0];
+      const style = capabilitiesStyles.find((s) => s.Name === styleName);
+      const legend = style?.LegendURL?.[0]?.OnlineResource;
+      if (!isNullOrEmpty(legend)) {
+        this.legendUrl_ = legend;
+      }
+    }
+
+    if (!isNullOrEmpty(this.cesiumLayer) && !isNullOrEmpty(this.map)) {
+      this.replaceAutoRefreshProvider(this.createCesiumSource_());
+    }
   }
 
   /**

@@ -15,7 +15,7 @@ test.describe('Vector layers', () => {
 
     await page.waitForFunction(() => window.map.isFinished());
     await page.evaluate((temp) => {
-      const ogc_001 = new IDEE.layer.OGCAPIFeatures({
+      const ogc001 = new IDEE.layer.OGCAPIFeatures({
         url: 'https://api-features.ign.es/collections/',
         name: 'administrativeunit',
         legend: 'AU Unidades administrativas',
@@ -25,15 +25,15 @@ test.describe('Vector layers', () => {
         template: temp,
       });
 
-      window.ogc_001 = ogc_001;
+      window.ogc001 = ogc001;
     }, customTemplate);
 
     await page.evaluate(() => {
       return new Promise((resolve) => {
-        window.ogc_001.on(IDEE.evt.LOAD, () => {
+        window.ogc001.on(IDEE.evt.LOAD, () => {
           resolve();
         });
-        window.map.addLayers(window.ogc_001);
+        window.map.addLayers(window.ogc001);
       });
     });
 
@@ -42,7 +42,7 @@ test.describe('Vector layers', () => {
     // try {
     const text = await popup.innerText({ timeout: 2000 });
     expect(text).toContain(textPopup);
-    const template = await page.evaluate(() => window.ogc_001.template);
+    const template = await page.evaluate(() => window.ogc001.template);
     expect(template).toEqual(customTemplate);
     /* } catch (e) {
       console.warn('⚠️ Popup no apareció. El servicio podría no haber cargado los features.');

@@ -8,6 +8,9 @@ const upload = '#m-layerswitcher-addservices-file-input';
 const fileUrl = 'http://localhost:8081/fixtures/layerswitcher/SAMPLE.GPKG?download=1';
 
 test.beforeEach(async ({ page }) => {
+  await page.route('https://fonts.googleapis.com/**', (route) => route.fulfill({
+    contentType: 'text/css', body: '',
+  }));
   if (process.env.API_IDEE_TEST_LAYERSWITCHER_BUILD) {
     await page.route('**/layerswitcher/dist/layerswitcher.ol.min.*', (route) => {
       const file = path.basename(new URL(route.request().url()).pathname);
@@ -17,13 +20,6 @@ test.beforeEach(async ({ page }) => {
       });
     });
   }
-  await page.route('**/gdal3WebAssembly.*', (route) => {
-    const file = path.basename(new URL(route.request().url()).pathname);
-    return route.fulfill({
-      path: require.resolve(`gdal3.js/dist/package/${file}`),
-      contentType: file.endsWith('.wasm') ? 'application/wasm' : 'application/octet-stream',
-    });
-  });
   await prepareGeoPackagePage(page);
   await page.addScriptTag({ url: '/src/plugins/layerswitcher/dist/layerswitcher.ol.min.js' });
   await page.addStyleTag({ url: '/src/plugins/layerswitcher/dist/layerswitcher.ol.min.css' });
@@ -41,6 +37,7 @@ test.beforeEach(async ({ page }) => {
 ['file', 'url'].forEach((source) => {
   ['vector', 'raster', 'mixed', 'curves'].forEach((kind) => {
     test(`GeoPackage en LayerSwitcher: ${source}, ${kind}`, async ({ page }, testInfo) => {
+      test.slow(kind === 'curves', 'La inicialización de GDAL/WebAssembly puede superar 5 s en CI.');
       const errors = [];
       page.on('pageerror', (error) => errors.push(error.message));
       const buffer = await createGeoPackage(kind);
@@ -57,7 +54,10 @@ test.beforeEach(async ({ page }) => {
         await page.locator(search).fill(fileUrl);
         await page.locator(submit).click();
       }
-      await expect(page.locator(search)).toHaveCount(0);
+      await expect(page.locator(search)).toHaveCount(
+        0,
+        { timeout: kind === 'curves' ? 30000 : 5000 },
+      );
       const count = {
         curves: 4, mixed: 2, vector: 1, raster: 1,
       }[kind];

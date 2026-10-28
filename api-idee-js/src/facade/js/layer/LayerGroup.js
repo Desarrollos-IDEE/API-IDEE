@@ -5,7 +5,6 @@
 import LayerGroupImpl from 'impl/layer/LayerGroup';
 import LayerBase from './Layer';
 import * as parameter from '../parameter/parameter';
-import * as EventType from '../event/eventtype';
 import * as LayerType from './Type';
 import {
   isUndefined, isNullOrEmpty, isObject, isString,
@@ -170,14 +169,11 @@ class LayerGroup extends LayerBase {
     }
 
     arrLayers.forEach((layer) => {
-      const l = this.getImpl().addLayer(layer);
-      this.fire(EventType.ADDED_TO_LAYERGROUP, [l, this]);
+      this.getImpl().addLayer(layer);
     });
 
-    // ! Se actualiza this.layers
     this.layers = this.getLayers();
 
-    // se actualiza zIndex de grupos relacionados desde el grupo raiz
     if (this.getZIndex() !== null) {
       let topRootGroup = this.getImpl().getTopRootGroup();
       let oldZIndex = this.getZIndex();
@@ -185,8 +181,9 @@ class LayerGroup extends LayerBase {
       let base = this.isBase;
       let idLayer = this.idLayer;
       if (topRootGroup) {
-        topRootGroup = map.getLayers()
-          .find((l) => l.getImpl().getLayer().ol_uid === topRootGroup.getLayer().ol_uid);
+        // Se busca la fachada del grupo raíz por su implementación (independiente de la librería)
+        const rootGroupImpl = topRootGroup;
+        topRootGroup = map.getLayers().find((l) => l.getImpl() === rootGroupImpl);
         oldZIndex = topRootGroup.getZIndex();
         base = topRootGroup.isBase;
         idLayer = topRootGroup.idLayer;

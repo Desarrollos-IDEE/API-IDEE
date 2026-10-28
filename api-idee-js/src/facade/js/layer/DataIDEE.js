@@ -10,6 +10,9 @@ import Vector from './Vector';
 import * as LayerType from './Type';
 import * as parameter from '../parameter/parameter';
 import { getValue } from '../i18n/language';
+import * as EventType from '../event/eventtype';
+import * as Dialog from '../dialog';
+import RequestManager from '../../../impl/common/RequestManager';
 
 /**
  * @classdesc
@@ -22,7 +25,7 @@ import { getValue } from '../i18n/language';
  * @property {String} url URL del servicio.
  * @property {String} name Nombre de la capa en el servidor.
  * @property {Number} limit Límite de objetos geográficos a mostrar.
- * @property {Array<Number>} bbox Filtro para mostrar los resultados en un bbox específico.
+ * @property {Array<Number>} bbox Filtro geográfico fijo, ignorado cuando bboxStrategy está activo.
  * @property {String} format Formato solicitado. Si se omite, se usa el formato
  * predeterminado del servicio.
  * @property {Number} offset Determina desde que número comenzará a leer los objetos geográficos.
@@ -93,17 +96,42 @@ class DataIDEE extends Vector {
    * - clampToGround: Define si el objeto geográfico se debe ajustar al suelo. Si las coordenadas
    *   son 3D, por defecto es falso, en caso contrario es verdadero.
    *   Solo disponible para Cesium.
+   * - cache: false (predeterminado), true o { ttlMs, maxEntries, maxBytes }.
+   *   Valores por defecto: 60000 ms, 32 entradas y 16777216 bytes estimados de texto.
+   *   Cada instancia reutiliza únicamente peticiones con URL y contexto exactamente iguales.
+   *   La caducidad comienza al validar la respuesta y no se prolonga con los accesos.
+   * - bboxStrategy: Booleano, false por defecto. Consulta el bbox visible en CRS84
+   *   al terminar el desplazamiento o zoom y al cambiar el tamaño del mapa.
+   *   Sustituye las entidades anteriores tras una carga válida, sin acumular zonas.
+   *   El bbox visible sustituye al parámetro bbox fijo. Solo admite consultas de colección.
+   *   Compatible con caché exacta y throttling; no reutiliza por solapamiento espacial.
+   *   Las fuentes externas vendorOpts.source mantienen su propia gestión.
+   * - throttleMs: Intervalo mínimo entre inicios de peticiones; 0 lo desactiva.
+   *   Durante la espera se conserva solo la última consulta pendiente.
+   *   refresh() y refreshInterval descargan datos nuevos y renuevan la caché.
+   * - editingLimits: límites de zona con pageSize, maxFeatures, maxCoordinates
+   *   y maxBytes; por defecto 250, 1000, 100000 y 10485760.
+   * - transactionParameters / transactionHeaders: valores para escrituras y
+   *   comprobaciones de conflicto, independientes de los parámetros de lectura.
+   * - dataideeDefaultProperties: propiedades no vacías que se añaden a las altas.
    * @param {Object} vendorOpts Opciones para la biblioteca base.
    * - filter: Expresión CQL2 en texto o un objeto CQL2 JSON. Una cadena usa
    *   cql2-text por defecto y un objeto usa cql2-json.
    * - filterLang: Lenguaje CQL2 explícito para filter (por ejemplo, cql2-text
    *   o cql2-json).
    * - cql: Alias heredado para enviar un filtro mediante el parámetro filter.
+   * - getFeature: Parámetros adicionales de la petición de items. El token de
+   *   autenticación (token) es opcional: las capas públicas no lo necesitan.
+   * - tokenLocation: Ubicación del token: 'header' (predeterminado), que envía
+   *   Authorization: Bearer <token>, o 'query', que lo envía como ?token=<token>.
+   *   Si se rechaza (HTTP 401/403), la capa queda vacía y dispara LOAD_UNAUTHORIZED.
    * Ejemplo vendorOptions:
    * <pre><code>
    * {
    *   filter: { op: '=', args: [{ property: 'status' }, 'active'] },
    *   filterLang: 'cql2-json',
+   *   getFeature: { token: tokenAutenticacion },
+   *   // tokenLocation: 'query', // Alternativa de compatibilidad.
    * }
    * </code></pre>
    * @api
@@ -123,6 +151,16 @@ class DataIDEE extends Vector {
     const parameters = parameter.layer(userParams, LayerType.DataIDEE);
 
     const optionsVar = opt;
+    if (optionsVar.bboxStrategy !== undefined && typeof optionsVar.bboxStrategy !== 'boolean') {
+      throw new TypeError('DataIDEE bboxStrategy must be a boolean.');
+    }
+    if (optionsVar.bboxStrategy === true && !isNullOrEmpty(parameters.id)) {
+      throw new TypeError('DataIDEE bboxStrategy requires a collection, without an item id.');
+    }
+    RequestManager.normalizeOptions({
+      cache: optionsVar.cache,
+      throttleMs: optionsVar.throttleMs,
+    });
 
     if (typeof userParams !== 'string') {
       optionsVar.maxExtent = userParams.maxExtent;
@@ -234,6 +272,15 @@ class DataIDEE extends Vector {
      * DataIDEE opt: Opciones.
      */
     this.opt = opt;
+
+    /**
+     * Token del último aviso de acceso no autorizado.
+     * @private
+     * @type {String|null}
+     */
+    this.notifiedToken_ = null;
+
+    impl.on(EventType.LOAD_UNAUTHORIZED, this.notifyUnauthorized_, this);
   }
 
   /**
@@ -296,6 +343,9 @@ class DataIDEE extends Vector {
 
   /**
    * Sobrescribe el rectángulo geográfico envolvente.
+   * Se utiliza en la siguiente carga; asignarlo no inicia una petición.
+   * refresh() solicita datos nuevos, omitiendo la caché almacenada.
+   * Con bboxStrategy activo se utiliza siempre el bbox visible, no este filtro fijo.
    * @function
    * @param {Array} newBbox Nuevo bbox.
    * @api
@@ -422,6 +472,111 @@ class DataIDEE extends Vector {
     defaultStyle = DataIDEE.DEFAULT_OPTS_STYLE,
   ) {
     super.setStyle(styleParam, applyToFeature, defaultStyle);
+  }
+
+  /**
+   * Fuerza una recarga de red y actualiza la caché tras una respuesta válida.
+   * @public
+   * @function
+   * @api
+   */
+  refresh() {
+    this.getImpl().refreshFresh();
+    this.redraw();
+  }
+
+  /**
+   * Invalida las respuestas guardadas de esta instancia sin hacer una petición.
+   * @public
+   * @function
+   * @api
+   */
+  clearCache() {
+    this.getImpl().clearCache();
+  }
+
+  /** Returns advertised DataIDEE transaction capabilities for this collection. */
+  getEditingCapabilities() {
+    return this.getEditingImpl_().getEditingCapabilities();
+  }
+
+  /** Loads a complete, bounded CRS84 work area and pauses DataIDEE refreshes. */
+  beginEditing({ bbox }) {
+    return this.getEditingImpl_().beginEditing({ bbox });
+  }
+
+  /** Returns the active editing session for generic editing controls. */
+  getEditingSession() { return this.getEditingImpl_().getEditingSession(); }
+
+  /** Releases the DataIDEE edit-session refresh lock. */
+  endEditing(refresh = true) {
+    return this.getEditingImpl_().endEditing(refresh);
+  }
+
+  /** Creates a GeoJSON feature in the configured collection. */
+  createFeature(feature) {
+    return this.getEditingImpl_().createFeature(feature);
+  }
+
+  /** Reads one feature for optimistic conflict detection during an explicit save. */
+  getEditingFeature(id) {
+    return this.getEditingImpl_().getEditingFeature(id);
+  }
+
+  /** Updates a GeoJSON feature, preserving the caller's properties. */
+  updateFeature(id, feature, method, etag) {
+    return this.getEditingImpl_().updateFeature(id, feature, method, etag);
+  }
+
+  /** Deletes one feature by its server identifier. */
+  deleteFeature(id, etag) {
+    return this.getEditingImpl_().deleteFeature(id, etag);
+  }
+
+  getEditingImpl_() {
+    const impl = this.getImpl();
+    if (typeof impl.getEditingCapabilities !== 'function') {
+      throw new Error('DataIDEE spatial editing is only available in OpenLayers.');
+    }
+    return impl;
+  }
+
+  /**
+   * Devuelve el token de autenticación de la capa, con independencia de dónde se envíe.
+   *
+   * @function
+   * @returns {String|undefined} Token configurado en getFeature.token.
+   * @api
+   */
+  getToken() {
+    return this.getImpl().getToken();
+  }
+
+  /**
+   * Cambia el token de autenticación y recarga la capa. Las respuestas
+   * guardadas con el token anterior se descartan.
+   *
+   * @function
+   * @param {String} token Nuevo token. Si es vacío, se elimina.
+   * @api
+   */
+  setToken(token) {
+    this.getImpl().setToken(token);
+  }
+
+  /**
+   * Notifica que el servicio ha rechazado la petición de la capa (HTTP 401/403).
+   * El aviso al usuario se muestra una única vez por token.
+   * @private
+   * @function
+   */
+  notifyUnauthorized_() {
+    this.fire(EventType.LOAD_UNAUTHORIZED, [this]);
+    const token = this.getToken() || '';
+    if (this.notifiedToken_ !== token) {
+      this.notifiedToken_ = token;
+      Dialog.error(getValue('dialog').dataidee_unauthorized);
+    }
   }
 
   /**

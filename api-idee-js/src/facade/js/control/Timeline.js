@@ -10,6 +10,7 @@ import TimelineImpl from 'impl/control/Timeline';
 import WMS from 'IDEE/layer/WMS';
 import WMTS from 'IDEE/layer/WMTS';
 import Vector from 'IDEE/layer/Vector';
+import * as LayerType from 'IDEE/layer/Type';
 import FilterFunction from 'IDEE/filter/Function';
 import * as EventType from 'IDEE/event/eventtype';
 import {
@@ -1074,7 +1075,22 @@ class Timeline extends Control {
    * @function
   */
   searchLayerDinamic(layer) {
-    return this.intervals.find(({ id }) => layer.id === id);
+    return this.intervals.find(({ id }) => layer.timelineId === id);
+  }
+
+  /**
+   * Asigna a la capa el identificador del intervalo. En OGCAPIFeatures y
+   * DataIDEE "id" es el filtro por objeto geográfico y no se sobrescribe.
+   *
+   * @private
+   * @function
+  */
+  setTimelineId_(layer, id) {
+    const target = layer;
+    target.timelineId = id;
+    if (![LayerType.OGCAPIFeatures, LayerType.DataIDEE].includes(target.type)) {
+      target.id = id;
+    }
   }
 
   /**
@@ -1099,7 +1115,7 @@ class Timeline extends Control {
           },
         },
       );
-      layerWMS.id = id;
+      this.setTimelineId_(layerWMS, id);
       layerWMS.layerTimeLine = true;
       layerWMS.attributeParam = attributeParam;
       layerWMS.equalsTimeLine = equalsTimeLine;
@@ -1107,14 +1123,14 @@ class Timeline extends Control {
     }
     if ((layerAux instanceof Vector)) {
       layerAux.layerTimeLine = true;
-      layerAux.id = id;
+      this.setTimelineId_(layerAux, id);
       layerAux.attributeParam = attributeParam;
       layerAux.equalsTimeLine = equalsTimeLine;
       return layerAux;
     }
     // WMS
     layerAux.layerTimeLine = true;
-    layerAux.id = id;
+    this.setTimelineId_(layerAux, id);
     layerAux.attributeParam = attributeParam;
     layerAux.equalsTimeLine = equalsTimeLine;
     return layerAux;
@@ -1178,7 +1194,7 @@ class Timeline extends Control {
         this.sliderEventDinamic(new Date(init).getTime(), new Date(end).getTime());
       } else {
         const layerNoGroup = this.allLayersDinamic.noGroupLayer
-          .find(({ name, layers }) => layers[0].id === selected.id);
+          .find(({ layers }) => layers[0].timelineId === selected.id);
 
         this.map.addLayers(layerNoGroup.layers);
         this.changeVectorLayer(

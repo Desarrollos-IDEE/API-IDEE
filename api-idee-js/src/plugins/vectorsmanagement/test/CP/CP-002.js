@@ -19,23 +19,21 @@ const lAguasSupRediam = new IDEE.layer.WFS({
 
 map.addLayers([lAguasSupRediam]);
 
+// probar funcionalidad de creación de capas vectoriales
 const mp = new VectorsManagement({
-  position: 'TL',
+  position: 'left',
   tooltip: 'Gestionar mis vectores',
-  // isDraggable => falta implementar
-  // useProxy => falta implementar
   collapsed: false,
-  collapsible: false,
   // Herramientas
-  // selection: false,
-  // addlayer: false,
+  addlayer: true,
   // creation: false,
   // edition: false,
   // style: false,
   // analysis: false,
   // download: false,
-  // help: false,
-  isDraggable: true,
+  // snapping: false,
+  // turf: false,
+  help: true,
 });
 
 map.addPlugin(mp);
@@ -43,7 +41,7 @@ map.addPlugin(mp);
 const mp1 = new IDEE.plugin.StyleManager({
   collapsed: true,
   collapsible: true,
-  position: 'TL',
+  position: 'left',
 });
 map.addPlugin(mp1);
 

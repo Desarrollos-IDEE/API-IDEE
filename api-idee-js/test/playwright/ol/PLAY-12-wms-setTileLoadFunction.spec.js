@@ -31,6 +31,7 @@ test('Capa WMS - tileLoadFunction', async ({ page }) => {
         tileLoadFunction: (imageTile, src) => {
           // eslint-disable-next-line no-param-reassign
           imageTile.getImage().src = src;
+          // eslint-disable-next-line no-console -- el test escucha este mensaje en la consola
           console.log('tile cargada');
         },
       },

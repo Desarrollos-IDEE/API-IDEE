@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('Test Modal', async ({ page }) => {
-  await page.goto('/src/plugins/modal/test/playwright/ol/modal-ol.html');
+  await page.goto('/src/plugins/modal/test/playwright/ol/modal-ol.html', { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => {
     window.mapjs = IDEE.map({
       container: 'mapjs',

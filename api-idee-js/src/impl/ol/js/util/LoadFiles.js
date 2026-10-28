@@ -26,6 +26,17 @@ import Feature from '../feature/Feature';
  */
 class LoadFiles {
   /**
+   * Proyección en la que se leen los ficheros: la del mapa.
+   * @public
+   * @function
+   * @param {IDEE.Map} map Mapa.
+   * @returns {String} Código de la proyección.
+   */
+  static getFileProjection(map) {
+    return map.getProjection().code;
+  }
+
+  /**
    * Centra el mapa en los features obtenidos
    * @public
    * @function

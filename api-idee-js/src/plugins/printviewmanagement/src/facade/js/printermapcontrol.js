@@ -167,6 +167,13 @@ export default class PrinterMapControl extends IDEE.Control {
      * @type {Boolean}
      */
     this.showDefaultTemplate = showDefaultTemplate || false;
+
+    /**
+     * Indica si se está activando el control (carga de plantillas en curso)
+     * @private
+     * @type {Boolean}
+     */
+    this.isActivating_ = false;
   }
 
   /**
@@ -181,49 +188,62 @@ export default class PrinterMapControl extends IDEE.Control {
     this.html_ = html;
     const button = this.html_.querySelector(ID_PRINTERMAP_BUTTON);
 
-    const template = IDEE.template.compileSync(printermapHTML, {
-      jsonp: true,
-      vars: {
-        formats: this.outputFormats_,
-        translations: {
-          tooltip: getValue('tooltip'),
-          title: getValue('title'),
-          description: getValue('description'),
-          layout: getValue('layout'),
-          format: getValue('format'),
-          projection: getValue('projection'),
-          delete: getValue('delete'),
-          download: getValue('download'),
-          map: getValue('map'),
-          mapWithTemplate: getValue('mapWithTemplate'),
-          preloadedTemplates: getValue('preloadedTemplates'),
-          customTemplates: getValue('customTemplates'),
-          helpCustomTemplates: getValue('helpCustomTemplates'),
-          nameTitle: getValue('title_map'),
-          maintain_view: getValue('maintain_view'),
-          customizeTemplate: getValue('customizeTemplate'),
-          uploadTemplate: getValue('uploadTemplate'),
-          selectUploadedTemplate: getValue('selectUploadedTemplate'),
+    // Segundo clic: cerrar sin recompilar ni recargar plantillas
+    if (button.classList.contains('activated')) {
+      this.deactive();
+      button.classList.remove('activated');
+      return;
+    }
+
+    // Evita doble activación mientras se cargan las plantillas
+    if (this.isActivating_) {
+      return;
+    }
+    this.isActivating_ = true;
+
+    try {
+      const template = IDEE.template.compileSync(printermapHTML, {
+        jsonp: true,
+        vars: {
+          formats: this.outputFormats_,
+          translations: {
+            tooltip: getValue('tooltip'),
+            title: getValue('title'),
+            description: getValue('description'),
+            layout: getValue('layout'),
+            format: getValue('format'),
+            projection: getValue('projection'),
+            delete: getValue('delete'),
+            download: getValue('download'),
+            map: getValue('map'),
+            mapWithTemplate: getValue('mapWithTemplate'),
+            preloadedTemplates: getValue('preloadedTemplates'),
+            customTemplates: getValue('customTemplates'),
+            helpCustomTemplates: getValue('helpCustomTemplates'),
+            nameTitle: getValue('title_map'),
+            maintain_view: getValue('maintain_view'),
+            customizeTemplate: getValue('customizeTemplate'),
+            uploadTemplate: getValue('uploadTemplate'),
+            selectUploadedTemplate: getValue('selectUploadedTemplate'),
+          },
         },
-      },
-    });
+      });
 
-    this.accessibilityTab(template);
+      this.accessibilityTab(template);
 
-    this.template_ = template;
+      this.template_ = template;
 
-    this.addEvents(template);
+      this.addEvents(template);
 
-    if (this.filterTemplates.length > 0) {
-      await this.loadFilterTemplates();
-    }
+      if (this.filterTemplates.length > 0) {
+        await this.loadFilterTemplates();
+      }
 
-    if (!button.classList.contains('activated')) {
       this.html_.querySelector(ID_PRINTERMAP_CONTROL).appendChild(template);
-    } else {
-      document.querySelector('.m-printermap-container').remove();
+      button.classList.add('activated');
+    } finally {
+      this.isActivating_ = false;
     }
-    button.classList.toggle('activated');
   }
 
   /**
@@ -467,7 +487,7 @@ export default class PrinterMapControl extends IDEE.Control {
     });
 
     if (nameExists) {
-      IDEE.dialog.error(`${getValue('templateSameName')} "${templateName}"`);
+      IDEE.dialog.error(`${getValue('invalidTemplateName')} "${templateName}"`);
       return false;
     }
 
@@ -622,7 +642,7 @@ export default class PrinterMapControl extends IDEE.Control {
     );
 
     if (nameExists) {
-      IDEE.toast.error(`${getValue('templateSameName')} "${templateName}"`, null, 3000);
+      IDEE.toast.error(`${getValue('invalidTemplateName')} "${templateName}"`, null, 3000);
     }
 
     const contentExists = this.uploadedTemplates.some(
@@ -630,7 +650,7 @@ export default class PrinterMapControl extends IDEE.Control {
     );
 
     if (contentExists) {
-      IDEE.toast.error(getValue('templateSameContent'), null, 3000);
+      IDEE.toast.error(getValue('invalidTemplateContent'), null, 3000);
     }
     return !nameExists && !contentExists;
   }
@@ -723,7 +743,10 @@ export default class PrinterMapControl extends IDEE.Control {
       const scripts = this.extractScripts(doc);
       templateData = {
         name: 'default',
-        content: defaultTemplate.replaceAll('${api-idee.static_resources.url}', IDEE.config.STATIC_RESOURCES_URL),
+        content: defaultTemplate
+          .replaceAll('${api-idee.static_resources.url}', IDEE.config.STATIC_RESOURCES_URL)
+          .replaceAll('Introduzca título...', getValue('enterTitle'))
+          .replaceAll('Introduzca descripción...', getValue('enterDescription')),
         types,
         styles,
         scripts,
