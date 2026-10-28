@@ -2,35 +2,26 @@ import { getValue } from '../i18n/language';
 import {
   Display, ErrorKey, GeoJSONType, Mode, Output, ResultKey,
 } from './turftypes';
+import { fill as replaceVars } from './ui/messages';
 
 /** @typedef {import('./turftypes').TurfOperation} TurfOperation */
 
 /**
- * Reemplaza las variables en un texto por sus valores.
- *
- * @param {String} text Texto con variables.
- * @param {Object} vars Valores de las variables.
- * @returns {String} Texto con las variables reemplazadas.
- */
-const replaceVars = (text, vars) => Object.keys(vars)
-  .reduce((acc, key) => acc.replace(`{${key}}`, vars[key]), text);
-
-/**
  * @classdesc
- * Gestor de las operaciones de Turf.js: obtiene y valida los elementos de
- * entrada, ejecuta la operación y muestra el resultado.
+ * Gestor de las operaciones de colección de Turf.js: obtiene y valida los
+ * elementos de entrada, ejecuta la operación y muestra el resultado.
  */
 export default class TurfManager {
   /**
    * @constructor
-   * @param {IDEE.Map} map Mapa.
    * @param {VectorsManagementControl} managementControl Control principal del plugin.
    * @param {Object} impl Implementación del control Turf.
+   * @param {ResultLayerWriter} writer Creación de las capas de resultado.
    */
-  constructor(map, managementControl, impl) {
-    this.map_ = map;
+  constructor(managementControl, impl, writer) {
     this.managementControl_ = managementControl;
     this.impl_ = impl;
+    this.writer_ = writer;
     this.layer_ = null;
   }
 
@@ -102,25 +93,39 @@ export default class TurfManager {
         const fc = this.impl_.toGeoJSON(features);
         const error = TurfManager.validate(op, fc);
         if (error === null) {
-          let result;
-          try {
-            result = op.mode === Mode.EACH
-              ? fc.features.map((feature) => op.run(feature, params))
-              : op.run(fc, params);
-          } catch (e) {
-            IDEE.toast.error(replaceVars(getValue(`turf.exception.${ErrorKey.ERROR}`), { msg: e.message }), null, 6000);
-          }
-          if (op.output === Output.GEOMETRY) {
-            this.showGeometry(op, result);
-          } else {
-            TurfManager.showValue(op, result, params);
-          }
+          this.run_(op, fc, params);
         } else {
           IDEE.dialog.error(error, getValue(`turf.ops.${op.id}.name`));
         }
       }
     } else {
       IDEE.dialog.error(getValue(`turf.exception.${ErrorKey.NOT_LOADED}`));
+    }
+  }
+
+  /**
+   * Ejecuta la operación y muestra su resultado. Si Turf falla, solo se
+   * muestra el error.
+   *
+   * @private
+   * @param {TurfOperation} op Operación del catálogo.
+   * @param {Object} fc FeatureCollection GeoJSON validado.
+   * @param {Object} params Valores del formulario de parámetros.
+   */
+  run_(op, fc, params) {
+    let result;
+    try {
+      result = op.mode === Mode.EACH
+        ? fc.features.map((feature) => op.run(feature, params))
+        : op.run(fc, params);
+    } catch (e) {
+      IDEE.toast.error(replaceVars(getValue(`turf.exception.${ErrorKey.ERROR}`), { msg: e.message }), null, 6000);
+      return;
+    }
+    if (op.output === Output.GEOMETRY) {
+      this.showGeometry(op, result);
+    } else {
+      TurfManager.showValue(op, result, params);
     }
   }
 
@@ -138,49 +143,16 @@ export default class TurfManager {
       .filter((f) => f && f.geometry);
 
     if (geojsonFeatures.length !== 0) {
-      const features = this.impl_.fromGeoJSON({
-        type: GeoJSONType.FEATURE_COLLECTION,
-        features: geojsonFeatures,
-      });
-      const opName = getValue(`turf.ops.${op.id}.name`);
-      const index = this.getNextResultIndex_(op.id);
-      const layer = new IDEE.layer.Vector({
-        name: IDEE.utils.generateRandom(`turf_${op.id}_${index}_`),
-        legend: `${getValue('turf.layerPrefix')} ${opName} (${index})`,
-        extract: false,
-        style: TurfManager.getResultStyle(),
-      }, { displayInLayerSwitcher: true });
-      this.map_.addLayers(layer);
-      layer.addFeatures(features);
-
+      const layer = this.writer_.write(op.id, geojsonFeatures.map(({ geometry, properties }) => ({
+        geometry, properties: properties || {},
+      })));
       IDEE.toast.success(replaceVars(getValue(`turf.results.${ResultKey.LAYER_CREATED}`), {
-        layer: layer.legend || opName,
-        n: features.length,
+        layer: layer.legend,
+        n: geojsonFeatures.length,
       }), null, 6000);
     } else {
       IDEE.toast.warning(getValue(`turf.exception.${ErrorKey.EMPTY}`), null, 6000);
     }
-  }
-
-  /**
-   * Devuelve el siguiente número de orden para la capa de resultado de una
-   * operación. Solo tiene en cuenta las capas creadas por Turf para esa
-   * operación, que se identifican por su nombre interno
-   * (turf_<operación>_<n>_<aleatorio>).
-   *
-   * @private
-   * @param {String} opId Identificador de la operación.
-   * @returns {Number} Mayor número existente más uno, o 1 si no hay ninguna.
-   */
-  getNextResultIndex_(opId) {
-    const prefix = `turf_${opId}_`;
-    const layers = this.map_.getLayers().concat(this.map_.getImpl().getAllLayerInGroup());
-    const indexes = layers
-      .filter((layer) => typeof layer.name === 'string' && layer.name.startsWith(prefix))
-      .map((layer) => /^(\d+)_/.exec(layer.name.slice(prefix.length)))
-      .filter((match) => match !== null)
-      .map((match) => parseInt(match[1], 10));
-    return indexes.length > 0 ? Math.max(...indexes) + 1 : 1;
   }
 
   /**
@@ -216,27 +188,5 @@ export default class TurfManager {
    */
   static isAvailable() {
     return typeof turf !== 'undefined';
-  }
-
-  /**
-   * Estilo de las capas de resultado, válido para cualquier tipo de geometría.
-   *
-   * @returns {IDEE.style.Generic}
-   */
-  static getResultStyle() {
-    return new IDEE.style.Generic({
-      point: {
-        radius: 6,
-        fill: { color: '#71a7d3', opacity: 0.9 },
-        stroke: { color: '#ffffff', width: 1.5 },
-      },
-      line: {
-        stroke: { color: '#71a7d3', width: 3 },
-      },
-      polygon: {
-        fill: { color: '#71a7d3', opacity: 0.5 },
-        stroke: { color: '#71a7d3', width: 2 },
-      },
-    });
   }
 }

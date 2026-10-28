@@ -223,19 +223,115 @@
     "info_remove_vertex": "Per eliminar el vèrtex, utilitza 'alt + clic' sobre el vèrtex a eliminar",
     "turf": {
         "title": "Geoprocessos (Turf.js)",
-        "hint": "Les operacions s'apliquen als elements seleccionats o, si no hi ha selecció, a tots els elements de la capa.",
+        "hint": "Les quatre primeres categories treballen amb diverses capes: obren un formulari per triar la capa i les entitats de cada entrada. La resta s'aplica als elements seleccionats o, si no hi ha selecció, a tots els de la capa activa.",
         "hintParams": "Les que mostren aquesta icona demanen paràmetres abans d'executar-se:",
         "paramsTitle": "Cal configurar paràmetres.",
         "run": "Executar",
         "layerPrefix": "Turf:",
         "categories": {
+            "proximity": "Àrea d'influència",
+            "extraction": "Selecció i extracció espacial",
+            "overlay": "Superposició de capes",
+            "join": "Atributs espacials",
             "measurement": "Mesurament",
             "center": "Centres",
             "transformation": "Transformació",
-            "overlay": "Superposició",
+            "combine": "Combinar polígons (una capa)",
             "relation": "Relació espacial"
         },
+        "categoriesDesc": {
+            "proximity": "Crea zones a una distància de les entitats d'una capa.",
+            "extraction": "Copia, sense retallar-les, les entitats d'una capa que compleixen una relació espacial amb una altra.",
+            "overlay": "Calcula geometries noves segons com se superposen dues capes, amb els camps de totes dues.",
+            "join": "Afegeix a cada entitat els camps de les entitats d'una altra capa amb què es relaciona, sense canviar-ne la geometria.",
+            "measurement": "Sobre els elements seleccionats o, si no hi ha selecció, sobre tota la capa activa.",
+            "center": "Sobre els elements seleccionats o, si no hi ha selecció, sobre tota la capa activa.",
+            "transformation": "Sobre els elements seleccionats o, si no hi ha selecció, sobre tota la capa activa.",
+            "combine": "Combina en una sola geometria els polígons seleccionats (o tots) de la capa activa. No és una superposició de capes.",
+            "relation": "Comprova la relació entre els dos elements seleccionats de la capa activa."
+        },
         "ops": {
+            "buffer": {
+                "name": "Àrea d'influència (buffer)",
+                "desc": "Crea un polígon a la distància indicada al voltant de cada entitat i en conserva els camps, o un de sol amb totes les àrees dissoltes.",
+                "aggregatesNote": "En dissoldre, totes les àrees s'uneixen en una sola entitat: no es conserven els camps d'origen i s'afegeix num_entidades amb el nombre d'entitats que la formen.",
+                "roles": {
+                    "input": {
+                        "label": "Capa d'entrada",
+                        "help": "Capa sobre la qual es genera l'àrea d'influència."
+                    }
+                }
+            },
+            "extractByLocation": {
+                "name": "Extreure per localització",
+                "desc": "Copia en una capa nova, completes i sense retallar, les entitats de la capa d'entrada que compleixen la relació espacial amb la capa de condició.",
+                "roles": {
+                    "input": {
+                        "label": "Capa de la qual s'extreuen entitats",
+                        "help": "Les seves entitats es copien amb la geometria original."
+                    },
+                    "condition": {
+                        "label": "Capa que defineix la condició",
+                        "help": "N'hi ha prou que la relació es compleixi amb una de les seves entitats (amb «Disjunt», amb cap). Pots afegir diverses capes."
+                    }
+                }
+            },
+            "layerIntersection": {
+                "name": "Intersecció de capes (intersection)",
+                "desc": "Crea la part comuna de cada entitat d'entrada amb cada polígon de superposició que la talla, amb els camps de totes dues. Els punts i les línies es retallen sense canviar de tipus.",
+                "roles": {
+                    "input": {
+                        "label": "Capa d'entrada",
+                        "help": "Punts, línies o polígons que es retallen."
+                    },
+                    "overlay": {
+                        "label": "Capa de superposició",
+                        "help": "Polígons amb què es retalla."
+                    }
+                }
+            },
+            "layerUnion": {
+                "name": "Unió de capes (union)",
+                "desc": "Divideix els polígons de les dues capes en les parts on se solapen i on no, com la unió de QGIS. Cada part porta els camps de les entitats que la cobreixen i buits els de l'altra capa. No és una dissolució.",
+                "roles": {
+                    "input": {
+                        "label": "Primera capa",
+                        "help": "Polígons. Els solapaments entre les seves pròpies entitats no es divideixen."
+                    },
+                    "overlay": {
+                        "label": "Segona capa",
+                        "help": "Polígons. Els solapaments entre les seves pròpies entitats no es divideixen."
+                    }
+                }
+            },
+            "layerDifference": {
+                "name": "Diferència de capes (difference)",
+                "desc": "Crea la part de cada entitat d'entrada que queda fora dels polígons de les capes que es resten, amb els seus camps.",
+                "roles": {
+                    "input": {
+                        "label": "Capa d'entrada",
+                        "help": "Punts, línies o polígons dels quals es resta."
+                    },
+                    "overlay": {
+                        "label": "Capa que es resta",
+                        "help": "Polígons. Pots afegir diverses capes."
+                    }
+                }
+            },
+            "spatialJoin": {
+                "name": "Unió espacial d'atributs (spatial join)",
+                "desc": "Copia les entitats de destinació sense canviar-ne la geometria i els afegeix els camps de les entitats de la capa d'unió amb què compleixen la relació espacial.",
+                "roles": {
+                    "target": {
+                        "label": "Capa les geometries de la qual es conserven",
+                        "help": "Cada entitat conserva la seva geometria i els seus camps."
+                    },
+                    "join": {
+                        "label": "Capa que aporta els camps",
+                        "help": "Els seus camps s'afegeixen a les entitats relacionades."
+                    }
+                }
+            },
             "area": {
                 "name": "Àrea",
                 "desc": "Calcula l'àrea total dels polígons."
@@ -272,10 +368,6 @@
                 "name": "Punt a l'element",
                 "desc": "Crea un punt situat sempre sobre cada element."
             },
-            "buffer": {
-                "name": "Àrea d'influència",
-                "desc": "Crea una àrea d'influència (buffer) al voltant dels elements."
-            },
             "simplify": {
                 "name": "Simplificar",
                 "desc": "Simplifica les línies i polígons (algorisme de Douglas-Peucker)."
@@ -305,16 +397,16 @@
                 "desc": "Desplaça cada element una distància en una direcció."
             },
             "union": {
-                "name": "Unió",
-                "desc": "Uneix els polígons en una sola geometria."
+                "name": "Fusionar polígons (turf.union)",
+                "desc": "Uneix en una sola geometria els polígons seleccionats (o tots) de la capa activa. No conserva atributs."
             },
             "intersect": {
-                "name": "Intersecció",
-                "desc": "Crea la zona comuna a tots els polígons."
+                "name": "Part comuna dels polígons (turf.intersect)",
+                "desc": "Crea la zona comuna a tots els polígons seleccionats (o tots) de la capa activa."
             },
             "difference": {
-                "name": "Diferència",
-                "desc": "Resta al primer polígon seleccionat la resta de polígons."
+                "name": "Restar polígons (turf.difference)",
+                "desc": "Resta al primer polígon seleccionat de la capa activa la resta de polígons seleccionats."
             },
             "booleanPointInPolygon": {
                 "name": "Punt en polígon",
@@ -351,14 +443,23 @@
             "pivotLat": "Latitud del punt de gir",
             "origin": "Punt d'origen",
             "ignoreBoundary": "Ignorar la vora del polígon",
-            "ignoreSelfIntersections": "Ignorar autointerseccions"
+            "ignoreSelfIntersections": "Ignorar autointerseccions",
+            "dissolve": "Dissoldre el resultat",
+            "predicate": "Relació espacial",
+            "matchPolicy": "Si hi ha diverses coincidències",
+            "keepUnmatched": "Conservar les entitats sense coincidència"
         },
         "paramsHelp": {
             "tolerance": "En graus (EPSG:4326). 0,001 equival aproximadament a 100 m.",
             "direction": "Angle des del nord, en el sentit de les agulles del rellotge.",
-            "radius": "Un radi negatiu redueix els polígons.",
+            "radius": "Distància de l'àrea d'influència. Un valor negatiu redueix els polígons.",
             "concavity": "Buit: envolupant convexa. Com més baix (mínim 1), més s'ajusta als elements.",
-            "pivot": "En graus (EPSG:4326). Deixa-les buides per girar cada element sobre el seu centroide."
+            "pivot": "En graus (EPSG:4326). Deixa-les buides per girar cada element sobre el seu centroide.",
+            "dissolve": "Uneix totes les àrees en una sola entitat.",
+            "predicateExtract": "Relació de cada entitat d'entrada amb les de condició. «Dins de» exigeix que sigui a l'interior: no n'hi ha prou de tocar la vora.",
+            "predicateJoin": "«Dins de»: l'entitat de destinació és dins de la d'unió. «Conté»: l'entitat de destinació conté la d'unió.",
+            "matchPolicy": "«Una entitat per coincidència» repeteix l'entitat de destinació per cada entitat relacionada. «Més solapament» tria la de més superfície o longitud comuna; si empaten, la primera de la capa.",
+            "keepUnmatched": "Si es desmarca, les entitats sense cap coincidència no es copien."
         },
         "units": {
             "meters": "Metres",
@@ -420,6 +521,82 @@
             "nw": "Cantonada nord-oest",
             "ne": "Cantonada nord-est"
         },
+        "predicates": {
+            "intersects": "Interseca (intersects)",
+            "disjoint": "Disjunt (disjoint)",
+            "within": "Dins de (within)",
+            "contains": "Conté (contains)"
+        },
+        "matchPolicies": {
+            "oneToMany": "Una entitat per coincidència (un a diversos)",
+            "largestOverlap": "Només la de més solapament (un a un)"
+        },
+        "scopes": {
+            "all": "Totes les entitats de la capa",
+            "selection": "Només les seleccionades",
+            "result": "Resultat d'una operació anterior"
+        },
+        "layerIssues": {
+            "tiled": "capa tesselada: les seves entitats estan retallades per tessel·les",
+            "noFeatures": "sense entitats disponibles (potser encara no s'ha carregat o està oculta)",
+            "types": "tipus de geometria no admesos aquí ({types})"
+        },
+        "fieldIssues": {
+            "technical": "El camp «{field}» és tècnic i no es copia.",
+            "complex": "El camp «{field}» té valors compostos (objectes o llistes) i no es copia."
+        },
+        "skipReasons": {
+            "noGeometry": "S'han omès {n} entitat(s) de «{layer}» sense geometria.",
+            "unsupportedType": "S'han omès {n} entitat(s) de «{layer}» amb un tipus de geometria no admès.",
+            "collapsed": "{n} entitat(s) no han generat àrea d'influència: la distància negativa les fa desaparèixer.",
+            "unmatched": "S'han descartat {n} entitat(s) sense coincidència."
+        },
+        "aggregates": {
+            "count": "{role} · nombre d'entitats"
+        },
+        "form": {
+            "back": "← Tornar a les operacions",
+            "scope": "Entitats que s'utilitzen",
+            "layer": "Capa",
+            "layerOption": "{layer} ({n})",
+            "noLayers": {
+                "all": "No hi ha capes vectorials al mapa",
+                "selection": "Cap capa no té una selecció desada",
+                "result": "No hi ha resultats d'operacions anteriors"
+            },
+            "summary": {
+                "all": "«{layer}», totes les seves entitats: {n} ({types})",
+                "selection": "«{layer}», només les seleccionades: {n} ({types})",
+                "result": "«{layer}» (resultat anterior): {n} ({types})"
+            },
+            "omitted": "S'ometran {n} sense una geometria admesa.",
+            "addLayer": "+ Afegir una altra capa",
+            "removeLayer": "Treure aquesta capa",
+            "params": "Paràmetres",
+            "attributes": "Camps de la capa resultant",
+            "fieldsOf": "{role} ({layers}):",
+            "noFields": "Les seves entitats no tenen camps.",
+            "prefix": "Prefix d'aquests camps a la capa resultant",
+            "schema": "La capa resultant tindrà aquests camps:",
+            "column": "{role} · {field}",
+            "columnRenamed": "{role} · {field} (reanomenat: el nom ja existia)",
+            "noColumns": "La capa resultant no tindrà camps.",
+            "output": "Nom de la capa resultant",
+            "outputPlaceholder": "Per defecte: Turf: <operació> (n)",
+            "willProcess": "Es processarà:"
+        },
+        "selections": {
+            "title": "Seleccions desades per capa",
+            "empty": "Cap. Amb l'eina de selecció, el que seleccionis a cada capa es desa aquí per utilitzar-ho com a «Només les seleccionades».",
+            "count": "{n} entitat(s)",
+            "visible": "visible al mapa",
+            "hidden": "no visible (no és la capa activa)",
+            "missing": "⚠ {n} ja no existeix(en) a la capa",
+            "remove": "Treure",
+            "removeLabel": "Treure la selecció desada de «{layer}»",
+            "clear": "Netejar-les totes",
+            "note": "Seleccionar en una altra capa no esborra aquestes seleccions, i buidar la selecció al mapa tampoc: treu-les aquí."
+        },
         "results": {
             "yes": "Sí",
             "no": "No",
@@ -427,7 +604,9 @@
             "minY": "Latitud mínima",
             "maxX": "Longitud màxima",
             "maxY": "Latitud màxima",
-            "layerCreated": "S'ha creat la capa «{layer}» amb {n} geometria(es)."
+            "layerCreated": "S'ha creat la capa «{layer}» amb {n} geometria(es).",
+            "featuresCreated": "S'ha creat la capa «{layer}» amb {n} entitat(s).",
+            "emptyResult": "L'operació no ha produït cap entitat, així que no s'ha creat cap capa."
         },
         "exception": {
             "notLoaded": "Turf.js no està disponible. Cal una versió d'API-IDEE que l'inclogui.",
@@ -439,7 +618,22 @@
             "unsupportedGeometries": "Turf no pot comprovar aquesta relació entre els tipus de geometria seleccionats.",
             "empty": "L'operació no ha retornat cap geometria.",
             "error": "Error en executar l'operació: {msg}",
-            "pivot": "Indica la longitud i la latitud del punt de gir, o deixa-les totes dues buides."
+            "pivot": "Indica la longitud i la latitud del punt de gir, o deixa-les totes dues buides.",
+            "noLayer": "Tria una capa a «{role}».",
+            "maxLayers": "«{role}» admet com a màxim {n} capa(es).",
+            "duplicatedLayer": "Hi ha una capa repetida a «{role}».",
+            "layerNotFound": "La capa «{layer}» ja no és al mapa.",
+            "layerIncompatible": "La capa «{layer}» no es pot utilitzar a «{role}»: {reason}.",
+            "notResult": "La capa «{layer}» no és el resultat d'una operació anterior.",
+            "noSelection": "La capa «{layer}» no té cap selecció desada.",
+            "staleSelection": "La selecció desada de «{layer}» inclou {n} entitat(s) que ja no existeixen a la capa. Treu-la o torna a seleccionar.",
+            "noFeatures": "«{role}» no té cap entitat amb una geometria admesa.",
+            "param": "El valor de «{param}» no és vàlid.",
+            "optionUnavailable": "L'opció triada a «{param}» no es pot aplicar als tipus de geometria de les capes triades.",
+            "unknownField": "El camp «{field}» no existeix a «{role}».",
+            "radiusZero": "La distància no pot ser 0.",
+            "negativeRadius": "Una distància negativa només s'admet si totes les entitats són polígons.",
+            "geometry": "No s'ha pogut calcular la geometria de l'entitat {feature} de «{layer}»: {msg}"
         }
     }
 }

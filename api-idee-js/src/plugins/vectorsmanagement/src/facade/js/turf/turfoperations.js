@@ -10,6 +10,7 @@ import {
   LengthUnit,
   Mode,
   OperationId,
+  OperationKind,
   OptionsKey,
   Output,
   ParamName,
@@ -18,42 +19,15 @@ import {
   ScaleOrigin,
   Step,
 } from './turftypes';
+import { contains, validateContains } from './geometry/predicates';
+import buffer from './operations/buffer';
+import extractByLocation from './operations/extractbylocation';
+import { layerDifference, layerIntersection, layerUnion } from './operations/overlay';
+import spatialJoin from './operations/spatialjoin';
 
 /** @typedef {import('./turftypes').TurfOperation} TurfOperation */
+/** @typedef {import('./turftypes').LayerOperation} LayerOperation */
 /** @typedef {import('./turftypes').TurfParam} TurfParam */
-
-/**
- * Combinaciones contenedor
- * @const
- * @type {Object<GeometryType, Array<GeometryType>>}
- */
-const CONTAINS_SUPPORTED = Object.freeze({
-  [GeometryType.POINT]: [GeometryType.POINT],
-  [GeometryType.MULTI_POINT]: [
-    GeometryType.POINT,
-    GeometryType.MULTI_POINT,
-  ],
-  [GeometryType.LINE_STRING]: [
-    GeometryType.POINT,
-    GeometryType.LINE_STRING,
-    GeometryType.MULTI_POINT,
-  ],
-  [GeometryType.POLYGON]: [
-    GeometryType.POINT,
-    GeometryType.LINE_STRING,
-    GeometryType.POLYGON,
-    GeometryType.MULTI_POINT,
-    GeometryType.MULTI_POLYGON,
-  ],
-  [GeometryType.MULTI_POLYGON]: [
-    GeometryType.POINT,
-    GeometryType.MULTI_POINT,
-    GeometryType.LINE_STRING,
-    GeometryType.MULTI_LINE_STRING,
-    GeometryType.POLYGON,
-    GeometryType.MULTI_POLYGON,
-  ],
-});
 
 /**
  * Categorías del panel, en el orden en que se muestran.
@@ -193,54 +167,6 @@ const isPoint = (feature) => feature.geometry.type === GeometryType.POINT;
 const isPolygon = (feature) => GeometryGroup.POLYGONS.includes(feature.geometry.type);
 
 /**
- * Devuelve la dimensión de la geometría del elemento.
- *
- * @param {Object} feature Feature GeoJSON.
- * @returns {Number} 0 punto, 1 línea, 2 polígono.
- */
-const getDimension = (feature) => {
-  const { type } = feature.geometry;
-  if (GeometryGroup.POINTS.includes(type)) return 0;
-  if (GeometryGroup.LINES.includes(type)) return 1;
-  return 2;
-};
-
-/**
- * Indica si el contenido no puede estar contenido en el contenedor por tener
- * mayor dimensión (evita errores internos de Turf).
- *
- * @param {Object} container Feature GeoJSON contenedor.
- * @param {Object} contained Feature GeoJSON contenido.
- * @returns {Boolean}
- */
-const isTrivialNotContained = (container, contained) => (
-  getDimension(contained) > getDimension(container)
-);
-
-/**
- * Comprueba si el contenedor contiene al contenido. Devuelve false sin
- * consultar a Turf cuando el contenido tiene mayor dimensión.
- *
- * @param {Object} container Feature GeoJSON contenedor.
- * @param {Object} contained Feature GeoJSON contenido.
- * @returns {Boolean}
- */
-const contains = (container, contained) => (isTrivialNotContained(container, contained)
-  ? false : turf.booleanContains(container, contained));
-
-/**
- * Valida que Turf admite la combinación de geometrías de contains / within.
- *
- * @param {Object} container Feature GeoJSON contenedor.
- * @param {Object} contained Feature GeoJSON contenido.
- * @returns {ErrorKey|null} Clave del error o null si es válida.
- */
-const validateContains = (container, contained) => (
-  isTrivialNotContained(container, contained)
-  || (CONTAINS_SUPPORTED[container.geometry.type] || []).includes(contained.geometry.type)
-    ? null : ErrorKey.UNSUPPORTED_GEOMETRIES);
-
-/**
  * Valida que la entrada contiene un punto y un polígono.
  *
  * @param {Object} fc FeatureCollection GeoJSON.
@@ -250,7 +176,8 @@ const validatePointPolygon = (fc) => (fc.features.some(isPoint) && fc.features.s
   ? null : ErrorKey.POINT_POLYGON);
 
 /**
- * Catálogo de operaciones de Turf.js disponibles en el control Turf.
+ * Catálogo de las operaciones de colección: se ejecutan sobre los elementos
+ * seleccionados o, si no hay selección, sobre todos los de la capa activa.
  *
  * La forma de cada entrada se describe en el typedef TurfOperation
  * (turftypes.js) y todos sus valores de configuración se toman de los
@@ -287,7 +214,7 @@ const validatePointPolygon = (fc) => (fc.features.some(isPoint) && fc.features.s
  * @const
  * @type {Array<TurfOperation>}
  */
-export const OPERATIONS = [
+const COLLECTION_OPERATIONS = [
   // Medición
   {
     id: OperationId.AREA,
@@ -391,31 +318,6 @@ export const OPERATIONS = [
   },
 
   // Transformación
-  {
-    id: OperationId.BUFFER,
-    category: Category.TRANSFORMATION,
-    input: { min: 1, types: GeometryGroup.ANY },
-    params: [
-      {
-        name: ParamName.RADIUS,
-        type: ParamType.NUMBER,
-        step: Step.ANY,
-        default: 100,
-        help: HelpKey.RADIUS,
-      },
-      unitsParam(),
-      {
-        name: ParamName.STEPS,
-        type: ParamType.NUMBER,
-        min: 1,
-        step: 1,
-        default: 8,
-      },
-    ],
-    mode: Mode.ALL,
-    output: Output.GEOMETRY,
-    run: (fc, p) => turf.buffer(fc, p.radius, { units: p.units, steps: p.steps }),
-  },
   {
     id: OperationId.SIMPLIFY,
     category: Category.TRANSFORMATION,
@@ -581,10 +483,10 @@ export const OPERATIONS = [
     }),
   },
 
-  // Superposición
+  // Combinar polígonos (una capa)
   {
     id: OperationId.UNION,
-    category: Category.OVERLAY,
+    category: Category.COMBINE,
     input: { min: 2, types: GeometryGroup.POLYGONS },
     params: [],
     mode: Mode.ALL,
@@ -593,7 +495,7 @@ export const OPERATIONS = [
   },
   {
     id: OperationId.INTERSECT,
-    category: Category.OVERLAY,
+    category: Category.COMBINE,
     input: { min: 2, types: GeometryGroup.POLYGONS },
     params: [],
     mode: Mode.ALL,
@@ -602,7 +504,7 @@ export const OPERATIONS = [
   },
   {
     id: OperationId.DIFFERENCE,
-    category: Category.OVERLAY,
+    category: Category.COMBINE,
     input: { min: 2, types: GeometryGroup.POLYGONS },
     params: [],
     mode: Mode.ALL,
@@ -688,12 +590,39 @@ export const OPERATIONS = [
     run: (fc) => contains(fc.features[1], fc.features[0]),
     format: formatBoolean,
   },
+].map((op) => Object.freeze({ kind: OperationKind.COLLECTION, ...op }));
+
+/**
+ * Operaciones de capas: cada entrada tiene un papel, una capa y un ámbito
+ * propios, y el resultado conserva la procedencia de sus elementos. Cada
+ * operación se define en su módulo de ./operations (typedef LayerOperation):
+ * para añadir una basta con definirla allí, añadirla a esta lista y añadir
+ * sus traducciones (turf.ops.<id>, incluidos los papeles de sus entradas).
+ *
+ * @const
+ * @type {Array<LayerOperation>}
+ */
+const LAYER_OPERATIONS = [
+  buffer,
+  extractByLocation,
+  layerIntersection,
+  layerUnion,
+  layerDifference,
+  spatialJoin,
 ];
+
+/**
+ * Todas las operaciones del control Turf.
+ *
+ * @const
+ * @type {Array<TurfOperation|LayerOperation>}
+ */
+export const OPERATIONS = [...LAYER_OPERATIONS, ...COLLECTION_OPERATIONS];
 
 /**
  * Devuelve la operación del catálogo con el identificador indicado.
  *
  * @param {OperationId} id Identificador de la operación.
- * @returns {TurfOperation|undefined} Operación o undefined si no existe.
+ * @returns {TurfOperation|LayerOperation|undefined} Operación o undefined si no existe.
  */
 export const getOperation = (id) => OPERATIONS.find((op) => op.id === id);

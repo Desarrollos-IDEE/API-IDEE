@@ -223,19 +223,115 @@
   "info_remove_vertex": "To delete the vertex, use ‘alt + click’ on the vertex to be deleted",
   "turf": {
     "title": "Geoprocessing (Turf.js)",
-    "hint": "Operations apply to the selected features or, if nothing is selected, to every feature in the layer.",
+    "hint": "The first four categories work with several layers: they open a form to choose the layer and the features of each input. The rest apply to the selected features or, if nothing is selected, to every feature of the active layer.",
     "hintParams": "Those showing this icon ask for parameters before running:",
     "paramsTitle": "Requires setting parameters.",
     "run": "Run",
     "layerPrefix": "Turf:",
     "categories": {
+      "proximity": "Proximity",
+      "extraction": "Spatial selection and extraction",
+      "overlay": "Layer overlay",
+      "join": "Spatial attributes",
       "measurement": "Measurement",
       "center": "Centers",
       "transformation": "Transformation",
-      "overlay": "Overlay",
+      "combine": "Combine polygons (one layer)",
       "relation": "Spatial relation"
     },
+    "categoriesDesc": {
+      "proximity": "Creates areas within a distance of the features of a layer.",
+      "extraction": "Copies, without clipping them, the features of a layer that meet a spatial relation with another layer.",
+      "overlay": "Computes new geometries from how two layers overlap, with the fields of both.",
+      "join": "Adds to each feature the fields of the related features of another layer, without changing its geometry.",
+      "measurement": "On the selected features or, if nothing is selected, on the whole active layer.",
+      "center": "On the selected features or, if nothing is selected, on the whole active layer.",
+      "transformation": "On the selected features or, if nothing is selected, on the whole active layer.",
+      "combine": "Combines the selected (or all) polygons of the active layer into a single geometry. It is not a layer overlay.",
+      "relation": "Checks the relation between the two selected features of the active layer."
+    },
     "ops": {
+      "buffer": {
+        "name": "Buffer",
+        "desc": "Creates a polygon at the given distance around each feature and keeps its fields, or a single polygon with every area dissolved.",
+        "aggregatesNote": "When dissolving, every area is merged into one feature: the source fields are not kept and num_entidades holds the number of features it is made of.",
+        "roles": {
+          "input": {
+            "label": "Input layer",
+            "help": "Layer whose features get the buffer."
+          }
+        }
+      },
+      "extractByLocation": {
+        "name": "Extract by location",
+        "desc": "Copies to a new layer, whole and unclipped, the features of the input layer that meet the spatial relation with the condition layer.",
+        "roles": {
+          "input": {
+            "label": "Layer to extract features from",
+            "help": "Its features are copied with their original geometry."
+          },
+          "condition": {
+            "label": "Layer that defines the condition",
+            "help": "The relation must hold with at least one of its features (with \"Disjoint\", with none). You can add several layers."
+          }
+        }
+      },
+      "layerIntersection": {
+        "name": "Layer intersection",
+        "desc": "Creates the common part of each input feature with each overlay polygon that crosses it, with the fields of both. Points and lines are clipped and keep their type.",
+        "roles": {
+          "input": {
+            "label": "Input layer",
+            "help": "Points, lines or polygons to clip."
+          },
+          "overlay": {
+            "label": "Overlay layer",
+            "help": "Polygons to clip with."
+          }
+        }
+      },
+      "layerUnion": {
+        "name": "Layer union",
+        "desc": "Splits the polygons of both layers into the parts where they overlap and where they do not, like the QGIS union. Each part carries the fields of the features covering it and empty fields for the other layer. It is not a dissolve.",
+        "roles": {
+          "input": {
+            "label": "First layer",
+            "help": "Polygons. Overlaps between its own features are not split."
+          },
+          "overlay": {
+            "label": "Second layer",
+            "help": "Polygons. Overlaps between its own features are not split."
+          }
+        }
+      },
+      "layerDifference": {
+        "name": "Layer difference",
+        "desc": "Creates the part of each input feature outside the polygons of the subtracted layers, with its fields.",
+        "roles": {
+          "input": {
+            "label": "Input layer",
+            "help": "Points, lines or polygons to subtract from."
+          },
+          "overlay": {
+            "label": "Layer to subtract",
+            "help": "Polygons. You can add several layers."
+          }
+        }
+      },
+      "spatialJoin": {
+        "name": "Join attributes by location (spatial join)",
+        "desc": "Copies the target features without changing their geometry and adds the fields of the join features they meet the spatial relation with.",
+        "roles": {
+          "target": {
+            "label": "Layer whose geometries are kept",
+            "help": "Each feature keeps its geometry and its fields."
+          },
+          "join": {
+            "label": "Layer that provides the fields",
+            "help": "Its fields are added to the related features."
+          }
+        }
+      },
       "area": {
         "name": "Area",
         "desc": "Calculates the total area of the polygons."
@@ -272,10 +368,6 @@
         "name": "Point on feature",
         "desc": "Creates a point that is always on each feature."
       },
-      "buffer": {
-        "name": "Buffer",
-        "desc": "Creates a buffer around the features."
-      },
       "simplify": {
         "name": "Simplify",
         "desc": "Simplifies lines and polygons (Douglas-Peucker algorithm)."
@@ -305,16 +397,16 @@
         "desc": "Moves each feature a distance in a direction."
       },
       "union": {
-        "name": "Union",
-        "desc": "Merges the polygons into a single geometry."
+        "name": "Merge polygons (turf.union)",
+        "desc": "Merges the selected (or all) polygons of the active layer into a single geometry. Attributes are not kept."
       },
       "intersect": {
-        "name": "Intersection",
-        "desc": "Creates the area shared by every polygon."
+        "name": "Common area of the polygons (turf.intersect)",
+        "desc": "Creates the area shared by all the selected (or all) polygons of the active layer."
       },
       "difference": {
-        "name": "Difference",
-        "desc": "Subtracts the other polygons from the first selected polygon."
+        "name": "Subtract polygons (turf.difference)",
+        "desc": "Subtracts the other selected polygons of the active layer from the first selected one."
       },
       "booleanPointInPolygon": {
         "name": "Point in polygon",
@@ -351,14 +443,23 @@
       "pivotLat": "Pivot latitude",
       "origin": "Origin",
       "ignoreBoundary": "Ignore polygon boundary",
-      "ignoreSelfIntersections": "Ignore self-intersections"
+      "ignoreSelfIntersections": "Ignore self-intersections",
+      "dissolve": "Dissolve the result",
+      "predicate": "Spatial relation",
+      "matchPolicy": "With several matches",
+      "keepUnmatched": "Keep features without matches"
     },
     "paramsHelp": {
       "tolerance": "In degrees (EPSG:4326). 0.001 is roughly 100 m.",
       "direction": "Angle from north, clockwise.",
-      "radius": "A negative radius shrinks polygons.",
+      "radius": "Buffer distance. A negative value shrinks the polygons.",
       "concavity": "Empty: convex hull. The lower it is (minimum 1), the closer it fits the features.",
-      "pivot": "In degrees (EPSG:4326). Leave both empty to rotate each feature around its centroid."
+      "pivot": "In degrees (EPSG:4326). Leave both empty to rotate each feature around its centroid.",
+      "dissolve": "Merges every area into a single feature.",
+      "predicateExtract": "Relation of each input feature with the condition features. \"Within\" requires it to be inside: touching the boundary is not enough.",
+      "predicateJoin": "\"Within\": the target feature is inside the join feature. \"Contains\": the target feature contains the join feature.",
+      "matchPolicy": "\"One feature per match\" repeats the target feature for each related feature. \"Largest overlap\" picks the one with the largest common area or length; on a tie, the first one in the layer.",
+      "keepUnmatched": "If unchecked, features without any match are not copied."
     },
     "units": {
       "meters": "Meters",
@@ -420,6 +521,82 @@
       "nw": "Northwest corner",
       "ne": "Northeast corner"
     },
+    "predicates": {
+      "intersects": "Intersects",
+      "disjoint": "Disjoint",
+      "within": "Within",
+      "contains": "Contains"
+    },
+    "matchPolicies": {
+      "oneToMany": "One feature per match (one-to-many)",
+      "largestOverlap": "Only the largest overlap (one-to-one)"
+    },
+    "scopes": {
+      "all": "Every feature of the layer",
+      "selection": "Only the selected ones",
+      "result": "Result of a previous operation"
+    },
+    "layerIssues": {
+      "tiled": "tiled layer: its features are clipped by tiles",
+      "noFeatures": "no features available (it may not be loaded yet or may be hidden)",
+      "types": "geometry types not accepted here ({types})"
+    },
+    "fieldIssues": {
+      "technical": "The field \"{field}\" is technical and is not copied.",
+      "complex": "The field \"{field}\" has compound values (objects or lists) and is not copied."
+    },
+    "skipReasons": {
+      "noGeometry": "{n} feature(s) of \"{layer}\" without geometry were skipped.",
+      "unsupportedType": "{n} feature(s) of \"{layer}\" with a geometry type not accepted were skipped.",
+      "collapsed": "{n} feature(s) produced no buffer: the negative distance makes them disappear.",
+      "unmatched": "{n} feature(s) without matches were discarded."
+    },
+    "aggregates": {
+      "count": "{role} · number of features"
+    },
+    "form": {
+      "back": "← Back to the operations",
+      "scope": "Features used",
+      "layer": "Layer",
+      "layerOption": "{layer} ({n})",
+      "noLayers": {
+        "all": "There are no vector layers on the map",
+        "selection": "No layer has a saved selection",
+        "result": "There are no results of previous operations"
+      },
+      "summary": {
+        "all": "\"{layer}\", every feature: {n} ({types})",
+        "selection": "\"{layer}\", only the selected ones: {n} ({types})",
+        "result": "\"{layer}\" (previous result): {n} ({types})"
+      },
+      "omitted": "{n} without an accepted geometry will be skipped.",
+      "addLayer": "+ Add another layer",
+      "removeLayer": "Remove this layer",
+      "params": "Parameters",
+      "attributes": "Fields of the resulting layer",
+      "fieldsOf": "{role} ({layers}):",
+      "noFields": "Its features have no fields.",
+      "prefix": "Prefix of these fields in the resulting layer",
+      "schema": "The resulting layer will have these fields:",
+      "column": "{role} · {field}",
+      "columnRenamed": "{role} · {field} (renamed: the name already existed)",
+      "noColumns": "The resulting layer will have no fields.",
+      "output": "Name of the resulting layer",
+      "outputPlaceholder": "Default: Turf: <operation> (n)",
+      "willProcess": "It will process:"
+    },
+    "selections": {
+      "title": "Saved selections by layer",
+      "empty": "None. With the selection tool, what you select in each layer is saved here to be used as \"Only the selected ones\".",
+      "count": "{n} feature(s)",
+      "visible": "shown on the map",
+      "hidden": "not shown (not the active layer)",
+      "missing": "⚠ {n} no longer in the layer",
+      "remove": "Remove",
+      "removeLabel": "Remove the saved selection of \"{layer}\"",
+      "clear": "Clear all",
+      "note": "Selecting in another layer does not delete these selections, and neither does clearing the selection on the map: remove them here."
+    },
     "results": {
       "yes": "Yes",
       "no": "No",
@@ -427,7 +604,9 @@
       "minY": "Minimum latitude",
       "maxX": "Maximum longitude",
       "maxY": "Maximum latitude",
-      "layerCreated": "Layer «{layer}» created with {n} geometry(ies)."
+      "layerCreated": "Layer «{layer}» created with {n} geometry(ies).",
+      "featuresCreated": "The layer \"{layer}\" has been created with {n} feature(s).",
+      "emptyResult": "The operation produced no features, so no layer has been created."
     },
     "exception": {
       "notLoaded": "Turf.js is not available. A version of API-IDEE that includes it is required.",
@@ -439,7 +618,22 @@
       "unsupportedGeometries": "Turf cannot check this relation between the selected geometry types.",
       "empty": "The operation did not return any geometry.",
       "error": "Error running the operation: {msg}",
-      "pivot": "Enter both the longitude and latitude of the pivot, or leave both empty."
+      "pivot": "Enter both the longitude and latitude of the pivot, or leave both empty.",
+      "noLayer": "Choose a layer in \"{role}\".",
+      "maxLayers": "\"{role}\" accepts at most {n} layer(s).",
+      "duplicatedLayer": "A layer is repeated in \"{role}\".",
+      "layerNotFound": "The layer \"{layer}\" is no longer on the map.",
+      "layerIncompatible": "The layer \"{layer}\" cannot be used in \"{role}\": {reason}.",
+      "notResult": "The layer \"{layer}\" is not the result of a previous operation.",
+      "noSelection": "The layer \"{layer}\" has no saved selection.",
+      "staleSelection": "The saved selection of \"{layer}\" includes {n} feature(s) that are no longer in the layer. Remove it or select again.",
+      "noFeatures": "\"{role}\" has no feature with an accepted geometry.",
+      "param": "The value of \"{param}\" is not valid.",
+      "optionUnavailable": "The option chosen in \"{param}\" cannot be applied to the geometry types of the chosen layers.",
+      "unknownField": "The field \"{field}\" does not exist in \"{role}\".",
+      "radiusZero": "The distance cannot be 0.",
+      "negativeRadius": "A negative distance is only accepted when every feature is a polygon.",
+      "geometry": "The geometry of feature {feature} of \"{layer}\" could not be computed: {msg}"
     }
   }
 }

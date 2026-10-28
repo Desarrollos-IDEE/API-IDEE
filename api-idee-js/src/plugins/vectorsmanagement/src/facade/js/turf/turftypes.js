@@ -20,13 +20,17 @@
  * @property {Boolean} [required=true] false para un número opcional (vacío es undefined).
  * @property {Array<String>} [options] Valores del desplegable.
  * @property {OptionsKey} [optionsKey=OptionsKey.UNITS] Traducciones de las opciones.
+ * @property {function(Object<InputRole, RoleMeta>): Array<String>} [availableOptions]
+ * Opciones válidas para los tipos de geometría de las entradas (operaciones de capas).
  * @property {HelpKey} [help] Texto de ayuda.
  */
 
 /**
- * Operación del catálogo.
+ * Operación de colección: se ejecuta sobre los elementos seleccionados o
+ * todos los de la capa activa, con el formulario en un diálogo.
  * @typedef {Object} TurfOperation
  * @property {OperationId} id Identificador.
+ * @property {OperationKind} kind OperationKind.COLLECTION.
  * @property {Category} category Categoría del panel.
  * @property {TurfInput} input Requisitos de los elementos de entrada.
  * @property {Array<TurfParam>} params Parámetros del formulario.
@@ -37,6 +41,83 @@
  * con el FeatureCollection (o el Feature, en Mode.EACH) en EPSG:4326 y
  * los valores del formulario.
  * @property {function(*, Object): String} [format] Texto del resultado.
+ */
+
+/**
+ * Papel de una entrada de una operación de capas.
+ * @typedef {Object} InputRoleSpec
+ * @property {InputRole} role Papel.
+ * @property {Array<GeometryType>} types Tipos de geometría admitidos.
+ * @property {Number} [maxLayers=1] Número máximo de capas. Los papeles que
+ * aportan campos admiten una sola capa.
+ */
+
+/**
+ * Resumen de una entrada calculado sin convertir sus elementos.
+ * @typedef {Object} RoleMeta
+ * @property {Array<GeometryType>} types Tipos de geometría admitidos presentes.
+ * @property {Number} count Número de elementos.
+ */
+
+/**
+ * Agregado de una columna de salida que resume varios elementos de origen.
+ * @typedef {Object} AggregateSpec
+ * @property {InputRole} role Papel cuyos elementos se resumen.
+ * @property {Aggregate} aggregate Agregado.
+ * @property {String} name Nombre de la columna.
+ */
+
+/**
+ * Operación de capas: combina elementos de una o varias capas, cada una
+ * con su papel y su ámbito, y genera una capa con la procedencia de cada
+ * resultado.
+ * @typedef {Object} LayerOperation
+ * @property {OperationId} id Identificador.
+ * @property {OperationKind} kind OperationKind.LAYERS.
+ * @property {Category} category Categoría del panel.
+ * @property {Array<InputRoleSpec>} inputs Papeles de las entradas, en el orden
+ * en que se resuelven los conflictos de nombres de campo.
+ * @property {Array<TurfParam>} params Parámetros.
+ * @property {function(Object): Array<InputRole>} attributeRoles Papeles cuyos campos
+ * se pueden copiar a la salida según los parámetros.
+ * @property {function(Object): Array<AggregateSpec>} [aggregates] Columnas agregadas.
+ * @property {function(Object<InputRole, RoleMeta>, Object): (ErrorKey|null)} [validate]
+ * Validación propia de la operación.
+ * @property {function(Object): OperationOutput} execute Calcula los resultados a
+ * partir de `{ inputs: Object<InputRole, Array<InputFeature>>, params }`.
+ */
+
+/**
+ * Elemento de entrada normalizado. No se modifica.
+ * @typedef {Object} InputFeature
+ * @property {String} key Clave única dentro de la ejecución.
+ * @property {InputRole} role Papel.
+ * @property {{id: String, name: String, legend: String}} layer Capa de procedencia.
+ * @property {String} featureId Identificador del elemento en su capa.
+ * @property {Number} index Posición del elemento en su capa.
+ * @property {InputScope} scope Ámbito por el que se ha incluido.
+ * @property {Object} geometry Geometría GeoJSON en EPSG:4326.
+ * @property {Object} properties Copia de los atributos.
+ * @property {Array<Number>} bbox Extensión de la geometría en EPSG:4326.
+ * @property {function(): Object} getSourceGeometry Copia de la geometría GeoJSON
+ * en la proyección del mapa.
+ */
+
+/**
+ * Resultado de una operación de capas con su procedencia. Indica la geometría
+ * calculada (EPSG:4326) o el papel cuya geometría original se conserva.
+ * @typedef {Object} ProvenanceRecord
+ * @property {Object} [geometry] Geometría GeoJSON calculada en EPSG:4326.
+ * @property {InputRole} [keepGeometryOf] Papel cuya geometría se conserva.
+ * @property {Object<InputRole, Array<InputFeature>>} sources Elementos que
+ * originan el resultado, por papel.
+ */
+
+/**
+ * Salida de una operación de capas.
+ * @typedef {Object} OperationOutput
+ * @property {Array<ProvenanceRecord>} records Resultados.
+ * @property {Array<{reason: SkipReason, count: Number}>} [skipped] Elementos sin resultado.
  */
 
 /**
@@ -66,6 +147,20 @@ export const GeometryGroup = Object.freeze({
 });
 
 /**
+ * Dimensión de cada tipo de geometría: 0 punto, 1 línea, 2 polígono.
+ * @readonly
+ * @enum {Number}
+ */
+export const GeometryDimension = Object.freeze({
+  [GeometryType.POINT]: 0,
+  [GeometryType.MULTI_POINT]: 0,
+  [GeometryType.LINE_STRING]: 1,
+  [GeometryType.MULTI_LINE_STRING]: 1,
+  [GeometryType.POLYGON]: 2,
+  [GeometryType.MULTI_POLYGON]: 2,
+});
+
+/**
  * Tipos de objeto GeoJSON.
  * @readonly
  * @enum {String}
@@ -81,11 +176,25 @@ export const GeoJSONType = Object.freeze({
  * @enum {String}
  */
 export const Category = Object.freeze({
+  PROXIMITY: 'proximity',
+  EXTRACTION: 'extraction',
+  OVERLAY: 'overlay',
+  JOIN: 'join',
   MEASUREMENT: 'measurement',
   CENTER: 'center',
   TRANSFORMATION: 'transformation',
-  OVERLAY: 'overlay',
+  COMBINE: 'combine',
   RELATION: 'relation',
+});
+
+/**
+ * Tipo de operación: decide cómo se configura y se ejecuta.
+ * @readonly
+ * @enum {String}
+ */
+export const OperationKind = Object.freeze({
+  COLLECTION: 'collection',
+  LAYERS: 'layers',
 });
 
 /**
@@ -118,6 +227,99 @@ export const OperationId = Object.freeze({
   BOOLEAN_INTERSECTS: 'booleanIntersects',
   BOOLEAN_CONTAINS: 'booleanContains',
   BOOLEAN_WITHIN: 'booleanWithin',
+  EXTRACT_BY_LOCATION: 'extractByLocation',
+  LAYER_INTERSECTION: 'layerIntersection',
+  LAYER_UNION: 'layerUnion',
+  LAYER_DIFFERENCE: 'layerDifference',
+  SPATIAL_JOIN: 'spatialJoin',
+});
+
+/**
+ * Papel de una entrada de una operación de capas.
+ * @readonly
+ * @enum {String}
+ */
+export const InputRole = Object.freeze({
+  INPUT: 'input',
+  OVERLAY: 'overlay',
+  CONDITION: 'condition',
+  TARGET: 'target',
+  JOIN: 'join',
+});
+
+/**
+ * Ámbito de los elementos de una entrada.
+ * @readonly
+ * @enum {String}
+ */
+export const InputScope = Object.freeze({
+  ALL: 'all',
+  SELECTION: 'selection',
+  RESULT: 'result',
+});
+
+/**
+ * Relaciones espaciales entre un elemento de entrada y otro de referencia.
+ * @readonly
+ * @enum {String}
+ */
+export const SpatialPredicate = Object.freeze({
+  INTERSECTS: 'intersects',
+  DISJOINT: 'disjoint',
+  WITHIN: 'within',
+  CONTAINS: 'contains',
+});
+
+/**
+ * Política para los elementos con varias coincidencias espaciales.
+ * @readonly
+ * @enum {String}
+ */
+export const MatchPolicy = Object.freeze({
+  ONE_TO_MANY: 'oneToMany',
+  LARGEST_OVERLAP: 'largestOverlap',
+});
+
+/**
+ * Agregados de las columnas que resumen varios elementos de origen.
+ * @readonly
+ * @enum {String}
+ */
+export const Aggregate = Object.freeze({
+  COUNT: 'count',
+});
+
+/**
+ * Motivos por los que una capa no se puede usar en una entrada.
+ * @readonly
+ * @enum {String}
+ */
+export const LayerIssue = Object.freeze({
+  TILED: 'tiled',
+  NO_FEATURES: 'noFeatures',
+  TYPES: 'types',
+});
+
+/**
+ * Motivos por los que un campo no se puede copiar a la salida.
+ * @readonly
+ * @enum {String}
+ */
+export const FieldIssue = Object.freeze({
+  TECHNICAL: 'technical',
+  COMPLEX: 'complex',
+});
+
+/**
+ * Motivos por los que un elemento de entrada no genera resultado.
+ * @readonly
+ * @enum {String}
+ */
+export const SkipReason = Object.freeze({
+  NO_GEOMETRY: 'noGeometry',
+  UNSUPPORTED_TYPE: 'unsupportedType',
+  COLLAPSED: 'collapsed',
+  UNMATCHED: 'unmatched',
 });
 
 /**
@@ -195,6 +397,10 @@ export const ParamName = Object.freeze({
   DIRECTION: 'direction',
   IGNORE_BOUNDARY: 'ignoreBoundary',
   IGNORE_SELF_INTERSECTIONS: 'ignoreSelfIntersections',
+  DISSOLVE: 'dissolve',
+  PREDICATE: 'predicate',
+  MATCH_POLICY: 'matchPolicy',
+  KEEP_UNMATCHED: 'keepUnmatched',
 });
 
 /**
@@ -206,6 +412,8 @@ export const OptionsKey = Object.freeze({
   UNITS: 'units',
   AREA_UNITS: 'areaUnits',
   ORIGINS: 'origins',
+  PREDICATES: 'predicates',
+  MATCH_POLICIES: 'matchPolicies',
 });
 
 /**
@@ -219,6 +427,11 @@ export const HelpKey = Object.freeze({
   RADIUS: 'radius',
   CONCAVITY: 'concavity',
   PIVOT: 'pivot',
+  DISSOLVE: 'dissolve',
+  PREDICATE_EXTRACT: 'predicateExtract',
+  PREDICATE_JOIN: 'predicateJoin',
+  MATCH_POLICY: 'matchPolicy',
+  KEEP_UNMATCHED: 'keepUnmatched',
 });
 
 /**
@@ -243,6 +456,13 @@ export const LengthUnit = Object.freeze({
 // Unidades de longitud lineales.
 // eslint-disable-next-line no-unused-vars
 const { RADIANS, DEGREES, ...LINEAR_UNITS } = LengthUnit;
+
+/**
+ * Unidades de longitud de Turf sin las angulares (radianes y grados).
+ * @readonly
+ * @enum {String}
+ */
+export const LinearUnit = Object.freeze(LINEAR_UNITS);
 
 /**
  * Unidades de área de Turf.
@@ -285,6 +505,21 @@ export const ErrorKey = Object.freeze({
   PIVOT: 'pivot',
   EMPTY: 'empty',
   ERROR: 'error',
+  NO_LAYER: 'noLayer',
+  MAX_LAYERS: 'maxLayers',
+  DUPLICATED_LAYER: 'duplicatedLayer',
+  LAYER_NOT_FOUND: 'layerNotFound',
+  LAYER_INCOMPATIBLE: 'layerIncompatible',
+  NOT_RESULT: 'notResult',
+  NO_SELECTION: 'noSelection',
+  STALE_SELECTION: 'staleSelection',
+  NO_FEATURES: 'noFeatures',
+  PARAM: 'param',
+  OPTION_UNAVAILABLE: 'optionUnavailable',
+  UNKNOWN_FIELD: 'unknownField',
+  RADIUS_ZERO: 'radiusZero',
+  NEGATIVE_RADIUS: 'negativeRadius',
+  GEOMETRY: 'geometry',
 });
 
 /**
@@ -300,4 +535,24 @@ export const ResultKey = Object.freeze({
   MAX_X: 'maxX',
   MAX_Y: 'maxY',
   LAYER_CREATED: 'layerCreated',
+  FEATURES_CREATED: 'featuresCreated',
+  EMPTY_RESULT: 'emptyResult',
 });
+
+/**
+ * Error controlado de una operación de capas. Su clave identifica el texto
+ * del bloque turf.exception y sus variables lo completan.
+ */
+export class OperationError extends Error {
+  /**
+   * @constructor
+   * @param {ErrorKey} key Clave del mensaje.
+   * @param {Object} [vars] Variables del mensaje.
+   */
+  constructor(key, vars = {}) {
+    super(key);
+    this.name = 'OperationError';
+    this.key = key;
+    this.vars = vars;
+  }
+}

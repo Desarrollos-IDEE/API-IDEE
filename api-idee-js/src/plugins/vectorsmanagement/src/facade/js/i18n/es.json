@@ -223,19 +223,115 @@
   "info_remove_vertex": "Para eliminar el vértice, utiliza 'alt + clic' sobre el vértice a eliminar",
   "turf": {
     "title": "Geoprocesos (Turf.js)",
-    "hint": "Las operaciones se aplican a los elementos seleccionados o, si no hay selección, a todos los elementos de la capa.",
+    "hint": "Las cuatro primeras categorías trabajan con varias capas: abren un formulario para elegir la capa y las entidades de cada entrada. El resto se aplica a los elementos seleccionados o, si no hay selección, a todos los de la capa activa.",
     "hintParams": "Las que muestran este icono piden parámetros antes de ejecutarse:",
     "paramsTitle": "Requiere configurar parámetros.",
     "run": "Ejecutar",
     "layerPrefix": "Turf:",
     "categories": {
+      "proximity": "Área de influencia",
+      "extraction": "Selección y extracción espacial",
+      "overlay": "Superposición de capas",
+      "join": "Atributos espaciales",
       "measurement": "Medición",
       "center": "Centros",
       "transformation": "Transformación",
-      "overlay": "Superposición",
+      "combine": "Combinar polígonos (una capa)",
       "relation": "Relación espacial"
     },
+    "categoriesDesc": {
+      "proximity": "Crea zonas a una distancia de las entidades de una capa.",
+      "extraction": "Copia, sin recortarlas, las entidades de una capa que cumplen una relación espacial con otra.",
+      "overlay": "Calcula geometrías nuevas según cómo se superponen dos capas, con los campos de ambas.",
+      "join": "Añade a cada entidad los campos de las entidades de otra capa con las que se relaciona, sin cambiar su geometría.",
+      "measurement": "Sobre los elementos seleccionados o, si no hay selección, sobre toda la capa activa.",
+      "center": "Sobre los elementos seleccionados o, si no hay selección, sobre toda la capa activa.",
+      "transformation": "Sobre los elementos seleccionados o, si no hay selección, sobre toda la capa activa.",
+      "combine": "Combina en una sola geometría los polígonos seleccionados (o todos) de la capa activa. No es una superposición de capas.",
+      "relation": "Comprueba la relación entre los dos elementos seleccionados de la capa activa."
+    },
     "ops": {
+      "buffer": {
+        "name": "Área de influencia (buffer)",
+        "desc": "Crea un polígono a la distancia indicada alrededor de cada entidad y conserva sus campos, o uno solo con todas las áreas disueltas.",
+        "aggregatesNote": "Al disolver, todas las áreas se unen en una sola entidad: no se conservan los campos de origen y se añade num_entidades con el número de entidades que la forman.",
+        "roles": {
+          "input": {
+            "label": "Capa de entrada",
+            "help": "Capa sobre la que se genera el área de influencia."
+          }
+        }
+      },
+      "extractByLocation": {
+        "name": "Extraer por localización",
+        "desc": "Copia en una capa nueva, completas y sin recortar, las entidades de la capa de entrada que cumplen la relación espacial con la capa de condición.",
+        "roles": {
+          "input": {
+            "label": "Capa de la que se extraen entidades",
+            "help": "Sus entidades se copian con su geometría original."
+          },
+          "condition": {
+            "label": "Capa que define la condición",
+            "help": "Basta con que la relación se cumpla con una de sus entidades (con «Disjunto», con ninguna). Puedes añadir varias capas."
+          }
+        }
+      },
+      "layerIntersection": {
+        "name": "Intersección de capas (intersection)",
+        "desc": "Crea la parte común de cada entidad de entrada con cada polígono de superposición que la corta, con los campos de ambas. Los puntos y las líneas se recortan sin cambiar de tipo.",
+        "roles": {
+          "input": {
+            "label": "Capa de entrada",
+            "help": "Puntos, líneas o polígonos que se recortan."
+          },
+          "overlay": {
+            "label": "Capa de superposición",
+            "help": "Polígonos con los que se recorta."
+          }
+        }
+      },
+      "layerUnion": {
+        "name": "Unión de capas (union)",
+        "desc": "Divide los polígonos de las dos capas en las partes en que se solapan y en las que no, como la unión de QGIS. Cada parte lleva los campos de las entidades que la cubren y vacíos los de la otra capa. No es una disolución.",
+        "roles": {
+          "input": {
+            "label": "Primera capa",
+            "help": "Polígonos. Los solapes entre sus propias entidades no se dividen."
+          },
+          "overlay": {
+            "label": "Segunda capa",
+            "help": "Polígonos. Los solapes entre sus propias entidades no se dividen."
+          }
+        }
+      },
+      "layerDifference": {
+        "name": "Diferencia de capas (difference)",
+        "desc": "Crea la parte de cada entidad de entrada que queda fuera de los polígonos de las capas que se restan, con sus campos.",
+        "roles": {
+          "input": {
+            "label": "Capa de entrada",
+            "help": "Puntos, líneas o polígonos de los que se resta."
+          },
+          "overlay": {
+            "label": "Capa que se resta",
+            "help": "Polígonos. Puedes añadir varias capas."
+          }
+        }
+      },
+      "spatialJoin": {
+        "name": "Unión espacial de atributos (spatial join)",
+        "desc": "Copia las entidades de destino sin cambiar su geometría y les añade los campos de las entidades de la capa de unión con las que cumplen la relación espacial.",
+        "roles": {
+          "target": {
+            "label": "Capa cuyas geometrías se conservan",
+            "help": "Cada entidad conserva su geometría y sus campos."
+          },
+          "join": {
+            "label": "Capa que aporta los campos",
+            "help": "Sus campos se añaden a las entidades relacionadas."
+          }
+        }
+      },
       "area": {
         "name": "Área",
         "desc": "Calcula el área total de los polígonos."
@@ -272,10 +368,6 @@
         "name": "Punto en el elemento",
         "desc": "Crea un punto situado siempre sobre cada elemento."
       },
-      "buffer": {
-        "name": "Área de influencia",
-        "desc": "Crea un área de influencia (buffer) alrededor de los elementos."
-      },
       "simplify": {
         "name": "Simplificar",
         "desc": "Simplifica las líneas y polígonos (algoritmo de Douglas-Peucker)."
@@ -305,16 +397,16 @@
         "desc": "Desplaza cada elemento una distancia en una dirección."
       },
       "union": {
-        "name": "Unión",
-        "desc": "Une los polígonos en una sola geometría."
+        "name": "Fusionar polígonos (turf.union)",
+        "desc": "Une en una sola geometría los polígonos seleccionados (o todos) de la capa activa. No conserva atributos."
       },
       "intersect": {
-        "name": "Intersección",
-        "desc": "Crea la zona común a todos los polígonos."
+        "name": "Parte común de los polígonos (turf.intersect)",
+        "desc": "Crea la zona común a todos los polígonos seleccionados (o todos) de la capa activa."
       },
       "difference": {
-        "name": "Diferencia",
-        "desc": "Resta al primer polígono seleccionado el resto de polígonos."
+        "name": "Restar polígonos (turf.difference)",
+        "desc": "Resta al primer polígono seleccionado de la capa activa el resto de polígonos seleccionados."
       },
       "booleanPointInPolygon": {
         "name": "Punto en polígono",
@@ -351,14 +443,23 @@
       "pivotLat": "Latitud del punto de giro",
       "origin": "Punto de origen",
       "ignoreBoundary": "Ignorar el borde del polígono",
-      "ignoreSelfIntersections": "Ignorar autointersecciones"
+      "ignoreSelfIntersections": "Ignorar autointersecciones",
+      "dissolve": "Disolver el resultado",
+      "predicate": "Relación espacial",
+      "matchPolicy": "Si hay varias coincidencias",
+      "keepUnmatched": "Conservar las entidades sin coincidencia"
     },
     "paramsHelp": {
       "tolerance": "En grados (EPSG:4326). 0,001 equivale aproximadamente a 100 m.",
       "direction": "Ángulo desde el norte, en el sentido de las agujas del reloj.",
-      "radius": "Un radio negativo reduce los polígonos.",
+      "radius": "Distancia del área de influencia. Un valor negativo reduce los polígonos.",
       "concavity": "Vacío: envolvente convexa. Cuanto más bajo (mínimo 1), más se ajusta a los elementos.",
-      "pivot": "En grados (EPSG:4326). Déjalas vacías para girar cada elemento sobre su centroide."
+      "pivot": "En grados (EPSG:4326). Déjalas vacías para girar cada elemento sobre su centroide.",
+      "dissolve": "Une todas las áreas en una sola entidad.",
+      "predicateExtract": "Relación de cada entidad de entrada con las de condición. «Dentro de» exige que esté en el interior: no basta con tocar el borde.",
+      "predicateJoin": "«Dentro de»: la entidad de destino está dentro de la de unión. «Contiene»: la entidad de destino contiene a la de unión.",
+      "matchPolicy": "«Una entidad por coincidencia» repite la entidad de destino por cada entidad relacionada. «Mayor solape» elige la de más superficie o longitud común; si empatan, la primera de la capa.",
+      "keepUnmatched": "Si se desmarca, las entidades sin ninguna coincidencia no se copian."
     },
     "units": {
       "meters": "Metros",
@@ -420,6 +521,82 @@
       "nw": "Esquina noroeste",
       "ne": "Esquina noreste"
     },
+    "predicates": {
+      "intersects": "Interseca (intersects)",
+      "disjoint": "Disjunto (disjoint)",
+      "within": "Dentro de (within)",
+      "contains": "Contiene (contains)"
+    },
+    "matchPolicies": {
+      "oneToMany": "Una entidad por coincidencia (uno a varios)",
+      "largestOverlap": "Solo la de mayor solape (uno a uno)"
+    },
+    "scopes": {
+      "all": "Todas las entidades de la capa",
+      "selection": "Solo las seleccionadas",
+      "result": "Resultado de una operación anterior"
+    },
+    "layerIssues": {
+      "tiled": "capa teselada: sus entidades están recortadas por teselas",
+      "noFeatures": "sin entidades disponibles (puede que aún no se haya cargado o esté oculta)",
+      "types": "tipos de geometría no admitidos aquí ({types})"
+    },
+    "fieldIssues": {
+      "technical": "El campo «{field}» es técnico y no se copia.",
+      "complex": "El campo «{field}» tiene valores compuestos (objetos o listas) y no se copia."
+    },
+    "skipReasons": {
+      "noGeometry": "Se han omitido {n} entidad(es) de «{layer}» sin geometría.",
+      "unsupportedType": "Se han omitido {n} entidad(es) de «{layer}» con un tipo de geometría no admitido.",
+      "collapsed": "{n} entidad(es) no han generado área de influencia: el radio negativo las hace desaparecer.",
+      "unmatched": "Se han descartado {n} entidad(es) sin coincidencia."
+    },
+    "aggregates": {
+      "count": "{role} · número de entidades"
+    },
+    "form": {
+      "back": "← Volver a las operaciones",
+      "scope": "Entidades que se usan",
+      "layer": "Capa",
+      "layerOption": "{layer} ({n})",
+      "noLayers": {
+        "all": "No hay capas vectoriales en el mapa",
+        "selection": "Ninguna capa tiene una selección guardada",
+        "result": "No hay resultados de operaciones anteriores"
+      },
+      "summary": {
+        "all": "«{layer}», todas sus entidades: {n} ({types})",
+        "selection": "«{layer}», solo las seleccionadas: {n} ({types})",
+        "result": "«{layer}» (resultado anterior): {n} ({types})"
+      },
+      "omitted": "Se omitirán {n} sin una geometría admitida.",
+      "addLayer": "+ Añadir otra capa",
+      "removeLayer": "Quitar esta capa",
+      "params": "Parámetros",
+      "attributes": "Campos de la capa resultante",
+      "fieldsOf": "{role} ({layers}):",
+      "noFields": "Sus entidades no tienen campos.",
+      "prefix": "Prefijo de estos campos en la capa resultante",
+      "schema": "La capa resultante tendrá estos campos:",
+      "column": "{role} · {field}",
+      "columnRenamed": "{role} · {field} (renombrado: el nombre ya existía)",
+      "noColumns": "La capa resultante no tendrá campos.",
+      "output": "Nombre de la capa resultante",
+      "outputPlaceholder": "Por defecto: Turf: <operación> (n)",
+      "willProcess": "Se procesará:"
+    },
+    "selections": {
+      "title": "Selecciones guardadas por capa",
+      "empty": "Ninguna. Con la herramienta de selección, lo que selecciones en cada capa se guarda aquí para usarlo como «Solo las seleccionadas».",
+      "count": "{n} entidad(es)",
+      "visible": "visible en el mapa",
+      "hidden": "no visible (no es la capa activa)",
+      "missing": "⚠ {n} ya no existe(n) en la capa",
+      "remove": "Quitar",
+      "removeLabel": "Quitar la selección guardada de «{layer}»",
+      "clear": "Limpiar todas",
+      "note": "Seleccionar en otra capa no borra estas selecciones, y vaciar la selección en el mapa tampoco: quítalas aquí."
+    },
     "results": {
       "yes": "Sí",
       "no": "No",
@@ -427,7 +604,9 @@
       "minY": "Latitud mínima",
       "maxX": "Longitud máxima",
       "maxY": "Latitud máxima",
-      "layerCreated": "Se ha creado la capa «{layer}» con {n} geometría(s)."
+      "layerCreated": "Se ha creado la capa «{layer}» con {n} geometría(s).",
+      "featuresCreated": "Se ha creado la capa «{layer}» con {n} entidad(es).",
+      "emptyResult": "La operación no ha producido ninguna entidad, así que no se ha creado ninguna capa."
     },
     "exception": {
       "notLoaded": "Turf.js no está disponible. Se necesita una versión de API-IDEE que lo incluya.",
@@ -439,7 +618,22 @@
       "unsupportedGeometries": "Turf no puede comprobar esta relación entre los tipos de geometría seleccionados.",
       "empty": "La operación no ha devuelto ninguna geometría.",
       "error": "Error al ejecutar la operación: {msg}",
-      "pivot": "Indica la longitud y la latitud del punto de giro, o deja ambas vacías."
+      "pivot": "Indica la longitud y la latitud del punto de giro, o deja ambas vacías.",
+      "noLayer": "Elige una capa en «{role}».",
+      "maxLayers": "«{role}» admite como máximo {n} capa(s).",
+      "duplicatedLayer": "Hay una capa repetida en «{role}».",
+      "layerNotFound": "La capa «{layer}» ya no está en el mapa.",
+      "layerIncompatible": "La capa «{layer}» no se puede usar en «{role}»: {reason}.",
+      "notResult": "La capa «{layer}» no es el resultado de una operación anterior.",
+      "noSelection": "La capa «{layer}» no tiene ninguna selección guardada.",
+      "staleSelection": "La selección guardada de «{layer}» incluye {n} entidad(es) que ya no existen en la capa. Quítala o vuelve a seleccionar.",
+      "noFeatures": "«{role}» no tiene ninguna entidad con una geometría admitida.",
+      "param": "El valor de «{param}» no es válido.",
+      "optionUnavailable": "La opción elegida en «{param}» no se puede aplicar a los tipos de geometría de las capas elegidas.",
+      "unknownField": "El campo «{field}» no existe en «{role}».",
+      "radiusZero": "La distancia no puede ser 0.",
+      "negativeRadius": "Una distancia negativa solo se admite si todas las entidades son polígonos.",
+      "geometry": "No se ha podido calcular la geometría de la entidad {feature} de «{layer}»: {msg}"
     }
   }
 }

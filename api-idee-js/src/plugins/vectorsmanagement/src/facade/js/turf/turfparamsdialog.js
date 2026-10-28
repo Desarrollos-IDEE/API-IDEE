@@ -1,10 +1,18 @@
 import template from '../../../templates/turfparams';
+import fieldsTemplate from '../../../templates/turfparamfields';
 import { getValue } from '../i18n/language';
 import { OptionsKey, ParamType, Step } from './turftypes';
 
 /** @typedef {import('./turftypes').TurfOperation} TurfOperation */
 
 const RUN_BUTTON_ID = 'm-vectorsmanagement-turf-run';
+
+/**
+ * Prefijo de los identificadores de los campos del formulario.
+ * @const
+ * @type {String}
+ */
+const FIELD_ID_PREFIX = 'm-vectorsmanagement-turf-param-';
 
 /**
  * @classdesc
@@ -28,30 +36,67 @@ export default class TurfParamsDialog {
   /**
    * Prepara los parámetros de la operación para la plantilla.
    *
-   * @param {TurfOperation} op Operación del catálogo.
+   * @param {TurfOperation|LayerOperation} op Operación del catálogo.
+   * @param {Object} [values] Valores actuales; por defecto, los de cada parámetro.
+   * @param {Object<ParamName, Array<String>>} [available] Opciones que se
+   * muestran en cada desplegable; por defecto, todas.
    * @returns {Array<Object>}
    */
-  static getTemplateParams(op) {
-    return op.params.map((param) => ({
-      name: param.name,
-      label: getValue(`turf.params.${param.name}`),
-      help: param.help ? getValue(`turf.paramsHelp.${param.help}`) : '',
-      isSelect: param.type === ParamType.SELECT,
-      isNumber: param.type === ParamType.NUMBER,
-      isCheckbox: param.type === ParamType.CHECKBOX,
-      default: param.default,
-      step: this.getOptionalValue_(param.step, Step.ANY),
-      required: param.required !== false,
-      hasMin: param.min !== undefined,
-      min: param.min,
-      hasMax: param.max !== undefined,
-      max: param.max,
-      options: (param.options || []).map((value) => ({
-        value,
-        label: getValue(`turf.${this.getOptionalValue_(param.optionsKey, OptionsKey.UNITS)}.${value}`),
-        selected: value === param.default,
-      })),
-    }));
+  static getTemplateParams(op, values = {}, available = {}) {
+    return op.params.map((param) => {
+      const value = this.getOptionalValue_(values[param.name], param.default);
+      return {
+        id: `${FIELD_ID_PREFIX}${param.name}`,
+        name: param.name,
+        label: getValue(`turf.params.${param.name}`),
+        help: param.help ? getValue(`turf.paramsHelp.${param.help}`) : '',
+        isSelect: param.type === ParamType.SELECT,
+        isNumber: param.type === ParamType.NUMBER,
+        isCheckbox: param.type === ParamType.CHECKBOX,
+        default: value,
+        step: this.getOptionalValue_(param.step, Step.ANY),
+        required: param.required !== false,
+        hasMin: param.min !== undefined,
+        min: param.min,
+        hasMax: param.max !== undefined,
+        max: param.max,
+        options: (available[param.name] || param.options || []).map((option) => ({
+          value: option,
+          label: getValue(`turf.${this.getOptionalValue_(param.optionsKey, OptionsKey.UNITS)}.${option}`),
+          selected: option === value,
+        })),
+      };
+    });
+  }
+
+  /**
+   * Genera el HTML de los campos de los parámetros.
+   *
+   * @param {TurfOperation|LayerOperation} op Operación del catálogo.
+   * @param {Number} order Orden de tabulación.
+   * @param {Object} [values] Valores actuales.
+   * @param {Object<ParamName, Array<String>>} [available] Opciones de los desplegables.
+   * @returns {String} HTML.
+   */
+  static renderFields(op, order, values, available) {
+    return IDEE.template.compileSync(fieldsTemplate, {
+      parseToHtml: false,
+      vars: { params: this.getTemplateParams(op, values, available), order },
+    });
+  }
+
+  /**
+   * Lee el valor de un campo con el tipo de su parámetro.
+   *
+   * @param {TurfParam} param Parámetro.
+   * @param {HTMLInputElement|HTMLSelectElement} input Campo.
+   * @returns {*} Valor.
+   */
+  static readValue(param, input) {
+    if (param.type === ParamType.NUMBER) {
+      return input.value === '' ? undefined : parseFloat(input.value);
+    }
+    return param.type === ParamType.CHECKBOX ? input.checked : input.value;
   }
 
   /**
@@ -66,8 +111,7 @@ export default class TurfParamsDialog {
         parseToHtml: false,
         vars: {
           desc: getValue(`turf.ops.${op.id}.desc`),
-          params: TurfParamsDialog.getTemplateParams(op),
-          order: this.order_,
+          fields: TurfParamsDialog.renderFields(op, this.order_),
         },
       });
 
@@ -118,16 +162,10 @@ export default class TurfParamsDialog {
    * @returns {Object} Valores por nombre de parámetro.
    */
   static readValues(op, form) {
-    return op.params.reduce((values, param) => {
-      const input = form.elements.namedItem(param.name);
-      let value = input.value;
-      if (param.type === ParamType.NUMBER) {
-        value = input.value === '' ? undefined : parseFloat(input.value);
-      } else if (param.type === ParamType.CHECKBOX) {
-        value = input.checked;
-      }
-      return { ...values, [param.name]: value };
-    }, {});
+    return op.params.reduce((values, param) => ({
+      ...values,
+      [param.name]: this.readValue(param, form.elements.namedItem(param.name)),
+    }), {});
   }
 
   /**

@@ -1,25 +1,4 @@
 <form id="m-vectorsmanagement-turf-form" class="m-vectorsmanagement-turf-form" novalidate>
     <p class="m-vectorsmanagement-turf-form-desc">{{desc}}</p>
-    {{#each params}}
-    <div class="m-vectorsmanagement-turf-field{{#if isCheckbox}} m-vectorsmanagement-turf-field-check{{/if}}">
-        <label for="m-vectorsmanagement-turf-param-{{name}}">{{label}}</label>
-        {{#if isSelect}}
-        <select tabindex="{{../order}}" id="m-vectorsmanagement-turf-param-{{name}}" name="{{name}}">
-            {{#each options}}
-            <option value="{{value}}"{{#if selected}} selected{{/if}}>{{label}}</option>
-            {{/each}}
-        </select>
-        {{/if}}
-        {{#if isNumber}}
-        <input tabindex="{{../order}}" type="number" id="m-vectorsmanagement-turf-param-{{name}}" name="{{name}}"
-            value="{{default}}" step="{{step}}"{{#if hasMin}} min="{{min}}"{{/if}}{{#if hasMax}} max="{{max}}"{{/if}}{{#if required}} required{{/if}}>
-        {{/if}}
-        {{#if isCheckbox}}
-        <input tabindex="{{../order}}" type="checkbox" id="m-vectorsmanagement-turf-param-{{name}}" name="{{name}}"{{#if default}} checked{{/if}}>
-        {{/if}}
-        {{#if help}}
-        <small class="m-vectorsmanagement-turf-field-help">{{help}}</small>
-        {{/if}}
-    </div>
-    {{/each}}
+    {{{fields}}}
 </form>

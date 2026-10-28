@@ -1,0 +1,22 @@
+{{#each params}}
+<div class="m-vectorsmanagement-turf-field{{#if isCheckbox}} m-vectorsmanagement-turf-field-check{{/if}}">
+    <label for="{{id}}">{{label}}</label>
+    {{#if isSelect}}
+    <select tabindex="{{../order}}" id="{{id}}" name="{{name}}">
+        {{#each options}}
+        <option value="{{value}}"{{#if selected}} selected{{/if}}>{{label}}</option>
+        {{/each}}
+    </select>
+    {{/if}}
+    {{#if isNumber}}
+    <input tabindex="{{../order}}" type="number" id="{{id}}" name="{{name}}"
+        value="{{default}}" step="{{step}}"{{#if hasMin}} min="{{min}}"{{/if}}{{#if hasMax}} max="{{max}}"{{/if}}{{#if required}} required{{/if}}>
+    {{/if}}
+    {{#if isCheckbox}}
+    <input tabindex="{{../order}}" type="checkbox" id="{{id}}" name="{{name}}"{{#if default}} checked{{/if}}>
+    {{/if}}
+    {{#if help}}
+    <small class="m-vectorsmanagement-turf-field-help">{{help}}</small>
+    {{/if}}
+</div>
+{{/each}}

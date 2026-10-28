@@ -1,0 +1,113 @@
+<form class="m-vectorsmanagement-turf-opform" novalidate aria-labelledby="m-vectorsmanagement-turf-opform-title">
+    <div class="m-vectorsmanagement-turf-opform-header">
+        <button type="button" tabindex="{{order}}" class="m-vectorsmanagement-turf-link" id="m-vectorsmanagement-turf-back" data-action="back">{{translations.back}}</button>
+        <p class="m-vectorsmanagement-turf-opform-title" id="m-vectorsmanagement-turf-opform-title">{{name}}</p>
+    </div>
+    <p class="m-vectorsmanagement-turf-form-desc">{{desc}}</p>
+
+    {{#each roles}}
+    <fieldset class="m-vectorsmanagement-turf-group">
+        <legend>{{label}}</legend>
+        <p class="m-vectorsmanagement-turf-field-help">{{help}}</p>
+        {{#each entries}}
+        <div class="m-vectorsmanagement-turf-entry">
+            <div class="m-vectorsmanagement-turf-scopes" role="radiogroup" aria-label="{{scopeLabel}}">
+                {{#each scopes}}
+                <label class="m-vectorsmanagement-turf-check">
+                    <input type="radio" tabindex="{{order}}" id="{{id}}" name="{{name}}" value="{{value}}" data-input="scope" data-role="{{role}}" data-index="{{index}}"{{#if checked}} checked{{/if}}{{#if disabled}} disabled{{/if}}>
+                    <span>{{label}}</span>
+                </label>
+                {{/each}}
+            </div>
+            <div class="m-vectorsmanagement-turf-field">
+                <label for="{{layerSelectId}}">{{layerLabel}}</label>
+                <select tabindex="{{order}}" id="{{layerSelectId}}" data-input="layer" data-role="{{role}}" data-index="{{index}}">
+                    {{#unless layers.length}}
+                    <option value="">{{emptyText}}</option>
+                    {{/unless}}
+                    {{#each layers}}
+                    <option value="{{id}}"{{#if selected}} selected{{/if}}{{#if disabled}} disabled{{/if}}>{{text}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <p class="m-vectorsmanagement-turf-entry-summary">{{summary}}</p>
+            {{#if removable}}
+            <button type="button" tabindex="{{order}}" class="m-vectorsmanagement-turf-link" id="{{removeId}}" data-action="remove-entry" data-role="{{role}}" data-index="{{index}}">{{removeText}}</button>
+            {{/if}}
+        </div>
+        {{/each}}
+        {{#if canAdd}}
+        <button type="button" tabindex="{{order}}" class="m-vectorsmanagement-turf-link" id="{{addId}}" data-action="add-entry" data-role="{{role}}">{{addText}}</button>
+        {{/if}}
+    </fieldset>
+    {{/each}}
+
+    {{#if hasParams}}
+    <fieldset class="m-vectorsmanagement-turf-group">
+        <legend>{{translations.params}}</legend>
+        {{{params}}}
+    </fieldset>
+    {{/if}}
+
+    <fieldset class="m-vectorsmanagement-turf-group">
+        <legend>{{translations.attributes}}</legend>
+        {{#if aggregatesNote}}
+        <p class="m-vectorsmanagement-turf-field-help">{{aggregatesNote}}</p>
+        {{/if}}
+        {{#each attributes}}
+        <div class="m-vectorsmanagement-turf-fields">
+            <p class="m-vectorsmanagement-turf-fields-title">{{title}}</p>
+            {{#each fields}}
+            <label class="m-vectorsmanagement-turf-check">
+                <input type="checkbox" tabindex="{{order}}" id="{{id}}" value="{{name}}" data-input="field" data-role="{{role}}"{{#if checked}} checked{{/if}}>
+                <span>{{name}}</span>
+            </label>
+            {{/each}}
+            {{#unless fields.length}}
+            <p class="m-vectorsmanagement-turf-field-help">{{noFieldsText}}</p>
+            {{/unless}}
+            {{#each excluded}}
+            <p class="m-vectorsmanagement-turf-field-help">{{this}}</p>
+            {{/each}}
+            <div class="m-vectorsmanagement-turf-field">
+                <label for="{{prefixId}}">{{prefixLabel}}</label>
+                <input type="text" tabindex="{{order}}" id="{{prefixId}}" value="{{prefix}}" data-input="prefix" data-role="{{role}}">
+            </div>
+        </div>
+        {{/each}}
+        <div data-live="schema">
+            <p class="m-vectorsmanagement-turf-fields-title">{{translations.schema}}</p>
+            {{#if schema.length}}
+            <ul class="m-vectorsmanagement-turf-schema">
+                {{#each schema}}
+                <li{{#if renamed}} class="m-vectorsmanagement-turf-schema-renamed"{{/if}}><strong>{{name}}</strong> ← {{source}}</li>
+                {{/each}}
+            </ul>
+            {{else}}
+            <p class="m-vectorsmanagement-turf-field-help">{{translations.noColumns}}</p>
+            {{/if}}
+        </div>
+    </fieldset>
+
+    <div class="m-vectorsmanagement-turf-field">
+        <label for="m-vectorsmanagement-turf-output">{{translations.output}}</label>
+        <input type="text" tabindex="{{order}}" id="m-vectorsmanagement-turf-output" value="{{outputName}}" placeholder="{{outputPlaceholder}}" data-input="output">
+    </div>
+
+    <div class="m-vectorsmanagement-turf-status" id="m-vectorsmanagement-turf-opform-status" aria-live="polite" data-live="status">
+        <p class="m-vectorsmanagement-turf-fields-title">{{translations.willProcess}}</p>
+        <ul>
+            {{#each processSummary}}
+            <li>{{this}}</li>
+            {{/each}}
+        </ul>
+        {{#if errors.length}}
+        <ul class="m-vectorsmanagement-turf-errors">
+            {{#each errors}}
+            <li>{{this}}</li>
+            {{/each}}
+        </ul>
+        {{/if}}
+    </div>
+    <button type="submit" tabindex="{{order}}" id="m-vectorsmanagement-turf-opform-run" class="m-vectorsmanagement-turf-run" data-live="run" aria-describedby="m-vectorsmanagement-turf-opform-status"{{#unless canRun}} disabled{{/unless}}>{{translations.run}}</button>
+</form>

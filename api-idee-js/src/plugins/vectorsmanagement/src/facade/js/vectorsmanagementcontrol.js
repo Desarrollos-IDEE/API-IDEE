@@ -1186,6 +1186,7 @@ export default class VectorsManagementControl extends IDEE.Control {
    * @api stable
    */
   refreshSelection() {
+    if (this.turf_) this.turfControl.onSelectionChange();
     const active = this.getControlActive(this.html);
     if (active) {
       if (active.id === 'm-vectorsmanagement-edition') {
@@ -1207,6 +1208,7 @@ export default class VectorsManagementControl extends IDEE.Control {
     if (this.editingSession_) this.finishEditing(false);
     if (this.html) this.deactive(this.html, '');
     if (this.analysisControl) this.analysisControl.destroy();
+    if (this.turfControl) this.turfControl.destroy();
   }
 
   /**

@@ -111,9 +111,10 @@ La capa contiene dos puntos (P1, P2), una línea (L1) y dos polígonos solapados
 - [ ] Extensión bbox (diálogo)
 - [ ] Punto sobre la línea (formulario + capa)
 [ ] Centros: centro, centroide, centro de masas y punto en el elemento (capa)
-[ ] Transformación
-- [ ] Área de influencia (formulario + capa)
+[ ] Área de influencia (formulario del panel, ámbito «Solo las seleccionadas» o «Todas»)
+- [ ] Área de influencia (capa con los campos de origen; disuelta, con num_entidades)
 - [ ] Área de influencia con radio negativo sobre A: el polígono encoge
+[ ] Transformación
 - [ ] Simplificar (formulario + capa)
 - [ ] Envolvente convexa sin concavidad y con concavidad 1 (formulario + capa)
 - [ ] Rectángulo envolvente (capa)
@@ -121,10 +122,10 @@ La capa contiene dos puntos (P1, P2), una línea (L1) y dos polígonos solapados
 - [ ] Rotar sin punto de giro, con punto de giro y con solo uno de los dos campos (error)
 - [ ] Escalar desde el centroide y desde una esquina
 - [ ] Desplazar en distintas unidades
-[ ] Superposición con A y B seleccionados
-- [ ] Unión
-- [ ] Intersección
-- [ ] Diferencia (depende del orden de selección)
+[ ] Combinar polígonos (una capa) con A y B seleccionados
+- [ ] Fusionar polígonos
+- [ ] Parte común de los polígonos
+- [ ] Restar polígonos (depende del orden de selección)
 [ ] Relación espacial (toast Sí/No)
 - [ ] Punto en polígono, con un punto sobre el borde marcando y sin marcar "Ignorar el borde"
 - [ ] Intersecan, marcando y sin marcar "Ignorar autointersecciones"
