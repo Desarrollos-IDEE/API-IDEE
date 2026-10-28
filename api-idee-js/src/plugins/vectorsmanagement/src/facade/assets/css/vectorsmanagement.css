@@ -933,10 +933,12 @@ table#attribute-table>tr>th>button {
     border: none;
 }
 
+.vectorsmanagement-icon-ayuda.m-vectorsmanagement-turf-help:before,
 .m-vectorsmanagement-selection-layer>button[class^="vectorsmanagement-icon-"]:before {
     color: var(--idee-color-neutral-60);
 }
 
+.vectorsmanagement-icon-ayuda.m-vectorsmanagement-turf-help:hover:before,
 .m-vectorsmanagement-selection-layer>button[class^="vectorsmanagement-icon-"]:hover:before {
     color: var(--idee-color-primary);
 }
