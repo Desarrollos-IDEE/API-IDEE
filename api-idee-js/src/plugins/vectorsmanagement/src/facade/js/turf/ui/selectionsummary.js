@@ -58,7 +58,6 @@ export default class SelectionSummary {
           title: getValue('turf.selections.title'),
           clear: getValue('turf.selections.clear'),
           empty: getValue('turf.selections.empty'),
-          note: getValue('turf.selections.note'),
         },
       },
     });

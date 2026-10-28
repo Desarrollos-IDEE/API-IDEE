@@ -54,17 +54,10 @@ const sourceGeometries = (page, layerId) => page.evaluate((id) => Object.fromEnt
     .map((f) => [f.getId(), f.getGeoJSON().geometry]),
 ), layerId);
 
-/**
- * Elige una capa en el selector del plugin. El desplegable alterna entre
- * abierto y cerrado con cada clic y su estado inicial depende de la carga de
- * capas, así que se hace clic hasta que la opción es visible.
- */
+/** Elige una capa en el selector del plugin (cerrado hasta que se pulsa). */
 const chooseLayer = async (page, layerId) => {
-  const selector = page.locator('#m-vectorsmanagement-layer-selector');
-  const option = page.locator(`#m-vectorsmanagement-layer-selector-options span[data-value="${layerId}"]`);
-  await selector.click();
-  if (!(await option.isVisible())) await selector.click();
-  await option.click();
+  await page.locator('#m-vectorsmanagement-layer-selector').click();
+  await page.locator(`#m-vectorsmanagement-layer-selector-options span[data-value="${layerId}"]`).click();
 };
 
 /** Pulsa el botón de una operación del panel Turf, desplegando su categoría. */
@@ -114,10 +107,17 @@ const selectOnMap = async (page, layerId, points) => {
   }
 };
 
+/** Cierra los diálogos abiertos (ayuda, errores, información...). */
+const closeDialogs = (page) => page.evaluate(() => document.querySelectorAll('.m-dialog')
+  .forEach((dialog) => dialog.remove()));
+
 test.describe('VectorsManagement Turf: operaciones entre capas', () => {
   let ids;
+  let pageErrors;
 
   test.beforeEach(async ({ page }) => {
+    pageErrors = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
     await page.goto(PAGE, { waitUntil: 'domcontentloaded' });
     await page.evaluate(() => {
       window.map = IDEE.map({ container: 'mapjs' });
@@ -134,6 +134,11 @@ test.describe('VectorsManagement Turf: operaciones entre capas', () => {
     await expect.poll(() => page.evaluate((layerIds) => layerIds.every((id) => window.map
       .getLayers().find((l) => l.idLayer === id).getFeatures().length > 0), SAMPLE_KEYS.map((k) => ids[k])), { timeout: 15000 }).toBe(true);
     await page.waitForFunction(() => window.mp.controls[0] && window.mp.controls[0].turfControl);
+  });
+
+  // Ninguna prueba puede dejar errores no capturados en la página.
+  test.afterEach(() => {
+    expect(pageErrors).toEqual([]);
   });
 
   test('buffer de una entidad seleccionada y de una capa, disuelto y reutilizado', async ({ page }) => {
@@ -483,8 +488,58 @@ test.describe('VectorsManagement Turf: operaciones entre capas', () => {
     expect(await page.locator('#m-vectorsmanagement-turf-opform-input-0-layer option').evaluateAll(
       (options) => options.filter((o) => o.disabled).map((o) => o.value),
     )).toContain(ids.empty);
+
+    // La ayuda de la operación explica sus entradas en un modal
+    const role = await page.locator('.m-vectorsmanagement-turf-group legend').first().innerText();
+    await page.locator('#m-vectorsmanagement-turf-opform-help').click();
+    await expect(page.locator('.m-dialog')).toHaveCount(1);
+    await expect(page.locator('.m-dialog .m-vectorsmanagement-turf-helpbox')).toContainText(role);
+    await closeDialogs(page);
+
     await page.locator('#m-vectorsmanagement-turf-back').click();
     await expect(page.locator('.m-vectorsmanagement-turf-catalog')).toBeVisible();
+    await page.locator('button[data-action="turf-help"]').click();
+    await expect(page.locator('.m-dialog .m-vectorsmanagement-turf-helpbox .popup-section')).toHaveCount(3);
+  });
+
+  test('las herramientas del plugin funcionan con capas de ejemplo y de resultado', async ({ page }) => {
+    // El selector de capas empieza cerrado aunque el mapa ya tenga capas
+    await expect(page.locator('#m-vectorsmanagement-layer-selector-options')).toBeHidden();
+    const result = await run(page, 'buffer', { inputs: { input: all(ids.lines) }, params: { radius: 200 } });
+    const tools = ['creation', 'edition', 'style', 'analysis', 'download', 'turf'];
+    const toggle = async (tool) => {
+      await page.locator(`#m-vectorsmanagement-${tool}`).click();
+      await closeDialogs(page);
+    };
+    const layers = [
+      [ids.zones, CLICK.Z1],
+      [ids.points, CLICK.P1],
+      [result.layer.idLayer, null],
+    ];
+    for (let i = 0; i < layers.length; i += 1) {
+      const [layerId, point] = layers[i];
+      // eslint-disable-next-line no-await-in-loop
+      await chooseLayer(page, layerId);
+      for (let j = 0; j < tools.length; j += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        await toggle(tools[j]);
+        // eslint-disable-next-line no-await-in-loop
+        await toggle(tools[j]);
+      }
+      if (point) {
+        // Estilo de un elemento seleccionado
+        // eslint-disable-next-line no-await-in-loop
+        await selectOnMap(page, layerId, [point]);
+        // eslint-disable-next-line no-await-in-loop
+        await toggle('style');
+        // eslint-disable-next-line no-await-in-loop
+        await page.locator('#set-style-btn').click();
+        // eslint-disable-next-line no-await-in-loop
+        await toggle('style');
+        // eslint-disable-next-line no-await-in-loop
+        await page.locator('#m-vectorsmanagement-selection').click();
+      }
+    }
   });
 
   test('las operaciones de colección existentes siguen funcionando', async ({ page }) => {

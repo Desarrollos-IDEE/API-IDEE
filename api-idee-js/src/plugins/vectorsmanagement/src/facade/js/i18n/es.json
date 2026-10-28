@@ -74,7 +74,7 @@
     "analysis_content_4": "GeoJSON",
     "analysis_content_4_1": "Permite ver el GeoJSON de la capa o elementos seleccionados.",
     "turf_title": "Geoprocesos (Turf.js)",
-    "turf_content": "Permite ejecutar operaciones de Turf.js sobre los elementos seleccionados o, si no hay selección, sobre toda la capa: medición (área, longitud, distancia, extensión), centros, transformaciones (área de influencia, simplificar, rotar, escalar, desplazar…), superposición (unión, intersección, diferencia) y relaciones espaciales. Si la operación necesita parámetros, se piden en un formulario antes de ejecutarla. Las geometrías resultantes se añaden al mapa en una capa nueva; el resto de resultados se muestran en un mensaje.",
+    "turf_content": "Permite ejecutar geoprocesos de Turf.js. Las operaciones de capas (área de influencia, extraer por localización, intersección, unión y diferencia de capas, unión espacial de atributos) combinan varias capas y se configuran en un formulario del panel, eligiendo para cada entrada la capa y sus entidades. El resto (medición, centros, transformaciones, combinar polígonos y relaciones) se aplica a los elementos seleccionados o a toda la capa activa. Las geometrías resultantes se añaden al mapa en una capa nueva. El botón de ayuda del panel explica cada operación.",
     "download_title": "Descarga",
     "download_content": "Esta herramienta permite descargar la capa completa o los elementos seleccionados en formato GeoJSON, KML, GPX y Shapefile."
   },
@@ -223,8 +223,21 @@
   "info_remove_vertex": "Para eliminar el vértice, utiliza 'alt + clic' sobre el vértice a eliminar",
   "turf": {
     "title": "Geoprocesos (Turf.js)",
-    "hint": "Las cuatro primeras categorías trabajan con varias capas: abren un formulario para elegir la capa y las entidades de cada entrada. El resto se aplica a los elementos seleccionados o, si no hay selección, a todos los de la capa activa.",
     "hintParams": "Las que muestran este icono piden parámetros antes de ejecutarse:",
+    "help": {
+      "button": "Ayuda de los geoprocesos",
+      "opButton": "Ayuda de la operación",
+      "layerOpsTitle": "Operaciones de capas",
+      "layerOps": "Combinan una o varias capas. Abren un formulario en este panel para elegir, en cada entrada, la capa y sus entidades: todas, solo las seleccionadas o el resultado de una operación anterior.",
+      "collectionOpsTitle": "Operaciones de la capa activa",
+      "collectionOps": "Se aplican a los elementos seleccionados o, si no hay selección, a todos los de la capa activa.",
+      "selectionsTitle": "Selecciones guardadas",
+      "selections": "Con la herramienta de selección, lo que seleccionas en cada capa se guarda para usarlo como «Solo las seleccionadas». Seleccionar en otra capa no borra estas selecciones, y vaciar la selección en el mapa tampoco: quítalas en el resumen del panel.",
+      "what": "Qué hace",
+      "inputs": "Entradas",
+      "params": "Parámetros",
+      "output": "Capa resultante"
+    },
     "paramsTitle": "Requiere configurar parámetros.",
     "run": "Ejecutar",
     "layerPrefix": "Turf:",
@@ -244,9 +257,9 @@
       "extraction": "Copia, sin recortarlas, las entidades de una capa que cumplen una relación espacial con otra.",
       "overlay": "Calcula geometrías nuevas según cómo se superponen dos capas, con los campos de ambas.",
       "join": "Añade a cada entidad los campos de las entidades de otra capa con las que se relaciona, sin cambiar su geometría.",
-      "measurement": "Sobre los elementos seleccionados o, si no hay selección, sobre toda la capa activa.",
-      "center": "Sobre los elementos seleccionados o, si no hay selección, sobre toda la capa activa.",
-      "transformation": "Sobre los elementos seleccionados o, si no hay selección, sobre toda la capa activa.",
+      "measurement": "Área, longitud, distancia, extensión y punto a una distancia sobre una línea.",
+      "center": "Centro, centroide, centro de masas o un punto sobre cada elemento.",
+      "transformation": "Simplificar, envolventes, suavizar líneas, rotar, escalar y desplazar.",
       "combine": "Combina en una sola geometría los polígonos seleccionados (o todos) de la capa activa. No es una superposición de capas.",
       "relation": "Comprueba la relación entre los dos elementos seleccionados de la capa activa."
     },
@@ -587,15 +600,14 @@
     },
     "selections": {
       "title": "Selecciones guardadas por capa",
-      "empty": "Ninguna. Con la herramienta de selección, lo que selecciones en cada capa se guarda aquí para usarlo como «Solo las seleccionadas».",
+      "empty": "Ninguna.",
       "count": "{n} entidad(es)",
       "visible": "visible en el mapa",
       "hidden": "no visible (no es la capa activa)",
       "missing": "⚠ {n} ya no existe(n) en la capa",
       "remove": "Quitar",
       "removeLabel": "Quitar la selección guardada de «{layer}»",
-      "clear": "Limpiar todas",
-      "note": "Seleccionar en otra capa no borra estas selecciones, y vaciar la selección en el mapa tampoco: quítalas aquí."
+      "clear": "Limpiar todas"
     },
     "results": {
       "yes": "Sí",

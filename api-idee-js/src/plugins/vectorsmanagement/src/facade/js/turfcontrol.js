@@ -13,6 +13,7 @@ import LayerCatalog from './turf/layers/layercatalog';
 import ResultLayerWriter from './turf/layers/resultlayers';
 import SelectionRegistry from './turf/layers/selectionregistry';
 import { OperationKind, ResultKey } from './turf/turftypes';
+import { showCatalogHelp } from './turf/ui/helpdialog';
 import OperationForm from './turf/ui/operationform';
 import SelectionSummary from './turf/ui/selectionsummary';
 import { errorMessage, skippedMessage, translate } from './turf/ui/messages';
@@ -100,8 +101,8 @@ export default class TurfControl extends IDEE.Control {
           })),
         })).filter((category) => category.ops.length > 0),
         translations: {
-          hint: getValue('turf.hint'),
-          hintParams: getValue('turf.hintParams'),
+          title: getValue('turf.title'),
+          help: getValue('turf.help.button'),
           selections: getValue('turf.selections.title'),
         },
       },
@@ -111,6 +112,8 @@ export default class TurfControl extends IDEE.Control {
     this.template.querySelectorAll('button[data-op]').forEach((button) => {
       button.addEventListener('click', () => this.runOperation(button.dataset.op));
     });
+    this.template.querySelector('button[data-action="turf-help"]')
+      .addEventListener('click', () => showCatalogHelp(this.managementControl_.order));
     this.managementControl_.accessibilityTab(this.template);
     this.map_.on(IDEE.evt.ADDED_LAYER, this.refreshView_);
     this.map_.on(IDEE.evt.REMOVED_LAYER, this.refreshView_);

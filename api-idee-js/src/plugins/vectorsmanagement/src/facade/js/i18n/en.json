@@ -74,7 +74,7 @@
     "analysis_content_4": "GeoJSON",
     "analysis_content_4_1": "Allows you to view the GeoJSON of the layer or selected elements.",
     "turf_title": "Geoprocessing (Turf.js)",
-    "turf_content": "Runs Turf.js operations on the selected features or, if nothing is selected, on the whole layer: measurement (area, length, distance, extent), centers, transformations (buffer, simplify, rotate, scale, translate…), overlay (union, intersection, difference) and spatial relations. If the operation needs parameters, a form asks for them before running it. Resulting geometries are added to the map in a new layer; other results are shown in a message.",
+    "turf_content": "Runs Turf.js geoprocessing. Layer operations (buffer, extract by location, layer intersection, union and difference, join attributes by location) combine several layers and are configured in a form in the panel, choosing for each input the layer and its features. The rest (measurement, centers, transformations, combine polygons and relations) apply to the selected features or to the whole active layer. Resulting geometries are added to the map in a new layer. The help button of the panel explains each operation.",
     "download_title": "Download",
     "download_content": "This tool allows you to download the complete layer or selected elements in GeoJSON, KML and Shapefile format."
   },
@@ -223,8 +223,21 @@
   "info_remove_vertex": "To delete the vertex, use ‘alt + click’ on the vertex to be deleted",
   "turf": {
     "title": "Geoprocessing (Turf.js)",
-    "hint": "The first four categories work with several layers: they open a form to choose the layer and the features of each input. The rest apply to the selected features or, if nothing is selected, to every feature of the active layer.",
     "hintParams": "Those showing this icon ask for parameters before running:",
+    "help": {
+      "button": "Geoprocessing help",
+      "opButton": "Operation help",
+      "layerOpsTitle": "Layer operations",
+      "layerOps": "They combine one or several layers. They open a form in this panel to choose, for each input, the layer and its features: all of them, only the selected ones or the result of a previous operation.",
+      "collectionOpsTitle": "Active layer operations",
+      "collectionOps": "They apply to the selected features or, if nothing is selected, to every feature of the active layer.",
+      "selectionsTitle": "Saved selections",
+      "selections": "With the selection tool, what you select in each layer is saved to be used as \"Only the selected ones\". Selecting in another layer does not delete these selections, and neither does clearing the selection on the map: remove them in the panel summary.",
+      "what": "What it does",
+      "inputs": "Inputs",
+      "params": "Parameters",
+      "output": "Resulting layer"
+    },
     "paramsTitle": "Requires setting parameters.",
     "run": "Run",
     "layerPrefix": "Turf:",
@@ -244,9 +257,9 @@
       "extraction": "Copies, without clipping them, the features of a layer that meet a spatial relation with another layer.",
       "overlay": "Computes new geometries from how two layers overlap, with the fields of both.",
       "join": "Adds to each feature the fields of the related features of another layer, without changing its geometry.",
-      "measurement": "On the selected features or, if nothing is selected, on the whole active layer.",
-      "center": "On the selected features or, if nothing is selected, on the whole active layer.",
-      "transformation": "On the selected features or, if nothing is selected, on the whole active layer.",
+      "measurement": "Area, length, distance, extent and a point at a distance along a line.",
+      "center": "Center, centroid, center of mass or a point on each feature.",
+      "transformation": "Simplify, hulls, smooth lines, rotate, scale and translate.",
       "combine": "Combines the selected (or all) polygons of the active layer into a single geometry. It is not a layer overlay.",
       "relation": "Checks the relation between the two selected features of the active layer."
     },
@@ -587,15 +600,14 @@
     },
     "selections": {
       "title": "Saved selections by layer",
-      "empty": "None. With the selection tool, what you select in each layer is saved here to be used as \"Only the selected ones\".",
+      "empty": "None.",
       "count": "{n} feature(s)",
       "visible": "shown on the map",
       "hidden": "not shown (not the active layer)",
       "missing": "⚠ {n} no longer in the layer",
       "remove": "Remove",
       "removeLabel": "Remove the saved selection of \"{layer}\"",
-      "clear": "Clear all",
-      "note": "Selecting in another layer does not delete these selections, and neither does clearing the selection on the map: remove them here."
+      "clear": "Clear all"
     },
     "results": {
       "yes": "Yes",

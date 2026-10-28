@@ -1,14 +1,16 @@
 <form class="m-vectorsmanagement-turf-opform" novalidate aria-labelledby="m-vectorsmanagement-turf-opform-title">
     <div class="m-vectorsmanagement-turf-opform-header">
         <button type="button" tabindex="{{order}}" class="m-vectorsmanagement-turf-link" id="m-vectorsmanagement-turf-back" data-action="back">{{translations.back}}</button>
-        <p class="m-vectorsmanagement-turf-opform-title" id="m-vectorsmanagement-turf-opform-title">{{name}}</p>
+        <div class="m-vectorsmanagement-turf-header">
+            <p class="m-vectorsmanagement-turf-opform-title" id="m-vectorsmanagement-turf-opform-title">{{name}}</p>
+            <button type="button" tabindex="{{order}}" class="vectorsmanagement-icon-ayuda m-vectorsmanagement-turf-help" id="m-vectorsmanagement-turf-opform-help" data-action="help" title="{{translations.help}}" aria-label="{{translations.help}}"></button>
+        </div>
     </div>
     <p class="m-vectorsmanagement-turf-form-desc">{{desc}}</p>
 
     {{#each roles}}
     <fieldset class="m-vectorsmanagement-turf-group">
         <legend>{{label}}</legend>
-        <p class="m-vectorsmanagement-turf-field-help">{{help}}</p>
         {{#each entries}}
         <div class="m-vectorsmanagement-turf-entry">
             <div class="m-vectorsmanagement-turf-scopes" role="radiogroup" aria-label="{{scopeLabel}}">
@@ -51,9 +53,6 @@
 
     <fieldset class="m-vectorsmanagement-turf-group">
         <legend>{{translations.attributes}}</legend>
-        {{#if aggregatesNote}}
-        <p class="m-vectorsmanagement-turf-field-help">{{aggregatesNote}}</p>
-        {{/if}}
         {{#each attributes}}
         <div class="m-vectorsmanagement-turf-fields">
             <p class="m-vectorsmanagement-turf-fields-title">{{title}}</p>

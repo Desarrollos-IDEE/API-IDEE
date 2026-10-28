@@ -76,12 +76,16 @@ export default class TurfParamsDialog {
    * @param {Number} order Orden de tabulación.
    * @param {Object} [values] Valores actuales.
    * @param {Object<ParamName, Array<String>>} [available] Opciones de los desplegables.
+   * @param {Boolean} [showHelp=true] false para no mostrar los textos de ayuda
+   * (el formulario del panel los muestra en un modal).
    * @returns {String} HTML.
    */
-  static renderFields(op, order, values, available) {
+  static renderFields(op, order, values, available, showHelp = true) {
+    const params = this.getTemplateParams(op, values, available)
+      .map((param) => (showHelp ? param : { ...param, help: '' }));
     return IDEE.template.compileSync(fieldsTemplate, {
       parseToHtml: false,
-      vars: { params: this.getTemplateParams(op, values, available), order },
+      vars: { params, order },
     });
   }
 

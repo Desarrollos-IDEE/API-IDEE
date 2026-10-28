@@ -74,7 +74,7 @@
         "analysis_content_4": "GeoJSON",
         "analysis_content_4_1": "Permet veure el GeoJSON de la capa o elements seleccionats.",
         "turf_title": "Geoprocessos (Turf.js)",
-        "turf_content": "Permet executar operacions de Turf.js sobre els elements seleccionats o, si no hi ha selecció, sobre tota la capa: mesurament (àrea, longitud, distància, extensió), centres, transformacions (àrea d'influència, simplificar, rotar, escalar, desplaçar…), superposició (unió, intersecció, diferència) i relacions espacials. Si l'operació necessita paràmetres, es demanen en un formulari abans d'executar-la. Les geometries resultants s'afegeixen al mapa en una capa nova; la resta de resultats es mostren en un missatge.",
+        "turf_content": "Permet executar geoprocessos de Turf.js. Les operacions de capes (àrea d'influència, extreure per localització, intersecció, unió i diferència de capes, unió espacial d'atributs) combinen diverses capes i es configuren en un formulari del panell, triant per a cada entrada la capa i les seves entitats. La resta (mesurament, centres, transformacions, combinar polígons i relacions) s'aplica als elements seleccionats o a tota la capa activa. Les geometries resultants s'afegeixen al mapa en una capa nova. El botó d'ajuda del panell explica cada operació.",
         "download_title": "Descarrega",
         "download_content": "Aquesta eina permet descarregar la capa completa o els elements seleccionats en format GeoJSON, KML, GPX i Shapefile."
     },
@@ -223,8 +223,21 @@
     "info_remove_vertex": "Per eliminar el vèrtex, utilitza 'alt + clic' sobre el vèrtex a eliminar",
     "turf": {
         "title": "Geoprocessos (Turf.js)",
-        "hint": "Les quatre primeres categories treballen amb diverses capes: obren un formulari per triar la capa i les entitats de cada entrada. La resta s'aplica als elements seleccionats o, si no hi ha selecció, a tots els de la capa activa.",
         "hintParams": "Les que mostren aquesta icona demanen paràmetres abans d'executar-se:",
+        "help": {
+            "button": "Ajuda dels geoprocessos",
+            "opButton": "Ajuda de l'operació",
+            "layerOpsTitle": "Operacions de capes",
+            "layerOps": "Combinen una o diverses capes. Obren un formulari en aquest panell per triar, a cada entrada, la capa i les seves entitats: totes, només les seleccionades o el resultat d'una operació anterior.",
+            "collectionOpsTitle": "Operacions de la capa activa",
+            "collectionOps": "S'apliquen als elements seleccionats o, si no hi ha selecció, a tots els de la capa activa.",
+            "selectionsTitle": "Seleccions desades",
+            "selections": "Amb l'eina de selecció, el que selecciones a cada capa es desa per utilitzar-ho com a «Només les seleccionades». Seleccionar en una altra capa no esborra aquestes seleccions, i buidar la selecció al mapa tampoc: treu-les al resum del panell.",
+            "what": "Què fa",
+            "inputs": "Entrades",
+            "params": "Paràmetres",
+            "output": "Capa resultant"
+        },
         "paramsTitle": "Cal configurar paràmetres.",
         "run": "Executar",
         "layerPrefix": "Turf:",
@@ -244,9 +257,9 @@
             "extraction": "Copia, sense retallar-les, les entitats d'una capa que compleixen una relació espacial amb una altra.",
             "overlay": "Calcula geometries noves segons com se superposen dues capes, amb els camps de totes dues.",
             "join": "Afegeix a cada entitat els camps de les entitats d'una altra capa amb què es relaciona, sense canviar-ne la geometria.",
-            "measurement": "Sobre els elements seleccionats o, si no hi ha selecció, sobre tota la capa activa.",
-            "center": "Sobre els elements seleccionats o, si no hi ha selecció, sobre tota la capa activa.",
-            "transformation": "Sobre els elements seleccionats o, si no hi ha selecció, sobre tota la capa activa.",
+            "measurement": "Àrea, longitud, distància, extensió i punt a una distància sobre una línia.",
+            "center": "Centre, centroide, centre de masses o un punt sobre cada element.",
+            "transformation": "Simplificar, envolupants, suavitzar línies, girar, escalar i desplaçar.",
             "combine": "Combina en una sola geometria els polígons seleccionats (o tots) de la capa activa. No és una superposició de capes.",
             "relation": "Comprova la relació entre els dos elements seleccionats de la capa activa."
         },
@@ -587,15 +600,14 @@
         },
         "selections": {
             "title": "Seleccions desades per capa",
-            "empty": "Cap. Amb l'eina de selecció, el que seleccionis a cada capa es desa aquí per utilitzar-ho com a «Només les seleccionades».",
+            "empty": "Cap.",
             "count": "{n} entitat(s)",
             "visible": "visible al mapa",
             "hidden": "no visible (no és la capa activa)",
             "missing": "⚠ {n} ja no existeix(en) a la capa",
             "remove": "Treure",
             "removeLabel": "Treure la selecció desada de «{layer}»",
-            "clear": "Netejar-les totes",
-            "note": "Seleccionar en una altra capa no esborra aquestes seleccions, i buidar la selecció al mapa tampoc: treu-les aquí."
+            "clear": "Netejar-les totes"
         },
         "results": {
             "yes": "Sí",

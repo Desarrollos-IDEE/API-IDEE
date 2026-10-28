@@ -4,6 +4,7 @@ import LayerCatalog from '../layers/layercatalog';
 import SelectionRegistry from '../layers/selectionregistry';
 import TurfParamsDialog from '../turfparamsdialog';
 import { InputScope, ParamType } from '../turftypes';
+import { showOperationHelp } from './helpdialog';
 import {
   errorMessage, layerIssueText, roleLabel, translate,
 } from './messages';
@@ -249,15 +250,13 @@ export default class OperationForm {
     const op = this.op_;
     const order = this.order_;
     const cache = new Map();
-    const aggregates = op.aggregates ? op.aggregates(report.params) : [];
     return {
       order,
       name: getValue(`turf.ops.${op.id}.name`),
       desc: getValue(`turf.ops.${op.id}.desc`),
       roles: op.inputs.map((spec) => this.getRoleVars_(spec, report, cache)),
       hasParams: op.params.length > 0,
-      params: TurfParamsDialog.renderFields(op, order, report.params, report.options),
-      aggregatesNote: aggregates.length > 0 ? getValue(`turf.ops.${op.id}.aggregatesNote`) : '',
+      params: TurfParamsDialog.renderFields(op, order, report.params, report.options, false),
       attributes: op.attributeRoles(report.params)
         .map((role) => this.getAttributeVars_(role, report)),
       schema: report.schema.columns.map((column) => ({
@@ -286,6 +285,7 @@ export default class OperationForm {
         output: getValue('turf.form.output'),
         willProcess: getValue('turf.form.willProcess'),
         run: getValue('turf.run'),
+        help: getValue('turf.help.opButton'),
       },
     };
   }
@@ -307,7 +307,6 @@ export default class OperationForm {
       .filter((option) => !option.disabled && !entries.some((e) => e.layerId === option.id));
     return {
       label: roleLabel(this.op_, role),
-      help: getValue(`turf.ops.${this.op_.id}.roles.${role}.help`),
       entries: entries.map((entry, index) => {
         const prefix = `${ID_PREFIX}-${role}-${index}`;
         return {
@@ -461,6 +460,8 @@ export default class OperationForm {
     const { action, role } = button.dataset;
     if (action === 'back') {
       this.onClose_();
+    } else if (action === 'help') {
+      showOperationHelp(this.op_, this.order_);
     } else if (action === 'add-entry') {
       const spec = this.op_.inputs.find((s) => s.role === role);
       const entries = this.config_.inputs[role];
