@@ -502,6 +502,18 @@ test.describe('VectorsManagement Turf: operaciones entre capas', () => {
     await expect(page.locator('.m-dialog .m-vectorsmanagement-turf-helpbox .popup-section')).toHaveCount(3);
   });
 
+  test('al cambiar de capa la herramienta de selección se apaga aunque no haya selección', async ({ page }) => {
+    const selection = page.locator('#m-vectorsmanagement-selection');
+    await chooseLayer(page, ids.points);
+    await selection.click();
+    await expect(selection).toHaveClass(/activated/);
+    await chooseLayer(page, ids.zones);
+    await expect(selection).not.toHaveClass(/activated/);
+    await selectOnMap(page, ids.zones, [CLICK.Z1]);
+    expect(await page.evaluate(() => window.mp.controls[0].getSelectedFeatures()
+      .map((f) => f.getAttributes().idZona))).toEqual(['Z1']);
+  });
+
   test('las herramientas del plugin funcionan con capas de ejemplo y de resultado', async ({ page }) => {
     // El selector de capas empieza cerrado aunque el mapa ya tenga capas
     await expect(page.locator('#m-vectorsmanagement-layer-selector-options')).toBeHidden();

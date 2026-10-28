@@ -313,8 +313,7 @@ export default class VectorsManagementControl extends IDEE.Control {
   selectLayerEvent() {
     if (
       this.selectionControl
-      // eslint-disable-next-line no-underscore-dangle
-      && this.selectionControl.selectedFeatures_.length > 0
+      && (this.getSelection() === 'feature' || this.getSelectedFeatures().length > 0)
     ) {
       document
         .querySelector('#m-vectorsmanagement-selection')

@@ -191,9 +191,9 @@ export default class SelectionControl extends IDEE.Control {
         || undefined;
       if (this.feature) {
         this.addFeatureToSelection(this.feature);
+        this.geometry = this.feature.getGeometry().type;
+        this.emphasizeSelectedFeature();
       }
-      this.geometry = this.feature.getGeometry().type;
-      this.emphasizeSelectedFeature();
     });
     this.managementControl_.refreshSelection();
 
