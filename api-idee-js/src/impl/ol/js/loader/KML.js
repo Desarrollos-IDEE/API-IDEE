@@ -224,24 +224,26 @@ class KML extends MObject {
 
           const screenOverlay = this.format_.getScreenOverlay();
 
-          const mFeatures = features.map((olFeature) => {
-            const feature = new FacadeFeature(olFeature.getId(), {
-              geometry: {
-                coordinates: olFeature.getGeometry().getCoordinates(),
-                type: olFeature.getGeometry().getType(),
-              },
-              properties: olFeature.getProperties(),
+          const mFeatures = features
+            .filter((olFeature) => typeof olFeature.getGeometry()?.getCoordinates === 'function')
+            .map((olFeature) => {
+              const feature = new FacadeFeature(olFeature.getId(), {
+                geometry: {
+                  coordinates: olFeature.getGeometry().getCoordinates(),
+                  type: olFeature.getGeometry().getType(),
+                },
+                properties: olFeature.getProperties(),
+              });
+              feature.getImpl().getFeature().setStyle(olFeature.getStyle());
+              feature.getImpl()
+                .getFeature()
+                .getGeometry()
+                .transform(
+                  lastProjection,
+                  this.map_.getProjection().code,
+                );
+              return feature;
             });
-            feature.getImpl().getFeature().setStyle(olFeature.getStyle());
-            feature.getImpl()
-              .getFeature()
-              .getGeometry()
-              .transform(
-                lastProjection,
-                this.map_.getProjection().code,
-              );
-            return feature;
-          });
 
           success({
             features: mFeatures,
