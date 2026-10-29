@@ -3,20 +3,21 @@ import {
   GeometryGroup,
   InputRole,
   OperationId,
-  OperationKind,
+  Output,
 } from '../turftypes';
 import { intersectGeometry, subtractGeometry } from '../geometry/clipping';
 import {
-  ALL_SCOPES, geometriesOf, guard, touching,
+  ALL_SCOPES, geometriesOf, guard, inputRole, touching,
 } from './common';
+import { sourceLayerParam } from './params';
 
 /**
- * Entrada de superposición: polígonos de una capa.
+ * Entrada de superposición: polígonos de una o varias capas.
  * @const
  * @type {InputRoleSpec}
  */
 const POLYGON_OVERLAY = Object.freeze({
-  role: InputRole.OVERLAY, types: GeometryGroup.POLYGONS, scopes: ALL_SCOPES, maxLayers: 1,
+  role: InputRole.OVERLAY, types: GeometryGroup.POLYGONS, scopes: ALL_SCOPES,
 });
 
 /**
@@ -58,15 +59,10 @@ const outsidePart = (feature, others) => guard(
  */
 export const layerIntersection = Object.freeze({
   id: OperationId.LAYER_INTERSECTION,
-  kind: OperationKind.LAYERS,
   category: Category.OVERLAY,
-  inputs: [
-    {
-      role: InputRole.INPUT, types: GeometryGroup.ANY, scopes: ALL_SCOPES, maxLayers: 1,
-    },
-    POLYGON_OVERLAY,
-  ],
-  params: [],
+  output: Output.GEOMETRY,
+  inputs: [inputRole(GeometryGroup.ANY), POLYGON_OVERLAY],
+  params: [sourceLayerParam()],
   attributeRoles: () => [InputRole.INPUT, InputRole.OVERLAY],
   execute: ({ inputs }) => ({
     records: inputs[InputRole.INPUT].flatMap((feature) => commonParts(
@@ -79,22 +75,17 @@ export const layerIntersection = Object.freeze({
 /**
  * Unión de capas (como la de QGIS): las partes comunes de cada pareja, con
  * los campos de ambos elementos, y las partes de cada elemento que no se
- * solapan con la otra capa, con los campos de la otra capa vacíos. Los
- * solapes entre elementos de una misma capa no se dividen.
+ * solapan con la otra entrada, con los campos de la otra entrada vacíos. Los
+ * solapes entre elementos de una misma entrada no se dividen.
  * @const
  * @type {LayerOperation}
  */
 export const layerUnion = Object.freeze({
   id: OperationId.LAYER_UNION,
-  kind: OperationKind.LAYERS,
   category: Category.OVERLAY,
-  inputs: [
-    {
-      role: InputRole.INPUT, types: GeometryGroup.POLYGONS, scopes: ALL_SCOPES, maxLayers: 1,
-    },
-    POLYGON_OVERLAY,
-  ],
-  params: [],
+  output: Output.GEOMETRY,
+  inputs: [inputRole(GeometryGroup.POLYGONS), POLYGON_OVERLAY],
+  params: [sourceLayerParam()],
   attributeRoles: () => [InputRole.INPUT, InputRole.OVERLAY],
   execute: ({ inputs }) => {
     const features = inputs[InputRole.INPUT];
@@ -124,15 +115,10 @@ export const layerUnion = Object.freeze({
  */
 export const layerDifference = Object.freeze({
   id: OperationId.LAYER_DIFFERENCE,
-  kind: OperationKind.LAYERS,
   category: Category.OVERLAY,
-  inputs: [
-    {
-      role: InputRole.INPUT, types: GeometryGroup.ANY, scopes: ALL_SCOPES, maxLayers: 1,
-    },
-    { ...POLYGON_OVERLAY, maxLayers: Number.POSITIVE_INFINITY },
-  ],
-  params: [],
+  output: Output.GEOMETRY,
+  inputs: [inputRole(GeometryGroup.ANY), POLYGON_OVERLAY],
+  params: [sourceLayerParam()],
   attributeRoles: () => [InputRole.INPUT],
   execute: ({ inputs }) => ({
     records: inputs[InputRole.INPUT]

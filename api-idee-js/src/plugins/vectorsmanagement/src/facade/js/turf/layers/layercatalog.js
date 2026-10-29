@@ -14,7 +14,7 @@ const TILED_TYPES = Object.freeze(['MVT', 'MBTilesVector']);
  * @const
  * @type {Array<String>}
  */
-const TECHNICAL_FIELDS = Object.freeze(['geometry', 'vendor', 'parentID']);
+export const TECHNICAL_FIELDS = Object.freeze(['geometry', 'vendor', 'parentID']);
 
 /**
  * Prefijo del nombre interno de las capas de resultado de Turf
@@ -23,6 +23,13 @@ const TECHNICAL_FIELDS = Object.freeze(['geometry', 'vendor', 'parentID']);
  * @type {String}
  */
 export const RESULT_NAME_PREFIX = 'turf_';
+
+/**
+ * Nombre interno de una capa de resultado de Turf.
+ * @const
+ * @type {RegExp}
+ */
+const RESULT_NAME = new RegExp(`^${RESULT_NAME_PREFIX}[A-Za-z]+_\\d+_`);
 
 /**
  * Resumen de una capa (o de una parte de sus elementos) calculado sin
@@ -154,7 +161,7 @@ export default class LayerCatalog {
    * @returns {Boolean}
    */
   static isResult(layer) {
-    return typeof layer.name === 'string' && layer.name.startsWith(RESULT_NAME_PREFIX);
+    return typeof layer.name === 'string' && RESULT_NAME.test(layer.name);
   }
 
   /**

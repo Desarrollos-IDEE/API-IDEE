@@ -74,7 +74,7 @@
     "analysis_content_4": "GeoJSON",
     "analysis_content_4_1": "Permite ver el GeoJSON de la capa o elementos seleccionados.",
     "turf_title": "Geoprocesos (Turf.js)",
-    "turf_content": "Permite ejecutar geoprocesos de Turf.js. Las operaciones de capas (área de influencia, extraer por localización, intersección, unión y diferencia de capas, unión espacial de atributos) combinan varias capas y se configuran en un formulario del panel, eligiendo para cada entrada la capa y sus entidades. El resto (medición, centros, transformaciones, combinar polígonos y relaciones) se aplica a los elementos seleccionados o a toda la capa activa. Las geometrías resultantes se añaden al mapa en una capa nueva. El botón de ayuda del panel explica cada operación.",
+    "turf_content": "Permite ejecutar geoprocesos de Turf.js sobre las capas vectoriales del mapa. Todas las operaciones (área de influencia; reunir, extraer y excluir entidades; superposición de capas; unión espacial de atributos; combinar polígonos; medición; centros; transformaciones y relaciones) se configuran en un formulario del panel, eligiendo en cada entrada una o varias capas y sus entidades: todas, solo las seleccionadas, una entidad seleccionada o el resultado de una operación anterior. El resultado es una capa nueva o un valor. El botón de ayuda del panel explica cada operación.",
     "download_title": "Descarga",
     "download_content": "Esta herramienta permite descargar la capa completa o los elementos seleccionados en formato GeoJSON, KML, GPX y Shapefile."
   },
@@ -223,69 +223,98 @@
   "info_remove_vertex": "Para eliminar el vértice, utiliza 'alt + clic' sobre el vértice a eliminar",
   "turf": {
     "title": "Geoprocesos (Turf.js)",
-    "hintParams": "Las que muestran este icono piden parámetros antes de ejecutarse:",
     "help": {
       "button": "Ayuda de los geoprocesos",
       "opButton": "Ayuda de la operación",
-      "layerOpsTitle": "Operaciones de capas",
-      "layerOps": "Combinan una o varias capas. Abren un formulario en este panel para elegir, en cada entrada, la capa y sus entidades: todas, solo las seleccionadas o el resultado de una operación anterior.",
-      "collectionOpsTitle": "Operaciones de la capa activa",
-      "collectionOps": "Se aplican a los elementos seleccionados o, si no hay selección, a todos los de la capa activa.",
       "selectionsTitle": "Selecciones guardadas",
-      "selections": "Con la herramienta de selección, lo que seleccionas en cada capa se guarda para usarlo como «Solo las seleccionadas». Seleccionar en otra capa no borra estas selecciones, y vaciar la selección en el mapa tampoco: quítalas en el resumen del panel.",
+      "selections": "Con la herramienta de selección, lo que seleccionas en cada capa se guarda para usarlo como «Solo las seleccionadas» o «Una entidad seleccionada». Seleccionar en otra capa no borra estas selecciones, y vaciar la selección en el mapa tampoco: quítalas en el resumen del panel.",
       "what": "Qué hace",
       "inputs": "Entradas",
       "params": "Parámetros",
-      "output": "Capa resultante"
+      "output": "Resultado",
+      "opsTitle": "Operaciones",
+      "ops": "Todas se configuran en un formulario de este panel, que no bloquea el mapa: en cada entrada eliges una o varias capas y qué entidades usar de cada una. Al abrirlo, la primera entrada usa la capa activa (su selección, si la herramienta de selección está activa). El resultado es una capa nueva o un valor; las capas de origen no se modifican.",
+      "scopesTitle": "Entidades de cada entrada",
+      "scopes": {
+        "all": "todas las entidades de la capa.",
+        "selection": "las entidades de su selección guardada.",
+        "feature": "una sola entidad de su selección guardada, que eliges en una lista. Sirve para comparar o medir dos entidades, también de la misma capa.",
+        "result": "una capa creada por una operación anterior, para encadenar operaciones."
+      },
+      "layerOutput": "Una capa nueva con la leyenda «Turf: <operación> (n)», que se puede usar como entrada de otras operaciones («Resultado de una operación anterior»). En el formulario se eligen los campos que se copian y si se añade capa_origen.",
+      "valueOutput": "Un valor que se muestra en un mensaje; no se crea ninguna capa.",
+      "combinedOutput": "Cuando varias entidades forman un único resultado, se añade num_entidades con cuántas lo forman. Sus campos solo se copian si los eliges y sus valores se combinan según «Valores de los campos combinados»: nunca se toma el de una entidad cualquiera."
     },
-    "paramsTitle": "Requiere configurar parámetros.",
     "run": "Ejecutar",
     "layerPrefix": "Turf:",
     "categories": {
       "proximity": "Área de influencia",
-      "extraction": "Selección y extracción espacial",
+      "extraction": "Reunir, extraer y excluir entidades",
       "overlay": "Superposición de capas",
       "join": "Atributos espaciales",
       "measurement": "Medición",
       "center": "Centros",
       "transformation": "Transformación",
-      "combine": "Combinar polígonos (una capa)",
+      "combine": "Combinar polígonos",
       "relation": "Relación espacial"
     },
     "categoriesDesc": {
       "proximity": "Crea zonas a una distancia de las entidades de una capa.",
-      "extraction": "Copia, sin recortarlas, las entidades de una capa que cumplen una relación espacial con otra.",
+      "extraction": "Copian entidades completas a una capa nueva, sin modificar sus geometrías: reúnen entidades de varias capas, extraen una selección, excluyen entidades o extraen las que cumplen una relación espacial.",
       "overlay": "Calcula geometrías nuevas según cómo se superponen dos capas, con los campos de ambas.",
       "join": "Añade a cada entidad los campos de las entidades de otra capa con las que se relaciona, sin cambiar su geometría.",
-      "measurement": "Área, longitud, distancia, extensión y punto a una distancia sobre una línea.",
-      "center": "Centro, centroide, centro de masas o un punto sobre cada elemento.",
-      "transformation": "Simplificar, envolventes, suavizar líneas, rotar, escalar y desplazar.",
-      "combine": "Combina en una sola geometría los polígonos seleccionados (o todos) de la capa activa. No es una superposición de capas.",
-      "relation": "Comprueba la relación entre los dos elementos seleccionados de la capa activa."
+      "measurement": "Área, longitud, distancia, extensión y punto a una distancia sobre una línea, con entidades de una o varias capas.",
+      "center": "Centro, centroide, centro de masas o un punto sobre cada entidad, con sus campos.",
+      "transformation": "Simplificar, envolventes, suavizar líneas, rotar, escalar y desplazar, con entidades de una o varias capas.",
+      "combine": "Crean una geometría nueva a partir de polígonos de una o varias capas: los fusionan, calculan su parte común o restan unos de otros. Sus campos se combinan.",
+      "relation": "Comprueban la relación entre dos entidades, de la misma capa o de capas distintas."
     },
     "ops": {
       "buffer": {
         "name": "Área de influencia (buffer)",
-        "desc": "Crea un polígono a la distancia indicada alrededor de cada entidad y conserva sus campos, o uno solo con todas las áreas disueltas.",
-        "aggregatesNote": "Al disolver, todas las áreas se unen en una sola entidad: no se conservan los campos de origen y se añade num_entidades con el número de entidades que la forman.",
+        "desc": "Crea un polígono a la distancia indicada alrededor de cada entidad, con sus campos, o uno solo con todas las áreas disueltas.",
         "roles": {
           "input": {
-            "label": "Capa de entrada",
-            "help": "Capa sobre la que se genera el área de influencia."
+            "label": "Entidades de entrada",
+            "help": "Puntos, líneas o polígonos de una o varias capas."
+          }
+        }
+      },
+      "mergeFeatures": {
+        "name": "Reunir o extraer entidades",
+        "desc": "Copia en una capa nueva las entidades elegidas de una o varias capas (todas, solo las seleccionadas, una de ellas o un resultado anterior), sin modificar sus geometrías ni sus campos. Los campos con el mismo nombre comparten columna.",
+        "roles": {
+          "input": {
+            "label": "Entidades que se copian",
+            "help": "Añade varias capas para reunirlas en una; elige «Solo las seleccionadas» para extraer una selección."
+          }
+        }
+      },
+      "excludeFeatures": {
+        "name": "Excluir entidades",
+        "desc": "Copia en una capa nueva las entidades de partida salvo las que se excluyen. Compara qué entidades son (su capa y su posición), no sus geometrías: no resta superficies.",
+        "roles": {
+          "input": {
+            "label": "Entidades de partida",
+            "help": "Por defecto, todas las de la capa activa. Puedes añadir varias capas."
+          },
+          "exclude": {
+            "label": "Entidades que se excluyen",
+            "help": "Por defecto, la selección guardada de la capa activa. Solo se quitan las que también son de partida."
           }
         }
       },
       "extractByLocation": {
         "name": "Extraer por localización",
-        "desc": "Copia en una capa nueva, completas y sin recortar, las entidades de la capa de entrada que cumplen la relación espacial con la capa de condición.",
+        "desc": "Copia en una capa nueva, completas y sin recortar, las entidades de entrada que cumplen la relación espacial con las entidades de condición.",
         "roles": {
           "input": {
-            "label": "Capa de la que se extraen entidades",
-            "help": "Sus entidades se copian con su geometría original."
+            "label": "Entidades de las que se extrae",
+            "help": "Se copian con su geometría original. Puedes añadir varias capas."
           },
           "condition": {
-            "label": "Capa que define la condición",
-            "help": "Basta con que la relación se cumpla con una de sus entidades (con «Disjunto», con ninguna). Puedes añadir varias capas."
+            "label": "Entidades que definen la condición",
+            "help": "Basta con que la relación se cumpla con una de ellas (con «Disjunto», con ninguna). Puedes añadir varias capas."
           }
         }
       },
@@ -294,148 +323,310 @@
         "desc": "Crea la parte común de cada entidad de entrada con cada polígono de superposición que la corta, con los campos de ambas. Los puntos y las líneas se recortan sin cambiar de tipo.",
         "roles": {
           "input": {
-            "label": "Capa de entrada",
-            "help": "Puntos, líneas o polígonos que se recortan."
+            "label": "Entidades de entrada",
+            "help": "Puntos, líneas o polígonos que se recortan. Puedes añadir varias capas."
           },
           "overlay": {
-            "label": "Capa de superposición",
-            "help": "Polígonos con los que se recorta."
+            "label": "Polígonos de superposición",
+            "help": "Polígonos con los que se recorta. Puedes añadir varias capas."
           }
         }
       },
       "layerUnion": {
         "name": "Unión de capas (union)",
-        "desc": "Divide los polígonos de las dos capas en las partes en que se solapan y en las que no, como la unión de QGIS. Cada parte lleva los campos de las entidades que la cubren y vacíos los de la otra capa. No es una disolución.",
+        "desc": "Divide los polígonos de las dos entradas en las partes en que se solapan y en las que no, como la unión de QGIS. Cada parte lleva los campos de las entidades que la cubren y vacíos los de la otra entrada. No es una disolución.",
         "roles": {
           "input": {
-            "label": "Primera capa",
-            "help": "Polígonos. Los solapes entre sus propias entidades no se dividen."
+            "label": "Primera entrada",
+            "help": "Polígonos de una o varias capas. Los solapes entre sus propias entidades no se dividen."
           },
           "overlay": {
-            "label": "Segunda capa",
-            "help": "Polígonos. Los solapes entre sus propias entidades no se dividen."
+            "label": "Segunda entrada",
+            "help": "Polígonos de una o varias capas. Los solapes entre sus propias entidades no se dividen."
           }
         }
       },
       "layerDifference": {
         "name": "Diferencia de capas (difference)",
-        "desc": "Crea la parte de cada entidad de entrada que queda fuera de los polígonos de las capas que se restan, con sus campos.",
+        "desc": "Crea la parte de cada entidad de entrada que queda fuera de los polígonos que se restan, con sus campos.",
         "roles": {
           "input": {
-            "label": "Capa de entrada",
-            "help": "Puntos, líneas o polígonos de los que se resta."
+            "label": "Entidades de entrada",
+            "help": "Puntos, líneas o polígonos de los que se resta. Puedes añadir varias capas."
           },
           "overlay": {
-            "label": "Capa que se resta",
-            "help": "Polígonos. Puedes añadir varias capas."
+            "label": "Polígonos que se restan",
+            "help": "Puedes añadir varias capas."
           }
         }
       },
       "spatialJoin": {
         "name": "Unión espacial de atributos (spatial join)",
-        "desc": "Copia las entidades de destino sin cambiar su geometría y les añade los campos de las entidades de la capa de unión con las que cumplen la relación espacial.",
+        "desc": "Copia las entidades de destino sin cambiar su geometría y les añade los campos de las entidades de unión con las que cumplen la relación espacial.",
         "roles": {
           "target": {
-            "label": "Capa cuyas geometrías se conservan",
-            "help": "Cada entidad conserva su geometría y sus campos."
+            "label": "Entidades cuyas geometrías se conservan",
+            "help": "Cada entidad conserva su geometría y sus campos. Puedes añadir varias capas."
           },
           "join": {
-            "label": "Capa que aporta los campos",
-            "help": "Sus campos se añaden a las entidades relacionadas."
+            "label": "Entidades que aportan los campos",
+            "help": "Sus campos se añaden a las entidades relacionadas. Si añades varias capas, sus campos con el mismo nombre comparten columna."
+          }
+        }
+      },
+      "union": {
+        "name": "Fusionar polígonos (unión)",
+        "desc": "Une en una sola geometría los polígonos elegidos de una o varias capas y elimina sus límites interiores. Los polígonos separados forman una geometría multiparte o, si se pide, una entidad cada uno. No copia entidades ni divide capas.",
+        "roles": {
+          "input": {
+            "label": "Polígonos que se fusionan",
+            "help": "De una o varias capas: una entidad, solo las seleccionadas, todas o un resultado anterior."
+          }
+        }
+      },
+      "intersect": {
+        "name": "Parte común de los polígonos (intersección)",
+        "desc": "Crea la zona que comparten todos los polígonos elegidos, de una o varias capas. Si no tienen ninguna zona común, no se crea ninguna capa.",
+        "roles": {
+          "input": {
+            "label": "Polígonos",
+            "help": "Al menos dos, de una o varias capas."
+          }
+        }
+      },
+      "difference": {
+        "name": "Restar polígonos (diferencia)",
+        "desc": "Crea la zona de los polígonos de partida (unidos) que no cubren los polígonos que se restan. Con dos o más polígonos seleccionados en la capa activa, resta al primero el resto, como antes.",
+        "roles": {
+          "input": {
+            "label": "Polígonos de partida",
+            "help": "Por defecto, la primera entidad seleccionada de la capa activa. Puedes añadir varias capas."
+          },
+          "overlay": {
+            "label": "Polígonos que se restan",
+            "help": "Por defecto, la selección de la capa activa. Las entidades que también son de partida no se restan."
           }
         }
       },
       "area": {
         "name": "Área",
-        "desc": "Calcula el área total de los polígonos."
+        "desc": "Suma el área de los polígonos elegidos, de una o varias capas. Las zonas solapadas se cuentan una vez por polígono.",
+        "roles": {
+          "input": {
+            "label": "Polígonos",
+            "help": "De una o varias capas; las entidades que no son polígonos se omiten."
+          }
+        }
       },
       "length": {
         "name": "Longitud",
-        "desc": "Calcula la longitud total de las líneas."
+        "desc": "Suma la longitud de las líneas elegidas, de una o varias capas.",
+        "roles": {
+          "input": {
+            "label": "Líneas",
+            "help": "De una o varias capas; las entidades que no son líneas se omiten."
+          }
+        }
       },
       "distance": {
         "name": "Distancia",
-        "desc": "Calcula la distancia entre dos puntos."
+        "desc": "Calcula la distancia entre dos puntos, de la misma capa o de capas distintas.",
+        "roles": {
+          "first": {
+            "label": "Punto de origen",
+            "help": "Un solo punto. Por defecto, la primera entidad seleccionada de la capa activa."
+          },
+          "second": {
+            "label": "Punto de destino",
+            "help": "Un solo punto. Por defecto, la segunda entidad seleccionada de la capa activa o la de otra selección guardada."
+          }
+        }
       },
       "bbox": {
         "name": "Extensión (bbox)",
-        "desc": "Calcula la extensión (caja envolvente) de los elementos en EPSG:4326."
+        "desc": "Calcula la extensión (caja envolvente) de las entidades elegidas, de una o varias capas, en EPSG:4326.",
+        "roles": {
+          "input": {
+            "label": "Entidades",
+            "help": "De una o varias capas."
+          }
+        }
       },
       "along": {
         "name": "Punto sobre la línea",
-        "desc": "Crea un punto a la distancia indicada desde el inicio de la línea."
+        "desc": "Crea en cada línea un punto a la distancia indicada desde su inicio, con los campos de la línea.",
+        "roles": {
+          "input": {
+            "label": "Líneas",
+            "help": "LineString de una o varias capas; las multilíneas se omiten."
+          }
+        }
       },
       "center": {
         "name": "Centro",
-        "desc": "Crea el centro de la extensión de cada elemento."
+        "desc": "Crea el centro de la extensión de cada entidad, con sus campos.",
+        "roles": {
+          "input": {
+            "label": "Entidades",
+            "help": "De una o varias capas."
+          }
+        }
       },
       "centroid": {
         "name": "Centroide",
-        "desc": "Crea el centroide (media de los vértices) de cada elemento."
+        "desc": "Crea el centroide (media de los vértices) de cada entidad, con sus campos.",
+        "roles": {
+          "input": {
+            "label": "Entidades",
+            "help": "De una o varias capas."
+          }
+        }
       },
       "centerOfMass": {
         "name": "Centro de masas",
-        "desc": "Crea el centro de masas de cada elemento."
+        "desc": "Crea el centro de masas de cada entidad, con sus campos.",
+        "roles": {
+          "input": {
+            "label": "Entidades",
+            "help": "De una o varias capas."
+          }
+        }
       },
       "pointOnFeature": {
         "name": "Punto en el elemento",
-        "desc": "Crea un punto situado siempre sobre cada elemento."
+        "desc": "Crea un punto situado siempre sobre cada entidad, con sus campos.",
+        "roles": {
+          "input": {
+            "label": "Entidades",
+            "help": "De una o varias capas."
+          }
+        }
       },
       "simplify": {
         "name": "Simplificar",
-        "desc": "Simplifica las líneas y polígonos (algoritmo de Douglas-Peucker)."
+        "desc": "Simplifica cada línea y polígono (algoritmo de Douglas-Peucker) y conserva sus campos.",
+        "roles": {
+          "input": {
+            "label": "Líneas y polígonos",
+            "help": "De una o varias capas; los puntos se omiten."
+          }
+        }
       },
       "convex": {
         "name": "Envolvente convexa",
-        "desc": "Crea el polígono convexo mínimo que contiene todos los elementos."
+        "desc": "Crea el polígono convexo mínimo que contiene todas las entidades elegidas, de una o varias capas.",
+        "roles": {
+          "input": {
+            "label": "Entidades",
+            "help": "De una o varias capas."
+          }
+        }
       },
       "envelope": {
         "name": "Rectángulo envolvente",
-        "desc": "Crea el rectángulo que contiene todos los elementos."
+        "desc": "Crea el rectángulo que contiene todas las entidades elegidas, de una o varias capas.",
+        "roles": {
+          "input": {
+            "label": "Entidades",
+            "help": "De una o varias capas."
+          }
+        }
       },
       "bezierSpline": {
         "name": "Suavizar línea (Bézier)",
-        "desc": "Convierte cada línea en una curva de Bézier suavizada."
+        "desc": "Convierte cada línea en una curva de Bézier suavizada y conserva sus campos.",
+        "roles": {
+          "input": {
+            "label": "Líneas",
+            "help": "LineString de una o varias capas; las multilíneas se omiten."
+          }
+        }
       },
       "transformRotate": {
         "name": "Rotar",
-        "desc": "Rota cada elemento sobre su centroide."
+        "desc": "Rota cada entidad sobre su centroide o sobre un punto de giro común y conserva sus campos.",
+        "roles": {
+          "input": {
+            "label": "Entidades",
+            "help": "De una o varias capas."
+          }
+        }
       },
       "transformScale": {
         "name": "Escalar",
-        "desc": "Escala cada elemento respecto a su centroide."
+        "desc": "Escala cada entidad respecto a un punto de origen y conserva sus campos.",
+        "roles": {
+          "input": {
+            "label": "Entidades",
+            "help": "De una o varias capas."
+          }
+        }
       },
       "transformTranslate": {
         "name": "Desplazar",
-        "desc": "Desplaza cada elemento una distancia en una dirección."
-      },
-      "union": {
-        "name": "Fusionar polígonos (turf.union)",
-        "desc": "Une en una sola geometría los polígonos seleccionados (o todos) de la capa activa. No conserva atributos."
-      },
-      "intersect": {
-        "name": "Parte común de los polígonos (turf.intersect)",
-        "desc": "Crea la zona común a todos los polígonos seleccionados (o todos) de la capa activa."
-      },
-      "difference": {
-        "name": "Restar polígonos (turf.difference)",
-        "desc": "Resta al primer polígono seleccionado de la capa activa el resto de polígonos seleccionados."
+        "desc": "Desplaza cada entidad una distancia en una dirección y conserva sus campos.",
+        "roles": {
+          "input": {
+            "label": "Entidades",
+            "help": "De una o varias capas."
+          }
+        }
       },
       "booleanPointInPolygon": {
         "name": "Punto en polígono",
-        "desc": "Comprueba si el punto está dentro del polígono."
+        "desc": "Comprueba si un punto está dentro de un polígono, de la misma capa o de capas distintas.",
+        "roles": {
+          "first": {
+            "label": "Punto",
+            "help": "Un solo punto. Por defecto, la primera entidad seleccionada de la capa activa."
+          },
+          "second": {
+            "label": "Polígono",
+            "help": "Un solo polígono. Por defecto, la segunda entidad seleccionada de la capa activa o la de otra selección guardada."
+          }
+        }
       },
       "booleanIntersects": {
         "name": "Intersecan",
-        "desc": "Comprueba si los dos elementos se tocan o se cruzan."
+        "desc": "Comprueba si dos entidades, de la misma capa o de capas distintas, se tocan o se cruzan.",
+        "roles": {
+          "first": {
+            "label": "Primera entidad",
+            "help": "Una sola entidad. Por defecto, la primera seleccionada de la capa activa."
+          },
+          "second": {
+            "label": "Segunda entidad",
+            "help": "Una sola entidad. Por defecto, la segunda seleccionada de la capa activa o la de otra selección guardada."
+          }
+        }
       },
       "booleanContains": {
         "name": "Contiene",
-        "desc": "Comprueba si el primer elemento seleccionado contiene al segundo."
+        "desc": "Comprueba si la primera entidad contiene a la segunda, de la misma capa o de capas distintas.",
+        "roles": {
+          "first": {
+            "label": "Entidad que contiene",
+            "help": "Una sola entidad. Por defecto, la primera seleccionada de la capa activa."
+          },
+          "second": {
+            "label": "Entidad contenida",
+            "help": "Una sola entidad. Por defecto, la segunda seleccionada de la capa activa o la de otra selección guardada."
+          }
+        }
       },
       "booleanWithin": {
         "name": "Está dentro",
-        "desc": "Comprueba si el primer elemento seleccionado está dentro del segundo."
+        "desc": "Comprueba si la primera entidad está dentro de la segunda, de la misma capa o de capas distintas.",
+        "roles": {
+          "first": {
+            "label": "Entidad que está dentro",
+            "help": "Una sola entidad. Por defecto, la primera seleccionada de la capa activa."
+          },
+          "second": {
+            "label": "Entidad que la contiene",
+            "help": "Una sola entidad. Por defecto, la segunda seleccionada de la capa activa o la de otra selección guardada."
+          }
+        }
       }
     },
     "params": {
@@ -460,7 +651,10 @@
       "dissolve": "Disolver el resultado",
       "predicate": "Relación espacial",
       "matchPolicy": "Si hay varias coincidencias",
-      "keepUnmatched": "Conservar las entidades sin coincidencia"
+      "keepUnmatched": "Conservar las entidades sin coincidencia",
+      "separateParts": "Una entidad por cada parte separada",
+      "fieldPolicy": "Valores de los campos combinados",
+      "sourceLayer": "Añadir la capa de origen (capa_origen)"
     },
     "paramsHelp": {
       "tolerance": "En grados (EPSG:4326). 0,001 equivale aproximadamente a 100 m.",
@@ -468,11 +662,14 @@
       "radius": "Distancia del área de influencia. Un valor negativo reduce los polígonos.",
       "concavity": "Vacío: envolvente convexa. Cuanto más bajo (mínimo 1), más se ajusta a los elementos.",
       "pivot": "En grados (EPSG:4326). Déjalas vacías para girar cada elemento sobre su centroide.",
-      "dissolve": "Une todas las áreas en una sola entidad.",
+      "dissolve": "Une todas las áreas en una sola entidad; sus campos se combinan.",
       "predicateExtract": "Relación de cada entidad de entrada con las de condición. «Dentro de» exige que esté en el interior: no basta con tocar el borde.",
       "predicateJoin": "«Dentro de»: la entidad de destino está dentro de la de unión. «Contiene»: la entidad de destino contiene a la de unión.",
       "matchPolicy": "«Una entidad por coincidencia» repite la entidad de destino por cada entidad relacionada. «Mayor solape» elige la de más superficie o longitud común; si empatan, la primera de la capa.",
-      "keepUnmatched": "Si se desmarca, las entidades sin ninguna coincidencia no se copian."
+      "keepUnmatched": "Si se desmarca, las entidades sin ninguna coincidencia no se copian.",
+      "separateParts": "Si los polígonos fusionados forman zonas separadas, crea una entidad por zona, con los campos de las entidades que la forman. Si no se marca, crea una sola geometría multiparte.",
+      "fieldPolicy": "«Valores distintos» reúne los valores distintos de las entidades, separados por comas. «Valor común» copia el valor solo si todas las entidades lo comparten; si no, lo deja vacío.",
+      "sourceLayer": "Añade una columna con el nombre de la capa de la que procede cada entidad (o de las capas, si el resultado combina varias)."
     },
     "units": {
       "meters": "Metros",
@@ -547,7 +744,8 @@
     "scopes": {
       "all": "Todas las entidades de la capa",
       "selection": "Solo las seleccionadas",
-      "result": "Resultado de una operación anterior"
+      "result": "Resultado de una operación anterior",
+      "feature": "Una entidad seleccionada"
     },
     "layerIssues": {
       "tiled": "capa teselada: sus entidades están recortadas por teselas",
@@ -562,10 +760,12 @@
       "noGeometry": "Se han omitido {n} entidad(es) de «{layer}» sin geometría.",
       "unsupportedType": "Se han omitido {n} entidad(es) de «{layer}» con un tipo de geometría no admitido.",
       "collapsed": "{n} entidad(es) no han generado área de influencia: el radio negativo las hace desaparecer.",
-      "unmatched": "Se han descartado {n} entidad(es) sin coincidencia."
+      "unmatched": "Se han descartado {n} entidad(es) sin coincidencia.",
+      "noResult": "{n} entidad(es) de entrada no han producido resultado."
     },
     "aggregates": {
-      "count": "{role} · número de entidades"
+      "count": "{role} · número de entidades",
+      "layers": "{role} · capa de origen"
     },
     "form": {
       "back": "← Volver a las operaciones",
@@ -575,12 +775,14 @@
       "noLayers": {
         "all": "No hay capas vectoriales en el mapa",
         "selection": "Ninguna capa tiene una selección guardada",
-        "result": "No hay resultados de operaciones anteriores"
+        "result": "No hay resultados de operaciones anteriores",
+        "feature": "Ninguna capa tiene una selección guardada"
       },
       "summary": {
         "all": "«{layer}», todas sus entidades: {n} ({types})",
         "selection": "«{layer}», solo las seleccionadas: {n} ({types})",
-        "result": "«{layer}» (resultado anterior): {n} ({types})"
+        "result": "«{layer}» (resultado anterior): {n} ({types})",
+        "feature": "«{layer}», entidad {feature} ({types})"
       },
       "omitted": "Se omitirán {n} sin una geometría admitida.",
       "addLayer": "+ Añadir otra capa",
@@ -596,7 +798,10 @@
       "noColumns": "La capa resultante no tendrá campos.",
       "output": "Nombre de la capa resultante",
       "outputPlaceholder": "Por defecto: Turf: <operación> (n)",
-      "willProcess": "Se procesará:"
+      "willProcess": "Se procesará:",
+      "feature": "Entidad",
+      "columnCombined": "{role} · {field} ({policy})",
+      "combinedFields": "Cada resultado reúne varias entidades: elige qué campos se copian; sus valores se combinan según «Valores de los campos combinados»."
     },
     "selections": {
       "title": "Selecciones guardadas por capa",
@@ -616,19 +821,15 @@
       "minY": "Latitud mínima",
       "maxX": "Longitud máxima",
       "maxY": "Latitud máxima",
-      "layerCreated": "Se ha creado la capa «{layer}» con {n} geometría(s).",
       "featuresCreated": "Se ha creado la capa «{layer}» con {n} entidad(es).",
       "emptyResult": "La operación no ha producido ninguna entidad, así que no se ha creado ninguna capa."
     },
     "exception": {
       "notLoaded": "Turf.js no está disponible. Se necesita una versión de API-IDEE que lo incluya.",
-      "min": "La operación necesita al menos {n} elementos.",
-      "max": "La operación admite como máximo {n} elementos.",
-      "exact": "La operación necesita exactamente {n} elementos.",
-      "types": "Tipo de geometría no admitido. Esta operación admite: {types}.",
-      "pointPolygon": "Selecciona un punto y un polígono.",
-      "unsupportedGeometries": "Turf no puede comprobar esta relación entre los tipos de geometría seleccionados.",
-      "empty": "La operación no ha devuelto ninguna geometría.",
+      "min": "«{role}» necesita al menos {n} entidades y tiene {count}.",
+      "max": "«{role}» admite como máximo {n} entidad(es) y tiene {count}.",
+      "exact": "«{role}» necesita exactamente {n} entidad(es) y tiene {count}. Elige «Una entidad seleccionada».",
+      "unsupportedGeometries": "Turf no puede comprobar esta relación entre esos tipos de geometría.",
       "error": "Error al ejecutar la operación: {msg}",
       "pivot": "Indica la longitud y la latitud del punto de giro, o deja ambas vacías.",
       "noLayer": "Elige una capa en «{role}».",
@@ -645,7 +846,15 @@
       "unknownField": "El campo «{field}» no existe en «{role}».",
       "radiusZero": "La distancia no puede ser 0.",
       "negativeRadius": "Una distancia negativa solo se admite si todas las entidades son polígonos.",
-      "geometry": "No se ha podido calcular la geometría de la entidad {feature} de «{layer}»: {msg}"
+      "geometry": "No se ha podido calcular la geometría de la entidad {feature} de «{layer}»: {msg}",
+      "featureNotSelected": "La entidad elegida de «{layer}» ya no está en su selección guardada. Elige otra."
+    },
+    "fieldPolicies": {
+      "distinct": "Valores distintos (lista)",
+      "common": "Valor común (vacío si difieren)"
+    },
+    "notices": {
+      "mixedDimensions": "La capa resultante mezclará puntos, líneas o polígonos. Las operaciones posteriores solo usarán los tipos que admitan."
     }
   }
 }

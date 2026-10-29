@@ -4,14 +4,15 @@ import {
   HelpKey,
   InputRole,
   OperationId,
-  OperationKind,
   OptionsKey,
+  Output,
   ParamName,
   ParamType,
   SpatialPredicate,
 } from '../turftypes';
 import { PREDICATES, relate } from '../geometry/predicates';
-import { ALL_SCOPES, guard } from './common';
+import { ALL_SCOPES, guard, inputRole } from './common';
+import { sourceLayerParam } from './params';
 
 /**
  * Relaciones que se pueden elegir.
@@ -34,18 +35,11 @@ const PREDICATE_OPTIONS = Object.freeze([
  */
 export default Object.freeze({
   id: OperationId.EXTRACT_BY_LOCATION,
-  kind: OperationKind.LAYERS,
   category: Category.EXTRACTION,
+  output: Output.GEOMETRY,
   inputs: [
-    {
-      role: InputRole.INPUT, types: GeometryGroup.ANY, scopes: ALL_SCOPES, maxLayers: 1,
-    },
-    {
-      role: InputRole.CONDITION,
-      types: GeometryGroup.ANY,
-      scopes: ALL_SCOPES,
-      maxLayers: Number.POSITIVE_INFINITY,
-    },
+    inputRole(GeometryGroup.ANY),
+    { role: InputRole.CONDITION, types: GeometryGroup.ANY, scopes: ALL_SCOPES },
   ],
   params: [
     {
@@ -58,6 +52,7 @@ export default Object.freeze({
       availableOptions: (meta) => PREDICATE_OPTIONS.filter((id) => PREDICATES[id]
         .supports(meta[InputRole.INPUT].types, meta[InputRole.CONDITION].types)),
     },
+    sourceLayerParam(),
   ],
   attributeRoles: () => [InputRole.INPUT],
   execute: ({ inputs, params }) => {

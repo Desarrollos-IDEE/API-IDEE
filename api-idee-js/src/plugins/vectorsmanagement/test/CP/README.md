@@ -103,39 +103,47 @@ Configuración inicial: `{ vertex: true, edge: false, intersection: true, allLay
 # CP-009 - Geoprocesos con Turf.js (capa GeoJSON)
 La capa contiene dos puntos (P1, P2), una línea (L1) y dos polígonos solapados (A, B). Requiere un núcleo de API-IDEE que publique `window.turf`.
 
-[ ] Panel con las operaciones agrupadas por categoría y el icono en las que piden parámetros
+[ ] Panel con las operaciones agrupadas por categoría; todas abren su formulario en el panel sin bloquear el mapa
+[ ] Entradas de cada formulario
+- [ ] Ámbitos «Todas», «Solo las seleccionadas», «Una entidad seleccionada» (lista de entidades) y «Resultado de una operación anterior»
+- [ ] Añadir y quitar capas en una misma entrada
+- [ ] Con A y B seleccionados, la primera entrada usa la selección; en relaciones y «Restar polígonos», la primera y la segunda entidad
+- [ ] Seleccionar en otra capa con el formulario abierto: el formulario y el resumen de selecciones se actualizan
 [ ] Medición
-- [ ] Área en distintas unidades: m², hectáreas, acres (formulario + toast)
-- [ ] Longitud en distintas unidades: millas, pies, grados (formulario + toast)
-- [ ] Distancia entre P1 y P2 en distintas unidades (formulario + toast)
+- [ ] Área en distintas unidades: m², hectáreas, acres (toast)
+- [ ] Longitud en distintas unidades: millas, pies, grados (toast)
+- [ ] Distancia entre P1 y P2 (una entidad seleccionada en cada entrada) en distintas unidades (toast)
 - [ ] Extensión bbox (diálogo)
-- [ ] Punto sobre la línea (formulario + capa)
-[ ] Centros: centro, centroide, centro de masas y punto en el elemento (capa)
-[ ] Área de influencia (formulario del panel, ámbito «Solo las seleccionadas» o «Todas»)
-- [ ] Área de influencia (capa con los campos de origen; disuelta, con num_entidades)
+- [ ] Punto sobre la línea (capa con los campos de la línea)
+[ ] Centros: centro, centroide, centro de masas y punto en el elemento (capa con los campos de cada elemento)
+[ ] Área de influencia (ámbito «Solo las seleccionadas» o «Todas»)
+- [ ] Área de influencia (capa con los campos de origen; disuelta, con num_entidades y los campos elegidos combinados)
 - [ ] Área de influencia con radio negativo sobre A: el polígono encoge
+[ ] Reunir, extraer y excluir
+- [ ] Reunir entidades de dos capas: geometrías y campos sin cambios, capa_origen y aviso de tipos mezclados
+- [ ] Extraer solo las seleccionadas
+- [ ] Excluir la selección de toda la capa
 [ ] Transformación
-- [ ] Simplificar (formulario + capa)
-- [ ] Envolvente convexa sin concavidad y con concavidad 1 (formulario + capa)
+- [ ] Simplificar (capa con los campos de origen)
+- [ ] Envolvente convexa sin concavidad y con concavidad 1 (capa con num_entidades)
 - [ ] Rectángulo envolvente (capa)
-- [ ] Suavizar línea Bézier (formulario + capa)
+- [ ] Suavizar línea Bézier (capa)
 - [ ] Rotar sin punto de giro, con punto de giro y con solo uno de los dos campos (error)
 - [ ] Escalar desde el centroide y desde una esquina
 - [ ] Desplazar en distintas unidades
-[ ] Combinar polígonos (una capa) con A y B seleccionados
-- [ ] Fusionar polígonos
+[ ] Combinar polígonos con A y B seleccionados, y con polígonos de otra capa
+- [ ] Fusionar polígonos (multiparte o una entidad por parte separada), con campos combinados («Valores distintos» y «Valor común»)
 - [ ] Parte común de los polígonos
-- [ ] Restar polígonos (depende del orden de selección)
-[ ] Relación espacial (toast Sí/No)
+- [ ] Restar polígonos (por defecto, la primera entidad seleccionada menos el resto)
+[ ] Relación espacial (toast Sí/No), con entidades de la misma capa y de capas distintas
 - [ ] Punto en polígono, con un punto sobre el borde marcando y sin marcar "Ignorar el borde"
 - [ ] Intersecan, marcando y sin marcar "Ignorar autointersecciones"
-- [ ] Contiene y está dentro (dependen del orden de selección)
+- [ ] Contiene y está dentro (Primera y Segunda entidad)
 [ ] Las capas de resultado aparecen en el selector de capas y se pueden usar en otras operaciones
 [ ] Ejecutar dos veces la misma operación crea `Turf: <operación> (1)` y `(2)`; otra operación empieza en `(1)`; al borrar la `(2)` y repetir, se vuelve a crear la `(2)`
 [ ] Errores
-- [ ] Sin elementos seleccionados o capa vacía
-- [ ] Número de elementos incorrecto
+- [ ] Sin selección guardada o capa vacía
+- [ ] Número de entidades incorrecto (p. ej. dos entidades en una entrada de una sola)
 - [ ] Tipo de geometría incorrecto
-- [ ] Operación sin resultado (por ejemplo, intersección sin solape)
-- [ ] Cancelar el formulario no ejecuta la operación
-- [ ] Botón "Ejecutar" deshabilitado con valores no válidos
+- [ ] Operación sin resultado (por ejemplo, parte común sin solape)
+- [ ] Botón "Ejecutar" deshabilitado con valores no válidos, con el motivo

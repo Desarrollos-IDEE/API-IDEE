@@ -32,6 +32,16 @@
                     {{/each}}
                 </select>
             </div>
+            {{#if isFeature}}
+            <div class="m-vectorsmanagement-turf-field">
+                <label for="{{featureSelectId}}">{{featureLabel}}</label>
+                <select tabindex="{{order}}" id="{{featureSelectId}}" data-input="feature" data-role="{{role}}" data-index="{{index}}">
+                    {{#each features}}
+                    <option value="{{key}}"{{#if selected}} selected{{/if}}>{{text}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            {{/if}}
             <p class="m-vectorsmanagement-turf-entry-summary">{{summary}}</p>
             {{#if removable}}
             <button type="button" tabindex="{{order}}" class="m-vectorsmanagement-turf-link" id="{{removeId}}" data-action="remove-entry" data-role="{{role}}" data-index="{{index}}">{{removeText}}</button>
@@ -51,11 +61,15 @@
     </fieldset>
     {{/if}}
 
+    {{#if createsLayer}}
     <fieldset class="m-vectorsmanagement-turf-group">
         <legend>{{translations.attributes}}</legend>
         {{#each attributes}}
         <div class="m-vectorsmanagement-turf-fields">
             <p class="m-vectorsmanagement-turf-fields-title">{{title}}</p>
+            {{#if combinedNote}}
+            <p class="m-vectorsmanagement-turf-field-help">{{combinedNote}}</p>
+            {{/if}}
             {{#each fields}}
             <label class="m-vectorsmanagement-turf-check">
                 <input type="checkbox" tabindex="{{order}}" id="{{id}}" value="{{name}}" data-input="field" data-role="{{role}}"{{#if checked}} checked{{/if}}>
@@ -92,6 +106,7 @@
         <label for="m-vectorsmanagement-turf-output">{{translations.output}}</label>
         <input type="text" tabindex="{{order}}" id="m-vectorsmanagement-turf-output" value="{{outputName}}" placeholder="{{outputPlaceholder}}" data-input="output">
     </div>
+    {{/if}}
 
     <div class="m-vectorsmanagement-turf-status" id="m-vectorsmanagement-turf-opform-status" aria-live="polite" data-live="status">
         <p class="m-vectorsmanagement-turf-fields-title">{{translations.willProcess}}</p>
@@ -100,6 +115,13 @@
             <li>{{this}}</li>
             {{/each}}
         </ul>
+        {{#if notices.length}}
+        <ul class="m-vectorsmanagement-turf-notices">
+            {{#each notices}}
+            <li>{{this}}</li>
+            {{/each}}
+        </ul>
+        {{/if}}
         {{#if errors.length}}
         <ul class="m-vectorsmanagement-turf-errors">
             {{#each errors}}

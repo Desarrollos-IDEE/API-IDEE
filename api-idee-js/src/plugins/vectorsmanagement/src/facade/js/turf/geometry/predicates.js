@@ -85,7 +85,7 @@ const isDirectlySupported = (containerType, containedType) => (
  * @param {GeometryType} containedType Tipo del contenido.
  * @returns {Boolean}
  */
-export const supportsContains = (containerType, containedType) => (
+const supportsContains = (containerType, containedType) => (
   isTrivialNotContainedType(containerType, containedType)
   || isDirectlySupported(containerType, containedType)
   || isDirectlySupported(containerType, PART_TYPE[containedType]));
@@ -98,7 +98,7 @@ export const supportsContains = (containerType, containedType) => (
  * @param {Object} contained Feature o geometría GeoJSON contenido.
  * @returns {Boolean}
  */
-export const contains = (container, contained) => (
+const contains = (container, contained) => (
   isTrivialNotContainedType(geometryOf(container).type, geometryOf(contained).type)
     ? false : turf.booleanContains(container, contained));
 
@@ -118,15 +118,25 @@ const containsParts = (container, contained) => (
     : turf.flatten(contained).features.every((part) => contains(container, part)));
 
 /**
- * Valida que Turf admite la combinación de geometrías de contains / within.
+ * Parejas de tipos contenedor / contenido.
  *
- * @param {Object} container Feature GeoJSON contenedor.
- * @param {Object} contained Feature GeoJSON contenido.
- * @returns {ErrorKey|null} Clave del error o null si es válida.
+ * @param {Array<GeometryType>} containerTypes Tipos de los contenedores.
+ * @param {Array<GeometryType>} containedTypes Tipos de los contenidos.
+ * @returns {Array<Array<GeometryType>>} Parejas.
  */
-export const validateContains = (container, contained) => (
-  isTrivialNotContainedType(container.geometry.type, contained.geometry.type)
-  || isDirectlySupported(container.geometry.type, contained.geometry.type)
+const typePairs = (containerTypes, containedTypes) => containerTypes
+  .flatMap((a) => containedTypes.map((b) => [a, b]));
+
+/**
+ * Comprueba que se puede calcular contains / within entre los tipos de dos
+ * entradas, aunque el resultado sea falso por dimensión.
+ *
+ * @param {Array<GeometryType>} containerTypes Tipos de los contenedores.
+ * @param {Array<GeometryType>} containedTypes Tipos de los contenidos.
+ * @returns {ErrorKey|null} Clave del error o null si se puede calcular.
+ */
+export const validateContainsTypes = (containerTypes, containedTypes) => (
+  typePairs(containerTypes, containedTypes).every(([a, b]) => supportsContains(a, b))
     ? null : ErrorKey.UNSUPPORTED_GEOMETRIES);
 
 /**
@@ -139,8 +149,8 @@ export const validateContains = (container, contained) => (
  * @returns {Boolean}
  */
 const supportsContainsTypes = (containerTypes, containedTypes) => {
-  const pairs = containerTypes.flatMap((a) => containedTypes.map((b) => [a, b]));
-  return pairs.every(([a, b]) => supportsContains(a, b))
+  const pairs = typePairs(containerTypes, containedTypes);
+  return validateContainsTypes(containerTypes, containedTypes) === null
     && pairs.some(([a, b]) => !isTrivialNotContainedType(a, b));
 };
 

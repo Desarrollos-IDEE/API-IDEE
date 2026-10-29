@@ -5,18 +5,18 @@ import TurfImplControl from 'impl/turfcontrol';
 import template from '../../templates/turf';
 import { getValue } from './i18n/language';
 import { CATEGORIES, OPERATIONS, getOperation } from './turf/turfoperations';
-import TurfManager from './turf/turfmanager';
-import TurfParamsDialog from './turf/turfparamsdialog';
 import LayerOperationRunner from './turf/layeroperationrunner';
 import InputResolver from './turf/layers/inputresolver';
 import LayerCatalog from './turf/layers/layercatalog';
 import ResultLayerWriter from './turf/layers/resultlayers';
 import SelectionRegistry from './turf/layers/selectionregistry';
-import { OperationKind, ResultKey } from './turf/turftypes';
+import { isTurfAvailable } from './turf/operations/common';
+import { Output, ResultKey } from './turf/turftypes';
 import { showCatalogHelp } from './turf/ui/helpdialog';
 import OperationForm from './turf/ui/operationform';
 import SelectionSummary from './turf/ui/selectionsummary';
 import { errorMessage, skippedMessage, translate } from './turf/ui/messages';
+import { showValue } from './turf/ui/valueview';
 
 export default class TurfControl extends IDEE.Control {
   /**
@@ -43,23 +43,21 @@ export default class TurfControl extends IDEE.Control {
     this.template = null;
     this.selections_ = new SelectionRegistry();
     this.catalog_ = new LayerCatalog(() => managementControl.getAllLayers());
-    const writer = new ResultLayerWriter(map, impl);
-    this.manager_ = new TurfManager(managementControl, impl, writer);
     this.runner_ = new LayerOperationRunner({
       map,
       catalog: this.catalog_,
       selections: this.selections_,
       resolver: new InputResolver(this.catalog_, this.selections_, impl),
-      writer,
-      isAvailable: TurfManager.isAvailable,
+      writer: new ResultLayerWriter(map, impl),
+      isAvailable: isTurfAvailable,
     });
-    this.paramsDialog_ = new TurfParamsDialog(managementControl.order);
     this.form_ = new OperationForm({
       runner: this.runner_,
       catalog: this.catalog_,
       selections: this.selections_,
       order: managementControl.order,
       getActiveLayer: () => managementControl.selectedLayer || null,
+      isSelecting: () => managementControl.getSelection() === 'feature',
       onRun: (op, config) => this.runLayerOperation(op.id, config),
       onClose: () => this.showCatalog_(),
     });
@@ -69,10 +67,6 @@ export default class TurfControl extends IDEE.Control {
         && managementControl.getSelection() === 'feature',
       order: managementControl.order,
     });
-    this.launchers_ = {
-      [OperationKind.COLLECTION]: (op) => this.runCollectionOperation_(op),
-      [OperationKind.LAYERS]: (op) => this.openLayerForm_(op),
-    };
     this.refreshView_ = () => this.refreshView();
     this.unsubscribeSelections_ = this.selections_.onChange(this.refreshView_);
   }
@@ -94,10 +88,7 @@ export default class TurfControl extends IDEE.Control {
           ops: OPERATIONS.filter((op) => op.category === category).map((op) => ({
             id: op.id,
             name: getValue(`turf.ops.${op.id}.name`),
-            title: op.params.length > 0
-              ? `${getValue(`turf.ops.${op.id}.desc`)} ${getValue('turf.paramsTitle')}`
-              : getValue(`turf.ops.${op.id}.desc`),
-            hasParams: op.params.length > 0,
+            title: getValue(`turf.ops.${op.id}.desc`),
           })),
         })).filter((category) => category.ops.length > 0),
         translations: {
@@ -119,13 +110,13 @@ export default class TurfControl extends IDEE.Control {
     this.map_.on(IDEE.evt.REMOVED_LAYER, this.refreshView_);
     this.refreshView();
 
-    if (!TurfManager.isAvailable()) {
+    if (!isTurfAvailable()) {
       IDEE.toast.error(getValue('turf.exception.notLoaded'), null, 6000);
     }
   }
 
   /**
-   * Request operation params and executes it.
+   * Opens the form of an operation in the panel.
    *
    * @public
    * @function
@@ -134,25 +125,31 @@ export default class TurfControl extends IDEE.Control {
    */
   runOperation(id) {
     const op = getOperation(id);
-    this.launchers_[op.kind](op);
+    if (!op || !this.template) return;
+    const container = this.template.querySelector('.m-vectorsmanagement-turf-opform-container');
+    this.template.querySelector('.m-vectorsmanagement-turf-catalog').hidden = true;
+    container.hidden = false;
+    this.form_.open(op, container);
   }
 
   /**
-   * Executes a layer operation and shows its result. It doesn't need the
-   * panel to be open.
+   * Executes an operation and shows its result: the new layer or the
+   * calculated value. It doesn't need the panel to be open.
    *
    * @public
    * @function
    * @param {String} id operation id.
    * @param {Object} config inputs (layer and scope by role), params,
    * attributes and output name. See LayerOperationConfig.
-   * @returns {Object} { layer, count, skipped } or { error } if it fails.
+   * @returns {Object} { layer, count, skipped } (operations that create a
+   * layer), { value, skipped } (operations that calculate a value) or
+   * { error } if it fails.
    * @api
    */
   runLayerOperation(id, config) {
     const op = getOperation(id);
-    if (!op || op.kind !== OperationKind.LAYERS) {
-      throw new Error(`VectorsManagement Turf: ${id} is not a layer operation`);
+    if (!op) {
+      throw new Error(`VectorsManagement Turf: ${id} is not an operation`);
     }
     const opName = getValue(`turf.ops.${op.id}.name`);
     this.selections_.prune(this.catalog_.getLayers());
@@ -164,7 +161,9 @@ export default class TurfControl extends IDEE.Control {
       return { error };
     }
     const skipped = skippedMessage(result.skipped);
-    if (result.layer === null) {
+    if (op.output === Output.VALUE) {
+      showValue(op, result.value, result.params, skipped);
+    } else if (result.layer === null) {
       IDEE.toast.warning(`${getValue(`turf.results.${ResultKey.EMPTY_RESULT}`)} ${skipped}`.trim(), null, 6000);
     } else {
       const created = translate(`turf.results.${ResultKey.FEATURES_CREATED}`, {
@@ -218,8 +217,10 @@ export default class TurfControl extends IDEE.Control {
    * @param {IDEE.layer.Vector} layer
    * @api
    */
+  // eslint-disable-next-line no-unused-vars
   setLayer(layer) {
-    this.manager_.setLayer(layer);
+    // Las operaciones eligen sus capas en el formulario; la capa activa solo
+    // cambia sus valores por defecto y el resumen de selecciones.
     this.refreshView();
   }
 
@@ -263,38 +264,6 @@ export default class TurfControl extends IDEE.Control {
     this.deactivate();
     this.unsubscribeSelections_();
     this.selections_.clear();
-  }
-
-  /**
-   * Runs a collection operation, asking for its params first.
-   *
-   * @private
-   * @param {TurfOperation} op Collection operation.
-   */
-  runCollectionOperation_(op) {
-    if (op.params.length !== 0) {
-      this.paramsDialog_.open(op).then((values) => {
-        if (values !== null) {
-          this.manager_.execute(op, values);
-        }
-      });
-    } else {
-      this.manager_.execute(op);
-    }
-  }
-
-  /**
-   * Opens the form of a layer operation in the panel.
-   *
-   * @private
-   * @param {LayerOperation} op Layer operation.
-   */
-  openLayerForm_(op) {
-    if (!this.template) return;
-    const container = this.template.querySelector('.m-vectorsmanagement-turf-opform-container');
-    this.template.querySelector('.m-vectorsmanagement-turf-catalog').hidden = true;
-    container.hidden = false;
-    this.form_.open(op, container);
   }
 
   /**

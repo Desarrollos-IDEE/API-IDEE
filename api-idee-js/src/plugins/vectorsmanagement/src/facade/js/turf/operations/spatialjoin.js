@@ -6,8 +6,8 @@ import {
   InputRole,
   MatchPolicy,
   OperationId,
-  OperationKind,
   OptionsKey,
+  Output,
   ParamName,
   ParamType,
   SkipReason,
@@ -16,6 +16,7 @@ import {
 import { overlapSize } from '../geometry/clipping';
 import { PREDICATES, relate } from '../geometry/predicates';
 import { ALL_SCOPES, guard } from './common';
+import { sourceLayerParam } from './params';
 
 /**
  * Relaciones que se pueden elegir.
@@ -48,7 +49,7 @@ const MATCH_POLICIES = Object.freeze({
     choose: (target, matches) => matches,
   }),
   // La coincidencia con más superficie (o longitud) común; si empatan, la
-  // primera en el orden de la capa de unión.
+  // primera en el orden de las entradas de unión.
   [MatchPolicy.LARGEST_OVERLAP]: Object.freeze({
     supports: (meta) => meta[InputRole.TARGET].types
       .every((type) => GeometryDimension[type] > 0)
@@ -71,15 +72,11 @@ const MATCH_POLICIES = Object.freeze({
  */
 export default Object.freeze({
   id: OperationId.SPATIAL_JOIN,
-  kind: OperationKind.LAYERS,
   category: Category.JOIN,
+  output: Output.GEOMETRY,
   inputs: [
-    {
-      role: InputRole.TARGET, types: GeometryGroup.ANY, scopes: ALL_SCOPES, maxLayers: 1,
-    },
-    {
-      role: InputRole.JOIN, types: GeometryGroup.ANY, scopes: ALL_SCOPES, maxLayers: 1,
-    },
+    { role: InputRole.TARGET, types: GeometryGroup.ANY, scopes: ALL_SCOPES },
+    { role: InputRole.JOIN, types: GeometryGroup.ANY, scopes: ALL_SCOPES },
   ],
   params: [
     {
@@ -108,6 +105,7 @@ export default Object.freeze({
       default: true,
       help: HelpKey.KEEP_UNMATCHED,
     },
+    sourceLayerParam(),
   ],
   attributeRoles: () => [InputRole.TARGET, InputRole.JOIN],
   execute: ({ inputs, params }) => {

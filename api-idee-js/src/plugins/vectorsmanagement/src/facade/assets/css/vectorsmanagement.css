@@ -1403,11 +1403,6 @@ div#popup-box {
     cursor: pointer;
 }
 
-.m-vectorsmanagement-turf .vectorsmanagement-icon-libro:before {
-    width: 1rem;
-    color: inherit;
-}
-
 .m-vectorsmanagement-turf-ops>button:hover,
 .m-vectorsmanagement-turf-ops>button:focus-visible {
     background-color: var(--idee-color-primary);
@@ -1572,6 +1567,10 @@ div#popup-box {
 
 .m-vectorsmanagement-turf-errors {
     color: var(--idee-color-danger);
+}
+
+.m-vectorsmanagement-turf-notices {
+    color: var(--idee-color-warning);
 }
 
 .m-vectorsmanagement-turf-run {

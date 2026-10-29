@@ -9,6 +9,17 @@ import SelectionRegistry from './selectionregistry';
  * @typedef {Object} InputEntry
  * @property {String} layerId Identificador de la capa (idLayer).
  * @property {InputScope} scope Ámbito.
+ * @property {String} [featureKey] Elemento de la selección guardada de la
+ * capa (ámbito InputScope.FEATURE). Ver SelectionRegistry.keyOf.
+ */
+
+/**
+ * Capa y elementos de una entrada.
+ * @typedef {Object} EntryLookup
+ * @property {IDEE.layer.Vector|null} layer Capa o null si no existe.
+ * @property {Array<IDEE.Feature>|undefined} features Elementos según el ámbito;
+ * undefined si no se pueden obtener.
+ * @property {OperationError|null} error Motivo por el que la entrada no es válida.
  */
 
 /**
@@ -41,6 +52,43 @@ const hasCoordinates = (geometry) => {
 export const layerTitle = (layer) => layer.legend || layer.name || layer.idLayer;
 
 /**
+ * Busca la capa de una entrada y sus elementos según el ámbito. Si la
+ * entrada no es válida, devuelve el error y, cuando se pueden obtener, los
+ * elementos que siguen siendo válidos (para describirlos).
+ *
+ * @param {InputEntry} entry Entrada.
+ * @param {LayerCatalog} catalog Capas candidatas.
+ * @param {SelectionRegistry} selections Selecciones guardadas.
+ * @returns {EntryLookup} Capa, elementos y error.
+ */
+export const lookupEntry = (entry, catalog, selections) => {
+  const layer = entry.layerId ? catalog.findLayer(entry.layerId) : null;
+  const invalid = (key, vars) => ({
+    layer, features: undefined, error: new OperationError(key, vars),
+  });
+  if (layer === null) return invalid(ErrorKey.LAYER_NOT_FOUND, { layer: entry.layerId });
+  const title = layerTitle(layer);
+  if (entry.scope === InputScope.SELECTION || entry.scope === InputScope.FEATURE) {
+    const snapshot = selections.get(layer.idLayer);
+    if (!snapshot) return invalid(ErrorKey.NO_SELECTION, { layer: title });
+    if (entry.scope === InputScope.FEATURE) {
+      const feature = SelectionRegistry.findByKey(snapshot, entry.featureKey);
+      return feature === null
+        ? invalid(ErrorKey.FEATURE_NOT_SELECTED, { layer: title })
+        : { layer, features: [feature], error: null };
+    }
+    const { features, missing } = SelectionRegistry.check(snapshot);
+    const error = missing > 0
+      ? new OperationError(ErrorKey.STALE_SELECTION, { layer: title, n: missing }) : null;
+    return { layer, features, error };
+  }
+  if (entry.scope === InputScope.RESULT && !LayerCatalog.isResult(layer)) {
+    return invalid(ErrorKey.NOT_RESULT, { layer: title });
+  }
+  return { layer, features: layer.getFeatures(), error: null };
+};
+
+/**
  * @classdesc
  * Convierte la configuración de las entradas de una operación (capa y
  * ámbito de cada papel) en elementos normalizados en EPSG:4326 que
@@ -68,27 +116,9 @@ export default class InputResolver {
    * @throws {OperationError} Si la capa no existe o el ámbito no es válido.
    */
   featuresOf(entry) {
-    const layer = this.catalog_.findLayer(entry.layerId);
-    if (layer === null) {
-      throw new OperationError(ErrorKey.LAYER_NOT_FOUND, { layer: entry.layerId });
-    }
-    if (entry.scope === InputScope.SELECTION) {
-      const snapshot = this.selections_.get(layer.idLayer);
-      if (!snapshot) {
-        throw new OperationError(ErrorKey.NO_SELECTION, { layer: layerTitle(layer) });
-      }
-      const { features, missing } = SelectionRegistry.check(snapshot);
-      if (missing > 0) {
-        throw new OperationError(ErrorKey.STALE_SELECTION, {
-          layer: layerTitle(layer), n: missing,
-        });
-      }
-      return { layer, features };
-    }
-    if (entry.scope === InputScope.RESULT && !LayerCatalog.isResult(layer)) {
-      throw new OperationError(ErrorKey.NOT_RESULT, { layer: layerTitle(layer) });
-    }
-    return { layer, features: layer.getFeatures() };
+    const { layer, features, error } = lookupEntry(entry, this.catalog_, this.selections_);
+    if (error) throw error;
+    return { layer, features };
   }
 
   /**
@@ -142,12 +172,14 @@ export default class InputResolver {
         return [];
       }
       const feature = features[i];
+      const index = positions.has(feature) ? positions.get(feature) : i;
       return [Object.freeze({
         key: `${spec.role}:${entryIndex}:${i}`,
+        uid: `${layerRef.id}#${index}`,
         role: spec.role,
         layer: layerRef,
         featureId: feature.getId(),
-        index: positions.has(feature) ? positions.get(feature) : i,
+        index,
         scope: entry.scope,
         geometry,
         properties: Object.freeze({ ...(properties || {}) }),

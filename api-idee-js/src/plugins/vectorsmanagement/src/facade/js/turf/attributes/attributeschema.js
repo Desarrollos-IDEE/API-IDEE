@@ -1,4 +1,5 @@
 import { Aggregate } from '../turftypes';
+import { FIELD_POLICIES, sourceLayers } from './fieldpolicies';
 
 /**
  * Nombres que no pueden usarse en la salida: OpenLayers interpreta la
@@ -13,13 +14,14 @@ const RESERVED_NAMES = Object.freeze(['geometry']);
  * @typedef {Object} SchemaColumn
  * @property {String} name Nombre en la salida.
  * @property {InputRole} role Papel del que procede el valor.
- * @property {String} [field] Campo de origen (columnas por elemento).
- * @property {Aggregate} [aggregate] Agregado (columnas que resumen varios elementos).
+ * @property {String} [field] Campo de origen (columnas de campos).
+ * @property {Aggregate} [aggregate] Agregado (columnas que resumen los elementos).
  * @property {Boolean} renamed Indica si el nombre ha cambiado por un conflicto.
  */
 
 /**
- * Campos de un papel que se copian a la salida.
+ * Campos de un papel que se copian a la salida. Si el papel tiene varias
+ * capas, los campos con el mismo nombre comparten columna.
  * @typedef {Object} RoleFields
  * @property {InputRole} role Papel.
  * @property {Array<String>} fields Campos elegidos, en orden.
@@ -42,22 +44,6 @@ const freeName = (base, used) => {
 };
 
 /**
- * Valor de una columna para los elementos de origen de su papel.
- *
- * @param {SchemaColumn} column Columna.
- * @param {Array<InputFeature>} sources Elementos de origen.
- * @returns {*} Valor; null si el elemento no aporta el campo.
- */
-const columnValue = (column, sources) => {
-  if (column.aggregate === Aggregate.COUNT) return sources.length;
-  if (sources.length > 1) {
-    throw new Error(`La columna ${column.name} solo admite un elemento de origen`);
-  }
-  const value = sources.length === 1 ? sources[0].properties[column.field] : undefined;
-  return value === undefined ? null : value;
-};
-
-/**
  * @classdesc
  * Esquema de atributos de una capa de salida: qué columnas tiene, de qué
  * papel y campo procede cada una y cómo se calculan sus valores a partir de
@@ -69,9 +55,12 @@ export default class AttributeSchema {
   /**
    * @constructor
    * @param {Array<SchemaColumn>} columns Columnas.
+   * @param {FieldPolicy} [fieldPolicy] Combinación de los valores de un campo
+   * cuando un resultado procede de varios elementos de un papel.
    */
-  constructor(columns) {
+  constructor(columns, fieldPolicy) {
     this.columns = Object.freeze(columns.map((column) => Object.freeze({ ...column })));
+    this.fieldPolicy = fieldPolicy;
   }
 
   /**
@@ -79,9 +68,10 @@ export default class AttributeSchema {
    *
    * @param {Array<RoleFields>} roleFields Campos por papel, en orden de prioridad.
    * @param {Array<AggregateSpec>} [aggregates] Columnas agregadas.
+   * @param {FieldPolicy} [fieldPolicy] Combinación de valores de varios elementos.
    * @returns {AttributeSchema} Esquema.
    */
-  static build(roleFields, aggregates = []) {
+  static build(roleFields, aggregates = [], fieldPolicy = undefined) {
     const used = new Set(RESERVED_NAMES);
     const add = (base, column) => {
       const name = freeName(base, used);
@@ -92,7 +82,7 @@ export default class AttributeSchema {
       .map((field) => add(`${prefix}${field}`, { role, field })));
     const aggregateColumns = aggregates
       .map(({ role, aggregate, name }) => add(name, { role, aggregate }));
-    return new AttributeSchema([...fieldColumns, ...aggregateColumns]);
+    return new AttributeSchema([...fieldColumns, ...aggregateColumns], fieldPolicy);
   }
 
   /**
@@ -105,7 +95,30 @@ export default class AttributeSchema {
   project(sources) {
     return this.columns.reduce((properties, column) => ({
       ...properties,
-      [column.name]: columnValue(column, sources[column.role] || []),
+      [column.name]: this.valueOf_(column, sources[column.role] || []),
     }), {});
+  }
+
+  /**
+   * Valor de una columna para los elementos de origen de su papel.
+   *
+   * @private
+   * @param {SchemaColumn} column Columna.
+   * @param {Array<InputFeature>} sources Elementos de origen.
+   * @returns {*} Valor; null si los elementos no aportan el campo.
+   */
+  valueOf_(column, sources) {
+    if (column.aggregate === Aggregate.COUNT) return sources.length;
+    if (column.aggregate === Aggregate.LAYERS) return sourceLayers(sources);
+    const values = sources.map((source) => {
+      const value = source.properties[column.field];
+      return value === undefined ? null : value;
+    });
+    if (values.length <= 1) return values.length === 1 ? values[0] : null;
+    const policy = FIELD_POLICIES[this.fieldPolicy];
+    if (!policy) {
+      throw new Error(`La columna ${column.name} no tiene forma de combinar varios elementos`);
+    }
+    return policy.combine(values);
   }
 }

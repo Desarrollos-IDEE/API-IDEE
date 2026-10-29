@@ -1,59 +1,39 @@
 import {
-  Aggregate,
   Category,
   ErrorKey,
   GeometryGroup,
   HelpKey,
   InputRole,
-  LinearUnit,
   OperationId,
-  OperationKind,
-  OptionsKey,
+  Output,
   ParamName,
   ParamType,
   SkipReason,
   Step,
 } from '../turftypes';
 import { dissolvePolygons } from '../geometry/clipping';
-import { ALL_SCOPES, guard } from './common';
+import { eachFeature, guard, inputRole } from './common';
+import { fieldPolicyParam, sourceLayerParam, unitsParam } from './params';
 
 /**
- * Columna con el número de elementos que forman el área disuelta.
- * @const
- * @type {String}
- */
-export const COUNT_FIELD = 'num_entidades';
-
-/**
- * Área de influencia de un elemento.
+ * Indica si se disuelven las áreas en una sola entidad.
  *
- * @param {InputFeature} feature Elemento.
  * @param {Object} p Parámetros.
- * @returns {Object|null} Polígono o null si desaparece (radio negativo).
+ * @returns {Boolean}
  */
-const bufferOf = (feature, p) => guard(feature, () => {
-  const result = turf.buffer(turf.feature(feature.geometry), p.radius, {
-    units: p.units,
-    steps: p.steps,
-  });
-  return result && result.geometry ? result.geometry : null;
-});
+const dissolves = (p) => p.dissolve === true;
 
 /**
  * Área de influencia (buffer): un polígono por elemento, con sus campos, o
- * un único polígono disuelto que indica cuántos elementos lo forman.
+ * un único polígono disuelto con los campos combinados de todos.
  * @const
  * @type {LayerOperation}
  */
 export default Object.freeze({
   id: OperationId.BUFFER,
-  kind: OperationKind.LAYERS,
   category: Category.PROXIMITY,
-  inputs: [
-    {
-      role: InputRole.INPUT, types: GeometryGroup.ANY, scopes: ALL_SCOPES, maxLayers: 1,
-    },
-  ],
+  output: Output.GEOMETRY,
+  inputs: [inputRole(GeometryGroup.ANY)],
   params: [
     {
       name: ParamName.RADIUS,
@@ -62,13 +42,7 @@ export default Object.freeze({
       default: 100,
       help: HelpKey.RADIUS,
     },
-    {
-      name: ParamName.UNITS,
-      type: ParamType.SELECT,
-      options: Object.values(LinearUnit),
-      optionsKey: OptionsKey.UNITS,
-      default: LinearUnit.METERS,
-    },
+    unitsParam({ linear: true }),
     {
       name: ParamName.STEPS,
       type: ParamType.NUMBER,
@@ -82,10 +56,11 @@ export default Object.freeze({
       default: false,
       help: HelpKey.DISSOLVE,
     },
+    fieldPolicyParam(dissolves),
+    sourceLayerParam(),
   ],
-  attributeRoles: (p) => (p.dissolve ? [] : [InputRole.INPUT]),
-  aggregates: (p) => (p.dissolve
-    ? [{ role: InputRole.INPUT, aggregate: Aggregate.COUNT, name: COUNT_FIELD }] : []),
+  attributeRoles: () => [InputRole.INPUT],
+  combines: dissolves,
   validate: (meta, p) => {
     if (p.radius === 0) return ErrorKey.RADIUS_ZERO;
     if (p.radius < 0 && meta[InputRole.INPUT].types
@@ -95,25 +70,20 @@ export default Object.freeze({
     return null;
   },
   execute: ({ inputs, params }) => {
-    const buffered = inputs[InputRole.INPUT]
-      .map((feature) => ({ feature, geometry: bufferOf(feature, params) }));
-    const produced = buffered.filter(({ geometry }) => geometry !== null);
-    const collapsed = buffered.length - produced.length;
-    const skipped = collapsed > 0 ? [{ reason: SkipReason.COLLAPSED, count: collapsed }] : [];
-    if (!params.dissolve) {
-      return {
-        records: produced.map(({ feature, geometry }) => ({
-          geometry, sources: { [InputRole.INPUT]: [feature] },
-        })),
-        skipped,
-      };
-    }
-    const geometry = guard(null, () => dissolvePolygons(produced.map((b) => b.geometry)));
+    // Un radio negativo puede hacer desaparecer un polígono.
+    const buffered = eachFeature(inputs[InputRole.INPUT], (feature) => turf.buffer(
+      feature,
+      params.radius,
+      { units: params.units, steps: params.steps },
+    ), SkipReason.COLLAPSED);
+    if (!dissolves(params)) return buffered;
+    const geometry = guard(null, () => dissolvePolygons(buffered.records.map((r) => r.geometry)));
     return {
       records: geometry === null ? [] : [{
-        geometry, sources: { [InputRole.INPUT]: produced.map((b) => b.feature) },
+        geometry,
+        sources: { [InputRole.INPUT]: buffered.records.map((r) => r.sources[InputRole.INPUT][0]) },
       }],
-      skipped,
+      skipped: buffered.skipped,
     };
   },
 });

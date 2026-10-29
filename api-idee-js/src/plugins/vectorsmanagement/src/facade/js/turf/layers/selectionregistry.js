@@ -121,6 +121,38 @@ export default class SelectionRegistry {
   }
 
   /**
+   * Clave de un elemento dentro de su capa: su identificador si lo
+   * identifica sin ambigüedad o, si no, su posición. Es una cadena para que
+   * la configuración de una operación se pueda copiar o serializar.
+   *
+   * @param {IDEE.layer.Vector} layer Capa.
+   * @param {IDEE.Feature} feature Elemento de la capa.
+   * @returns {String} Clave.
+   */
+  static keyOf(layer, feature) {
+    const id = feature.getId();
+    // getFeatureById muestra un error si el identificador está vacío.
+    if (id !== undefined && id !== null && id !== '' && typeof layer.getFeatureById === 'function'
+      && layer.getFeatureById(id) === feature) {
+      return `id:${id}`;
+    }
+    return `#${layer.getFeatures().indexOf(feature)}`;
+  }
+
+  /**
+   * Busca, entre los elementos que siguen en una selección guardada, el que
+   * tiene la clave indicada.
+   *
+   * @param {SelectionSnapshot} snapshot Selección.
+   * @param {String} key Clave (ver keyOf).
+   * @returns {IDEE.Feature|null} Elemento o null si ya no está en la selección.
+   */
+  static findByKey(snapshot, key) {
+    return SelectionRegistry.check(snapshot).features
+      .find((feature) => SelectionRegistry.keyOf(snapshot.layer, feature) === key) || null;
+  }
+
+  /**
    * Suscribe una función a los cambios de las selecciones.
    *
    * @param {function(): void} listener Función.

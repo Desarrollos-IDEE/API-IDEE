@@ -1,14 +1,4 @@
 /**
- * Requisitos de los elementos de entrada de una operación.
- * @typedef {Object} TurfInput
- * @property {Number} [min=1] Número mínimo de elementos.
- * @property {Number} [max] Número máximo de elementos.
- * @property {Array<GeometryType>} types Tipos de geometría admitidos.
- * @property {function(Object): (ErrorKey|null)} [validate] Validación adicional sobre el
- * FeatureCollection; devuelve la clave del error.
- */
-
-/**
  * Parámetro del formulario de una operación.
  * @typedef {Object} TurfParam
  * @property {ParamName} name Nombre del parámetro.
@@ -21,35 +11,26 @@
  * @property {Array<String>} [options] Valores del desplegable.
  * @property {OptionsKey} [optionsKey=OptionsKey.UNITS] Traducciones de las opciones.
  * @property {function(Object<InputRole, RoleMeta>): Array<String>} [availableOptions]
- * Opciones válidas para los tipos de geometría de las entradas (operaciones de capas).
+ * Opciones válidas para los tipos de geometría de las entradas.
+ * @property {function(Object): Boolean} [when] Indica, según los valores de los
+ * demás parámetros, si el parámetro se aplica; si no, no se muestra ni se valida.
  * @property {HelpKey} [help] Texto de ayuda.
  */
 
 /**
- * Operación de colección: se ejecuta sobre los elementos seleccionados o
- * todos los de la capa activa, con el formulario en un diálogo.
- * @typedef {Object} TurfOperation
- * @property {OperationId} id Identificador.
- * @property {OperationKind} kind OperationKind.COLLECTION.
- * @property {Category} category Categoría del panel.
- * @property {TurfInput} input Requisitos de los elementos de entrada.
- * @property {Array<TurfParam>} params Parámetros del formulario.
- * @property {Mode} mode Modo de ejecución.
- * @property {Output} output Tipo de resultado.
- * @property {Display} [display] Forma de mostrar el resultado.
- * @property {function(Object, Object): *} run Ejecuta la operacion Turf
- * con el FeatureCollection (o el Feature, en Mode.EACH) en EPSG:4326 y
- * los valores del formulario.
- * @property {function(*, Object): String} [format] Texto del resultado.
- */
-
-/**
- * Papel de una entrada de una operación de capas.
+ * Papel de una entrada de una operación.
  * @typedef {Object} InputRoleSpec
  * @property {InputRole} role Papel.
  * @property {Array<GeometryType>} types Tipos de geometría admitidos.
- * @property {Number} [maxLayers=1] Número máximo de capas. Los papeles que
- * aportan campos admiten una sola capa.
+ * @property {Array<InputScope>} scopes Ámbitos que se pueden elegir.
+ * @property {Number} [maxLayers=Infinity] Número máximo de capas.
+ * @property {Number} [minFeatures=1] Número mínimo de elementos del papel.
+ * @property {Number} [maxFeatures] Número máximo de elementos del papel.
+ * @property {InputScope} [defaultScope] Cómo usa el papel, al abrir el
+ * formulario, la capa activa: todos sus elementos (ALL), su selección
+ * guardada (SELECTION) o la siguiente entidad de esa selección (FEATURE).
+ * Si no se indica, el primer papel usa la selección si la herramienta de
+ * selección está activa (o todos los elementos si no) y el resto, otra capa.
  */
 
 /**
@@ -60,7 +41,7 @@
  */
 
 /**
- * Agregado de una columna de salida que resume varios elementos de origen.
+ * Agregado de una columna de salida que resume los elementos de origen.
  * @typedef {Object} AggregateSpec
  * @property {InputRole} role Papel cuyos elementos se resumen.
  * @property {Aggregate} aggregate Agregado.
@@ -68,29 +49,42 @@
  */
 
 /**
- * Operación de capas: combina elementos de una o varias capas, cada una
- * con su papel y su ámbito, y genera una capa con la procedencia de cada
- * resultado.
+ * Operación del catálogo de Turf. Cada entrada tiene un papel y una o varias
+ * capas, cada una con su ámbito; la operación calcula geometrías con su
+ * procedencia (Output.GEOMETRY) o un valor (Output.VALUE).
  * @typedef {Object} LayerOperation
  * @property {OperationId} id Identificador.
- * @property {OperationKind} kind OperationKind.LAYERS.
  * @property {Category} category Categoría del panel.
+ * @property {Output} output Tipo de resultado.
  * @property {Array<InputRoleSpec>} inputs Papeles de las entradas, en el orden
  * en que se resuelven los conflictos de nombres de campo.
  * @property {Array<TurfParam>} params Parámetros.
- * @property {function(Object): Array<InputRole>} attributeRoles Papeles cuyos campos
- * se pueden copiar a la salida según los parámetros.
- * @property {function(Object): Array<AggregateSpec>} [aggregates] Columnas agregadas.
  * @property {function(Object<InputRole, RoleMeta>, Object): (ErrorKey|null)} [validate]
  * Validación propia de la operación.
- * @property {function(Object): OperationOutput} execute Calcula los resultados a
- * partir de `{ inputs: Object<InputRole, Array<InputFeature>>, params }`.
+ * @property {function(Object<InputRole, RoleMeta>, Object): Array<NoticeKey>} [notices]
+ * Avisos que no impiden ejecutar.
+ * @property {function(Object): (OperationOutput|ValueOutput)} execute Calcula el
+ * resultado a partir de `{ inputs: Object<InputRole, Array<InputFeature>>, params }`.
+ *
+ * Solo las de Output.GEOMETRY:
+ * @property {function(Object): Array<InputRole>} [attributeRoles] Papeles cuyos
+ * campos se pueden copiar a la salida según los parámetros.
+ * @property {function(Object): Boolean} [combines] Indica si cada resultado
+ * puede reunir varios elementos de un papel (disolver, unir...). Entonces se
+ * añade el número de elementos, los campos no se copian salvo que se elijan y
+ * sus valores se combinan según el parámetro FIELD_POLICY.
+ *
+ * Solo las de Output.VALUE:
+ * @property {ValueType} [valueType] Tipo del valor, que decide cómo se muestra.
+ * @property {Display} [display] Forma de mostrar el valor.
  */
 
 /**
  * Elemento de entrada normalizado. No se modifica.
  * @typedef {Object} InputFeature
  * @property {String} key Clave única dentro de la ejecución.
+ * @property {String} uid Identidad del elemento en su capa (capa y posición):
+ * es la misma aunque el elemento aparezca en varios papeles.
  * @property {InputRole} role Papel.
  * @property {{id: String, name: String, legend: String}} layer Capa de procedencia.
  * @property {String} featureId Identificador del elemento en su capa.
@@ -104,7 +98,7 @@
  */
 
 /**
- * Resultado de una operación de capas con su procedencia. Indica la geometría
+ * Resultado de una operación con su procedencia. Indica la geometría
  * calculada (EPSG:4326) o el papel cuya geometría original se conserva.
  * @typedef {Object} ProvenanceRecord
  * @property {Object} [geometry] Geometría GeoJSON calculada en EPSG:4326.
@@ -114,9 +108,16 @@
  */
 
 /**
- * Salida de una operación de capas.
+ * Salida de una operación de tipo Output.GEOMETRY.
  * @typedef {Object} OperationOutput
  * @property {Array<ProvenanceRecord>} records Resultados.
+ * @property {Array<{reason: SkipReason, count: Number}>} [skipped] Elementos sin resultado.
+ */
+
+/**
+ * Salida de una operación de tipo Output.VALUE.
+ * @typedef {Object} ValueOutput
+ * @property {*} value Valor, ya en las unidades elegidas.
  * @property {Array<{reason: SkipReason, count: Number}>} [skipped] Elementos sin resultado.
  */
 
@@ -180,21 +181,11 @@ export const Category = Object.freeze({
   EXTRACTION: 'extraction',
   OVERLAY: 'overlay',
   JOIN: 'join',
+  COMBINE: 'combine',
   MEASUREMENT: 'measurement',
   CENTER: 'center',
   TRANSFORMATION: 'transformation',
-  COMBINE: 'combine',
   RELATION: 'relation',
-});
-
-/**
- * Tipo de operación: decide cómo se configura y se ejecuta.
- * @readonly
- * @enum {String}
- */
-export const OperationKind = Object.freeze({
-  COLLECTION: 'collection',
-  LAYERS: 'layers',
 });
 
 /**
@@ -227,6 +218,8 @@ export const OperationId = Object.freeze({
   BOOLEAN_INTERSECTS: 'booleanIntersects',
   BOOLEAN_CONTAINS: 'booleanContains',
   BOOLEAN_WITHIN: 'booleanWithin',
+  MERGE_FEATURES: 'mergeFeatures',
+  EXCLUDE_FEATURES: 'excludeFeatures',
   EXTRACT_BY_LOCATION: 'extractByLocation',
   LAYER_INTERSECTION: 'layerIntersection',
   LAYER_UNION: 'layerUnion',
@@ -235,7 +228,7 @@ export const OperationId = Object.freeze({
 });
 
 /**
- * Papel de una entrada de una operación de capas.
+ * Papel de una entrada de una operación.
  * @readonly
  * @enum {String}
  */
@@ -245,6 +238,9 @@ export const InputRole = Object.freeze({
   CONDITION: 'condition',
   TARGET: 'target',
   JOIN: 'join',
+  EXCLUDE: 'exclude',
+  FIRST: 'first',
+  SECOND: 'second',
 });
 
 /**
@@ -255,6 +251,7 @@ export const InputRole = Object.freeze({
 export const InputScope = Object.freeze({
   ALL: 'all',
   SELECTION: 'selection',
+  FEATURE: 'feature',
   RESULT: 'result',
 });
 
@@ -281,12 +278,24 @@ export const MatchPolicy = Object.freeze({
 });
 
 /**
- * Agregados de las columnas que resumen varios elementos de origen.
+ * Agregados de las columnas que resumen los elementos de origen.
  * @readonly
  * @enum {String}
  */
 export const Aggregate = Object.freeze({
   COUNT: 'count',
+  LAYERS: 'layers',
+});
+
+/**
+ * Forma de combinar los valores de un campo cuando varios elementos forman
+ * un único resultado.
+ * @readonly
+ * @enum {String}
+ */
+export const FieldPolicy = Object.freeze({
+  DISTINCT: 'distinct',
+  COMMON: 'common',
 });
 
 /**
@@ -320,16 +329,16 @@ export const SkipReason = Object.freeze({
   UNSUPPORTED_TYPE: 'unsupportedType',
   COLLAPSED: 'collapsed',
   UNMATCHED: 'unmatched',
+  NO_RESULT: 'noResult',
 });
 
 /**
- * Modo de ejecución de una operación.
+ * Avisos de una configuración que no impiden ejecutarla.
  * @readonly
  * @enum {String}
  */
-export const Mode = Object.freeze({
-  ALL: 'all',
-  EACH: 'each',
+export const NoticeKey = Object.freeze({
+  MIXED_DIMENSIONS: 'mixedDimensions',
 });
 
 /**
@@ -340,6 +349,18 @@ export const Mode = Object.freeze({
 export const Output = Object.freeze({
   GEOMETRY: 'geometry',
   VALUE: 'value',
+});
+
+/**
+ * Tipo de un resultado de tipo valor: decide cómo se muestra.
+ * @readonly
+ * @enum {String}
+ */
+export const ValueType = Object.freeze({
+  AREA: 'area',
+  LENGTH: 'length',
+  BBOX: 'bbox',
+  BOOLEAN: 'boolean',
 });
 
 /**
@@ -373,8 +394,8 @@ export const Step = Object.freeze({
 });
 
 /**
- * Nombres de los parámetros del formulario. Son también las
- * propiedades del objeto de valores que reciben run y format.
+ * Nombres de los parámetros del formulario. Son también las propiedades del
+ * objeto de valores que reciben las operaciones.
  * @readonly
  * @enum {String}
  */
@@ -398,9 +419,12 @@ export const ParamName = Object.freeze({
   IGNORE_BOUNDARY: 'ignoreBoundary',
   IGNORE_SELF_INTERSECTIONS: 'ignoreSelfIntersections',
   DISSOLVE: 'dissolve',
+  SEPARATE_PARTS: 'separateParts',
   PREDICATE: 'predicate',
   MATCH_POLICY: 'matchPolicy',
   KEEP_UNMATCHED: 'keepUnmatched',
+  FIELD_POLICY: 'fieldPolicy',
+  SOURCE_LAYER: 'sourceLayer',
 });
 
 /**
@@ -414,6 +438,7 @@ export const OptionsKey = Object.freeze({
   ORIGINS: 'origins',
   PREDICATES: 'predicates',
   MATCH_POLICIES: 'matchPolicies',
+  FIELD_POLICIES: 'fieldPolicies',
 });
 
 /**
@@ -428,10 +453,13 @@ export const HelpKey = Object.freeze({
   CONCAVITY: 'concavity',
   PIVOT: 'pivot',
   DISSOLVE: 'dissolve',
+  SEPARATE_PARTS: 'separateParts',
   PREDICATE_EXTRACT: 'predicateExtract',
   PREDICATE_JOIN: 'predicateJoin',
   MATCH_POLICY: 'matchPolicy',
   KEEP_UNMATCHED: 'keepUnmatched',
+  FIELD_POLICY: 'fieldPolicy',
+  SOURCE_LAYER: 'sourceLayer',
 });
 
 /**
@@ -499,11 +527,8 @@ export const ErrorKey = Object.freeze({
   MIN: 'min',
   MAX: 'max',
   EXACT: 'exact',
-  TYPES: 'types',
-  POINT_POLYGON: 'pointPolygon',
   UNSUPPORTED_GEOMETRIES: 'unsupportedGeometries',
   PIVOT: 'pivot',
-  EMPTY: 'empty',
   ERROR: 'error',
   NO_LAYER: 'noLayer',
   MAX_LAYERS: 'maxLayers',
@@ -513,6 +538,7 @@ export const ErrorKey = Object.freeze({
   NOT_RESULT: 'notResult',
   NO_SELECTION: 'noSelection',
   STALE_SELECTION: 'staleSelection',
+  FEATURE_NOT_SELECTED: 'featureNotSelected',
   NO_FEATURES: 'noFeatures',
   PARAM: 'param',
   OPTION_UNAVAILABLE: 'optionUnavailable',
@@ -534,14 +560,13 @@ export const ResultKey = Object.freeze({
   MIN_Y: 'minY',
   MAX_X: 'maxX',
   MAX_Y: 'maxY',
-  LAYER_CREATED: 'layerCreated',
   FEATURES_CREATED: 'featuresCreated',
   EMPTY_RESULT: 'emptyResult',
 });
 
 /**
- * Error controlado de una operación de capas. Su clave identifica el texto
- * del bloque turf.exception y sus variables lo completan.
+ * Error controlado de una operación. Su clave identifica el texto del
+ * bloque turf.exception y sus variables lo completan.
  */
 export class OperationError extends Error {
   /**

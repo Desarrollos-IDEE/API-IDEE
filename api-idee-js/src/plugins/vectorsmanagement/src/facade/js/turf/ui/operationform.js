@@ -1,13 +1,13 @@
 import template from '../../../../templates/turfform';
 import { getValue } from '../../i18n/language';
-import LayerCatalog from '../layers/layercatalog';
+import LayerCatalog, { TECHNICAL_FIELDS } from '../layers/layercatalog';
 import SelectionRegistry from '../layers/selectionregistry';
-import TurfParamsDialog from '../turfparamsdialog';
-import { InputScope, ParamType } from '../turftypes';
+import { InputScope, Output, ParamType } from '../turftypes';
 import { showOperationHelp } from './helpdialog';
 import {
   errorMessage, layerIssueText, roleLabel, translate,
 } from './messages';
+import { readValue, renderFields } from './paramfields';
 
 /**
  * Prefijo de los identificadores de los elementos del formulario.
@@ -26,30 +26,58 @@ const ID_PREFIX = 'm-vectorsmanagement-turf-opform';
  */
 
 /**
+ * Opción del selector de entidades de una entrada (ámbito FEATURE).
+ * @typedef {Object} FeatureOption
+ * @property {String} key Clave del elemento (SelectionRegistry.keyOf).
+ * @property {String} text Texto de la opción.
+ */
+
+/**
+ * Texto que identifica una entidad: su posición en la selección, su
+ * identificador y el primer valor de sus campos distinto de él.
+ *
+ * @param {IDEE.Feature} feature Elemento.
+ * @param {Number} position Posición en la selección (desde 1).
+ * @returns {String} Texto.
+ */
+const featureLabel = (feature, position) => {
+  const id = feature.getId();
+  const attributes = feature.getAttributes() || {};
+  const value = Object.keys(attributes)
+    .filter((name) => !TECHNICAL_FIELDS.includes(name))
+    .map((name) => attributes[name])
+    .find((v) => v !== null && v !== undefined && v !== '' && typeof v !== 'object' && v !== id);
+  const parts = [id, value].filter((part) => part !== undefined && part !== null);
+  return parts.length > 0 ? `${position}. ${parts.join(' · ')}` : `${position}.`;
+};
+
+/**
  * Texto con lo que se va a procesar en una entrada.
  *
  * @param {EntryReport} report Diagnóstico de la entrada.
+ * @param {String} [feature] Texto de la entidad elegida (ámbito FEATURE).
  * @returns {String} Texto (vacío si la entrada no tiene capa válida).
  */
-const entrySummary = (report) => {
+const entrySummary = (report, feature = '') => {
   if (!report || !report.info) return '';
   const { entry, info, omitted } = report;
   const summary = translate(`turf.form.summary.${entry.scope}`, {
     layer: info.title,
     n: info.count - omitted,
     types: Object.keys(info.typeCounts).join(', '),
+    feature,
   });
   return omitted > 0 ? `${summary} ${translate('turf.form.omitted', { n: omitted })}` : summary;
 };
 
 /**
  * @classdesc
- * Formulario de una operación de capas en el panel Turf. Se genera a partir
- * de la declaración de la operación: un grupo por papel de entrada (ámbito,
- * capa y resumen de lo que se va a procesar), los parámetros, los campos de
- * salida y el nombre de la capa resultante. No contiene reglas: los errores,
- * las opciones disponibles y el esquema de salida los calcula
- * LayerOperationRunner#check.
+ * Formulario de una operación en el panel Turf. Se genera a partir de la
+ * declaración de la operación: un grupo por papel de entrada (ámbito, capa,
+ * entidad y resumen de lo que se va a procesar), los parámetros y, si la
+ * operación crea una capa, sus campos y su nombre. No contiene reglas: los
+ * errores, los avisos, las opciones disponibles y el esquema de salida los
+ * calcula LayerOperationRunner#check.
  */
 export default class OperationForm {
   /**
@@ -60,17 +88,20 @@ export default class OperationForm {
    * @param {SelectionRegistry} options.selections Selecciones guardadas.
    * @param {Number} options.order Orden de tabulación.
    * @param {function(): (IDEE.layer.Vector|null)} options.getActiveLayer Capa activa del plugin.
+   * @param {function(): Boolean} options.isSelecting Indica si la herramienta de
+   * selección del plugin está activa.
    * @param {function(LayerOperation, LayerOperationConfig): void} options.onRun Ejecuta.
    * @param {function(): void} options.onClose Cierra el formulario.
    */
   constructor({
-    runner, catalog, selections, order, getActiveLayer, onRun, onClose,
+    runner, catalog, selections, order, getActiveLayer, isSelecting, onRun, onClose,
   }) {
     this.runner_ = runner;
     this.catalog_ = catalog;
     this.selections_ = selections;
     this.order_ = order;
     this.getActiveLayer_ = getActiveLayer;
+    this.isSelecting_ = isSelecting;
     this.onRun_ = onRun;
     this.onClose_ = onClose;
     this.op_ = null;
@@ -80,8 +111,8 @@ export default class OperationForm {
   }
 
   /**
-   * Abre el formulario de una operación con su configuración inicial: la
-   * capa activa del plugin en la primera entrada y todos sus elementos.
+   * Abre el formulario de una operación con su configuración inicial (ver
+   * getDefaultConfig_).
    *
    * @param {LayerOperation} op Operación.
    * @param {HTMLElement} container Contenedor.
@@ -164,9 +195,13 @@ export default class OperationForm {
   }
 
   /**
-   * Configuración inicial: una entrada por papel con todos sus elementos; la
-   * primera usa la capa activa del plugin si es compatible y el resto, capas
-   * compatibles distintas.
+   * Configuración inicial, que reproduce el comportamiento de las
+   * herramientas del plugin: el primer papel usa la capa activa (su
+   * selección si la herramienta de selección está activa, o todas sus
+   * entidades) y el resto, otras capas compatibles. Los papeles con
+   * defaultScope usan la capa activa con ese ámbito; con FEATURE, cada papel
+   * toma la siguiente entidad de la selección (p. ej. la primera y la segunda
+   * entidad que se comparan).
    *
    * @private
    * @param {LayerOperation} op Operación.
@@ -174,22 +209,98 @@ export default class OperationForm {
    */
   getDefaultConfig_(op) {
     const used = [];
-    const active = this.getActiveLayer_();
     const cache = new Map();
+    const active = this.getActiveLayer_();
+    const snapshot = active ? this.selections_.get(active.idLayer) : undefined;
+    const selected = snapshot ? SelectionRegistry.check(snapshot).features : [];
+    let next = 0;
     const inputs = op.inputs.reduce((acc, spec, i) => {
-      const candidates = this.getLayerOptions_(spec, InputScope.ALL, cache)
-        .filter((option) => !option.disabled);
-      const choice = (i === 0 && active && candidates.find((o) => o.id === active.idLayer))
-        || candidates.find((o) => !used.includes(o.id)) || candidates[0];
-      if (choice) used.push(choice.id);
-      return {
-        ...acc,
-        [spec.role]: [{ layerId: choice ? choice.id : '', scope: InputScope.ALL }],
-      };
+      const scope = spec.defaultScope || (i === 0 ? this.firstScope_(spec) : null);
+      let entry = null;
+      if (active && scope === InputScope.FEATURE) {
+        entry = next < selected.length
+          ? this.featureEntry_(active, selected[next])
+          : this.otherFeatureEntry_(spec, active, cache);
+        if (next < selected.length) next += 1;
+      } else if (active && scope === InputScope.SELECTION && selected.length > 0) {
+        entry = { layerId: active.idLayer, scope };
+      } else if (active && (scope === InputScope.ALL || i === 0)) {
+        entry = { layerId: active.idLayer, scope: InputScope.ALL };
+      }
+      if (entry && !this.isUsable_(spec, entry, cache)) entry = null;
+      if (!entry) {
+        const candidates = this.getLayerOptions_(spec, InputScope.ALL, cache)
+          .filter((option) => !option.disabled);
+        const choice = (i === 0 && active && candidates.find((o) => o.id === active.idLayer))
+          || candidates.find((o) => !used.includes(o.id)) || candidates[0];
+        entry = { layerId: choice ? choice.id : '', scope: InputScope.ALL };
+      }
+      used.push(entry.layerId);
+      return { ...acc, [spec.role]: [entry] };
     }, {});
     return {
       inputs, params: {}, attributes: {}, outputName: '',
     };
+  }
+
+  /**
+   * Ámbito del primer papel al abrir el formulario.
+   *
+   * @private
+   * @param {InputRoleSpec} spec Papel.
+   * @returns {InputScope} Ámbito.
+   */
+  firstScope_(spec) {
+    if (spec.maxFeatures === 1) return InputScope.FEATURE;
+    return this.isSelecting_() ? InputScope.SELECTION : InputScope.ALL;
+  }
+
+  /**
+   * Entrada con una entidad concreta de una capa.
+   *
+   * @private
+   * @param {IDEE.layer.Vector} layer Capa.
+   * @param {IDEE.Feature} feature Entidad de la selección guardada de la capa.
+   * @returns {InputEntry} Entrada.
+   */
+  featureEntry_(layer, feature) {
+    return {
+      layerId: layer.idLayer,
+      scope: InputScope.FEATURE,
+      featureKey: SelectionRegistry.keyOf(layer, feature),
+    };
+  }
+
+  /**
+   * Entrada con la primera entidad de la selección guardada de otra capa
+   * compatible con el papel.
+   *
+   * @private
+   * @param {InputRoleSpec} spec Papel.
+   * @param {IDEE.layer.Vector} active Capa activa, que se descarta.
+   * @param {Map<String, Array<LayerOption>>} cache Opciones ya calculadas.
+   * @returns {InputEntry|null} Entrada o null si no hay ninguna.
+   */
+  otherFeatureEntry_(spec, active, cache) {
+    const option = this.getLayerOptions_(spec, InputScope.FEATURE, cache)
+      .find((o) => !o.disabled && o.id !== active.idLayer);
+    if (!option) return null;
+    const [first] = this.getFeatureOptions_(option.id);
+    return first ? { layerId: option.id, scope: InputScope.FEATURE, featureKey: first.key } : null;
+  }
+
+  /**
+   * Indica si una entrada se puede usar en un papel.
+   *
+   * @private
+   * @param {InputRoleSpec} spec Papel.
+   * @param {InputEntry} entry Entrada.
+   * @param {Map<String, Array<LayerOption>>} cache Opciones ya calculadas.
+   * @returns {Boolean}
+   */
+  isUsable_(spec, entry, cache) {
+    return spec.scopes.includes(entry.scope) && this.getLayerOptions_(spec, entry.scope, cache)
+      .some((option) => option.id === entry.layerId && !option.disabled);
   }
 
   /**
@@ -204,12 +315,12 @@ export default class OperationForm {
   getLayerOptions_(spec, scope, cache) {
     const key = `${spec.role}|${scope}`;
     if (!cache.has(key)) {
+      const fromSelection = scope === InputScope.SELECTION || scope === InputScope.FEATURE;
       cache.set(key, this.catalog_.getLayers()
         .filter((layer) => this.isInScope_(layer, scope))
         .map((layer) => {
-          const snapshot = this.selections_.get(layer.idLayer);
-          const features = scope === InputScope.SELECTION
-            ? SelectionRegistry.check(snapshot).features : undefined;
+          const features = fromSelection
+            ? SelectionRegistry.check(this.selections_.get(layer.idLayer)).features : undefined;
           const info = this.catalog_.describe(layer, features);
           const issue = LayerCatalog.issueFor(info, spec);
           return {
@@ -226,6 +337,22 @@ export default class OperationForm {
   }
 
   /**
+   * Entidades de la selección guardada de una capa.
+   *
+   * @private
+   * @param {String} layerId Identificador de la capa.
+   * @returns {Array<FeatureOption>} Opciones (vacío si no tiene selección).
+   */
+  getFeatureOptions_(layerId) {
+    const snapshot = this.selections_.get(layerId);
+    if (!snapshot) return [];
+    return SelectionRegistry.check(snapshot).features.map((feature, i) => ({
+      key: SelectionRegistry.keyOf(snapshot.layer, feature),
+      text: featureLabel(feature, i + 1),
+    }));
+  }
+
+  /**
    * Indica si una capa se puede elegir con un ámbito.
    *
    * @private
@@ -234,7 +361,9 @@ export default class OperationForm {
    * @returns {Boolean}
    */
   isInScope_(layer, scope) {
-    if (scope === InputScope.SELECTION) return this.selections_.get(layer.idLayer) !== undefined;
+    if (scope === InputScope.SELECTION || scope === InputScope.FEATURE) {
+      return this.selections_.get(layer.idLayer) !== undefined;
+    }
     if (scope === InputScope.RESULT) return LayerCatalog.isResult(layer);
     return true;
   }
@@ -250,30 +379,31 @@ export default class OperationForm {
     const op = this.op_;
     const order = this.order_;
     const cache = new Map();
+    const roles = op.inputs.map((spec) => this.getRoleVars_(spec, report, cache));
+    const createsLayer = op.output === Output.GEOMETRY;
+    const policy = report.combines && report.params.fieldPolicy
+      ? getValue(`turf.fieldPolicies.${report.params.fieldPolicy}`) : '';
     return {
       order,
       name: getValue(`turf.ops.${op.id}.name`),
       desc: getValue(`turf.ops.${op.id}.desc`),
-      roles: op.inputs.map((spec) => this.getRoleVars_(spec, report, cache)),
+      roles,
       hasParams: op.params.length > 0,
-      params: TurfParamsDialog.renderFields(op, order, report.params, report.options, false),
-      attributes: op.attributeRoles(report.params)
-        .map((role) => this.getAttributeVars_(role, report)),
+      params: renderFields(op, order, report.params, report.options),
+      createsLayer,
+      attributes: createsLayer ? op.attributeRoles(report.params)
+        .map((role) => this.getAttributeVars_(role, report)) : [],
       schema: report.schema.columns.map((column) => ({
         name: column.name,
         renamed: column.renamed,
-        source: column.aggregate
-          ? translate(`turf.aggregates.${column.aggregate}`, { role: roleLabel(op, column.role) })
-          : translate(column.renamed ? 'turf.form.columnRenamed' : 'turf.form.column', {
-            role: roleLabel(op, column.role), field: column.field,
-          }),
+        source: this.columnSource_(column, policy),
       })),
       outputName: this.config_.outputName,
       outputPlaceholder: getValue('turf.form.outputPlaceholder'),
-      processSummary: op.inputs.flatMap((spec) => report.entries[spec.role]
-        .map((entryReport) => entrySummary(entryReport))
-        .filter((text) => text !== '')
-        .map((text) => `${roleLabel(op, spec.role)}: ${text}`)),
+      processSummary: roles.flatMap((role) => role.entries
+        .filter((entry) => entry.summary !== '')
+        .map((entry) => `${role.label}: ${entry.summary}`)),
+      notices: report.notices.map((notice) => getValue(`turf.notices.${notice}`)),
       errors: [...new Set(report.errors.map((error) => errorMessage(op, error)))],
       canRun: report.errors.length === 0,
       translations: {
@@ -288,6 +418,22 @@ export default class OperationForm {
         help: getValue('turf.help.opButton'),
       },
     };
+  }
+
+  /**
+   * Texto que explica de dónde procede una columna de la salida.
+   *
+   * @private
+   * @param {SchemaColumn} column Columna.
+   * @param {String} policy Nombre de la política de combinación ('' si no se combinan).
+   * @returns {String} Texto.
+   */
+  columnSource_(column, policy) {
+    const role = roleLabel(this.op_, column.role);
+    if (column.aggregate) return translate(`turf.aggregates.${column.aggregate}`, { role });
+    const vars = { role, field: column.field, policy };
+    if (column.renamed) return translate('turf.form.columnRenamed', vars);
+    return translate(policy ? 'turf.form.columnCombined' : 'turf.form.column', vars);
   }
 
   /**
@@ -309,6 +455,10 @@ export default class OperationForm {
       label: roleLabel(this.op_, role),
       entries: entries.map((entry, index) => {
         const prefix = `${ID_PREFIX}-${role}-${index}`;
+        const isFeature = entry.scope === InputScope.FEATURE;
+        const features = isFeature ? this.getFeatureOptions_(entry.layerId)
+          .map((option) => ({ ...option, selected: option.key === entry.featureKey })) : [];
+        const chosen = features.find((option) => option.selected);
         return {
           role,
           index,
@@ -331,13 +481,17 @@ export default class OperationForm {
           layers: this.getLayerOptions_(spec, entry.scope, cache)
             .map((option) => ({ ...option, selected: option.id === entry.layerId })),
           emptyText: getValue(`turf.form.noLayers.${entry.scope}`),
-          summary: entrySummary(report.entries[role][index]),
+          isFeature,
+          featureSelectId: `${prefix}-feature`,
+          featureLabel: getValue('turf.form.feature'),
+          features,
+          summary: entrySummary(report.entries[role][index], chosen ? chosen.text : ''),
           removable: entries.length > 1,
           removeId: `${prefix}-remove`,
           removeText: getValue('turf.form.removeLayer'),
         };
       }),
-      canAdd: entries.length < (spec.maxLayers || 1) && available.length > 0,
+      canAdd: entries.length < (spec.maxLayers ?? Number.POSITIVE_INFINITY) && available.length > 0,
       addId: `${ID_PREFIX}-${role}-add`,
       addText: getValue('turf.form.addLayer'),
       role,
@@ -357,14 +511,15 @@ export default class OperationForm {
     const order = this.order_;
     const fields = report.fields[role] || { available: [], excluded: [] };
     const config = this.config_.attributes[role] || {};
-    const chosen = Array.isArray(config.fields) ? config.fields : fields.available;
+    const chosen = report.chosenFields[role] || [];
     const layers = report.entries[role]
       .filter((entryReport) => entryReport.info)
       .map((entryReport) => entryReport.info.title);
     return {
       title: translate('turf.form.fieldsOf', {
-        role: roleLabel(this.op_, role), layers: layers.join(', '),
+        role: roleLabel(this.op_, role), layers: [...new Set(layers)].join(', '),
       }),
+      combinedNote: report.combines ? getValue('turf.form.combinedFields') : '',
       fields: fields.available.map((name, i) => ({
         id: `${ID_PREFIX}-${role}-field-${i}`, name, checked: chosen.includes(name), role, order,
       })),
@@ -418,7 +573,7 @@ export default class OperationForm {
     } else {
       const param = this.getParam_(target, ParamType.NUMBER);
       if (param) {
-        this.config_.params[param.name] = TurfParamsDialog.readValue(param, target);
+        this.config_.params[param.name] = readValue(param, target);
         this.renderStatus_();
       }
     }
@@ -437,15 +592,19 @@ export default class OperationForm {
     if (input === 'scope') {
       this.setScope_(role, index, target.value);
     } else if (input === 'layer') {
-      this.config_.inputs[role][index].layerId = target.value;
+      const entry = this.config_.inputs[role][index];
+      entry.layerId = target.value;
+      if (entry.scope === InputScope.FEATURE) this.chooseFirstFeature_(entry);
       this.resetFields_(role);
+    } else if (input === 'feature') {
+      this.config_.inputs[role][index].featureKey = target.value;
     } else if (input === 'field') {
       this.toggleField_(role, target.value, target.checked);
     } else {
       const param = this.getParam_(target, ParamType.SELECT)
         || this.getParam_(target, ParamType.CHECKBOX);
       if (!param) return;
-      this.config_.params[param.name] = TurfParamsDialog.readValue(param, target);
+      this.config_.params[param.name] = readValue(param, target);
     }
     this.render();
   }
@@ -495,7 +654,27 @@ export default class OperationForm {
       const option = options.find((o) => !o.disabled) || options[0];
       entry.layerId = option ? option.id : '';
     }
+    if (scope === InputScope.FEATURE) {
+      this.chooseFirstFeature_(entry);
+    } else {
+      delete entry.featureKey;
+    }
     this.resetFields_(role);
+  }
+
+  /**
+   * Elige la primera entidad de la selección guardada de la capa de una
+   * entrada, salvo que la entidad elegida siga en ella.
+   *
+   * @private
+   * @param {InputEntry} entry Entrada con ámbito FEATURE.
+   */
+  chooseFirstFeature_(entry) {
+    const options = this.getFeatureOptions_(entry.layerId);
+    if (!options.some((option) => option.key === entry.featureKey)) {
+      // eslint-disable-next-line no-param-reassign
+      entry.featureKey = options.length > 0 ? options[0].key : '';
+    }
   }
 
   /**
@@ -508,15 +687,15 @@ export default class OperationForm {
    */
   toggleField_(role, field, checked) {
     const available = (this.report_.fields[role] || { available: [] }).available;
-    const config = this.getAttributeConfig_(role);
-    const current = Array.isArray(config.fields) ? config.fields : available;
-    config.fields = checked
+    const current = this.report_.chosenFields[role] || [];
+    this.getAttributeConfig_(role).fields = checked
       ? available.filter((name) => current.includes(name) || name === field)
       : current.filter((name) => name !== field);
   }
 
   /**
-   * Vuelve a copiar todos los campos de un papel (al cambiar sus capas).
+   * Vuelve a la selección de campos por defecto de un papel (al cambiar sus
+   * capas).
    *
    * @private
    * @param {InputRole} role Papel.

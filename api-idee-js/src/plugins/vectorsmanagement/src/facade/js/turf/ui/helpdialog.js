@@ -1,7 +1,7 @@
 import template from '../../../../templates/turfhelp';
 import { getValue } from '../../i18n/language';
 import { CATEGORIES, OPERATIONS } from '../turfoperations';
-import { OperationKind } from '../turftypes';
+import { InputScope, Output } from '../turftypes';
 import { roleLabel } from './messages';
 
 /**
@@ -29,38 +29,27 @@ const showHelp = (title, sections, order) => {
 };
 
 /**
- * Categorías del panel que contienen operaciones del tipo indicado, con su
- * descripción.
- *
- * @param {OperationKind} kind Tipo de operación.
- * @returns {Array<{label: String, text: String}>} Categorías.
- */
-const categoriesOf = (kind) => CATEGORIES
-  .filter((category) => OPERATIONS.some((op) => op.category === category && op.kind === kind))
-  .map((category) => ({
-    label: getValue(`turf.categories.${category}`),
-    text: getValue(`turf.categoriesDesc.${category}`),
-  }));
-
-/**
- * Muestra la ayuda general del panel Turf: tipos de operaciones, sus
- * categorías y las selecciones guardadas.
+ * Muestra la ayuda general del panel Turf: las categorías de operaciones,
+ * qué entidades se pueden usar en cada entrada y las selecciones guardadas.
  *
  * @param {Number} order Orden de tabulación.
  */
 export const showCatalogHelp = (order) => showHelp(getValue('turf.title'), [
   {
-    title: getValue('turf.help.layerOpsTitle'),
-    paragraphs: [{ text: getValue('turf.help.layerOps') }],
-    items: categoriesOf(OperationKind.LAYERS),
+    title: getValue('turf.help.opsTitle'),
+    paragraphs: [{ text: getValue('turf.help.ops') }],
+    items: CATEGORIES.filter((category) => OPERATIONS.some((op) => op.category === category))
+      .map((category) => ({
+        label: getValue(`turf.categories.${category}`),
+        text: getValue(`turf.categoriesDesc.${category}`),
+      })),
   },
   {
-    title: getValue('turf.help.collectionOpsTitle'),
-    paragraphs: [
-      { text: getValue('turf.help.collectionOps') },
-      { text: getValue('turf.hintParams'), icon: 'vectorsmanagement-icon-libro' },
-    ],
-    items: categoriesOf(OperationKind.COLLECTION),
+    title: getValue('turf.help.scopesTitle'),
+    items: Object.values(InputScope).map((scope) => ({
+      label: getValue(`turf.scopes.${scope}`),
+      text: getValue(`turf.help.scopes.${scope}`),
+    })),
   },
   {
     title: getValue('turf.help.selectionsTitle'),
@@ -70,8 +59,8 @@ export const showCatalogHelp = (order) => showHelp(getValue('turf.title'), [
 ], order);
 
 /**
- * Muestra la ayuda de una operación de capas: qué hace, el papel de cada
- * entrada, sus parámetros y, si tiene columnas agregadas, la capa resultante.
+ * Muestra la ayuda de una operación: qué hace, el papel de cada entrada,
+ * sus parámetros y qué produce.
  *
  * @param {LayerOperation} op Operación.
  * @param {Number} order Orden de tabulación.
@@ -92,11 +81,11 @@ export const showOperationHelp = (op, order) => {
     },
   ];
   if (params.length > 0) sections.push({ title: getValue('turf.help.params'), items: params });
-  if (op.aggregates) {
-    sections.push({
-      title: getValue('turf.help.output'),
-      paragraphs: [{ text: getValue(`turf.ops.${op.id}.aggregatesNote`) }],
-    });
-  }
+  const output = [getValue(op.output === Output.VALUE ? 'turf.help.valueOutput' : 'turf.help.layerOutput')];
+  if (op.combines) output.push(getValue('turf.help.combinedOutput'));
+  sections.push({
+    title: getValue('turf.help.output'),
+    paragraphs: output.map((text) => ({ text })),
+  });
   showHelp(getValue(`turf.ops.${op.id}.name`), sections, order);
 };

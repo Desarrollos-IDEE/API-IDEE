@@ -10,17 +10,21 @@ const CLICK = {
   P1: [-3.695, 40.405],
   P2: [-3.685, 40.415],
   Z1: [-3.698, 40.402],
+  Z2: [-3.675, 40.425],
+  D1: [-3.677, 40.407],
+  D2: [-3.635, 40.43],
 };
 
 /**
- * Ejecuta una operación de capas y devuelve su resultado serializable: los
- * elementos de la capa creada con sus propiedades, su geometría en EPSG:4326
- * y sus medidas (área en m², longitud en km).
+ * Ejecuta una operación y devuelve su resultado serializable: el valor
+ * calculado o los elementos de la capa creada con sus propiedades, su
+ * geometría en EPSG:4326 y sus medidas (área en m², longitud en km).
  */
 const run = (page, id, config) => page.evaluate(({ opId, opConfig }) => {
   const tc = window.mp.controls[0].turfControl;
   const result = tc.runLayerOperation(opId, opConfig);
   if (result.error) return { error: result.error.key || result.error.message };
+  if ('value' in result) return { value: result.value, skipped: result.skipped };
   const format = new ol.format.GeoJSON();
   const projection = window.map.getProjection().code;
   const features = result.layer === null ? [] : result.layer.getFeatures().map((f) => {
@@ -47,6 +51,26 @@ const run = (page, id, config) => page.evaluate(({ opId, opConfig }) => {
 }, { opId: id, opConfig: config });
 
 const all = (layerId) => [{ layerId, scope: 'all' }];
+const selected = (layerId) => [{ layerId, scope: 'selection' }];
+const one = (layerId, id) => [{ layerId, scope: 'feature', featureKey: `id:${id}` }];
+
+/** Geometría (EPSG:4326) de una entidad de ejemplo. */
+const sample = (key, id) => TURF_SAMPLES[key].features.find((f) => f.id === id).geometry;
+
+/** Área (m²) de la unión de unas geometrías GeoJSON en EPSG:4326. */
+const unionArea = (page, geometries) => page.evaluate((list) => turf.area(list.length > 1
+  ? turf.union(turf.featureCollection(list.map((g) => turf.feature(g))))
+  : list[0]), geometries);
+
+/** Captura los toasts informativos (resultados de valor) en window.toasts. */
+const captureToasts = (page) => page.evaluate(() => {
+  window.toasts = [];
+  const info = IDEE.toast.info;
+  IDEE.toast.info = (message, ...args) => {
+    window.toasts.push(message);
+    return info(message, ...args);
+  };
+});
 
 /** Geometrías (proyección del mapa) de una capa de ejemplo, por id de entidad. */
 const sourceGeometries = (page, layerId) => page.evaluate((id) => Object.fromEntries(
@@ -107,9 +131,16 @@ const selectOnMap = async (page, layerId, points) => {
   }
 };
 
-/** Cierra los diálogos abiertos (ayuda, errores, información...). */
-const closeDialogs = (page) => page.evaluate(() => document.querySelectorAll('.m-dialog')
-  .forEach((dialog) => dialog.remove()));
+/**
+ * Cierra los diálogos (ayuda, errores, información...) y oculta los toasts:
+ * al caducar, el núcleo los quita de su contenedor, así que no se borran.
+ */
+const closeDialogs = (page) => page.evaluate(() => {
+  document.querySelectorAll('.m-dialog').forEach((dialog) => dialog.remove());
+  document.querySelectorAll('.m-toast').forEach((toast) => {
+    toast.style.display = 'none'; // eslint-disable-line no-param-reassign
+  });
+});
 
 test.describe('VectorsManagement Turf: operaciones entre capas', () => {
   let ids;
@@ -380,9 +411,11 @@ test.describe('VectorsManagement Turf: operaciones entre capas', () => {
       .getLayers().find((l) => l.idLayer === id).getFeatures()
       .map((f) => [f.getId(), f.getGeoJSON()]))), SAMPLE_KEYS.map((k) => ids[k]));
     const before = await snapshot();
-    const sourceIds = await page.evaluate((layerIds) => layerIds.flatMap((id) => window.map
-      .getLayers().find((l) => l.idLayer === id).getFeatures().map((f) => f.getId())),
-    SAMPLE_KEYS.map((k) => ids[k]));
+    const sourceIds = await page.evaluate(
+      (layerIds) => layerIds.flatMap((id) => window.map
+        .getLayers().find((l) => l.idLayer === id).getFeatures().map((f) => f.getId())),
+      SAMPLE_KEYS.map((k) => ids[k]),
+    );
 
     const results = [
       await run(page, 'buffer', { inputs: { input: all(ids.zones) }, params: { radius: 50 } }),
@@ -390,6 +423,14 @@ test.describe('VectorsManagement Turf: operaciones entre capas', () => {
       await run(page, 'spatialJoin', { inputs: { target: all(ids.points), join: all(ids.zones) } }),
       await run(page, 'extractByLocation', { inputs: { input: all(ids.points), condition: all(ids.zones) } }),
       await run(page, 'layerIntersection', { inputs: { input: all(ids.lines), overlay: all(ids.zones) } }),
+      await run(page, 'mergeFeatures', { inputs: { input: [...all(ids.zones), ...all(ids.points)] } }),
+      await run(page, 'excludeFeatures', { inputs: { input: all(ids.zones), exclude: all(ids.areas) } }),
+      await run(page, 'union', { inputs: { input: [...all(ids.zones), ...all(ids.areas)] } }),
+      await run(page, 'difference', { inputs: { input: all(ids.zones), overlay: all(ids.areas) } }),
+      await run(page, 'centroid', { inputs: { input: all(ids.lines) } }),
+      await run(page, 'transformRotate', { inputs: { input: all(ids.zones) } }),
+      await run(page, 'simplify', { inputs: { input: all(ids.lines) }, params: { tolerance: 0.01 } }),
+      await run(page, 'convex', { inputs: { input: all(ids.points) } }),
     ];
     expect(await snapshot()).toBe(before);
 
@@ -405,7 +446,9 @@ test.describe('VectorsManagement Turf: operaciones entre capas', () => {
   });
 
   test('las entradas no válidas y los resultados vacíos no crean capas', async ({ page }) => {
-    const layerCount = () => page.evaluate(() => window.map.getLayers().length);
+    // Solo las capas de resultado: la selección añade su propia capa interna
+    const layerCount = () => page.evaluate(() => window.map.getLayers()
+      .filter((l) => typeof l.name === 'string' && l.name.startsWith('turf_')).length);
     const before = await layerCount();
     const errorOf = async (id, config) => (await run(page, id, config)).error;
 
@@ -420,6 +463,20 @@ test.describe('VectorsManagement Turf: operaciones entre capas', () => {
     expect(await errorOf('buffer', {
       inputs: { input: all(ids.points) }, attributes: { input: { fields: ['noExiste'] } },
     })).toBe('unknownField');
+
+    expect(await errorOf('union', { inputs: { input: all(ids.points) } })).toBe('layerIncompatible');
+    expect(await errorOf('booleanIntersects', { inputs: { first: all(ids.zones), second: all(ids.areas) } }))
+      .toBe('exact');
+    await closeDialogs(page);
+    await selectOnMap(page, ids.zones, [CLICK.Z1]);
+    expect(await errorOf('intersect', { inputs: { input: selected(ids.zones) } })).toBe('min');
+    expect(await errorOf('union', { inputs: { input: one(ids.zones, 'Z3') } })).toBe('featureNotSelected');
+    expect(await errorOf('union', { inputs: { input: [...one(ids.zones, 'Z1'), ...one(ids.zones, 'Z1')] } }))
+      .toBe('duplicatedLayer');
+    expect(await errorOf('union', { inputs: { input: [...one(ids.zones, 'Z1'), ...all(ids.zones)] } }))
+      .toBe('duplicatedLayer');
+    const disjoint = await run(page, 'intersect', { inputs: { input: [...all(ids.zones), ...all(ids.areas)] } });
+    expect(disjoint.layer).toBeNull();
 
     const collapsed = await run(page, 'buffer', { inputs: { input: all(ids.zones) }, params: { radius: -3000 } });
     expect(collapsed.layer).toBeNull();
@@ -554,28 +611,286 @@ test.describe('VectorsManagement Turf: operaciones entre capas', () => {
     }
   });
 
-  test('las operaciones de colección existentes siguen funcionando', async ({ page }) => {
+  test('combinar polígonos de una o varias capas, con selecciones parciales y campos combinados', async ({ page }) => {
+    // Varias entidades seleccionadas de una sola capa
+    await selectOnMap(page, ids.zones, [CLICK.Z1, CLICK.Z2]);
+    const two = await run(page, 'union', { inputs: { input: selected(ids.zones) } });
+    expect(two.count).toBe(1);
+    expect(two.features[0].properties).toEqual({ num_entidades: 2 });
+    expect(two.features[0].area / await unionArea(page, [sample('zones', 'Z1'), sample('zones', 'Z2')]))
+      .toBeCloseTo(1, 3);
+
+    // Una entidad de A y la selección de D, con sus campos combinados y su procedencia
+    await selectOnMap(page, ids.areas, [CLICK.D1]);
+    const mixed = await run(page, 'union', {
+      inputs: { input: [...one(ids.zones, 'Z1'), ...selected(ids.areas)] },
+      params: { sourceLayer: true },
+      attributes: { input: { fields: ['nombre', 'tipo'] } },
+    });
+    expect(mixed.features[0].properties).toEqual({
+      nombre: 'Centro, Barrio 1', tipo: 'urbana, distrito', num_entidades: 2, capa_origen: 'Zonas A, Ámbitos D',
+    });
+    expect(mixed.features[0].area / await unionArea(page, [sample('zones', 'Z1'), sample('areas', 'D1')]))
+      .toBeCloseTo(1, 3);
+    const common = await run(page, 'union', {
+      inputs: { input: [...one(ids.zones, 'Z1'), ...selected(ids.areas)] },
+      params: { fieldPolicy: 'common' },
+      attributes: { input: { fields: ['nombre', 'tipo'] } },
+    });
+    expect(common.features[0].properties).toEqual({ nombre: null, tipo: null, num_entidades: 2 });
+
+    // Toda la capa A con una selección parcial de D: partes separadas con su procedencia
+    await selectOnMap(page, ids.areas, [CLICK.D2]);
+    const config = {
+      inputs: { input: [...all(ids.zones), ...selected(ids.areas)] },
+      attributes: { input: { fields: ['idZona', 'idAmbito'] } },
+    };
+    const whole = await run(page, 'union', config);
+    expect(whole.count).toBe(1);
+    expect(whole.features[0].geometry.type).toBe('MultiPolygon');
+    expect(whole.features[0].properties).toEqual({ idZona: 'Z1, Z2, Z3', idAmbito: 'D2', num_entidades: 4 });
+    const parts = await run(page, 'union', { ...config, params: { separateParts: true } });
+    expect(parts.features.map((f) => f.properties).sort((a, b) => a.idZona.localeCompare(b.idZona)))
+      .toEqual([
+        { idZona: 'Z1, Z2', idAmbito: null, num_entidades: 2 },
+        { idZona: 'Z3', idAmbito: 'D2', num_entidades: 2 },
+      ]);
+    const partsArea = parts.features.reduce((sum, f) => sum + f.area, 0);
+    expect(partsArea / whole.features[0].area).toBeCloseTo(1, 4);
+
+    // Parte común y diferencia con las mismas entradas
+    const intersection = await run(page, 'intersect', { inputs: { input: selected(ids.zones) } });
+    const expectedCommon = await page.evaluate(() => turf.area(turf.bboxPolygon([
+      -3.69, 40.41, -3.68, 40.42,
+    ])));
+    expect(intersection.features[0].area / expectedCommon).toBeCloseTo(1, 3);
+    // La primera seleccionada menos la selección (que la incluye): Z1 − Z2
+    const rest = await run(page, 'difference', {
+      inputs: { input: one(ids.zones, 'Z1'), overlay: selected(ids.zones) },
+    });
+    const z1 = await unionArea(page, [sample('zones', 'Z1')]);
+    expect(rest.features[0].area / (z1 - expectedCommon)).toBeCloseTo(1, 3);
+    expect(rest.features[0].properties).toEqual({ num_entidades: 1 });
+  });
+
+  test('reunir, extraer y excluir entidades sin modificar sus geometrías ni sus campos', async ({ page }) => {
+    await selectOnMap(page, ids.points, [CLICK.P1, CLICK.P2]);
+    const merged = await run(page, 'mergeFeatures', {
+      inputs: { input: [...all(ids.zones), ...selected(ids.points), ...all(ids.lines)] },
+    });
+    expect(merged.count).toBe(9);
+    expect(Object.keys(merged.features[0].properties)).toEqual([
+      'idZona', 'nombre', 'tipo', 'idPunto', 'categoria', 'idTramo', 'clase', 'capa_origen',
+    ]);
+    expect(merged.features.find((f) => f.properties.idPunto === 'P1').properties).toEqual({
+      idZona: null,
+      nombre: 'Fuente',
+      tipo: null,
+      idPunto: 'P1',
+      categoria: 'mobiliario',
+      idTramo: null,
+      clase: null,
+      capa_origen: 'Puntos B',
+    });
+    const sources = {
+      ...await sourceGeometries(page, ids.zones),
+      ...await sourceGeometries(page, ids.points),
+      ...await sourceGeometries(page, ids.lines),
+    };
+    merged.features.forEach((f) => {
+      const { idZona, idPunto, idTramo } = f.properties;
+      expect(f.mapGeometry).toEqual(sources[idZona || idPunto || idTramo]);
+    });
+
+    // Extraer solo la selección
+    const extracted = await run(page, 'mergeFeatures', { inputs: { input: selected(ids.points) } });
+    expect(extracted.features.map((f) => f.properties.idPunto).sort()).toEqual(['P1', 'P2']);
+
+    // Excluir por identidad, no por geometría
+    await selectOnMap(page, ids.zones, [CLICK.Z2]);
+    const kept = await run(page, 'excludeFeatures', {
+      inputs: { input: all(ids.zones), exclude: selected(ids.zones) },
+    });
+    expect(kept.features.map((f) => f.properties.idZona).sort()).toEqual(['Z1', 'Z3']);
+    kept.features.forEach((f) => expect(f.mapGeometry).toEqual(sources[f.properties.idZona]));
+    const overlapping = await run(page, 'excludeFeatures', {
+      inputs: { input: all(ids.zones), exclude: all(ids.areas) },
+    });
+    expect(overlapping.count).toBe(3);
+
+    // El resultado se reutiliza: sus polígonos se fusionan y el resto se omite
+    const chained = await run(page, 'union', {
+      inputs: { input: [{ layerId: merged.layer.idLayer, scope: 'result' }] },
+    });
+    expect(chained.features[0].properties).toEqual({ num_entidades: 3 });
+    expect(chained.skipped).toEqual([{
+      role: 'input', layer: merged.layer.legend, reason: 'unsupportedType', count: 6,
+    }]);
+
+    // El formulario avisa de que la capa resultante mezclará tipos
+    await page.locator('#m-vectorsmanagement-turf').click();
+    await openOperation(page, 'mergeFeatures');
+    await expect(page.locator('#m-vectorsmanagement-turf-opform-input-0-layer')).toHaveValue(ids.zones);
+    await page.locator('#m-vectorsmanagement-turf-opform-input-add').click();
+    await page.locator('#m-vectorsmanagement-turf-opform-input-1-layer').selectOption(ids.points);
+    await expect(page.locator('.m-vectorsmanagement-turf-notices li')).toHaveCount(1);
+    await expect(page.locator('#m-vectorsmanagement-turf-opform-run')).toBeEnabled();
+  });
+
+  test('medición y relaciones entre entidades de la misma capa o de capas distintas', async ({ page }) => {
+    await selectOnMap(page, ids.points, [CLICK.P1, CLICK.P2]);
+    await selectOnMap(page, ids.zones, [CLICK.Z1, CLICK.Z2]);
+
+    const area = await run(page, 'area', { inputs: { input: selected(ids.zones) }, params: { areaUnits: 'hectares' } });
+    const z1z2 = await page.evaluate(
+      (list) => list.reduce((sum, g) => sum + turf.area(g), 0) / 10000,
+      [sample('zones', 'Z1'), sample('zones', 'Z2')],
+    );
+    expect(area.value / z1z2).toBeCloseTo(1, 6);
+
+    const lengths = await run(page, 'length', { inputs: { input: all(ids.lines) }, params: { units: 'kilometers' } });
+    const expectedLength = await page.evaluate(
+      (list) => list.reduce((sum, g) => sum + turf.length(g), 0),
+      TURF_SAMPLES.lines.features.map((f) => f.geometry),
+    );
+    expect(lengths.value / expectedLength).toBeCloseTo(1, 6);
+
+    const bbox = await run(page, 'bbox', { inputs: { input: [...selected(ids.zones), ...selected(ids.points)] } });
+    bbox.value.forEach((v, i) => expect(v).toBeCloseTo([-3.70, 40.40, -3.67, 40.43][i], 6));
+
+    const distance = await run(page, 'distance', {
+      inputs: { first: one(ids.points, 'P1'), second: one(ids.points, 'P2') }, params: { units: 'meters' },
+    });
+    const expectedDistance = await page.evaluate(() => turf.distance(
+      [-3.695, 40.405],
+      [-3.685, 40.415],
+      { units: 'meters' },
+    ));
+    expect(distance.value / expectedDistance).toBeCloseTo(1, 6);
+
+    const relation = async (id, first, second) => (await run(page, id, {
+      inputs: { first, second },
+    })).value;
+    expect(await relation('booleanPointInPolygon', one(ids.points, 'P1'), one(ids.zones, 'Z1'))).toBe(true);
+    expect(await relation('booleanPointInPolygon', one(ids.points, 'P1'), one(ids.zones, 'Z2'))).toBe(false);
+    expect(await relation('booleanIntersects', one(ids.zones, 'Z1'), one(ids.zones, 'Z2'))).toBe(true);
+    expect(await relation('booleanContains', one(ids.zones, 'Z1'), one(ids.points, 'P1'))).toBe(true);
+    expect(await relation('booleanWithin', one(ids.points, 'P1'), one(ids.zones, 'Z1'))).toBe(true);
+    // Dos entidades de la misma capa, como antes de la fase 2
+    expect(await relation('booleanContains', one(ids.zones, 'Z1'), one(ids.zones, 'Z2'))).toBe(false);
+    expect(await relation('booleanWithin', one(ids.zones, 'Z1'), one(ids.zones, 'Z2'))).toBe(false);
+
+    // Desde el panel, con la selección de la capa activa: primera y segunda entidad seleccionadas
+    await closeDialogs(page);
+    await captureToasts(page);
+    await page.locator('#m-vectorsmanagement-turf').click();
+    await openOperation(page, 'booleanContains');
+    await expect(page.locator('#m-vectorsmanagement-turf-opform-first-0-feature option:checked')).toContainText('Z1');
+    await expect(page.locator('#m-vectorsmanagement-turf-opform-second-0-feature option:checked')).toContainText('Z2');
+    await page.locator('#m-vectorsmanagement-turf-opform-run').click();
+    await expect.poll(() => page.evaluate(() => window.toasts)).toEqual(['Contiene: No']);
+    await expect(page.locator('#m-vectorsmanagement-turf-opform-title')).toHaveText('Contiene');
+  });
+
+  test('el panel sigue abierto mientras se seleccionan entidades de varias capas', async ({ page }) => {
     await chooseLayer(page, ids.zones);
     await page.locator('#m-vectorsmanagement-turf').click();
-    await openOperation(page, 'centroid');
-    await expect.poll(() => page.evaluate(() => window.map.getLayers()
-      .filter((l) => l.name.startsWith('turf_centroid_1_'))
-      .map((l) => l.getFeatures().length))).toEqual([3]);
+    await openOperation(page, 'booleanPointInPolygon');
+    const prefix = '#m-vectorsmanagement-turf-opform';
+    const runButton = page.locator(`${prefix}-run`);
+    // Sin selecciones, los papeles de una entidad no se pueden cumplir
+    await expect(runButton).toBeDisabled();
 
-    // Relaciones con dos elementos seleccionados (Z1 y Z2, que se solapan)
-    await page.evaluate(() => {
-      window.toasts = [];
-      const info = IDEE.toast.info;
-      IDEE.toast.info = (message, ...args) => {
-        window.toasts.push(message);
-        return info(message, ...args);
-      };
-    });
-    await selectOnMap(page, ids.zones, [CLICK.Z1, [-3.675, 40.425]]);
-    await openOperation(page, 'booleanContains');
-    await openOperation(page, 'booleanWithin');
-    await expect.poll(() => page.evaluate(() => window.toasts)).toHaveLength(2);
-    expect(await page.evaluate(() => window.toasts.map((t) => t.split(': ')[1])))
-      .toEqual(['No', 'No']);
+    await selectOnMap(page, ids.points, [CLICK.P1]);
+    await selectOnMap(page, ids.zones, [CLICK.Z1]);
+    await expect(page.locator('.m-vectorsmanagement-turf-opform')).toBeVisible();
+    await expect(page.locator('.m-vectorsmanagement-turf-selection')).toHaveCount(2);
+
+    await page.locator(`${prefix}-first-0-scope-feature`).check();
+    await page.locator(`${prefix}-first-0-layer`).selectOption(ids.points);
+    await page.locator(`${prefix}-second-0-scope-feature`).check();
+    await page.locator(`${prefix}-second-0-layer`).selectOption(ids.zones);
+    await expect(page.locator(`${prefix}-first-0-feature`)).toContainText('P1');
+    await expect(page.locator(`${prefix}-status`)).toContainText('Puntos B');
+    await expect(page.locator(`${prefix}-status`)).toContainText('Zonas A');
+    await expect(runButton).toBeEnabled();
+    await captureToasts(page);
+    await runButton.click();
+    await expect.poll(() => page.evaluate(() => window.toasts)).toEqual(['Punto en polígono: Sí']);
+
+    // Cambiar la selección de una capa no cambia la de la otra
+    await selectOnMap(page, ids.zones, [CLICK.Z2]);
+    await expect(page.locator('.m-vectorsmanagement-turf-selection').filter({ hasText: 'Puntos B' }))
+      .toContainText('1');
+    await expect(page.locator(`${prefix}-second-0-feature`)).toContainText('Z2');
+  });
+
+  test('todas las operaciones del catálogo se configuran en el panel y se ejecutan', async ({ page }) => {
+    await selectOnMap(page, ids.points, [CLICK.P1, CLICK.P2]);
+    await selectOnMap(page, ids.zones, [CLICK.Z1, CLICK.Z2]);
+    const zoneProps = (f) => f.properties.idZona;
+    const CASES = {
+      buffer: [{ input: all(ids.points) }, { count: 5 }],
+      mergeFeatures: [{ input: [...all(ids.zones), ...all(ids.points)] }, { count: 8 }],
+      excludeFeatures: [{ input: all(ids.zones), exclude: selected(ids.zones) }, { count: 1 }],
+      extractByLocation: [{ input: all(ids.points), condition: all(ids.zones) }, { count: 4 }],
+      layerIntersection: [{ input: all(ids.lines), overlay: all(ids.zones) }, { count: 5 }],
+      layerUnion: [{ input: all(ids.zones), overlay: all(ids.areas) }, { count: 9 }],
+      layerDifference: [{ input: all(ids.zones), overlay: all(ids.areas) }, { count: 3 }],
+      spatialJoin: [{ target: all(ids.points), join: all(ids.zones) }, { count: 6 }],
+      union: [{ input: selected(ids.zones) }, { count: 1 }],
+      intersect: [{ input: selected(ids.zones) }, { count: 1 }],
+      difference: [{ input: one(ids.zones, 'Z1'), overlay: selected(ids.zones) }, { count: 1 }],
+      area: [{ input: all(ids.zones) }, { value: 'number' }],
+      length: [{ input: all(ids.lines) }, { value: 'number' }],
+      distance: [{ first: one(ids.points, 'P1'), second: one(ids.points, 'P2') }, { value: 'number' }],
+      bbox: [{ input: all(ids.points) }, { value: 'object' }],
+      along: [{ input: all(ids.lines) }, { count: 3 }],
+      center: [{ input: all(ids.zones) }, { count: 3, props: zoneProps }],
+      centroid: [{ input: all(ids.zones) }, { count: 3, props: zoneProps }],
+      centerOfMass: [{ input: all(ids.zones) }, { count: 3, props: zoneProps }],
+      pointOnFeature: [{ input: all(ids.zones) }, { count: 3, props: zoneProps }],
+      simplify: [{ input: all(ids.zones) }, { count: 3, props: zoneProps }],
+      convex: [{ input: all(ids.points) }, { count: 1 }],
+      envelope: [{ input: all(ids.points) }, { count: 1 }],
+      bezierSpline: [{ input: all(ids.lines) }, { count: 3 }],
+      transformRotate: [{ input: all(ids.zones) }, { count: 3, props: zoneProps }],
+      transformScale: [{ input: all(ids.zones) }, { count: 3, props: zoneProps }],
+      transformTranslate: [{ input: all(ids.zones) }, { count: 3, props: zoneProps }],
+      booleanPointInPolygon: [{ first: one(ids.points, 'P1'), second: one(ids.zones, 'Z1') }, { value: 'boolean' }],
+      booleanIntersects: [{ first: one(ids.zones, 'Z1'), second: one(ids.zones, 'Z2') }, { value: 'boolean' }],
+      booleanContains: [{ first: one(ids.zones, 'Z1'), second: one(ids.points, 'P1') }, { value: 'boolean' }],
+      booleanWithin: [{ first: one(ids.points, 'P1'), second: one(ids.zones, 'Z1') }, { value: 'boolean' }],
+    };
+
+    await page.locator('#m-vectorsmanagement-turf').click();
+    const catalog = await page.locator('.m-vectorsmanagement-turf-catalog button[data-op]')
+      .evaluateAll((buttons) => buttons.map((b) => b.dataset.op));
+    expect([...catalog].sort()).toEqual(Object.keys(CASES).sort());
+
+    for (let i = 0; i < catalog.length; i += 1) {
+      const id = catalog[i];
+      // eslint-disable-next-line no-await-in-loop
+      await openOperation(page, id);
+      // eslint-disable-next-line no-await-in-loop
+      await expect(page.locator('.m-vectorsmanagement-turf-opform-title')).not.toBeEmpty();
+      // eslint-disable-next-line no-await-in-loop
+      await page.locator('#m-vectorsmanagement-turf-back').click();
+
+      const [inputs, expected] = CASES[id];
+      // eslint-disable-next-line no-await-in-loop
+      const result = await run(page, id, { inputs });
+      expect(result.error, id).toBeUndefined();
+      if (expected.value) {
+        expect(typeof result.value, id).toBe(expected.value);
+      } else {
+        expect(result.count, id).toBe(expected.count);
+        if (expected.props) {
+          expect(result.features.map(expected.props).sort(), id).toEqual(['Z1', 'Z2', 'Z3']);
+        }
+      }
+      // eslint-disable-next-line no-await-in-loop
+      await closeDialogs(page);
+    }
   });
 });

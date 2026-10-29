@@ -1,21 +1,21 @@
 import AttributeSchema from './attributes/attributeschema';
+import { COUNT_FIELD, SOURCE_LAYER_FIELD, distinct } from './attributes/fieldpolicies';
 import LayerCatalog from './layers/layercatalog';
-import SelectionRegistry from './layers/selectionregistry';
-import { layerTitle } from './layers/inputresolver';
+import { lookupEntry } from './layers/inputresolver';
 import { TURF_PROJECTION } from './layers/resultlayers';
 import {
-  ErrorKey, InputScope, OperationError, ParamType,
+  Aggregate, ErrorKey, InputScope, OperationError, Output, ParamType,
 } from './turftypes';
 
 /**
- * Configuración de una ejecución de una operación de capas.
+ * Configuración de una ejecución de una operación.
  * @typedef {Object} LayerOperationConfig
  * @property {Object<InputRole, Array<InputEntry>>} inputs Entradas por papel.
  * @property {Object} [params] Valores de los parámetros; los que falten toman
  * su valor por defecto.
  * @property {Object<InputRole, {fields: (Array<String>|undefined), prefix: String}>}
  * [attributes] Campos y prefijo por papel; si no se indican los campos, se
- * copian todos.
+ * copian todos (ninguno si cada resultado combina varios elementos).
  * @property {String} [outputName] Nombre de la capa de salida.
  */
 
@@ -31,30 +31,29 @@ import {
  * Diagnóstico de una configuración, calculado sin convertir geometrías.
  * @typedef {Object} CheckReport
  * @property {Array<OperationError>} errors Errores que impiden ejecutar.
+ * @property {Array<NoticeKey>} notices Avisos que no impiden ejecutar.
  * @property {Object<InputRole, Array<EntryReport>>} entries Entradas por papel.
  * @property {Object<InputRole, RoleMeta>} meta Resumen de cada papel.
  * @property {Object} params Valores de los parámetros.
  * @property {Object<ParamName, Array<String>>} options Opciones válidas de los desplegables.
  * @property {Object<InputRole, {available: Array<String>, excluded: Array<Object>}>} fields
  * Campos de cada papel.
+ * @property {Object<InputRole, Array<String>>} chosenFields Campos que se copian de
+ * cada papel.
+ * @property {Boolean} combines Indica si cada resultado puede reunir varios elementos.
  * @property {AttributeSchema} schema Esquema de la salida.
  */
 
 /**
  * Resultado de una ejecución.
  * @typedef {Object} RunResult
- * @property {IDEE.layer.Vector|null} layer Capa creada o null si no hay resultados.
- * @property {Number} count Número de elementos de la capa.
+ * @property {IDEE.layer.Vector|null} [layer] Capa creada o null si no hay
+ * resultados (Output.GEOMETRY).
+ * @property {Number} [count] Número de elementos de la capa (Output.GEOMETRY).
+ * @property {*} [value] Valor calculado (Output.VALUE).
+ * @property {Object} params Valores de los parámetros usados.
  * @property {Array<Object>} skipped Elementos de entrada sin resultado.
  */
-
-/**
- * Valores únicos conservando el orden.
- *
- * @param {Array<*>} values Valores.
- * @returns {Array<*>} Valores sin repetir.
- */
-const unique = (values) => [...new Set(values)];
 
 /**
  * Resumen de los elementos de cada papel ya resueltos.
@@ -65,10 +64,19 @@ const unique = (values) => [...new Set(values)];
 const metaOfInputs = (inputs) => Object.keys(inputs).reduce((meta, role) => ({
   ...meta,
   [role]: {
-    types: unique(inputs[role].map((feature) => feature.geometry.type)),
+    types: distinct(inputs[role].map((feature) => feature.geometry.type)),
     count: inputs[role].length,
   },
 }), {});
+
+/**
+ * Indica si un parámetro se aplica con los valores indicados.
+ *
+ * @param {TurfParam} param Parámetro.
+ * @param {Object} params Valores de los parámetros.
+ * @returns {Boolean}
+ */
+export const isApplicable = (param, params) => !param.when || param.when(params);
 
 /**
  * Comprueba el valor de un parámetro.
@@ -96,30 +104,75 @@ const checkParam = (param, value, available) => {
 };
 
 /**
- * Comprueba el número de capas de un papel y que no se repitan.
+ * Comprueba el número de capas de un papel y que sus entradas no se
+ * repitan: una capa solo puede aparecer varias veces con entidades
+ * concretas distintas.
  *
  * @param {InputRoleSpec} spec Papel.
  * @param {Array<InputEntry>} entries Entradas.
  * @param {Array<OperationError>} errors Errores (se completa).
  */
 const checkRoleEntries = (spec, entries, errors) => {
-  const maxLayers = spec.maxLayers || 1;
+  const maxLayers = spec.maxLayers ?? Number.POSITIVE_INFINITY;
+  const layerIds = distinct(entries.map((entry) => entry.layerId));
   if (entries.length === 0) {
     errors.push(new OperationError(ErrorKey.NO_LAYER, { role: spec.role }));
-  } else if (entries.length > maxLayers) {
+  } else if (layerIds.length > maxLayers) {
     errors.push(new OperationError(ErrorKey.MAX_LAYERS, { role: spec.role, n: maxLayers }));
   }
-  const ids = entries.map((entry) => entry.layerId);
-  if (unique(ids).length !== ids.length) {
-    errors.push(new OperationError(ErrorKey.DUPLICATED_LAYER, { role: spec.role }));
-  }
+  const repeated = layerIds.some((id) => {
+    const same = entries.filter((entry) => entry.layerId === id);
+    if (same.length < 2) return false;
+    return !same.every((entry) => entry.scope === InputScope.FEATURE)
+      || distinct(same.map((entry) => entry.featureKey)).length !== same.length;
+  });
+  if (repeated) errors.push(new OperationError(ErrorKey.DUPLICATED_LAYER, { role: spec.role }));
 };
 
 /**
+ * Comprueba el número de elementos de cada papel.
+ *
+ * @param {LayerOperation} op Operación.
+ * @param {Object<InputRole, RoleMeta>} meta Resumen de cada papel.
+ * @returns {Array<OperationError>} Errores.
+ */
+const checkFeatureCounts = (op, meta) => op.inputs.flatMap((spec) => {
+  const { role, minFeatures = 1, maxFeatures } = spec;
+  const { count } = meta[role];
+  if (count === 0) return [];
+  if (minFeatures === maxFeatures && count !== minFeatures) {
+    return [new OperationError(ErrorKey.EXACT, { role, n: minFeatures, count })];
+  }
+  if (count < minFeatures) {
+    return [new OperationError(ErrorKey.MIN, { role, n: minFeatures, count })];
+  }
+  if (maxFeatures !== undefined && count > maxFeatures) {
+    return [new OperationError(ErrorKey.MAX, { role, n: maxFeatures, count })];
+  }
+  return [];
+});
+
+/**
+ * Columnas agregadas de la salida: el número de elementos si cada resultado
+ * combina varios y, si se pide, la capa de origen.
+ *
+ * @param {Array<InputRole>} roles Papeles que aportan campos.
+ * @param {Boolean} combines Indica si los resultados combinan varios elementos.
+ * @param {Object} params Parámetros.
+ * @returns {Array<AggregateSpec>} Columnas.
+ */
+const aggregatesOf = (roles, combines, params) => [
+  ...(combines
+    ? roles.map((role) => ({ role, aggregate: Aggregate.COUNT, name: COUNT_FIELD })) : []),
+  ...(params.sourceLayer === true
+    ? roles.map((role) => ({ role, aggregate: Aggregate.LAYERS, name: SOURCE_LAYER_FIELD })) : []),
+];
+
+/**
  * @classdesc
- * Ejecuta las operaciones de capas: comprueba la configuración, resuelve las
- * entradas, calcula los resultados con su procedencia, construye sus
- * atributos y crea la capa de salida. No muestra mensajes: devuelve el
+ * Ejecuta las operaciones del catálogo: comprueba la configuración, resuelve
+ * las entradas, calcula los resultados con su procedencia y entrega una capa
+ * (con sus atributos) o un valor. No muestra mensajes: devuelve el
  * resultado o lanza OperationError.
  */
 export default class LayerOperationRunner {
@@ -142,6 +195,16 @@ export default class LayerOperationRunner {
     this.resolver_ = resolver;
     this.writer_ = writer;
     this.isAvailable_ = isAvailable;
+
+    /**
+     * Forma de entregar el resultado de cada tipo de operación.
+     * @private
+     * @type {Object<Output, function(Object): Object>}
+     */
+    this.outputHandlers_ = {
+      [Output.GEOMETRY]: (context) => this.writeLayer_(context),
+      [Output.VALUE]: ({ output }) => ({ value: output.value }),
+    };
   }
 
   /**
@@ -158,40 +221,48 @@ export default class LayerOperationRunner {
     const entries = {};
     const meta = {};
     const fields = {};
+    let entriesValid = true;
     op.inputs.forEach((spec) => {
       const roleEntries = (config.inputs && config.inputs[spec.role]) || [];
+      const before = errors.length;
       const reports = roleEntries.map((entry) => this.checkEntry_(spec, entry, errors));
       checkRoleEntries(spec, roleEntries, errors);
+      entriesValid = entriesValid && errors.length === before;
       const infos = reports.filter((report) => report.info !== null && !report.issue)
         .map((report) => report.info);
       entries[spec.role] = reports;
       meta[spec.role] = {
-        types: unique(infos.flatMap((info) => LayerCatalog.admittedTypes(info, spec))),
+        types: distinct(infos.flatMap((info) => LayerCatalog.admittedTypes(info, spec))),
         count: reports.reduce((sum, r) => sum + (r.info ? r.info.count - r.omitted : 0), 0),
       };
       fields[spec.role] = {
-        available: unique(infos.flatMap((info) => info.fields)),
+        available: distinct(infos.flatMap((info) => info.fields)),
         excluded: infos.flatMap((info) => info.excludedFields)
           .filter((field, i, all) => all.findIndex((f) => f.name === field.name) === i),
       };
     });
+    if (entriesValid) errors.push(...checkFeatureCounts(op, meta));
     const params = LayerOperationRunner.normalizeParams(op, config.params);
     const options = op.params.filter((param) => param.availableOptions)
       .reduce((acc, param) => ({ ...acc, [param.name]: param.availableOptions(meta) }), {});
-    op.params.map((param) => checkParam(param, params[param.name], options[param.name]))
+    op.params.filter((param) => isApplicable(param, params))
+      .map((param) => checkParam(param, params[param.name], options[param.name]))
       .filter((error) => error !== null)
       .forEach((error) => errors.push(error));
     const complete = op.inputs.every((spec) => meta[spec.role].types.length > 0);
     const validation = complete && op.validate ? op.validate(meta, params) : null;
     if (validation) errors.push(new OperationError(validation));
-    const schema = this.buildSchema_(op, params, fields, config.attributes || {}, errors);
+    const notices = complete && op.notices ? op.notices(meta, params) : [];
+    const combines = op.combines ? op.combines(params) : false;
+    const attributes = config.attributes || {};
+    const { schema, chosenFields } = this.buildSchema_(op, params, fields, attributes, errors);
     return {
-      errors, entries, meta, params, options, fields, schema,
+      errors, notices, entries, meta, params, options, fields, chosenFields, combines, schema,
     };
   }
 
   /**
-   * Ejecuta una operación y crea su capa de resultado.
+   * Ejecuta una operación y entrega su resultado: una capa nueva o un valor.
    *
    * @param {LayerOperation} op Operación.
    * @param {LayerOperationConfig} config Configuración.
@@ -202,14 +273,17 @@ export default class LayerOperationRunner {
     const report = this.check(op, config);
     if (report.errors.length > 0) throw report.errors[0];
     const { inputs, skipped } = this.resolver_.resolve(op, config.inputs);
-    const validation = op.validate ? op.validate(metaOfInputs(inputs), report.params) : null;
+    const meta = metaOfInputs(inputs);
+    const [countError] = checkFeatureCounts(op, meta);
+    if (countError) throw countError;
+    const validation = op.validate ? op.validate(meta, report.params) : null;
     if (validation) throw new OperationError(validation);
     const output = op.execute({ inputs, params: report.params });
-    const features = output.records.map((record) => this.toOutputFeature_(record, report.schema));
-    const layer = this.writer_.write(op.id, features, config.outputName);
     return {
-      layer,
-      count: layer === null ? 0 : features.length,
+      ...this.outputHandlers_[op.output]({
+        op, output, report, config,
+      }),
+      params: report.params,
       skipped: [...skipped, ...(output.skipped || [])],
     };
   }
@@ -238,30 +312,13 @@ export default class LayerOperationRunner {
    * @returns {EntryReport} Diagnóstico.
    */
   checkEntry_(spec, entry, errors) {
-    const layer = entry.layerId ? this.catalog_.findLayer(entry.layerId) : null;
-    if (layer === null) {
-      errors.push(entry.layerId
-        ? new OperationError(ErrorKey.LAYER_NOT_FOUND, { layer: entry.layerId })
-        : new OperationError(ErrorKey.NO_LAYER, { role: spec.role }));
+    if (!entry.layerId) {
+      errors.push(new OperationError(ErrorKey.NO_LAYER, { role: spec.role }));
       return { entry, info: null, omitted: 0 };
     }
-    let features;
-    if (entry.scope === InputScope.SELECTION) {
-      const snapshot = this.selections_.get(layer.idLayer);
-      if (!snapshot) {
-        errors.push(new OperationError(ErrorKey.NO_SELECTION, { layer: layerTitle(layer) }));
-        return { entry, info: null, omitted: 0 };
-      }
-      const state = SelectionRegistry.check(snapshot);
-      if (state.missing > 0) {
-        errors.push(new OperationError(ErrorKey.STALE_SELECTION, {
-          layer: layerTitle(layer), n: state.missing,
-        }));
-      }
-      features = state.features;
-    } else if (entry.scope === InputScope.RESULT && !LayerCatalog.isResult(layer)) {
-      errors.push(new OperationError(ErrorKey.NOT_RESULT, { layer: layerTitle(layer) }));
-    }
+    const { layer, features, error } = lookupEntry(entry, this.catalog_, this.selections_);
+    if (error) errors.push(error);
+    if (layer === null || features === undefined) return { entry, info: null, omitted: 0 };
     const info = this.catalog_.describe(layer, features);
     const issue = LayerCatalog.issueFor(info, spec);
     if (issue) {
@@ -276,7 +333,8 @@ export default class LayerOperationRunner {
 
   /**
    * Construye el esquema de la salida con los campos elegidos de cada papel,
-   * en el orden en que aparecen en sus capas.
+   * en el orden en que aparecen en sus capas. Si no se eligen, se copian
+   * todos, salvo que cada resultado combine varios elementos.
    *
    * @private
    * @param {LayerOperation} op Operación.
@@ -284,14 +342,20 @@ export default class LayerOperationRunner {
    * @param {Object<InputRole, Object>} fields Campos de cada papel.
    * @param {Object<InputRole, Object>} attributes Configuración de atributos.
    * @param {Array<OperationError>} errors Errores (se completa).
-   * @returns {AttributeSchema} Esquema.
+   * @returns {{schema: AttributeSchema, chosenFields: Object<InputRole, Array<String>>}}
+   * Esquema y campos elegidos de cada papel.
    */
   buildSchema_(op, params, fields, attributes, errors) {
-    const roleFields = op.attributeRoles(params).map((role) => {
+    if (op.output !== Output.GEOMETRY) {
+      return { schema: AttributeSchema.build([]), chosenFields: {} };
+    }
+    const roles = op.attributeRoles(params);
+    const combines = op.combines ? op.combines(params) : false;
+    const roleFields = roles.map((role) => {
       const available = fields[role] ? fields[role].available : [];
       const config = attributes[role] || {};
       if (!Array.isArray(config.fields)) {
-        return { role, fields: available, prefix: config.prefix || '' };
+        return { role, fields: combines ? [] : available, prefix: config.prefix || '' };
       }
       config.fields.filter((field) => !available.includes(field)).forEach((field) => {
         errors.push(new OperationError(ErrorKey.UNKNOWN_FIELD, { field, role }));
@@ -302,7 +366,31 @@ export default class LayerOperationRunner {
         prefix: config.prefix || '',
       };
     });
-    return AttributeSchema.build(roleFields, op.aggregates ? op.aggregates(params) : []);
+    return {
+      schema: AttributeSchema.build(
+        roleFields,
+        aggregatesOf(roles, combines, params),
+        combines ? params.fieldPolicy : undefined,
+      ),
+      chosenFields: roleFields.reduce((acc, { role, fields: chosen }) => ({
+        ...acc, [role]: chosen,
+      }), {}),
+    };
+  }
+
+  /**
+   * Crea la capa de salida con los resultados y sus atributos.
+   *
+   * @private
+   * @param {Object} context Ejecución: op, output (OperationOutput), report y config.
+   * @returns {{layer: (IDEE.layer.Vector|null), count: Number}} Capa y número de elementos.
+   */
+  writeLayer_({
+    op, output, report, config,
+  }) {
+    const features = output.records.map((record) => this.toOutputFeature_(record, report.schema));
+    const layer = this.writer_.write(op.id, features, config.outputName);
+    return { layer, count: layer === null ? 0 : features.length };
   }
 
   /**

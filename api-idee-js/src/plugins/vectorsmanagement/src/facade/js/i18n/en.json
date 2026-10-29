@@ -74,7 +74,7 @@
     "analysis_content_4": "GeoJSON",
     "analysis_content_4_1": "Allows you to view the GeoJSON of the layer or selected elements.",
     "turf_title": "Geoprocessing (Turf.js)",
-    "turf_content": "Runs Turf.js geoprocessing. Layer operations (buffer, extract by location, layer intersection, union and difference, join attributes by location) combine several layers and are configured in a form in the panel, choosing for each input the layer and its features. The rest (measurement, centers, transformations, combine polygons and relations) apply to the selected features or to the whole active layer. Resulting geometries are added to the map in a new layer. The help button of the panel explains each operation.",
+    "turf_content": "Runs Turf.js geoprocessing on the vector layers of the map. Every operation (buffer; merge, extract and exclude features; layer overlay; join attributes by location; combine polygons; measurement; centers; transformations and relations) is configured in a form in the panel, choosing for each input one or several layers and their features: all of them, only the selected ones, one selected feature or the result of a previous operation. The result is a new layer or a value. The help button of the panel explains each operation.",
     "download_title": "Download",
     "download_content": "This tool allows you to download the complete layer or selected elements in GeoJSON, KML and Shapefile format."
   },
@@ -223,69 +223,98 @@
   "info_remove_vertex": "To delete the vertex, use ‘alt + click’ on the vertex to be deleted",
   "turf": {
     "title": "Geoprocessing (Turf.js)",
-    "hintParams": "Those showing this icon ask for parameters before running:",
     "help": {
       "button": "Geoprocessing help",
       "opButton": "Operation help",
-      "layerOpsTitle": "Layer operations",
-      "layerOps": "They combine one or several layers. They open a form in this panel to choose, for each input, the layer and its features: all of them, only the selected ones or the result of a previous operation.",
-      "collectionOpsTitle": "Active layer operations",
-      "collectionOps": "They apply to the selected features or, if nothing is selected, to every feature of the active layer.",
       "selectionsTitle": "Saved selections",
-      "selections": "With the selection tool, what you select in each layer is saved to be used as \"Only the selected ones\". Selecting in another layer does not delete these selections, and neither does clearing the selection on the map: remove them in the panel summary.",
+      "selections": "With the selection tool, what you select in each layer is saved to be used as \"Only the selected ones\" or \"One selected feature\". Selecting in another layer does not delete these selections, and neither does clearing the selection on the map: remove them in the panel summary.",
       "what": "What it does",
       "inputs": "Inputs",
       "params": "Parameters",
-      "output": "Resulting layer"
+      "output": "Result",
+      "opsTitle": "Operations",
+      "ops": "They are all configured in a form in this panel, which does not block the map: for each input you choose one or several layers and which features of each one to use. When it opens, the first input uses the active layer (its selection, if the selection tool is active). The result is a new layer or a value; the source layers are not modified.",
+      "scopesTitle": "Features of each input",
+      "scopes": {
+        "all": "every feature of the layer.",
+        "selection": "the features of its saved selection.",
+        "feature": "a single feature of its saved selection, chosen from a list. Use it to compare or measure two features, also of the same layer.",
+        "result": "a layer created by a previous operation, to chain operations."
+      },
+      "layerOutput": "A new layer with the legend \"Turf: <operation> (n)\", which can be used as the input of other operations (\"Result of a previous operation\"). The form lets you choose the fields that are copied and whether capa_origen is added.",
+      "valueOutput": "A value shown in a message; no layer is created.",
+      "combinedOutput": "When several features make up a single result, num_entidades is added with how many there are. Their fields are only copied if you choose them, and their values are combined according to \"Values of the combined fields\": the value of an arbitrary feature is never taken."
     },
-    "paramsTitle": "Requires setting parameters.",
     "run": "Run",
     "layerPrefix": "Turf:",
     "categories": {
       "proximity": "Proximity",
-      "extraction": "Spatial selection and extraction",
+      "extraction": "Merge, extract and exclude features",
       "overlay": "Layer overlay",
       "join": "Spatial attributes",
       "measurement": "Measurement",
       "center": "Centers",
       "transformation": "Transformation",
-      "combine": "Combine polygons (one layer)",
+      "combine": "Combine polygons",
       "relation": "Spatial relation"
     },
     "categoriesDesc": {
       "proximity": "Creates areas within a distance of the features of a layer.",
-      "extraction": "Copies, without clipping them, the features of a layer that meet a spatial relation with another layer.",
+      "extraction": "They copy whole features to a new layer without changing their geometries: they merge features of several layers, extract a selection, exclude features or extract the ones that meet a spatial relation.",
       "overlay": "Computes new geometries from how two layers overlap, with the fields of both.",
       "join": "Adds to each feature the fields of the related features of another layer, without changing its geometry.",
-      "measurement": "Area, length, distance, extent and a point at a distance along a line.",
-      "center": "Center, centroid, center of mass or a point on each feature.",
-      "transformation": "Simplify, hulls, smooth lines, rotate, scale and translate.",
-      "combine": "Combines the selected (or all) polygons of the active layer into a single geometry. It is not a layer overlay.",
-      "relation": "Checks the relation between the two selected features of the active layer."
+      "measurement": "Area, length, distance, extent and a point at a distance along a line, with features of one or several layers.",
+      "center": "Center, centroid, center of mass or a point on each feature, with its fields.",
+      "transformation": "Simplify, hulls, smooth lines, rotate, scale and translate, with features of one or several layers.",
+      "combine": "They create a new geometry from polygons of one or several layers: they merge them, compute their common area or subtract some from others. Their fields are combined.",
+      "relation": "They check the relation between two features, of the same layer or of different layers."
     },
     "ops": {
       "buffer": {
         "name": "Buffer",
-        "desc": "Creates a polygon at the given distance around each feature and keeps its fields, or a single polygon with every area dissolved.",
-        "aggregatesNote": "When dissolving, every area is merged into one feature: the source fields are not kept and num_entidades holds the number of features it is made of.",
+        "desc": "Creates a polygon at the given distance around each feature, with its fields, or a single polygon with every area dissolved.",
         "roles": {
           "input": {
-            "label": "Input layer",
-            "help": "Layer whose features get the buffer."
+            "label": "Input features",
+            "help": "Points, lines or polygons of one or several layers."
+          }
+        }
+      },
+      "mergeFeatures": {
+        "name": "Merge or extract features",
+        "desc": "Copies to a new layer the chosen features of one or several layers (all of them, only the selected ones, one of them or a previous result) without changing their geometries or fields. Fields with the same name share a column.",
+        "roles": {
+          "input": {
+            "label": "Features to copy",
+            "help": "Add several layers to merge them into one; choose \"Only the selected ones\" to extract a selection."
+          }
+        }
+      },
+      "excludeFeatures": {
+        "name": "Exclude features",
+        "desc": "Copies to a new layer the starting features except the excluded ones. It compares which features they are (their layer and position), not their geometries: it does not subtract areas.",
+        "roles": {
+          "input": {
+            "label": "Starting features",
+            "help": "By default, every feature of the active layer. You can add several layers."
+          },
+          "exclude": {
+            "label": "Features to exclude",
+            "help": "By default, the saved selection of the active layer. Only the ones that are also starting features are removed."
           }
         }
       },
       "extractByLocation": {
         "name": "Extract by location",
-        "desc": "Copies to a new layer, whole and unclipped, the features of the input layer that meet the spatial relation with the condition layer.",
+        "desc": "Copies to a new layer, whole and unclipped, the input features that meet the spatial relation with the condition features.",
         "roles": {
           "input": {
-            "label": "Layer to extract features from",
-            "help": "Its features are copied with their original geometry."
+            "label": "Features to extract from",
+            "help": "They are copied with their original geometry. You can add several layers."
           },
           "condition": {
-            "label": "Layer that defines the condition",
-            "help": "The relation must hold with at least one of its features (with \"Disjoint\", with none). You can add several layers."
+            "label": "Features that define the condition",
+            "help": "The relation must hold with at least one of them (with \"Disjoint\", with none). You can add several layers."
           }
         }
       },
@@ -294,40 +323,40 @@
         "desc": "Creates the common part of each input feature with each overlay polygon that crosses it, with the fields of both. Points and lines are clipped and keep their type.",
         "roles": {
           "input": {
-            "label": "Input layer",
-            "help": "Points, lines or polygons to clip."
+            "label": "Input features",
+            "help": "Points, lines or polygons to clip. You can add several layers."
           },
           "overlay": {
-            "label": "Overlay layer",
-            "help": "Polygons to clip with."
+            "label": "Overlay polygons",
+            "help": "Polygons to clip with. You can add several layers."
           }
         }
       },
       "layerUnion": {
         "name": "Layer union",
-        "desc": "Splits the polygons of both layers into the parts where they overlap and where they do not, like the QGIS union. Each part carries the fields of the features covering it and empty fields for the other layer. It is not a dissolve.",
+        "desc": "Splits the polygons of both inputs into the parts where they overlap and where they do not, like the QGIS union. Each part carries the fields of the features covering it and empty fields for the other input. It is not a dissolve.",
         "roles": {
           "input": {
-            "label": "First layer",
-            "help": "Polygons. Overlaps between its own features are not split."
+            "label": "First input",
+            "help": "Polygons of one or several layers. Overlaps between its own features are not split."
           },
           "overlay": {
-            "label": "Second layer",
-            "help": "Polygons. Overlaps between its own features are not split."
+            "label": "Second input",
+            "help": "Polygons of one or several layers. Overlaps between its own features are not split."
           }
         }
       },
       "layerDifference": {
         "name": "Layer difference",
-        "desc": "Creates the part of each input feature outside the polygons of the subtracted layers, with its fields.",
+        "desc": "Creates the part of each input feature outside the subtracted polygons, with its fields.",
         "roles": {
           "input": {
-            "label": "Input layer",
-            "help": "Points, lines or polygons to subtract from."
+            "label": "Input features",
+            "help": "Points, lines or polygons to subtract from. You can add several layers."
           },
           "overlay": {
-            "label": "Layer to subtract",
-            "help": "Polygons. You can add several layers."
+            "label": "Polygons to subtract",
+            "help": "You can add several layers."
           }
         }
       },
@@ -336,106 +365,268 @@
         "desc": "Copies the target features without changing their geometry and adds the fields of the join features they meet the spatial relation with.",
         "roles": {
           "target": {
-            "label": "Layer whose geometries are kept",
-            "help": "Each feature keeps its geometry and its fields."
+            "label": "Features whose geometries are kept",
+            "help": "Each feature keeps its geometry and its fields. You can add several layers."
           },
           "join": {
-            "label": "Layer that provides the fields",
-            "help": "Its fields are added to the related features."
+            "label": "Features that provide the fields",
+            "help": "Their fields are added to the related features. If you add several layers, their fields with the same name share a column."
+          }
+        }
+      },
+      "union": {
+        "name": "Merge polygons (union)",
+        "desc": "Merges the chosen polygons of one or several layers into a single geometry and removes their inner boundaries. Separate polygons make up a multipart geometry or, if requested, one feature each. It does not copy features or split layers.",
+        "roles": {
+          "input": {
+            "label": "Polygons to merge",
+            "help": "Of one or several layers: one feature, only the selected ones, all of them or a previous result."
+          }
+        }
+      },
+      "intersect": {
+        "name": "Common area of the polygons (intersection)",
+        "desc": "Creates the area shared by all the chosen polygons, of one or several layers. If they have no common area, no layer is created.",
+        "roles": {
+          "input": {
+            "label": "Polygons",
+            "help": "At least two, of one or several layers."
+          }
+        }
+      },
+      "difference": {
+        "name": "Subtract polygons (difference)",
+        "desc": "Creates the area of the starting polygons (merged) not covered by the subtracted polygons. With two or more polygons selected in the active layer, it subtracts the others from the first one, as before.",
+        "roles": {
+          "input": {
+            "label": "Starting polygons",
+            "help": "By default, the first selected feature of the active layer. You can add several layers."
+          },
+          "overlay": {
+            "label": "Polygons to subtract",
+            "help": "By default, the selection of the active layer. Features that are also starting polygons are not subtracted."
           }
         }
       },
       "area": {
         "name": "Area",
-        "desc": "Calculates the total area of the polygons."
+        "desc": "Adds up the area of the chosen polygons, of one or several layers. Overlapping areas are counted once per polygon.",
+        "roles": {
+          "input": {
+            "label": "Polygons",
+            "help": "Of one or several layers; features that are not polygons are skipped."
+          }
+        }
       },
       "length": {
         "name": "Length",
-        "desc": "Calculates the total length of the lines."
+        "desc": "Adds up the length of the chosen lines, of one or several layers.",
+        "roles": {
+          "input": {
+            "label": "Lines",
+            "help": "Of one or several layers; features that are not lines are skipped."
+          }
+        }
       },
       "distance": {
         "name": "Distance",
-        "desc": "Calculates the distance between two points."
+        "desc": "Calculates the distance between two points, of the same layer or of different layers.",
+        "roles": {
+          "first": {
+            "label": "Origin point",
+            "help": "A single point. By default, the first selected feature of the active layer."
+          },
+          "second": {
+            "label": "Destination point",
+            "help": "A single point. By default, the second selected feature of the active layer or the one of another saved selection."
+          }
+        }
       },
       "bbox": {
         "name": "Extent (bbox)",
-        "desc": "Calculates the extent (bounding box) of the features in EPSG:4326."
+        "desc": "Calculates the extent (bounding box) of the chosen features, of one or several layers, in EPSG:4326.",
+        "roles": {
+          "input": {
+            "label": "Features",
+            "help": "Of one or several layers."
+          }
+        }
       },
       "along": {
         "name": "Point along line",
-        "desc": "Creates a point at the given distance from the start of the line."
+        "desc": "Creates on each line a point at the given distance from its start, with the fields of the line.",
+        "roles": {
+          "input": {
+            "label": "Lines",
+            "help": "LineStrings of one or several layers; multilines are skipped."
+          }
+        }
       },
       "center": {
         "name": "Center",
-        "desc": "Creates the center of the extent of each feature."
+        "desc": "Creates the center of the extent of each feature, with its fields.",
+        "roles": {
+          "input": {
+            "label": "Features",
+            "help": "Of one or several layers."
+          }
+        }
       },
       "centroid": {
         "name": "Centroid",
-        "desc": "Creates the centroid (mean of the vertices) of each feature."
+        "desc": "Creates the centroid (mean of the vertices) of each feature, with its fields.",
+        "roles": {
+          "input": {
+            "label": "Features",
+            "help": "Of one or several layers."
+          }
+        }
       },
       "centerOfMass": {
         "name": "Center of mass",
-        "desc": "Creates the center of mass of each feature."
+        "desc": "Creates the center of mass of each feature, with its fields.",
+        "roles": {
+          "input": {
+            "label": "Features",
+            "help": "Of one or several layers."
+          }
+        }
       },
       "pointOnFeature": {
         "name": "Point on feature",
-        "desc": "Creates a point that is always on each feature."
+        "desc": "Creates a point that is always on each feature, with its fields.",
+        "roles": {
+          "input": {
+            "label": "Features",
+            "help": "Of one or several layers."
+          }
+        }
       },
       "simplify": {
         "name": "Simplify",
-        "desc": "Simplifies lines and polygons (Douglas-Peucker algorithm)."
+        "desc": "Simplifies each line and polygon (Douglas-Peucker algorithm) and keeps its fields.",
+        "roles": {
+          "input": {
+            "label": "Lines and polygons",
+            "help": "Of one or several layers; points are skipped."
+          }
+        }
       },
       "convex": {
         "name": "Convex hull",
-        "desc": "Creates the smallest convex polygon that contains every feature."
+        "desc": "Creates the smallest convex polygon that contains all the chosen features, of one or several layers.",
+        "roles": {
+          "input": {
+            "label": "Features",
+            "help": "Of one or several layers."
+          }
+        }
       },
       "envelope": {
         "name": "Envelope",
-        "desc": "Creates the rectangle that contains every feature."
+        "desc": "Creates the rectangle that contains all the chosen features, of one or several layers.",
+        "roles": {
+          "input": {
+            "label": "Features",
+            "help": "Of one or several layers."
+          }
+        }
       },
       "bezierSpline": {
         "name": "Smooth line (Bézier)",
-        "desc": "Turns each line into a smoothed Bézier curve."
+        "desc": "Turns each line into a smoothed Bézier curve and keeps its fields.",
+        "roles": {
+          "input": {
+            "label": "Lines",
+            "help": "LineStrings of one or several layers; multilines are skipped."
+          }
+        }
       },
       "transformRotate": {
         "name": "Rotate",
-        "desc": "Rotates each feature around its centroid."
+        "desc": "Rotates each feature around its centroid or around a common pivot and keeps its fields.",
+        "roles": {
+          "input": {
+            "label": "Features",
+            "help": "Of one or several layers."
+          }
+        }
       },
       "transformScale": {
         "name": "Scale",
-        "desc": "Scales each feature from its centroid."
+        "desc": "Scales each feature from an origin point and keeps its fields.",
+        "roles": {
+          "input": {
+            "label": "Features",
+            "help": "Of one or several layers."
+          }
+        }
       },
       "transformTranslate": {
         "name": "Translate",
-        "desc": "Moves each feature a distance in a direction."
-      },
-      "union": {
-        "name": "Merge polygons (turf.union)",
-        "desc": "Merges the selected (or all) polygons of the active layer into a single geometry. Attributes are not kept."
-      },
-      "intersect": {
-        "name": "Common area of the polygons (turf.intersect)",
-        "desc": "Creates the area shared by all the selected (or all) polygons of the active layer."
-      },
-      "difference": {
-        "name": "Subtract polygons (turf.difference)",
-        "desc": "Subtracts the other selected polygons of the active layer from the first selected one."
+        "desc": "Moves each feature a distance in a direction and keeps its fields.",
+        "roles": {
+          "input": {
+            "label": "Features",
+            "help": "Of one or several layers."
+          }
+        }
       },
       "booleanPointInPolygon": {
         "name": "Point in polygon",
-        "desc": "Checks whether the point is inside the polygon."
+        "desc": "Checks whether a point is inside a polygon, of the same layer or of different layers.",
+        "roles": {
+          "first": {
+            "label": "Point",
+            "help": "A single point. By default, the first selected feature of the active layer."
+          },
+          "second": {
+            "label": "Polygon",
+            "help": "A single polygon. By default, the second selected feature of the active layer or the one of another saved selection."
+          }
+        }
       },
       "booleanIntersects": {
         "name": "Intersect",
-        "desc": "Checks whether the two features touch or cross."
+        "desc": "Checks whether two features, of the same layer or of different layers, touch or cross.",
+        "roles": {
+          "first": {
+            "label": "First feature",
+            "help": "A single feature. By default, the first selected one of the active layer."
+          },
+          "second": {
+            "label": "Second feature",
+            "help": "A single feature. By default, the second selected one of the active layer or the one of another saved selection."
+          }
+        }
       },
       "booleanContains": {
         "name": "Contains",
-        "desc": "Checks whether the first selected feature contains the second."
+        "desc": "Checks whether the first feature contains the second one, of the same layer or of different layers.",
+        "roles": {
+          "first": {
+            "label": "Containing feature",
+            "help": "A single feature. By default, the first selected one of the active layer."
+          },
+          "second": {
+            "label": "Contained feature",
+            "help": "A single feature. By default, the second selected one of the active layer or the one of another saved selection."
+          }
+        }
       },
       "booleanWithin": {
         "name": "Within",
-        "desc": "Checks whether the first selected feature is inside the second."
+        "desc": "Checks whether the first feature is inside the second one, of the same layer or of different layers.",
+        "roles": {
+          "first": {
+            "label": "Feature inside",
+            "help": "A single feature. By default, the first selected one of the active layer."
+          },
+          "second": {
+            "label": "Containing feature",
+            "help": "A single feature. By default, the second selected one of the active layer or the one of another saved selection."
+          }
+        }
       }
     },
     "params": {
@@ -460,7 +651,10 @@
       "dissolve": "Dissolve the result",
       "predicate": "Spatial relation",
       "matchPolicy": "With several matches",
-      "keepUnmatched": "Keep features without matches"
+      "keepUnmatched": "Keep features without matches",
+      "separateParts": "One feature for each separate part",
+      "fieldPolicy": "Values of the combined fields",
+      "sourceLayer": "Add the source layer (capa_origen)"
     },
     "paramsHelp": {
       "tolerance": "In degrees (EPSG:4326). 0.001 is roughly 100 m.",
@@ -468,11 +662,14 @@
       "radius": "Buffer distance. A negative value shrinks the polygons.",
       "concavity": "Empty: convex hull. The lower it is (minimum 1), the closer it fits the features.",
       "pivot": "In degrees (EPSG:4326). Leave both empty to rotate each feature around its centroid.",
-      "dissolve": "Merges every area into a single feature.",
+      "dissolve": "Merges every area into a single feature; their fields are combined.",
       "predicateExtract": "Relation of each input feature with the condition features. \"Within\" requires it to be inside: touching the boundary is not enough.",
       "predicateJoin": "\"Within\": the target feature is inside the join feature. \"Contains\": the target feature contains the join feature.",
       "matchPolicy": "\"One feature per match\" repeats the target feature for each related feature. \"Largest overlap\" picks the one with the largest common area or length; on a tie, the first one in the layer.",
-      "keepUnmatched": "If unchecked, features without any match are not copied."
+      "keepUnmatched": "If unchecked, features without any match are not copied.",
+      "separateParts": "If the merged polygons form separate areas, creates one feature per area, with the fields of the features it is made of. If unchecked, creates a single multipart geometry.",
+      "fieldPolicy": "\"Distinct values\" gathers the distinct values of the features, separated by commas. \"Common value\" copies the value only if every feature shares it; otherwise it is left empty.",
+      "sourceLayer": "Adds a column with the name of the layer each feature comes from (or the layers, if the result combines several)."
     },
     "units": {
       "meters": "Meters",
@@ -547,7 +744,8 @@
     "scopes": {
       "all": "Every feature of the layer",
       "selection": "Only the selected ones",
-      "result": "Result of a previous operation"
+      "result": "Result of a previous operation",
+      "feature": "One selected feature"
     },
     "layerIssues": {
       "tiled": "tiled layer: its features are clipped by tiles",
@@ -562,10 +760,12 @@
       "noGeometry": "{n} feature(s) of \"{layer}\" without geometry were skipped.",
       "unsupportedType": "{n} feature(s) of \"{layer}\" with a geometry type not accepted were skipped.",
       "collapsed": "{n} feature(s) produced no buffer: the negative distance makes them disappear.",
-      "unmatched": "{n} feature(s) without matches were discarded."
+      "unmatched": "{n} feature(s) without matches were discarded.",
+      "noResult": "{n} input feature(s) produced no result."
     },
     "aggregates": {
-      "count": "{role} · number of features"
+      "count": "{role} · number of features",
+      "layers": "{role} · source layer"
     },
     "form": {
       "back": "← Back to the operations",
@@ -575,12 +775,14 @@
       "noLayers": {
         "all": "There are no vector layers on the map",
         "selection": "No layer has a saved selection",
-        "result": "There are no results of previous operations"
+        "result": "There are no results of previous operations",
+        "feature": "No layer has a saved selection"
       },
       "summary": {
         "all": "\"{layer}\", every feature: {n} ({types})",
         "selection": "\"{layer}\", only the selected ones: {n} ({types})",
-        "result": "\"{layer}\" (previous result): {n} ({types})"
+        "result": "\"{layer}\" (previous result): {n} ({types})",
+        "feature": "\"{layer}\", feature {feature} ({types})"
       },
       "omitted": "{n} without an accepted geometry will be skipped.",
       "addLayer": "+ Add another layer",
@@ -596,7 +798,10 @@
       "noColumns": "The resulting layer will have no fields.",
       "output": "Name of the resulting layer",
       "outputPlaceholder": "Default: Turf: <operation> (n)",
-      "willProcess": "It will process:"
+      "willProcess": "It will process:",
+      "feature": "Feature",
+      "columnCombined": "{role} · {field} ({policy})",
+      "combinedFields": "Each result gathers several features: choose which fields are copied; their values are combined according to \"Values of the combined fields\"."
     },
     "selections": {
       "title": "Saved selections by layer",
@@ -616,19 +821,15 @@
       "minY": "Minimum latitude",
       "maxX": "Maximum longitude",
       "maxY": "Maximum latitude",
-      "layerCreated": "Layer «{layer}» created with {n} geometry(ies).",
       "featuresCreated": "The layer \"{layer}\" has been created with {n} feature(s).",
       "emptyResult": "The operation produced no features, so no layer has been created."
     },
     "exception": {
       "notLoaded": "Turf.js is not available. A version of API-IDEE that includes it is required.",
-      "min": "The operation needs at least {n} features.",
-      "max": "The operation accepts at most {n} features.",
-      "exact": "The operation needs exactly {n} features.",
-      "types": "Geometry type not supported. This operation accepts: {types}.",
-      "pointPolygon": "Select a point and a polygon.",
-      "unsupportedGeometries": "Turf cannot check this relation between the selected geometry types.",
-      "empty": "The operation did not return any geometry.",
+      "min": "\"{role}\" needs at least {n} features and has {count}.",
+      "max": "\"{role}\" accepts at most {n} feature(s) and has {count}.",
+      "exact": "\"{role}\" needs exactly {n} feature(s) and has {count}. Choose \"One selected feature\".",
+      "unsupportedGeometries": "Turf cannot check this relation between those geometry types.",
       "error": "Error running the operation: {msg}",
       "pivot": "Enter both the longitude and latitude of the pivot, or leave both empty.",
       "noLayer": "Choose a layer in \"{role}\".",
@@ -645,7 +846,15 @@
       "unknownField": "The field \"{field}\" does not exist in \"{role}\".",
       "radiusZero": "The distance cannot be 0.",
       "negativeRadius": "A negative distance is only accepted when every feature is a polygon.",
-      "geometry": "The geometry of feature {feature} of \"{layer}\" could not be computed: {msg}"
+      "geometry": "The geometry of feature {feature} of \"{layer}\" could not be computed: {msg}",
+      "featureNotSelected": "The chosen feature of \"{layer}\" is no longer in its saved selection. Choose another one."
+    },
+    "fieldPolicies": {
+      "distinct": "Distinct values (list)",
+      "common": "Common value (empty if they differ)"
+    },
+    "notices": {
+      "mixedDimensions": "The resulting layer will mix points, lines or polygons. Later operations will only use the types they accept."
     }
   }
 }
