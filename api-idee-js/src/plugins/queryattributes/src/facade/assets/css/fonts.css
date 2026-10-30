@@ -6,15 +6,16 @@
        url('../fonts/queryattributes.woff?67130516') format('woff'),
        url('../fonts/queryattributes.ttf?67130516') format('truetype'),
        url('../fonts/queryattributes.svg?67130516#queryattributes') format('svg');
-  font-weight: normal;
+  font-weight: var(--idee-font-weight-regular);
   font-style: normal;
 }
 
 div.ol-overlaycontainer-stopevent > div > div.m-area > div.m-panel.m-queryattributes > button:before,
 .m-queryattributes [class^="icon-"]:before, .m-queryattributes [class*=" icon-"]:before {
+  /* idee-token-exception: fuente de iconos */
   font-family: "queryattributes" !important;
   font-style: normal;
-  font-weight: normal;
+  font-weight: var(--idee-font-weight-regular);
   speak: none;
   display: inline-block;
   text-decoration: inherit;

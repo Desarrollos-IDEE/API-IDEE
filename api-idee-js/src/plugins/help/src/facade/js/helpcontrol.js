@@ -66,7 +66,7 @@ class HelpControl extends IDEE.Control {
     this.defaultInitialContents = [
       {
         title: 'API-IDEE',
-        content: `<div><h2 style="text-align: center; color: (--idee-color-white, #fff); background-color: (--idee-color-neutral-80, #364b5f); padding: 8px 10px;">API-IDEE</h2><div><p style='text-align: center'>${getValue('welcome0')}: <a tabindex="0" href='https://plataforma.idee.es/cnig-api' target='_blank'>https://plataforma.idee.es/cnig-api</a></p><p>${getValue('welcome1')}</p><h4>${getValue('welcome2')}</h4><p>${getValue('welcome3')}: <a tabindex="0" href="https://github.com/Desarrollos-IDEE/API-IDEE" target="_blank">https://github.com/Desarrollos-IDEE/API-IDEE</a></p><h4>${getValue('welcome4')}</h4><p>${getValue('welcome5')}: <a tabindex="0" href="http://componentes.idee.es/api-idee/test.html" target="_blank">http://componentes.idee.es/api-idee/test.html</a></p><h4>Wiki API-IDEE</h4><p>${getValue('welcome6')}: <a tabindex="0" href="https://github.com/Desarrollos-IDEE/API-IDEE/wiki" target="_blank">https://github.com/Desarrollos-IDEE/API-IDEE/wiki</a></p><h4>${getValue('welcome7')}</h4><p>${getValue('welcome8')}: <a tabindex="0" href="https://plataforma.idee.es/resources/GaleriaEjemplos_APICNIG/" target="_blank">https://plataforma.idee.es/resources/GaleriaEjemplos_APICNIG/</a></p><h4>${getValue('welcome9')}</h4><p>${getValue('welcome10')}: <a tabindex="0" href="https://plataforma.idee.es/cnig-api" target="_blank">https://plataforma.idee.es/cnig-api</a></p></div>`,
+        content: `<div><h2 style="text-align: center; color: var(--idee-color-white, #fff); background-color: var(--idee-color-neutral-80, #364b5f); padding: 8px 10px;">API-IDEE</h2><div><p style='text-align: center'>${getValue('welcome0')}: <a tabindex="0" href='https://plataforma.idee.es/cnig-api' target='_blank'>https://plataforma.idee.es/cnig-api</a></p><p>${getValue('welcome1')}</p><h4>${getValue('welcome2')}</h4><p>${getValue('welcome3')}: <a tabindex="0" href="https://github.com/Desarrollos-IDEE/API-IDEE" target="_blank">https://github.com/Desarrollos-IDEE/API-IDEE</a></p><h4>${getValue('welcome4')}</h4><p>${getValue('welcome5')}: <a tabindex="0" href="http://componentes.idee.es/api-idee/test.html" target="_blank">http://componentes.idee.es/api-idee/test.html</a></p><h4>Wiki API-IDEE</h4><p>${getValue('welcome6')}: <a tabindex="0" href="https://github.com/Desarrollos-IDEE/API-IDEE/wiki" target="_blank">https://github.com/Desarrollos-IDEE/API-IDEE/wiki</a></p><h4>${getValue('welcome7')}</h4><p>${getValue('welcome8')}: <a tabindex="0" href="https://plataforma.idee.es/resources/GaleriaEjemplos_APICNIG/" target="_blank">https://plataforma.idee.es/resources/GaleriaEjemplos_APICNIG/</a></p><h4>${getValue('welcome9')}</h4><p>${getValue('welcome10')}: <a tabindex="0" href="https://plataforma.idee.es/cnig-api" target="_blank">https://plataforma.idee.es/cnig-api</a></p></div>`,
       },
     ];
 
@@ -149,6 +149,7 @@ class HelpControl extends IDEE.Control {
       windowHelp.document.write(html);
 
       windowHelp.document.close();
+      IDEE.utils.copyDesignTokenCssVariables(windowHelp.document);
       windowHelp.addEventListener('load', () => {
         const listContent = windowHelp.document.querySelector('#m-help-index > div:nth-child(2)');
         listContent.appendChild(IDEE.utils.stringToHtml(list));

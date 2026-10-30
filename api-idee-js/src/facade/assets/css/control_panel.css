@@ -32,7 +32,7 @@
     position: relative;
     background: transparent;
     box-sizing: border-box;
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
     display: flex !important;
     align-items: self-start;
 }
@@ -88,6 +88,7 @@
 .m-control-panel.m-panzoombar {
     order: -69;
     margin-top: 8px;
+    /* idee-token-exception: píldora, radio igual a la mitad de la altura del control */
     border-radius: 20px;
     margin-left: 25px;
     width: 10px;
@@ -103,7 +104,7 @@
     order: -70;
     width: 30px;
     height: 60px;
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
 }
 
 .m-control-panel.m-location>div.m-controls-panel>div.m-control.activated>button {
@@ -111,7 +112,7 @@
 }
 
 .m-control-panel.m-mouse {
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
     padding: 5px;
 }
 
@@ -120,6 +121,7 @@
 }
 
 .m-control-panel.m-mouse>div.m-controls-panel:before {
+    /* idee-token-exception: tamaño de glifo de icono */
     font-size: 15px;
     background: none;
 }
@@ -133,14 +135,15 @@
     z-index: 999;
     display: flex;
     opacity: 1;
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
     background-color: var(--idee-color-white);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
+    box-shadow: var(--idee-shape-box-shadow);
     -webkit-transition: max-width 1s ease 0s, opacity .75s ease .1s;
     transition: max-width 1s ease 0s, opacity .75s ease .1s;
 }
 
 .m-control-panel.collapsed {
+    /* idee-token-exception: píldora, radio igual a la mitad de la altura del control */
     border-radius: 20px;
 }
 
@@ -301,7 +304,9 @@
 
 @media only screen and (max-width: 768px) {
     .m-control-panel.m-map-info.m-with-mouse:not(.m-with-scale)>div.m-controls-panel>div.m-control.m-wmcselector-container {
+        /* idee-token-exception: píldora, radio igual a la mitad de la altura del control */
         border-top-left-radius: 20px !important;
+        /* idee-token-exception: píldora, radio igual a la mitad de la altura del control */
         border-bottom-left-radius: 20px !important;
     }
 }
@@ -309,9 +314,9 @@
 .m-control-panel>div.m-controls-panel .m-mouse-position {
     background-color: white !important;
     padding: 6px 12px 3px 12px !important;
-    font-family: 'Muli', 'sans-serif' !important;
-    font-size: 12px !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02) !important;
+    font-family: var(--idee-font-family) !important;
+    font-size: var(--idee-font-size-caption) !important;
+    box-shadow: var(--idee-shape-box-shadow) !important;
     display: inline;
     height: 15px !important;
 }
@@ -323,7 +328,9 @@
 
 @media only screen and (max-width: 768px) {
     .m-control-panel.m-map-info.m-with-mouse>div.m-controls-panel>div.m-control.m-scale-container {
+        /* idee-token-exception: píldora, radio igual a la mitad de la altura del control */
         border-top-left-radius: 20px !important;
+        /* idee-token-exception: píldora, radio igual a la mitad de la altura del control */
         border-bottom-left-radius: 20px !important;
     }
 }

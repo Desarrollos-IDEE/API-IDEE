@@ -5,6 +5,7 @@
 .m-mouse-position:before {
    color: #a35d38;
    margin-right: 5px;
+   /* idee-token-exception: fuente de iconos */
    font-family: 'g-cartografia' !important;
 }
 
@@ -15,6 +16,7 @@
 }
 
 .m-panel.m-map-info > div.m-panel-controls >.m-mouse-position {
+   /* idee-token-exception: píldora, radio igual a la mitad de la altura del control */
    border-radius: 20px !important;
 }
 

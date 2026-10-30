@@ -8,8 +8,8 @@
   gap: 8px;
   padding: .5rem 0;
   height: 24px;
-  font-size: 12px;
-  font-weight: 400;
+  font-size: var(--idee-font-size-caption);
+  font-weight: var(--idee-font-weight-regular);
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -34,8 +34,8 @@
 
 #plugin-panel-content-incicarto .m-plugin-incicarto-html-title {
   padding-bottom: 16px;
-  font-size: 14px;
-  font-weight: 400;
+  font-size: var(--idee-font-size-body-s);
+  font-weight: var(--idee-font-weight-regular);
 }
 
 #plugin-panel-content-incicarto .m-plugin-incicarto-html-method {
@@ -45,7 +45,7 @@
 #plugin-panel-content-incicarto .m-plugin-incicarto-html-method ol {
   margin: 0;
   padding-left: 1em;
-  font-size: 12px;
+  font-size: var(--idee-font-size-caption);
   line-height: 1.2;
   color: #343A40;
 }
@@ -99,7 +99,7 @@
   flex-direction: column;
   align-items: center;
   border: 1px solid #CED4DA;
-  border-radius: 2px;
+  border-radius: var(--idee-shape-border-radius);
   padding: 16px;
   gap: 16px;
 }
@@ -165,9 +165,8 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: var(--idee-font-size-caption);
   margin-bottom: 8px;
-  font-weight: 12px;
   color: #364B5F;
   cursor: pointer;
 }
@@ -192,7 +191,7 @@
 
 #plugin-panel-content-incicarto .m-incicarto-layer-legend-change {
   width: 150px;
-  font-size: 16px;
+  font-size: var(--idee-font-size-body-m);
   text-overflow: ellipsis;
   overflow: hidden;
   cursor: pointer;
@@ -214,7 +213,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  font-size: 12px;
+  font-size: var(--idee-font-size-caption);
 }
 
 #plugin-panel-content-incicarto .drawingToolsContainer input {
@@ -239,7 +238,7 @@
 
 #plugin-panel-content-incicarto .stroke-options .stroke-option-default {
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: var(--idee-shape-border-radius);
   background-color: #fff;
   box-sizing: border-box;
   cursor: pointer;
@@ -271,7 +270,7 @@
   border: 1px solid #ccc;
   background-color: #fff;
   display: none;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--idee-shape-box-shadow);
 }
 
 #plugin-panel-content-incicarto .stroke-options.active .options-select {
@@ -333,7 +332,7 @@
   text-align: center;
   flex: 1 1 auto;
   box-sizing: border-box;
-  font-size: 12px;
+  font-size: var(--idee-font-size-caption);
 }
 
 .m-incicarto-results-table td:first-child {
@@ -478,10 +477,10 @@
   background-color: var(--idee-color-primary);
   color: white;
   border: 2px solid var(--idee-color-primary);
-  border-radius: 4px;
+  border-radius: var(--idee-shape-border-radius);
   cursor: pointer;
-  font-family: Roboto, "sans-serif";
-  font-size: 14px;
+  font-family: var(--idee-font-family);
+  font-size: var(--idee-font-size-body-s);
   height: 32px;
   padding: 0 5px;
   cursor: pointer;
@@ -527,7 +526,7 @@
 .m-api-idee-container .ol-profil .ol-inner {
   position: relative;
   padding: 0.5em;
-  font-size: 0.8em;
+  font-size: var(--idee-font-size-caption);
 }
 
 .m-api-idee-container .ol-control.ol-profil .ol-inner {
@@ -637,7 +636,7 @@
 .m-api-idee-container .ol-profil p {
   text-align: center;
   margin: 0;
-  font-weight: bold;
+  font-weight: var(--idee-font-weight-bold);
   color: #676767;
 }
 

@@ -35,9 +35,9 @@ OL3 PERFORMANCE
 
 .ol-overviewmap {
     background-color: #fff !important;
-    border-radius: 4px !important;
+    border-radius: var(--idee-shape-border-radius) !important;
     display: block;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02) !important;
+    box-shadow: var(--idee-shape-box-shadow) !important;
     transition: border-radius .33s ease 0s;
 }
 
@@ -52,10 +52,12 @@ OL3 PERFORMANCE
     right: 0 !important;
     background-color: white !important;
     padding: 2px;
+    /* idee-token-exception: geometría circular del botón */
     border-radius: 15px;
     left: initial !important;
     right: 4px;
     padding-top: 0px;
+    /* idee-token-exception: botón solo con icono, reduce la caja del texto */
     font-size: 6px;
 }
 
@@ -64,10 +66,12 @@ OL3 PERFORMANCE
 }
 
 .ol-overviewmap:not(.ol-collapsed)>button:before {
+    /* idee-token-exception: tamaño de glifo de icono */
     font-size: 11px !important;
 }
 
 .ol-overviewmap.ol-collapsed {
+    /* idee-token-exception: píldora, radio igual a la mitad de la altura del control */
     border-radius: 20px !important;
 }
 
@@ -93,18 +97,21 @@ OL3 PERFORMANCE
 .ol-overviewmap>button {
     width: 20px !important;
     height: 20px !important;
+    /* idee-token-exception: geometría circular del botón */
     border-radius: 20px;
     margin: 0px !important;
     padding: 0px;
     background-color: transparent !important;
     color: #404040 !important;
     opacity: .75 !important;
+    /* idee-token-exception: tamaño de glifo de icono */
     font-size: 15px !important;
     background: none;
     cursor: pointer;
+    /* idee-token-exception: fuente de iconos */
     font-family: 'g-cartografia' !important;
     font-style: normal;
-    font-weight: normal;
+    font-weight: var(--idee-font-weight-regular);
     font-variant: normal;
     text-transform: none;
     line-height: 1;
@@ -145,6 +152,7 @@ OL3 PERFORMANCE
 .m-control-panel.m-map-info>div.m-controls-panel>div.m-control.m-scale-container,
 .m-control-panel.m-map-info>div.m-controls-panel>div.m-control.m-wmcselector-container {
     border: 2px solid var(--button-border-color, #fff);
+    /* idee-token-exception: píldora, radio igual a la mitad de la altura del control */
     border-radius: 20px !important;
 }
 

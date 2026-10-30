@@ -40,6 +40,8 @@
 
     border: 2px solid var(--idee-color-success, #2e7d32);
 
+    /* idee-token-exception: halo animado de estado */
+
     box-shadow:
         inset 0 0 6px color-mix(
             in srgb,

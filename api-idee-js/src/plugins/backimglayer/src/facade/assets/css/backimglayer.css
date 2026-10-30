@@ -9,7 +9,7 @@ div[id^="backimglayer-layer-"] {
     height: 48px;
     margin-bottom: 16px;
     border: 2px solid #ccc;
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
     cursor: pointer;
     transition: all 0.3s ease;
     overflow: hidden;
@@ -40,7 +40,7 @@ div[id^="backimglayer-layer-"]>span {
     align-items: center;
     justify-content: flex-start;
     padding-left: 8px;
-    font-size: 16px;
+    font-size: var(--idee-font-size-body-m);
 }
 
 .m-backimglayer-active {
@@ -48,5 +48,5 @@ div[id^="backimglayer-layer-"]>span {
 }
 
 .m-backimglayer-active>span {
-    font-weight: bold;
+    font-weight: var(--idee-font-weight-bold);
 }

@@ -3,12 +3,56 @@
 ************************/
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
+/*
+ * Valores por defecto de los tokens de diseño (tema cnig).
+ * El token activo (IDEE.config.token) los sobrescribe en línea sobre <html>
+ * y, al estar en @layer base, también puede hacerlo el CSS de quien consume la API.
+ * Los tamaños que no define el token se derivan de body_m y heading_l.
+ */
+@layer base {
+    :root {
+        --idee-color-primary: #71a7d3;
+        --idee-color-links: #1470db;
+        --idee-color-primary-dark: #1d5a9e;
+        --idee-color-success: #49d793;
+        --idee-color-danger: #e65244;
+        --idee-color-warning: #fc8802;
+        --idee-color-neutral-05: #f8f9fa;
+        --idee-color-neutral-10: #f1f3f5;
+        --idee-color-neutral-20: #e9ecef;
+        --idee-color-neutral-30: #dee2e6;
+        --idee-color-neutral-40: #ced4da;
+        --idee-color-neutral-50: #adb5bd;
+        --idee-color-neutral-60: #868e96;
+        --idee-color-neutral-70: #495057;
+        --idee-color-neutral-80: #343a40;
+        --idee-color-neutral-90: #212529;
+        --idee-color-white: #ffffff;
+        --idee-color-black: #000000;
+
+        --idee-font-family: 'Roboto', sans-serif;
+        --idee-font-size-body-m: 16px;
+        --idee-font-size-heading-l: 32px;
+        --idee-font-size-caption: calc(var(--idee-font-size-body-m) * 0.75);
+        --idee-font-size-body-s: calc(var(--idee-font-size-body-m) * 0.875);
+        --idee-font-size-body-l: calc(var(--idee-font-size-body-m) * 1.125);
+        --idee-font-size-heading-m: calc(var(--idee-font-size-heading-l) * 0.75);
+        --idee-font-weight-regular: 400;
+        --idee-font-weight-bold: 700;
+
+        --idee-shape-border: none;
+        --idee-shape-border-radius: 4px;
+        --idee-shape-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
+    }
+}
+
 :root {
     --font-color: #fff;
     --button-border-color: #fff;
-    --control-font-family: 'Roboto', 'sans-serif';
+    /* Alias de compatibilidad: usar --idee-font-family y --idee-font-weight-regular */
+    --control-font-family: var(--idee-font-family);
     --control-font-style: normal;
-    --control-font-weight: 400;
+    --control-font-weight: var(--idee-font-weight-regular);
     --control-font-stretch: 100%;
 }
 
@@ -17,8 +61,8 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
-    font-family: var(--control-font-family);
-    font-size: 13px;
+    font-family: var(--idee-font-family);
+    font-size: var(--idee-font-size-body-s);
     background-image:
         linear-gradient(45deg, color-mix(in srgb, var(--idee-color-primary) 25%, transparent) 25%, transparent 25%),
         linear-gradient(-45deg, color-mix(in srgb, var(--idee-color-primary) 25%, transparent) 25%, transparent 25%),
@@ -211,9 +255,10 @@
     position: absolute;
     background-color: white;
     border: 1px solid var(--idee-color-primary);
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
     transition: all 0.3s ease;
     z-index: 4;
+    /* idee-token-exception: sombra coloreada con el color primario */
     box-shadow: 5px 0 10px color-mix(in srgb, var(--idee-color-primary) 30%, transparent);
 }
 
@@ -295,10 +340,10 @@
         color: var(--font-color);
         background-color: var(--idee-color-primary);
         border: 2px solid var(--idee-color-primary);
-        border-radius: 4px;
+        border-radius: var(--idee-shape-border-radius);
         cursor: pointer;
-        font-family: var(--control-font-family);
-        font-size: 14px;
+        font-family: var(--idee-font-family);
+        font-size: var(--idee-font-size-body-s);
         transition: all 0.3s ease;
     }
 
@@ -331,9 +376,9 @@
         color: var(--idee-color-primary-dark);
         background-color: var(--idee-color-neutral-20);
         border: 2px solid transparent;
-        border-radius: 4px;
+        border-radius: var(--idee-shape-border-radius);
         cursor: pointer;
-        font-size: 14px;
+        font-size: var(--idee-font-size-body-s);
         transition: all 0.3s ease;
     }
 
@@ -364,15 +409,15 @@
         height: 32px;
         background-color: transparent;
         cursor: auto;
-        border-radius: 4px;
+        border-radius: var(--idee-shape-border-radius);
         border: 1px solid rgba(0, 0, 0, 0.5);
         box-sizing: border-box;
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
         color: #6C6C6C;
-        font-family: var(--control-font-family);
-        font-size: 16px;
+        font-family: var(--idee-font-family);
+        font-size: var(--idee-font-size-body-m);
         transition: all 0.3s ease;
     }
 
@@ -503,11 +548,11 @@
     .m-api-idee-container select {
         cursor: pointer;
         color: #6c6c6c;
-        border-radius: 4px;
+        border-radius: var(--idee-shape-border-radius);
         background: none;
         border: 1px solid #e9ecef;
-        font-family: var(--control-font-family);
-        font-size: 16px;
+        font-family: var(--idee-font-family);
+        font-size: var(--idee-font-size-body-m);
         height: 32px;
         transition: all 0.3s ease;
     }
@@ -526,8 +571,8 @@
 
     html:has(>body>.m-api-idee-test-form-frame) option,
     .m-api-idee-container option {
-        font-family: var(--control-font-family);
-        font-size: 16px;
+        font-family: var(--idee-font-family);
+        font-size: var(--idee-font-size-body-m);
         cursor: pointer;
     }
 
@@ -576,7 +621,7 @@
     z-index: 990;
     overflow-y: hidden;
     background-color: transparent;
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
     padding: 2px;
 }
 
@@ -586,8 +631,10 @@
 
 div.m-control button[class^="g-cartografia-"],
 div.m-control button[class*=" g-cartografia-"] {
+    /* idee-token-exception: tamaño de glifo de icono */
     font-size: 28px;
     padding: 8px;
+    /* idee-token-exception: tamaño de glifo de icono */
     font-size: 24px;
     background: none;
     border: none;
@@ -615,7 +662,7 @@ div.m-control button[class*=" g-cartografia-"]:focus,
 .m-help-btn,
 .m-clear-btn {
     opacity: 0.4 !important;
-    font-size: 18px !important;
+    font-size: var(--idee-font-size-body-l) !important;
 }
 
 .m-search-btn {
@@ -725,7 +772,7 @@ div.m-control button[class^=g-cartografia-],
 .m-scale-container>.m-unit:before,
 .ol-zoomslider>button.ol-zoomslider-thumb,
 .m-scale-container {
-    font-family: var(--control-font-family);
+    font-family: var(--idee-font-family);
     color: var(--font-color);
     background-color: var(--idee-color-primary);
     border: 2px solid var(--button-border-color);

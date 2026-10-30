@@ -31,7 +31,7 @@
     justify-content: flex-start;
     align-items: center;
     column-gap: .5rem;
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
     background-color: var(--idee-color-neutral-10);
     padding: .5rem;
 }

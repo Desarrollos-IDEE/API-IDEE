@@ -6,6 +6,7 @@
     color: white;
     background-color: #71a7d3 !important;
     opacity: 1;
+    /* idee-token-exception: geometría circular del botón */
     border-radius: 40px;
     border: 2px solid white;
 }
@@ -39,7 +40,7 @@ span.m-content-collapsed {
 .m-information-content-info .m-information-content-info-header {
     display: flex;
     align-items: center;
-    font-size: 12px;
+    font-size: var(--idee-font-size-caption);
     background-color: #eee;
     margin-bottom: 5px;
     color: black;
