@@ -6,9 +6,9 @@ import { loadGPX } from 'IDEE/util/GPX';
 import * as EventType from 'IDEE/event/eventtype';
 import * as Dialog from 'IDEE/dialog';
 import { escapeXSS } from 'IDEE/util/Utils';
-import OLLayerVector from 'ol/layer/Vector';
 import OLSourceVector from 'ol/source/Vector';
 import GeoJSON from './GeoJSON';
+import { createVectorLayer } from '../webgl/WebGLLayerProvider';
 
 /**
  * Carga GPX sobre los mecanismos vectoriales de OpenLayers.
@@ -36,12 +36,13 @@ class GPX extends GeoJSON {
     this.map = map;
     this.loadFeaturesPromise_ = null;
     map.on(EventType.CHANGE_PROJ, this.projectionListener_, this);
-    this.olLayer = new OLLayerVector({
+    this.olLayer = createVectorLayer({
       ...this.vendorOptions_,
       source: new OLSourceVector(),
       extent: this.maxExtent_,
       opacity: this.opacity_,
-    });
+    }, this.renderer_);
+    this.watchFeatureStyles_();
     this.olLayer.setMaxZoom(this.maxZoom);
     this.olLayer.setMinZoom(this.minZoom);
     if (this.options.minScale !== undefined) this.setMinScale(this.options.minScale);
