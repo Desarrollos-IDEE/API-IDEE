@@ -10,6 +10,9 @@ import {
   getValue,
 } from 'IDEE/i18n/language';
 import { getResolutionFromScale, getScaleFromResolution } from 'M/util/Utils';
+import * as RendererType from '../webgl/RendererType';
+import { resolveRenderer } from '../webgl/RendererResolver';
+import { getLayerRenderer, createCanvasEquivalent } from '../webgl/WebGLLayerProvider';
 
 const autoRefreshSources = new WeakMap();
 
@@ -36,6 +39,7 @@ class LayerBase extends MObject {
    * - minScale: Escala mínima.
    * - maxScale: Escala máxima.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
+   * - renderer: Renderer solicitado ('canvas' | 'webgl'). Por defecto IDEE.config.WEBGL.
    * @param {Object} vendorOptions Pasa los "vendorOptions" heredados a la clase
    * MObject (IDEE/Object).
    *
@@ -101,6 +105,129 @@ class LayerBase extends MObject {
     this.maxZoom = this.options.maxZoom || Number.POSITIVE_INFINITY;
 
     this.userMaxExtent = options.maxExtent;
+
+    /**
+     * Layer renderer_. Renderer para las capas que se construyen con WebGLLayerProvider.
+     */
+    this.renderer_ = resolveRenderer({
+      renderer: this.options.renderer,
+      crossOrigin: this.options.crossOrigin,
+    });
+  }
+
+  /**
+   * Este método devuelve el renderer efectivo de la capa.
+   * Si la capa de OpenLayers ya existe se obtiene de ella; si no,
+   * se devuelve el renderer resuelto a partir de las opciones.
+   *
+   * @function
+   * @returns {string} IDEE.impl.webgl.RendererType ('canvas' | 'webgl').
+   * @api
+   */
+  getRenderer() {
+    return isNullOrEmpty(this.olLayer) ? this.renderer_ : getLayerRenderer(this.olLayer);
+  }
+
+  /**
+   * Este método indica si la capa se está renderizando con WebGL.
+   *
+   * @function
+   * @returns {Boolean} Verdadero si el renderer es WebGL.
+   * @api
+   */
+  isWebGL() {
+    return this.getRenderer() === RendererType.WEBGL;
+  }
+
+  /**
+   * Cambia la capa de OpenLayers a su equivalente Canvas,
+   * conservando la fuente y las propiedades de visualización.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @function
+   * @param {string} reason Clave i18n (exception) del motivo del cambio.
+   * @returns {Boolean} Verdadero si se ha cambiado la capa.
+   * @api
+   */
+  useCanvasRenderer(reason) {
+    if (!this.isWebGL()) {
+      return false;
+    }
+    const webglLayer = this.olLayer;
+    const canvasLayer = createCanvasEquivalent(webglLayer);
+    if (isNullOrEmpty(canvasLayer)) {
+      return false;
+    }
+    if (!isNullOrEmpty(reason)) {
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception')[reason]);
+    }
+    this.olLayer = canvasLayer;
+    this.renderer_ = RendererType.CANVAS;
+    Promise.resolve().then(() => {
+      this.replaceOLLayer_(webglLayer, this.olLayer === canvasLayer ? canvasLayer : null);
+    });
+    return true;
+  }
+
+  /**
+   * Devuelve la capa de OpenLayers que debe añadirse a un mapa
+   * secundario (mapa de situación, lupa...). Una capa WebGL no puede mostrarse
+   * en dos mapas, por lo que se devuelve una copia Canvas que comparte la fuente.
+   *
+   * @function
+   * @returns {ol.layer.Base} Capa de OpenLayers para el mapa secundario.
+   * @api
+   */
+  getSecondaryMapLayer() {
+    if (!this.isWebGL()) {
+      return this.olLayer;
+    }
+    return createCanvasEquivalent(this.olLayer) || this.olLayer;
+  }
+
+  /**
+   * Libera el contexto WebGL de la capa de OpenLayers.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @function
+   * @api
+   */
+  disposeWebGLLayer_() {
+    if (!isNullOrEmpty(this.olLayer) && this.isWebGL()) {
+      this.olLayer.dispose();
+    }
+  }
+
+  /**
+   * Libera una capa WebGL y la sustituye en el contenedor que la tenga
+   * (grupo de capas o mapa).
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @function
+   * @param {ol.layer.Base} oldLayer Capa WebGL de OpenLayers.
+   * @param {ol.layer.Base|null} newLayer Nueva capa de OpenLayers.
+   * @api
+   */
+  replaceOLLayer_(oldLayer, newLayer) {
+    oldLayer.dispose();
+    const groupLayers = this.rootGroup?.layersCollection;
+    const groupIndex = groupLayers ? groupLayers.getArray().indexOf(oldLayer) : -1;
+    if (groupIndex !== -1) {
+      if (newLayer) {
+        groupLayers.setAt(groupIndex, newLayer);
+      } else {
+        groupLayers.removeAt(groupIndex);
+      }
+      return;
+    }
+    const olMap = this.map?.getMapImpl();
+    if (olMap && olMap.getLayers().getArray().includes(oldLayer)) {
+      olMap.removeLayer(oldLayer);
+      if (newLayer) {
+        olMap.addLayer(newLayer);
+      }
+    }
   }
 
   /**

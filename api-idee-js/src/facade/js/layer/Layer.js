@@ -924,6 +924,17 @@ class LayerBase extends Base {
     this.getImpl().setOpacity(opacity);
   }
 
+  /**
+   * Este método obtiene el renderer efectivo de la capa.
+   *
+   * @function
+   * @returns {string|undefined} Renderer de la capa ('canvas' | 'webgl')
+   * @api
+   */
+  getRenderer() {
+    return isUndefined(this.getImpl().getRenderer) ? undefined : this.getImpl().getRenderer();
+  }
+
   getAttribution() {
     return this.attribution;
   }
