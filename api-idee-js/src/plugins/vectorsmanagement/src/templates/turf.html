@@ -1,16 +1,20 @@
 <div class="m-vectorsmanagement-turf">
-    <p class="m-vectorsmanagement-turf-hint">
-        {{translations.hint}}
-        {{translations.hintParams}} <span class="vectorsmanagement-icon-libro" aria-hidden="true"></span>
-    </p>
-    {{#each categories}}
-    <details class="m-vectorsmanagement-turf-category"{{#if @first}} open{{/if}}>
-        <summary tabindex="0">{{name}}</summary>
-        <div class="m-vectorsmanagement-turf-ops">
-            {{#each ops}}
-            <button tabindex="0" type="button" data-op="{{id}}" title="{{title}}">{{name}}{{#if hasParams}}<span class="vectorsmanagement-icon-libro" aria-hidden="true"></span>{{/if}}</button>
-            {{/each}}
-        </div>
-    </details>
-    {{/each}}
+    <div class="m-vectorsmanagement-turf-header">
+        <p class="m-vectorsmanagement-turf-title">{{translations.title}}</p>
+        <button tabindex="0" type="button" class="vectorsmanagement-icon-ayuda m-vectorsmanagement-turf-help" data-action="turf-help" title="{{translations.help}}" aria-label="{{translations.help}}"></button>
+    </div>
+    <section class="m-vectorsmanagement-turf-selections" aria-live="polite" aria-label="{{translations.selections}}"></section>
+    <div class="m-vectorsmanagement-turf-catalog">
+        {{#each categories}}
+        <details class="m-vectorsmanagement-turf-category"{{#if @first}} open{{/if}}>
+            <summary tabindex="0" title="{{desc}}">{{name}}</summary>
+            <div class="m-vectorsmanagement-turf-ops">
+                {{#each ops}}
+                <button tabindex="0" type="button" data-op="{{id}}" title="{{title}}">{{name}}</button>
+                {{/each}}
+            </div>
+        </details>
+        {{/each}}
+    </div>
+    <div class="m-vectorsmanagement-turf-opform-container" hidden></div>
 </div>

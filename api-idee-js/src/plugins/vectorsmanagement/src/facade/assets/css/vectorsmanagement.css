@@ -933,10 +933,12 @@ table#attribute-table>tr>th>button {
     border: none;
 }
 
+.vectorsmanagement-icon-ayuda.m-vectorsmanagement-turf-help:before,
 .m-vectorsmanagement-selection-layer>button[class^="vectorsmanagement-icon-"]:before {
     color: var(--idee-color-neutral-60);
 }
 
+.vectorsmanagement-icon-ayuda.m-vectorsmanagement-turf-help:hover:before,
 .m-vectorsmanagement-selection-layer>button[class^="vectorsmanagement-icon-"]:hover:before {
     color: var(--idee-color-primary);
 }
@@ -1331,10 +1333,35 @@ div#popup-box {
     font-size: 14px;
 }
 
-.m-vectorsmanagement-turf-hint {
+.m-vectorsmanagement-turf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: .5rem;
+}
+
+.m-vectorsmanagement-turf-title {
     margin: 0;
-    color: var(--idee-color-neutral-60);
-    font-size: 13px;
+    font-weight: 700;
+    color: var(--idee-color-primary);
+}
+
+.m-vectorsmanagement-turf-help {
+    flex-shrink: 0;
+    height: 1.75rem;
+    width: 1.75rem;
+    border: none;
+    border-radius: 4px;
+    background: var(--idee-color-neutral-20);
+    cursor: pointer;
+}
+
+.m-vectorsmanagement-turf-helpbox .popup-section {
+    margin-bottom: 1rem;
+}
+
+.m-vectorsmanagement-turf-helpbox .popup-title {
+    margin-bottom: .5rem;
 }
 
 .m-vectorsmanagement-turf-category {
@@ -1376,15 +1403,189 @@ div#popup-box {
     cursor: pointer;
 }
 
-.m-vectorsmanagement-turf .vectorsmanagement-icon-libro:before {
-    width: 1rem;
-    color: inherit;
-}
-
 .m-vectorsmanagement-turf-ops>button:hover,
 .m-vectorsmanagement-turf-ops>button:focus-visible {
     background-color: var(--idee-color-primary);
     color: var(--idee-color-white);
+}
+
+/* Resumen de selecciones guardadas */
+.m-vectorsmanagement-turf [hidden] {
+    display: none !important;
+}
+
+.m-vectorsmanagement-turf-selections {
+    padding: .5rem;
+    border: 1px solid var(--idee-color-neutral-40);
+    border-radius: 4px;
+    background-color: var(--idee-color-neutral-10, #f5f5f5);
+}
+
+.m-vectorsmanagement-turf-selections-content {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+}
+
+.m-vectorsmanagement-turf-selections-title,
+.m-vectorsmanagement-turf-fields-title {
+    margin: 0;
+    font-weight: 700;
+}
+
+.m-vectorsmanagement-turf-selections-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.m-vectorsmanagement-turf-selection {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: .5rem;
+    padding: .125rem 0;
+}
+
+.m-vectorsmanagement-turf-selection>span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.m-vectorsmanagement-turf-selection>button {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.m-vectorsmanagement-turf-selection-stale>span {
+    color: var(--idee-color-danger);
+}
+
+.m-vectorsmanagement-turf-selection>button,
+.m-vectorsmanagement-turf-link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--idee-color-primary);
+    text-decoration: underline;
+    text-align: left;
+    cursor: pointer;
+}
+
+/* Formulario de las operaciones de capas */
+.m-vectorsmanagement-turf-opform {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+}
+
+.m-vectorsmanagement-turf-opform-header {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+}
+
+.m-vectorsmanagement-turf-opform-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--idee-color-primary);
+}
+
+.m-vectorsmanagement-turf-group {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    min-width: 0;
+    margin: 0;
+    padding: .75rem;
+    border: 1px solid var(--idee-color-neutral-40);
+    border-radius: 4px;
+}
+
+.m-vectorsmanagement-turf-group>legend {
+    padding: 0 .25rem;
+    font-weight: 700;
+}
+
+.m-vectorsmanagement-turf-group .m-vectorsmanagement-turf-field-help,
+.m-vectorsmanagement-turf-entry-summary {
+    margin: 0;
+    font-size: 13px;
+}
+
+.m-vectorsmanagement-turf-entry {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    padding-bottom: .5rem;
+    border-bottom: 1px dashed var(--idee-color-neutral-40);
+}
+
+.m-vectorsmanagement-turf-scopes,
+.m-vectorsmanagement-turf-fields {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+}
+
+.m-vectorsmanagement-turf-check {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    cursor: pointer;
+}
+
+.m-vectorsmanagement-turf-check>input:disabled,
+.m-vectorsmanagement-turf-check>input:disabled+span {
+    cursor: not-allowed;
+    opacity: .55;
+}
+
+.m-vectorsmanagement-turf-field>select,
+.m-vectorsmanagement-turf-field>input[type=text] {
+    max-width: 100%;
+    height: 2rem;
+    border: 1px solid var(--idee-color-neutral-40);
+    border-radius: 2px;
+}
+
+.m-vectorsmanagement-turf-schema {
+    margin: 0;
+    padding-left: 1.25rem;
+    overflow-wrap: anywhere;
+}
+
+.m-vectorsmanagement-turf-schema-renamed {
+    color: var(--idee-color-danger);
+}
+
+.m-vectorsmanagement-turf-status>ul {
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+.m-vectorsmanagement-turf-errors {
+    color: var(--idee-color-danger);
+}
+
+.m-vectorsmanagement-turf-notices {
+    color: var(--idee-color-warning);
+}
+
+.m-vectorsmanagement-turf-run {
+    min-height: 2rem;
+    border: 1px solid var(--idee-color-primary);
+    border-radius: 2px;
+    background-color: var(--idee-color-primary);
+    color: var(--idee-color-white);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.m-vectorsmanagement-turf-run:disabled {
+    opacity: .5;
+    cursor: not-allowed;
 }
 
 /**************************
@@ -1422,9 +1623,19 @@ div#popup-box {
 }
 
 .m-vectorsmanagement-turf-field.m-vectorsmanagement-turf-field-check {
-    flex-direction: row-reverse;
-    justify-content: flex-end;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
     align-items: center;
+    column-gap: .5rem;
+}
+
+.m-vectorsmanagement-turf-field-check>input {
+    order: -1;
+}
+
+.m-vectorsmanagement-turf-field-check>.m-vectorsmanagement-turf-field-help {
+    flex-basis: 100%;
 }
 
 .m-vectorsmanagement-turf-field-help {
