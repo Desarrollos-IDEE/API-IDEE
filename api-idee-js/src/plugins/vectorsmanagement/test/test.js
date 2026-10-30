@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import VectorsManagement from 'facade/vectorsmanagement';
+import { TURF_SAMPLES, addSampleLayers } from './turfsamples';
 
 IDEE.language.setLang('es');
 // IDEE.language.setLang('en');
@@ -13,7 +14,11 @@ const map = IDEE.map({
 });
 window.map = map;
 
-// map.addPlugin(new IDEE.plugin.Layerswitcher({ collapsed: true, position: 'TR' }));
+map.addPlugin(new IDEE.plugin.Layerswitcher({ collapsed: true, position: 'TL' }));
+
+// Capas de ejemplo de los geoprocesos de Turf (ver turfsamples.js)
+window.turfSamples = TURF_SAMPLES;
+window.sampleLayers = addSampleLayers(TURF_SAMPLES);
 
 /* / Capa Vector
 map.addLayers(new IDEE.layer.Vector({
