@@ -47,6 +47,7 @@ class GeoPackageTile extends LayerBase {
    * - legend: Nombre asociado en el árbol de contenidos, si usamos uno.
    * - tileLoadFunction: Función de carga de tiles.
    * - opacity: Opacidad de capa, por defecto 1.
+   * - renderer: Renderizado ('canvas' | 'webgl'). Por defecto IDEE.config.WEBGL.
    * - visibility: Define si la capa es visible o no. Verdadero por defecto.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
    * - minZoom: Zoom mínimo aplicable a la capa.

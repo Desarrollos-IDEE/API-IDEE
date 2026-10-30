@@ -13,8 +13,8 @@ import { getBottomLeft, getTopLeft, getWidth } from 'ol/extent';
 import { get as getRemote } from 'IDEE/util/Remote';
 import * as EventType from 'IDEE/event/eventtype';
 import { get as getProj } from 'ol/proj';
-import OLLayerTile from 'ol/layer/Tile';
 import LayerBase from './Layer';
+import { createTileLayer } from '../webgl/WebGLLayerProvider';
 import getLayerExtent from '../util/wmtscapabilities';
 /**
  * @classdesc
@@ -149,13 +149,13 @@ class WMTS extends LayerBase {
       this.options.maxResolution = getResolutionFromScale(this.options.maxScale, units);
     }
 
-    this.olLayer = new OLLayerTile(extend({
+    this.olLayer = createTileLayer(extend({
       visible: this.visibility,
       minResolution: this.options.minResolution,
       maxResolution: this.options.maxResolution,
       extent: this.userMaxExtent,
       opacity: this.opacity_,
-    }, this.vendorOptions_, true));
+    }, this.vendorOptions_, true), this.renderer_);
 
     if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
     if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
@@ -665,6 +665,7 @@ class WMTS extends LayerBase {
     this.facadeLayer_?.stopAutoRefresh();
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.olLayer)) {
+      this.disposeWebGLLayer_();
       olMap.removeLayer(this.olLayer);
       this.olLayer = null;
     }
