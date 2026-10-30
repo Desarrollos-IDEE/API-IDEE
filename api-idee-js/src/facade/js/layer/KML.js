@@ -58,6 +58,7 @@ class KML extends LayerVector {
    * - maxScale: Escala máxima.
    * - displayInLayerSwitcher. Indica si la capa se muestra en el selector de capas.
    * - opacity. Opacidad de capa, por defecto 1.
+   * - renderer: Renderizado ('canvas' | 'webgl'). Por defecto IDEE.config.WEBGL.
    * - scaleLabel. Escala de la etiqueta.
    * - extractStyles: Extraer estilos del KML.Por defecto es verdadero.
    * - predefinedStyles: Estilos predefinidos para la capa.

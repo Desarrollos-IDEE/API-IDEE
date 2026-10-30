@@ -6,11 +6,11 @@ import {
   isUndefined, isNullOrEmpty, generateResolutionsFromExtent, getZDirectionFunction, extend,
 } from 'IDEE/util/Utils';
 import * as EventType from 'IDEE/event/eventtype';
-import OLLayerTile from 'ol/layer/Tile';
 import SourceOSM from 'ol/source/OSM';
 import SourceXYZ from 'ol/source/XYZ';
 import ImplMap from '../Map';
 import Layer from './Layer';
+import { createTileLayer } from '../webgl/WebGLLayerProvider';
 
 /**
  * @classdesc
@@ -148,11 +148,11 @@ class OSM extends Layer {
   addTo(map, addLayer = true) {
     this.map = map;
 
-    this.olLayer = new OLLayerTile(extend(
+    this.olLayer = createTileLayer(extend(
       { visible: this.visibility },
       this.vendorOptions_,
       true,
-    ));
+    ), this.renderer_);
     this.updateSource_();
     if (this.opacity_) {
       this.setOpacity(this.opacity_);
@@ -242,6 +242,8 @@ class OSM extends Layer {
           url: this.url,
           tileLoadFunction: this.tileLoadFunction,
           zDirection: this.zDirection,
+          // WebGL solo admite teselas cargadas con CORS.
+          crossOrigin: this.isWebGL() ? 'anonymous' : undefined,
         });
       } else {
         newSource = new SourceOSM({
@@ -327,6 +329,7 @@ class OSM extends Layer {
     this.facadeLayer_?.stopAutoRefresh();
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.olLayer)) {
+      this.disposeWebGLLayer_();
       olMap.removeLayer(this.olLayer);
       this.olLayer = null;
     }

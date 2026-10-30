@@ -8,9 +8,9 @@ import popupKMLTemplate from 'templates/kml_popup';
 import Popup from 'IDEE/Popup';
 import { isNullOrEmpty, extend } from 'IDEE/util/Utils';
 import * as EventType from 'IDEE/event/eventtype';
-import OLLayerVector from 'ol/layer/Vector';
 import OLSourceVector from 'ol/source/Vector';
 import Vector from './Vector';
+import { createVectorLayer } from '../webgl/WebGLLayerProvider';
 import LoaderKML from '../loader/KML';
 import FormatKML from '../format/KML';
 import ImplUtils from '../util/Utils';
@@ -166,10 +166,11 @@ class KML extends Vector {
       extractStyles: this.extractStyles_,
     });
     this.loader_ = this.getLoader();
-    this.olLayer = new OLLayerVector(extend({
+    this.olLayer = createVectorLayer(extend({
       extent: this.maxExtent_,
       opacity: this.opacity_,
-    }, this.vendorOptions_, true));
+    }, this.vendorOptions_, true), this.renderer_);
+    this.watchFeatureStyles_();
     this.updateSource_();
     // sets its visibility if it is in range
     // if (this.options.visibility !== false) {
@@ -295,6 +296,7 @@ class KML extends Vector {
   recreateLayer() {
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.olLayer)) {
+      this.disposeWebGLLayer_();
       olMap.removeLayer(this.olLayer);
       this.olLayer = null;
     }
@@ -304,10 +306,11 @@ class KML extends Vector {
       extractStyles: this.extractStyles_,
     });
     this.loader_ = this.getLoader();
-    this.olLayer = new OLLayerVector(extend({
+    this.olLayer = createVectorLayer(extend({
       extent: this.maxExtent_,
       opacity: this.opacity_,
-    }, this.vendorOptions_, true));
+    }, this.vendorOptions_, true), this.renderer_);
+    this.watchFeatureStyles_();
     this.updateSource_(true);
     this.setVisible(this.visibility);
     // sets its z-index
@@ -353,9 +356,11 @@ class KML extends Vector {
    */
   destroy() {
     this.facadeVector_?.stopAutoRefresh();
+    this.unwatchFeatureStyles_();
     const olMap = this.map.getMapImpl();
 
     if (!isNullOrEmpty(this.olLayer)) {
+      this.disposeWebGLLayer_();
       olMap.removeLayer(this.olLayer);
       this.olLayer = null;
     }

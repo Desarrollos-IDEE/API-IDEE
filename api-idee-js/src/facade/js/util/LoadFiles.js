@@ -163,7 +163,8 @@ export const loadFeaturesFromSource = async (map, source, layerName, fileExt) =>
     } else {
       let features = [];
       if (fileExt === 'kml') {
-        features = await LoadFilesImpl.loadKMLLayer(source, projection, false);
+        const hasStyles = /<(?:[\w-]+:)?(?:StyleMap|Style)[\s>]/i.test(source);
+        features = await LoadFilesImpl.loadKMLLayer(source, projection, hasStyles);
       } else if (Gdal.extensionFiles.includes(fileExt)) {
         const { vectors } = await Gdal.processFile(source, projection);
         features = await LoadFilesImpl.loadAllInGeoJSONLayer(vectors ?? [], projection);

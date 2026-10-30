@@ -6,13 +6,13 @@ import {
 } from 'IDEE/util/Utils';
 
 import { get as getProj, transformExtent } from 'ol/proj';
-import OLLayerTile from 'ol/layer/Tile';
 import TileGrid from 'ol/tilegrid/TileGrid';
 import { getBottomLeft, getWidth } from 'ol/extent';
 import { XYZ } from 'ol/source';
 import { getValue } from 'IDEE/i18n/language';
 import ImplMap from '../Map';
 import Layer from './Layer';
+import { createTileLayer } from '../webgl/WebGLLayerProvider';
 import TileProvider, { DEFAULT_WHITE_TILE } from '../../../../facade/js/provider/Tile';
 
 const autoRefreshOptions = new WeakMap();
@@ -258,11 +258,11 @@ class MBTiles extends Layer {
     this.map = map;
     const projection = getProj('EPSG:3857');
     const extent = projection.getExtent();
-    this.olLayer = new OLLayerTile(extend({
+    this.olLayer = createTileLayer(extend({
       visible: this.visibility,
       opacity: this.opacity_,
       zIndex: this.zIndex_,
-    }, this.vendorOptions_, true));
+    }, this.vendorOptions_, true), this.renderer_);
 
     if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
     if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
@@ -469,6 +469,7 @@ class MBTiles extends Layer {
     this.facadeLayer_?.stopAutoRefresh();
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.olLayer)) {
+      this.disposeWebGLLayer_();
       olMap.removeLayer(this.olLayer);
       this.olLayer = null;
     }

@@ -176,13 +176,27 @@ export default class StereoscopicControl extends IDEE.Control {
     $("#tools").dialog({ position: { my: "right top", at: "right top", of: window }, width: 215 });
     document.querySelector('.ui-icon-closethick').click();
 
+    function getLayerCanvas() {
+        const olMap = map.getMapImpl();
+        const layerCanvas = olMap.getViewport().querySelector('.ol-layer canvas, canvas.ol-layer');
+        if (!layerCanvas || !layerCanvas.classList.contains('ol-layer')) {
+            return layerCanvas;
+        }
+        olMap.renderSync();
+        const copy = document.createElement('canvas');
+        copy.width = layerCanvas.width;
+        copy.height = layerCanvas.height;
+        copy.getContext('2d').drawImage(layerCanvas, 0, 0);
+        return copy;
+    }
+
     function setTR3(changeZoom = true) {
         const bbox = map.getMapImpl().getView().calculateExtent(map.getMapImpl().getSize());
         const code = map.getMapImpl().getView().getProjection().getCode();
   
         const desty = document.getElementById('TR3');
         // const ori = document.getElementsByTagName('CANVAS')[0]; // 1
-        const ori = document.querySelector('.ol-layer canvas');
+        const ori = getLayerCanvas();
 
         const TR3pms = {
             ori: ori,

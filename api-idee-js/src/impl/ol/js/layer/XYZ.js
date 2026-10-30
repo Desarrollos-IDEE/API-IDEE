@@ -2,12 +2,12 @@
  * @module IDEE/impl/layer/XYZ
  */
 import { isNullOrEmpty, extend, getZDirectionFunction } from 'IDEE/util/Utils';
-import OLTileLayer from 'ol/layer/Tile';
 import { get as getProj, transform } from 'ol/proj';
 import XYZSource from 'ol/source/XYZ';
 import * as EventType from 'IDEE/event/eventtype';
 import * as LayerType from '../../../../facade/js/layer/Type';
 import Layer from './Layer';
+import { createTileLayer } from '../webgl/WebGLLayerProvider';
 import ImplMap from '../Map';
 
 /**
@@ -179,12 +179,12 @@ class XYZ extends Layer {
     this.map = map;
     const projection = getProj('EPSG:3857');
     const extent = projection.getExtent();
-    this.olLayer = new OLTileLayer(extend({
+    this.olLayer = createTileLayer(extend({
       visible: this.visibility,
       opacity: this.opacity_,
       zIndex: this.zIndex_,
       extent: this.userMaxExtent || extent,
-    }, this.vendorOptions_, true));
+    }, this.vendorOptions_, true), this.renderer_);
 
     if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
     if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
@@ -259,6 +259,7 @@ class XYZ extends Layer {
     this.facadeLayer_?.stopAutoRefresh();
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.olLayer)) {
+      this.disposeWebGLLayer_();
       olMap.removeLayer(this.olLayer);
       this.olLayer = null;
     }

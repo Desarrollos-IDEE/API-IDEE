@@ -1,6 +1,7 @@
 /**
  * @module IDEE/style/Category
  */
+import CategoryImpl from 'impl/style/Category';
 import StyleBase from './Style';
 import Composite from './Composite';
 import {
@@ -32,7 +33,7 @@ class Category extends Composite {
    * @api
    */
   constructor(attributeName, categoryStyles, options = {}) {
-    super(options, {});
+    super(options, new CategoryImpl(options));
     if (isNullOrEmpty(attributeName)) {
       Exception(getValue('exception').no_attr_name);
     }
@@ -277,16 +278,23 @@ class Category extends Composite {
       if (isNullOrEmpty(this.categoryStyles_) || Object.keys(this.categoryStyles_).length === 0) {
         this.categoryStyles_ = this.generateRandomCategories_();
       }
-      const styleOther = this.categoryStyles_.other;
-      this.layer_.getFeatures().forEach((feature) => {
-        const value = feature.getAttribute(this.attributeName_);
-        const style = this.categoryStyles_[value];
-        if (!isNullOrEmpty(style)) {
-          feature.setStyle(style);
-        } else if (!isNullOrEmpty(styleOther)) {
-          feature.setStyle(styleOther);
-        }
+      const appliedToLayer = this.getImpl().applyToLayer(this.layer_, {
+        attributeName: this.attributeName_,
+        styles: this.categoryStyles_,
+        composed: this.getStyles().length > 0,
       });
+      if (!appliedToLayer) {
+        const styleOther = this.categoryStyles_.other;
+        this.layer_.getFeatures().forEach((feature) => {
+          const value = feature.getAttribute(this.attributeName_);
+          const style = this.categoryStyles_[value];
+          if (!isNullOrEmpty(style)) {
+            feature.setStyle(style);
+          } else if (!isNullOrEmpty(styleOther)) {
+            feature.setStyle(styleOther);
+          }
+        });
+      }
       this.updateCanvas();
     }
   }

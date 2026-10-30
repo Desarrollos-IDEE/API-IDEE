@@ -47,6 +47,7 @@ class OSM extends LayerBase {
    * - maxZoom: Zoom máximo aplicable a la capa.
    * - maxExtent: La medida en que restringe la visualización a una región específica.
    * - opacity: Opacidad de capa, por defecto 1.
+   * - renderer: Renderizado ('canvas' | 'webgl'). Por defecto IDEE.config.WEBGL.
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán
    * a la implementación de la capa.
    * - animated: Activa la animación para capas base o parámetros animados.

@@ -70,6 +70,7 @@ class GeoJSON extends LayerVector {
    * - visibility: Define si la capa es visible o no. Verdadero por defecto.
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
    * - opacity: Opacidad de capa, por defecto 1.
+   * - renderer: Renderizado ('canvas' | 'webgl'). Por defecto IDEE.config.WEBGL.
    * - style: Define el estilo de la capa.
    * - predefinedStyles: Estilos predefinidos para la capa.
    * - height: Define la altura del objeto geográfico. Puede ser un número o una propiedad.

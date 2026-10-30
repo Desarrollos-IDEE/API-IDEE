@@ -396,7 +396,7 @@ export const encodeMVT = (layer, facadeMap) => {
   const features = layer.getFeatures();
   const layerName = layer.name;
   const layerOpacity = layer.getOpacity();
-  const layerStyle = layer.getImpl().getLayer().getStyle();
+  const layerStyle = layer.getImpl().getCanvasStyle?.() ?? layer.getImpl().getLayer().getStyle?.();
   let bbox = facadeMap.getBbox();
   bbox = [bbox.x.min, bbox.y.min, bbox.x.max, bbox.y.max];
   const resolution = facadeMap.getMapImpl().getView().getResolution();

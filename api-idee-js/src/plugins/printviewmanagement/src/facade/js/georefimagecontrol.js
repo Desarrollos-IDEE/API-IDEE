@@ -8,6 +8,7 @@ import { getValue } from './i18n/language';
 import {
   createWLD, createZipFile,
   generateTitle, getBase64Image, formatImageBase64, createLoadingSpinner,
+  SELECTOR_LAYER_CANVAS, getLayerCanvases, getLayerCanvasOpacity,
 } from './utils';
 import { DPI_OPTIONS, GEOREFIMAGE_FORMATS } from '../../constants';
 
@@ -18,9 +19,6 @@ const ID_PROJECTION = '#m-georefimage-projection';
 const ID_WLD = '#m-georefimage-wld';
 const ID_DPI = '#m-georefimage-dpi';
 const ID_GEOREFIMAGE_PRINT_BUTTON = '#m-georefimage-print';
-
-// SELECTOR CANVAS
-const SELECTOR_CANVAS = '.ol-layer canvas';
 
 // DEFAULTS PARAMS
 const TYPE_SAVE = '.zip';
@@ -163,7 +161,7 @@ export default class GeorefimageControl extends IDEE.Control {
   selectElementHTML(html) {
     this.elementTitle_ = html.querySelector(ID_TITLE);
     this.elementWld_ = html.querySelector(ID_WLD);
-    this.elementCanvas_ = document.querySelector(SELECTOR_CANVAS);
+    this.elementCanvas_ = document.querySelector(SELECTOR_LAYER_CANVAS);
     this.elementProjection_ = html.querySelector(ID_PROJECTION);
 
     const printButton = html.querySelector(ID_GEOREFIMAGE_PRINT_BUTTON);
@@ -214,26 +212,20 @@ export default class GeorefimageControl extends IDEE.Control {
       canvas.height = newHeight;
       const context = canvas.getContext('2d');
 
-      Array.prototype.forEach.call(
-        document.querySelectorAll('.ol-layer canvas'),
-        (layerCanvas) => {
-          if (layerCanvas.width > 0) {
-            const opacity = layerCanvas.parentNode.style.opacity || '1';
-            context.globalAlpha = Number(opacity);
-            const transform = layerCanvas.style.transform;
+      getLayerCanvases(map).forEach((layerCanvas) => {
+        context.globalAlpha = getLayerCanvasOpacity(layerCanvas);
+        const transform = layerCanvas.style.transform;
 
-            if (transform) {
-              const matrix = transform
-                .match(/^matrix\(([^(]*)\)$/)[1]
-                .split(',')
-                .map(Number);
-              context.setTransform(...matrix);
-            }
+        if (transform) {
+          const matrix = transform
+            .match(/^matrix\(([^(]*)\)$/)[1]
+            .split(',')
+            .map(Number);
+          context.setTransform(...matrix);
+        }
 
-            context.drawImage(layerCanvas, 0, 0, newWidth, newHeight);
-          }
-        },
-      );
+        context.drawImage(layerCanvas, 0, 0, newWidth, newHeight);
+      });
 
       map.setSize(originalSize);
       map.getView().setResolution(originalResolution);

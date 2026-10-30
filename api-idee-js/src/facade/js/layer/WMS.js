@@ -64,6 +64,8 @@ class WMS extends LayerBase {
    * @param {Mx.parameters.LayerOptions} options Estas opciones se mandarán a
    * la implementación de la capa.
    * - opacity: Opacidad de capa, por defecto 1.
+   * - renderer: Renderizado ('canvas' | 'webgl'), solo en modo teselado.
+   * Por defecto IDEE.config.WEBGL.
    * - singleTile: Indica si la tesela es única o no.
    * - animated: Define si la capa está animada,
    * el valor predeterminado es falso.
