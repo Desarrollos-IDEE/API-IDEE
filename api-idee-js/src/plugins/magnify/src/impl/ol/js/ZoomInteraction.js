@@ -22,7 +22,8 @@ export default class ZoomInteraction extends ol.Overlay {
     });
     this._elt = elt;
 
-    const layers = options.layers.map((layer) => layer.getImpl().getLayer())
+    const layers = options.layers
+      .map((layer) => layer.getImpl().getSecondaryMapLayer?.() ?? layer.getImpl().getLayer())
       .filter((layer) => layer != null);
 
     // Create magnify map
