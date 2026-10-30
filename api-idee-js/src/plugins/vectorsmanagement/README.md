@@ -119,39 +119,89 @@ https://componentes.idee.es/api-idee/?vectorsmanagement=RIGHT*true*true
 
 # Geoprocesos con Turf.js
 
-La herramienta de geoprocesos ejecuta operaciones de [Turf.js](https://turfjs.org/) sobre los elementos seleccionados o, si no hay selección, sobre todos los elementos de la capa seleccionada:
+La herramienta de geoprocesos ejecuta operaciones de [Turf.js](https://turfjs.org/) sobre las capas vectoriales del mapa, se hayan añadido con el plugin, con el Layerswitcher o con la API (`IDEE.layer.Vector` y sus subtipos: GeoJSON, KML, WFS, OGCAPIFeatures...). Todas se configuran en un formulario del panel, que no bloquea el mapa: mientras está abierto se puede cambiar de capa y seleccionar entidades.
 
-- Si la operación necesita parámetros (marcada con «…»), se piden en un diálogo antes de ejecutarla.
-- Si devuelve geometría, cada ejecución añade al mapa su propia capa con la leyenda `Turf: <operación> (n)`, donde `n` es el número de orden de esa operación (1, 2, 3…). Su nombre interno es `turf_<operación>_<n>_<aleatorio>`.
-- Si no devuelve geometría, el resultado se muestra en un toast o en un diálogo.
+## Entradas
 
-| Categoría | Operación | Entrada | Parámetros | Resultado |
-|---|---|---|---|---|
-| Medición | `area` | 1+ polígonos | unidades de área¹ | Área total |
-| Medición | `length` | 1+ líneas | unidades² | Longitud total |
-| Medición | `distance` | 2 puntos | unidades² | Distancia |
-| Medición | `bbox` | 1+ elementos | – | Extensión en EPSG:4326 |
-| Medición | `along` | 1 línea | distancia, unidades² | Punto |
-| Centros | `center`, `centroid`, `centerOfMass`, `pointOnFeature` | 1+ elementos | – | Un punto por elemento |
-| Transformación | `buffer` | 1+ elementos | radio (negativo reduce polígonos), unidades², pasos | Polígonos |
-| Transformación | `simplify` | 1+ líneas o polígonos | tolerancia (grados), alta calidad | Geometrías simplificadas |
-| Transformación | `convex` | 1+ elementos | concavidad (opcional; vacía = envolvente convexa) | Polígono |
-| Transformación | `envelope` | 1+ elementos | – | Polígono |
-| Transformación | `bezierSpline` | 1+ líneas | resolución, suavizado | Líneas suavizadas |
-| Transformación | `transformRotate` | 1+ elementos | ángulo, punto de giro opcional (longitud y latitud; vacío = centroide) | Geometrías rotadas |
-| Transformación | `transformScale` | 1+ elementos | factor, origen (centroide, centro o una esquina) | Geometrías escaladas |
-| Transformación | `transformTranslate` | 1+ elementos | distancia, unidades², dirección | Geometrías desplazadas |
-| Superposición | `union`, `intersect` | 2+ polígonos | – | Polígono |
-| Superposición | `difference` | 2+ polígonos | – | Primer polígono seleccionado menos el resto |
-| Relación | `booleanPointInPolygon` | 1 punto y 1 polígono | ignorar el borde | Sí / No |
-| Relación | `booleanIntersects` | 2 elementos | ignorar autointersecciones | Sí / No |
-| Relación | `booleanContains`, `booleanWithin` | 2 elementos (en orden de selección) | – | Sí / No |
+Cada operación declara sus entradas (papeles). En cada una se eligen una o varias capas y, para cada capa, el ámbito:
+
+- **Todas las entidades de la capa.**
+- **Solo las seleccionadas:** las de la selección guardada de esa capa.
+- **Una entidad seleccionada:** una entidad de esa selección, elegida en una lista. Permite comparar o medir dos entidades, también de la misma capa.
+- **Resultado de una operación anterior:** una capa creada por Turf, para encadenar operaciones.
+
+Las capas teseladas (MVT, MBTilesVector), las que no tienen elementos cargados y las de tipos de geometría no admitidos aparecen deshabilitadas, con el motivo. Algunas entradas exigen un número de entidades (por ejemplo, exactamente una en las relaciones y la distancia).
+
+Al abrir el formulario, la primera entrada usa la capa activa del plugin: su selección si la herramienta de selección está activa o, si no, todas sus entidades. Las relaciones, la distancia y «Restar polígonos» toman la primera y la segunda entidad seleccionadas, como hacían antes al pulsarlas con dos entidades seleccionadas.
+
+**Selecciones guardadas.** Lo que se selecciona con la herramienta de selección se guarda por capa para Turf. Así se pueden combinar selecciones de varias capas aunque la selección del plugin solo se vea en la capa activa. El panel muestra cada selección guardada, cuántos elementos tiene y si se está viendo en el mapa, y permite quitarlas. Vaciar la selección en el mapa no vacía la selección guardada.
+
+## Resultados y atributos
+
+Antes de ejecutar, el formulario muestra qué entidades se van a procesar, el esquema de la capa resultante, los avisos y los errores que impiden ejecutar. Las operaciones de medición y de relación devuelven un valor (toast o diálogo). El resto crea una capa nueva con la leyenda `Turf: <operación> (n)` y el nombre interno `turf_<operación>_<n>_<aleatorio>`; si no hay resultados, no se crea ninguna capa. Las capas de origen no se modifican y los elementos de salida tienen identificadores nuevos.
+
+- Se eligen los campos que se copian de cada entrada y su prefijo. Dentro de una entrada con varias capas, los campos con el mismo nombre comparten columna (cada resultado procede de una sola entidad de esa entrada). Entre entradas distintas, si dos campos acaban con el mismo nombre, el segundo recibe un sufijo `_2`, `_3`...; el orden lo fijan los papeles y los campos, nunca los elementos.
+- La opción «Añadir la capa de origen» añade la columna `capa_origen`.
+- Cuando varias entidades forman un único resultado (fusionar, parte común, restar, envolventes y área de influencia disuelta), se añade `num_entidades`. Sus campos solo se copian si se eligen y sus valores se combinan según «Valores de los campos combinados»: valores distintos separados por comas o el valor común (vacío si difieren). Nunca se toma el de una entidad cualquiera.
+
+| Categoría | Operación | Entradas | Resultado |
+|---|---|---|---|
+| Área de influencia | `buffer` | Entrada (cualquier geometría) | Un polígono por entidad con sus campos, o uno disuelto. Distancia (negativa solo con polígonos), unidades lineales y pasos |
+| Reunir, extraer y excluir | `mergeFeatures` | Entrada | Copia de las entidades elegidas, sin modificar geometrías ni campos. Reúne varias capas o extrae una selección. Avisa si mezcla puntos, líneas y polígonos |
+| Reunir, extraer y excluir | `excludeFeatures` | Entrada + Exclusión | Las entidades de entrada que no están en la exclusión. Compara la identidad de las entidades (capa y posición), no su geometría |
+| Reunir, extraer y excluir | `extractByLocation` | Entrada + Condición | Las entidades de entrada, sin recortar, que cumplen `intersects`, `disjoint`, `within` o `contains` con alguna entidad de condición (`disjoint`: con ninguna) |
+| Superposición de capas | `layerIntersection` | Entrada (punto, línea o polígono) + Superposición (polígonos) | La parte común de cada pareja, con la dimensión de la entrada y los campos de ambos |
+| Superposición de capas | `layerUnion` | Entrada + Superposición (polígonos) | Como la unión de QGIS: partes comunes (campos de ambos) y partes sin solape (campos de la otra entrada a `null`) |
+| Superposición de capas | `layerDifference` | Entrada (punto, línea o polígono) + Superposición (polígonos) | La parte de cada entidad de entrada fuera de la superposición |
+| Atributos espaciales | `spatialJoin` | Destino + Unión | La geometría del destino con los campos de las entidades de unión relacionadas. Relación `intersects`, `within` o `contains`; coincidencias múltiples: una salida por coincidencia o la de mayor solape |
+| Combinar polígonos | `union` | Polígonos | Su unión (disolución) en una geometría; las partes separadas, multiparte o una entidad por parte con su procedencia |
+| Combinar polígonos | `intersect` | Polígonos (2 o más) | La zona común a todos |
+| Combinar polígonos | `difference` | Partida + Polígonos que se restan | La unión de los de partida menos la de los que se restan (los que también son de partida no se restan) |
+| Medición | `area`, `length` | Polígonos / líneas | Suma de áreas¹ o longitudes² (los solapes se cuentan una vez por entidad) |
+| Medición | `distance` | Origen + Destino (1 punto cada uno) | Distancia² |
+| Medición | `bbox` | Entrada | Extensión en EPSG:4326 |
+| Medición | `along` | Líneas (LineString) | Un punto por línea, a la distancia² indicada, con sus campos |
+| Centros | `center`, `centroid`, `centerOfMass`, `pointOnFeature` | Entrada | Un punto por entidad con sus campos |
+| Transformación | `simplify`, `bezierSpline`, `transformRotate`, `transformScale`, `transformTranslate` | Entrada | Una geometría transformada por entidad con sus campos |
+| Transformación | `convex`, `envelope` | Entrada | Un polígono que contiene todas las entidades |
+| Relación | `booleanPointInPolygon`, `booleanIntersects`, `booleanContains`, `booleanWithin` | Primera + Segunda (1 entidad cada una) | Sí / No |
 
 ¹ Metros, milímetros, centímetros, kilómetros, millas, millas náuticas, pulgadas, yardas y pies cuadrados, acres y hectáreas.
 
-² Metros, milímetros, centímetros, kilómetros, millas, millas náuticas, pulgadas, yardas, pies, radianes y grados.
+² Metros, milímetros, centímetros, kilómetros, millas, millas náuticas, pulgadas, yardas, pies, radianes y grados (el área de influencia solo admite las lineales).
 
-Las operaciones se definen en `src/facade/js/turf/turfoperations.js`. Para añadir una nueva basta con añadir una entrada al catálogo y sus traducciones (`turf.ops.<id>`).
+Las relaciones y las políticas que no se pueden aplicar a los tipos de geometría elegidos no se ofrecen. Las operaciones también se pueden ejecutar desde código; `runLayerOperation` devuelve `{ layer, count, skipped }` o, en las de medición y relación, `{ value, skipped }`:
+
+```javascript
+const turfControl = vectorsManagement.controls[0].turfControl;
+turfControl.runLayerOperation('spatialJoin', {
+  inputs: {
+    target: [{ layerId: puntos.idLayer, scope: 'selection' }],
+    join: [{ layerId: zonas.idLayer, scope: 'all' }],
+  },
+  params: { predicate: 'within', matchPolicy: 'oneToMany', keepUnmatched: true },
+  attributes: { join: { fields: ['nombre'], prefix: 'zona_' } },
+  outputName: 'Puntos con zona',
+});
+turfControl.runLayerOperation('union', {
+  inputs: {
+    input: [
+      { layerId: zonas.idLayer, scope: 'feature', featureKey: 'id:Z1' },
+      { layerId: ambitos.idLayer, scope: 'selection' },
+    ],
+  },
+  params: { separateParts: false, fieldPolicy: 'distinct', sourceLayer: true },
+  attributes: { input: { fields: ['nombre'] } },
+});
+```
+
+`featureKey` identifica una entidad de la selección guardada de su capa: `id:<identificador>` o, si no tiene un identificador único, `#<posición en la capa>`.
+
+Limitaciones: la superposición y «Restar polígonos» solo admiten polígonos en el papel que recorta o resta, y la unión de capas, también en la entrada. Los tramos de línea que coinciden con un borde no se cortan en sus extremos. Solo se procesan los elementos cargados en el cliente (por ejemplo, los limitados por `limit` en OGCAPIFeatures).
+
+## Añadir operaciones
+
+Cada operación se define en un módulo de `src/facade/js/turf/operations/`, agrupado por categoría, con el contrato `LayerOperation` de `turf/turftypes.js`: sus papeles de entrada, sus parámetros, si devuelve geometrías (`Output.GEOMETRY`) o un valor (`Output.VALUE`) y su `execute`, que devuelve geometrías con su procedencia (nunca propiedades) o el valor. Los constructores habituales están en `operations/common.js` (`eachFeature`, `combineAll`, papeles) y `operations/params.js` (unidades, capa de origen, combinación de campos). Después se añade a la lista de `turf/turfoperations.js` con sus traducciones, incluidos sus papeles (`turf.ops.<id>.roles`). Los algoritmos reutilizables están en `turf/geometry/`, el esquema de atributos en `turf/attributes/`, la integración con las capas del mapa en `turf/layers/` y la interfaz en `turf/ui/`.
 
 Turf.js lo publica el núcleo de API-IDEE como variable global `turf`, igual que `ol` o `proj4`, por lo que también se puede usar directamente:
 
@@ -228,6 +278,8 @@ npm i
 npm start:ol
 npm start:cesium
 ```
+
+`test/dev.html` (http://localhost:6123/test/dev.html) carga el núcleo de API-IDEE, el Layerswitcher y PrintViewManagement desde el WAR desplegado en Tomcat (`http://localhost:8080/api-idee/`); el plugin se sirve desde el código fuente. `test/test.js` añade las capas de ejemplo de `test/turfsamples.js` para probar los geoprocesos de Turf.
 
 ## 📂 Estructura del código / *Code scaffolding*
 

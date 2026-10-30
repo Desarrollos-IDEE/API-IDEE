@@ -1,0 +1,17 @@
+<div class="m-vectorsmanagement-turf-helpbox">
+    {{#each sections}}
+    <div class="popup-section">
+        <div class="popup-title"><b>{{title}}</b>{{#if icon}} <span class="{{icon}}" aria-hidden="true"></span>{{/if}}</div>
+        {{#each paragraphs}}
+        <p>{{text}}{{#if icon}} <span class="{{icon}}" aria-hidden="true"></span>{{/if}}</p>
+        {{/each}}
+        {{#if items.length}}
+        <ul>
+            {{#each items}}
+            <li><b>{{label}}</b>: {{text}}</li>
+            {{/each}}
+        </ul>
+        {{/if}}
+    </div>
+    {{/each}}
+</div>
