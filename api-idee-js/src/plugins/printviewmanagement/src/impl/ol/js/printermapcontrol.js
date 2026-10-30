@@ -203,7 +203,7 @@ export default class PrinterMapControl extends IDEE.impl.Control {
     let res = null;
     const projection = this.facadeMap_.getProjection();
     const olLayer = layer.getImpl().getLayer();
-    const layerStyle = olLayer.getStyle();
+    const layerStyle = layer.getImpl().getCanvasStyle?.() ?? olLayer.getStyle?.();
     const geoJSONFormat = new ol.format.GeoJSON();
     let bbox = this.facadeMap_.getBbox();
     bbox = [bbox.x.min, bbox.y.min, bbox.x.max, bbox.y.max];
