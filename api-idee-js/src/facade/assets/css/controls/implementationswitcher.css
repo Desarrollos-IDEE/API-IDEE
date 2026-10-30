@@ -28,7 +28,7 @@
 
 .m-implementationswitcher header h1 {
     text-align: center;
-    font-size: 15px;
+    font-size: var(--idee-font-size-body-m);
     font-weight: var(--idee-font-weight-bold);
     margin: 0;
     color: var(--idee-color-white);
@@ -47,7 +47,7 @@
 }
 
 .m-implementationswitcher {
-    font-size: 12px;
+    font-size: var(--idee-font-size-caption);
     color: var(--idee-color-black) !important;
     white-space: nowrap;
 }
@@ -60,7 +60,7 @@
 
 .m-implementationswitcher a,
 .m-implementationswitcher p {
-    font-size: 12px;
+    font-size: var(--idee-font-size-caption);
     color: var(--idee-color-black) !important;
     white-space: nowrap;
     text-decoration: none;

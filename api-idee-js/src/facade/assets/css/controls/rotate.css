@@ -84,6 +84,7 @@ div.m-control.m-rotate-container {
   height: 26px;
   box-sizing: content-box;
   background-color: var(--idee-color-white);
+  /* idee-token-exception: geometría circular del botón */
   border-radius: 26px;
 }
 
@@ -102,15 +103,15 @@ div.m-control.m-rotate-container {
   transform: translateY(-50%);
   background-color: var(--idee-color-primary);
   color: white;
-  font-weight: bold;
+  font-weight: var(--idee-font-weight-bold);
   border: 2px solid white;
   cursor: pointer;
   height: 19px;
   width: 19px;
   border-radius: 50%;
   text-align: center;
-  font-family: 'Muli', 'sans-serif';
-  font-size: 10px;
+  font-family: var(--idee-font-family);
+  font-size: var(--idee-font-size-caption);
   z-index: 1;
 }
 
@@ -123,7 +124,7 @@ div.m-control.m-rotate-container {
   opacity: 1;
   background-color: var(--idee-color-primary) !important;
   border: 2px solid white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
+  box-shadow: var(--idee-shape-box-shadow);
 }
 
 #m-rotate-marker {
@@ -164,8 +165,8 @@ div.m-control.m-rotate-container {
   left: calc(100% + 8px);
   transform: translateY(-12%);
   display: none;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  border-radius: calc(var(--idee-shape-border-radius) * 2);
+  box-shadow: var(--idee-shape-box-shadow);
   padding: 16px;
   color: #000;
 }
@@ -188,13 +189,14 @@ div.m-control.m-rotate-container {
 
 .m-rotate-help-header h3 {
   margin: 0;
-  font-size: 16px;
-  font-weight: bold;
+  font-size: var(--idee-font-size-body-m);
+  font-weight: var(--idee-font-weight-bold);
 }
 
 .m-rotate-help-close {
   background: none;
   border: none;
+  /* idee-token-exception: tamaño del glifo de cierre (×) */
   font-size: 20px;
   line-height: 20px;
   cursor: pointer;
@@ -215,7 +217,7 @@ button.m-rotate-help-close.g-cartografia-cancelar:before {
 }
 
 .m-rotate-help-option p {
-  font-size: 13px;
+  font-size: var(--idee-font-size-body-s);
 }
 
 .m-rotate-help-ctrl {
@@ -228,15 +230,15 @@ button.m-rotate-help-close.g-cartografia-cancelar:before {
 .m-rotate-help-ctrl .m-rotate-key {
   color: #524F4F;
   background: white;
-  font-weight: bold;
+  font-weight: var(--idee-font-weight-bold);
   padding: 4px 6px;
-  border-radius: 4px;
-  font-size: 12px;
+  border-radius: var(--idee-shape-border-radius);
+  font-size: var(--idee-font-size-caption);
   border: 1px solid #524F4F;
 }
 
 .m-rotate-help-ctrl p {
-  font-size: 13px;
+  font-size: var(--idee-font-size-body-s);
   margin: 0;
 }
 
@@ -252,9 +254,9 @@ button.m-rotate-help-close.g-cartografia-cancelar:before {
   display: block;
   text-decoration: underline;
   cursor: pointer;
-  font-family: Inter, sans-serif;
-  font-weight: 400;
+  font-family: var(--idee-font-family);
+  font-weight: var(--idee-font-weight-regular);
   color: var(--idee-color-primary);
-  font-size: 13px;
+  font-size: var(--idee-font-size-body-s);
   line-height: normal;
 }

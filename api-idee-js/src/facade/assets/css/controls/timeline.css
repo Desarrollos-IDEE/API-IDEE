@@ -31,6 +31,7 @@
     height: 2px;
     cursor: pointer;
     background: rgba(0, 0, 0, .31);
+    /* idee-token-exception: geometría del control range */
     border-radius: 12px
 }
 
@@ -38,6 +39,7 @@
     height: 10px;
     width: 10px;
     cursor: pointer;
+    /* idee-token-exception: geometría del control range */
     border-radius: 15px;
     background: #fff;
     -webkit-appearance: none;
@@ -50,6 +52,7 @@
     height: 2px;
     cursor: pointer;
     background: rgba(0, 0, 0, .31);
+    /* idee-token-exception: geometría del control range */
     border-radius: 12px
 }
 
@@ -74,7 +77,7 @@
     background: #0000008a;
     color: #fff;
     padding: .3rem;
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
     margin-top: -1.35rem;
     margin-left: 0.4rem;
     height: 1rem;
@@ -92,9 +95,9 @@
 }
 
 .m-control-panel.m-control-timeline.opened div#m-timeline-title {
-    font-size: 18px;
+    font-size: var(--idee-font-size-body-l);
     line-height: 40px;
-    font-weight: bold;
+    font-weight: var(--idee-font-weight-bold);
     text-align: left;
     background-color: transparent;
     color: var(--idee-color-links);
@@ -110,11 +113,11 @@
     text-align: center;
     height: 39px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.13);
-    font-size: 15px;
+    font-size: var(--idee-font-size-body-m);
 }
 
 .m-control-panel.m-control-timeline.opened>div.m-panel-controls>div.m-control.m-container.m-timeline>div#m-timeline-title {
-    font-size: 13px;
+    font-size: var(--idee-font-size-body-s);
     padding-left: 0;
     padding-right: 0;
     width: 210px;
@@ -130,7 +133,7 @@
 
 .m-control-panel.m-control-timeline.opened [class^="m-timeline-names"] {
     display: none;
-    font-size: 14px;
+    font-size: var(--idee-font-size-body-s);
     height: 1.5rem;
     width: 100%;
 }
@@ -152,7 +155,7 @@
     justify-content: space-between;
     height: 6px;
     margin: -7px -3px 11px 13px;
-    font-size: 11px;
+    font-size: var(--idee-font-size-caption);
     counter-reset: count -1;
 }
 
@@ -195,6 +198,7 @@
     aspect-ratio: 1;
     background: none;
     border: 0;
+    /* idee-token-exception: geometría circular del botón */
     border-radius: 50rem;
     padding: .45rem 0 .6rem 0;
     margin: auto;
@@ -325,7 +329,7 @@
     align-items: center;
     appearance: none;
     background-color: var(--idee-color-primary);
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
     border-width: 0;
 
     box-sizing: border-box;
@@ -348,7 +352,7 @@
     touch-action: manipulation;
     white-space: nowrap;
     will-change: box-shadow, transform;
-    font-size: 12px;
+    font-size: var(--idee-font-size-caption);
 }
 
 .m-control-panel.m-control-timeline.opened .selectDinamicLayer option {
@@ -356,7 +360,8 @@
     text-align: left;
     color: #000;
     padding: 0 13px;
-    font-size: 13px;
+    font-size: var(--idee-font-size-body-s);
+    /* idee-token-exception: monoespaciada intencional para alinear las fechas */
     font-family: "JetBrains Mono", monospace;
 }
 
@@ -368,7 +373,7 @@
     align-items: center;
     appearance: none;
     background-color: var(--idee-color-primary);
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
     border-width: 0;
 
     box-sizing: border-box;
@@ -390,7 +395,7 @@
     touch-action: manipulation;
     white-space: nowrap;
     will-change: box-shadow, transform;
-    font-size: 14px;
+    font-size: var(--idee-font-size-body-s);
 }
 
 .m-control-panel.m-control-timeline.opened .sizeWidthDinamic_medium,

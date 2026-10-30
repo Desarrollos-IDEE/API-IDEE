@@ -66,8 +66,8 @@
 }
 
 #m-printviewmanagement-controls label {
-    font-size: 14px;
-    font-weight: 400;
+    font-size: var(--idee-font-size-body-s);
+    font-weight: var(--idee-font-weight-regular);
     line-height: 1.2;
 }
 
@@ -227,7 +227,7 @@
     flex-direction: column;
     gap: 8px;
     border: 1px solid var(--idee-color-neutral-40);
-    border-radius: 5px;
+    border-radius: var(--idee-shape-border-radius);
     margin-bottom: 20px;
     padding: 15px;
 }
@@ -284,14 +284,14 @@
     overflow-y: auto;
     list-style: none;
     background-color: var(--idee-color-neutral-20);
-    font-size: 12px;
+    font-size: var(--idee-font-size-caption);
 }
 
 .m-templateCustomizer-srs-list li a {
     display: block;
     margin-top: -1px;
     padding: 4px 12px;
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
     text-decoration: none;
     color: var(--idee-color-neutral-70)
 }

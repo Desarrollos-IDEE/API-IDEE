@@ -59,7 +59,7 @@ TOOLTIP
     color: #fff !important;
     text-align: center;
     padding: 5px 0;
-    border-radius: 6px;
+    border-radius: var(--idee-shape-border-radius);
     width: 120px;
     position: inherit;
     z-index: 1;

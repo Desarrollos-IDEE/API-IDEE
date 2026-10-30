@@ -16,10 +16,10 @@
 
 .m-toast {
     max-width: 330px;
-    border-radius: 5px;
+    border-radius: var(--idee-shape-border-radius);
     margin: 0.5rem;
     color: #ffffff;
-    font-weight: 900;
+    font-weight: var(--idee-font-weight-bold);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -42,6 +42,7 @@
 .m-toast>span {
     color: #ffffff;
     margin: 0 15px 0 10px;
+    /* idee-token-exception: tamaño de glifo de icono */
     font-size: 1.5rem;
 }
 
@@ -49,7 +50,7 @@
     background-color: transparent;
     border: none;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: var(--idee-font-weight-bold);
     color: #ffffff;
     margin: 0 10px 0 10px;
 }

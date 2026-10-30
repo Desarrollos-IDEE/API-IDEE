@@ -43,13 +43,13 @@
 }
 
 .m-storymap-title {
-  font-size: 16px;
-  font-weight: 500;
+  font-size: var(--idee-font-size-body-m);
+  font-weight: var(--idee-font-weight-regular);
 }
 
 .m-storymap-subtitle {
-  font-size: 14px;
-  font-weight: 400;
+  font-size: var(--idee-font-size-body-s);
+  font-weight: var(--idee-font-weight-regular);
 }
 
 
@@ -88,7 +88,7 @@
   margin: 1.5rem 1rem;
   padding: 8px;
   background: color-mix(in srgb, var(--idee-color-success) 50%, transparent);
-  border-radius: 4px;
+  border-radius: var(--idee-shape-border-radius);
   line-height: 1.2;
 }
 
@@ -135,7 +135,7 @@
 
 .m-storymap-chapters li {
   padding-left: 8px;
-  font-size: 12px;
+  font-size: var(--idee-font-size-caption);
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -152,7 +152,7 @@
 .step {
   overflow: auto;
   height: calc(100% - 1rem);
-  font-size: 12px;
+  font-size: var(--idee-font-size-caption);
   line-height: 1.2;
 }
 

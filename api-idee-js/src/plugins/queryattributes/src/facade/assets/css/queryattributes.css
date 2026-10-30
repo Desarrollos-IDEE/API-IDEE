@@ -83,7 +83,7 @@ div.m-area.m-right .m-queryattributes.opened .m-panel-btn {
   width: 520px;
   background-color: white !important;
   max-width: 520px;
-  box-shadow: 0 2px 4px rgb(0 0 0 / 20%), 0 -1px 0 rgb(0 0 0 / 2%);
+  box-shadow: var(--idee-shape-box-shadow);
 }
 
 div.m-area.m-left .m-queryattributes.opened #div-contenedor {
@@ -101,8 +101,8 @@ div.m-area.m-right .m-queryattributes.opened #div-contenedor {
     cursor: grab;
     cursor: -moz-grab;
     cursor: -webkit-grab;
-    font-size: 15px;
-    font-weight: bold;
+    font-size: var(--idee-font-size-body-m);
+    font-weight: var(--idee-font-weight-bold);
     height: 39px;
     line-height: 40px;
     text-align: center;
@@ -122,7 +122,7 @@ div.m-area.m-right .m-queryattributes.opened #div-contenedor {
 }
 
 .m-queryattributes-field-container select{
-    font-family: Muli,"sans-serif"!important;
+    font-family: var(--idee-font-family)!important;
     display: inline-block;
     width: 75%;
     cursor: pointer;
@@ -181,17 +181,18 @@ div.m-area.m-right .m-queryattributes.opened #div-contenedor {
 
 #m-queryattributes-filter .m-queryattributes-filters-container span {
   color: #6c6c6c;
-  font-weight: bold;
+  font-weight: var(--idee-font-weight-bold);
   margin-right: 10px;
 }
 
 
 #m-queryattributes-filter button.filters i {
+  /* idee-token-exception: tamaño de glifo de icono */
   font-size: 22px;
 }
 
 #m-queryattributes-filter #m-queryattributes-search-btn {
-  font-size: 16px;
+  font-size: var(--idee-font-size-body-m);
   position: relative;
   left: -5px;
   top: 1px;
@@ -203,14 +204,14 @@ div.m-area.m-right .m-queryattributes.opened #div-contenedor {
   position: absolute;
   left: 190px;
   top: 48px;
-  font-size: 1rem;
+  font-size: var(--idee-font-size-body-m);
   animation: rotate 1s linear infinite;
   display:none;
 }
 
 
 #m-queryattributes-search-results {
-  font-size: 0.9rem;
+  font-size: var(--idee-font-size-body-s);
   position: relative;
   left: -15px;
   top: 1px;
@@ -224,9 +225,9 @@ div.m-area.m-right .m-queryattributes.opened #div-contenedor {
 #m-queryattributes-filter button.filters {
   padding: 5px 7px;
   background-color: #71a7d3;
-  font-family: Muli,"sans-serif"!important;
+  font-family: var(--idee-font-family)!important;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: var(--idee-shape-border-radius);
   border: 1px solid #71a7d3;
   color: white;
   margin-right: 10px;
@@ -253,7 +254,7 @@ div.m-area.m-right .m-queryattributes.opened #div-contenedor {
 #m-queryattributes-options-buttons>button {
     background-color: #71a7d3;
     border: 1px solid #71a7d3;
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
     clear: both;
     color: white;
     margin: 3px;
@@ -316,7 +317,7 @@ div.m-area.m-right .m-queryattributes.opened #div-contenedor {
   position: -ms-sticky;
   position: -o-sticky;
   top: -1px;
-  font-weight: bold;
+  font-weight: var(--idee-font-weight-bold);
   background-color: #9DC6E8;
   color: white;
   min-width: 130px !important;
@@ -327,7 +328,7 @@ div.m-area.m-right .m-queryattributes.opened #div-contenedor {
 }
 
 .highlight-attrow{
-  font-weight: bolder;
+  font-weight: var(--idee-font-weight-bold);
   color: #0c4b82; 
   background-color: cyan !important;
 }
@@ -336,7 +337,7 @@ div.m-area.m-right .m-queryattributes.opened #div-contenedor {
 .m-dialog div#downloadFormat>button {
     background-color: #71a7d3 !important;
     border: 1px solid #71a7d3;
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
     color: white !important;
     margin: 3px;
     padding: 5px 8px;
@@ -367,6 +368,7 @@ div.m-area.m-right .m-queryattributes.opened #div-contenedor {
 }
 
 .m-queryattributes .m-queryattributes-table-loading span {
+  /* idee-token-exception: tamaño de glifo de icono */
   font-size: 3rem;
   animation: rotate 1s linear infinite;
 }
@@ -378,8 +380,8 @@ div.m-area.m-right .m-queryattributes.opened #div-contenedor {
 }
 
 .m-queryattributes #m-queryattributes-options-information-container #m-queryattributes-information-content > p {
-  font-weight: bold;
-  font-size: 16px;
+  font-weight: var(--idee-font-weight-bold);
+  font-size: var(--idee-font-size-body-m);
   text-align: center;
   margin: 0rem;
   background-color: #9DC6E8;
@@ -431,18 +433,21 @@ Information Window
 
 #m-queryattributes-information-content .lbl-descript{
   color:#71a7d3;
-  font-size: 0.80rem;
-  font-weight: bolder;
+  font-size: var(--idee-font-size-caption);
+  font-weight: var(--idee-font-weight-bold);
 }
 
 .m-queryattributes-information-button-link{
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
+  -webkit-border-radius: var(--idee-shape-border-radius);
+  -moz-border-radius: var(--idee-shape-border-radius);
+  border-radius: var(--idee-shape-border-radius);
   border: solid 1px #20538D;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.4);
+  /* idee-token-exception: relieve del botón */
   -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+  /* idee-token-exception: relieve del botón */
   -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+  /* idee-token-exception: relieve del botón */
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
   background: #71a7d3;
   color: #FFF;

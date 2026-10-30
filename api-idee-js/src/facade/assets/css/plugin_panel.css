@@ -9,9 +9,9 @@
 
 .m-plugin-panel-title {
   padding: 16px;
-  font-size: 18px;
-  font-family: 'Roboto';
-  font-weight: 500;
+  font-size: var(--idee-font-size-body-l);
+  font-family: var(--idee-font-family);
+  font-weight: var(--idee-font-weight-regular);
   color: var(--idee-color-primary-dark);
   white-space: normal;
   word-break: break-word;

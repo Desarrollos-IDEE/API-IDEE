@@ -47,7 +47,7 @@
         url('../fonts/g-cartografia.ttf?61783612') format('truetype'),
         url('../fonts/g-cartografia.woff?61783612') format('woff'),
         url('../fonts/g-cartografia.svg?61783612#g-cartografia') format('svg');
-    font-weight: normal;
+    font-weight: var(--idee-font-weight-regular);
     font-style: normal;
     font-display: block;
 }
@@ -203,10 +203,11 @@
 .g-cartografia-zoom-extension::after,
 .g-cartografia-zoom-mas::after,
 .g-cartografia-zoom-menos::after {
+    /* idee-token-exception: fuente de iconos */
     font-family: 'g-cartografia' !important;
     speak: never;
     font-style: normal;
-    font-weight: normal;
+    font-weight: var(--idee-font-weight-regular);
     font-variant: normal;
     text-transform: none;
     -webkit-font-smoothing: antialiased;

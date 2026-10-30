@@ -6,14 +6,13 @@
 
 div.m-control.m-container.m-background>button {
     background-color: var(--idee-color-primary) !important;
-    /* border: 2px solid white !important; */
-    border-radius: 5px;
+    border-radius: var(--idee-shape-border-radius);
     color: white;
     align-items: center;
     height: auto;
-    font-size: 12px !important;
+    font-size: var(--idee-font-size-caption) !important;
     padding: 10px !important;
-    font-weight: bold !important;
+    font-weight: var(--idee-font-weight-bold) !important;
     width: 75px !important;
 }
 

@@ -36,14 +36,14 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 }
 
 .m-control.m-container.m-vectorsmanagement select {
-    border-radius: 2px;
+    border-radius: var(--idee-shape-border-radius);
 }
 
 .m-panel.m-plugin-vectorsmanagement.opened .m-control.m-container.m-vectorsmanagement>div#m-vectorsmanagement-previews>div[id^="m-vectorsmanagement-"] {
     border: 5px solid var(--idee-color-neutral-20);
     box-sizing: border-box;
     float: left;
-    font-size: 0.9em;
+    font-size: var(--idee-font-size-caption);
     height: 110px;
     position: relative;
     width: 110px;
@@ -100,10 +100,10 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 
 #m-vectorsmanagement-layer-selector span,
 #m-vectorsmanagement-layer-selector-options span {
-    font-family: 'Roboto';
+    font-family: var(--idee-font-family);
     font-style: normal;
-    font-size: 16px;
-    font-weight: 400;
+    font-size: var(--idee-font-size-body-m);
+    font-weight: var(--idee-font-weight-regular);
     word-spacing: 1.2;
     width: 100%;
     white-space: nowrap;
@@ -118,7 +118,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     left: -1px;
     border: 1px solid var(--idee-color-neutral-40);
     border-bottom: none;
-    border-radius: 0 0 4px 4px;
+    border-radius: 0 0 var(--idee-shape-border-radius) var(--idee-shape-border-radius);
     background: var(--idee-color-white);
     max-height: 200px;
     overflow-y: auto;
@@ -159,13 +159,13 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     background-color: var(--idee-color-white);
     height: 30px;
     border: 1px solid var(--idee-color-neutral-40);
-    border-radius: 2px;
+    border-radius: var(--idee-shape-border-radius);
     color: var(--idee-color-neutral-60);
-    font-family: 'Roboto';
+    font-family: var(--idee-font-family);
     font-style: normal;
-    font-weight: 400;
+    font-weight: var(--idee-font-weight-regular);
     font-stretch: 100%;
-    font-size: 13px;
+    font-size: var(--idee-font-size-body-s);
 }
 
 #m-vectorsmanagement-layer-selector:hover,
@@ -227,7 +227,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 
 #edition-container>div {
     padding: 10px;
-    font-size: 1em;
+    font-size: inherit;
 }
 
 .m-vectorsmanagement-snap-container {
@@ -240,7 +240,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     flex-direction: column;
     gap: 10px;
     padding: 12px 14px;
-    font-size: 1em;
+    font-size: inherit;
     text-align: left;
 }
 
@@ -252,7 +252,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 }
 
 .m-vectorsmanagement-snap-title {
-    font-weight: bold;
+    font-weight: var(--idee-font-weight-bold);
     cursor: pointer;
 }
 
@@ -264,6 +264,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     width: 36px;
     height: 20px;
     margin: 0;
+    /* idee-token-exception: geometría del interruptor (switch) */
     border-radius: 10px;
     background-color: var(--idee-color-neutral-40);
     cursor: pointer;
@@ -280,6 +281,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     height: 16px;
     border-radius: 50%;
     background-color: var(--idee-color-white);
+    /* idee-token-exception: relieve del tirador del interruptor (switch) */
     box-shadow: 0 1px 2px rgba(0, 0, 0, .3);
     transition: transform .2s;
 }
@@ -305,7 +307,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     margin: 0;
     padding: 15px;
     border: 1px solid var(--idee-color-neutral-40);
-    border-radius: 5px;
+    border-radius: var(--idee-shape-border-radius);
 }
 
 .m-vectorsmanagement-snap-group:disabled {
@@ -353,7 +355,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
     padding: 2px 4px;
     text-align: right;
     border: solid 1px var(--idee-color-neutral-40);
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
 }
 
 #m-point-coordinates label {
@@ -369,7 +371,7 @@ div.m-panel.m-plugin-vectorsmanagement>div.m-panel-controls>div.m-control.m-cont
 #m-point-coordinates-srs.dropdown {
     margin: .35rem 0 .5rem 0;
     padding: 4px;
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
     border-color: var(--idee-color-neutral-40);
     width: 100%;
     height: 2rem;
@@ -455,13 +457,13 @@ button#cancel-clear-btn {
 #layerdrawing,
 #m-vectorsmanagement-help {
     background: var(--idee-color-neutral-20);
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
 }
 
 #layerdrawing.activate,
 #m-vectorsmanagement-help.activate {
     background: var(--idee-color-neutral-20);
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
 }
 
 .m-vectorsmanagement-creation-container,
@@ -548,7 +550,7 @@ table#attribute-table>tr>th {
     text-align: center;
     position: sticky;
     top: -1px;
-    font-weight: 700;
+    font-weight: var(--idee-font-weight-bold);
     background-color: var(--idee-color-primary);
     color: var(--idee-color-white);
     min-width: 130px !important;
@@ -590,7 +592,7 @@ table#attribute-table>tr>th>button {
 .m-vectorsmanagement-style-container,
 #m-point-coordinates {
     padding-top: 1rem;
-    font-size: 14px;
+    font-size: var(--idee-font-size-body-s);
 }
 
 .m-vectorsmanagement-style-container .m-vectorsmanagement-style-options {
@@ -610,13 +612,13 @@ table#attribute-table>tr>th>button {
 
 .m-vectorsmanagement-style-container #options {
     color: var(--idee-color-primary);
-    font-size: 14px;
+    font-size: var(--idee-font-size-body-s);
     width: 100%;
     border-bottom: 0;
     height: 64px;
     line-height: 2.7;
     text-align: center;
-    font-weight: 700;
+    font-weight: var(--idee-font-weight-bold);
 }
 
 .m-vectorsmanagement-style-container .row-container-title {
@@ -624,14 +626,14 @@ table#attribute-table>tr>th>button {
     margin: 0 0 .5rem 0;
     background-color: var(--idee-color-primary);
     padding: .25rem 0;
-    border-radius: 2px;
+    border-radius: var(--idee-shape-border-radius);
     opacity: 0.85;
     padding: 0.25rem .5rem;
 }
 
 .m-vectorsmanagement-style-container .row-container-title label {
     width: 100%;
-    font-weight: bold;
+    font-weight: var(--idee-font-weight-bold);
 }
 
 .m-vectorsmanagement-style-container .row-container {
@@ -648,7 +650,7 @@ table#attribute-table>tr>th>button {
 .m-vectorsmanagement-style-container .row-container select,
 .m-vectorsmanagement-style-container .row-container #textContent,
 .m-message #metreBuffer {
-    border-radius: 2px;
+    border-radius: var(--idee-shape-border-radius);
     min-width: 120px;
     width: 100%;
     height: 2rem;
@@ -674,7 +676,7 @@ table#attribute-table>tr>th>button {
     margin: 0;
     height: 2rem;
     width: 3rem;
-    border-radius: 2px;
+    border-radius: var(--idee-shape-border-radius);
 }
 
 .m-vectorsmanagement-style-container .row-container #textContent {
@@ -735,7 +737,7 @@ table#attribute-table>tr>th>button {
 .ol-profil .ol-inner {
     position: relative;
     padding: 0.5em;
-    font-size: 0.8em;
+    font-size: var(--idee-font-size-caption);
 }
 
 .ol-control-vector.ol-profil .ol-inner {
@@ -855,16 +857,16 @@ table#attribute-table>tr>th>button {
     width: 100%;
 
     margin-top: 10px;
-    font-size: 13px;
+    font-size: var(--idee-font-size-body-s);
     color: var(--idee-color-black);
-    font-weight: 600;
+    font-weight: var(--idee-font-weight-bold);
 }
 
 .ol-profil table span {
     display: block;
 
     padding: 8px 0;
-    font-size: 16px;
+    font-size: var(--idee-font-size-body-m);
     background-color: var(--idee-color-white);
 }
 
@@ -906,10 +908,10 @@ table#attribute-table>tr>th>button {
 .ol-profil p {
     text-align: center;
     margin: 0px;
-    font-weight: bold;
+    font-weight: var(--idee-font-weight-bold);
     color: var(--idee-color-primary-dark);
     padding: 10px 0;
-    font-size: 16px;
+    font-size: var(--idee-font-size-body-m);
     background-color: var(--idee-color-white);
 }
 
@@ -961,6 +963,7 @@ table#attribute-table>tr>th>button {
 table#attribute-table>tr>th>button,
 table#attribute-table>tr>th>button[class^="vectorsmanagement-icon-"]:before {
     color: var(--idee-color-primary-dark);
+    /* idee-token-exception: tamaño de glifo de icono */
     font-size: 20px;
     border: none;
     background-color: transparent;
@@ -970,6 +973,7 @@ table#attribute-table>tr>th>button[class^="vectorsmanagement-icon-"]:before {
 
 div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:before {
     color: var(--idee-color-white);
+    /* idee-token-exception: tamaño de glifo de icono */
     font-size: 20px;
     border: none;
     background-color: transparent;
@@ -1027,7 +1031,7 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
     height: auto;
     padding: .35rem .25rem;
     border: 1px solid #ced4da;
-    border-radius: 3px;
+    border-radius: var(--idee-shape-border-radius);
     background-color: #f5f5f5 !important;
     color: #343a40;
     white-space: normal;
@@ -1130,6 +1134,7 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
 }
 
 .m-control.m-container.m-modal>button.m-panel-btn.vectorsmanagement-icon-cancelar {
+    /* idee-token-exception: tamaño de glifo de icono */
     font-size: 20px;
     border: none;
     background-color: var(--idee-color-white);
@@ -1145,6 +1150,7 @@ div#popup-box>div.popup-section>div>span[class^="vectorsmanagement-icon-"]:befor
     z-index: 9999;
     border: none;
     background-color: var(--idee-color-primary);
+    /* idee-token-exception: tamaño de glifo de icono */
     font-size: 20px;
 }
 
@@ -1209,15 +1215,15 @@ th .vectorsmanagement-icon-papelera {
 #clear-layer-modal .popup-title,
 .m-plugin-vectorsmanagement.opened #popup-box>div>div.popup-title {
     background-color: var(--idee-color-primary);
-    border-radius: 5px;
+    border-radius: var(--idee-shape-border-radius);
     color: var(--idee-color-white);
     padding: 7px 10px 5px 10px;
-    font-weight: bold;
+    font-weight: var(--idee-font-weight-bold);
 }
 
 .m-plugin-vectorsmanagement.opened #popup-box>div>a {
     background-color: var(--idee-color-neutral-50);
-    border-radius: 5px;
+    border-radius: var(--idee-shape-border-radius);
     color: var(--idee-color-white);
     display: block;
     margin: auto;
@@ -1225,7 +1231,7 @@ th .vectorsmanagement-icon-papelera {
     text-align: center;
     text-decoration: none;
     width: 60px;
-    font-weight: bold;
+    font-weight: var(--idee-font-weight-bold);
 }
 
 .m-vectorsmanagement-controls,
@@ -1260,8 +1266,11 @@ th .vectorsmanagement-icon-papelera {
     background-color: var(--idee-color-white);
 }
 
+/* Se monta en document.body: no hereda la tipografía del contenedor del mapa */
 #vectorsmanagement-point-profile-container {
     width: fit-content;
+    font-family: var(--idee-font-family);
+    font-size: var(--idee-font-size-body-s);
 }
 
 div#popup-box {
@@ -1313,7 +1322,7 @@ div#popup-box {
   color: #263746;
   background: #fff;
   border: 1px solid #7c8994;
-  border-radius: 0.2rem;
+  border-radius: var(--idee-shape-border-radius);
   cursor: pointer;
 }
 
@@ -1330,7 +1339,7 @@ div#popup-box {
     flex-direction: column;
     gap: .5rem;
     padding: 1rem 0;
-    font-size: 14px;
+    font-size: var(--idee-font-size-body-s);
 }
 
 .m-vectorsmanagement-turf-header {
@@ -1342,7 +1351,7 @@ div#popup-box {
 
 .m-vectorsmanagement-turf-title {
     margin: 0;
-    font-weight: 700;
+    font-weight: var(--idee-font-weight-bold);
     color: var(--idee-color-primary);
 }
 
@@ -1351,7 +1360,7 @@ div#popup-box {
     height: 1.75rem;
     width: 1.75rem;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
     background: var(--idee-color-neutral-20);
     cursor: pointer;
 }
@@ -1366,13 +1375,13 @@ div#popup-box {
 
 .m-vectorsmanagement-turf-category {
     border: 1px solid var(--idee-color-neutral-40);
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
 }
 
 .m-vectorsmanagement-turf-category>summary {
     cursor: pointer;
     padding: .5rem;
-    font-weight: 700;
+    font-weight: var(--idee-font-weight-bold);
     color: var(--idee-color-primary);
 }
 
@@ -1394,7 +1403,7 @@ div#popup-box {
     min-height: 2rem;
     padding: .25rem .5rem;
     border: 1px solid var(--idee-color-primary);
-    border-radius: 2px;
+    border-radius: var(--idee-shape-border-radius);
     background-color: var(--idee-color-white);
     color: var(--idee-color-primary);
     text-align: left;
@@ -1417,7 +1426,7 @@ div#popup-box {
 .m-vectorsmanagement-turf-selections {
     padding: .5rem;
     border: 1px solid var(--idee-color-neutral-40);
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
     background-color: var(--idee-color-neutral-10, #f5f5f5);
 }
 
@@ -1430,7 +1439,7 @@ div#popup-box {
 .m-vectorsmanagement-turf-selections-title,
 .m-vectorsmanagement-turf-fields-title {
     margin: 0;
-    font-weight: 700;
+    font-weight: var(--idee-font-weight-bold);
 }
 
 .m-vectorsmanagement-turf-selections-list {
@@ -1487,8 +1496,8 @@ div#popup-box {
 
 .m-vectorsmanagement-turf-opform-title {
     margin: 0;
-    font-size: 15px;
-    font-weight: 700;
+    font-size: var(--idee-font-size-body-m);
+    font-weight: var(--idee-font-weight-bold);
     color: var(--idee-color-primary);
 }
 
@@ -1500,18 +1509,18 @@ div#popup-box {
     margin: 0;
     padding: .75rem;
     border: 1px solid var(--idee-color-neutral-40);
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
 }
 
 .m-vectorsmanagement-turf-group>legend {
     padding: 0 .25rem;
-    font-weight: 700;
+    font-weight: var(--idee-font-weight-bold);
 }
 
 .m-vectorsmanagement-turf-group .m-vectorsmanagement-turf-field-help,
 .m-vectorsmanagement-turf-entry-summary {
     margin: 0;
-    font-size: 13px;
+    font-size: var(--idee-font-size-body-s);
 }
 
 .m-vectorsmanagement-turf-entry {
@@ -1547,7 +1556,7 @@ div#popup-box {
     max-width: 100%;
     height: 2rem;
     border: 1px solid var(--idee-color-neutral-40);
-    border-radius: 2px;
+    border-radius: var(--idee-shape-border-radius);
 }
 
 .m-vectorsmanagement-turf-schema {
@@ -1576,10 +1585,10 @@ div#popup-box {
 .m-vectorsmanagement-turf-run {
     min-height: 2rem;
     border: 1px solid var(--idee-color-primary);
-    border-radius: 2px;
+    border-radius: var(--idee-shape-border-radius);
     background-color: var(--idee-color-primary);
     color: var(--idee-color-white);
-    font-weight: 700;
+    font-weight: var(--idee-font-weight-bold);
     cursor: pointer;
 }
 
@@ -1609,13 +1618,13 @@ div#popup-box {
 }
 
 .m-vectorsmanagement-turf-field>label {
-    font-weight: 700;
+    font-weight: var(--idee-font-weight-bold);
 }
 
 .m-vectorsmanagement-turf-field>input[type=number],
 .m-vectorsmanagement-turf-field>select {
     height: 2rem;
-    border-radius: 2px;
+    border-radius: var(--idee-shape-border-radius);
 }
 
 .m-vectorsmanagement-turf-field>input:invalid {

@@ -5,18 +5,19 @@
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
+    /* idee-token-exception: píldora, radio igual a la mitad de la altura del control */
     border-radius: 20px;
     gap: 0.25em;
     padding: 0 .75em !important;
     margin: 0;
     width: 100%;
     min-width: 132px;
-    font-size: 12px;
+    font-size: var(--idee-font-size-caption);
     vertical-align: middle;
     white-space: pre;
     order: 3;
-    font-weight: normal;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
+    font-weight: var(--idee-font-weight-regular);
+    box-shadow: var(--idee-shape-box-shadow);
 }
 
 .m-control.m-scale-container:before {
@@ -26,7 +27,7 @@
 
 .m-control.m-scale-container>.m-unit:before {
     color: #a35d38;
-    font-size: 12px !important;
+    font-size: var(--idee-font-size-caption) !important;
     margin-right: 5px;
 }
 
@@ -77,7 +78,7 @@
 
 @supports (-ms-ime-align:auto) {
     div.m-panel-controls>div.m-control.m-scale-container>div.m-scale#m-scale-span {
-        font-size: 10.5px;
+        font-size: var(--idee-font-size-caption);
         line-height: 1.3;
     }
 

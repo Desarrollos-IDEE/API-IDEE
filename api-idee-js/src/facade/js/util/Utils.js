@@ -12,6 +12,7 @@ import { getValue } from '../i18n/language';
 import { DOTS_PER_INCH, INCHES_PER_UNIT } from '../units';
 import * as WKT from '../geom/WKT';
 import * as dialog from '../dialog';
+import { readDesignTokenCssVariables } from '../theme/tokens';
 
 /**
  * Este método obtiene las extensiones de los objetos geográficos especificados
@@ -2255,6 +2256,21 @@ export const parseUrlParams = (stringToParse, objectName, fieldSeparator = ';', 
     }
   });
   return result;
+};
+
+/**
+ * Copia las variables CSS de los tokens de diseño (--idee-*) del documento actual
+ * en otro documento, por ejemplo una ventana abierta con window.open.
+ *
+ * @function
+ * @param {Document} targetDocument Documento de destino.
+ * @api
+ */
+export const copyDesignTokenCssVariables = (targetDocument) => {
+  const variables = readDesignTokenCssVariables(document);
+  Object.keys(variables).forEach((name) => {
+    targetDocument.documentElement.style.setProperty(name, variables[name]);
+  });
 };
 
 /**
