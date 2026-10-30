@@ -3,7 +3,7 @@
  */
 import { useproxy } from 'IDEE/api-idee';
 import {
-  isUndefined, isArray, isFunction, isDynamic, drawDynamicStyle,
+  isUndefined, isArray, isFunction, isNullOrEmpty, isDynamic, drawDynamicStyle,
   concatUrlPaths, addParameters, getImageSize,
 } from 'IDEE/util/Utils';
 import OLFeature from 'ol/Feature';
@@ -15,6 +15,7 @@ import { toContext as toContextRender } from 'ol/render';
 import OLStyleFontsSymbol from '../ext/OLStyleFontSymbol';
 import Simple from './Simple';
 import { getLineStyle, getPointStyle, getPolygonStyle } from './builder';
+import { toGenericFlatStyle } from './FlatStyleTranslator';
 
 /**
  * Objetos con los tipos de geometrías.
@@ -321,6 +322,18 @@ class Generic extends Simple {
       }
       return styles;
     };
+  }
+
+  /**
+   * Este método devuelve el estilo plano (WebGL) equivalente.
+   *
+   * @public
+   * @function
+   * @returns {Array<Object>|null} Reglas de estilo plano, o nulo.
+   * @api
+   */
+  toFlatStyle() {
+    return isNullOrEmpty(this.vendorOptions) ? toGenericFlatStyle(this.options_) : null;
   }
 
   /**

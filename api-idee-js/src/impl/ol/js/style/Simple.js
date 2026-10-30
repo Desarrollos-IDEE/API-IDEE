@@ -6,6 +6,7 @@ import RenderFeature from 'ol/render/Feature';
 import { isNullOrEmpty, isFunction, extendsObj } from 'IDEE/util/Utils';
 import Style from './Style';
 import Feature from '../feature/Feature';
+import { setFlatStyle } from '../webgl/WebGLLayerProvider';
 
 const templateRegexp = /^\{\{([^}]+)\}\}$/;
 
@@ -51,12 +52,33 @@ class Simple extends Style {
    */
   applyToLayer(layer) {
     this.layer_ = layer;
+    const layerImpl = layer.getImpl();
+    if (layerImpl.isWebGL?.()) {
+      const flatStyle = this.toFlatStyle();
+      if (!isNullOrEmpty(flatStyle)) {
+        setFlatStyle(layerImpl.getLayer(), flatStyle);
+        return;
+      }
+      layerImpl.useCanvasRenderer('webgl_fallback_style');
+    }
     // we will apply the style on the ol3 layer
-    const olLayer = layer.getImpl().getLayer();
+    const olLayer = layerImpl.getLayer();
     if (!isNullOrEmpty(olLayer)) {
       olLayer.setStyle(this.olStyleFn_);
       // layer.getFeatures().forEach(this.applyToFeature, this);
     }
+  }
+
+  /**
+   * Devuelve el estilo plano (WebGL) equivalente al estilo.
+   *
+   * @public
+   * @function
+   * @returns {Array<Object>|Object|null} Estilo plano de OpenLayers, o nulo.
+   * @api
+   */
+  toFlatStyle() {
+    return null;
   }
 
   /**
