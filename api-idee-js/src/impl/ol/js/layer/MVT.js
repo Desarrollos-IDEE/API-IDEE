@@ -3,7 +3,6 @@
  * @module IDEE/impl/layer/MVT
  */
 import OLSourceVectorTile from 'ol/source/VectorTile';
-import OLLayerVectorTile from 'ol/layer/VectorTile';
 import {
   isNullOrEmpty, extend, isObject, getZDirectionFunction,
 } from 'IDEE/util/Utils';
@@ -18,6 +17,7 @@ import { createXYZ } from 'ol/tilegrid';
 import { mode } from 'IDEE/layer/MVT';
 import Layer from './Layer';
 import Vector from './Vector';
+import { createVectorTileLayer } from '../webgl/WebGLLayerProvider';
 import ImplUtils from '../util/Utils';
 
 /**
@@ -235,10 +235,10 @@ class MVT extends Vector {
     source.on(TileEventType.TILELOADERROR, (evt) => this.checkAllTilesLoaded_(evt));
     source.on(TileEventType.TILELOADEND, (evt) => this.checkAllTilesLoaded_(evt));
 
-    this.olLayer = new OLLayerVectorTile(extend({
+    this.olLayer = createVectorTileLayer(extend({
       source,
       extent,
-    }, this.vendorOptions_, true));
+    }, this.vendorOptions_, true), this.renderer_);
     this.olLayer.setMaxZoom(this.maxZoom);
     this.olLayer.setMinZoom(this.minZoom);
 

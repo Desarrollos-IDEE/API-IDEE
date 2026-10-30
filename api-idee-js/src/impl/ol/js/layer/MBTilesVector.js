@@ -9,7 +9,6 @@ import {
 import { get as getProj, transformExtent } from 'ol/proj';
 // import { inflate } from 'pako';
 // import OLLayerTile from 'ol/layer/Tile';
-import OLLayerVectorTile from 'ol/layer/VectorTile';
 import OLSourceVectorTile from 'ol/source/VectorTile';
 import TileGrid from 'ol/tilegrid/TileGrid';
 import { getBottomLeft, getWidth } from 'ol/extent';
@@ -22,6 +21,7 @@ import TileState from 'ol/TileState';
 import ImplMap from '../Map';
 import ImplUtils from '../util/Utils';
 import Vector from './Vector';
+import { createVectorTileLayer } from '../webgl/WebGLLayerProvider';
 
 const autoRefreshOptions = new WeakMap();
 
@@ -201,11 +201,11 @@ class MBTilesVector extends Vector {
     const { code } = this.map.getProjection();
     const projection = getProj('EPSG:3857');
     const extent = projection.getExtent();
-    this.olLayer = new OLLayerVectorTile(extend({
+    this.olLayer = createVectorTileLayer(extend({
       visible: this.visibility,
       opacity: this.opacity_,
       zIndex: this.zIndex_,
-    }, this.vendorOptions_, true));
+    }, this.vendorOptions_, true), this.renderer_);
 
     if (!isNullOrEmpty(this.options.minScale)) this.setMinScale(this.options.minScale);
     if (!isNullOrEmpty(this.options.maxScale)) this.setMaxScale(this.options.maxScale);
@@ -460,6 +460,7 @@ class MBTilesVector extends Vector {
     this.facadeLayer_?.stopAutoRefresh();
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.olLayer)) {
+      this.disposeWebGLLayer_();
       olMap.removeLayer(this.olLayer);
       this.olLayer = null;
     }
