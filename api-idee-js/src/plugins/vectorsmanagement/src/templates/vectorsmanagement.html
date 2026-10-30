@@ -1,9 +1,9 @@
 <div id="plugin-panel-content-vectorsmanagement" class="m-plugin-panel-content" aria-label="Plugin vectorsmanagement" role="menuitem">
     <section tabindex="0" class="m-vectorsmanagement-selection-layer">
         <!-- Selección de capa -->
-        <div id="m-vectorsmanagement-layer-selector" class="vectorsmanagement-icon-selector-arrow-up">
+        <div id="m-vectorsmanagement-layer-selector" class="vectorsmanagement-icon-selector-arrow-down">
             <span id="m-vectorsmanagement-layer-selected">{{translations.selectLayerDefault}}...</span>
-            <div id="m-vectorsmanagement-layer-selector-options">
+            <div id="m-vectorsmanagement-layer-selector-options" class="closed">
               {{#each layer}}
                   <span data-value="{{value}}">{{text}}</span>
               {{/each}}

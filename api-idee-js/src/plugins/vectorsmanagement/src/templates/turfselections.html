@@ -1,0 +1,16 @@
+<div class="m-vectorsmanagement-turf-selections-content">
+    <p class="m-vectorsmanagement-turf-selections-title">{{translations.title}}</p>
+    {{#if items.length}}
+    <ul class="m-vectorsmanagement-turf-selections-list">
+        {{#each items}}
+        <li class="m-vectorsmanagement-turf-selection{{#if stale}} m-vectorsmanagement-turf-selection-stale{{/if}}">
+            <span>{{text}}</span>
+            <button type="button" tabindex="{{order}}" data-action="remove-selection" data-layer="{{id}}" aria-label="{{removeLabel}}">{{removeText}}</button>
+        </li>
+        {{/each}}
+    </ul>
+    <button type="button" tabindex="{{order}}" class="m-vectorsmanagement-turf-link" data-action="clear-selections">{{translations.clear}}</button>
+    {{else}}
+    <p class="m-vectorsmanagement-turf-field-help">{{translations.empty}}</p>
+    {{/if}}
+</div>
