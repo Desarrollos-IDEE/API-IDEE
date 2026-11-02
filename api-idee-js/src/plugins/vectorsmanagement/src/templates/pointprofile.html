@@ -4,14 +4,14 @@
     <div style="font-size: smaller;">
         {{#if dist}}
         <div tabindex="0" style="border-bottom: 1px solid grey;">
-            <p style="font-weight: bold;">{{translations.point_profile_map_coordinates}}</p>
+            <p style="font-weight: var(--idee-font-weight-bold);">{{translations.point_profile_map_coordinates}}</p>
             <p>{{mapCoordX}}</p>
             <p>{{mapCoordY}}</p>
             <p>{{mapProj}}</p>
         </div>
         {{/if}}
         <div tabindex="0" style="border-bottom: 1px solid grey;">
-            <p style="font-weight: bold;">{{translations.point_profile_geographic_coordinates}}</p>
+            <p style="font-weight: var(--idee-font-weight-bold);">{{translations.point_profile_geographic_coordinates}}</p>
             <p>{{translations.longitude}}: {{geographicCoordX}}</p>
             <p>{{translations.latitude}}: {{geographicCoordY}}</p>
             <p>{{geographicProj}}</p>

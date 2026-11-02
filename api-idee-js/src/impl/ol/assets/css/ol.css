@@ -2,7 +2,7 @@
 
     .m-api-idee-container .ol-box {
         box-sizing: border-box;
-        border-radius: 2px;
+        border-radius: var(--idee-shape-border-radius);
         border: 2px solid blue;
     }
 
@@ -16,18 +16,18 @@
     .m-api-idee-container .ol-scale-line {
         z-index: 2;
         background-color: transparent;
-        border-radius: 4px;
+        border-radius: var(--idee-shape-border-radius);
         padding: 0 2px;
 
         color: #404040;
         border-color: #404040;
-        font-weight: bold;
+        font-weight: var(--idee-font-weight-bold);
     }
 
     .m-api-idee-container .ol-scale-line .ol-scale-line-inner {
         border: 2px solid;
         border-top: none;
-        font-size: 10px;
+        font-size: var(--idee-font-size-caption);
         text-align: center;
         margin: 1px;
         will-change: contents, width;
@@ -63,7 +63,7 @@
     .m-api-idee-container .ol-scale-step-text {
         position: absolute;
         bottom: -5px;
-        font-size: 10px;
+        font-size: var(--idee-font-size-caption);
         line-height: 1;
         white-space: nowrap;
         z-index: 11;
@@ -73,7 +73,7 @@
 
     .m-api-idee-container .ol-scale-text {
         position: absolute;
-        font-size: 14px;
+        font-size: var(--idee-font-size-body-s);
         text-align: center;
         bottom: 25px;
         color: #000000;
@@ -146,7 +146,7 @@
     .m-api-idee-container .ol-control {
         position: absolute;
         background-color: rgba(255, 255, 255, 0.4);
-        border-radius: 4px;
+        border-radius: var(--idee-shape-border-radius);
         /* padding: 2px; */
     }
 
@@ -191,12 +191,14 @@
 
     .m-api-idee-container .ol-compass {
         display: block;
-        font-weight: normal;
+        font-weight: var(--idee-font-weight-regular);
+        /* idee-token-exception: tamaño del glifo de la brújula */
         font-size: 1.2em;
         will-change: transform;
     }
 
     .m-api-idee-container .ol-touch .ol-control button {
+        /* idee-token-exception: ampliación relativa de los glifos en pantallas táctiles */
         font-size: 1.5em;
     }
 
@@ -257,7 +259,7 @@
     .m-api-idee-container .ol-attribution.ol-uncollapsible {
         bottom: 0;
         right: 0;
-        border-radius: 4px 0 0;
+        border-radius: var(--idee-shape-border-radius) 0 0;
     }
 
     .m-api-idee-container .ol-attribution.ol-uncollapsible img {
@@ -283,6 +285,7 @@
         width: 3px;
 
         background-color: #FFFFFF;
+        /* idee-token-exception: extremos redondeados del carril del zoomslider (3px de ancho) */
         border-radius: 8px;
         z-index: 5;
         overflow: visible;
@@ -341,12 +344,12 @@
     }
 
     .m-api-idee-container .ol-zoom .ol-zoom-in {
-        border-radius: 2px 2px 0 0;
+        border-radius: var(--idee-shape-border-radius) var(--idee-shape-border-radius) 0 0;
         border: 2px solid white;
     }
 
     .m-api-idee-container .ol-zoom .ol-zoom-out {
-        border-radius: 0 0 2px 2px;
+        border-radius: 0 0 var(--idee-shape-border-radius) var(--idee-shape-border-radius);
         border: 2px solid white;
         border-top: none;
     }
@@ -359,11 +362,12 @@
         padding: 0px;
         color: white !important;
         opacity: .75;
-        font-size: 18px !important;
+        font-size: var(--idee-font-size-body-l) !important;
         text-align: center;
         cursor: pointer;
         width: 30px !important;
         height: 30px !important;
+        /* idee-token-exception: sombra propia de los botones de zoom */
         box-shadow: 0px 1px 3px 0px #CACACA;
     }
 
@@ -379,7 +383,7 @@
     .m-api-idee-container .ol-overviewmap.ol-uncollapsible {
         bottom: 0;
         left: 0;
-        border-radius: 0 4px 0 0;
+        border-radius: 0 var(--idee-shape-border-radius) 0 0;
     }
 
     .m-api-idee-container .ol-overviewmap .ol-overviewmap-map,

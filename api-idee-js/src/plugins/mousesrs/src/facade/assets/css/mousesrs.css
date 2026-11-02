@@ -6,8 +6,9 @@
     align-items: center;
     gap: 8px;
     padding: 5px 9px;
-    font-size: 12px;
+    font-size: var(--idee-font-size-caption);
     border: 2px solid var(--idee-color-white);
+    /* idee-token-exception: píldora, radio igual a la mitad de la altura del control */
     border-radius: 16px;
     background: var(--idee-color-primary);
     color: var(--idee-color-white);
@@ -71,8 +72,8 @@
     background: var(--idee-color-white);
     border: 1px solid var(--idee-color-neutral-40);
     border-top: none;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, .15);
-    font-size: .8rem;
+    box-shadow: var(--idee-shape-box-shadow);
+    font-size: var(--idee-font-size-caption);
     z-index: 1001;
 }
 
@@ -83,7 +84,7 @@
 .m-mousesrs-srs-container .m-mousesrs-srs-selector li a {
     color: var(--idee-color-neutral-60);
     display: block;
-    font-size: .8rem;
+    font-size: var(--idee-font-size-caption);
     line-height: 1.8;
     padding: 4px 8px;
     text-decoration: none;

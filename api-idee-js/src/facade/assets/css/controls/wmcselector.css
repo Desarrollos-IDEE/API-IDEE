@@ -7,6 +7,7 @@
    flex-wrap: nowrap;
    flex: 0 0 auto;
    flex-shrink: 0;
+   /* idee-token-exception: píldora, radio igual a la mitad de la altura del control */
    border-radius: 20px;
    gap: 4px;
    padding: 0 8px 0 10px !important;
@@ -14,12 +15,12 @@
    width: max-content;
    max-width: none;
    min-width: max-content;
-   font-size: 12px;
-   font-weight: normal;
+   font-size: var(--idee-font-size-caption);
+   font-weight: var(--idee-font-weight-regular);
    vertical-align: middle;
    white-space: nowrap;
    order: 2;
-   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
+   box-shadow: var(--idee-shape-box-shadow);
    overflow: visible;
 }
 
@@ -51,8 +52,8 @@
    background-color: transparent !important;
    color: var(--font-color, #fff);
    font-family: inherit;
-   font-size: 12px;
-   font-weight: normal;
+   font-size: var(--idee-font-size-caption);
+   font-weight: var(--idee-font-weight-regular);
    text-decoration: none;
    outline: none;
    cursor: pointer;
@@ -93,7 +94,9 @@
 
    .m-panel.m-map-info.m-with-mouse:not(.m-with-scale)>div.m-panel-controls>div.m-control.m-wmcselector-container,
    .m-control-panel.m-map-info.m-with-mouse:not(.m-with-scale)>div.m-controls-panel>div.m-control.m-wmcselector-container {
+      /* idee-token-exception: píldora, radio igual a la mitad de la altura del control */
       border-top-left-radius: 20px !important;
+      /* idee-token-exception: píldora, radio igual a la mitad de la altura del control */
       border-bottom-left-radius: 20px !important;
    }
 }

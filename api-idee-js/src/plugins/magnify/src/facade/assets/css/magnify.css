@@ -6,7 +6,7 @@
 [class*=' g-cartografia-btn-magnify-'] {
   speak: none;
   font-style: normal;
-  font-weight: normal;
+  font-weight: var(--idee-font-weight-regular);
   font-variant: normal;
   text-transform: none;
   line-height: 1;
@@ -52,7 +52,7 @@
 .m-magnify-container {
   width: 100%;
   box-sizing: border-box;
-  font-family: Muli, sans-serif;
+  font-family: var(--idee-font-family);
   color: var(--idee-color-neutral-70);
 }
 
@@ -112,7 +112,7 @@
   text-align: center;
   height: 39px;
   border-bottom: 1px solid var(--idee-color-neutral-20);
-  font-size: 15px;
+  font-size: var(--idee-font-size-body-m);
   background-color: var(--idee-color-primary) !important;
   color: var(--idee-color-white) !important;
 }
@@ -127,7 +127,7 @@
   border: none;
   padding-left: 5px;
   height: 30px;
-  font-size: 20px;
+  font-size: var(--idee-font-size-body-l);
 }
 
 input::-webkit-inner-spin-button {
@@ -141,6 +141,7 @@ input::-webkit-inner-spin-button {
   height: 150px;
   width: 150px;
   overflow: hidden;
+  /* idee-token-exception: efecto óptico de la lupa */
   box-shadow: 5px 5px 5px color-mix(in srgb, var(--idee-color-black) 50%, transparent);
   position: relative;
   z-index: 0;
@@ -148,6 +149,7 @@ input::-webkit-inner-spin-button {
 
 .ol-overlay-container .ol-magnify:before {
   border-radius: 50%;
+  /* idee-token-exception: efecto óptico de la lupa */
   box-shadow: 0 0 40px 2px color-mix(in srgb, var(--idee-color-black) 25%, transparent) inset;
   content: "";
   display: block;
@@ -161,6 +163,7 @@ input::-webkit-inner-spin-button {
 
 .ol-overlay-container .ol-magnify:after {
   border-radius: 50%;
+  /* idee-token-exception: efecto óptico de la lupa */
   box-shadow: 0 0 20px 7px var(--idee-color-white);
   content: "";
   display: block;

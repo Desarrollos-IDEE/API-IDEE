@@ -1,9 +1,10 @@
 [class^="vectorsmanagement-"],
 [class*=" vectorsmanagement-"] {
+    /* idee-token-exception: fuente de iconos */
     font-family: 'vectorsmanagement' !important;
     speak: none;
     font-style: normal;
-    font-weight: normal;
+    font-weight: var(--idee-font-weight-regular);
     font-variant: normal;
     text-transform: none;
     line-height: 1;

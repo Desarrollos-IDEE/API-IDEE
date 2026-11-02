@@ -2,8 +2,8 @@
 * General *
 ***********/
 #plugin-panel-locator .m-plugin-panel-content label {
-    font-size: 14px;
-    font-weight: 400;
+    font-size: var(--idee-font-size-body-s);
+    font-weight: var(--idee-font-weight-regular);
 }
 
 /*******************
@@ -165,8 +165,8 @@
 
 #plugin-panel-locator .parcela--input {
     color: #868e96;
-    font-size: 12px;
-    font-weight: 400;
+    font-size: var(--idee-font-size-caption);
+    font-weight: var(--idee-font-weight-regular);
     text-align: center;
 }
 
@@ -213,7 +213,7 @@
     max-height: 2rem;
     min-height: 2rem;
     height: 2rem;
-    font-size: 14px;
+    font-size: var(--idee-font-size-body-s);
     padding: 0 .5rem;
     margin: 0;
     border-color: #ADB5BD;
@@ -226,10 +226,11 @@
     align-items: start;
     overflow: auto;
     background: transparent;
-    border-radius: 2px;
+    border-radius: var(--idee-shape-border-radius);
 }
 
 .m-ignsearchlocator-search-frame>.m-ignsearch-results.locator-icon-spinner::before {
+    /* idee-token-exception: tamaño de glifo de icono */
     font-size: 24px;
     text-align: center;
     width: 100%;
@@ -248,8 +249,8 @@
 
 #plugin-panel-locator .m-ignsearch-results>.m-ignsearch-results-list li {
     color: #ADB5BD;
-    font-size: 12px;
-    font-weight: 400;
+    font-size: var(--idee-font-size-caption);
+    font-weight: var(--idee-font-weight-regular);
     cursor: pointer;
     transition: all 0.3s ease;
     overflow-wrap: break-word;

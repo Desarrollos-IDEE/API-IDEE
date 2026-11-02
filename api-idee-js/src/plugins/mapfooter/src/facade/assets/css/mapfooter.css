@@ -6,7 +6,7 @@
 [class*=' g-cartografia-btn-mapfooter-'] {
   speak: none;
   font-style: normal;
-  font-weight: normal;
+  font-weight: var(--idee-font-weight-regular);
   font-variant: normal;
   text-transform: none;
   line-height: 1;
@@ -89,9 +89,9 @@
   margin: 0 !important;
   padding: 0 6px 0 8px !important;
   opacity: 1 !important;
-  font-size: 12px !important;
-  font-weight: normal !important;
-  font-family: sans-serif !important;
+  font-size: var(--idee-font-size-caption) !important;
+  font-weight: var(--idee-font-weight-regular) !important;
+  font-family: var(--idee-font-family) !important;
   line-height: 25px !important;
   letter-spacing: normal !important;
   text-align: left !important;
@@ -99,7 +99,7 @@
   border-bottom-left-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
   border-top-left-radius: 0 !important;
-  border-top-right-radius: 10px !important;
+  border-top-right-radius: calc(var(--idee-shape-border-radius) * 2) !important;
   background-image: linear-gradient(var(--idee-color-neutral-40), var(--idee-color-white), var(--idee-color-white)) !important;
   background-color: var(--idee-color-white) !important;
   border-top: solid 2px var(--idee-color-primary) !important;
@@ -107,6 +107,7 @@
   border-bottom: none !important;
   border-left: none !important;
   color: var(--idee-color-neutral-60) !important;
+  /* idee-token-exception: sombra orientada hacia arriba del botón del pie */
   box-shadow: 1px -2px 4px color-mix(in srgb, var(--idee-color-black) 20%, transparent) !important;
   display: flex !important;
   flex-direction: row !important;
@@ -155,7 +156,7 @@
 }
 
 .m-mapfooter-btn-text {
-  font-size: 12px !important;
+  font-size: var(--idee-font-size-caption) !important;
   line-height: 1 !important;
   color: inherit !important;
 }
@@ -215,7 +216,7 @@
   box-sizing: border-box !important;
   color: var(--idee-color-neutral-70) !important;
   text-align: center !important;
-  font-size: 0.9em !important;
+  font-size: var(--idee-font-size-caption) !important;
   line-height: 1.35 !important;
   padding: 4px 8px 0 !important;
   display: block !important;

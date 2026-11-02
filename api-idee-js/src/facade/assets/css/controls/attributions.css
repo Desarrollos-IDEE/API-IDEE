@@ -3,12 +3,12 @@
 }
 
 .m-control-panel.m-attributions.opened .attributionElements span {
-    font-weight: bold;
+    font-weight: var(--idee-font-weight-bold);
     margin-right: 5px;
 }
 
 .m-control-panel.m-attributions.opened {
-    font-size: 12px;
+    font-size: var(--idee-font-size-caption);
     color: #000 !important;
     white-space: nowrap;
 }
@@ -28,8 +28,8 @@
 .m-control-panel.m-attributions.opened header h1 {
     color: var(--idee-color-primary-dark) !important;
     text-align: left;
-    font-size: 18px;
-    font-weight: bold;
+    font-size: var(--idee-font-size-body-l);
+    font-weight: var(--idee-font-weight-bold);
     margin: 0;
 }
 
@@ -77,7 +77,7 @@
 
 .m-control-panel.m-attributions-inline.opened header,
 .m-control-panel.m-attributions-inline.opened .attributionElements {
-    font-size: x-small;
+    font-size: var(--idee-font-size-caption);
     width: fit-content;
 }
 
@@ -100,7 +100,7 @@
     outline-color: var(--idee-color-primary) !important;
     outline-width: 4px;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: var(--idee-font-weight-regular);
 }
 
 .m-control-panel.m-attributions.opened .attributionElements a:hover {
@@ -110,7 +110,7 @@
 
 .m-control-panel.m-attributions.opened .attributionElements a span {
     color: #000000 !important;
-    font-weight: bold;
+    font-weight: var(--idee-font-weight-bold);
     margin-right: 4px;
     text-decoration: none;
     display: inline-block;
