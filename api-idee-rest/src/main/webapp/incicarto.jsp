@@ -68,6 +68,15 @@
                             </select>
                         </div>
                         <div>
+                            <label for="selectProfileGraphs" title="Gráficas del perfil topográfico. Por defecto: profile">Gráficas del perfil topográfico "profileGraphs"</label>
+                            <select name="profileGraphs" id="selectProfileGraphs">
+                                <option value="" selected></option>
+                                <option value="profile">profile</option>
+                                <option value="elevationGain">elevationGain</option>
+                                <option value="profile,elevationGain">profile,elevationGain</option>
+                            </select>
+                        </div>
+                        <div>
                             <label for="inputErrorList">Lista de errores "errorList" (separado por ,)</label>
                             <input type="text" name="errorList" id="inputErrorList"
                                 value="No especificado,Omisión,Otros" />
@@ -170,6 +179,7 @@
                             const inputOrder = document.getElementById('inputOrder');
                             const inputPrefixSubject = document.getElementById('inputPrefixSubject');
                             const selectInterfazmode = document.getElementById('selectInterfazmode');
+                            const selectProfileGraphs = document.getElementById('selectProfileGraphs');
                             const inputErrorList = document.getElementById('inputErrorList');
                             const inputProductList = document.getElementById('inputProductList');
                             const inputBuzones = document.getElementById('inputBuzones');
@@ -207,6 +217,8 @@
 
                                 if (inputPrefixSubject.value !== '') options.prefixSubject = inputPrefixSubject.value; // 'Incidencia cartogrfica - '
 
+                                if (selectProfileGraphs.value !== '') options.profileGraphs = selectProfileGraphs.value; // 'profile,elevationGain'
+
                                 if (inputErrorList.value !== '') options.errorList = inputErrorList.value.split(','); // ['No especificado', 'Omisión', 'Otros']
 
                                 if (inputProductList.value !== '') options.productList = inputProductList.value.split(','); // ['No especificado', 'IGN Base', 'Otros productos'];
@@ -226,6 +238,7 @@
                                 inputTooltip,
                                 inputPrefixSubject,
                                 selectInterfazmode,
+                                selectProfileGraphs,
                                 inputErrorList,
                                 inputProductList,
                                 inputBuzones,

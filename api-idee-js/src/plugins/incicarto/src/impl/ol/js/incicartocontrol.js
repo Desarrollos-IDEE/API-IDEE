@@ -1188,7 +1188,8 @@ export default class IncicartoControl extends IDEE.impl.Control {
       .then((response) => {
         if (response) {
           if (calculateProfile) {
-            this.showProfile(response);
+            if (typeof callback === 'function') callback(response);
+            else this.showProfile(response);
           } else if (calculateProfilePoints) {
             if (typeof callback === 'function') callback(response);
           } else {
@@ -1225,11 +1226,12 @@ export default class IncicartoControl extends IDEE.impl.Control {
     this.calculateElevations(feature, false, true, callback);
   }
 
-  calculateProfile(feature) {
-    this.calculateElevations(feature, true);
+  calculateProfile(feature, graphs) {
+    const showProfile = (response) => this.showProfile(response, graphs);
+    this.calculateElevations(feature, true, false, showProfile);
   }
 
-  showProfile(coord) {
+  showProfile(coord, graphs) {
     const lineString = new ol.geom.LineString(coord);
     const feature = new ol.Feature({
       geometry: lineString,
@@ -1243,12 +1245,14 @@ export default class IncicartoControl extends IDEE.impl.Control {
         altitude: getValue('altitude'),
         distance: getValue('distanceT'),
         distanceP: getValue('distanceP'),
+        elevationGain: getValue('elevationGain'),
         ytitle: getValue('ytitle'),
         xtitle: getValue('xtitle'),
         altitudeUnits: 'm',
         distanceUnitsM: 'm',
         distanceUnitsKM: 'km',
       },
+      graphs,
       title: getValue('profile'),
       pointLayer: this.source_,
       width: 400,

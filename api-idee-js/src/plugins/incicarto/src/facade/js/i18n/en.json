@@ -48,6 +48,7 @@
   "altitude": "Altitude",
   "distanceT": "Total distance",
   "distanceP": "Partial distance",
+  "elevationGain": "Cumulative elevation gain",
   "ytitle": "Altitude (m)",
   "xtitle": "Distance (km)",
   "vector_layers": "Vector layers",
