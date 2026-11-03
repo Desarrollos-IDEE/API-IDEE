@@ -104,8 +104,8 @@
                         <option value=eyes selected="selected">eyes</option>
                         <option value=radio>radio</option>
                     </select>
-                    <label for="inputPrecharged">Precharged</label>
-                    <input type="text" name="precharged" id="inputPrecharged">
+                    <label for="inputPrecharged" title="Objeto JSON o URL a un JSON con el catálogo precargado. Si se deja vacío se usa el JSON por defecto del plugin">Precharged</label>
+                    <input type="text" name="precharged" id="inputPrecharged" placeholder='{"groups":[...]} o https://.../precharged.json'>
                     <label for="isHttp">isHttp</label>
                     <select name="isHttpValue" id="isHttp">
                         <option value=true selected="selected">true</option>
@@ -493,10 +493,9 @@
                                     try {
                                         objeto.precharged = JSON.parse(inputPrecharged.value);
                                     } catch (e) {
-                                        objeto.precharged = inputPrecharged.value;
+                                        // Si no es JSON, se trata como URL
+                                        objeto.precharged = inputPrecharged.value.trim();
                                     }
-                                } else {
-                                    objeto.precharged = transformPrecharged(PRECHARGED);
                                 }
                                 objeto.http = (selectHttp.options[selectHttp.selectedIndex].value == 'true');
                                 objeto.https = (selectHttps.options[selectHttps.selectedIndex].value == 'true');
