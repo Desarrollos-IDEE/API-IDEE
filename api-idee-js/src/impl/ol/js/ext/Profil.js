@@ -22,6 +22,34 @@ const DEFAULT_CHART = {
 };
 
 /**
+ * Gráficas que puede representar el control.
+ * - PROFILE: perfil topográfico (altitud).
+ * - ELEVATION_GAIN: desnivel acumulado positivo.
+ * @const
+ * @type {Object}
+ */
+const GRAPHS = Object.freeze({
+  PROFILE: 'profile',
+  ELEVATION_GAIN: 'elevationGain',
+});
+
+/**
+ * Normaliza las gráficas a representar: admite un array o un texto separado
+ * por comas, descarta valores desconocidos o repetidos y las ordena (perfil
+ * arriba). Si no queda ninguna, representa el perfil.
+ * @param {Array<String>|String} graphs gráficas indicadas.
+ * @return {Array<String>} gráficas a representar.
+ */
+const normalizeGraphs = (graphs) => {
+  let list = [];
+  if (typeof graphs === 'string') list = graphs.split(',');
+  else if (Array.isArray(graphs)) list = graphs;
+  list = list.map((graph) => String(graph).trim());
+  const result = [GRAPHS.PROFILE, GRAPHS.ELEVATION_GAIN].filter((graph) => list.indexOf(graph) !== -1);
+  return result.length ? result : [GRAPHS.PROFILE];
+};
+
+/**
  * @classdesc
  * Control que dibuja el perfil topográfico de una feature
  *
@@ -36,14 +64,18 @@ class Profil extends OLControl {
    * @constructor
    * @param {Object} [options] Opciones del control.
    * - info: textos y unidades (zmin, zmax, altitude, distance, distanceP, time,
-   *   xtitle, ytitle, altitudeUnits, distanceUnitsM, distanceUnitsKM).
+   *   elevationGain, xtitle, ytitle, altitudeUnits, distanceUnitsM, distanceUnitsKM).
+   * - graphs: gráficas a representar, apiladas y con el mismo eje de distancias
+   *   (Profil.GRAPHS): 'profile' (perfil) y 'elevationGain' (desnivel acumulado).
+   *   Array o texto separado por comas. Por defecto ['profile'].
    * - title: título del panel.
    * - target: si se indica, el panel se crea sin título ni botones.
    * - className: clase del panel. Por defecto 'ol-profil'.
    * - controlClassName: clase de control del panel. Por defecto 'ol-control'.
    * - downloadClassName: clase del icono del botón de descarga. Por defecto 'icon-download'.
    * - draggable: añade el botón para arrastrar el panel. Por defecto false.
-   * - width, height: tamaño del gráfico en píxeles. Por defecto 300 x 150.
+   * - centered: centra el panel en el mapa al mostrarlo con show(). Por defecto false.
+   * - width, height: tamaño de cada gráfica en píxeles. Por defecto 300 x 150.
    * - chart: aspecto del gráfico ({ margin: { top, left, bottom, right },
    *   fontSize, titleFontSize, lineWidth }).
    * - pointLayer: origen de datos (ol.source.Vector) donde se marca la posición del
@@ -60,6 +92,9 @@ class Profil extends OLControl {
     var controlClassName = options.controlClassName || 'ol-control';
     var chart = Object.assign({}, DEFAULT_CHART, options.chart);
     this.draggable_ = Boolean(options.draggable) && !options.target;
+    this.centered_ = Boolean(options.centered);
+    this.graphs_ = normalizeGraphs(options.graphs);
+    this.hasElevationGain_ = this.graphs_.indexOf(GRAPHS.ELEVATION_GAIN) !== -1;
 
     var element;
     if (options.target) {
@@ -129,7 +164,8 @@ class Profil extends OLControl {
     var ratio = this.ratio = 2;
     this.canvas_ = document.createElement('canvas');
     this.canvas_.width = (options.width || 300) * ratio;
-    this.canvas_.height = (options.height || 150) * ratio;
+    this.graphHeight_ = (options.height || 150) * ratio;
+    this.canvas_.height = this.graphHeight_ * this.graphs_.length;
 
     var styles = {
       'msTransform': 'scale(0.5,0.5)',
@@ -174,11 +210,15 @@ class Profil extends OLControl {
     if (!this.info.xtitle) this.margin_.bottom -= 20 * ratio;
 
     // Cursor
-    this.bar_ = document.createElement('div');
-    this.bar_.classList.add('ol-profilbar');
-    this.bar_.style.top = (this.margin_.top / ratio) + 'px';
-    this.bar_.style.height = (this.canvas_.height - this.margin_.top - this.margin_.bottom) / ratio + 'px';
-    div.appendChild(this.bar_);
+    this.bars_ = this.graphs_.map((graph, index) => {
+      var bar = document.createElement('div');
+      bar.classList.add('ol-profilbar');
+      bar.style.top = ((index * this.graphHeight_ + this.margin_.top) / ratio) + 'px';
+      bar.style.height = (this.graphHeight_ - this.margin_.top - this.margin_.bottom) / ratio + 'px';
+      div.appendChild(bar);
+      return bar;
+    });
+    this.bar_ = this.bars_[0];
 
     this.cursor_ = document.createElement('div');
     this.cursor_.classList.add('ol-profilcursor');
@@ -188,11 +228,19 @@ class Profil extends OLControl {
     this.popup_.classList.add('ol-profilpopup');
     this.cursor_.appendChild(this.popup_);
 
+    this.cursors_ = [this.cursor_];
+    for (var g = 1; g < this.graphs_.length; g++) {
+      var cursor = document.createElement('div');
+      cursor.classList.add('ol-profilcursor');
+      div.appendChild(cursor);
+      this.cursors_.push(cursor);
+    }
+
     // Track information
     var t = document.createElement('table');
     t.cellPadding = '0';
     t.cellSpacing = '0';
-    t.style.clientWidth = this.canvas_.width / ratio + 'px';
+    t.style.width = this.canvas_.width / ratio + 'px';
     div.appendChild(t);
 
     var firstTr = document.createElement('tr');
@@ -207,6 +255,11 @@ class Profil extends OLControl {
     var div_distance = document.createElement('td');
     div_distance.innerHTML = (this.info.distance || 'Distance') + ': <span class="dist">';
     firstTr.appendChild(div_distance);
+    if (this.hasElevationGain_) {
+      var div_gain = document.createElement('td');
+      div_gain.innerHTML = (this.info.elevationGain || 'Elevation gain') + ': <span class="gain">';
+      firstTr.appendChild(div_gain);
+    }
     var secondTr = document.createElement('tr');
     secondTr.classList.add('point-info')
     t.appendChild(secondTr);
@@ -219,6 +272,11 @@ class Profil extends OLControl {
     var div_time2 = document.createElement('td');
     div_time2.innerHTML = (this.info.time || 'Time') + ': <span class="time">';
     secondTr.appendChild(div_time2);
+    if (this.hasElevationGain_) {
+      var div_gain2 = document.createElement('td');
+      div_gain2.innerHTML = (this.info.elevationGain || 'Elevation gain') + ': <span class="gain">';
+      secondTr.appendChild(div_gain2);
+    }
 
     // Array of data
     this.tab_ = [];
@@ -258,7 +316,10 @@ class Profil extends OLControl {
    * @private 
    */
   onHover_(e) {
-    if (e.type === 'over') this.popup(e.coord[2] + ' ' + (this.info.altitudeUnits || 'm'));
+    if (e.type === 'over') {
+      var value = this.graphs_[0] === GRAPHS.ELEVATION_GAIN ? Number(e.elevationGain.toFixed(2)) : e.coord[2];
+      this.popup(value + ' ' + (this.info.altitudeUnits || 'm'));
+    }
     if (this.marker_) {
       if (e.type === 'over') {
         this.marker_.setGeometry(new OLGeomPoint(e.coord));
@@ -303,8 +364,10 @@ class Profil extends OLControl {
       var ratio = this.ratio;
       if (dx > this.margin_.left / ratio && dx < (this.canvas_.width - this.margin_.right) / ratio
         && dy > this.margin_.top / ratio && dy < (this.canvas_.height - this.margin_.bottom) / ratio) {
-        this.bar_.style.left = dx + 'px';
-        this.bar_.style.display = 'block';
+        this.bars_.forEach((bar) => {
+          bar.style.left = dx + 'px';
+          bar.style.display = 'block';
+        });
         var d = (dx * ratio - this.margin_.left) / this.scale_[0];
         var p0 = this.tab_[0];
         for (var i = 1, p; p = this.tab_[i]; i++) {
@@ -314,23 +377,27 @@ class Profil extends OLControl {
           }
         }
         if (p) {
-          this.cursor_.style.left = dx + 'px';
-          this.cursor_.style.top = (this.canvas_.height - this.margin_.bottom + p[1] * this.scale_[1] + this.dy_) / ratio + 'px';
-          this.cursor_.style.display = 'block';
+          for (var k = 0; k < this.cursors_.length; k++) {
+            var layout = this.graphLayout_[k];
+            this.cursors_[k].style.left = dx + 'px';
+            this.cursors_[k].style.top = (layout.top + this.graphHeight_ - this.margin_.bottom + p[layout.value] * layout.scy + layout.dy) / ratio + 'px';
+            this.cursors_[k].style.display = 'block';
+          }
         } else {
-          this.cursor_.style.display = 'none';
+          this.cursors_.forEach((cursor) => { cursor.style.display = 'none'; });
         }
         this.bar_.parentElement.classList.add('over');
         this.element.querySelector('.point-info .z').textContent = `${p[1].toFixed(2).replace(".", ",")} ${this.info.altitudeUnits}`;
         this.element.querySelector('.point-info .dist').textContent = `${(p[0] / 1000).toFixed(2).replace(".", ",")} ${this.info.distanceUnitsKM}`;
         this.element.querySelector('.point-info .time').textContent = p[2];
+        if (this.hasElevationGain_) this.element.querySelector('.point-info .gain').textContent = `${p[4].toFixed(2).replace(".", ",")} ${this.info.altitudeUnits}`;
         if (dx > this.canvas_.width / ratio / 2) this.popup_.classList.add('ol-left');
         else this.popup_.classList.remove('ol-left');
-        this.dispatchEvent({ type: 'over', click: e.type == 'click', coord: p[3], time: p[2], distance: p[0] });
+        this.dispatchEvent({ type: 'over', click: e.type == 'click', coord: p[3], time: p[2], distance: p[0], elevationGain: p[4] });
       } else {
         if (this.bar_.parentElement.classList.contains('over')) {
-          this.bar_.style.display = 'none';
-          this.cursor_.style.display = 'none';
+          this.bars_.forEach((bar) => { bar.style.display = 'none'; });
+          this.cursors_.forEach((cursor) => { cursor.style.display = 'none'; });
           this.bar_.parentElement.classList.remove('over');
           this.dispatchEvent({ type: 'out' });
         }
@@ -344,7 +411,20 @@ class Profil extends OLControl {
    */
   show() {
     this.element.classList.remove('ol-collapsed');
+    if (this.centered_) this.center_();
     this.dispatchEvent({ type: 'show', show: true });
+  }
+
+  /**
+   * Centra el panel en su contenedor sin que se salga por arriba ni por la izquierda.
+   * @private
+   */
+  center_() {
+    var parent = this.element.parentElement;
+    if (parent) {
+      this.element.style.left = Math.max(0, (parent.clientWidth - this.element.offsetWidth) / 2) + 'px';
+      this.element.style.top = Math.max(0, (parent.clientHeight - this.element.offsetHeight) / 2) + 'px';
+    }
   }
 
   /**
@@ -437,34 +517,20 @@ class Profil extends OLControl {
         return time;
       }
 
-      // Margin
-      ctx.setTransform(1, 0, 0, 1, this.margin_.left, h - this.margin_.bottom);
-      var ratio = this.ratio;
-
-      w -= this.margin_.right + this.margin_.left;
-      h -= this.margin_.top + this.margin_.bottom;
-      // Draw axes
-      ctx.strokeStyle = '#000';
-      ctx.lineWidth = 0.5 * ratio;
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(0, -h);
-      ctx.moveTo(0, 0);
-      ctx.lineTo(w, 0);
-      ctx.stroke();
-
-      //
       var zmin = Infinity,
         zmax = -Infinity;
-      var i, p, d, z, ti, t = this.tab_ = [];
+      var i, p, d, z, ti, gain = 0, t = this.tab_ = [];
       for (i = 0, p; p = c[i]; i++) {
         z = p[2];
         if (z < zmin) zmin = z;
         if (z > zmax) zmax = z;
         if (i == 0) d = 0;
-        else d += dist2d(c[i - 1], p);
+        else {
+          d += dist2d(c[i - 1], p);
+          gain += Math.max(0, z - c[i - 1][2]);
+        }
         ti = getTime(c[0][3], p[3]);
-        t.push([d, z, ti, p]);
+        t.push([d, z, ti, p, gain]);
       }
 
       // Info
@@ -475,86 +541,139 @@ class Profil extends OLControl {
       } else {
         this.element.querySelector('.track-info .dist').textContent = `${((d).toFixed(2)).replace(".", ",")} ${this.info.distanceUnitsM}`;
       }
-
-      // Set graduation
-      var grad = options.graduation || 100;
-      while (true) {
-        zmax = Math.ceil(zmax / grad) * grad;
-        zmin = Math.floor(zmin / grad) * grad;
-        var nbgrad = (zmax - zmin) / grad;
-        if (h / nbgrad < 15 * ratio) {
-          grad *= 2;
-        } else break;
+      if (this.hasElevationGain_) {
+        this.element.querySelector('.track-info .gain').textContent = `${(gain.toFixed(2)).replace(".", ",")} ${this.info.altitudeUnits}`;
       }
 
-      // Set amplitude
-      if (typeof(options.zmin) == 'number' && zmin > options.zmin) zmin = options.zmin;
-      if (typeof(options.zmax) == 'number' && zmax < options.zmax) zmax = options.zmax;
-      var amplitude = options.amplitude;
-      if (amplitude) {
-        zmax = Math.max(zmin + amplitude, zmax);
-      }
-
-      // Scales lines
-      var scx = w / d;
-      var scy = -h / (zmax - zmin);
-      var dy = this.dy_ = -zmin * scy;
-      this.scale_ = [scx, scy];
-      // Draw
-      ctx.font = (this.fontSize_ * ratio) + 'px arial';
-      ctx.textAlign = 'right';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = '#000';
-      // Scale Z
-      ctx.beginPath();
-      for (i = zmin; i <= zmax; i += grad) {
-        if (options.zunit != 'km') ctx.fillText(i, -4 * ratio, i * scy + dy);
-        else ctx.fillText((i / 1000).toFixed(1), -4 * ratio, i * scy + dy);
-        ctx.moveTo(-2 * ratio, i * scy + dy);
-        if (i != 0) ctx.lineTo(d * scx, i * scy + dy);
-        else ctx.lineTo(0, i * scy + dy);
-      }
-      // Scale X
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'top';
-      ctx.setLineDash([ratio, 3 * ratio]);
-      var unit = options.unit || 'km';
-      var step;
-      if (d > 1000) {
-        step = Math.round(d / 1000) * 100;
-        if (step > 1000) step = Math.ceil(step / 1000) * 1000;
-      } else {
-        unit = 'm';
-        if (d > 100) step = Math.round(d / 100) * 10;
-        else if (d > 10) step = Math.round(d / 10);
-        else if (d > 1) step = Math.round(d) / 10;
-        else step = d;
-      }
-      for (i = 0; i <= d; i += step) {
-        var txt = (unit == 'm') ? i : (i / 1000);
-        ctx.fillText(Math.round(txt * 10) / 10, i * scx, 4 * ratio);
-        ctx.moveTo(i * scx, 2 * ratio);
-        ctx.lineTo(i * scx, 0);
-      }
-      ctx.font = (this.titleFontSize_ * ratio) + 'px arial';
-      ctx.fillText(this.info.xtitle.replace('(km)', '(' + unit + ')'), w / 2, 18 * ratio);
-      ctx.save();
-      ctx.rotate(-Math.PI / 2);
-      ctx.fillText(this.info.ytitle, h / 2, -this.margin_.left);
-      ctx.restore();
-
-      ctx.stroke();
-
-      ctx.strokeStyle = '#368';
-      ctx.lineWidth = this.lineWidth_;
-      ctx.setLineDash([]);
-      ctx.beginPath();
-      for (i = 0; p = t[i]; i++) {
-        if (i == 0) ctx.moveTo(p[0] * scx, p[1] * scy + dy);
-        else ctx.lineTo(p[0] * scx, p[1] * scy + dy);
-      }
-      ctx.stroke();
+      var series = {};
+      series[GRAPHS.PROFILE] = { value: 1, min: zmin, max: zmax, title: this.info.ytitle, options: options };
+      series[GRAPHS.ELEVATION_GAIN] = {
+        value: 4,
+        min: 0,
+        max: gain,
+        title: (this.info.elevationGain || 'Elevation gain') + ' (' + (this.info.altitudeUnits || 'm') + ')',
+        options: { graduation: options.graduation, zunit: options.zunit, unit: options.unit },
+      };
+      this.graphLayout_ = this.graphs_.map((graph, index) => this.drawGraph_(ctx, index * this.graphHeight_, d, series[graph]));
+      this.scale_ = [this.graphLayout_[0].scx, this.graphLayout_[0].scy];
+      this.dy_ = this.graphLayout_[0].dy;
     }
+  }
+
+  /**
+   * Dibuja una gráfica en su franja del canvas: ejes, escalas, títulos y curva.
+   * @param {CanvasRenderingContext2D} ctx contexto del canvas
+   * @param {Number} top posición vertical de la franja en el canvas
+   * @param {Number} d distancia total
+   * @param {Object} serie valores a dibujar (value: posición del valor en cada punto,
+   * min, max, title y options de la escala)
+   * @return {Object} escala de la gráfica (top, value, scx, scy, dy)
+   * @private
+   */
+  drawGraph_(ctx, top, d, serie) {
+    var options = serie.options;
+    var t = this.tab_;
+    var i, p;
+
+    // Margin
+    ctx.setTransform(1, 0, 0, 1, this.margin_.left, top + this.graphHeight_ - this.margin_.bottom);
+    var ratio = this.ratio;
+
+    var w = this.canvas_.width - this.margin_.right - this.margin_.left;
+    var h = this.graphHeight_ - this.margin_.top - this.margin_.bottom;
+    // Draw axes
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 0.5 * ratio;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, -h);
+    ctx.moveTo(0, 0);
+    ctx.lineTo(w, 0);
+    ctx.stroke();
+
+    var zmin = serie.min,
+      zmax = serie.max;
+
+    // Set graduation
+    var grad = options.graduation || 100;
+    while (true) {
+      zmax = Math.ceil(zmax / grad) * grad;
+      zmin = Math.floor(zmin / grad) * grad;
+      var nbgrad = (zmax - zmin) / grad;
+      if (h / nbgrad < 15 * ratio) {
+        grad *= 2;
+      } else break;
+    }
+
+    // Set amplitude
+    if (typeof(options.zmin) == 'number' && zmin > options.zmin) zmin = options.zmin;
+    if (typeof(options.zmax) == 'number' && zmax < options.zmax) zmax = options.zmax;
+    var amplitude = options.amplitude;
+    if (amplitude) {
+      zmax = Math.max(zmin + amplitude, zmax);
+    }
+    if (zmax === zmin) zmax = zmin + grad;
+
+    // Scales lines
+    var scx = w / d;
+    var scy = -h / (zmax - zmin);
+    var dy = -zmin * scy;
+    // Draw
+    ctx.font = (this.fontSize_ * ratio) + 'px arial';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#000';
+    // Scale Z
+    ctx.beginPath();
+    for (i = zmin; i <= zmax; i += grad) {
+      if (options.zunit != 'km') ctx.fillText(i, -4 * ratio, i * scy + dy);
+      else ctx.fillText((i / 1000).toFixed(1), -4 * ratio, i * scy + dy);
+      ctx.moveTo(-2 * ratio, i * scy + dy);
+      if (i != 0) ctx.lineTo(d * scx, i * scy + dy);
+      else ctx.lineTo(0, i * scy + dy);
+    }
+    // Scale X
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.setLineDash([ratio, 3 * ratio]);
+    var unit = options.unit || 'km';
+    var step;
+    if (d > 1000) {
+      step = Math.round(d / 1000) * 100;
+      if (step > 1000) step = Math.ceil(step / 1000) * 1000;
+    } else {
+      unit = 'm';
+      if (d > 100) step = Math.round(d / 100) * 10;
+      else if (d > 10) step = Math.round(d / 10);
+      else if (d > 1) step = Math.round(d) / 10;
+      else step = d;
+    }
+    for (i = 0; i <= d; i += step) {
+      var txt = (unit == 'm') ? i : (i / 1000);
+      ctx.fillText(Math.round(txt * 10) / 10, i * scx, 4 * ratio);
+      ctx.moveTo(i * scx, 2 * ratio);
+      ctx.lineTo(i * scx, 0);
+    }
+    ctx.font = (this.titleFontSize_ * ratio) + 'px arial';
+    ctx.fillText(this.info.xtitle.replace('(km)', '(' + unit + ')'), w / 2, 18 * ratio);
+    ctx.save();
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText(serie.title, h / 2, -this.margin_.left);
+    ctx.restore();
+
+    ctx.stroke();
+
+    ctx.strokeStyle = '#368';
+    ctx.lineWidth = this.lineWidth_;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    for (i = 0; p = t[i]; i++) {
+      if (i == 0) ctx.moveTo(p[0] * scx, p[serie.value] * scy + dy);
+      else ctx.lineTo(p[0] * scx, p[serie.value] * scy + dy);
+    }
+    ctx.stroke();
+
+    return { top: top, value: serie.value, scx: scx, scy: scy, dy: dy };
   }
 
   /**
@@ -568,5 +687,13 @@ class Profil extends OLControl {
     return this.canvas_.toDataURL(type, encoderOptions);
   }
 }
+
+/**
+ * Gráficas que puede representar el control (opción graphs).
+ * @const
+ * @type {Object}
+ * @api
+ */
+Profil.GRAPHS = GRAPHS;
 
 export default Profil;
