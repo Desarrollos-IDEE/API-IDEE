@@ -361,6 +361,8 @@ class WMS extends LayerBase {
     } else if (this.useCapabilities || this.isWMSfull) {
       // just one WMS layer and useCapabilities
       this.getCapabilities().then((capabilities) => {
+        // La capa se ha retirado del mapa antes de recibir las capacidades.
+        if (isNullOrEmpty(this.map)) return;
         this.addSingleLayer_(capabilities);
       });
     } else {
@@ -1138,6 +1140,8 @@ class WMS extends LayerBase {
 
     if (this.useCapabilities || this.isWMSfull) {
       this.getCapabilities().then((capabilities) => {
+        // La capa se ha retirado del mapa antes de recibir las capacidades.
+        if (isNullOrEmpty(this.map)) return;
         this.addSingleLayer_(capabilities);
       });
     } else {
