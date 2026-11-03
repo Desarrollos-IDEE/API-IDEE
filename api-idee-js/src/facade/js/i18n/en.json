@@ -113,6 +113,11 @@
     "invalid_layer_position": "Timeline: there is no compatible layer at position {position} of the viewer; the first compatible layer is activated.",
     "legacy_reference": "Timeline: reference {reference} was resolved by partial match with layer {layer}.",
     "missing_attribute": "Timeline: interval {id} does not define attributeParam; its features cannot be filtered.",
+    "playback": "Playback controls",
+    "previous": "Previous step",
+    "next": "Next step",
+    "speed": "Playback speed",
+    "speed_option": "{seconds} s per step",
     "textHelp": {
       "help1": "The timeline extension.",
       "help2": "The extension is customizable, so you can switch from one viewer to another.",

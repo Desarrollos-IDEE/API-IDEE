@@ -13,7 +13,7 @@ import {
   isArray, isBoolean, isFunction, isNullOrEmpty, isObject, isString, isUndefined, isUrl,
 } from '../util/Utils';
 import Control from './Control';
-import { getValue } from '../i18n/language';
+import { getLang, getValue } from '../i18n/language';
 import Exception from '../exception/exception';
 import * as Position from '../ui/position';
 import { compileSync } from '../util/Template';
@@ -22,6 +22,22 @@ import { buildLayer } from '../builder/builder';
 
 const typesTimeline = ['absoluteSimple', 'absolute', 'relative'];
 const EMPTY_LAYER_ID = '__timeline_empty_layer__';
+
+/**
+ * Segundos por paso por defecto ("speed" en absoluteSimple y "speedDate" en absolute y
+ * relative). Equivalen a ×1 en el selector de velocidad.
+ * @const
+ * @private
+ */
+const DEFAULT_SPEED = 1;
+const DEFAULT_SPEED_DATE = 2;
+
+/**
+ * Multiplicadores estándar del selector de velocidad.
+ * @const
+ * @private
+ */
+const SPEED_FACTORS = [0.5, 1, 2, 3, 5];
 
 /**
  * Capas internas del mapa que nunca forman parte del visualizador para Timeline.
@@ -345,6 +361,7 @@ class TimelinePlayer {
   constructor(isAlive) {
     this.handle_ = null;
     this.isAlive_ = isAlive;
+    this.generation_ = 0;
   }
 
   /**
@@ -364,33 +381,26 @@ class TimelinePlayer {
   }
 
   /**
-   * Programa una ejecución única.
-   * @param {Function} callback Función.
-   * @param {Number} delay Retardo en milisegundos.
-   * @returns {Number} Identificador.
+   * Repite un paso mientras devuelva verdadero. El retardo se lee antes de cada paso,
+   * así que un cambio de velocidad se aplica en el siguiente sin cortar la reproducción.
+   * Durante el paso la reproducción sigue en curso.
+   * @param {Function} tick Paso; devuelve falso para terminar.
+   * @param {Function} getDelay Devuelve el retardo en milisegundos.
    */
-  schedule(callback, delay) {
+  loop(tick, getDelay) {
     this.stop();
-    this.handle_ = setTimeout(() => {
-      this.handle_ = null;
-      if (this.isAlive_()) callback();
-    }, delay);
-    return this.handle_;
-  }
-
-  /**
-   * Programa una ejecución periódica.
-   * @param {Function} callback Función.
-   * @param {Number} delay Periodo en milisegundos.
-   * @returns {Number} Identificador.
-   */
-  repeat(callback, delay) {
-    this.stop();
-    this.handle_ = setInterval(() => {
-      if (this.isAlive_()) callback();
-      else this.stop();
-    }, delay);
-    return this.handle_;
+    const generation = this.generation_;
+    const next = () => {
+      this.handle_ = setTimeout(() => {
+        if (generation !== this.generation_) return;
+        if (this.isAlive_() && tick()) {
+          if (generation === this.generation_) next();
+        } else if (generation === this.generation_) {
+          this.handle_ = null;
+        }
+      }, getDelay());
+    };
+    next();
   }
 
   /**
@@ -406,6 +416,7 @@ class TimelinePlayer {
    * Detiene la reproducción.
    */
   stop() {
+    this.generation_ += 1;
     if (this.handle_ !== null) {
       clearTimeout(this.handle_);
       clearInterval(this.handle_);
@@ -413,6 +424,171 @@ class TimelinePlayer {
     this.handle_ = null;
   }
 }
+
+/**
+ * @classdesc
+ * Opciones del selector de velocidad. Cada opción es un multiplicador de la velocidad
+ * por defecto del modo (×1) con sus segundos por paso. La velocidad configurada
+ * ("speed" o "speedDate") se preselecciona y, si su multiplicador no está entre los
+ * estándar, se inserta en su lugar.
+ *
+ * @private
+ */
+class TimelineSpeed {
+  /**
+   * @param {Number} base Segundos por paso de ×1.
+   * @param {Number|String} seconds Segundos por paso configurados.
+   */
+  constructor(base, seconds) {
+    const configured = Number(seconds) > 0 ? Number(seconds) : base;
+    const factor = TimelineSpeed.round(base / configured);
+    this.options_ = SPEED_FACTORS.map((value) => ({ factor: value, seconds: base / value }));
+    let selected = this.options_.find((option) => option.factor === factor);
+    if (selected) {
+      selected.seconds = configured;
+    } else {
+      selected = { factor, seconds: configured };
+      this.options_.push(selected);
+      this.options_.sort((a, b) => a.factor - b.factor);
+    }
+    this.selected_ = selected;
+  }
+
+  /**
+   * Redondea un multiplicador a dos decimales.
+   * @param {Number} value Valor.
+   * @returns {Number} Valor redondeado.
+   */
+  static round(value) {
+    return Math.round(value * 100) / 100;
+  }
+
+  /**
+   * Número con el separador decimal del idioma.
+   * @param {Number} value Valor.
+   * @param {String} lang Idioma.
+   * @returns {String} Texto.
+   */
+  static formatNumber(value, lang) {
+    return value.toLocaleString(lang, { maximumFractionDigits: 2 });
+  }
+
+  /**
+   * Opciones en orden ascendente.
+   * @returns {Array<Object>} [{factor, seconds}].
+   */
+  get options() {
+    return this.options_;
+  }
+
+  /**
+   * Opción seleccionada.
+   * @returns {Object} {factor, seconds}.
+   */
+  get selected() {
+    return this.selected_;
+  }
+
+  /**
+   * Selecciona la opción de un multiplicador.
+   * @param {Number|String} factor Multiplicador.
+   * @returns {Object|null} Opción seleccionada o null si no existe.
+   */
+  select(factor) {
+    const option = this.options_.find((item) => item.factor === Number(factor));
+    if (option) this.selected_ = option;
+    return option ?? null;
+  }
+}
+
+/**
+ * @classdesc
+ * Movimiento del rango con límite inferior fijo y superior móvil (formatMove
+ * "discrete", por defecto en relative): avanzar y retroceder solo mueven el fin, que
+ * nunca queda por debajo del inicio.
+ *
+ * @private
+ */
+class FixedStartMotion {
+  /**
+   * @param {Object} range Rango {init, end} en milisegundos.
+   * @param {Object} limits Límites {min, max, step} en milisegundos.
+   * @returns {Object|null} Nuevo rango o null si no hay movimiento.
+   */
+  forward({ init, end }, { max, step }) {
+    return end < max ? { init, end: Math.min(end + step, max) } : null;
+  }
+
+  /**
+   * @param {Object} range Rango {init, end} en milisegundos.
+   * @param {Object} limits Límites {min, max, step} en milisegundos.
+   * @returns {Object|null} Nuevo rango o null si no hay movimiento.
+   */
+  backward({ init, end }, { step }) {
+    return end > init ? { init, end: Math.max(end - step, init) } : null;
+  }
+
+  /**
+   * Primer estado de la reproducción: el fin, un paso después del inicio.
+   * @param {Object} range Rango {init, end} en milisegundos.
+   * @param {Object} limits Límites {min, max, step} en milisegundos.
+   * @returns {Object} Nuevo rango.
+   */
+  rewind({ init }, { max, step }) {
+    return { init, end: Math.min(init + step, max) };
+  }
+}
+
+/**
+ * @classdesc
+ * Movimiento del rango como ventana deslizante (formatMove "continuous"): avanzar y
+ * retroceder desplazan los dos límites y conservan el ancho hasta llegar al extremo.
+ *
+ * @private
+ */
+class SlidingWindowMotion {
+  /**
+   * @param {Object} range Rango {init, end} en milisegundos.
+   * @param {Object} limits Límites {min, max, step} en milisegundos.
+   * @returns {Object|null} Nuevo rango o null si no hay movimiento.
+   */
+  forward({ init, end }, { max, step }) {
+    const shift = Math.min(step, max - end);
+    return shift > 0 ? { init: init + shift, end: end + shift } : null;
+  }
+
+  /**
+   * @param {Object} range Rango {init, end} en milisegundos.
+   * @param {Object} limits Límites {min, max, step} en milisegundos.
+   * @returns {Object|null} Nuevo rango o null si no hay movimiento.
+   */
+  backward({ init, end }, { min, step }) {
+    const shift = Math.min(step, init - min);
+    return shift > 0 ? { init: init - shift, end: end - shift } : null;
+  }
+
+  /**
+   * Primer estado de la reproducción: la ventana al principio. Si ocupa todo el
+   * rango, su ancho pasa a ser un paso.
+   * @param {Object} range Rango {init, end} en milisegundos.
+   * @param {Object} limits Límites {min, max, step} en milisegundos.
+   * @returns {Object} Nuevo rango.
+   */
+  rewind({ init, end }, { min, max, step }) {
+    const width = end - init > 0 && end - init < max - min ? end - init : Math.min(step, max - min);
+    return { init: min, end: min + width };
+  }
+}
+
+/**
+ * Estrategias de movimiento del rango por formatMove.
+ * @const
+ * @private
+ */
+const RANGE_MOTIONS = {
+  discrete: new FixedStartMotion(),
+  continuous: new SlidingWindowMotion(),
+};
 
 /**
  * @classdesc
@@ -1136,6 +1312,215 @@ class TimelineIntervals {
 
 /**
  * @classdesc
+ * Controles de reproducción del panel: retroceso, play/pausa, avance y velocidad.
+ * Lleva el bucle de reproducción y el estado de los botones; el movimiento lo hace el
+ * modo, que implementa speedProperty, speedBase, canPlay(), stepForward(),
+ * stepBackward(), isAtEnd(), rewind() y onPlaybackChange(playing).
+ *
+ * Play desde el final vuelve a empezar; si no, avanza un paso en el acto. Después
+ * avanza un paso cada host[speedProperty] segundos y se detiene en el último estado.
+ *
+ * @private
+ */
+class TimelineTransport {
+  /**
+   * @param {IDEE.control.Timeline} host Control (configuración, traducciones y elemento).
+   * @param {SimpleTimelineMode|DynamicTimelineMode} mode Modo.
+   * @param {Object} context Colaboradores.
+   * @param {TimelinePlayer} context.player Reproductor.
+   * @param {Function} context.fireChange Notifica un cambio de estado.
+   */
+  constructor(host, mode, context) {
+    this.host_ = host;
+    this.mode_ = mode;
+    this.player_ = context.player;
+    this.fireChange_ = context.fireChange;
+    this.speed_ = new TimelineSpeed(mode.speedBase, host[mode.speedProperty]);
+  }
+
+  /**
+   * Busca un elemento dentro del control.
+   * @param {String} selector Selector CSS.
+   * @returns {HTMLElement|null} Elemento.
+   */
+  query(selector) {
+    return this.host_.getElement()?.querySelector(selector) ?? null;
+  }
+
+  /**
+   * Botón de play/pausa.
+   * @returns {HTMLButtonElement|null} Botón.
+   */
+  get playButton() {
+    return this.query('[data-timeline-action="play"]');
+  }
+
+  /**
+   * Selector de velocidad.
+   * @returns {HTMLSelectElement|null} Selector.
+   */
+  get speedSelect() {
+    return this.query('.m-timeline-speed');
+  }
+
+  /**
+   * Enlaza los botones, pinta el selector de velocidad y aplica "animation": con
+   * false se ocultan play/pausa y la velocidad, y quedan avance y retroceso.
+   */
+  bind() {
+    const actions = {
+      back: () => this.step(false),
+      play: () => this.toggle(),
+      forward: () => this.step(true),
+    };
+    this.host_.getElement().querySelectorAll('[data-timeline-action]').forEach((button) => {
+      button.addEventListener('click', () => actions[button.dataset.timelineAction]?.());
+    });
+    this.renderSpeed();
+    const animated = this.host_.animation !== false;
+    [this.playButton, this.speedSelect].forEach((element) => {
+      // eslint-disable-next-line no-param-reassign
+      if (element) element.hidden = !animated;
+    });
+    this.setPlaying(false);
+  }
+
+  /**
+   * Pinta las opciones de velocidad con la configurada seleccionada.
+   */
+  renderSpeed() {
+    const select = this.speedSelect;
+    if (!select) return;
+    const lang = getLang();
+    const { translation } = this.host_;
+    select.textContent = '';
+    this.speed_.options.forEach((option) => {
+      const element = document.createElement('option');
+      element.value = String(option.factor);
+      element.textContent = `×${TimelineSpeed.formatNumber(option.factor, lang)}`;
+      element.title = formatText(translation.speed_option, {
+        seconds: TimelineSpeed.formatNumber(option.seconds, lang),
+      });
+      element.selected = option === this.speed_.selected;
+      select.appendChild(element);
+    });
+    select.addEventListener('change', () => this.setSpeed(select.value));
+  }
+
+  /**
+   * Aplica una velocidad: escribe sus segundos por paso en el control y la siguiente
+   * pausa de la reproducción ya la usa.
+   * @param {Number|String} factor Multiplicador.
+   */
+  setSpeed(factor) {
+    const option = this.speed_.select(factor);
+    if (!option) return;
+    this.host_[this.mode_.speedProperty] = option.seconds;
+    this.fireChange_('speed');
+  }
+
+  /**
+   * Indica si hay una reproducción en curso.
+   * @returns {Boolean} Verdadero si se reproduce.
+   */
+  isPlaying() {
+    return this.player_.isRunning();
+  }
+
+  /**
+   * Reproduce o pausa.
+   */
+  toggle() {
+    if (this.isPlaying()) this.pause();
+    else this.play();
+  }
+
+  /**
+   * Inicia la reproducción.
+   * @returns {Boolean} Verdadero si se ha iniciado.
+   */
+  play() {
+    if (this.isPlaying() || !this.mode_.canPlay()) return false;
+    const moved = this.mode_.isAtEnd() ? this.mode_.rewind() : this.mode_.stepForward();
+    if (!moved) return false;
+    this.player_.loop(() => this.tick(), () => this.getDelay());
+    this.setPlaying(true);
+    this.fireChange_('play');
+    return true;
+  }
+
+  /**
+   * Paso de la reproducción: avanza o, si ya está en el final, la detiene.
+   * @returns {Boolean} Verdadero si la reproducción continúa.
+   */
+  tick() {
+    if (!this.mode_.isAtEnd() && this.mode_.stepForward()) return true;
+    this.pause();
+    return false;
+  }
+
+  /**
+   * Detiene la reproducción.
+   * @returns {Boolean} Verdadero si estaba en curso.
+   */
+  pause() {
+    if (!this.isPlaying()) return false;
+    this.player_.stop();
+    this.setPlaying(false);
+    this.fireChange_('play');
+    return true;
+  }
+
+  /**
+   * Avanza o retrocede un paso; antes pausa la reproducción.
+   * @param {Boolean} forward Verdadero para avanzar.
+   * @returns {Boolean} Verdadero si se ha movido.
+   */
+  step(forward) {
+    this.pause();
+    return forward ? this.mode_.stepForward() : this.mode_.stepBackward();
+  }
+
+  /**
+   * Retardo entre pasos en milisegundos.
+   * @returns {Number} Milisegundos.
+   */
+  getDelay() {
+    const seconds = Number(this.host_[this.mode_.speedProperty]);
+    return (seconds > 0 ? seconds : this.mode_.speedBase) * 1000;
+  }
+
+  /**
+   * Refleja el estado en el botón de play/pausa: icono, título y etiqueta traducidos.
+   * @param {Boolean} playing Reproduciendo.
+   */
+  setPlaying(playing) {
+    const button = this.playButton;
+    if (button) {
+      const text = playing ? this.host_.translation.pause : this.host_.translation.play;
+      button.classList.toggle('g-cartografia-control-pausa', playing);
+      button.classList.toggle('g-cartografia-control-siguiente', !playing);
+      button.title = text;
+      button.setAttribute('aria-label', text);
+    }
+    this.mode_.onPlaybackChange(playing);
+  }
+
+  /**
+   * Activa o desactiva todos los controles de reproducción.
+   * @param {Boolean} disabled Desactivados.
+   */
+  setDisabled(disabled) {
+    this.host_.getElement().querySelectorAll('[data-timeline-action], .m-timeline-speed')
+      .forEach((element) => {
+        // eslint-disable-next-line no-param-reassign
+        element.disabled = disabled;
+      });
+  }
+}
+
+/**
+ * @classdesc
  * Estrategia de interfaz y comportamiento de timelineType "absoluteSimple": cada paso
  * del deslizador muestra las capas de un año (selector por paso) y oculta el resto.
  * Mantiene los atributos "intervals" e "intervalsGrouped" del control.
@@ -1152,6 +1537,7 @@ class SimpleTimelineMode {
    * @param {Function} context.showNotice Muestra un aviso en el panel.
    * @param {Function} context.hideNotice Oculta el aviso.
    * @param {Function} context.fireChange Notifica un cambio de estado.
+   * @param {Function} context.pausePlayback Pausa la reproducción.
    * @param {Function} [context.getPreviousKey] Clave de la selección previa.
    */
   constructor(host, context) {
@@ -1159,6 +1545,12 @@ class SimpleTimelineMode {
     this.context_ = context;
     this.layers_ = context.layers;
     this.player_ = context.player;
+    /**
+     * Atributo del control con los segundos por paso y su valor para ×1.
+     * @type {String}
+     */
+    this.speedProperty = 'speed';
+    this.speedBase = DEFAULT_SPEED;
   }
 
   /**
@@ -1199,12 +1591,9 @@ class SimpleTimelineMode {
     slider.setAttribute('max', host.intervals.length - 1);
     slider.addEventListener('input', () => host.changeSlider(slider));
     slider.addEventListener('change', () => {
-      this.setPlaying(false);
       this.query('.div-m-timeline-slider').style.setProperty('--opacity', '0');
-      this.player_.stop();
-      this.context_.fireChange('play');
+      this.context_.pausePlayback();
     });
-    this.query('.m-timeline-play').addEventListener('click', () => host.playTimeline(false));
 
     if (!this.hasLayers()) this.context_.showNotice(host.translation.no_layers);
     slider.value = this.getDefaultStep();
@@ -1366,11 +1755,6 @@ class SimpleTimelineMode {
     const ratio = max > min ? (elem.value - min) / (max - min) : 0;
     const left = ratio * ((256 - 20) - 5);
     sliderBox.style.setProperty('--left', `${left}px`);
-    if (host.animation) {
-      const button = this.query('.m-timeline-button');
-      button.style.display = 'block';
-      button.style.visibility = 'visible';
-    }
     const step = parseFloat(elem.value);
     host.intervals.forEach((interval) => {
       this.setIntervalLayerVisible(interval, false);
@@ -1480,52 +1864,77 @@ class SimpleTimelineMode {
   }
 
   /**
-   * Cambia el icono del botón de reproducción.
-   * @param {Boolean} playing Reproduciendo.
+   * Indica si hay pasos que reproducir.
+   * @returns {Boolean} Verdadero si hay más de un paso.
    */
-  setPlaying(playing) {
-    const button = this.host_.getPlayTimeButton();
-    if (!button) return;
-    button.classList.toggle('g-cartografia-control-pausa', playing);
-    button.classList.toggle('g-cartografia-control-siguiente', !playing);
+  canPlay() {
+    return this.host_.intervals.length > 1;
   }
 
   /**
-   * Reproduce o pausa la animación.
-   * @param {Boolean} next Avance automático (llamada del temporizador).
+   * Mueve el deslizador al paso entero siguiente o anterior.
+   * @param {Number} offset 1 (avanzar) o -1 (retroceder).
+   * @returns {Boolean} Verdadero si se ha movido.
    */
-  playTimeline(next) {
-    const host = this.host_;
-    const start = 0;
-    const end = host.intervals.length - 1;
+  moveStep(offset) {
     const { slider } = this;
-    if (!slider) return;
-    let step = parseInt(slider.value, 10);
-    const wasRunning = this.player_.isRunning();
-    if (wasRunning) {
-      this.setPlaying(false);
-      this.player_.stop();
-    }
-    if (!next) {
-      if (step > start && step < end && wasRunning) {
-        this.context_.fireChange('play');
-        return;
-      }
-      if (step > end) {
-        step = start;
-      }
-    }
-    if (step >= end) {
-      slider.value = 0;
-      host.changeSlider(slider);
-      this.context_.fireChange('play');
-      return;
-    }
-    slider.value = parseFloat(slider.value) + 1;
-    host.changeSlider(slider);
-    this.setPlaying(true);
-    this.player_.schedule(() => host.playTimeline(true), host.speed * 1000);
-    this.context_.fireChange('play');
+    if (!slider) return false;
+    const value = parseFloat(slider.value);
+    const target = offset > 0
+      ? Math.min(Math.floor(value) + 1, Number(slider.max))
+      : Math.max(Math.ceil(value) - 1, Number(slider.min));
+    if (target === value) return false;
+    slider.value = target;
+    this.host_.changeSlider(slider);
+    return true;
+  }
+
+  /**
+   * Avanza un paso.
+   * @returns {Boolean} Verdadero si se ha movido.
+   */
+  stepForward() {
+    return this.moveStep(1);
+  }
+
+  /**
+   * Retrocede un paso.
+   * @returns {Boolean} Verdadero si se ha movido.
+   */
+  stepBackward() {
+    return this.moveStep(-1);
+  }
+
+  /**
+   * Indica si el deslizador está en el último paso.
+   * @returns {Boolean} Verdadero en el último paso.
+   */
+  isAtEnd() {
+    const { slider } = this;
+    return !slider || parseFloat(slider.value) >= Number(slider.max);
+  }
+
+  /**
+   * Vuelve al primer paso.
+   * @returns {Boolean} Verdadero si se ha movido.
+   */
+  rewind() {
+    const { slider } = this;
+    if (!slider) return false;
+    slider.value = slider.min;
+    this.host_.changeSlider(slider);
+    return true;
+  }
+
+  /**
+   * Durante la reproducción los selectores de capa quedan desactivados.
+   * @param {Boolean} playing Reproduciendo.
+   */
+  onPlaybackChange(playing) {
+    ['.m-timeline-names', '.m-timeline-names-next'].forEach((selector) => {
+      const element = this.query(selector);
+      if (element) element.disabled = playing;
+    });
   }
 
   /**
@@ -1615,6 +2024,7 @@ class DynamicTimelineMode {
    * @param {Function} context.showNotice Muestra un aviso en el panel.
    * @param {Function} context.hideNotice Oculta el aviso.
    * @param {Function} context.fireChange Notifica un cambio de estado.
+   * @param {Function} context.pausePlayback Pausa la reproducción.
    * @param {Function} [context.getPreviousKey] Clave de la selección previa.
    */
   constructor(host, context) {
@@ -1622,6 +2032,12 @@ class DynamicTimelineMode {
     this.context_ = context;
     this.layers_ = context.layers;
     this.player_ = context.player;
+    /**
+     * Atributo del control con los segundos por paso y su valor para ×1.
+     * @type {String}
+     */
+    this.speedProperty = 'speedDate';
+    this.speedBase = DEFAULT_SPEED_DATE;
     this.entries_ = new Map();
     this.order_ = [];
     this.pending_ = [];
@@ -1771,8 +2187,8 @@ class DynamicTimelineMode {
   }
 
   /**
-   * Enlaza una sola vez los eventos del selector, los deslizadores, las fechas y los
-   * botones.
+   * Enlaza una sola vez los eventos del selector, los deslizadores y las fechas. Los
+   * botones de reproducción los enlaza TimelineTransport.
    */
   bindControls() {
     const select = this.query('.m-timeline-layer-select');
@@ -1782,6 +2198,7 @@ class DynamicTimelineMode {
     const rangeInit = this.query('.m-timeline-range-init');
     const rangeEnd = this.query('.m-timeline-range-end');
     rangeInit.addEventListener('input', ({ target }) => {
+      this.context_.pausePlayback();
       const endValue = Number(rangeEnd.value);
       if (Number(target.value) >= endValue) {
         // eslint-disable-next-line no-param-reassign
@@ -1791,6 +2208,7 @@ class DynamicTimelineMode {
       this.onRangeInput(Number(target.value), endValue);
     });
     rangeEnd.addEventListener('input', ({ target }) => {
+      this.context_.pausePlayback();
       const initValue = Number(rangeInit.value);
       if (Number(target.value) <= initValue) {
         // eslint-disable-next-line no-param-reassign
@@ -1807,10 +2225,6 @@ class DynamicTimelineMode {
         });
       });
     });
-
-    this.query('.m-timelineDinamic-play').addEventListener('click', () => this.togglePlay());
-    this.query('.m-timelineDinamic-back').addEventListener('click', () => this.evtFormatMove('back'));
-    this.query('.m-timelineDinamic-before').addEventListener('click', () => this.evtFormatMove('before'));
     this.player_.stop();
   }
 
@@ -1834,61 +2248,100 @@ class DynamicTimelineMode {
     if (!this.selected_) return;
     const [init, end] = this.getValueDateInput();
     if (Number.isNaN(init) || Number.isNaN(end)) return;
+    if (init !== this.host_.date.init || end !== this.host_.date.end) {
+      this.context_.pausePlayback();
+    }
     this.applyRange(init, end);
     this.changeValueSlider(this.getValuesInputDate(init), this.getValuesInputDate(end));
   }
 
   /**
-   * Inicia o detiene la reproducción.
+   * Estrategia de movimiento del rango según formatMove.
+   * @returns {FixedStartMotion|SlidingWindowMotion} Estrategia.
    */
-  togglePlay() {
-    const host = this.host_;
-    const play = this.query('.m-timelineDinamic-play');
-    if (this.player_.isRunning()) {
-      this.player_.stop();
-      play.classList.remove('active');
-    } else if (this.selected_) {
-      this.player_.repeat(() => this.evtFormatMove('before'), 1000 * host.speedDate);
-      play.classList.add('active');
-    } else {
-      this.showChooseOption();
-    }
-    this.context_.fireChange('play');
+  get motion() {
+    return RANGE_MOTIONS[this.host_.formatMove] ?? RANGE_MOTIONS.continuous;
   }
 
   /**
-   * Avanza o retrocede un paso.
-   * @param {String} direction 'before' (adelante) o 'back' (atrás).
+   * Indica si hay una entrada que reproducir; si no, pide elegir una.
+   * @returns {Boolean} Verdadero si hay entrada seleccionada.
    */
-  evtFormatMove(direction) {
-    const host = this.host_;
-    if (!this.selected_) {
-      this.showChooseOption();
-      return;
-    }
-    const formatRevert = TimelineDates.getReverseFormat(host.formatValue);
-    const step = TimelineDates.getStepValue(host.paramsDate, host.stepValue);
-    const { min, max } = this.getValueSliderB();
-    const values = this.getValueDateInput();
-    if (values.some((value) => Number.isNaN(value))) return;
-
-    const [dateInit, dateEnd] = values.map((value, i) => {
-      if (i === 0 && host.formatMove === 'discrete') {
-        return value;
-      }
-      if (direction === 'before') {
-        return (value + step) >= max ? max : value + step;
-      }
-      return (value - step) <= min ? min : value - step;
-    });
-
-    this.changeValueInputDate(toISO(dateInit), toISO(dateEnd));
-    const [reverseInit, reverseEnd] = [dateInit, dateEnd]
-      .map((n) => this.getFormatValue(n, formatRevert));
-
-    this.applyRange(dateInit, dateEnd);
-    this.changeValueSlider(reverseInit, reverseEnd);
+  canPlay() {
+    if (this.selected_) return true;
+    this.showChooseOption();
+    return false;
   }
+
+  /**
+   * Mueve el rango con la estrategia de formatMove y el paso de paramsDate y
+   * stepValue, dentro de los límites de la entrada.
+   * @param {String} operation 'forward', 'backward' o 'rewind'.
+   * @returns {Boolean} Verdadero si se ha movido.
+   */
+  moveRange(operation) {
+    const host = this.host_;
+    if (!this.canPlay()) return false;
+    const [init, end] = this.getValueDateInput();
+    if (Number.isNaN(init) || Number.isNaN(end)) return false;
+    const { min, max } = this.getValueSliderB();
+    const step = TimelineDates.getStepValue(host.paramsDate, host.stepValue);
+    const range = this.motion[operation]({ init, end }, { min, max, step });
+    if (!range) return false;
+    this.setRange(range.init, range.end);
+    return true;
+  }
+
+  /**
+   * Aplica un rango a las capas, las fechas y los deslizadores.
+   * @param {Number} init Inicio en milisegundos.
+   * @param {Number} end Fin en milisegundos.
+   */
+  setRange(init, end) {
+    const formatRevert = TimelineDates.getReverseFormat(this.host_.formatValue);
+    this.changeValueInputDate(toISO(init), toISO(end));
+    this.applyRange(init, end);
+    this.changeValueSlider(...[init, end].map((n) => this.getFormatValue(n, formatRevert)));
+  }
+
+  /**
+   * Avanza un paso.
+   * @returns {Boolean} Verdadero si se ha movido.
+   */
+  stepForward() {
+    return this.moveRange('forward');
+  }
+
+  /**
+   * Retrocede un paso.
+   * @returns {Boolean} Verdadero si se ha movido.
+   */
+  stepBackward() {
+    return this.moveRange('backward');
+  }
+
+  /**
+   * Vuelve al primer estado de la reproducción.
+   * @returns {Boolean} Verdadero si se ha movido.
+   */
+  rewind() {
+    return this.moveRange('rewind');
+  }
+
+  /**
+   * Indica si el fin del rango está en el final de la entrada.
+   * @returns {Boolean} Verdadero en el final.
+   */
+  isAtEnd() {
+    if (!this.selected_) return false;
+    const [, end] = this.getValueDateInput();
+    return !(end < this.getValueSliderB().max);
+  }
+
+  /**
+   * Sin efecto: el selector de capas sigue disponible y elegir otra pausa.
+   */
+  onPlaybackChange() {}
 
   /**
    * Selecciona una entrada: desactiva la anterior, oculta el resto de capas
@@ -1899,6 +2352,7 @@ class DynamicTimelineMode {
   select(key) {
     const host = this.host_;
     const entry = isNullOrEmpty(key) ? null : (this.entries_.get(key) ?? null);
+    if (entry !== this.selected_) this.context_.pausePlayback();
     if (this.selected_ && this.selected_ !== entry) this.deactivate(this.selected_);
     this.selected_ = entry;
     const select = this.query('.m-timeline-layer-select');
@@ -2080,6 +2534,7 @@ class DynamicTimelineMode {
     if (!added && this.selected_
       && this.selected_.members.some(({ layer }) => !this.layers.isOwned(layer)
         && !this.layers.inMap(layer))) {
+      this.context_.pausePlayback();
       this.selected_.members.forEach(({ layer }) => this.layers.clearFilter(layer));
       this.selected_ = null;
       this.showChooseOption();
@@ -2274,129 +2729,134 @@ class DynamicTimelineMode {
 /**
  * @typedef {Object} module:IDEE/control/Timeline~Options
  * @api
- * @property {Array|String} intervals Intervalos de tiempo. (obligatorio)
- * Puede ser un array o una cadena JSON. Cada intervalo puede ser clásico
- * [name, tag, service] o extendido {id, init, end, layer, attributeParam, grupo,
- * equalsTimeLine}. "service" se admite como alias de "layer".
- * "layer"/"service" admite una capa de la API, una configuración con "type", una
- * definición REST "TIPO*..." (GPX, WMS, WMTS, KML, GeoJSON...) interpretada con el
- * mecanismo general de la API, o el nombre/leyenda de una capa ya existente.
- * @property {String} [position] Posición del control en el mapa.
- * @property {String} [tooltip] Texto del tooltip para el control.
- * @property {String} [title] Texto del título para el panel de este control.
- * Por defecto se asignará {@link tooltip}.
- * @property {Number} [order] Accesibilidad, z-index del control.
- * @property {Boolean} [collapsible] Indica si el control puede colapsarse.
- * @property {Boolean} [collapsed] Indica si el control está colapsado.
- * @property {Boolean} [animation] Indica si la línea de tiempo se anima automáticamente.
- * @property {Number} [speed] Velocidad de la animación en segundos (rango: 1-100).
- * @property {Number} [speedDate] Velocidad de la animación para timelines dinámicos.
- * @property {String} [paramsDate] Unidad de tiempo para los pasos (posibles valores:
- * 'sec', 'min', 'hrs', 'day', 'mos', 'yr').
- * @property {Number} [stepValue] Valor del paso para la navegación temporal.
- * @property {String} [snapMode] Activa el modo "snap" aproximación de la barra
- * de deslizamiento en caso de ser definido, puede tener los siguientes valores
- * 'bySpep', 'byStepIntersection'
- * @property {String} [sizeWidthDinamic] Ancho dinámico para el control.
- * Posibles valores: '', 'sizeWidthDinamic_medium' or 'sizeWidthDinamic_big'.
- * @property {String} [formatMove] Formato de movimiento: 'discrete' o 'continuous'.
- * @property {String} [formatValue] Formato de valores:
- * 'linear', 'logarithmic', 'exponential'.
- * @property {String} [timelineType] Tipo de timeline:
- * 'absoluteSimple', 'absolute', 'relative'.
+ * @property {String} timelineType Tipo de línea de tiempo (obligatorio):
+ * 'absoluteSimple', 'absolute' o 'relative'.
+ * @property {Array|String} intervals Intervalos (obligatorio). Array o cadena JSON; por
+ * GET, en base64 (`intervals=base64~...`). Cada intervalo puede ser clásico
+ * `[name, tag, service]` o extendido `{id, init, end, layer, attributeParam, grupo,
+ * equalsTimeLine}`, en cualquier timelineType; "service" es un alias de "layer".
+ * "layer" admite una capa de la API, una configuración con "type", una definición
+ * "TIPO*..." (GPX, WMS, WMTS, KML, GeoJSON...), que se interpreta con el mecanismo
+ * general de la API, o el nombre o la leyenda de una capa del visualizador.
  * @property {Number} [layerPosition] Posición en el visualizador de la capa que se activa
  * por defecto. Base 1 y contada desde arriba, como la lista del LayerSwitcher
  * (1 = capa superior). Si no se indica, o no hay una capa compatible en esa posición,
  * se activa la primera capa compatible en el orden del visualizador.
  * No confundir con "position", que es la posición del panel.
+ * @property {String} [position] Posición del panel en el mapa. Por defecto, 'left'.
+ * @property {String} [tooltip] Texto del tooltip del control.
+ * @property {String} [title] Título del panel. Por defecto, el tooltip.
+ * @property {Number} [order] Accesibilidad, z-index del control.
+ * @property {Boolean} [collapsible] Indica si el panel puede colapsarse. Por defecto, true.
+ * @property {Boolean} [collapsed] Indica si el panel empieza colapsado. Por defecto, true.
+ * @property {Boolean} [animation] Muestra el botón de play/pausa y el selector de
+ * velocidad. Por defecto, true; con false solo quedan avance y retroceso.
+ * @property {Number} [speed] Segundos por paso de la reproducción en absoluteSimple.
+ * Por defecto, 1 (×1 en el selector de velocidad).
+ * @property {Number} [speedDate] Segundos por paso de la reproducción en absolute y
+ * relative. Por defecto, 2 (×1 en el selector de velocidad).
+ * @property {String} [paramsDate] Unidad del paso en absolute y relative: 'sec', 'min',
+ * 'hrs', 'day', 'mos' o 'yr'. Por defecto, 'yr'.
+ * @property {Number} [stepValue] Número de unidades de "paramsDate" por paso.
+ * Por defecto, 1.
+ * @property {String} [formatMove] Movimiento del rango al reproducir, avanzar o
+ * retroceder en absolute y relative: 'discrete' (límite inferior fijo y superior
+ * móvil; por defecto en relative) o 'continuous' (ventana deslizante, se mueven los
+ * dos límites; por defecto en absolute).
+ * @property {String} [formatValue] Escala de los deslizadores en absolute y relative:
+ * 'linear', 'logarithmic' o 'exponential'. Por defecto, 'linear'.
+ * @property {String} [snapMode] Ajuste del deslizador de absoluteSimple: 'bySpep' (a cada
+ * paso) o 'byStepIntersection' (a cada paso y a mitad de paso, donde se ven las capas
+ * de los dos pasos). Sin valor, el deslizador es continuo.
+ * @property {String} [sizeWidthDinamic] Ancho del panel en absolute y relative: ''
+ * (por defecto), 'sizeWidthDinamic_medium' o 'sizeWidthDinamic_big'.
  * @property {Object} [vendorOptions] Opciones específicas para la implementación.
  */
 
 /**
  * @classdesc
  * Hereda de {@link module:IDEE/control/Control|Control}.
- * Control de línea de tiempo que permite visualizar y controlar datos temporales en el mapa.
- * Proporciona una interfaz para reproducir animaciones y navegar por diferentes
- * momentos en el tiempo.
- * Soporta diferentes tipos de timeline: absoluteSimple, absolute y relative.
+ * Control de línea de tiempo: muestra la evolución temporal de capas del mapa y permite
+ * reproducirla. Se añade con `map.addControls` o por GET
+ * (`controls=timeline*timelineType=...;intervals=base64~...`).
  *
- * La fachada no depende del motor cartográfico: delega en la implementación
- * (IDEE/impl/control/Timeline) la compatibilidad de cada capa y la aplicación de los
- * filtros temporales. En Cesium la funcionalidad temporal todavía no está disponible
- * y el panel lo indica.
+ * Tipos de línea de tiempo ("timelineType"):
+ * - **absoluteSimple**: cada paso del deslizador muestra la capa de un año (con un
+ *   selector si hay varias del mismo año) y oculta las demás.
+ * - **absolute**: filtra las capas por un instante, el fin del rango; la fecha inicial
+ *   no se edita.
+ * - **relative**: filtra las capas por el rango [inicio, fin]. Por defecto el límite
+ *   inferior queda fijo y la reproducción, el avance y el retroceso mueven el superior
+ *   ("formatMove" 'discrete'); con 'continuous' se mueven los dos.
  *
- * @property {Array|String} intervals Intervalos temporales.
- * Se admiten dos formatos:
- * Formato clásico:
- * [
- *   [name, tag, service]
- * ]
+ * Controles de reproducción, en todos los tipos: retroceso, play/pausa, avance y
+ * selector de velocidad (×0,5, ×1, ×2, ×3 y ×5; ×1 es el valor por defecto de "speed"
+ * o "speedDate"). La velocidad configurada queda seleccionada y, si no es una de esas,
+ * se añade en su lugar. Elegir otra velocidad actualiza "speed" o "speedDate" y se
+ * aplica en el siguiente paso. La reproducción se detiene en el último paso y play
+ * vuelve a empezar desde el principio. Mover el deslizador o las fechas, o cambiar de
+ * capa, la pausa. Los textos se traducen con el idioma de la API.
  *
- * Formato extendido:
- * [
- *   {
- *     id,
- *     init,
- *     end,
- *     layer,
- *     attributeParam,
- *     grupo,
- *     equalsTimeLine
- *   }
- * ]
+ * Capas: en absolute y relative el selector las ordena por su posición en el
+ * visualizador y activa la de "layerPosition" o, si no, la primera compatible. Una capa
+ * que ya está en el visualizador se reutiliza y recupera su visibilidad al destruir el
+ * control; si no existe, Timeline la crea y la retira al destruirse. Compatibilidad en
+ * OpenLayers: absoluteSimple muestra u oculta WMS, WMTS, XYZ, TMS, OSM, MBTiles, MVT,
+ * MBTilesVector, GeoTIFF, MapLibre, GeoPackageTile y las capas vectoriales; absolute y
+ * relative filtran WMS (CQL) y las capas vectoriales con entidades en memoria (GPX, KML,
+ * KMZ, GeoJSON, WFS, OGCAPIFeatures, DataIDEE, Vector) por "attributeParam". Las capas
+ * incompatibles se descartan con un aviso.
  *
- * El formato extendido puede utilizarse para cualquier timelineType.
- * Se mantiene compatibilidad completa con el formato clásico.
- * "layer" (o su alias "service") puede ser una capa, una configuración con "type",
- * una definición "TIPO*..." o el nombre/leyenda de una capa del visualizador. Si la capa
- * ya existe en el visualizador se reutiliza; si no, Timeline la crea y la retira al
- * destruirse.
- * Compatibilidad por modalidad (OpenLayers): absoluteSimple muestra/oculta WMS, WMTS,
- * XYZ, TMS, OSM, MBTiles, MVT, MBTilesVector, GeoTIFF, MapLibre, GeoPackageTile y las
- * capas vectoriales; absolute y relative filtran WMS (CQL) y las capas vectoriales con
- * entidades en memoria (GPX, KML, KMZ, GeoJSON, WFS, OGCAPIFeatures, DataIDEE, Vector)
- * por "attributeParam". Las capas incompatibles se descartan con un aviso.
- * @property {String} [position='left'] Posición del control en el mapa.
- * @property {Boolean} [collapsible=true] Indica si el control puede colapsarse.
- * @property {Boolean} [collapsed=true] Indica si el control está colapsado.
- * Depende de collapsible, solo se aplica si collapsible es true.
- * @property {String} [tooltip] Texto de información sobre la herramienta para el control.
- * Por defecto la traducción al idioma.
- * @property {String} [title] Texto del título para el panel de este control.
- * Por defecto se asignará {@link tooltip}.
- * @property {Number} [order=0] Accesibilidad, z-index del control.
- * @property {Boolean} [animation=true] Indica si la animación de la línea de tiempo está
- * activada (true) o desactivada (false).
- * @property {Number} [speed=1] Velocidad de reproducción de la animación en segundos,
- * con rango de 1 a 100.
- * @property {Number} [speedDate=2] Velocidad de la animación específica para timelines dinámicos.
- * @property {String} [paramsDate='yr'] Unidad de tiempo para los pasos de navegación
- * (posibles valores: 'sec', 'min', 'hrs', 'day', 'mos', 'yr').
- * @property {Number} [stepValue=1] Valor del paso para la navegación temporal,
- * determina el incremento en cada paso.
- * @property {String} [snapMode] Activa el modo "snap" aproximación de la barra
- * de deslizamiento en caso de ser definido, puede tener los siguientes valores
- * 'bySpep', 'byStepIntersection'
- * @property {String} [sizeWidthDinamic=''] Ancho dinámico para el control,
- * permite ajustar el tamaño basado en el contenido.
- * @property {String} [formatMove='continuous'] Formato de movimiento de la animación:
- * 'discrete' para movimientos discretos o 'continuous' para continuos.
- * @property {String} [formatValue='linear'] Formato de valores para la escala:
- * 'linear', 'logarithmic', 'exponential'.
- * @property {String} [timelineType=false] Tipo de timeline a utilizar:
- * 'absoluteSimple', 'absolute', 'relative'. Debe ser uno de los tipos soportados.
+ * La fachada no depende del motor cartográfico: la implementación decide la
+ * compatibilidad de las capas y aplica los filtros temporales. En Cesium la
+ * funcionalidad temporal todavía no está disponible: el panel lo indica y los controles
+ * quedan desactivados.
+ *
+ * Cada cambio de capa, rango, paso, reproducción o velocidad lanza el evento
+ * `IDEE.evt.CHANGE` con `{reason, timelineType, selectedLayer, date, running}`, donde
+ * "reason" es 'layer', 'range', 'step', 'play' o 'speed'.
+ *
+ * @property {String|Boolean} timelineType Tipo de línea de tiempo: 'absoluteSimple',
+ * 'absolute' o 'relative' (false si no se ha indicado; es obligatorio para añadir el
+ * control al mapa).
+ * @property {Array} intervals Intervalos normalizados. En absoluteSimple, tras añadir el
+ * control, son los pasos del deslizador `{number, name, tag, service}`; en absolute y
+ * relative, `{id, init, end, layer, attributeParam, grupo, equalsTimeLine}` con las
+ * fechas en ISO 8601.
+ * @property {Object} intervalsGrouped Intervalos de absoluteSimple agrupados por año.
  * @property {Number} [layerPosition] Posición en el visualizador (base 1, 1 = capa
  * superior) de la capa activada por defecto.
+ * @property {String} [position='left'] Posición del panel en el mapa.
+ * @property {String} [tooltip] Texto del tooltip. Por defecto, la traducción del idioma.
+ * @property {String} [title] Título del panel. Por defecto, el tooltip.
+ * @property {Boolean} [collapsible=true] Indica si el panel puede colapsarse.
+ * @property {Boolean} [collapsed=true] Indica si el panel está colapsado. Solo se aplica
+ * si collapsible es true.
+ * @property {Boolean} [animation=true] Indica si se muestran play/pausa y el selector de
+ * velocidad.
+ * @property {Number} [speed=1] Segundos por paso de la reproducción en absoluteSimple.
+ * @property {Number} [speedDate=2] Segundos por paso de la reproducción en absolute y
+ * relative.
+ * @property {String} [paramsDate='yr'] Unidad del paso en absolute y relative: 'sec',
+ * 'min', 'hrs', 'day', 'mos' o 'yr'.
+ * @property {Number} [stepValue=1] Número de unidades de "paramsDate" por paso.
+ * @property {String} [formatMove] Movimiento del rango en absolute y relative:
+ * 'discrete' (límite inferior fijo y superior móvil; por defecto en relative) o
+ * 'continuous' (se mueven los dos límites; por defecto en el resto).
+ * @property {String} [formatValue='linear'] Escala de los deslizadores: 'linear',
+ * 'logarithmic' o 'exponential'.
+ * @property {String} [snapMode] Ajuste del deslizador de absoluteSimple: 'bySpep' o
+ * 'byStepIntersection'. Sin valor, el deslizador es continuo.
+ * @property {String} [sizeWidthDinamic=''] Ancho del panel en absolute y relative: '',
+ * 'sizeWidthDinamic_medium' o 'sizeWidthDinamic_big'.
  * @property {Boolean|Number} [running=false] Identificador del temporizador de la
  * reproducción en curso o false si no hay reproducción. Asignar false la detiene.
- * @property {Object} [date] Objeto que contiene las fechas inicial y final para el timeline.
- * En absolute y relative refleja el rango activo.
- * @property {Number} [date.init=0] Fecha inicial en formato timestamp.
- * @property {Number} [date.end=0] Fecha final en formato timestamp.
- * @property {Object} [allLayersDinamic] Configuración de capas dinámicas para timelines avanzados.
- * @property {Array} [allLayersDinamic.groupLayer=[]] Capas agrupadas para el timeline dinámico.
- * @property {Array} [allLayersDinamic.noGroupLayer=[]] Capas no agrupadas para el timeline
- * dinámico.
+ * @property {Object} [date] Rango activo en absolute y relative, en milisegundos.
+ * @property {Number} [date.init=0] Inicio del rango.
+ * @property {Number} [date.end=0] Fin del rango.
+ * @property {Object} [allLayersDinamic] Capas de absolute y relative.
+ * @property {Array} [allLayersDinamic.groupLayer=[]] Capas agrupadas ({name, layers}).
+ * @property {Array} [allLayersDinamic.noGroupLayer=[]] Capas no agrupadas ({name, layers}).
  *
  * @api
  * @extends {module:IDEE/control/Control}
@@ -2407,58 +2867,35 @@ class Timeline extends Control {
   }
 
   /**
-   * Constructor principal de la clase. This classs create one facade control
-   * object which has an implementation Object
+   * Constructor principal de la clase. Crea un control de línea de tiempo de fachada con
+   * su implementación (OpenLayers o Cesium).
    *
    * @constructor
    * @param {module:IDEE/control/Timeline~Options} options Opciones del control.
    * @example
+   * // absoluteSimple: una capa WMS histórica por año, 2 s por paso (×0,5).
    * const control = new IDEE.control.Timeline({
-   *  "timelineType": "absoluteSimple",
-   *   "intervals": [
-   *        [
-   *            "NACIONAL 1981-1986",
-   *            "1986",
-   *            "WMS*NACIONAL_1981-1986*https://www.ign.es/wms/pnoa-historico*NACIONAL_1981-1986"
-   *        ],
-   *        [
-   *            "OLISTAT",
-   *            "1998",
-   *            "WMS*OLISTAT*https://www.ign.es/wms/pnoa-historico*OLISTAT"
-   *        ],
-   *        [
-   *            "SIGPAC",
-   *            "2003",
-   *            "WMS*SIGPAC*https://www.ign.es/wms/pnoa-historico*SIGPAC"
-   *        ],
-   *        [
-   *            "PNOA 2004",
-   *            "2004",
-   *            "WMS*pnoa2004*https://www.ign.es/wms/pnoa-historico*pnoa2004"
-   *        ],
-   *        [
-   *            "PNOA 2005",
-   *            "2005",
-   *            "WMS*pnoa2005*https://www.ign.es/wms/pnoa-historico*pnoa2005"
-   *        ],
-   *        [
-   *            "PNOA 2006",
-   *            "2006",
-   *            "WMS*pnoa2006*https://www.ign.es/wms/pnoa-historico*pnoa2006"
-   *        ],
-   *        [
-   *            "PNOA 2010",
-   *            "2010",
-   *            "WMS*pnoa2010*https://www.ign.es/wms/pnoa-historico*pnoa2010"
-   *        ]
-   *    ]
+   *   timelineType: 'absoluteSimple',
+   *   speed: 2,
+   *   intervals: [
+   *     ['NACIONAL 1981-1986', '1986', 'WMS*NACIONAL_1981-1986*https://www.ign.es/wms/pnoa-historico*NACIONAL_1981-1986'],
+   *     ['OLISTAT', '1998', 'WMS*OLISTAT*https://www.ign.es/wms/pnoa-historico*OLISTAT'],
+   *     ['SIGPAC', '2003', 'WMS*SIGPAC*https://www.ign.es/wms/pnoa-historico*SIGPAC'],
+   *     ['PNOA 2004', '2004', 'WMS*pnoa2004*https://www.ign.es/wms/pnoa-historico*pnoa2004'],
+   *     ['PNOA 2010', '2010', 'WMS*pnoa2010*https://www.ign.es/wms/pnoa-historico*pnoa2010'],
+   *   ],
    * });
+   * map.addControls(control);
    * @example
-   * // Capa GPX incorporada por GET (layers=GPX*rutas*https://servidor/rutas.gpx)
-   * // y referenciada desde Timeline por su nombre o con su definición "*":
+   * // relative: GPX filtrado por su atributo "time". El inicio queda fijo y cada paso
+   * // (un mes) amplía el fin; 1 s por paso (×2 en el selector de velocidad).
+   * // La capa puede venir por GET (layers=GPX*rutas*https://servidor/rutas.gpx) y
+   * // referenciarse por su nombre o con su definición "*".
    * const control = new IDEE.control.Timeline({
    *   timelineType: 'relative',
    *   layerPosition: 1,
+   *   paramsDate: 'mos',
+   *   speedDate: 1,
    *   intervals: [{
    *     id: 'rutas',
    *     init: '2020-01-01T00:00:00Z',
@@ -2467,6 +2904,8 @@ class Timeline extends Control {
    *     attributeParam: 'time',
    *   }],
    * });
+   * control.on(IDEE.evt.CHANGE, ({ reason, date }) => console.log(reason, date));
+   * map.addControls(control);
    * @api
    */
   constructor(options = {}) {
@@ -2512,6 +2951,13 @@ class Timeline extends Control {
     this.mode_ = null;
 
     /**
+     * Controles de reproducción (se crean en createView).
+     * @private
+     * @type {TimelineTransport|null}
+     */
+    this.transport_ = null;
+
+    /**
      * Clave de la última entrada seleccionada en timelines dinámicos.
      * @private
      * @type {String|null}
@@ -2527,16 +2973,18 @@ class Timeline extends Control {
     if (this.animation === undefined) this.animation = true;
 
     /**
-    * Speed of animation
-    * Value: 1 - 100
+    * Segundos por paso de la reproducción en absoluteSimple (×1 = 1 s).
+    * El selector de velocidad lo actualiza.
     * @type {number}
     */
-    this.speed = parseFloat(options.speed) || 1;
+    this.speed = parseFloat(options.speed) || DEFAULT_SPEED;
 
     /**
+     * Segundos por paso de la reproducción en absolute y relative (×1 = 2 s).
+     * El selector de velocidad lo actualiza.
      *@type { Number }
      */
-    this.speedDate = (options.speedDate) ? options.speedDate : 2;
+    this.speedDate = (options.speedDate) ? options.speedDate : DEFAULT_SPEED_DATE;
 
     /**
      *@type { String }
@@ -2561,9 +3009,14 @@ class Timeline extends Control {
     this.sizeWidthDinamic = (options.sizeWidthDinamic) ? options.sizeWidthDinamic : '';
 
     /**
+     * Movimiento del rango al reproducir, avanzar o retroceder: 'discrete' (límite
+     * inferior fijo y superior móvil, por defecto en relative) o 'continuous'
+     * (ventana deslizante, por defecto en absolute).
      *@type { String }
      */
-    this.formatMove = (options.formatMove === 'discrete') ? 'discrete' : 'continuous';
+    this.formatMove = ['discrete', 'continuous'].includes(options.formatMove)
+      ? options.formatMove
+      : (options.timelineType === 'relative' && 'discrete') || 'continuous';
 
     /**
      *@type { String }
@@ -2643,14 +3096,15 @@ class Timeline extends Control {
   }
 
   /**
-  * This function creates the view
-  *
-  * @public
-  * @function
-  * @param {IDEE.Map} map to add the control
-  * @returns {Promise} Plantilla HTML.
-  * @api stable
-  */
+   * Crea la vista del control: la plantilla del tipo de línea de tiempo, el
+   * comportamiento del tipo y los controles de reproducción.
+   *
+   * @public
+   * @function
+   * @param {IDEE.Map} map Mapa al que se añade el control.
+   * @returns {Promise} Plantilla HTML.
+   * @api stable
+   */
   createView(map) {
     return new Promise((success) => {
       const dynamic = this.isDynamicTimeline();
@@ -2665,6 +3119,10 @@ class Timeline extends Control {
           translations: {
             title: this.title || this.translation.title,
             play: this.translation.play,
+            playback: this.translation.playback,
+            previous: this.translation.previous,
+            next: this.translation.next,
+            speed: this.translation.speed,
             initValue: this.translation.initValue,
             endValue: this.translation.endValue,
           },
@@ -2687,14 +3145,22 @@ class Timeline extends Control {
         hideNotice: () => this.hideNotice_(),
         fireChange: (reason) => this.fireChange_(reason),
         getPreviousKey: () => this.selectedKey_,
+        pausePlayback: () => this.transport_?.pause(),
       };
       this.mode_ = dynamic
         ? new DynamicTimelineMode(this, context)
         : new SimpleTimelineMode(this, context);
+      this.transport_ = new TimelineTransport(this, this.mode_, {
+        player: this.player_,
+        fireChange: context.fireChange,
+      });
       if (this.layers_.isSupported()) {
         this.mode_.build();
+        this.transport_.bind();
       } else {
         this.mode_.renderUnsupported();
+        this.transport_.bind();
+        this.transport_.setDisabled(true);
       }
       success(this.getElement());
     });
@@ -2782,7 +3248,10 @@ class Timeline extends Control {
     }
   }
 
-  /** This function change layers and show layer name when slider moves
+  /**
+   * Aplica la posición del deslizador de absoluteSimple: muestra la capa del paso (o
+   * las de los dos pasos contiguos en una posición intermedia), su etiqueta y su
+   * selector de capas.
    *
    * @public
    * @function
@@ -2795,52 +3264,57 @@ class Timeline extends Control {
     }
   }
 
-  /** This function search a layer in the map
+  /**
+   * Busca en el mapa una capa: la misma instancia o, si no, una con la misma leyenda.
    *
    * @public
    * @function
    * @param {IDEE.layer.Layer} layerSearch Capa.
    * @api stable
-   * @return {object}
+   * @return {IDEE.layer.Layer|undefined} Capa del mapa.
    */
   getMapLayer(layerSearch) {
     return this.layers_.findInMap(layerSearch);
   }
 
-  /** Returns the play button element used to init timeline process
+  /**
+   * Devuelve el botón de play/pausa (en cualquier timelineType).
    *
    * @public
    * @api stable
    * @function
-   * @returns {HTMLElement}
+   * @returns {HTMLElement} Botón o null si el control no tiene vista.
    */
   getPlayTimeButton() {
-    return this.getElement()?.querySelector('.m-timeline-play') ?? null;
+    return this.getElement()?.querySelector('[data-timeline-action="play"]') ?? null;
   }
 
-  /** This function make the play animation
+  /**
+   * Reproduce o pausa la línea de tiempo, como el botón de play/pausa. Con next a true
+   * da un paso de la reproducción: avanza o, si ya está en el último, la detiene.
    *
    * @public
    * @function
-   * @param {Boolean} next Avance automático.
+   * @param {Boolean} next Paso de la reproducción en lugar de reproducir o pausar.
    * @api stable
    * @return {void}
    */
   playTimeline(next) {
-    if (this.mode_ instanceof SimpleTimelineMode) {
-      this.mode_.playTimeline(next);
-    }
+    if (!this.transport_ || !this.layers_.isSupported()) return;
+    if (next) this.transport_.tick();
+    else this.transport_.toggle();
   }
 
   /**
-   * This function remove the timeline layers: detiene la reproducción, retira las
-   * capas creadas por Timeline y restaura las capas del visualizador que utilizaba.
+   * Detiene la reproducción, retira las capas creadas por Timeline y restaura las capas
+   * del visualizador que utilizaba.
    *
    * @public
    * @function
    * @api stable
    */
   removeTimelineLayers() {
+    this.transport_?.pause();
     this.player_.stop();
     this.layers_.releaseAll();
   }
@@ -2934,11 +3408,11 @@ class Timeline extends Control {
   }
 
   /**
-   * Notifica un cambio de estado (capa, rango, paso o reproducción) con el evento
-   * EventType.CHANGE.
+   * Notifica un cambio de estado (capa, rango, paso, reproducción o velocidad) con el
+   * evento EventType.CHANGE.
    *
    * @private
-   * @param {String} reason Motivo: 'layer', 'range', 'step' o 'play'.
+   * @param {String} reason Motivo: 'layer', 'range', 'step', 'play' o 'speed'.
    */
   fireChange_(reason) {
     if (this.mode_ instanceof DynamicTimelineMode) {
@@ -2954,26 +3428,28 @@ class Timeline extends Control {
   }
 
   /**
-   * This function compares controls
+   * Compara controles: cualquier Timeline es igual a otro, de modo que el mapa solo
+   * admite uno.
    *
    * @public
    * @function
-   * @param {IDEE.Control} control to compare
+   * @param {IDEE.Control} control Control que se compara.
    * @api stable
-   * @return {Boolean}
+   * @return {Boolean} Verdadero si es un Timeline.
    */
   equals(control) {
     return control instanceof Timeline;
   }
 
   /**
-  * Obtiene la ayuda del control
-  * Su construcción es similar a la del plugin, por ello se usa la misma plantilla
-  *
-  * @function
-  * @public
-  * @api
-  */
+   * Obtiene la ayuda del control. Se construye como la de los plugins, con la misma
+   * plantilla.
+   *
+   * @function
+   * @public
+   * @returns {Object} Ayuda: {title, content}, donde content es una promesa con el HTML.
+   * @api
+   */
   getHelp() {
     return {
       title: this.name,
@@ -3010,6 +3486,7 @@ class Timeline extends Control {
     this.layers_.unlisten();
     this.layers_.releaseAll();
     this.mode_ = null;
+    this.transport_ = null;
     const element = this.getElement();
     if (element) element.remove();
     if (this.parentContainer) super.destroy();

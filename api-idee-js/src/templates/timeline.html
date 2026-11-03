@@ -13,9 +13,14 @@
                 <select class="m-timeline-names-next" aria-label="{{translations.title}}">
                 </select>
             </div>
-            <div class="m-timeline-button">
-                <div class="m-timeline-play timeline-control-siguiente g-cartografia-control-siguiente"
-                    title="Iniciar paso del tiempo"></div>
+            <div class="m-timeline-button m-timeline-transport" role="group" aria-label="{{translations.playback}}">
+                <button type="button" data-timeline-action="back" class="m-timeline-back g-cartografia-flecha-izquierda"
+                    title="{{translations.previous}}" aria-label="{{translations.previous}}"></button>
+                <button type="button" data-timeline-action="play" class="m-timeline-play timeline-control-siguiente g-cartografia-control-siguiente"
+                    title="{{translations.play}}" aria-label="{{translations.play}}"></button>
+                <button type="button" data-timeline-action="forward" class="m-timeline-forward g-cartografia-flecha-derecha"
+                    title="{{translations.next}}" aria-label="{{translations.next}}"></button>
+                <select class="m-timeline-speed" title="{{translations.speed}}" aria-label="{{translations.speed}}"></select>
             </div>
         </div>
     </div>

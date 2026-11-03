@@ -54,6 +54,8 @@ test.describe('IDEE.control.Timeline (Cesium)', () => {
         implExported: typeof IDEE.impl.control.Timeline,
         notice: { hidden: notice.hidden, text: notice.textContent },
         disabled: [...timeline.getElement().querySelectorAll('input, select, button')].every((element) => element.disabled),
+        transport: [...timeline.getElement().querySelectorAll('[data-timeline-action], .m-timeline-speed')]
+          .map((element) => element.disabled),
         selectable: timeline.getSelectableLayers(),
         selected: timeline.getSelectedLayer(),
         select: timeline.selectLayer('gpx'),
@@ -81,6 +83,7 @@ test.describe('IDEE.control.Timeline (Cesium)', () => {
     expect(result.notice.hidden).toBe(false);
     expect(result.notice.text).toContain('3D');
     expect(result.disabled).toBe(true);
+    expect(result.transport).toEqual([true, true, true, true]);
     expect(result.selectable).toEqual([]);
     expect(result.selected).toBe(null);
     expect(result.select).toBe(false);
@@ -100,13 +103,19 @@ test.describe('IDEE.control.Timeline (Cesium)', () => {
     ]);
     const result = await page.evaluate(() => {
       const timeline = window.map.getControls('timeline')[0];
+      timeline.playTimeline(false);
       return {
         notice: !timeline.getElement().querySelector('.m-timeline-notice').hidden,
         gpx: window.map.getGPX().map((layer) => [layer.name, layer.isVisible()]),
         valid: timeline.isValidLayer(window.map.getGPX()[0]),
+        transport: [...timeline.getElement().querySelectorAll('[data-timeline-action], .m-timeline-speed')]
+          .map((element) => element.disabled),
+        running: timeline.running,
       };
     });
-    expect(result).toEqual({ notice: true, gpx: [['gpx_get', true]], valid: false });
+    expect(result).toEqual({
+      notice: true, gpx: [['gpx_get', true]], valid: false, transport: [true, true, true, true], running: false,
+    });
     expect(errors).toEqual([]);
   });
 });

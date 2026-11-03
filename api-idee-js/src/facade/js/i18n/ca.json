@@ -114,6 +114,11 @@
     "invalid_layer_position": "Timeline: no hi ha cap capa compatible a la posició {position} del visualitzador; s'activa la primera compatible.",
     "legacy_reference": "Timeline: la referència {reference} s'ha resolt per coincidència parcial amb la capa {layer}.",
     "missing_attribute": "Timeline: l'interval {id} no defineix attributeParam; les seves entitats no es podran filtrar.",
+    "playback": "Controls de reproducció",
+    "previous": "Pas anterior",
+    "next": "Pas següent",
+    "speed": "Velocitat de reproducció",
+    "speed_option": "{seconds} s per pas",
     "textHelp": {
       "help1": "L'extensió línia de temps.",
       "help2": "L'extensió és personalitzable, per la qual cosa pot canviar d'un visualitzador a un altre.",

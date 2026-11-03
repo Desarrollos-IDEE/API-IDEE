@@ -28,10 +28,15 @@
             <select class="selectDinamicLayer m-timeline-layer-select" name="dinamicLayer" aria-label="{{translations.title}}">
             </select>
 
-            <button type="button" class="timelineDinamic-control-play m-timelineDinamic-back" title="Iniciar paso del tiempo"><<</button>
-            <button type="button" class="timelineDinamic-control-play m-timelineDinamic-play" title="Iniciar paso del tiempo">Play/Pausa</button>
-            <button type="button" class="timelineDinamic-control-play m-timelineDinamic-before" title="Iniciar paso del tiempo">>></button>
-            <!-- Parametrización del valor incremento de paso -->
+            <div class="m-timeline-transport" role="group" aria-label="{{translations.playback}}">
+                <button type="button" data-timeline-action="back" class="timelineDinamic-control-play m-timelineDinamic-back g-cartografia-flecha-izquierda"
+                    title="{{translations.previous}}" aria-label="{{translations.previous}}"></button>
+                <button type="button" data-timeline-action="play" class="timelineDinamic-control-play m-timelineDinamic-play g-cartografia-control-siguiente"
+                    title="{{translations.play}}" aria-label="{{translations.play}}"></button>
+                <button type="button" data-timeline-action="forward" class="timelineDinamic-control-play m-timelineDinamic-before g-cartografia-flecha-derecha"
+                    title="{{translations.next}}" aria-label="{{translations.next}}"></button>
+                <select class="m-timeline-speed" title="{{translations.speed}}" aria-label="{{translations.speed}}"></select>
+            </div>
         </div>
     </div>
 </div>

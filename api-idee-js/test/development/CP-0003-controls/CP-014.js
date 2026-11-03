@@ -11,11 +11,20 @@ import { setLang } from '../../../src/facade/js/i18n/language';
 
 const urlParams = new URLSearchParams(window.location.search);
 setLang(urlParams.get('language') || 'es');
-const manual = urlParams.get('mode') === 'manual';
+// Modo manual por defecto: sin `demo`, `layers` ni `controls` (o con mode=manual).
+const manual = urlParams.get('mode') === 'manual'
+  || !['demo', 'layers', 'controls'].some((key) => urlParams.has(key));
 
 /*
- * Escenario GET (por defecto)
- * ---------------------------
+ * Modo de apertura
+ * ----------------
+ * Sin query string la página abre el modo manual: formulario con todas las opciones del
+ * control (new Timeline(...)). El selector "Modo de apertura" de la fila de botones
+ * cambia a los escenarios GET (?demo=relative|absolute|absoluteSimple) y vuelve al
+ * manual; conserva el parámetro `language`.
+ *
+ * Escenario GET (?demo=...)
+ * -------------------------
  * Réplica del recorrido de api-idee-rest (BuilderWS.detectKeyValueLayers/Controls y
  * JSBuilder): `layers` y `controls` se separan por comas y cada entrada llega como cadena
  * a IDEE.map({ layers, controls }). El resto de parámetros (center, zoom, projection)
@@ -27,9 +36,9 @@ const manual = urlParams.get('mode') === 'manual';
     npm start -- --name=CP-0003-controls/CP-014
 
 Se ejecuta en `api-idee-js` o en cualquiera de sus subcarpetas, como `test/development`.
-Abre `test/development/CP-0003-controls/CP-014.html` sin query string.
+Abre `test/development/CP-0003-controls/CP-014.html` sin query string, en modo manual; los escenarios GET se eligen en "Modo de apertura".
 
-**Arranque GET.** Antes de cargar la API, la página navega con `location.replace()` a una URL GET real. Al crear el mapa, los parámetros ya están en `window.location.search`:
+**Arranque GET.** Con `?demo=...` y antes de cargar la API, la página navega con `location.replace()` a una URL GET real. Al crear el mapa, los parámetros ya están en `window.location.search`:
 
 - `layers`:
   - `QUICK*Base_IGNBaseTodo_TMS`: base de referencia, externa y no elegible.
@@ -54,14 +63,14 @@ Abre `test/development/CP-0003-controls/CP-014.html` sin query string.
   - con 2020, `wpt-0` y `rte-2`;
   - con 2021, `wpt-1` y `trk-3`.
 - **Cambio de capa:** con el selector del control o con el botón "Seleccionar siguiente capa".
-- **Navegación:** deslizadores, fechas (Enter o al salir del campo), `<<`, `>>` y Play/Pausa (pasos de un mes, `paramsDate=mos`).
+- **Navegación:** deslizadores, fechas (Enter o al salir del campo), retroceso, play/pausa, avance y selector de velocidad (pasos de un mes, `paramsDate=mos`; `speedDate=1` preselecciona ×2). En relative el inicio queda fijo y la reproducción amplía el fin.
 - **Ciclo de vida:** "Retirar Timeline" restaura las capas y elimina la creada. "Volver a añadir el mismo Timeline" vuelve a añadir la misma instancia.
 
 **Modalidades y URL propias**
 
 - `?demo=absolute` y `?demo=absoluteSimple` aplican el mismo recorrido GET a las otras modalidades. En `absoluteSimple` cada paso muestra u oculta una GPX.
 - Si la URL ya trae `layers` o `controls`, se respeta y no se redirige. `intervals` debe ir en base64, porque las comas del JSON se interpretarían como separadores.
-- `?mode=manual` es el formulario programático histórico, que usa `new Timeline(...)`. No demuestra el recorrido GET.
+- El modo manual (sin query string o `?mode=manual`) es el formulario programático, que usa `new Timeline(...)`: idioma, posición, orden, tooltip, título, colapsado, tipo, `layerPosition`, `animation`, intervalos (ejemplos WMS y GPX o JSON propio), `speed`/`speedDate`, `snapMode`, `paramsDate`, `stepValue`, tamaño, escala y `formatMove`. "Eliminar control" lo retira y, pulsado de nuevo, lo crea con las opciones del formulario. No demuestra el recorrido GET.
 
 **Depuración**
 
@@ -81,15 +90,15 @@ Abre `test/development/CP-0003-controls/CP-014.html` sin query string.
 /*
  * CP-014 · Timeline por parámetros GET.
  *
- * `npm start -- --name=CP-0003-controls/CP-014` abre la página sin query string.
- * Antes de crear el mapa se navega (location.replace) a una URL GET real con
+ * `npm start -- --name=CP-0003-controls/CP-014` abre la página sin query string, en
+ * modo manual. Con `?demo=...`, antes de crear el mapa se navega (location.replace) a
+ * una URL GET real con
  * `layers` (dos GPX locales y una base de referencia) y `controls` (Timeline con
  * `intervals` en base64). Así, al crear el mapa, los parámetros están en
  * window.location.search y los interpretan los parsers generales de la API.
  *
- * No se redirige si la URL ya trae `layers` o `controls` (URL manual) o con
- * `mode=manual` (formulario programático). `demo` elige la modalidad:
- * relative (por defecto), absolute o absoluteSimple.
+ * No se redirige si la URL ya trae `layers` o `controls` (URL propia) ni en el modo
+ * manual (sin `demo`). `demo` elige la modalidad: relative, absolute o absoluteSimple.
  *
  * Devuelve true si redirige; en ese caso no debe crearse el mapa.
  */
@@ -210,8 +219,11 @@ const setupScenarioSelector = () => {
     select.selectedIndex = 0;
   }
   select.addEventListener('change', () => {
-    const value = select.value === 'manual' ? 'mode=manual' : `demo=${select.value}`;
-    window.location.assign(`${window.location.pathname}?${value}`);
+    const params = new URLSearchParams();
+    if (select.value !== 'manual') params.set('demo', select.value);
+    if (urlParams.has('language')) params.set('language', urlParams.get('language'));
+    const query = params.toString();
+    window.location.assign(`${window.location.pathname}${query ? `?${query}` : ''}`);
   });
 };
 
@@ -254,6 +266,13 @@ const startGetScenario = () => {
   window.timeline = timeline;
   window.capasGPX = mapa.getGPX();
 
+  // Velocidad elegida en el selector del panel y segundos por paso que usa la reproducción.
+  const getSpeedText = (control) => {
+    const option = control.getElement()?.querySelector('.m-timeline-speed')?.selectedOptions[0];
+    const seconds = control.timelineType === 'absoluteSimple' ? control.speed : control.speedDate;
+    return `${option?.textContent ?? '–'} (${Number(seconds)} s/paso)`;
+  };
+
   // Estado compacto (una línea por elemento). El detalle completo está en window.mapa,
   // window.timeline y window.capasGPX.
   const getState = () => {
@@ -274,6 +293,8 @@ const startGetScenario = () => {
         seleccionada: timeline.getSelectedLayer()?.name ?? null,
         rango: `${toISO(timeline.date.init)} → ${toISO(timeline.date.end)}`,
         reproduciendo: timeline.running !== false,
+        velocidad: getSpeedText(timeline),
+        movimiento: timeline.formatMove === 'discrete' ? 'inicio fijo' : 'ventana deslizante',
       } : 'No hay Timeline en el mapa',
       selector: timeline ? timeline.getSelectableLayers().map((entry) => [
         entry.position ? `[${entry.position}]` : '[–]',
@@ -304,7 +325,7 @@ const startGetScenario = () => {
       'Intervalos (base64 decodificado):',
       ...list(state.get.intervals),
       typeof t === 'string' ? t
-        : `Timeline: ${t.seleccionada ?? 'sin capa'} · ${t.rango} · ${t.reproduciendo ? 'reproduciendo' : 'parado'}`,
+        : `Timeline: ${t.seleccionada ?? 'sin capa'} · ${t.rango} · ${t.reproduciendo ? 'reproduciendo' : 'parado'} · ${t.velocidad} · ${t.movimiento}`,
       typeof t === 'string' ? '' : `  opciones GET: ${t.opciones}`,
       `Selector: ${state.selector.join(' | ')}`,
       'Visualizador (1 = superior):',
@@ -359,10 +380,11 @@ const startGetScenario = () => {
 };
 
 /*
- * Modo manual (?mode=manual)
- * --------------------------
- * Formulario programático histórico: crea el Timeline con `new Timeline(...)`.
- * No demuestra el recorrido GET.
+ * Modo manual (por defecto)
+ * -------------------------
+ * Formulario programático: crea el Timeline con `new Timeline(...)` a partir de los
+ * campos (los vacíos no se pasan y el control usa su valor por defecto) y lo recrea al
+ * cambiar cualquiera. No demuestra el recorrido GET.
  */
 const startManualScenario = () => {
   const map = Mmap({
@@ -386,20 +408,6 @@ const startManualScenario = () => {
     const ctrls = map.getControls(Timeline.NAME);
     if (ctrls.length === 1) map.removeControls(ctrls);
   };
-
-  const inputIntervals = document.getElementById('inputIntervals');
-  const selectIntervals = document.getElementById('selectIntervals');
-  const selectAnimation = document.getElementById('selectAnimation');
-  const inputSpeed = document.getElementById('inputSpeed');
-  const selectPosicion = document.getElementById('selectPosicion');
-  const position = selectPosicion.options[selectPosicion.selectedIndex].value;
-  const selectSnapMode = document.getElementById('selectSnapMode');
-  const inputLayerPosition = document.getElementById('inputLayerPosition');
-
-  const inputTooltip = document.getElementById('inputTooltip');
-  const selectCollapsible = document.getElementById('selectCollapsible');
-  const selectCollapsed = document.getElementById('selectCollapsed');
-  const inputOrder = document.getElementById('inputOrder');
 
   const nacional1981Layer = new WMS({
     name: 'NACIONAL_1981-1986',
@@ -505,37 +513,20 @@ const startManualScenario = () => {
       grupo: 'NZ.ObservedEvent - equalsTimeLine',
     },
   ];
-  const speedDate = 2;
-  const paramsDate = 'yr';
-  const stepValue = 5;
-  const formatValue = 'logarithmic';
-  const sizeWidthDinamic = 'sizeWidthDinamic_medium';
-  const formatMove = 'continuous';
-  const title = inputTooltip.value;
+  // GPX local (CP-035): wpt-0 y rte-2 tienen time en 2020; wpt-1 y trk-3, en 2021.
+  // Timeline crea la capa a partir de la definición "*".
+  const gpxIntervals = [{
+    id: 'gpx',
+    init: '2020-01-01T00:00:00Z',
+    end: '2021-12-31T23:59:59Z',
+    layer: 'GPX*gpx_cp035*/test/development/CP-0002-layers/fixtures/CP-035.gpx*true*true',
+    attributeParam: 'time',
+  }];
+  const dynamicExamples = { wms: time, gpx: gpxIntervals };
 
-  // Type
-  const typeTimeLine = document.getElementById('typeTimeLine');
-
-  if (typeTimeLine.value === 'absoluteSimple') {
-    create({
-      timelineType: typeTimeLine.options[typeTimeLine.selectedIndex].value,
-      position,
-      intervals,
-      title,
-    });
-  } else {
-    create({
-      timelineType: typeTimeLine.options[typeTimeLine.selectedIndex].value,
-      intervals: time,
-      speedDate,
-      paramsDate,
-      stepValue,
-      formatMove,
-      formatValue,
-      sizeWidthDinamic,
-      title,
-    });
-  }
+  const field = (id) => document.getElementById(id);
+  const value = (id) => field(id).value;
+  const typeTimeLine = field('typeTimeLine');
 
   const changeTestFormsDisplay = (formValue = typeTimeLine) => {
     const isDynamic = formValue.value !== 'absoluteSimple';
@@ -549,65 +540,60 @@ const startManualScenario = () => {
     });
   };
 
-  // Dinamic
-  const elementTime = document.getElementById('time');
-  const elementSpeedDate = document.getElementById('speedDate');
-  const elementParamsDate = document.getElementById('paramsDate');
-  const elementStepValue = document.getElementById('stepValue');
-  const elementSizeWidth = document.getElementById('sizeWidthDinamic');
-  const elementFormatValue = document.getElementById('formatValueDinamic');
-  const elementFormatMove = document.getElementById('formatMove');
-
-  function changeTest() {
-    remove();
-    const options = {};
-
-    const selectPosition = selectPosicion.options[selectPosicion.selectedIndex].value;
-    if (selectPosition !== '') options.position = selectPosition;
-
-    if (inputTooltip.value !== '') options.tooltip = inputTooltip.value;
-
-    const collapsibleVal = selectCollapsible.value === 'true';
-    if (selectCollapsible.value !== '') options.collapsible = collapsibleVal;
-
-    const collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
-    if (collapsed !== '') options.collapsed = (collapsed === 'true');
-
-    if (inputOrder.value !== undefined) options.order = Number(inputOrder.value);
-
-    if (inputLayerPosition.value !== '') options.layerPosition = Number(inputLayerPosition.value);
-
-    options.timelineType = typeTimeLine.options[typeTimeLine.selectedIndex].value;
+  // Opciones del control a partir del formulario: los campos vacíos no se pasan y el
+  // control aplica sus valores por defecto.
+  const readOptions = () => {
+    const options = { timelineType: typeTimeLine.value };
+    const optional = {
+      position: value('selectPosicion'),
+      tooltip: value('inputTooltip'),
+      title: value('inputTitle'),
+    };
+    Object.entries(optional).forEach(([key, text]) => {
+      if (text !== '') options[key] = text;
+    });
+    ['selectCollapsible', 'selectCollapsed', 'selectAnimation'].forEach((id) => {
+      if (value(id) !== '') options[field(id).name] = value(id) === 'true';
+    });
+    if (value('inputOrder') !== '') options.order = Number(value('inputOrder'));
+    if (value('inputLayerPosition') !== '') options.layerPosition = Number(value('inputLayerPosition'));
 
     if (typeTimeLine.value === 'absoluteSimple') {
-      options.intervals = inputIntervals.value !== '' ? inputIntervals.value : intervals;
-      const animation = selectAnimation.options[selectAnimation.selectedIndex].value;
-      if (animation !== '') options.animation = animation === 'true';
-      if (inputSpeed.value !== '') options.speed = Number(inputSpeed.value);
-      const snapMode = selectSnapMode.options[selectSnapMode.selectedIndex].value;
-      if (snapMode !== '') options.snapMode = snapMode;
+      options.intervals = value('inputIntervals') !== '' ? value('inputIntervals') : intervals;
+      if (Number(value('inputSpeed')) > 0) options.speed = Number(value('inputSpeed'));
+      if (value('selectSnapMode') !== '') options.snapMode = value('selectSnapMode');
     } else {
-      options.intervals = elementTime.value !== '' ? elementTime.value : time;
-      options.speedDate = elementSpeedDate.value >= 1 ? Number(elementSpeedDate.value) : 1;
-      options.paramsDate = elementParamsDate.options[elementParamsDate.selectedIndex].value;
-      options.stepValue = elementStepValue.value >= 1 ? Number(elementStepValue.value) : 1;
-      options.sizeWidthDinamic = elementSizeWidth.options[elementSizeWidth.selectedIndex].value;
-      options.formatValue = elementFormatValue.options[elementFormatValue.selectedIndex].value;
-      options.formatMove = elementFormatMove.options[elementFormatMove.selectedIndex].value;
+      options.intervals = value('time') !== '' ? value('time') : dynamicExamples[value('selectTime')];
+      if (Number(value('speedDate')) > 0) options.speedDate = Number(value('speedDate'));
+      if (Number(value('stepValue')) > 0) options.stepValue = Number(value('stepValue'));
+      ['paramsDate', 'sizeWidthDinamic', 'formatValueDinamic', 'formatMove'].forEach((id) => {
+        const key = id === 'formatValueDinamic' ? 'formatValue' : field(id).name;
+        if (value(id) !== '') options[key] = value(id);
+      });
     }
-    create(options);
-  }
+    return options;
+  };
+
+  const removeButton = field('removeButton');
+  const updateRemoveButton = () => {
+    removeButton.textContent = map.hasControl(Timeline.NAME) ? 'Eliminar control' : 'Crear control';
+  };
+
+  const changeTest = () => {
+    remove();
+    create(readOptions());
+    updateRemoveButton();
+  };
 
   [
-    selectPosicion, inputIntervals, selectAnimation, inputSpeed,
-    elementTime, elementSpeedDate, elementParamsDate, elementStepValue,
-    elementSizeWidth, elementFormatValue, elementFormatMove,
-    inputTooltip, selectCollapsible, selectCollapsed, inputOrder,
-    selectSnapMode, inputLayerPosition,
-  ].forEach((el) => { el.addEventListener('change', changeTest); });
+    'selectPosicion', 'inputIntervals', 'selectAnimation', 'inputSpeed', 'time', 'selectTime',
+    'speedDate', 'paramsDate', 'stepValue', 'sizeWidthDinamic', 'formatValueDinamic', 'formatMove',
+    'inputTooltip', 'inputTitle', 'selectCollapsible', 'selectCollapsed', 'inputOrder',
+    'selectSnapMode', 'inputLayerPosition',
+  ].forEach((id) => field(id).addEventListener('change', changeTest));
 
-  selectIntervals.addEventListener('change', () => {
-    inputIntervals.value = selectIntervals.value;
+  field('selectIntervals').addEventListener('change', () => {
+    field('inputIntervals').value = value('selectIntervals');
     changeTest();
   });
 
@@ -618,12 +604,22 @@ const startManualScenario = () => {
     }
   });
 
-  changeTestFormsDisplay();
-
-  const removeButton = document.getElementById('removeButton');
-  removeButton.addEventListener('click', () => {
-    remove();
+  const selectLanguage = field('selectLanguage');
+  selectLanguage.value = urlParams.get('language') || 'es';
+  selectLanguage.addEventListener('change', () => {
+    setLang(selectLanguage.value);
+    changeTest();
   });
+
+  removeButton.addEventListener('click', () => {
+    if (map.hasControl(Timeline.NAME)) remove();
+    else create(readOptions());
+    updateRemoveButton();
+  });
+
+  changeTestFormsDisplay();
+  create(readOptions());
+  updateRemoveButton();
 };
 
 if (!prepareTimelineGetDemo()) {

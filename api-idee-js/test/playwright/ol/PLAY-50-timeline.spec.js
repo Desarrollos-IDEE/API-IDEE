@@ -722,4 +722,377 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
     expect(result.reference).toBe(`GPX*Ruta con espacios y tildes ñ*${GPX}*true*false`);
     expect(result.name).toBe('Ruta con espacios y tildes ñ');
   });
+  test('formatMove por defecto: inicio fijo en relative y ventana deslizante en el resto', async ({ page }) => {
+    await openPage(page);
+    const result = await page.evaluate(() => {
+      const formatMove = (options) => new IDEE.control.Timeline({ intervals: [], ...options }).formatMove;
+      return {
+        relative: formatMove({ timelineType: 'relative' }),
+        relativeContinuous: formatMove({ timelineType: 'relative', formatMove: 'continuous' }),
+        relativeInvalid: formatMove({ timelineType: 'relative', formatMove: 'otro' }),
+        absolute: formatMove({ timelineType: 'absolute' }),
+        absoluteDiscrete: formatMove({ timelineType: 'absolute', formatMove: 'discrete' }),
+        absoluteSimple: formatMove({ timelineType: 'absoluteSimple' }),
+      };
+    });
+    expect(result).toEqual({
+      relative: 'discrete',
+      relativeContinuous: 'continuous',
+      relativeInvalid: 'discrete',
+      absolute: 'continuous',
+      absoluteDiscrete: 'discrete',
+      absoluteSimple: 'continuous',
+    });
+  });
+
+  test('relative: límite inferior fijo; retroceso, avance y play solo mueven el fin', async ({ page }) => {
+    const { errors } = await openPage(page);
+    await createGetMap(page, 'relative', RANGE_INTERVALS, ';layerPosition=2;paramsDate=mos;stepValue=6;speedDate=0.05');
+    const INIT = Date.parse('2020-01-01T00:00:00Z');
+    const END = Date.parse('2021-12-31T23:59:59Z');
+    const STEP = 6 * 30 * 86400000;
+    const ALL = ['rte-2', 'trk-3', 'wpt-0', 'wpt-1'];
+    const FIRST_YEAR = ['rte-2', 'wpt-0'];
+    const click = (action) => page.evaluate((name) => {
+      const t = window.timeline;
+      t.getElement().querySelector(`[data-timeline-action="${name}"]`).click();
+      return {
+        init: t.date.init,
+        end: t.date.end,
+        shown: t.getSelectedLayer().getFeatures().map((feature) => feature.getId()).sort(),
+      };
+    }, action);
+
+    expect(await click('back')).toEqual({ init: INIT, end: END - STEP, shown: ALL });
+    expect(await click('back')).toEqual({ init: INIT, end: END - 2 * STEP, shown: ALL });
+    expect(await click('back')).toEqual({ init: INIT, end: END - 3 * STEP, shown: FIRST_YEAR });
+    expect(await click('back')).toEqual({ init: INIT, end: END - 4 * STEP, shown: FIRST_YEAR });
+    // El fin nunca queda por debajo del inicio.
+    expect(await click('back')).toEqual({ init: INIT, end: INIT, shown: [] });
+    expect(await click('back')).toEqual({ init: INIT, end: INIT, shown: [] });
+    expect(await click('forward')).toEqual({ init: INIT, end: INIT + STEP, shown: FIRST_YEAR });
+
+    // Play: avanza un paso en el acto y sigue hasta el final, donde se detiene.
+    await page.evaluate(() => {
+      window.ranges = [];
+      window.timeline.on('change', ({ reason, date }) => {
+        if (reason === 'range') window.ranges.push(date);
+      });
+      window.timeline.getPlayTimeButton().click();
+    });
+    expect(await page.evaluate(() => window.timeline.running !== false)).toBe(true);
+    await page.waitForFunction(() => window.timeline.running === false);
+    const played = await page.evaluate(() => ({
+      ranges: window.ranges,
+      icon: window.timeline.getPlayTimeButton().classList.contains('g-cartografia-control-siguiente'),
+      title: window.timeline.getPlayTimeButton().title === IDEE.language.getValue('timeline').play,
+      shown: window.timeline.getSelectedLayer().getFeatures().length,
+    }));
+    expect(played.ranges.map(({ init }) => init).every((init) => init === INIT)).toBe(true);
+    expect(played.ranges.map(({ end }) => end)).toEqual([INIT + 2 * STEP, INIT + 3 * STEP, INIT + 4 * STEP, END]);
+    expect(played).toEqual(expect.objectContaining({ icon: true, title: true, shown: 4 }));
+
+    // Play desde el final vuelve a empezar; un segundo clic lo pausa.
+    const replay = await page.evaluate(() => {
+      const t = window.timeline;
+      t.speedDate = 10;
+      t.getPlayTimeButton().click();
+      const state = { running: t.running !== false, end: t.date.end, paused: t.getPlayTimeButton().classList.contains('g-cartografia-control-pausa') };
+      t.getPlayTimeButton().click();
+      return { ...state, afterPause: t.running };
+    });
+    expect(replay).toEqual({
+      running: true, end: INIT + STEP, paused: true, afterPause: false,
+    });
+    expect(errors).toEqual([]);
+  });
+
+  test('relative con formatMove continuous: la ventana avanza y retrocede con ancho constante', async ({ page }) => {
+    const { errors } = await openPage(page);
+    await createGetMap(page, 'relative', RANGE_INTERVALS, ';layerPosition=2;formatMove=continuous;paramsDate=mos;stepValue=6');
+    const INIT = Date.parse('2020-01-01T00:00:00Z');
+    const END = Date.parse('2021-12-31T23:59:59Z');
+    const WIDTH = Date.parse('2020-07-01T00:00:00Z') - INIT;
+    const result = await page.evaluate(() => {
+      const t = window.timeline;
+      const input = t.getElement().querySelector('.m-timeline-date-end');
+      input.value = '2020-07-01T00:00:00Z';
+      input.dispatchEvent(new Event('focusout'));
+      const move = (action) => {
+        const ranges = [];
+        for (let i = 0; i < 6; i += 1) {
+          t.getElement().querySelector(`[data-timeline-action="${action}"]`).click();
+          ranges.push({ ...t.date });
+        }
+        return ranges;
+      };
+      return { forward: move('forward'), back: move('back') };
+    });
+    expect(result.forward.every(({ init, end }) => end - init === WIDTH)).toBe(true);
+    expect(result.back.every(({ init, end }) => end - init === WIDTH)).toBe(true);
+    expect(result.forward.at(-1).end).toBe(END);
+    expect(result.forward.at(-2).end).toBe(END);
+    expect(result.back.at(-1).init).toBe(INIT);
+    expect(errors).toEqual([]);
+  });
+
+  test('absoluteSimple: retroceso, avance y play/pausa recorren los pasos y se detienen en el último', async ({ page }) => {
+    const { errors } = await openPage(page);
+    await createGetMap(page, 'absoluteSimple', [
+      ['GPX por nombre', '2020', 'gpx_nombre'],
+      ['GPX por definición', '2021', `GPX*gpx_definicion*${GPX}*true*true`],
+      ['GPX creada', '2022', `GPX*gpx_creada*${GPX}*true*false`],
+    ], ';layerPosition=1;speed=0.05');
+    const click = (action) => page.evaluate((name) => {
+      const t = window.timeline;
+      t.getElement().querySelector(`[data-timeline-action="${name}"]`).click();
+      return [
+        Number(t.getElement().querySelector('.m-timeline-slider-input').value),
+        window.map.getGPX().filter((layer) => layer.isVisible()).map((layer) => layer.name),
+      ];
+    }, action);
+    expect(await click('back')).toEqual([0, ['gpx_nombre']]);
+    expect(await click('back')).toEqual([0, ['gpx_nombre']]);
+    expect(await click('forward')).toEqual([1, ['gpx_definicion']]);
+    expect(await click('forward')).toEqual([2, ['gpx_creada']]);
+    expect(await click('forward')).toEqual([2, ['gpx_creada']]);
+
+    // Play en el último paso vuelve al primero; durante la reproducción los selectores
+    // de capa están desactivados.
+    const playing = await page.evaluate(() => {
+      const t = window.timeline;
+      t.getPlayTimeButton().click();
+      const button = t.getPlayTimeButton();
+      return {
+        step: Number(t.getElement().querySelector('.m-timeline-slider-input').value),
+        running: t.running !== false,
+        icon: button.classList.contains('g-cartografia-control-pausa'),
+        title: button.title === IDEE.language.getValue('timeline').pause,
+        label: button.getAttribute('aria-label') === button.title,
+        selectorDisabled: t.getElement().querySelector('.m-timeline-names').disabled,
+      };
+    });
+    expect(playing).toEqual({
+      step: 0, running: true, icon: true, title: true, label: true, selectorDisabled: true,
+    });
+    await page.waitForFunction(() => window.timeline.running === false);
+    const stopped = await page.evaluate(() => {
+      const t = window.timeline;
+      return {
+        step: Number(t.getElement().querySelector('.m-timeline-slider-input').value),
+        icon: t.getPlayTimeButton().classList.contains('g-cartografia-control-siguiente'),
+        title: t.getPlayTimeButton().title === IDEE.language.getValue('timeline').play,
+        selectorDisabled: t.getElement().querySelector('.m-timeline-names').disabled,
+      };
+    });
+    expect(stopped).toEqual({
+      step: 2, icon: true, title: true, selectorDisabled: false,
+    });
+
+    // Avanzar durante la reproducción la pausa.
+    const forwarded = await page.evaluate(() => {
+      const t = window.timeline;
+      t.speed = 10;
+      t.playTimeline(false);
+      t.getElement().querySelector('[data-timeline-action="forward"]').click();
+      return {
+        step: Number(t.getElement().querySelector('.m-timeline-slider-input').value),
+        running: t.running,
+      };
+    });
+    expect(forwarded).toEqual({ step: 1, running: false });
+    expect(errors).toEqual([]);
+  });
+
+  test('selector de velocidad: ×1 por defecto y velocidad configurada preseleccionada o añadida', async ({ page }) => {
+    const { errors } = await openPage(page);
+    await createGetMap(page, 'relative', RANGE_INTERVALS, ';layerPosition=2');
+    const result = await page.evaluate(async (intervals) => {
+      const simple = [['A', '2020', 'gpx_nombre'], ['B', '2021', 'gpx_definicion']];
+      const add = async (options) => {
+        window.map.removeControls(window.map.getControls('timeline'));
+        const t = options instanceof IDEE.control.Timeline ? options : new IDEE.control.Timeline({
+          collapsible: false, collapsed: false, ...options,
+        });
+        window.map.addControls(t);
+        await window.whenTimeline(window.map);
+        return t;
+      };
+      const read = (t) => {
+        const select = t.getElement().querySelector('.m-timeline-speed');
+        return {
+          values: [...select.options].map((option) => option.value),
+          texts: [...select.options].map((option) => option.textContent),
+          titles: [...select.options].map((option) => option.title),
+          selected: select.value,
+        };
+      };
+      const relative = { timelineType: 'relative', intervals };
+      const byDefault = read(await add(relative));
+      const four = read(await add({ ...relative, speedDate: 4 }));
+      const three = await add({ ...relative, speedDate: 3 });
+      const threeState = read(three);
+      const events = [];
+      three.on('change', ({ reason }) => events.push(reason));
+      const select = three.getElement().querySelector('.m-timeline-speed');
+      select.value = '2';
+      select.dispatchEvent(new Event('change'));
+      const changed = { speedDate: three.speedDate, events: [...events] };
+      // El control conserva la velocidad elegida al volver a añadirse.
+      const readded = read(await add(three));
+      const simpleDefault = read(await add({ timelineType: 'absoluteSimple', intervals: simple }));
+      const simpleFour = read(await add({ timelineType: 'absoluteSimple', intervals: simple, speed: 0.25 }));
+      return {
+        byDefault, four, threeState, changed, readded, simpleDefault, simpleFour,
+      };
+    }, RANGE_INTERVALS);
+    expect(result.byDefault).toEqual({
+      values: ['0.5', '1', '2', '3', '5'],
+      texts: ['×0,5', '×1', '×2', '×3', '×5'],
+      titles: ['4 s por paso', '2 s por paso', '1 s por paso', '0,67 s por paso', '0,4 s por paso'],
+      selected: '1',
+    });
+    expect(result.four.values).toEqual(['0.5', '1', '2', '3', '5']);
+    expect(result.four.selected).toBe('0.5');
+    expect(result.threeState).toEqual({
+      values: ['0.5', '0.67', '1', '2', '3', '5'],
+      texts: ['×0,5', '×0,67', '×1', '×2', '×3', '×5'],
+      titles: ['4 s por paso', '3 s por paso', '2 s por paso', '1 s por paso', '0,67 s por paso', '0,4 s por paso'],
+      selected: '0.67',
+    });
+    expect(result.changed).toEqual({ speedDate: 1, events: ['speed'] });
+    expect(result.readded.values).toEqual(['0.5', '1', '2', '3', '5']);
+    expect(result.readded.selected).toBe('2');
+    expect(result.simpleDefault.titles).toEqual(['2 s por paso', '1 s por paso', '0,5 s por paso', '0,33 s por paso', '0,2 s por paso']);
+    expect(result.simpleDefault.selected).toBe('1');
+    expect(result.simpleFour.values).toEqual(['0.5', '1', '2', '3', '4', '5']);
+    expect(result.simpleFour.selected).toBe('4');
+    expect(errors).toEqual([]);
+  });
+
+  test('velocidad: el cambio se aplica en el siguiente paso sin cortar la reproducción', async ({ page }) => {
+    const { errors } = await openPage(page);
+    await createGetMap(page, 'relative', RANGE_INTERVALS, ';layerPosition=2;paramsDate=mos;stepValue=1;speedDate=0.04');
+    const result = await page.evaluate(async () => {
+      const t = window.timeline;
+      const delays = [];
+      const original = window.setTimeout;
+      window.setTimeout = (callback, delay, ...rest) => {
+        delays.push(delay);
+        return original(callback, delay, ...rest);
+      };
+      try {
+        t.getPlayTimeButton().click();
+        const select = t.getElement().querySelector('.m-timeline-speed');
+        select.value = '3';
+        select.dispatchEvent(new Event('change'));
+        await new Promise((resolve) => {
+          t.on('change', ({ reason }) => {
+            if (reason === 'range') resolve();
+          });
+        });
+        const state = {
+          speedDate: t.speedDate,
+          running: t.running !== false,
+          delays: delays.filter((delay) => Math.abs(delay - 40) < 1e-6 || Math.abs(delay - 2000 / 3) < 1e-6)
+            .map(Math.round),
+        };
+        t.playTimeline(false);
+        return state;
+      } finally {
+        window.setTimeout = original;
+      }
+    });
+    expect(result).toEqual({ speedDate: 2 / 3, running: true, delays: [40, 667] });
+    expect(errors).toEqual([]);
+  });
+
+  test('animation=false oculta play/pausa y la velocidad y mantiene avance y retroceso', async ({ page }) => {
+    const { errors } = await openPage(page);
+    await createGetMap(page, 'absoluteSimple', [
+      ['GPX por nombre', '2020', 'gpx_nombre'],
+      ['GPX por definición', '2021', `GPX*gpx_definicion*${GPX}*true*true`],
+    ], ';animation=false');
+    const visible = () => page.evaluate(() => {
+      const element = window.map.getControls('timeline')[0].getElement();
+      const shown = (selector) => window.getComputedStyle(element.querySelector(selector)).display !== 'none';
+      return {
+        back: shown('[data-timeline-action="back"]'),
+        play: shown('[data-timeline-action="play"]'),
+        forward: shown('[data-timeline-action="forward"]'),
+        speed: shown('.m-timeline-speed'),
+      };
+    });
+    expect(await visible()).toEqual({
+      back: true, play: false, forward: true, speed: false,
+    });
+    await page.evaluate(async (intervals) => {
+      window.map.removeControls(window.map.getControls('timeline'));
+      window.map.addControls(new IDEE.control.Timeline({
+        timelineType: 'relative', animation: false, collapsible: false, collapsed: false, intervals,
+      }));
+      await window.whenTimeline(window.map);
+    }, RANGE_INTERVALS);
+    expect(await visible()).toEqual({
+      back: true, play: false, forward: true, speed: false,
+    });
+    expect(errors).toEqual([]);
+  });
+
+  test('iconos de icons_cota y textos traducidos (es, en, ca) en los tres modos', async ({ page }) => {
+    const { errors } = await openPage(page);
+    await createGetMap(page, 'relative', RANGE_INTERVALS);
+    const mismatches = await page.evaluate(async (intervals) => {
+      const simple = [['A', '2020', 'gpx_nombre'], ['B', '2021', 'gpx_definicion'], ['C', '2022', 'gpx_nombre']];
+      const icon = (element) => {
+        const style = window.getComputedStyle(element, '::before');
+        return style.maskImage || style.webkitMaskImage;
+      };
+      const errorsFound = [];
+      const check = (condition, message) => {
+        if (!condition) errorsFound.push(message);
+      };
+      /* eslint-disable no-restricted-syntax, no-await-in-loop */
+      for (const lang of ['es', 'en', 'ca']) {
+        IDEE.language.setLang(lang);
+        const text = IDEE.language.getValue('timeline');
+        for (const timelineType of ['absoluteSimple', 'absolute', 'relative']) {
+          const where = `${lang}/${timelineType}`;
+          window.map.removeControls(window.map.getControls('timeline'));
+          const t = new IDEE.control.Timeline({
+            timelineType,
+            collapsible: false,
+            collapsed: false,
+            intervals: timelineType === 'absoluteSimple' ? simple : intervals,
+          });
+          window.map.addControls(t);
+          await window.whenTimeline(window.map);
+          const element = t.getElement();
+          const [back, play, forward] = ['back', 'play', 'forward']
+            .map((action) => element.querySelector(`[data-timeline-action="${action}"]`));
+          const speed = element.querySelector('.m-timeline-speed');
+          const group = element.querySelector('.m-timeline-transport');
+          [[back, text.previous, 'icn_chevron'], [play, text.play, 'icn_play'], [forward, text.next, 'icn_chevron']]
+            .forEach(([button, label, svg]) => {
+              check(button.title === label && button.getAttribute('aria-label') === label, `${where}: texto de ${button.dataset.timelineAction}`);
+              check(button.textContent.trim() === '', `${where}: ${button.dataset.timelineAction} con texto visible`);
+              check(icon(button).includes(`icons_cota/${svg}.svg`), `${where}: icono de ${button.dataset.timelineAction} (${icon(button)})`);
+            });
+          check(speed.title === text.speed && speed.getAttribute('aria-label') === text.speed, `${where}: texto de la velocidad`);
+          check(speed.options[1].title === text.speed_option.replace('{seconds}', timelineType === 'absoluteSimple' ? '1' : '2'), `${where}: opción de velocidad`);
+          check(group.getAttribute('aria-label') === text.playback, `${where}: grupo`);
+          play.click();
+          check(play.title === text.pause && play.getAttribute('aria-label') === text.pause, `${where}: texto de pausa`);
+          check(icon(play).includes('icons_cota/icn_pausa.svg'), `${where}: icono de pausa (${icon(play)})`);
+          play.click();
+          check(t.running === false, `${where}: pausa`);
+        }
+      }
+      /* eslint-enable no-restricted-syntax, no-await-in-loop */
+      IDEE.language.setLang('es');
+      return errorsFound;
+    }, RANGE_INTERVALS);
+    expect(mismatches).toEqual([]);
+    expect(errors).toEqual([]);
+  });
 });

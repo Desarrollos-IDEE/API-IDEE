@@ -243,9 +243,9 @@
           "order":            { "type": "number",  "description": "Accesibilidad: z-index del control.",                                                                   "example": 1                },
           "collapsible":      { "type": "boolean", "description": "Indica si el control puede colapsarse.",                                                                "example": true             },
           "collapsed":        { "type": "boolean", "description": "Indica si el control está colapsado.",                                                                  "example": false            },
-          "animation":        { "type": "boolean", "description": "(**Solo `absoluteSimple`**) Indica si la línea de tiempo se anima automáticamente.",  "default": true, "example": true },
-          "speed":            { "type": "number",  "description": "(**Solo `absoluteSimple`**) Velocidad de la animación en segundos (rango: 1–100).", "minimum": 1, "maximum": 100, "default": 1, "example": 1 },
-          "speedDate":        { "type": "number",  "description": "(**Solo `absolute`/`relative`**) Velocidad de la animación.",                        "example": 2 },
+          "animation":        { "type": "boolean", "description": "Muestra el botón de play/pausa y el selector de velocidad (todos los `timelineType`). Con `false` solo quedan avance y retroceso.",  "default": true, "example": true },
+          "speed":            { "type": "number",  "description": "(**Solo `absoluteSimple`**) Segundos por paso de la reproducción. El valor por defecto (1) es ×1 en el selector de velocidad del panel (×0,5, ×1, ×2, ×3, ×5); otro valor preselecciona su multiplicador (1 / speed) y, si no es uno de esos, se añade al selector.", "minimum": 0, "exclusiveMinimum": true, "default": 1, "example": 1 },
+          "speedDate":        { "type": "number",  "description": "(**Solo `absolute`/`relative`**) Segundos por paso de la reproducción. El valor por defecto (2) es ×1 en el selector de velocidad del panel (×0,5, ×1, ×2, ×3, ×5); otro valor preselecciona su multiplicador (2 / speedDate) y, si no es uno de esos, se añade al selector, p. ej. `speedDate=3` añade ×0,67.", "minimum": 0, "exclusiveMinimum": true, "default": 2, "example": 1 },
           "paramsDate":       {
             "type": "string",
             "description": "(**Solo `absolute`/`relative`**) Unidad de tiempo para los pasos.",
@@ -262,10 +262,9 @@
           },
           "formatMove":       {
             "type": "string",
-            "description": "(**Solo `absolute`/`relative`**) Formato de movimiento del slider.",
+            "description": "(**Solo `absolute`/`relative`**) Movimiento del rango al reproducir, avanzar o retroceder:\n- `discrete` — límite inferior fijo y superior móvil (el rango crece). **Por defecto en `relative`.**\n- `continuous` — ventana deslizante: se mueven los dos límites. **Por defecto en `absolute`.**\n",
             "enum": ["continuous", "discrete"],
-            "default": "continuous",
-            "example": "continuous"
+            "example": "discrete"
           },
           "formatValue":      {
             "type": "string",
