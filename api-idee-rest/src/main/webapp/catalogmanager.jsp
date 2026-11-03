@@ -67,6 +67,14 @@
         <br/>
         <label for="inputPredefinedCatalogs">Catálogos iniciales</label>
         <textarea id="inputPredefinedCatalogs" rows="4" style="width: 50vw;">[{
+            "title": "GNEIS",
+            "url": "https://stac-gneis.idee.es",
+            "authUrl": "https://gneis.desarrollo.guadaltel.es/o/custom-auth/token",
+            "collectionsUrl": "https://gneis.desarrollo.guadaltel.es/o/custom-auth/collections",
+            "public": false,
+            "user": "",
+            "password": ""
+        }, {
             "title": "Astraea Earth",
             "url": "https://eod-catalog-svc-prod.astraea.earth",
             "public": true
@@ -78,14 +86,6 @@
             "title": "Copernicus",
             "url": "https://stac.dataspace.copernicus.eu/v1",
             "public": true
-        }, {
-            "title": "GNEIS",
-            "url": "http://localhost:8090",
-            "authUrl": "https://gneis.desarrollo.guadaltel.es/o/custom-auth/token",
-            "collectionsUrl": "https://gneis.desarrollo.guadaltel.es/o/custom-auth/collections",
-            "public": true,
-            "user": "",
-            "password": ""
         }]</textarea>
         <input type="button" value="Eliminar Plugin" name="eliminar" id="botonEliminar">
     </div>
