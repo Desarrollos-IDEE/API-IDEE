@@ -11,7 +11,12 @@ import { compileSync as compileTemplate } from 'IDEE/util/Template';
 import Popup from 'IDEE/Popup';
 import * as EventType from 'IDEE/event/eventtype';
 import { MapLibreLayer } from '@geoblocks/ol-maplibre-layer';
+import { setWorkerUrl } from 'maplibre-gl';
 import LayerBase from './Layer';
+
+// MapLibre carga su worker desde un fichero aparte: webpack lo publica junto al
+// núcleo (dist/js) y esta URL se resuelve a partir del script del núcleo.
+setWorkerUrl(new URL('maplibre-gl/dist/maplibre-gl-worker.mjs', import.meta.url).toString());
 
 /**
  * @classdesc

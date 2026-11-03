@@ -115,6 +115,13 @@ module.exports = {
           fullySpecified: false,
         },
       },
+      {
+        test: /node_modules[/\\]maplibre-gl[/\\]dist[/\\]maplibre-gl-worker\.mjs$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'js/maplibre-gl-worker.[contenthash:8].js',
+        },
+      },
     ],
   },
   plugins: [
