@@ -105,6 +105,7 @@ const selectHelp = document.getElementById('selectHelp');
 const selectStyle = document.getElementById('selectStyle');
 const selectTurf = document.getElementById('selectTurf');
 const inputSnapping = document.getElementById('inputSnapping');
+const selectProfileGraphs = document.getElementById('selectProfileGraphs');
 
 const boolVal = (select, defaultVal = true) => {
   const v = select.options[select.selectedIndex].value;
@@ -115,7 +116,8 @@ const boolVal = (select, defaultVal = true) => {
 const updatePlugin = () => {
   const options = {};
   options.position = selectPosition.options[selectPosition.selectedIndex].value || 'right';
-  options.collapsed = boolVal(selectCollapsed, false);
+  const collapsed = selectCollapsed.options[selectCollapsed.selectedIndex].value;
+  if (collapsed !== '') options.collapsed = collapsed === 'true';
   options.order = Number(inputOrder.value);
   // Si selection es false automaticamente desactiva "edition" y "analysis"
   options.selection = boolVal(selectSelection);
@@ -127,8 +129,8 @@ const updatePlugin = () => {
   options.help = boolVal(selectHelp);
   options.style = boolVal(selectStyle);
   options.turf = boolVal(selectTurf);
-  // true, false, JSON o base64 (lo valida el plugin)
   options.snapping = inputSnapping.value.trim() || undefined;
+  options.profileGraphs = selectProfileGraphs.value || undefined;
 
   removePlugin();
   createPlugin(options);
@@ -148,6 +150,7 @@ const updatePlugin = () => {
   selectStyle,
   selectTurf,
   inputSnapping,
+  selectProfileGraphs,
 ].forEach((ctrl) => {
   ctrl.addEventListener('change', updatePlugin);
 });

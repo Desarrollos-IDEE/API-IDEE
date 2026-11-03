@@ -138,7 +138,8 @@ export const MEASUREMENT = contract(
  * Devuelve coordenadas y altitud.
  * - calculateProfile(feature: IDEE.Feature): Promise<Array|undefined>.
  * Devuelve puntos [x, y, altitud].
- * - showProfile(profile: Array): void. Muestra el perfil.
+ * - showProfile(profile: Array, graphs: Array<String>|String): void. Muestra el perfil
+ * con las gráficas indicadas ('profile' y/o 'elevationGain').
  * - get3DLength(profile: Array): Number. Devuelve la longitud 3D en metros.
  * @const
  * @type {Array<String>}

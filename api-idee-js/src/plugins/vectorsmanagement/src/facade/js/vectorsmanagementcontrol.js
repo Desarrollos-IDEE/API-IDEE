@@ -62,6 +62,7 @@ export default class VectorsManagementControl extends IDEE.Control {
     style,
     turf,
     snapping,
+    profileGraphs,
     order,
   }) {
     const impl = typeof implementationFactory.vectorsManagement === 'function'
@@ -79,6 +80,8 @@ export default class VectorsManagementControl extends IDEE.Control {
     this.download_ = download;
     this.edition_ = edition;
     this.snapOptions = getSnapOptions(snapping);
+    // Graphs of the topographic profile
+    this.profileGraphs = profileGraphs;
     this.help_ = help;
     this.style_ = style;
     this.turf_ = turf;

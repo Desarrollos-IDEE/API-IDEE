@@ -145,8 +145,9 @@ export default class Analysiscontrol extends IDEE.impl.Control {
    * @function
    * @api
    * @param {Array} coord
+   * @param {Array<String>|String} graphs
    */
-  showProfile(coord) {
+  showProfile(coord, graphs) {
     const lineString = new ol.geom.LineString(coord);
     const feature = new ol.Feature({
       geometry: lineString,
@@ -160,12 +161,14 @@ export default class Analysiscontrol extends IDEE.impl.Control {
         altitude: getValue('altitude'),
         distance: getValue('distanceT'),
         distanceP: getValue('distanceP'),
+        elevationGain: getValue('elevationGain'),
         ytitle: getValue('ytitle'),
         xtitle: getValue('xtitle'),
         altitudeUnits: 'm',
         distanceUnitsM: 'm',
         distanceUnitsKM: 'km',
       },
+      graphs,
       title: getValue('analysisProfile'),
       pointLayer: this.source_,
       width: 400,
@@ -173,6 +176,7 @@ export default class Analysiscontrol extends IDEE.impl.Control {
       controlClassName: 'ol-control-vector',
       downloadClassName: 'vectorsmanagement-icon-descargar',
       draggable: true,
+      centered: true,
       chart: {
         margin: {
           top: 25, left: 55, bottom: 45, right: 25,

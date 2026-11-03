@@ -273,7 +273,7 @@ export default class AnalysisControl extends IDEE.Control {
         } else {
           this.requestProfile_(this.feature).then((profile) => {
             if (profile) {
-              this.getImpl().showProfile(profile);
+              this.getImpl().showProfile(profile, this.managementControl_.profileGraphs);
             }
           }).catch(warnElevationError);
         }
