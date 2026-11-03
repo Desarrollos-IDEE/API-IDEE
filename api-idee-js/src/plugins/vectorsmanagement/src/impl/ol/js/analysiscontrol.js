@@ -2,14 +2,13 @@
  * @module IDEE/impl/control/Analysiscontrol
  */
 
-import Profil from './profilcontrol';
 import { cloneFeature } from './featureutils';
 import { getValue } from '../../../facade/js/i18n/language';
 
 const WGS84 = 'EPSG:4326';
 const MERCATOR = 'EPSG:900913';
 const ELEVATION_PROCESS_URL = 'https://api-processes.idee.es/processes/getElevation/execution';
-const ELEVATION_PROFILE_PROCESS_URL = 'https://api-processes.idee.es/processes/elevationProfile/execution';
+const ELEVATION_PROFILE_DISTANCE = 1000;
 const NO_DATA_VALUE = -9999;
 const { measurements } = require('../../../../../../geoprocesses');
 
@@ -88,10 +87,14 @@ export default class Analysiscontrol extends IDEE.impl.Control {
       coordinates = [].concat(feature.getGeometry().coordinates);
     }
 
-    return this
-      .readAltitudeFromElevationProfileProcess(coordinates, this.facadeMap_.getProjection().code.split(':')[1])
+    const crs = this.facadeMap_.getProjection().code.split(':')[1];
+    return IDEE.elevation.getProfile(coordinates, crs, { distance: ELEVATION_PROFILE_DISTANCE })
+      .catch(() => {
+        IDEE.toast.error(getValue('exception.query_profile'), 6000);
+        return undefined;
+      })
       .then((response) => {
-        if (!response || response === NO_DATA_VALUE) {
+        if (!response) {
           return undefined;
         }
         return response.map((resp) => [resp[0], resp[1], Number(parseFloat(resp[2]).toFixed(2))]);
@@ -150,53 +153,38 @@ export default class Analysiscontrol extends IDEE.impl.Control {
       name: 'Line',
     });
 
-    this.pt = new ol.Feature(new ol.geom.Point([0, 0]));
-    const profil = new Profil({
+    const profil = new IDEE.impl.ol.js.ext.Profil({
       info: {
         zmin: getValue('zmin'),
         zmax: getValue('zmax'),
         altitude: getValue('altitude'),
         distance: getValue('distanceT'),
+        distanceP: getValue('distanceP'),
         ytitle: getValue('ytitle'),
         xtitle: getValue('xtitle'),
         altitudeUnits: 'm',
         distanceUnitsM: 'm',
         distanceUnitsKM: 'km',
       },
-      projection: this.facadeMap_.getProjection().code,
-      map: this.facadeMap_.getMapImpl(),
       title: getValue('analysisProfile'),
       pointLayer: this.source_,
       width: 400,
       height: 200,
+      controlClassName: 'ol-control-vector',
+      downloadClassName: 'vectorsmanagement-icon-descargar',
+      draggable: true,
+      chart: {
+        margin: {
+          top: 25, left: 55, bottom: 45, right: 25,
+        },
+        fontSize: 12,
+        titleFontSize: 14,
+        lineWidth: 5,
+      },
     });
 
     this.facadeMap_.getMapImpl().addControl(profil);
-    const drawPoint = (e) => {
-      if (!this.pt) return;
-      if (e.type === 'over') {
-        this.pt.setGeometry(new ol.geom.Point(e.coord));
-        this.pt.setStyle([new ol.style.Style({
-          image: new ol.style.Circle({
-            radius: 7,
-            fill: new ol.style.Fill({
-              color: '#ff0000',
-            }),
-          }),
-        })]);
-      } else {
-        this.pt.setStyle([]);
-      }
-    };
-
     profil.setGeometry(feature);
-    this.pt.setStyle([]);
-    this.source_.addFeature(this.pt);
-    profil.on(['over', 'out'], (e) => {
-      if (e.type === 'over') profil.popup(`${e.coord[2]} m`);
-      drawPoint(e);
-    });
-
     profil.show();
     // document.querySelector('.m-vectors .m-vectors-loading-container').innerHTML = '';
   }
@@ -438,49 +426,6 @@ export default class Analysiscontrol extends IDEE.impl.Control {
   getProjectionInfo(code) {
     return IDEE.impl.ol.js.projections.getSupportedProjs()
       .filter((p) => p.codes.includes(code))[0];
-  }
-
-  readAltitudeFromElevationProfileProcess(coordinates, srcMapa) {
-    let features = '';
-    coordinates.forEach((element) => {
-      features += `,{"geometry": { "type": "Point", "coordinates": [${element[0]},${element[1]}] } }`;
-    });
-    features = features.substring(1);
-    return new Promise((resolve) => {
-      fetch(ELEVATION_PROFILE_PROCESS_URL, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          'inputs': {
-            'crs': parseInt(srcMapa, 10),
-            'distance': 1000,
-            'geom': `{ "type": "FeatureCollection", "features": [${features}] }`,
-            'withCoord': true,
-          },
-        }),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            IDEE.toast.error(getValue('exception.query_profile'), 6000);
-            return undefined;
-          }
-          return response.json();
-        })
-        .then((response) => {
-          if (!response) {
-            resolve(undefined);
-          } else {
-            resolve(response.values);
-          }
-        })
-        .catch(() => {
-          IDEE.toast.error(getValue('exception.query_profile'), 6000);
-          resolve(undefined);
-        });
-    });
   }
 
   readAltitudeFromElevationProcess(coordinates, srcMapa) {
