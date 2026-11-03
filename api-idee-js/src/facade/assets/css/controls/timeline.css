@@ -94,7 +94,7 @@
     color: #000000;
 }
 
-.m-control-panel.m-control-timeline.opened div#m-timeline-title {
+.m-control-panel.m-control-timeline.opened div.m-timeline-title {
     font-size: var(--idee-font-size-body-l);
     line-height: 40px;
     font-weight: var(--idee-font-weight-bold);
@@ -116,7 +116,7 @@
     font-size: var(--idee-font-size-body-m);
 }
 
-.m-control-panel.m-control-timeline.opened>div.m-panel-controls>div.m-control.m-container.m-timeline>div#m-timeline-title {
+.m-control-panel.m-control-timeline.opened>div.m-panel-controls>div.m-control.m-container.m-timeline>div.m-timeline-title {
     font-size: var(--idee-font-size-body-s);
     padding-left: 0;
     padding-right: 0;
@@ -191,7 +191,7 @@
     width: auto;
 }
 
-.m-control-panel.m-control-timeline.opened #m-timeline-play {
+.m-control-panel.m-control-timeline.opened .m-timeline-play {
     cursor: pointer;
     position: relative;
     width: 13.5px;
@@ -204,11 +204,11 @@
     margin: auto;
 }
 
-.m-control-panel.m-control-timeline.opened #m-timeline-play:hover {
+.m-control-panel.m-control-timeline.opened .m-timeline-play:hover {
     color: var(--idee-color-links) !important;
 }
 
-.m-control-panel.m-control-timeline.opened #m-timeline-play::before {
+.m-control-panel.m-control-timeline.opened .m-timeline-play::before {
     color: var(--idee-color-primary);
     width: 13.5px;
 }
@@ -367,9 +367,9 @@
 
 /* Style Button TimeLineDinamic*/
 
-.m-control-panel.m-control-timeline.opened #m-timelineDinamic-before,
-.m-control-panel.m-control-timeline.opened #m-timelineDinamic-play,
-.m-control-panel.m-control-timeline.opened #m-timelineDinamic-back {
+.m-control-panel.m-control-timeline.opened .m-timelineDinamic-before,
+.m-control-panel.m-control-timeline.opened .m-timelineDinamic-play,
+.m-control-panel.m-control-timeline.opened .m-timelineDinamic-back {
     align-items: center;
     appearance: none;
     background-color: var(--idee-color-primary);
@@ -408,11 +408,25 @@
     width: 900px;
 }
 
-.m-control-panel.m-control-timeline.opened input[disabled]#a {
+.m-control-panel.m-control-timeline.opened input[disabled].m-timeline-range-init {
     opacity: 0;
 }
 
-.m-control-panel.m-control-timeline.opened input[disabled]#init {
+.m-control-panel.m-control-timeline.opened input[disabled].m-timeline-date-init {
     background-color: #cecece;
     cursor: not-allowed;
+}
+.m-control-panel.m-control-timeline.opened .m-timeline-notice {
+    margin: 0 1rem .5rem;
+    padding: .5rem;
+    max-width: 19rem;
+    color: var(--idee-color-neutral-90);
+    background-color: var(--idee-color-neutral-05);
+    border-left: 3px solid var(--idee-color-warning);
+    border-radius: var(--idee-shape-border-radius);
+    font-size: var(--idee-font-size-caption);
+}
+
+.m-control-panel.m-control-timeline.opened .m-timeline-notice[hidden] {
+    display: none;
 }

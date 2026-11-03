@@ -8,11 +8,60 @@
     <meta name="idee" content="yes">
     <title>PRUEBA DESARROLLO</title>
     <link rel="stylesheet" href="./token-vars.css">
+    <style>
+        /* CP-014.js fija data-cp014 ("get" o "manual"); hasta entonces no se muestra ningún bloque. */
+        html:not([data-cp014]) .cp014-get,
+        html:not([data-cp014]) .cp014-manual,
+        html[data-cp014="get"] .cp014-manual,
+        html[data-cp014="manual"] .cp014-get {
+            display: none !important;
+        }
+
+        .cp014-nav {
+            font-weight: 550;
+            width: fit-content;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            gap: .25rem .75rem;
+            font-size: var(--idee-font-size-body-s);
+        }
+
+        .cp014-diagnostics {
+            margin: 0;
+            padding: .5rem;
+            max-height: 10rem;
+            overflow: auto;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            font-size: var(--idee-font-size-caption);
+            background-color: var(--idee-color-neutral-05);
+            border-radius: var(--idee-shape-border-radius);
+        }
+    </style>
 </head>
 
 <body>
     <div class="m-api-idee-test-form-frame">
-        <div class="m-test-form" style="min-height: 12.45rem;">
+        <div class="cp014-nav">
+            <label for="cp014-scenario">Modo de apertura</label>
+            <select id="cp014-scenario">
+                <option value="relative">GET · relative</option>
+                <option value="absolute">GET · absolute</option>
+                <option value="absoluteSimple">GET · absoluteSimple</option>
+                <option value="manual">Manual (programático, sin GET)</option>
+            </select>
+        </div>
+        <div class="m-test-buttons cp014-get">
+            <button id="cp014-refresh" type="button">Refrescar diagnóstico</button>
+            <button id="cp014-next" type="button" class="secondary">Seleccionar siguiente capa</button>
+            <button id="cp014-remove" type="button" class="secondary">Retirar Timeline</button>
+            <button id="cp014-add" type="button" class="secondary">Volver a añadir el mismo Timeline</button>
+        </div>
+        <pre id="cp014-diagnostics" class="cp014-diagnostics cp014-get" aria-live="polite"></pre>
+        <div class="m-test-form cp014-manual" style="min-height: 12.45rem;">
             <div>
                 <label for="selectPosicion">Posición del panel "position"</label>
                 <select name="position" id="selectPosicion">
@@ -60,6 +109,10 @@
                     <option value="absolute">absolute</option>
                     <option value="relative">relative</option>
                 </select>
+            </div>
+            <div>
+                <label for="inputLayerPosition">Capa por defecto por posición "layerPosition" (1 = superior)</label>
+                <input type="number" min="1" name="layerPosition" id="inputLayerPosition">
             </div>
             <div class="origin">
                 <label for="selectIntervals">Selección de intervalos "intervals"</label>
@@ -150,7 +203,7 @@
                 </select>
             </div>
         </div>
-        <div class="m-test-buttons">
+        <div class="m-test-buttons cp014-manual">
             <button id="removeButton">Eliminar Control</button>
         </div>
     </div>

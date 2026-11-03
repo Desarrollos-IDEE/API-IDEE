@@ -21,9 +21,22 @@
       "get": {
         "tags": ["Timeline"],
         "summary": "Configura el control Timeline (GET)",
-        "description": "Genera el código JavaScript que inicializa un mapa IDEE con el control **Timeline**.\n\nUsa el **formato `<campo>=<valor>`**: el parámetro de query es `controls` y su valor tiene la forma `timeline*<campo1>=<valor1>;<campo2>=<valor2>;...`\n\nEl campo `intervals` **debe codificarse en base64**: `intervals=base64~<base64_del_array_JSON>`\n\nEl array JSON contiene sub-arrays posicionales `[name, tag, service]` (para `absoluteSimple`) o `[name, tag, service, init, end]` (para `absolute`/`relative`).\n",
+        "description": "Genera el código JavaScript que inicializa un mapa IDEE con el control **Timeline**.\n\nUsa el **formato `<campo>=<valor>`**: el parámetro de query es `controls` y su valor tiene la forma `timeline*<campo1>=<valor1>;<campo2>=<valor2>;...`\n\nEl campo `intervals` **debe codificarse en base64**: `intervals=base64~<base64_del_array_JSON>`\n\nEl array JSON contiene sub-arrays posicionales `[name, tag, service]` (para `absoluteSimple`) o `[name, tag, service, init, end]` (para `absolute`/`relative`), o el formato extendido `{id, init, end, layer, attributeParam, grupo, equalsTimeLine}` (cualquier `timelineType`).\n\n**Capas del visualizador.** `service` (o su alias `layer`) puede referenciar una capa que ya está en el mapa, por ejemplo una capa GPX añadida con el parámetro `layers` (`layers=GPX*rutas*https://servidor/rutas.gpx*true*true`), por su nombre (`rutas`) o con su misma definición `TIPO*...` (`GPX*rutas*https://servidor/rutas.gpx`): la capa se reutiliza, sin duplicarla. Si la definición no existe en el mapa, Timeline la crea con el mecanismo general de la API. El selector de capas se ordena por posición en el visualizador y `layerPosition` (base 1, 1 = capa superior) elige la capa activada por defecto; sin él se activa la primera compatible.\n\n**Compatibilidad (OpenLayers):** `absoluteSimple` muestra/oculta WMS, WMTS, XYZ, TMS, OSM, MBTiles, MVT, GeoTIFF, MapLibre y capas vectoriales; `absolute`/`relative` filtran WMS (CQL) y capas vectoriales con entidades (GPX, KML, KMZ, GeoJSON, WFS, OGCAPIFeatures, DataIDEE) por `attributeParam`. En Cesium (3D) la funcionalidad temporal aún no está disponible y el panel lo indica.\n",
         "operationId": "timelineGet",
         "parameters": [
+          {
+            "name": "layers",
+            "in": "query",
+            "required": false,
+            "description": "Capas del visualizador separadas por `,`, con el mecanismo general de la API (`TIPO*...`). Timeline puede referenciarlas desde `intervals` por nombre o con la misma definición.\n\nGPX: `GPX*nombre*url*extract*visibility*style`.\n",
+            "schema": { "type": "string" },
+            "examples": {
+              "gpx": {
+                "summary": "Dos capas GPX",
+                "value": "GPX*gpx_nombre*https://servidor/rutas.gpx*true*true,GPX*gpx_definicion*https://servidor/rutas.gpx*true*true"
+              }
+            }
+          },
           {
             "name": "controls",
             "in": "query",
@@ -31,6 +44,11 @@
             "description": "Nombre del control seguido de `*` y los campos de configuración en formato `<campo>=<valor>` separados por `;`.\n\nLos campos `timelineType` e `intervals` son **obligatorios**.\n\nEl campo `intervals` debe ir **codificado en base64**: `intervals=base64~<base64_del_array_JSON>`.\n\nEl array JSON codificado contiene sub-arrays posicionales:\n- **`absoluteSimple`**: `[[name, tag, service], ...]`\n- **`absolute` / `relative`**: `[[name, tag, service, init, end], ...]`\n\nEl campo `service` sigue el formato legado API-REST: `TIPO*url*nombre*...`\n\n**Ejemplo `absoluteSimple`:**\n```\ntimeline*timelineType=absoluteSimple;intervals=base64~<base64>\n```\nDonde `<base64>` = base64 de `[[\"PNOA 2020\",\"pnoa2020\",\"WMTS*url*...\"],...]`\n",
             "schema": { "type": "string" },
             "examples": {
+              "relativeGPX": {
+                "summary": "relative — capas GPX de `layers` (por nombre y por definición) y una GPX nueva, capa por defecto en la posición 2",
+                "description": "`<base64>` = base64 de `[{\"id\":\"por-nombre\",\"init\":\"2020-01-01T00:00:00Z\",\"end\":\"2021-12-31T23:59:59Z\",\"layer\":\"gpx_nombre\",\"attributeParam\":\"time\"},{\"id\":\"por-definicion\",\"init\":\"2020-01-01T00:00:00Z\",\"end\":\"2020-12-31T23:59:59Z\",\"layer\":\"GPX*gpx_definicion*https://servidor/rutas.gpx*true*true\",\"attributeParam\":\"time\"},{\"id\":\"creada\",\"init\":\"2021-01-01T00:00:00Z\",\"end\":\"2021-12-31T23:59:59Z\",\"layer\":\"GPX*gpx_creada*https://servidor/rutas.gpx*true*true\",\"attributeParam\":\"time\"}]`. Usar junto con el ejemplo `gpx` de `layers`.",
+                "value": "timeline*timelineType=relative;layerPosition=2;collapsed=false;intervals=base64~W3siaWQiOiJwb3Itbm9tYnJlIiwiaW5pdCI6IjIwMjAtMDEtMDFUMDA6MDA6MDBaIiwiZW5kIjoiMjAyMS0xMi0zMVQyMzo1OTo1OVoiLCJsYXllciI6ImdweF9ub21icmUiLCJhdHRyaWJ1dGVQYXJhbSI6InRpbWUifSx7ImlkIjoicG9yLWRlZmluaWNpb24iLCJpbml0IjoiMjAyMC0wMS0wMVQwMDowMDowMFoiLCJlbmQiOiIyMDIwLTEyLTMxVDIzOjU5OjU5WiIsImxheWVyIjoiR1BYKmdweF9kZWZpbmljaW9uKmh0dHBzOi8vc2Vydmlkb3IvcnV0YXMuZ3B4KnRydWUqdHJ1ZSIsImF0dHJpYnV0ZVBhcmFtIjoidGltZSJ9LHsiaWQiOiJjcmVhZGEiLCJpbml0IjoiMjAyMS0wMS0wMVQwMDowMDowMFoiLCJlbmQiOiIyMDIxLTEyLTMxVDIzOjU5OjU5WiIsImxheWVyIjoiR1BYKmdweF9jcmVhZGEqaHR0cHM6Ly9zZXJ2aWRvci9ydXRhcy5ncHgqdHJ1ZSp0cnVlIiwiYXR0cmlidXRlUGFyYW0iOiJ0aW1lIn1d"
+              },
               "absoluteSimple": {
                 "summary": "absoluteSimple — 3 capas PNOA",
                 "value": "timeline*timelineType=absoluteSimple;animation=true;intervals=base64~W1siTkFDSU9OQUwgMTk4MS0xOTg2IiwiMTk4NiIsIldNUypOQUNJT05BTF8xOTgxLTE5ODYqaHR0cHM6Ly93d3cuaWduLmVzL3dtcy9wbm9hLWhpc3RvcmljbypOQUNJT05BTF8xOTgxLTE5ODYiXSxbIk9MSVNUQVQiLCIxOTk4IiwiV01TKk9MSVNUQVQqaHR0cHM6Ly93d3cuaWduLmVzL3dtcy9wbm9hLWhpc3RvcmljbypPTElTVEFUIl0sWyJTSUdQQUMiLCIyMDAzIiwiV01TKlNJR1BBQypodHRwczovL3d3dy5pZ24uZXMvd21zL3Bub2EtaGlzdG9yaWNvKlNJR1BBQyJdLFsiUE5PQSAyMDA0IiwiMjAwNCIsIldNUypwbm9hMjAwNCpodHRwczovL3d3dy5pZ24uZXMvd21zL3Bub2EtaGlzdG9yaWNvKnBub2EyMDA0Il0sWyJQTk9BIDIwMDUiLCIyMDA1IiwiV01TKnBub2EyMDA1Kmh0dHBzOi8vd3d3Lmlnbi5lcy93bXMvcG5vYS1oaXN0b3JpY28qcG5vYTIwMDUiXSxbIlBOT0EgMjAwNiIsIjIwMDYiLCJXTVMqcG5vYTIwMDYqaHR0cHM6Ly93d3cuaWduLmVzL3dtcy9wbm9hLWhpc3Rvcmljbypwbm9hMjAwNiJdLFsiUE5PQSAyMDEwIiwiMjAxMCIsIldNUypwbm9hMjAxMCpodHRwczovL3d3dy5pZ24uZXMvd21zL3Bub2EtaGlzdG9yaWNvKnBub2EyMDEwIl1d"
@@ -219,6 +237,7 @@
               }
             ]
           },
+          "layerPosition":    { "type": "integer", "description": "Posición en el visualizador de la capa activada por defecto: base 1 y contada desde arriba, como en el LayerSwitcher (1 = capa superior). Si no se indica, o en esa posición no hay una capa compatible, se activa la primera compatible. No confundir con `position` (posición del panel).", "minimum": 1, "example": 2 },
           "position":         { "type": "string",  "description": "Posición del control en el mapa.",                                                                    "example": "left"           },
           "tooltip":          { "type": "string",  "description": "Texto del tooltip del control.",                                                                        "example": "Línea temporal" },
           "order":            { "type": "number",  "description": "Accesibilidad: z-index del control.",                                                                   "example": 1                },
@@ -264,7 +283,7 @@
         "properties": {
           "name":    { "type": "string", "description": "Nombre visible del intervalo en el slider.", "example": "PNOA 2020"    },
           "tag":     { "type": "string", "description": "Identificador interno del intervalo.",       "example": "pnoa2020"     },
-          "service": { "type": "string", "description": "Capa en formato legado API-REST: `TIPO*url*nombre*...*parámetros`.", "example": "WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*PNOA MA*true*image/jpeg" }
+          "service": { "type": "string", "description": "Capa: definición de la API `TIPO*...` (WMS, WMTS, GPX, KML, GeoJSON...), interpretada con el mecanismo general de construcción de capas, o nombre/leyenda de una capa que ya está en el visualizador (se reutiliza). Alias: `layer`.", "example": "WMTS*https://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*PNOA MA*true*image/jpeg" }
         }
       },
       "IntervalDateDto": {
@@ -274,9 +293,14 @@
         "properties": {
           "name":    { "type": "string", "description": "Nombre visible del intervalo.",              "example": "Ortofoto histórica" },
           "tag":     { "type": "string", "description": "Identificador interno del intervalo.",       "example": "orto_historica"     },
-          "service": { "type": "string", "description": "Capa en formato legado API-REST.",           "example": "WMS*https://pnoa.ign.es/web/wcs/pnoa/ows?*Mosaic*false*Mosaico PNOA*true" },
-          "init":    { "type": "string", "description": "Fecha de inicio del intervalo.",             "example": "2000"               },
-          "end":     { "type": "string", "description": "Fecha de fin del intervalo.",               "example": "2023"               }
+          "service": { "type": "string", "description": "Capa: definición de la API `TIPO*...` o nombre/leyenda de una capa del visualizador (se reutiliza sin duplicarla). Alias: `layer`.", "example": "WMS*https://pnoa.ign.es/web/wcs/pnoa/ows?*Mosaic*false*Mosaico PNOA*true" },
+          "layer":   { "type": "string", "description": "Alias de `service` (formato extendido).", "example": "GPX*rutas*https://servidor/rutas.gpx*true*true" },
+          "id":      { "type": "string", "description": "Identificador del intervalo (formato extendido). Permite seleccionarlo con `selectLayer(id)`.", "example": "rutas" },
+          "attributeParam": { "type": "string", "description": "Atributo temporal que se filtra: CQL en WMS o atributo de las entidades en capas vectoriales (en GPX, `time`). Admite fechas ISO/UTC, timestamps en milisegundos y años `YYYY`; las entidades sin fecha válida se ocultan.", "example": "time" },
+          "grupo":   { "type": "string", "description": "Nombre de grupo: los intervalos del mismo grupo se activan juntos.", "example": "Rutas" },
+          "equalsTimeLine": { "type": "boolean", "description": "En WMS, filtra por igualdad con la fecha final (`attr = 'fin'`). En `absolute` es siempre verdadero.", "example": false },
+          "init":    { "type": "string", "description": "Fecha de inicio del intervalo (ISO 8601 o año `YYYY`, que equivale al 1 de enero UTC).", "example": "2000"               },
+          "end":     { "type": "string", "description": "Fecha de fin del intervalo (ISO 8601 o año `YYYY`, que equivale al 31 de diciembre UTC).", "example": "2023"               }
         }
       }
     }
