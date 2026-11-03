@@ -1,5 +1,6 @@
 import DrawRegular from 'ol-ext/interaction/DrawRegular';
 import SnapManager from './snapmanager';
+import { cloneFeature, extentFeature } from './featureutils';
 
 /**
  * @module IDEE/impl/control/Creationcontrol
@@ -59,38 +60,39 @@ export default class Creationcontrol extends IDEE.impl.Control {
   }
 
   /**
-   * This function set ol vector source
+   * This function sets the layer where features are drawn
    *
    * @public
    * @function
-   * @param {*} source ol layer source
+   * @param {IDEE.layer.Vector} layer layer selected for management
    * @api stable
    */
-  setVectorSource(source) {
-    this.vectorSource_ = source;
+  setLayer(layer) {
+    this.vectorSource_ = layer.getImpl().getLayer().getSource();
   }
 
   /**
-   * Returns vector source
+   * Removes all features of the drawing vector source
    *
    * @public
    * @function
    * @api stable
    */
-  getVectorSource() {
-    return this.vectorSource_;
+  clearVectorSource() {
+    this.vectorSource_.clear(true);
   }
 
   /**
    * This function adds draw interaction to map.
    * @public
    * @function
-   * @param {Object} snapOptions - snap options
+   * @param {String} geometry type of geometry ['Point', 'LineString', 'Polygon']
+   * @param {Object} snapOptions snap options
    * @api
    */
-  addDrawInteraction(snapOptions) {
+  addDrawInteraction(geometry, snapOptions) {
     const olMap = this.facadeMap_.getMapImpl();
-    this.draw = this.newDrawInteraction(this.vectorSource_, this.facadeControl.geometry);
+    this.draw = this.newDrawInteraction(this.vectorSource_, geometry);
     this.addDrawEvent();
     olMap.addInteraction(this.draw);
     this.snapManager_.enable(this.draw, () => this.facadeControl.getLayer(), snapOptions);
@@ -98,14 +100,14 @@ export default class Creationcontrol extends IDEE.impl.Control {
 
   /**
    * Defines function to be executed on click on draw interaction.
-   * Creates feature with drawing and adds it to map.
+   * Notifies the drawn feature to the facade control.
    * @public
    * @function
    * @api
    */
   addDrawEvent() {
     this.draw.on('drawend', (event) => {
-      this.facadeControl.onDraw(event);
+      this.facadeControl.onDraw({ feature: IDEE.impl.Feature.feature2Facade(event.feature) });
     });
   }
 
@@ -143,7 +145,7 @@ export default class Creationcontrol extends IDEE.impl.Control {
    */
   addDrawFigureEvent() {
     this.drawRegular.on('drawend', (event) => {
-      this.facadeControl.onDrawFigure(event);
+      this.facadeControl.onDrawFigure({ feature: this.convertToMFeatures(event.feature) });
     });
   }
 
@@ -205,7 +207,7 @@ export default class Creationcontrol extends IDEE.impl.Control {
    * @function
    * @api
    * @param {OLVectorSource} vectorSource -
-   * @param {String} geometry - type of geometry ['Point', 'LineString', 'Polygon']
+   * @param {String} geometry type of geometry ['Point', 'LineString', 'Polygon']
    */
   newDrawInteraction(vectorSource, geometry) {
     return new ol.interaction.Draw({
@@ -215,56 +217,75 @@ export default class Creationcontrol extends IDEE.impl.Control {
   }
 
   /**
-   * Creates polygon feature from extent.
-   * @public
-   * @function
-   * @api
-   * @param {Array} extent - geometry extent
-   */
-  newPolygonFeature(extent) {
-    return new ol.Feature({ geometry: ol.geom.Polygon.fromExtent(extent) });
-  }
-
-  /**
    * Creates point feature from coordinates.
    * @public
    * @function
    * @api
    * @param {Array} coordinates
-   * @param {Integer} srs
+   * @param {String} srs coordinates projection
+   * @returns {IDEE.Feature} point in map projection
    */
-  drawPointFeature(coordinates, srs) {
+  createPointFeature(coordinates, srs) {
     const mapSRS = this.facadeMap_.getProjection().code;
     const finalCoordinates = ol.proj.transform(coordinates, srs, mapSRS);
     const feature = new ol.Feature({ geometry: new ol.geom.Point(finalCoordinates) });
-    const mfeature = this.convertToMFeatures(feature);
-    this.facadeControl.getLayer().addFeatures([mfeature]);
-    this.facadeMap_.setCenter(finalCoordinates);
-    return mfeature;
+    return this.convertToMFeatures(feature);
   }
 
   /**
-   * Creates current feature clone.
+   * Creates a multiple geometry feature from the coordinates of its parts.
    * @public
    * @function
    * @api
+   * @param {String} type MultiPoint, MultiLineString or MultiPolygon
+   * @param {Array} coordinates coordinates of the parts
+   * @returns {IDEE.Feature} multiple geometry feature
    */
-  getApiIdeeFeatureClone() {
-    // eslint-disable-next-line no-underscore-dangle
-    const implFeatureClone = this.facadeControl.feature.getImpl().olFeature_.clone();
-    const emphasis = IDEE.impl.Feature.feature2Facade(implFeatureClone);
-    return emphasis;
+  createMultiGeometryFeature(type, coordinates) {
+    const geometryConstructors = {
+      MultiPoint: ol.geom.MultiPoint,
+      MultiLineString: ol.geom.MultiLineString,
+      MultiPolygon: ol.geom.MultiPolygon,
+    };
+    const Geometry = geometryConstructors[type];
+    const geometry = new Geometry(coordinates);
+    return IDEE.impl.Feature.feature2Facade(new ol.Feature({ geometry }));
   }
 
   /**
-   * Gets extent of feature
+   * Gets coordinates of a feature.
    * @public
    * @function
    * @api
-   * @param {IDEE.Featuer} apiIdeeFeature
+   * @param {IDEE.Feature} feature
+   * @returns {Array} coordinates in map projection
    */
-  getFeatureExtent(feature) {
-    return feature.getImpl().getFeature().getGeometry().getExtent();
+  getFeatureCoordinates(feature) {
+    return feature.getImpl().getFeature().getGeometry().getCoordinates();
+  }
+
+  /**
+   * Creates feature clone.
+   * @public
+   * @function
+   * @api
+   * @param {IDEE.Feature} feature
+   * @returns {IDEE.Feature} clone
+   */
+  getApiIdeeFeatureClone(feature) {
+    return cloneFeature(feature);
+  }
+
+  /**
+   * Creates polygon feature from the extent of a feature.
+   * @public
+   * @function
+   * @api
+   * @param {IDEE.Feature} feature
+   * @returns {IDEE.Feature} extent polygon
+   */
+  getExtentFeature(feature) {
+    return extentFeature(feature);
   }
 
   /**

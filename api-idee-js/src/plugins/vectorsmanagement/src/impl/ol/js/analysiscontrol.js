@@ -3,6 +3,7 @@
  */
 
 import Profil from './profilcontrol';
+import { cloneFeature } from './featureutils';
 import { getValue } from '../../../facade/js/i18n/language';
 
 const WGS84 = 'EPSG:4326';
@@ -40,8 +41,6 @@ export default class Analysiscontrol extends IDEE.impl.Control {
     this.facadeMap_.getMapImpl().addLayer(this.vector_);
 
     this.distance_ = 30;
-
-    this.arrayXYZ = null;
   }
 
   /**
@@ -62,39 +61,6 @@ export default class Analysiscontrol extends IDEE.impl.Control {
      * @type {IDEE.map}
      */
     this.facadeMap_ = map;
-
-    /**
-     * OL vector source for draw interactions.
-     * @private
-     * @type {*} - OpenLayers vector source
-     */
-    this.olLayer_ = undefined;
-  }
-
-  /**
-   * This function set the OL layer selected for management
-   *
-   * @public
-   * @function
-   * @api stable
-   * @param {ol.layer} olLayer
-   */
-  setOLLayer(olLayer) {
-    this.olLayer_ = olLayer;
-  }
-
-  /**
-   * Creates feature clone.
-   * @public
-   * @function
-   * @api
-   * @param {IDEE.Feature} mFeature
-   */
-  getApiIdeeFeatureClone(mFeature) {
-    // eslint-disable-next-line no-underscore-dangle
-    const implFeatureClone = mFeature.getImpl().olFeature_.clone();
-    const emphasis = IDEE.impl.Feature.feature2Facade(implFeatureClone);
-    return emphasis;
   }
 
   /**
@@ -103,9 +69,9 @@ export default class Analysiscontrol extends IDEE.impl.Control {
    * @function
    * @api
    * @param {IDEE.Feature} feature
+   * @returns {Promise<Array|undefined>} profile coordinates [x, y, altitude],
    */
-  calculateProfile(feature, id, show = true) {
-    const altitudes = [];
+  calculateProfile(feature) {
     let coordinates = [];
 
     if (feature.getGeometry().type === 'MultiLineString') {
@@ -122,34 +88,14 @@ export default class Analysiscontrol extends IDEE.impl.Control {
       coordinates = [].concat(feature.getGeometry().coordinates);
     }
 
-    let altitudeFromElevationProfileProcess;
-    const promesa = new Promise((success) => {
-      altitudeFromElevationProfileProcess = this
-        .readAltitudeFromElevationProfileProcess(coordinates, this.facadeMap_.getProjection().code.split(':')[1]);
-      success(altitudeFromElevationProfileProcess);
-    });
-
-    // IDEE.proxy(false);
-    promesa.then((response) => {
-      // IDEE.proxy(true);
-      document.querySelector('#vectorsmanagement-analysis-btn-container').classList.add('closed');
-      document.querySelector('#vectorsmanagement-analysis-div').innerHTML = '';
-      document.querySelector('#vectorsmanagement-analysis-div').style.height = '0';
-
-      if (response && response !== NO_DATA_VALUE) {
-        response.forEach((resp) => {
-          altitudes.push([resp[0], resp[1], Number(parseFloat(resp[2]).toFixed(2))]);
-        });
-        if (show) {
-          this.showProfile(altitudes);
+    return this
+      .readAltitudeFromElevationProfileProcess(coordinates, this.facadeMap_.getProjection().code.split(':')[1])
+      .then((response) => {
+        if (!response || response === NO_DATA_VALUE) {
+          return undefined;
         }
-        this.arrayXYZ = altitudes;
-        this.calculate3DLength(id);
-      }
-    }).catch(() => {
-      console.warn('Error reading elevation profile'); // eslint-disable-line no-console
-      // IDEE.proxy(true)
-    });
+        return response.map((resp) => [resp[0], resp[1], Number(parseFloat(resp[2]).toFixed(2))]);
+      });
   }
 
   /**
@@ -158,6 +104,8 @@ export default class Analysiscontrol extends IDEE.impl.Control {
    * @function
    * @api
    * @param {IDEE.Feature} feature
+   * @returns {Promise<Object|undefined>} point coordinates in map and geographic
+   * projections with its altitude in meters.
    */
   calculatePoint(feature) {
     const coordinates = feature.getGeometry().coordinates;
@@ -177,28 +125,15 @@ export default class Analysiscontrol extends IDEE.impl.Control {
       },
     };
 
-    let altitudeFromElevationProcess;
-    const promesa = new Promise((success) => {
-      altitudeFromElevationProcess = this
-        .readAltitudeFromElevationProcess(coordinates, this.facadeMap_.getProjection().code.split(':')[1]);
-      success(altitudeFromElevationProcess);
-    });
-
-    // IDEE.proxy(false);
-    promesa.then((response) => {
-      // IDEE.proxy(true);
-      document.querySelector('#vectorsmanagement-analysis-btn-container').classList.remove('closed');
-      document.querySelector('#vectorsmanagement-analysis-div').innerHTML = '';
-      document.querySelector('#vectorsmanagement-analysis-div').style.height = '0';
-      if (response && response !== NO_DATA_VALUE) {
-        altitudeFromElevationProcess = parseFloat(response).toFixed(2).replace('.', ',');
-        pointXYZ.altitude = altitudeFromElevationProcess;
-        this.facadeControl.showPointProfile(pointXYZ);
-      }
-    }).catch(() => {
-      console.warn('Error reading elevation profile'); // eslint-disable-line no-console
-      // IDEE.proxy(true)
-    });
+    return this
+      .readAltitudeFromElevationProcess(coordinates, this.facadeMap_.getProjection().code.split(':')[1])
+      .then((response) => {
+        if (!response || response === NO_DATA_VALUE) {
+          return undefined;
+        }
+        pointXYZ.altitude = parseFloat(response);
+        return pointXYZ;
+      });
   }
 
   /**
@@ -378,9 +313,15 @@ export default class Analysiscontrol extends IDEE.impl.Control {
     return length;
   }
 
-  calculate3DLength(elem) {
-    const $td = elem;
-    const points = this.arrayXYZ;
+  /**
+   * Calculates the 3D length of a topographic profile
+   * @public
+   * @function
+   * @api
+   * @param {Array} points profile coordinates [x, y, altitude]
+   * @returns {Number} length in meters
+   */
+  get3DLength(points) {
     let length = 0;
     for (let i = 0; i < points.length - 1; i += 1) {
       const a = points[i];
@@ -397,12 +338,7 @@ export default class Analysiscontrol extends IDEE.impl.Control {
       }
     }
 
-    let m = `${((length / 1000).toFixed(2)).replace('.', ',')} km`;
-    if (length < 1000) {
-      m = `${((length).toFixed(2)).replace('.', ',')} m`;
-    }
-
-    $td.innerHTML = `${m}`;
+    return length;
   }
 
   calculateFeatureLengthEllipsoidal(feature) {
@@ -424,10 +360,6 @@ export default class Analysiscontrol extends IDEE.impl.Control {
     return length;
   }
 
-  get3DLength(id, feature) {
-    this.calculateProfile(feature, id, false);
-  }
-
   getAreaGeoJSON(features) {
     const geoFormat = new IDEE.impl.format.GeoJSON();
     const src = this.facadeMap_.getProjection().code;
@@ -446,6 +378,66 @@ export default class Analysiscontrol extends IDEE.impl.Control {
 
       return featureJSON;
     });
+  }
+
+  /**
+   * Creates a buffer feature of a feature.
+   * @public
+   * @function
+   * @api
+   * @param {IDEE.Feature} feature
+   * @param {Number} distance buffer distance in meters
+   * @param {*} parentId identifier of the layer of the feature
+   * @returns {IDEE.Feature} buffer feature
+   */
+  createBufferFeature(feature, distance, parentId) {
+    const projection = this.facadeMap_.getProjection().code;
+    const olFeature = cloneFeature(feature).getImpl().getFeature();
+    this.setStyle('rgba(113, 167, 211)', olFeature);
+    const format = new ol.format.GeoJSON();
+    olFeature.getGeometry().transform(projection, 'EPSG:4326');
+    const turfGeom = format.writeFeatureObject(olFeature);
+    const buffered = turf.buffer(turfGeom, parseInt(distance, 10), { units: 'meters' });
+    olFeature.setGeometry(format.readFeature(buffered).getGeometry().transform('EPSG:4326', projection));
+    olFeature.set('parentID', parentId);
+    return IDEE.impl.Feature.feature2Facade(olFeature);
+  }
+
+  /**
+   * Gets the identifier of a layer
+   * @public
+   * @function
+   * @api
+   * @param {IDEE.layer.Vector} layer
+   * @returns {*} layer identifier
+   */
+  getLayerId(layer) {
+    return layer.getImpl().getLayer().ol_uid;
+  }
+
+  /**
+   * Gets the identifier of the layer a buffer feature was created from
+   * @public
+   * @function
+   * @api
+   * @param {IDEE.Feature} feature buffer feature
+   * @returns {*} layer identifier
+   */
+  getParentId(feature) {
+    return feature.getImpl().getFeature().get('parentID');
+  }
+
+  /**
+   * Gets the description of a supported projection
+   * @public
+   * @function
+   * @api
+   * @param {String} code projection code
+   * @returns {Object} projection description (codes, units, datum, proj)
+   */
+  getProjectionInfo(code) {
+    return IDEE.impl.ol.js.projections.getSupportedProjs()
+      .filter((p) => p.codes.includes(code))[0];
   }
 
   readAltitudeFromElevationProfileProcess(coordinates, srcMapa) {

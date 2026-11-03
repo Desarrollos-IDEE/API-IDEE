@@ -1,7 +1,6 @@
 /**
  * @module IDEE/control/StyleControl
  */
-import StyleImplControl from 'impl/stylecontrol';
 import template from '../../templates/style';
 import { getValue } from './i18n/language';
 
@@ -16,14 +15,8 @@ export default class StyleControl extends IDEE.Control {
    * @api stable
    */
   constructor(map, managementControl) {
-    if (IDEE.utils.isUndefined(StyleImplControl) || (IDEE.utils.isObject(StyleImplControl)
-      && IDEE.utils.isNullOrEmpty(Object.keys(StyleImplControl)))) {
-      IDEE.exception(getValue('exception.impl_stylecontrol'));
-    }
-
-    const impl = new StyleImplControl();
+    const impl = new IDEE.impl.Control();
     super('Style', impl);
-    impl.facadeControl = this;
 
     this.map_ = map;
 

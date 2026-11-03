@@ -2,6 +2,7 @@
  * @module IDEE/control/VectorsManagementControl
  */
 
+import implementationFactory from 'impl/implementationfactory';
 import template from '../../templates/vectorsmanagement';
 import { getValue } from './i18n/language';
 import SelectionControl from './selectioncontrol';
@@ -14,6 +15,7 @@ import HelpControl from './helpcontrol';
 import StyleControl from './stylecontrol';
 import TurfControl from './turfcontrol';
 import { getSnapOptions } from './snapoptions';
+import { EDITING_AREA, implementsContracts } from './contracts';
 
 /**
  * @classdesc
@@ -62,7 +64,9 @@ export default class VectorsManagementControl extends IDEE.Control {
     snapping,
     order,
   }) {
-    const impl = new IDEE.impl.Control();
+    const impl = typeof implementationFactory.vectorsManagement === 'function'
+      ? implementationFactory.vectorsManagement()
+      : new IDEE.impl.Control();
     super('VectorsManagement', impl, {});
 
     const allLayers = map
@@ -99,6 +103,19 @@ export default class VectorsManagementControl extends IDEE.Control {
 
     // order
     this.order = order;
+  }
+
+  /**
+   * Creates the platform implementation of a control.
+   *
+   * @private
+   * @function
+   * @param {String} capability factory entry
+   * @returns {Object|undefined} implementation, undefined if the platform does not provide it
+   */
+  createImplementation_(capability) {
+    const create = implementationFactory[capability];
+    return typeof create === 'function' ? create(this.map_) : undefined;
   }
 
   /**
@@ -427,7 +444,7 @@ export default class VectorsManagementControl extends IDEE.Control {
 
   updateEditingAvailability() {
     const isEditing = this.isSessionLayer_(this.selectedLayer)
-      && this.map_.getImplementation() === 'ol';
+      && implementsContracts(this.getImpl(), EDITING_AREA);
     this.editingPanel_.hidden = !isEditing;
     const isEditable = !isEditing || Boolean(this.editingSession_);
     ['creation', 'edition'].forEach((id) => {
@@ -572,14 +589,7 @@ export default class VectorsManagementControl extends IDEE.Control {
     let prepared = null;
     const targetLayer = this.selectedLayer;
     try {
-      const nativeMap = this.map_.getMapImpl();
-      const size = nativeMap.getSize();
-      const view = nativeMap.getView();
-      const bbox = ol.proj.transformExtent(
-        view.calculateExtent(size),
-        view.getProjection(),
-        'EPSG:4326',
-      );
+      const bbox = this.getImpl().getViewExtent();
       prepared = await targetLayer.beginEditing({ bbox });
       if (targetLayer !== this.selectedLayer) {
         targetLayer.endEditing(false);
@@ -596,7 +606,7 @@ export default class VectorsManagementControl extends IDEE.Control {
         this.editingStatus_.textContent = state.error?.message
           || getValue('editing_pending').replace('{count}', String(state.count));
       });
-      this.addEditingBoundary_(nativeMap, bbox, view.getProjection());
+      this.getImpl().addEditingBoundary(bbox);
       this.editingStatus_.textContent = getValue('editing_fixed_area').replace(
         '{count}',
         String(prepared.features.length),
@@ -682,29 +692,10 @@ export default class VectorsManagementControl extends IDEE.Control {
     this.editingUnsubscribe_ = null;
     this.editingSession_ = null;
     this.selectedLayer.endEditing(refresh);
-    if (this.editingBoundary_) this.map_.getMapImpl().removeLayer(this.editingBoundary_);
-    this.editingBoundary_ = null;
+    this.getImpl().removeEditingBoundary();
     this.toggleEditingActions(false);
     this.updateEditingAvailability();
     this.editingStatus_.textContent = '';
-  }
-
-  addEditingBoundary_(nativeMap, bbox, projection) {
-    const extent = ol.proj.transformExtent(bbox, 'EPSG:4326', projection);
-    const feature = new ol.Feature(ol.geom.Polygon.fromExtent(extent));
-    this.editingBoundary_ = new ol.layer.Vector({
-      source: new ol.source.Vector({ features: [feature] }),
-      style: new ol.style.Style({
-        fill: new ol.style.Fill({ color: 'rgba(0, 0, 0, 0)' }),
-        stroke: new ol.style.Stroke({
-          color: '#e67e22',
-          width: 2,
-          lineDash: [8, 5],
-        }),
-      }),
-    });
-    this.editingBoundary_.setZIndex(20000);
-    nativeMap.addLayer(this.editingBoundary_);
   }
 
   /**
@@ -716,7 +707,7 @@ export default class VectorsManagementControl extends IDEE.Control {
    * @api stable
    */
   addSelectionControl(html) {
-    this.selectionControl = new SelectionControl(this.map_, this);
+    this.selectionControl = new SelectionControl(this.map_, this, this.createImplementation_('selection'));
     html
       .querySelector('#m-vectorsmanagement-selection')
       .addEventListener('click', (event) => {
@@ -763,7 +754,7 @@ export default class VectorsManagementControl extends IDEE.Control {
    * @api stable
    */
   addAnalysisControl(html) {
-    this.analysisControl = new AnalysisControl(this.map_, this);
+    this.analysisControl = new AnalysisControl(this.map_, this, this.createImplementation_('analysis'));
     html
       .querySelector('#m-vectorsmanagement-analysis')
       .addEventListener('click', (event) => {
@@ -784,7 +775,7 @@ export default class VectorsManagementControl extends IDEE.Control {
    * @api stable
    */
   addCreationControl(html) {
-    this.creationControl = new CreationControl(this.map_, this);
+    this.creationControl = new CreationControl(this.map_, this, this.createImplementation_('creation'));
     html
       .querySelector('#m-vectorsmanagement-creation')
       .addEventListener('click', (event) => {
@@ -836,7 +827,7 @@ export default class VectorsManagementControl extends IDEE.Control {
    * @api stable
    */
   addEditionControl(html) {
-    this.editionControl = new EditionControl(this.map_, this);
+    this.editionControl = new EditionControl(this.map_, this, this.createImplementation_('edition'));
     html
       .querySelector('#m-vectorsmanagement-edition')
       .addEventListener('click', (event) => {
@@ -916,7 +907,7 @@ export default class VectorsManagementControl extends IDEE.Control {
    * @api stable
    */
   addTurfControl(html) {
-    this.turfControl = new TurfControl(this.map_, this);
+    this.turfControl = new TurfControl(this.map_, this, this.createImplementation_('turf'));
     html
       .querySelector('#m-vectorsmanagement-turf')
       .addEventListener('click', (event) => {

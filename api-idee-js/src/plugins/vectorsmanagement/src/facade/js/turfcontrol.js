@@ -1,9 +1,9 @@
 /**
  * @module IDEE/control/TurfControl
  */
-import TurfImplControl from 'impl/turfcontrol';
 import template from '../../templates/turf';
 import { getValue } from './i18n/language';
+import { GEOJSON_CONVERSION, requireImplementation } from './contracts';
 import { CATEGORIES, OPERATIONS, getOperation } from './turf/turfoperations';
 import LayerOperationRunner from './turf/layeroperationrunner';
 import InputResolver from './turf/layers/inputresolver';
@@ -25,18 +25,15 @@ export default class TurfControl extends IDEE.Control {
   *
   * @constructor
   * @extends {IDEE.Control}
+  * @param {IDEE.Map} map
+  * @param {VectorsManagementControl} managementControl
+  * @param {Object} impl platform implementation (GEOJSON_CONVERSION)
   * @api stable
   */
-  constructor(map, managementControl) {
-    if (IDEE.utils.isUndefined(TurfImplControl) || (IDEE.utils.isObject(TurfImplControl)
-      && IDEE.utils.isNullOrEmpty(Object.keys(TurfImplControl)))) {
-      IDEE.exception(getValue('exception.impl_turfcontrol'));
-    }
+  constructor(map, managementControl, impl) {
+    requireImplementation(impl, [GEOJSON_CONVERSION], 'exception.impl_turfcontrol');
 
-    const impl = new TurfImplControl(map);
     super('Turf', impl);
-
-    impl.facadeControl = this;
 
     this.map_ = map;
     this.managementControl_ = managementControl;
