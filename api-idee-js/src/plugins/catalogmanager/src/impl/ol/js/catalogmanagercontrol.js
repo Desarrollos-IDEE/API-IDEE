@@ -80,6 +80,7 @@ export default class CatalogmanagerControl extends IDEE.impl.Control {
     this.selectItem = new ol.interaction.Select({
       style: null,
       layers: this.olLayers_,
+      multi: true,
     });
     this.selectItem.on('select', (evt) => this.onSelectItem(evt));
     this.facadeMap_.getMapImpl().addInteraction(this.selectItem);
@@ -97,6 +98,7 @@ export default class CatalogmanagerControl extends IDEE.impl.Control {
       layers: this.olLayers_,
       condition: ol.events.condition.pointerMove,
       toggleCondition: ol.events.condition.never,
+      multi: true,
     });
     this.hoverItem.on('select', (evt) => this.onHoverItem(evt));
     this.facadeMap_.getMapImpl().addInteraction(this.hoverItem);
@@ -193,13 +195,8 @@ export default class CatalogmanagerControl extends IDEE.impl.Control {
    */
   onSelectItem(evt) {
     const features = this.selectItem.getFeatures();
-    const featuresArray = features.getArray();
-    if (featuresArray.length === 0) {
-      return;
-    }
-    const itemId = featuresArray[0].getId();
-    features.clear();
-    this.facadeControl_.onItemSelect(itemId);
+    const ids = this.getFeaturesIds(features);
+    this.facadeControl_.onItemSelect(ids);
   }
 
   /**
@@ -211,13 +208,18 @@ export default class CatalogmanagerControl extends IDEE.impl.Control {
    */
   onHoverItem(evt) {
     const features = this.hoverItem.getFeatures();
+    const ids = this.getFeaturesIds(features);
+    this.facadeControl_.onItemHover(ids);
+  }
+
+  getFeaturesIds(features) {
     const featuresArray = features.getArray();
     if (featuresArray.length === 0) {
       return;
     }
-    const itemId = featuresArray[0].getId();
+    const ids = featuresArray.map((feature) => feature.getId());
     features.clear();
-    this.facadeControl_.onItemHover(itemId);
+    return ids;
   }
 
   /**
