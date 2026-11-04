@@ -23,6 +23,17 @@
     <div id="mapjs" class="container"></div>
     <script type="text/javascript" src="/dist/js/apiidee.cesium.min.js"></script>
     <script type="text/javascript" src="/test/configuration_filtered.js"></script>
+    <script type="text/javascript">
+      // Sin GPU, Cesium pinta por software a la frecuencia de la pantalla y, en máquinas con
+      // pocas CPU (el agente de Jenkins tiene 2), deja al navegador sin tiempo para lo demás.
+      // Las pruebas no necesitan esa frecuencia: se limita en todos los mapas de la página.
+      (() => {
+        const createMap = IDEE.map;
+        IDEE.map = (parameters, options, viewOptions) => createMap(parameters, options, {
+          targetFrameRate: 15, ...viewOptions,
+        });
+      })();
+    </script>
     <script type="text/javascript" src="../../../dist/layerswitcher.cesium.min.js"></script>
   </body>
 </html>
