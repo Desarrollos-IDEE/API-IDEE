@@ -306,7 +306,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
      * @private
      * @type {IDEE.style.Generic}
      */
-    this.focusStyle_ = new IDEE.style.Generic({
+    this.focusStyle_ = {
       polygon: {
         stroke: {
           width: 1,
@@ -314,10 +314,12 @@ export default class CatalogmanagerControl extends IDEE.Control {
         },
         fill: {
           color: 'red',
-          opacity: 0.2,
+          opacity: 0.1,
         },
       },
-    });
+    };
+
+    this.baseOpacity_ = 0.1;
 
     /**
      * Criterio de ordenación activo del listado de colecciones
@@ -2773,24 +2775,27 @@ export default class CatalogmanagerControl extends IDEE.Control {
    *
    * @private
    * @function
-   * @param {string} itemId Identificador del ítem STAC seleccionado
+   * @param {Array<string>} ids Identificadores de los ítems STAC seleccionados
    */
-  onItemSelect(itemId) {
-    const itemElement = this.template_.querySelector(`#item-${itemId}`);
-    const catalogIndex = itemElement.dataset.catalogIndex;
-    const collectionIndex = itemElement.dataset.collectionIndex;
-    const imagesElement = this.template_.querySelector(`.m-catalogmanager-images.item-${itemId}`);
+  onItemSelect(ids) {
     const resultsTab = this.template_.querySelector('#m-catalogmanager-results-tab');
     if (!resultsTab.classList.contains('active')) {
       this.changeTab(resultsTab);
     }
-    if (imagesElement.classList.contains('empty')) {
-      this.getItemImages(catalogIndex, collectionIndex, itemId, imagesElement, true);
-    } else if (imagesElement.classList.contains('hidden')) {
-      this.closeAllImages();
-      this.toggleHidden(imagesElement);
-    }
-    this.toggleIcon(itemElement);
+    this.closeAllImages();
+    ids.forEach((itemId) => {
+      const itemElement = this.template_.querySelector(`#item-${itemId}`);
+      const catalogIndex = itemElement.dataset.catalogIndex;
+      const collectionIndex = itemElement.dataset.collectionIndex;
+      const imagesElement = this.template_.querySelector(`.m-catalogmanager-images.item-${itemId}`);
+
+      if (imagesElement.classList.contains('empty')) {
+        this.getItemImages(catalogIndex, collectionIndex, itemId, imagesElement, false);
+      } else if (imagesElement.classList.contains('hidden')) {
+        this.toggleHidden(imagesElement);
+      }
+      this.toggleIcon(itemElement);
+    });
   }
 
   /**
@@ -2798,17 +2803,24 @@ export default class CatalogmanagerControl extends IDEE.Control {
    *
    * @private
    * @function
-   * @param {string} itemId Identificador del ítem STAC seleccionado
+   * @param {Array<string>} ids Identificadores de los ítems STAC seleccionados
    */
-  onItemHover(itemId) {
-    const itemDiv = document.querySelector(`#item-${itemId}`);
-    if (itemDiv) {
-      const catalogIndex = itemDiv.dataset.catalogIndex;
-      const collectionIndex = itemDiv.dataset.collectionIndex;
-      const collection = this.catalogs_[catalogIndex].collections[collectionIndex];
-      this.applyFocusStyleToLayer(collection, itemId);
-    }
-    this.applyFocusStyleToItem(itemId);
+  onItemHover(ids) {
+    let clearStyle = true;
+    this.focusStyle_.polygon.fill.opacity = this.baseOpacity_ / ids.length;
+    ids.forEach((itemId) => {
+      const itemDiv = document.querySelector(`#item-${itemId}`);
+      if (itemDiv) {
+        const catalogIndex = itemDiv.dataset.catalogIndex;
+        const collectionIndex = itemDiv.dataset.collectionIndex;
+        const collection = this.catalogs_[catalogIndex].collections[collectionIndex];
+        this.applyFocusStyleToLayer(collection, itemId, clearStyle);
+        clearStyle = false;
+      }
+      this.applyFocusStyleToItem(itemId, clearStyle);
+      clearStyle = false;
+    });
+    this.focusStyle_.polygon.fill.opacity = this.baseOpacity_;
   }
 
   /**
@@ -3203,15 +3215,17 @@ export default class CatalogmanagerControl extends IDEE.Control {
    * @param {Object} collection Colección que contiene la capa de huella
    * @param {string} itemId Identificador del ítem a resaltar
    */
-  applyFocusStyleToLayer(collection, itemId) {
+  applyFocusStyleToLayer(collection, itemId, clearStyle = true) {
     const huella = this.getHuellaLayer(collection);
     if (!huella) {
       return;
     }
-    this.clearFocusStyleFromLayer(huella);
+    if (clearStyle) {
+      this.clearFocusStyleFromLayer(huella);
+    }
     const itemFeature = huella.getFeatureById(itemId);
     if (itemFeature) {
-      itemFeature.setStyle(this.focusStyle_);
+      itemFeature.setStyle(new IDEE.style.Generic(this.focusStyle_));
     }
   }
 
@@ -3222,12 +3236,14 @@ export default class CatalogmanagerControl extends IDEE.Control {
    * @function
    * @param {string} itemId Identificador del ítem a resaltar
    */
-  applyFocusStyleToItem(itemId) {
+  applyFocusStyleToItem(itemId, clearStyle = true) {
     const itemElement = this.template_.querySelector(`#item-${itemId}`);
     if (itemElement) {
-      document.querySelectorAll('.m-catalogmanager-title-item').forEach((element) => {
-        element.classList.remove('active');
-      });
+      if (clearStyle) {
+        document.querySelectorAll('.m-catalogmanager-title-item').forEach((element) => {
+          element.classList.remove('active');
+        });
+      }
       itemElement.classList.add('active');
     }
   }
@@ -3264,9 +3280,12 @@ export default class CatalogmanagerControl extends IDEE.Control {
    * @param {IDEE.layer.Vector} huellaLayer Capa de huella de la colección
    */
   clearFocusStyleFromLayer(huellaLayer) {
-    const focusFeature = huellaLayer.getFeatures().find((feature) => feature.getStyle() !== null);
-    if (focusFeature) {
-      focusFeature.setStyle(null);
+    const focusFeatures = huellaLayer.getFeatures()
+      .filter((feature) => feature.getStyle() !== null);
+    if (focusFeatures.length > 0) {
+      focusFeatures.forEach((feature) => {
+        feature.setStyle(null);
+      });
     }
   }
 
