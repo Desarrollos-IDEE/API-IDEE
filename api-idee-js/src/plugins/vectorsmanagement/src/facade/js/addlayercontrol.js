@@ -177,7 +177,7 @@ export default class AddLayerControl extends IDEE.Control {
    * @api stable
    */
   deactivate() {
-    document.querySelector('#layerdrawing').classList.remove('activated');
+    document.querySelector('#layerdrawing')?.classList.remove('activated');
   }
 
   /**

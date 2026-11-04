@@ -40,6 +40,13 @@ export default class Analysiscontrol extends IDEE.impl.Control {
     this.facadeMap_.getMapImpl().addLayer(this.vector_);
 
     this.distance_ = 30;
+
+    /**
+     * Topographic profile shown
+     * @private
+     * @type {IDEE.impl.ol.js.ext.Profil}
+     */
+    this.profil_ = null;
   }
 
   /**
@@ -140,7 +147,7 @@ export default class Analysiscontrol extends IDEE.impl.Control {
   }
 
   /**
-   * Show topographic profile window
+   * Show topographic profile window, replacing the shown one
    * @public
    * @function
    * @api
@@ -148,6 +155,7 @@ export default class Analysiscontrol extends IDEE.impl.Control {
    * @param {Array<String>|String} graphs
    */
   showProfile(coord, graphs) {
+    this.closeProfile();
     const lineString = new ol.geom.LineString(coord);
     const feature = new ol.Feature({
       geometry: lineString,
@@ -190,7 +198,21 @@ export default class Analysiscontrol extends IDEE.impl.Control {
     this.facadeMap_.getMapImpl().addControl(profil);
     profil.setGeometry(feature);
     profil.show();
+    this.profil_ = profil;
     // document.querySelector('.m-vectors .m-vectors-loading-container').innerHTML = '';
+  }
+
+  /**
+   * Closes the topographic profile window, if any
+   * @public
+   * @function
+   * @api
+   */
+  closeProfile() {
+    if (this.profil_) {
+      this.profil_.close();
+      this.profil_ = null;
+    }
   }
 
   /**

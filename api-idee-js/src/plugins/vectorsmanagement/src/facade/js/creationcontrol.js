@@ -6,7 +6,6 @@ import { getValue } from './i18n/language';
 import { renderSnapOptions, getToolSnapOptions } from './snapoptions';
 import {
   DRAWING,
-  FEATURE_EMPHASIS,
   SNAPPING,
   implementsContracts,
   requireImplementation,
@@ -28,12 +27,12 @@ export default class CreationControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @param {IDEE.Map} map
    * @param {VectorsManagementControl} managementControl
-   * @param {Object} impl platform implementation (DRAWING, FEATURE_EMPHASIS; SNAPPING optional)
+   * @param {Object} impl platform implementation (DRAWING; SNAPPING optional)
    * @api stable
    */
   constructor(map, managementControl, impl) {
     // 1. checks if the implementation fulfils the contracts of this control
-    requireImplementation(impl, [DRAWING, FEATURE_EMPHASIS], 'exception.impl_creationcontrol');
+    requireImplementation(impl, [DRAWING], 'exception.impl_creationcontrol');
 
     // 2. implementation of this control
     super('Creation', impl);
@@ -110,26 +109,11 @@ export default class CreationControl extends IDEE.Control {
     this.feature = undefined;
 
     /**
-     * Feature that is drawn on selection layer around this.feature
-     * to emphasize it.
-     * @private
-     * @type {IDEE.feature}
-     */
-    this.emphasis = undefined;
-
-    /**
      * Current geometry type selected for drawing.
      * @private
      * @type {String}
      */
     this.geometry = undefined; // Point, LineString, Polygon
-
-    /**
-     * api-idee layer where a square will be drawn around selected feature.
-     * @private
-     * @type {*}
-     */
-    this.selectionLayer = null;
   }
 
   /**
@@ -184,18 +168,8 @@ export default class CreationControl extends IDEE.Control {
    * @api
    */
   initializeLayers() {
-    const layers = this.map_.getLayers().filter((l) => l.name === 'selectLayer');
-    if (layers.length > 0) {
-      this.selectionLayer = layers[0];
-    } else {
-      this.selectionLayer = new IDEE.layer.Vector({
-        extract: false,
-        name: 'selectLayer',
-      }, { displayInLayerSwitcher: false });
-      this.layer_.getImpl().extract = false;
-      this.map_.addLayers(this.selectionLayer);
-      this.selectionLayer.setZIndex(1045);
-    }
+    this.managementControl_.getFeatureSelection().getLayer();
+    this.layer_.getImpl().extract = false;
   }
 
   /**
@@ -238,7 +212,10 @@ export default class CreationControl extends IDEE.Control {
     this[drawing.flag] = true;
     this.geometry = drawType;
     this.template.querySelector(`#${drawing.button}`).classList.add('activated');
-    this.getImpl().addDrawInteraction(this.geometry);
+    this.getImpl().addDrawInteraction(
+      this.geometry,
+      getToolSnapOptions(this.geometry, this.managementControl_.snapOptions),
+    );
   }
 
   onMultiPointSelected() { this.startMultipleGeometry('MultiPoint', 'Point'); }
@@ -258,19 +235,12 @@ export default class CreationControl extends IDEE.Control {
       .createMultiGeometryFeature(this.multipleGeometryType_, this.multipleCoordinates_);
     this.geometry = this.multipleGeometryType_;
     this.addAttributesToFeature();
-    if (this.managementControl_.hasActiveEditingSession()) {
-      const values = {};
-      this.managementControl_.getEditingFields()
-        .querySelectorAll('#m-vectorsmanagement-editing-fields input').forEach((input) => {
-          values[input.name] = input.value;
-        });
-      if (!this.managementControl_.prepareNewFeature(this.feature, values)) return;
-    }
-    this.layer_.addFeatures(this.feature);
+    if (!this.validateNewFeature_(this.feature)) return;
+    const isAddedAndSelected = this.addAndSelectFeature(this.feature);
     this.getImpl().clearVectorSource();
     this.multipleGeometryType_ = null;
     this.multipleCoordinates_ = [];
-    this.template.querySelector('#multiple-drawing-status').textContent = getValue('multiple_done');
+    this.template.querySelector('#multiple-drawing-status').textContent = isAddedAndSelected ? getValue('multiple_done') : '';
     this.template.querySelector('#finishmultipledrawing').hidden = true;
     this.deactivateDrawing();
   }
@@ -331,7 +301,7 @@ export default class CreationControl extends IDEE.Control {
       if (!Number.isNaN(parsedX) && !Number.isNaN(parsedY)) {
         const coordinates = [parsedX, parsedY];
         this.feature = this.getImpl().createPointFeature(coordinates, srs);
-        this.layer_.addFeatures([this.feature]);
+        this.addAndSelectFeature(this.feature);
         this.map_.setCenter(this.getImpl().getFeatureCoordinates(this.feature));
         // this.setFeatureStyle(this.feature, 'Point');
       } else {
@@ -394,7 +364,7 @@ export default class CreationControl extends IDEE.Control {
 
   /**
    * Checks if any drawing button is active and deactivates it,
-   * deleting drawing interaction.
+   * deleting drawing interaction. The last created feature remains selected.
    * @public
    * @function
    * @api
@@ -421,8 +391,6 @@ export default class CreationControl extends IDEE.Control {
         this.getImpl().removeDrawInteraction();
       }
 
-      this.selectionLayer.removeFeatures(this.selectionLayer.getFeatures());
-      this.managementControl_.removeSelectedFeatures();
       if ((this.feature !== undefined) && this.feature.getStyle() && this.feature.getStyle().get('label') !== undefined) {
         this.feature.getStyle().set('fill.opacity', 0);
       }
@@ -567,8 +535,8 @@ export default class CreationControl extends IDEE.Control {
 
   /**
    * After draw interaction event is over,
-   * updates feature style, inputs, adds feature to draw layer,
-   * shows feature info and emphasizes it.
+   * updates feature style, inputs, adds feature to draw layer
+   * and selects it.
    * @public
    * @function
    * @api
@@ -602,20 +570,45 @@ export default class CreationControl extends IDEE.Control {
       this.setFeatureStyle(this.feature, this.geometry);
     } */
     this.addAttributesToFeature();
-    if (this.managementControl_.hasActiveEditingSession()) {
-      const values = {};
-      this.managementControl_.getEditingFields()
-        .querySelectorAll('#m-vectorsmanagement-editing-fields input').forEach((input) => {
-          values[input.name] = input.value;
-        });
-      if (!this.managementControl_.prepareNewFeature(this.feature, values)) {
-        this.deactivateDrawing();
-        return;
-      }
+    if (!this.validateNewFeature_(this.feature)) {
+      this.deactivateDrawing();
+      return;
     }
-    this.layer_.addFeatures(this.feature);
+    this.addAndSelectFeature(this.feature);
+  }
 
-    this.emphasizeSelectedFeature();
+  /**
+   * Validates a new feature against the active editing session, if any.
+   * @private
+   * @function
+   * @param {IDEE.Feature} feature
+   * @returns {Boolean} true if there is no session or the feature is valid
+   */
+  validateNewFeature_(feature) {
+    if (!this.managementControl_.hasActiveEditingSession()) return true;
+    const values = {};
+    this.managementControl_.getEditingFields()
+      .querySelectorAll('#m-vectorsmanagement-editing-fields input').forEach((input) => {
+        values[input.name] = input.value;
+      });
+    return this.managementControl_.prepareNewFeature(feature, values);
+  }
+
+  /**
+   * Adds a created feature to the layer and selects it.
+   * @private
+   * @function
+   * @param {IDEE.Feature} feature
+   * @returns {Boolean} true if the feature has been added
+   */
+  addAndSelectFeature(feature) {
+    this.layer_.addFeatures(feature);
+    if (!this.getImpl().hasFeature(feature)) {
+      this.layer_.removeFeatures(feature);
+      return false;
+    }
+    this.managementControl_.getFeatureSelection().select([feature]);
+    return true;
   }
 
   /**
@@ -637,7 +630,7 @@ export default class CreationControl extends IDEE.Control {
   }
 
   /**
-   * Add drawed feature to layer
+   * Add drawed feature to layer and selects it
    * @public
    * @function
    * @api
@@ -647,9 +640,7 @@ export default class CreationControl extends IDEE.Control {
     this.feature = event.feature;
     this.geometry = this.feature.getGeometry().type;
     this.addAttributesToFeature();
-    this.layer_.addFeatures(this.feature);
-
-    this.emphasizeSelectedFeature();
+    this.addAndSelectFeature(this.feature);
   }
 
   /**
@@ -762,50 +753,13 @@ export default class CreationControl extends IDEE.Control {
   }
 
   /**
-   * Clears selection layer.
-   * Draws square around feature and adds it to selection layer.
-   * For points:
-   *    If feature doesn't have style, sets new style.
-   * For text:
-   *    Colours red text feature point.
+   * Selects the last created feature, emphasizing it.
    * @public
    * @function
    * @api
    */
   emphasizeSelectedFeature() {
-    this.emphasis = null;
-    this.selectionLayer.removeFeatures(this.selectionLayer.getFeatures());
-    this.managementControl_.removeSelectedFeatures();
-
-    if (this.feature) {
-      const isTextDrawActive = document.querySelector('#textdrawtools') !== null;
-
-      // if point vs text vs else
-      if ((this.geometry === 'Point' || this.geometry === 'MultiPoint') && !isTextDrawActive) {
-        this.emphasis = this.getImpl().getApiIdeeFeatureClone(this.feature);
-
-        this.emphasis.setStyle(new IDEE.style.Point({
-          radius: 20,
-          stroke: {
-            color: '#FF0000',
-            width: 2,
-          },
-        }));
-      } else if ((this.geometry === 'Point' || this.geometry === 'MultiPoint') && isTextDrawActive) {
-        if (this.feature.getStyle() === null) this.setTextStyle(false);
-        this.feature.getStyle().set('fill.opacity', 1);
-      } else {
-        this.emphasis = this.getImpl().getExtentFeature(this.feature);
-        this.emphasis.setStyle(new IDEE.style.Line({
-          stroke: {
-            color: '#FF0000',
-            width: 2,
-          },
-        }));
-      }
-      this.managementControl_.addFeatureToSelection(this.feature);
-      this.selectionLayer.addFeatures([this.emphasis]);
-    }
+    this.managementControl_.getFeatureSelection().select([this.feature]);
   }
 
   /**

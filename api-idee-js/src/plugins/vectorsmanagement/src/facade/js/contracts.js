@@ -52,6 +52,8 @@ export const SELECT_INTERACTION = contract('activateSelection', 'removeSelectInt
  * - removeFigureDrawInteraction(): void.
  * - changeFigure(evt: Event): void. Actualiza la figura seleccionada.
  * - clearVectorSource(): void. Vacía el origen de dibujo.
+ * - hasFeature(feature: IDEE.Feature): Boolean. Indica si la capa de dibujo ha
+ * incorporado el objeto.
  * - getFeatureCoordinates(feature: IDEE.Feature): Array. Obtiene coordenadas del mapa.
  * - createMultiGeometryFeature(type: String, coordinates: Array): IDEE.Feature.
  * - createPointFeature(coordinates: Array, srs: String): IDEE.Feature. Crea un punto.
@@ -66,6 +68,7 @@ export const DRAWING = contract(
   'removeFigureDrawInteraction',
   'changeFigure',
   'clearVectorSource',
+  'hasFeature',
   'getFeatureCoordinates',
   'createMultiGeometryFeature',
   'createPointFeature',
@@ -139,12 +142,13 @@ export const MEASUREMENT = contract(
  * - calculateProfile(feature: IDEE.Feature): Promise<Array|undefined>.
  * Devuelve puntos [x, y, altitud].
  * - showProfile(profile: Array, graphs: Array<String>|String): void. Muestra el perfil
- * con las gráficas indicadas ('profile' y/o 'elevationGain').
+ * con las gráficas indicadas ('profile' y/o 'elevationGain'), sustituyendo al anterior.
+ * - closeProfile(): void. Cierra el perfil mostrado, si lo hay.
  * - get3DLength(profile: Array): Number. Devuelve la longitud 3D en metros.
  * @const
  * @type {Array<String>}
  */
-export const ELEVATION = contract('calculatePoint', 'calculateProfile', 'showProfile', 'get3DLength');
+export const ELEVATION = contract('calculatePoint', 'calculateProfile', 'showProfile', 'closeProfile', 'get3DLength');
 
 /**
  * Áreas de influencia (buffer).

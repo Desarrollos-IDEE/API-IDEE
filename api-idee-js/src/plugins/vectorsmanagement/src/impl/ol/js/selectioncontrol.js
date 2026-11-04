@@ -50,12 +50,13 @@ export default class Selectioncontrol extends IDEE.impl.Control {
   }
 
   /**
-   * Activates selection mode.
+   * Activates selection mode starting from the selected features.
    * @public
    * @function
+   * @param {Array<IDEE.Feature>} features selected features
    * @api
    */
-  activateSelection() {
+  activateSelection(features = []) {
     const olMap = this.facadeMap_.getMapImpl();
     const drawingLayer = this.facadeControl.getLayer().getImpl().getLayer();
 
@@ -68,6 +69,7 @@ export default class Selectioncontrol extends IDEE.impl.Control {
         style: null,
         toggleCondition: ol.events.condition.platformModifierKeyOnly,
       });
+      this.select.getFeatures().extend(features.map((f) => f.getImpl().getFeature()));
 
       this.select.on('select', (e) => {
         const olFeatures = e.target.getFeatures().getArray();
