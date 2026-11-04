@@ -105,6 +105,15 @@ function fun(IDEE_) {
   IDEE.config('STATIC_RESOURCES_URL', 'https://componentes.idee.es/estaticos');
 
   /**
+   * URL del JSON de capas precargadas
+   * @const
+   * @type {string}
+   * @public
+   * @api stable
+   */
+  IDEE.config('LIST_PRECHARGED_URL', 'https://componentes.idee.es/estaticos/Datos/json/precharged_layerswitcher_cnig.json');
+
+  /**
    * The path to the API IDEE theme
    * @const
    * @type {string}
