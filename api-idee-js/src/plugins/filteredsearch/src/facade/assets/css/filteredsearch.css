@@ -6,7 +6,7 @@
 [class*=' g-cartografia-btn-filteredsearch-'] {
   speak: none;
   font-style: normal;
-  font-weight: normal;
+  font-weight: var(--idee-font-weight-regular);
   font-variant: normal;
   text-transform: none;
   line-height: 1;
@@ -52,7 +52,7 @@
   overflow-x: hidden;
   overflow-y: auto;
   width: 100%;
-  font-family: Muli, sans-serif;
+  font-family: var(--idee-font-family);
   color: var(--idee-color-neutral-70);
 }
 
@@ -85,8 +85,8 @@
   background-color: var(--idee-color-primary, #71a7d3) !important;
   box-sizing: border-box;
   color: var(--idee-color-white, #fff);
-  font-size: 15px;
-  font-weight: bold;
+  font-size: var(--idee-font-size-body-m);
+  font-weight: var(--idee-font-weight-bold);
   height: 39px;
   line-height: 40px;
   max-width: 100%;
@@ -97,7 +97,7 @@
 }
 
 .m-filteredsearch-headers {
-  font-weight: bold;
+  font-weight: var(--idee-font-weight-bold);
 }
 
 #m-filteredsearch-selects-container {
@@ -221,7 +221,7 @@
 #m-filteredsearch-lists-container #m-attributetable-tfoot>button {
   background-color: var(--idee-color-white, #fff);
   border: 1px solid var(--idee-color-neutral-40, silver);
-  border-radius: 3px;
+  border-radius: var(--idee-shape-border-radius);
   clear: none;
   color: var(--idee-color-neutral-60, grey);
   height: auto;

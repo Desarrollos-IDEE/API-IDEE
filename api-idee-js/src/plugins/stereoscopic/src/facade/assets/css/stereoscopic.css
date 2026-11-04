@@ -5,8 +5,8 @@
   top : 10px;
   left : 20%;
   background : rgba(245, 245, 245, 0.8);
-  font-size : large;
-  border-radius : 5px;
+  font-size : var(--idee-font-size-body-l);
+  border-radius : var(--idee-shape-border-radius);
   border-style: dashed;
   border-width: 2px;
   text-align: center;
@@ -40,7 +40,8 @@
 }
 
 .m-panel-btn.stereoscopic-plugin-3D::before {
-  font-weight: bold;
+  font-weight: var(--idee-font-weight-bold);
+  /* idee-token-exception: tamaño de glifo de icono */
   font-size: 22px;
 }
 
@@ -77,6 +78,7 @@
 
 .m-panel.m-plugin-stereoscopic.opened .stereoscopic-anaglyph {
   outline: unset !important;
+  /* idee-token-exception: tamaño de glifo de icono */
   font-size: 28px;
 }
 
@@ -85,7 +87,7 @@
 }
 
 .m-panel.m-plugin-stereoscopic.opened .m-stereoscopic.activated .stereoscopic-anaglyph::before {
-  font-weight: bold;
+  font-weight: var(--idee-font-weight-bold);
 }
 
 .m-stereoscopic #ctrlTest {
@@ -94,6 +96,7 @@
 
 .m-stereoscopic div.m-control button[class*=" g-cartografia-"], div.m-control button[class^=g-cartografia-] {
   padding: 8px;
+  /* idee-token-exception: tamaño de glifo de icono */
   font-size: 24px;
   background: 0 0;
   border: none;
@@ -135,18 +138,18 @@
 }
 
 .m-stereoscopic>.m-areas>div.m-area>div.m-panel.no-collapsible {
-  border-radius: 7px;
+  border-radius: calc(var(--idee-shape-border-radius) * 2);
 }
 
 .m-stereoscopic .title {
   margin: 0;
   color: white !important;
-  font-family: Muli, sans-serif !important;
+  font-family: var(--idee-font-family) !important;
   line-height: 40px;
   text-align: center;
   height: 39px;
   border-bottom: 1px solid rgba(0, 0, 0, .08);
-  font-size: 15px;
+  font-size: var(--idee-font-size-body-m);
   background-color: #71a7d3;
 }
 
@@ -178,6 +181,7 @@
   background-color: #0B4371;
   width: 12px;
   height: 12px;
+  /* idee-token-exception: geometría del control range */
   border-radius: 50px;
 }
 
@@ -186,6 +190,7 @@
   background-color: rgb(163, 163, 163);
   width: 12px;
   height: 12px;
+  /* idee-token-exception: geometría del control range */
   border-radius: 50px;
 }
 
@@ -241,14 +246,15 @@
        url('../font/stereoscopic.woff?7804453') format('woff'),
        url('../font/stereoscopic.ttf?7804453') format('truetype'),
        url('../font/stereoscopic.svg?7804453#stereoscopic') format('svg');
-  font-weight: normal;
+  font-weight: var(--idee-font-weight-regular);
   font-style: normal;
 }
 
  [class^="stereoscopic-"]:before, [class*=" stereoscopic-"]:before {
+  /* idee-token-exception: fuente de iconos */
   font-family: "stereoscopic";
   font-style: normal;
-  font-weight: normal;
+  font-weight: var(--idee-font-weight-regular);
   speak: never;
 
   display: inline-block;
@@ -282,6 +288,7 @@
 
 div.m-control button[class*=" stereoscopic-"], div.m-control button[class^=stereoscopic-] {
   padding: 8px;
+  /* idee-token-exception: tamaño de glifo de icono */
   font-size: 24px;
   background: 0 0;
   border: none;
@@ -314,7 +321,7 @@ div.m-control button[class*=" stereoscopic-"], div.m-control button[class^=stere
   border: none;
   padding: 10px 20px;
   background-color: #71a7d3;
-  border-radius: 10px;
+  border-radius: calc(var(--idee-shape-border-radius) * 2);
 }
 
 #glases3d:hover {
@@ -326,7 +333,7 @@ div.m-control button[class*=" stereoscopic-"], div.m-control button[class^=stere
   margin-top: 10px;
   border: none;
   background-color: #71a7d3;
-  border-radius: 10px;
+  border-radius: calc(var(--idee-shape-border-radius) * 2);
   color: white;
 
   display: flex;
@@ -334,7 +341,7 @@ div.m-control button[class*=" stereoscopic-"], div.m-control button[class^=stere
   align-items: center;
   width: 100%;
   height: 50px;
-  font-size: 0.83rem;
+  font-size: var(--idee-font-size-body-s);
   gap: 10px;
 }
 
@@ -359,6 +366,7 @@ div.m-control button[class*=" stereoscopic-"], div.m-control button[class^=stere
   background-color: #71a7d3 !important;
   width: 12px;
   height: 12px;
+  /* idee-token-exception: geometría del control range */
   border-radius: 50px;
 }
 
@@ -366,6 +374,7 @@ div.m-control button[class*=" stereoscopic-"], div.m-control button[class^=stere
   background-color: gray !important;
   width: 12px;
   height: 12px;
+  /* idee-token-exception: geometría del control range */
   border-radius: 50px;
 }
 

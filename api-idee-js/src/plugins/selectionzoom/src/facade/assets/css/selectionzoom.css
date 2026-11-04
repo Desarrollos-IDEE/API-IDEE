@@ -17,7 +17,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 12px;
+    font-size: var(--idee-font-size-caption);
     gap: 8px;
 }
 
@@ -26,7 +26,7 @@
     align-items: center;
     justify-content: center;
     padding: 2px;
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
     border: 2px solid var(--idee-color-neutral-40);
     transition: all 0.3s ease;
 }
@@ -53,13 +53,13 @@
 }
 
 .m-plugin-panel-content.m-selectionzoom div[id^="m-selectionzoom-lyr-"]:hover>span {
-    font-weight: bold;
+    font-weight: var(--idee-font-weight-bold);
     color: var(--idee-color-links);
 }
 
 /* SELECTED */
 .m-plugin-panel-content.m-selectionzoom .activeSelectionZoomDiv>span {
-    font-weight: bold;
+    font-weight: var(--idee-font-weight-bold);
     color: var(--idee-color-primary-dark) !important;
 }
 

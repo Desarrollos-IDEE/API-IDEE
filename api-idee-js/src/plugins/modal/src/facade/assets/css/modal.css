@@ -21,15 +21,15 @@
     
     .m-api-idee-map-panel .m-panel-modal.opened #popup-box>div>p.popup-title {
         background-color: #71a7d3;
-        border-radius: 5px;
+        border-radius: var(--idee-shape-border-radius);
         color: white;
         padding: 7px 10px 5px 10px;
-        font-weight: bold;
+        font-weight: var(--idee-font-weight-bold);
     }
     
     .m-api-idee-map-panel .m-panel-modal.opened #popup-box>div>a {
         background-color: #b5b6b8;
-        border-radius: 5px;
+        border-radius: var(--idee-shape-border-radius);
         color: white;
         display: block;
         margin: auto;
@@ -37,7 +37,7 @@
         text-align: center;
         text-decoration: none;
         width: 60px;
-        font-weight: bold;
+        font-weight: var(--idee-font-weight-bold);
     }
     
     .m-api-idee-map-panel div.m-panel-modal.opened>div.m-panel-controls>div {
@@ -51,7 +51,7 @@
     .m-api-idee-map-panel .m-panel-modal [class*=" icon-"]:before {
         font-family: var(--idee-font-family);
         font-style: normal;
-        font-weight: normal;
+        font-weight: var(--idee-font-weight-regular);
         display: inline-block;
         text-decoration: inherit;
         width: 1em;
@@ -97,8 +97,8 @@
         width: 650px;
         max-width: 90%;
         max-height: 90%;
-        border-radius: 4px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        border-radius: var(--idee-shape-border-radius);
+        box-shadow: var(--idee-shape-box-shadow);
         display: flex;
         flex-direction: column;
         position: relative;
@@ -108,8 +108,9 @@
         position: absolute;
         top: 10px;
         right: 20px;
+        /* idee-token-exception: tamaño del glifo de cierre (×) */
         font-size: 40px;
-        font-weight: bold;
+        font-weight: var(--idee-font-weight-bold);
         color: #333;
         cursor: pointer;
         line-height: 1;
@@ -160,20 +161,20 @@
         color: var(--idee-color-primary-dark);
         margin-top: 0;
         margin-bottom: 10px;
-        font-family: 'Roboto';
-        font-weight: 500;
+        font-family: var(--idee-font-family);
+        font-weight: var(--idee-font-weight-regular);
         background-color: transparent !important;
     }
     
     .m-api-idee-map-panel .popup-section p.popup-title {
         color: black;
-        font-weight: bold;
-        font-size: 1.05rem;
+        font-weight: var(--idee-font-weight-bold);
+        font-size: var(--idee-font-size-body-m);
         margin-bottom: 5px;
     }
     
     .m-api-idee-map-panel .popup-section p {
-        font-size: 0.95rem;
+        font-size: var(--idee-font-size-body-s);
         line-height: 1.5;
         color: #444;
         margin: 5px 0;

@@ -5,7 +5,7 @@
 }
 
 .m-control.m-getfeatureinfo-container>button#m-getfeatureinfo-button {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
+    box-shadow: var(--idee-shape-box-shadow);
 }
 
 .m-popup table.api-idee-table td.header {
@@ -29,12 +29,12 @@ span.m-content-collapsed {
     justify-content: space-between;
     flex-direction: row-reverse;
     align-items: center;
-    font-size: 13px;
+    font-size: var(--idee-font-size-body-s);
     background-color: #eee;
     margin-bottom: 5px;
     color: black;
     padding: 5px;
-    border-radius: 5px;
+    border-radius: var(--idee-shape-border-radius);
 }
 
 .m-getfeatureinfo-content-info .m-getfeatureinfo-content-info-header .m-arrow-right,
@@ -85,7 +85,7 @@ h5 {
 
 .m-getfeatureinfo-content-info-body td.titulo,
 .m-getfeatureinfo-content-info-body th {
-    font-weight: bold !important;
+    font-weight: var(--idee-font-weight-bold) !important;
 }
 
 /* Eliminar borde a la tabla */
@@ -104,7 +104,7 @@ h5 {
 .m-getfeatureinfo-content-info-body td.titulo,
 .m-getfeatureinfo-content-info-body th,
 .m-getfeatureinfo-content-info-body td.key {
-    font-weight: bold !important;
+    font-weight: var(--idee-font-weight-bold) !important;
     color: #333 !important;
     text-align: left !important;
     padding: 3px 10px 3px 0 !important;
@@ -114,7 +114,7 @@ h5 {
 .m-getfeatureinfo-content-info-body td.text-info,
 .m-getfeatureinfo-content-info-body td.value {
     color: #757575 !important;
-    font-weight: normal !important;
+    font-weight: var(--idee-font-weight-regular) !important;
     padding: 3px 0 !important;
 }
 

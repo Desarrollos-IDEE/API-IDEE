@@ -504,7 +504,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
                 <table>
                     <tbody>
                       <tr>
-                        <td style="font-weight: bold;">${numPoint}</td></b>
+                        <td style="font-weight: var(--idee-font-weight-bold);">${numPoint}</td></b>
                       </tr>
                     </tbody>
                 </table>
@@ -998,7 +998,7 @@ export default class InfocoordinatesControl extends IDEE.Control {
                 <table>
                     <tbody>
                       <tr>
-                        <td style="font-weight: bold">${getValue('point')} ${idx + 1}</td></b>
+                        <td style="font-weight: var(--idee-font-weight-bold)">${getValue('point')} ${idx + 1}</td></b>
                       </tr>
                       ${coordsHTML}
                       <tr>

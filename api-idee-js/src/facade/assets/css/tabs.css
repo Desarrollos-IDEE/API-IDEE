@@ -7,7 +7,7 @@
 @layer base {
     .m-api-idee-tabs-container .m-api-idee-tab {
         padding: 10px;
-        font-size: 18px;
+        font-size: var(--idee-font-size-body-l);
         cursor: pointer;
         width: 20%;
         height: 25px;

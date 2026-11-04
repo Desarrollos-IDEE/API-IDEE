@@ -80,7 +80,7 @@ label.check-inactive+label {
     display: block;
     position: relative;
     padding-left: 35px;
-    font: 13px Muli, Arial, sans-serif;
+    font: var(--idee-font-size-body-s) var(--idee-font-family);
     color: #fff;
     cursor: pointer;
     -webkit-user-select: none;
@@ -226,11 +226,11 @@ input[type="checkbox"].m-input+label.check-inactive:before {
 .m-stylemanager-simple-section .subtitle {
     margin: 0;
     color: #404040;
-    font-family: Muli, sans-serif !important;
+    font-family: var(--idee-font-family) !important;
     line-height: 40px;
     text-align: center;
     height: 20px;
-    font-size: 15px;
+    font-size: var(--idee-font-size-body-m);
     align-items: baseline;
 }
 
@@ -248,11 +248,11 @@ input[type="checkbox"].m-input+label.check-inactive:before {
     align-items: center;
     justify-content: center;
     color: var(--idee-color-primary);
-    font-size: 14px;
+    font-size: var(--idee-font-size-body-s);
     width: 100%;
     border-bottom: 0;
     height: 40px;
-    font-weight: bold;
+    font-weight: var(--idee-font-weight-bold);
 }
 
 .m-stylemanager-simple-section .subtitle>span {
@@ -261,7 +261,7 @@ input[type="checkbox"].m-input+label.check-inactive:before {
 }
 
 .m-stylemanager-control li div {
-    font-family: sans-serif;
+    font-family: var(--idee-font-family);
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
@@ -269,7 +269,7 @@ input[type="checkbox"].m-input+label.check-inactive:before {
     line-height: 40px;
     text-align: center;
     height: 39px;
-    font-size: 15px;
+    font-size: var(--idee-font-size-body-s);
 }
 
 .m-stylemanager-control select,
@@ -279,10 +279,10 @@ input[type="checkbox"].m-input+label.check-inactive:before {
     padding: 5px;
     background-color: #fff;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
     color: #6c6c6c;
-    font-family: Muli, sans-serif;
-    font-size: 13px;
+    font-family: var(--idee-font-family);
+    font-size: var(--idee-font-size-body-s);
 }
 
 .m-stylemanager-buttons-wrap>.m-stylemanager-select {
@@ -435,12 +435,12 @@ input[type="checkbox"].m-input+label.check-inactive:before {
 .styles-row .group-row input[type="number"],
 .styles-row .group-row input[type="url"] {
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
     margin: 0;
     padding: 5px;
     margin-right: 5px;
     width: 40px;
-    font-size: 12px;
+    font-size: var(--idee-font-size-caption);
 }
 
 div.title {
@@ -492,7 +492,7 @@ input+.m-close:hover::after {
 .m-table-category td:first-child:hover {
     width: 100%;
     color: white;
-    font-weight: bold;
+    font-weight: var(--idee-font-weight-bold);
     background-color: var(--idee-color-primary);
     cursor: pointer;
 }
@@ -500,7 +500,7 @@ input+.m-close:hover::after {
 .m-table-cell-selected {
     width: 100%;
     color: white;
-    font-weight: bold;
+    font-weight: var(--idee-font-weight-bold);
     background-color: var(--idee-color-primary);
     cursor: pointer;
 }
@@ -538,7 +538,7 @@ label.m-option-active+label {
     display: block;
     position: relative;
     padding-left: 35px;
-    font: 13px Muli, Arial, sans-serif;
+    font: var(--idee-font-size-body-s) var(--idee-font-family);
     color: #fff;
     cursor: pointer;
     -webkit-user-select: none;
@@ -623,6 +623,7 @@ label.check-inactive+label i {
     border-right: 0 !important;
     color: #6e6d6d;
     background-color: white;
+    /* idee-token-exception: sombra lateral de la opción activa */
     box-shadow: 3px 0px 6px 0px #80808036;
 }
 
@@ -922,7 +923,7 @@ select:disabled {
     position: absolute;
     max-height: 130px;
     overflow-y: auto;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
+    box-shadow: var(--idee-shape-box-shadow);
     padding: 0.5rem;
     grid-template-columns: auto auto auto auto auto;
     overflow-x: hidden;
@@ -930,12 +931,13 @@ select:disabled {
 
 .style-grid-item {
     background: #f4f4f4;
-    border-radius: 3px;
+    border-radius: var(--idee-shape-border-radius);
     margin: 1px;
     width: 30px;
     height: 30px;
     padding: 0.1rem;
     text-align: center;
+    /* idee-token-exception: tamaño de glifo de icono */
     font-size: 20px;
     line-height: 30px;
     color: var(--idee-color-primary);
@@ -976,12 +978,12 @@ select:disabled {
 
 .m-button-add-styles {
     background-color: var(--idee-color-primary);
-    border-radius: 5px 5px;
+    border-radius: var(--idee-shape-border-radius) var(--idee-shape-border-radius);
     color: white;
     text-align: center;
     display: inline-block;
-    font: 13px Muli, Arial, sans-serif;
-    font-weight: bold;
+    font: var(--idee-font-size-body-s) var(--idee-font-family);
+    font-weight: var(--idee-font-weight-bold);
     cursor: pointer;
     border: 0px;
     margin-left: 10px;
