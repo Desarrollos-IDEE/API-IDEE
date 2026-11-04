@@ -48,6 +48,7 @@
     "altitude": "Altitud",
     "distanceT": "Distància total",
     "distanceP": "Distància parcial",
+    "elevationGain": "Desnivell acumulat",
     "ytitle": "Altitud (m)",
     "xtitle": "Distància (km)",
     "vector_layers": "Capes vectorials",

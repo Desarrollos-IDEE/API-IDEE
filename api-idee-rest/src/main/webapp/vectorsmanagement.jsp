@@ -53,81 +53,81 @@
                         <div>
                             <label for="selectCollapsed">Panel colapsado "collapsed"</label>
                             <select name="collapsed" id="selectCollapsed">
-                                <option value=''></option>
+                                <option value='' selected="selected"></option>
                                 <option value="true">true</option>
-                                <option value="false" selected="selected">false</option>
+                                <option value="false">false</option>
                             </select>
                         </div>
                         <!-- Controles -->
                         <div>
                             <label for="selection">Control de selección habilitado "selection"</label>
                             <select name="collapsible" id="selection">
-                                <option value=""></option>
-                                <option value="true" selected="selected">true</option>
+                                <option value="" selected="selected"></option>
+                                <option value="true">true</option>
                                 <option value="false">false</option>
                             </select>
                         </div>
                         <div>
                             <label for="addLayer">Control de añadir capa habilitado "addLayer"</label>
                             <select name="collapsible" id="addLayer">
-                                <option value=""></option>
-                                <option value="true" selected="selected">true</option>
+                                <option value="" selected="selected"></option>
+                                <option value="true">true</option>
                                 <option value="false">false</option>
                             </select>
                         </div>
                         <div>
                             <label for="analysis">Control de análisis habilitado "analysis"</label>
                             <select name="collapsible" id="analysis">
-                                <option value=""></option>
-                                <option value="true" selected="selected">true</option>
+                                <option value="" selected="selected"></option>
+                                <option value="true">true</option>
                                 <option value="false">false</option>
                             </select>
                         </div>
                         <div>
                             <label for="creation">Control de creación habilitado "creation"</label>
                             <select name="collapsible" id="creation">
-                                <option value=""></option>
-                                <option value="true" selected="selected">true</option>
+                                <option value="" selected="selected"></option>
+                                <option value="true">true</option>
                                 <option value="false">false</option>
                             </select>
                         </div>
                         <div>
                             <label for="download">Control de descarga habilitado "download"</label>
                             <select name="collapsible" id="download">
-                                <option value=""></option>
-                                <option value="true" selected="selected">true</option>
+                                <option value="" selected="selected"></option>
+                                <option value="true">true</option>
                                 <option value="false">false</option>
                             </select>
                         </div>
                         <div>
                             <label for="edition">Control de edición habilitado "edition"</label>
                             <select name="collapsible" id="edition">
-                                <option value=""></option>
-                                <option value="true" selected="selected">true</option>
+                                <option value="" selected="selected"></option>
+                                <option value="true">true</option>
                                 <option value="false">false</option>
                             </select>
                         </div>
                         <div>
                             <label for="help">Control de ayuda habilitado "help"</label>
                             <select name="collapsible" id="help">
-                                <option value=""></option>
-                                <option value="true" selected="selected">true</option>
+                                <option value="" selected="selected"></option>
+                                <option value="true">true</option>
                                 <option value="false">false</option>
                             </select>
                         </div>
                         <div>
                             <label for="style">Control de estilo habilitado "style"</label>
                             <select name="collapsible" id="style">
-                                <option value=""></option>
-                                <option value="true" selected="selected">true</option>
+                                <option value="" selected="selected"></option>
+                                <option value="true">true</option>
                                 <option value="false">false</option>
                             </select>
                         </div>
                         <div>
                             <label for="turf" title="Es necesario tener añadida la herramienta de selección">Control de geoprocesos (Turf.js) habilitado "turf"</label>
                             <select name="selectTurf" id="turf">
-                                <option value=""></option>
-                                <option value="true" selected="selected">true</option>
+                                <option value="" selected="selected"></option>
+                                <option value="true">true</option>
                                 <option value="false">false</option>
                             </select>
                         </div>
@@ -139,6 +139,15 @@
                                 <option value="false" label="Snapping desactivado"></option>
                                 <option value='{"vertex":true,"edge":false,"intersection":true,"allLayers":true,"guides":true,"pixelTolerance":15}' label="Configuración completa"></option>
                             </datalist>
+                        </div>
+                        <div>
+                            <label for="profileGraphs" title="Gráficas del perfil topográfico de la herramienta de análisis. Por defecto: profile">Gráficas del perfil topográfico "profileGraphs"</label>
+                            <select name="profileGraphs" id="profileGraphs">
+                                <option value="" selected="selected"></option>
+                                <option value="profile">profile</option>
+                                <option value="elevationGain">elevationGain</option>
+                                <option value="profile,elevationGain">profile,elevationGain</option>
+                            </select>
                         </div>
                     </div>
                     <div class="m-test-buttons">
@@ -180,6 +189,7 @@
                             const styleInput = document.getElementById("style");
                             const turfInput = document.getElementById("turf");
                             const snappingInput = document.getElementById("snapping");
+                            const profileGraphsInput = document.getElementById("profileGraphs");
 
                             [
                                 selectPosicion,
@@ -196,6 +206,7 @@
                                 styleInput,
                                 turfInput,
                                 snappingInput,
+                                profileGraphsInput,
                             ].forEach((elm) => { elm.addEventListener('change', changeTest); });
 
                             function changeTest() {
@@ -250,6 +261,10 @@
                                 const snappingValor = snappingInput.value.trim();
                                 if (snappingValor) {
                                     options.snapping = snappingValor;
+                                }
+                                const profileGraphsValor = profileGraphsInput.options[profileGraphsInput.selectedIndex].value;
+                                if (profileGraphsValor) {
+                                    options.profileGraphs = profileGraphsValor;
                                 }
 
                                 map.removePlugins(mp);

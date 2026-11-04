@@ -62,6 +62,7 @@ class WMTS extends LayerBase {
    * - visibility: Define si la capa es visible o no. Verdadero por defecto.
    * - displayInLayerSwitcher: Indica si la capa se muestra en el selector de capas.
    * - opacity: Opacidad de capa, por defecto 1.
+   * - renderer: Renderizado ('canvas' | 'webgl'). Por defecto IDEE.config.WEBGL.
    * - crossOrigin: Atributo crossOrigin para las imágenes cargadas
    * - tileMatrixLabels: Lista de identificadores en TileMatrix para usar en solicitudes WMTS,
    *   uno por nivel de TileMatrix. Solo disponible para Cesium.

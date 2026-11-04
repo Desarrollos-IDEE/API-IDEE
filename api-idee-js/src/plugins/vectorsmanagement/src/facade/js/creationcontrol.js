@@ -1,10 +1,16 @@
 /**
  * @module IDEE/control/CreationControl
  */
-import CreationImplControl from 'impl/creationcontrol';
 import template from '../../templates/creation';
 import { getValue } from './i18n/language';
 import { renderSnapOptions, getToolSnapOptions } from './snapoptions';
+import {
+  DRAWING,
+  FEATURE_EMPHASIS,
+  SNAPPING,
+  implementsContracts,
+  requireImplementation,
+} from './contracts';
 
 const DEFAULT_FONT_COLOR = '#71a7d3';
 const DEFAULT_FONT_FAMILY = 'Arial';
@@ -20,21 +26,20 @@ export default class CreationControl extends IDEE.Control {
    *
    * @constructor
    * @extends {IDEE.Control}
+   * @param {IDEE.Map} map
+   * @param {VectorsManagementControl} managementControl
+   * @param {Object} impl platform implementation (DRAWING, FEATURE_EMPHASIS; SNAPPING optional)
    * @api stable
    */
-  constructor(map, managementControl) {
-    // 1. checks if the implementation can create PluginControl
-    if (IDEE.utils.isUndefined(CreationImplControl) || (IDEE.utils.isObject(CreationImplControl)
-      && IDEE.utils.isNullOrEmpty(Object.keys(CreationImplControl)))) {
-      IDEE.exception(getValue('exception.impl_creationcontrol'));
-    }
+  constructor(map, managementControl, impl) {
+    // 1. checks if the implementation fulfils the contracts of this control
+    requireImplementation(impl, [DRAWING, FEATURE_EMPHASIS], 'exception.impl_creationcontrol');
 
     // 2. implementation of this control
-    const impl = new CreationImplControl(map);
     super('Creation', impl);
 
     // facade control goes to impl as reference param
-    impl.facadeControl = this;
+    this.getImpl().facadeControl = this;
 
     this.map_ = map;
 
@@ -186,7 +191,6 @@ export default class CreationControl extends IDEE.Control {
       this.selectionLayer = new IDEE.layer.Vector({
         extract: false,
         name: 'selectLayer',
-        source: this.getImpl().getVectorSource(),
       }, { displayInLayerSwitcher: false });
       this.layer_.getImpl().extract = false;
       this.map_.addLayers(this.selectionLayer);
@@ -234,7 +238,7 @@ export default class CreationControl extends IDEE.Control {
     this[drawing.flag] = true;
     this.geometry = drawType;
     this.template.querySelector(`#${drawing.button}`).classList.add('activated');
-    this.getImpl().addDrawInteraction();
+    this.getImpl().addDrawInteraction(this.geometry);
   }
 
   onMultiPointSelected() { this.startMultipleGeometry('MultiPoint', 'Point'); }
@@ -250,14 +254,8 @@ export default class CreationControl extends IDEE.Control {
       this.template.querySelector('#multiple-drawing-status').textContent = getValue('multiple_no_parts');
       return;
     }
-    const geometryConstructors = {
-      MultiPoint: ol.geom.MultiPoint,
-      MultiLineString: ol.geom.MultiLineString,
-      MultiPolygon: ol.geom.MultiPolygon,
-    };
-    const Geometry = geometryConstructors[this.multipleGeometryType_];
-    const geometry = new Geometry(this.multipleCoordinates_);
-    this.feature = IDEE.impl.Feature.feature2Facade(new ol.Feature({ geometry }));
+    this.feature = this.getImpl()
+      .createMultiGeometryFeature(this.multipleGeometryType_, this.multipleCoordinates_);
     this.geometry = this.multipleGeometryType_;
     this.addAttributesToFeature();
     if (this.managementControl_.hasActiveEditingSession()) {
@@ -269,7 +267,7 @@ export default class CreationControl extends IDEE.Control {
       if (!this.managementControl_.prepareNewFeature(this.feature, values)) return;
     }
     this.layer_.addFeatures(this.feature);
-    this.getImpl().getVectorSource().clear(true);
+    this.getImpl().clearVectorSource();
     this.multipleGeometryType_ = null;
     this.multipleCoordinates_ = [];
     this.template.querySelector('#multiple-drawing-status').textContent = getValue('multiple_done');
@@ -332,7 +330,9 @@ export default class CreationControl extends IDEE.Control {
       const parsedY = parseFloat(y);
       if (!Number.isNaN(parsedX) && !Number.isNaN(parsedY)) {
         const coordinates = [parsedX, parsedY];
-        this.feature = this.getImpl().drawPointFeature(coordinates, srs);
+        this.feature = this.getImpl().createPointFeature(coordinates, srs);
+        this.layer_.addFeatures([this.feature]);
+        this.map_.setCenter(this.getImpl().getFeatureCoordinates(this.feature));
         // this.setFeatureStyle(this.feature, 'Point');
       } else {
         IDEE.dialog.error(getValue('exception.formatocoord'));
@@ -403,7 +403,7 @@ export default class CreationControl extends IDEE.Control {
     if (this.multipleGeometryType_) {
       this.multipleGeometryType_ = null;
       this.multipleCoordinates_ = [];
-      this.getImpl().getVectorSource().clear(true);
+      this.getImpl().clearVectorSource();
       this.template.querySelector('#finishmultipledrawing').hidden = true;
       this.template.querySelector('#multiple-drawing-status').textContent = '';
     }
@@ -511,7 +511,7 @@ export default class CreationControl extends IDEE.Control {
       }
 
       if (geometry !== 'LocatedPoint' && geometry !== 'Figure') {
-        this.getImpl().addDrawInteraction(snapOptions);
+        this.getImpl().addDrawInteraction(this.geometry, snapOptions);
       }
     }
 
@@ -536,7 +536,7 @@ export default class CreationControl extends IDEE.Control {
     const container = this.template.querySelector('#m-vectorsmanagement-creation-snap');
     const { snapOptions } = this.managementControl_;
     renderSnapOptions(container, 'creation', tool, snapOptions, (options) => {
-      if (typeof this.getImpl().updateSnap === 'function') {
+      if (implementsContracts(this.getImpl(), SNAPPING)) {
         this.getImpl().updateSnap(options);
       }
     });
@@ -551,7 +551,7 @@ export default class CreationControl extends IDEE.Control {
    */
   setLayer(layer) {
     this.layer_ = layer;
-    this.getImpl().setVectorSource(this.layer_.getImpl().getLayer().getSource());
+    this.getImpl().setLayer(layer);
   }
 
   /**
@@ -572,11 +572,11 @@ export default class CreationControl extends IDEE.Control {
    * @public
    * @function
    * @api
-   * @param {Event} event - 'drawend' triggering event
+   * @param {{feature: IDEE.Feature}} event - feature drawn by the implementation
    */
   onDraw(event) {
     if (this.multipleGeometryType_) {
-      const coordinates = event.feature.getGeometry().getCoordinates();
+      const coordinates = this.getImpl().getFeatureCoordinates(event.feature);
       if (this.multipleGeometryType_ === 'MultiPoint') {
         this.multipleCoordinates_.push(coordinates);
       } else this.multipleCoordinates_.push(coordinates);
@@ -586,7 +586,7 @@ export default class CreationControl extends IDEE.Control {
     }
     // const lastFeature = this.feature;
     this.hideTextPoint();
-    this.feature = IDEE.impl.Feature.feature2Facade(event.feature);
+    this.feature = event.feature;
     this.geometry = this.feature.getGeometry().type;
 
     if (this.geometry === 'Point' && this.isTextActive) {
@@ -641,10 +641,10 @@ export default class CreationControl extends IDEE.Control {
    * @public
    * @function
    * @api
-   * @param {Event} event - 'drawend' triggering event
+   * @param {{feature: IDEE.Feature}} event - figure drawn by the implementation
    */
   onDrawFigure(event) {
-    this.feature = this.getImpl().convertToMFeatures(event.feature);
+    this.feature = event.feature;
     this.geometry = this.feature.getGeometry().type;
     this.addAttributesToFeature();
     this.layer_.addFeatures(this.feature);
@@ -782,7 +782,7 @@ export default class CreationControl extends IDEE.Control {
 
       // if point vs text vs else
       if ((this.geometry === 'Point' || this.geometry === 'MultiPoint') && !isTextDrawActive) {
-        this.emphasis = this.getImpl().getApiIdeeFeatureClone();
+        this.emphasis = this.getImpl().getApiIdeeFeatureClone(this.feature);
 
         this.emphasis.setStyle(new IDEE.style.Point({
           radius: 20,
@@ -795,9 +795,7 @@ export default class CreationControl extends IDEE.Control {
         if (this.feature.getStyle() === null) this.setTextStyle(false);
         this.feature.getStyle().set('fill.opacity', 1);
       } else {
-        // eslint-disable-next-line no-underscore-dangle
-        const extent = this.getImpl().getFeatureExtent(this.feature);
-        this.emphasis = IDEE.impl.Feature.feature2Facade(this.getImpl().newPolygonFeature(extent));
+        this.emphasis = this.getImpl().getExtentFeature(this.feature);
         this.emphasis.setStyle(new IDEE.style.Line({
           stroke: {
             color: '#FF0000',

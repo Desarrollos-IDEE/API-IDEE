@@ -2,7 +2,7 @@ import { domToCanvas } from 'modern-screenshot';
 import TemplateCustomizerImpl from '../../impl/ol/js/templateCustomizer';
 import templateCustomizer from '../../templates/templateCustomizer';
 import { getValue } from './i18n/language';
-import { createLoadingSpinner } from './utils';
+import { createLoadingSpinner, getLayerCanvases, getLayerCanvasOpacity } from './utils';
 import { PREVIEW_MAP_ORIENTATION } from '../../constants';
 
 const ID_TEMPLATE_ORIENTATION = 'input[name="map-orientation"]';
@@ -1244,15 +1244,11 @@ export default class TemplateCustomizer extends IDEE.Control {
         canvas.width = newWidth;
         canvas.height = newHeight;
         const context = canvas.getContext('2d');
-        // Las capas WebGL (p. ej. GeoTIFF) llevan la clase ol-layer en el propio canvas
-        Array.prototype.forEach.call(
-          map.getViewport().querySelectorAll('.ol-layer canvas, canvas.ol-layer'),
+        // Las capas WebGL llevan la clase ol-layer en el propio canvas
+        getLayerCanvases(map).forEach(
           (layerCanvas) => {
             if (layerCanvas.width > 0) {
-              const opacity = layerCanvas.parentNode.style.opacity
-                || layerCanvas.style.opacity
-                || '1';
-              context.globalAlpha = Number(opacity);
+              context.globalAlpha = getLayerCanvasOpacity(layerCanvas);
               const transform = layerCanvas.style.transform;
               let matrix;
               if (transform) {

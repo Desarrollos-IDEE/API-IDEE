@@ -1,5 +1,11 @@
 import { test, expect } from '@playwright/test';
 
+const rendered = (page) => page.evaluate(() => new Promise((resolve) => {
+  const olMap = window.map.getMapImpl();
+  olMap.once('rendercomplete', () => resolve());
+  olMap.render();
+}));
+
 test.describe('IDEE.layer.WMTS', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/test/playwright/ol/basic-ol.html');
@@ -53,7 +59,7 @@ test.describe('IDEE.layer.WMTS', () => {
 
   test.describe('Method setVisible', () => {
     test('2 WMTS base layers', async ({ page }) => {
-      await page.evaluate(() => {
+      await page.evaluate(() => new Promise((resolve) => {
         window.map.setBbox([
           -804611.8055743021,
           4219255.695100406,
@@ -80,10 +86,13 @@ test.describe('IDEE.layer.WMTS', () => {
         });
         window.wmts002 = wmts002;
 
+        const added = (layer) => new Promise((done) => layer.once(IDEE.evt.ADDED_TO_MAP, done));
+        Promise.all([added(wmts001), added(wmts002)]).then(() => resolve());
         window.map.addLayers([wmts001, wmts002]);
-      });
+      }));
 
       await page.evaluate(() => window.wmts002.setVisible(true));
+      await rendered(page);
       await expect(page).toHaveScreenshot('snapshot.png', { maxDiffPixelRatio: 0.5 });
     });
   });

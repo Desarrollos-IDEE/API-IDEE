@@ -258,6 +258,7 @@ const selectCollapsed = document.getElementById('selectCollapsed');
 const inputOrder = document.getElementById('inputOrder');
 const inputPrefixSubject = document.getElementById('inputPrefixSubject');
 const selectInterfazmode = document.getElementById('selectInterfazmode');
+const selectProfileGraphs = document.getElementById('selectProfileGraphs');
 const inputErrorList = document.getElementById('inputErrorList');
 const inputProductList = document.getElementById('inputProductList');
 const inputBuzones = document.getElementById('inputBuzones');
@@ -293,6 +294,8 @@ function changeTest() {
 
   if (inputPrefixSubject.value !== '') options.prefixSubject = inputPrefixSubject.value; // 'Incidencia cartogrfica - '
 
+  if (selectProfileGraphs.value !== '') options.profileGraphs = selectProfileGraphs.value; // 'profile,elevationGain'
+
   if (inputErrorList.value !== '') options.errorList = inputErrorList.value.split(','); // ['No especificado', 'Omisión', 'Otros']
 
   if (inputProductList.value !== '') options.productList = inputProductList.value.split(','); // ['No especificado', 'IGN Base', 'Otros productos'];
@@ -313,6 +316,7 @@ function changeTest() {
   inputTooltip,
   inputPrefixSubject,
   selectInterfazmode,
+  selectProfileGraphs,
   inputErrorList,
   inputProductList,
   inputBuzones,

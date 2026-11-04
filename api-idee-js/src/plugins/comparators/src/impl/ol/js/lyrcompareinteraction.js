@@ -2,6 +2,8 @@
  * @module IDEE/impl/control/LyrcompareInteraction
 
  */
+import { clipRect, restoreClip, resetClip } from './layerClipper';
+
 export default class LyrcompareInteraction extends ol.interaction.Pointer {
   /**
    * @classdesc
@@ -60,6 +62,7 @@ export default class LyrcompareInteraction extends ol.interaction.Pointer {
 
             // eslint-disable-next-line no-multi-assign
             this.layers_[i].prerender = this.layers_[i].postrender = null;
+            resetClip(this.layers_[i]);
           }
         } else {
           if (this.layers_[i].precompose) ol.Observable.unByKey(this.layers_[i].precompose);
@@ -254,6 +257,7 @@ export default class LyrcompareInteraction extends ol.interaction.Pointer {
       if (k !== this.layers_.length && this.getMap()) {
         if (this.layers_[k].prerender) ol.Observable.unByKey(this.layers_[k].prerender);
         if (this.layers_[k].postrender) ol.Observable.unByKey(this.layers_[k].postrender);
+        resetClip(this.layers_[k]);
         this.layers_.splice(k, 1);
         this.getMap().renderSync();
       }
@@ -313,262 +317,76 @@ export default class LyrcompareInteraction extends ol.interaction.Pointer {
     }
   }
 
+  /**
+   * Rectángulo [x0, y0, x1, y1], en píxeles del mapa, visible de la capa
+   * indicada según el modo de comparación y la división (estática o dinámica).
+   * @private
+   * @param {string} slot Capa: 'A', 'B', 'C' o 'D'.
+   * @returns {Array<number>|null} Rectángulo visible.
+   */
+  getClipRect_(slot) {
+    const [width, height] = this.map_.getSize();
+    const cx = this.staticDivision === 1 ? width / 2 : this.pos[0];
+    const cy = this.staticDivision === 1 ? height / 2 : this.pos[1];
+    const rects = {
+      1: { A: [0, 0, cx, height], B: [cx, 0, width, height] },
+      2: { A: [0, 0, width, cy], B: [0, cy, width, height] },
+      3: {
+        A: [0, 0, cx, cy],
+        B: [cx, 0, width, cy],
+        C: [0, cy, cx, height],
+        D: [cx, cy, width, height],
+      },
+    };
+    return (rects[this.comparisonMode] || {})[slot] || null;
+  }
+
   /* @private
-     */
+   */
   precomposeA_(e) {
-    const ctx = e.context;
-    const ratio = e.frameState.pixelRatio;
-    const mapSize = this.map_.getSize();
-    const widthClip = this.pos[0];
-    const heightClip = this.pos[1];
-    const margenClip = 0; // Stroke size in pixels.
-    let tl;
-    let tr;
-    let br;
-    let bl;
-    // e2m: Canvas size --> lienzoMapa
-    // e2m: Mouse coordinates --> this.pos
-    ctx.save();
-    ctx.beginPath();
-    if (this.staticDivision === 1) {
-      if (this.comparisonMode === 1) {
-        tl = ol.render.getRenderPixel(e, [0, 0]);
-        tr = ol.render.getRenderPixel(e, [mapSize[0] / 2, 0]);
-        br = ol.render.getRenderPixel(e, [mapSize[0] / 2, mapSize[1]]);
-        bl = ol.render.getRenderPixel(e, [0, mapSize[1]]);
-      } else if (this.comparisonMode === 2) {
-        tl = ol.render.getRenderPixel(e, [0, 0]);
-        tr = ol.render.getRenderPixel(e, [mapSize[0], 0]);
-        br = ol.render.getRenderPixel(e, [mapSize[0], mapSize[1] / 2]);
-        bl = ol.render.getRenderPixel(e, [0, mapSize[1] / 2]);
-      } else if (this.comparisonMode === 3) {
-        tl = ol.render.getRenderPixel(e, [0, 0]);
-        tr = ol.render.getRenderPixel(e, [mapSize[0] / 2, 0]);
-        br = ol.render.getRenderPixel(e, [mapSize[0] / 2, mapSize[1] / 2]);
-        bl = ol.render.getRenderPixel(e, [0, mapSize[1] / 2]);
-      }
-    } else if (this.comparisonMode === 1) {
-      tl = ol.render.getRenderPixel(e, [0, 0]);
-      tr = ol.render.getRenderPixel(e, [widthClip, 0]);
-      br = ol.render.getRenderPixel(e, [widthClip, mapSize[1]]);
-      bl = ol.render.getRenderPixel(e, [0, mapSize[1]]);
-    } else if (this.comparisonMode === 2) {
-      tl = ol.render.getRenderPixel(e, [0, 0]);
-      tr = ol.render.getRenderPixel(e, [mapSize[0], 0]);
-      br = ol.render.getRenderPixel(e, [mapSize[0], heightClip]);
-      bl = ol.render.getRenderPixel(e, [0, heightClip]);
-    } else if (this.comparisonMode === 3) {
-      tl = ol.render.getRenderPixel(e, [0, 0]);
-      tr = ol.render.getRenderPixel(e, [widthClip, 0]);
-      br = ol.render.getRenderPixel(e, [widthClip, heightClip]);
-      bl = ol.render.getRenderPixel(e, [0, heightClip]);
-    }
-    if (tl !== undefined) {
-      ctx.moveTo(tl[0], tl[1]);
-      ctx.lineTo(bl[0], bl[1]);
-      ctx.lineTo(br[0], br[1]);
-      ctx.lineTo(tr[0], tr[1]);
-      ctx.closePath();
-    }
-
-    /**
-     *
-     * e2m: con esto podemos pintar una línea de color para contornear la capa. Pero no queda bien
-     *
-     */
-    if (margenClip > 0) {
-      ctx.lineWidth = 2 * margenClip * ratio;
-      ctx.strokeStyle = 'rgba(0, 102, 204, 0.9)';
-      ctx.stroke();
-    }
-
-    ctx.clip();
+    clipRect(e, this.getClipRect_('A'));
   }
 
   /* @private
    */
   postcomposeA_(e) {
-    e.context.restore();
+    restoreClip(e);
   }
 
   /* @private
    */
   precomposeB_(e) {
-    const ctx = e.context;
-    const ratio = e.frameState.pixelRatio;
-    const lienzoMapa = this.map_.getSize();
-    const mapSize = lienzoMapa;
-    const widthClip = this.pos[0];
-    const heightClip = this.pos[1];
-    const margenClip = 0; // Stroke size in pixels.
-    let tl;
-    let tr;
-    let br;
-    let bl;
-    // e2m: Canvas size --> lienzoMapa
-    // e2m: Mouse coordinates --> this.pos
-    ctx.save();
-    ctx.beginPath();
-    if (this.staticDivision === 1) {
-      if (this.comparisonMode === 1) {
-        tl = ol.render.getRenderPixel(e, [mapSize[0] / 2, 0]);
-        tr = ol.render.getRenderPixel(e, [mapSize[0], 0]);
-        br = ol.render.getRenderPixel(e, [mapSize[0], mapSize[1]]);
-        bl = ol.render.getRenderPixel(e, [mapSize[0] / 2, mapSize[1]]);
-      } else if (this.comparisonMode === 2) {
-        tl = ol.render.getRenderPixel(e, [0, mapSize[1] / 2]);
-        tr = ol.render.getRenderPixel(e, [mapSize[0], mapSize[1] / 2]);
-        br = ol.render.getRenderPixel(e, [mapSize[0], mapSize[1]]);
-        bl = ol.render.getRenderPixel(e, [0, mapSize[1]]);
-      } else if (this.comparisonMode === 3) {
-        tl = ol.render.getRenderPixel(e, [mapSize[0] / 2, 0]);
-        tr = ol.render.getRenderPixel(e, [mapSize[0], 0]);
-        br = ol.render.getRenderPixel(e, [mapSize[0], mapSize[1] / 2]);
-        bl = ol.render.getRenderPixel(e, [mapSize[0] / 2, mapSize[1] / 2]);
-      }
-    } else if (this.comparisonMode === 1) {
-      // ctx.rect(this.pos[0], 0, lienzoMapa[0] - this.pos[0], lienzoMapa[1]); //e2m: Right dynamic
-      tl = ol.render.getRenderPixel(e, [widthClip, 0]);
-      tr = ol.render.getRenderPixel(e, [mapSize[0], 0]);
-      br = ol.render.getRenderPixel(e, [mapSize[0], mapSize[1]]);
-      bl = ol.render.getRenderPixel(e, [widthClip, mapSize[1]]);
-    } else if (this.comparisonMode === 2) {
-      // ctx.rect(0, this.pos[1],
-      // ctx.canvas.width, ctx.canvas.height - this.pos[1]); //e2m: Down dynamic
-      tl = ol.render.getRenderPixel(e, [0, heightClip]);
-      tr = ol.render.getRenderPixel(e, [mapSize[0], heightClip]);
-      br = ol.render.getRenderPixel(e, [mapSize[0], mapSize[1]]);
-      bl = ol.render.getRenderPixel(e, [0, mapSize[1]]);
-    } else if (this.comparisonMode === 3) {
-      tl = ol.render.getRenderPixel(e, [widthClip, 0]);
-      tr = ol.render.getRenderPixel(e, [mapSize[0], 0]);
-      br = ol.render.getRenderPixel(e, [mapSize[0], heightClip]);
-      bl = ol.render.getRenderPixel(e, [widthClip, heightClip]);
-    }
-    if (tl !== undefined) {
-      ctx.moveTo(tl[0], tl[1]);
-      ctx.lineTo(bl[0], bl[1]);
-      ctx.lineTo(br[0], br[1]);
-      ctx.lineTo(tr[0], tr[1]);
-      ctx.closePath();
-    }
-
-    if (margenClip > 0) {
-      ctx.lineWidth = 2 * margenClip * ratio;
-      ctx.strokeStyle = 'rgba(0, 102, 204, 0.9)';
-      ctx.stroke();
-    }
-
-    ctx.clip();
+    clipRect(e, this.getClipRect_('B'));
   }
 
   /* @private
    */
   postcomposeB_(e) {
-    e.context.restore();
+    restoreClip(e);
   }
 
+  /* @private
+   */
   precomposeC_(e) {
-    const ctx = e.context;
-    const ratio = e.frameState.pixelRatio;
-    const lienzoMapa = this.map_.getSize();
-    const mapSize = lienzoMapa;
-    const widthClip = this.pos[0];
-    const heightClip = this.pos[1];
-    const margenClip = 0; // Stroke size in pixels.
-    let tl;
-    let tr;
-    let br;
-    let bl;
-    // e2m: Canvas size --> lienzoMapa
-    // e2m: Mouse coordinates --> this.pos
-    ctx.save();
-    ctx.beginPath();
-    if (this.staticDivision === 1) {
-      if (this.comparisonMode === 3) {
-        tl = ol.render.getRenderPixel(e, [0, mapSize[1] / 2]);
-        tr = ol.render.getRenderPixel(e, [mapSize[0] / 2, mapSize[1] / 2]);
-        br = ol.render.getRenderPixel(e, [mapSize[0] / 2, mapSize[1]]);
-        bl = ol.render.getRenderPixel(e, [0, mapSize[1]]);
-      }
-    } else if (this.comparisonMode === 3) {
-      tl = ol.render.getRenderPixel(e, [0, heightClip]);
-      tr = ol.render.getRenderPixel(e, [widthClip, heightClip]);
-      br = ol.render.getRenderPixel(e, [widthClip, mapSize[1]]);
-      bl = ol.render.getRenderPixel(e, [0, mapSize[1]]);
-    }
-    if (tl !== undefined) {
-      ctx.moveTo(tl[0], tl[1]);
-      ctx.lineTo(bl[0], bl[1]);
-      ctx.lineTo(br[0], br[1]);
-      ctx.lineTo(tr[0], tr[1]);
-      ctx.closePath();
-    }
-
-    if (margenClip > 0) {
-      ctx.lineWidth = 2 * margenClip * ratio;
-      ctx.strokeStyle = 'rgba(0, 102, 204, 0.9)';
-      ctx.stroke();
-    }
-
-    ctx.clip();
+    clipRect(e, this.getClipRect_('C'));
   }
 
   /* @private
    */
   postcomposeC_(e) {
-    e.context.restore();
+    restoreClip(e);
   }
 
+  /* @private
+   */
   precomposeD_(e) {
-    const ctx = e.context;
-    const ratio = e.frameState.pixelRatio;
-    const lienzoMapa = this.map_.getSize();
-    const mapSize = lienzoMapa;
-    const widthClip = this.pos[0];
-    const heightClip = this.pos[1];
-    const margenClip = 0; // Stroke size in pixels.
-    let tl;
-    let tr;
-    let br;
-    let bl;
-    // e2m: Canvas size --> lienzoMapa
-    // e2m: Mouse coordinates --> this.pos
-    ctx.save();
-    ctx.beginPath();
-    if (this.staticDivision === 1) {
-      if (this.comparisonMode === 3) {
-        tl = ol.render.getRenderPixel(e, [mapSize[0] / 2, mapSize[1] / 2]);
-        tr = ol.render.getRenderPixel(e, [mapSize[0], mapSize[1] / 2]);
-        br = ol.render.getRenderPixel(e, [mapSize[0], mapSize[1]]);
-        bl = ol.render.getRenderPixel(e, [mapSize[0] / 2, mapSize[1]]);
-      }
-    } else if (this.comparisonMode === 3) {
-      tl = ol.render.getRenderPixel(e, [widthClip, heightClip]);
-      tr = ol.render.getRenderPixel(e, [mapSize[0], heightClip]);
-      br = ol.render.getRenderPixel(e, [mapSize[0], mapSize[1]]);
-      bl = ol.render.getRenderPixel(e, [widthClip, mapSize[1]]);
-    }
-    if (tl !== undefined) {
-      ctx.moveTo(tl[0], tl[1]);
-      ctx.lineTo(bl[0], bl[1]);
-      ctx.lineTo(br[0], br[1]);
-      ctx.lineTo(tr[0], tr[1]);
-      ctx.closePath();
-    }
-    if (margenClip > 0) {
-      ctx.lineWidth = 2 * margenClip * ratio;
-      ctx.strokeStyle = 'rgba(0, 102, 204, 0.9)';
-      ctx.stroke();
-    }
-
-    ctx.clip();
+    clipRect(e, this.getClipRect_('D'));
   }
 
   /* @private
    */
   postcomposeD_(e) {
-    e.context.restore();
+    restoreClip(e);
   }
 
   /**

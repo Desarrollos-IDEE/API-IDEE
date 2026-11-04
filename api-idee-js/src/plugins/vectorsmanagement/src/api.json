@@ -59,6 +59,10 @@
       "type": "boolean",
       "name": "turf",
       "position": 12
+    }, {
+      "type": "simple",
+      "name": "profileGraphs",
+      "position": 13
     }]
   }],
   "files": {

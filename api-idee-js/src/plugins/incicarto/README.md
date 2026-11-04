@@ -104,11 +104,14 @@ Por defecto:
 - **errorList**: Lista de control con las posibles categorizaciones del error. Por defecto: [].
 - **productList**: Lista de control con los productos del IGN en los que se ha detectado el error. Por defecto: [].
 - **isDraggable**: Permite mover el plugin por el mapa. Por defecto: false.
+- **profileGraphs**: Gráficas que muestra el perfil topográfico. Si se indican varias, se muestran apiladas y con el mismo eje de distancias. Array o texto con los valores separados por comas. Por defecto: 'profile'.
+  - 'profile': perfil topográfico (altitud).
+  - 'elevationGain': desnivel acumulado positivo (suma de las subidas a lo largo del recorrido).
 
 # API-REST
 
 ```javascript
-URL_API?incicarto=position*collapsed*tooltip*prefixSubject*interfazmode*isDraggable
+URL_API?incicarto=position*collapsed*order*tooltip*prefixSubject*interfazmode*profileGraphs
 ```
 
 <table>
@@ -145,6 +148,11 @@ URL_API?incicarto=position*collapsed*tooltip*prefixSubject*interfazmode*isDragga
   <tr>
     <td>interfazmode</td>
     <td>simple/advance</td>
+    <td>Base64 ✔️ | Separador ✔️</td>
+  </tr>
+  <tr>
+    <td>profileGraphs</td>
+    <td>Gráficas del perfil topográfico separadas por comas: profile (perfil) y/o elevationGain (desnivel acumulado)</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
@@ -187,6 +195,10 @@ https://componentes.idee.es/api-idee?incicarto=TL*true*true*Incicarto%20plugin
 
 ```
 https://componentes.idee.es/api-idee?incicarto=TL*true*true*Incicarto%20plugin*12*Incidencia%20cartográfica%20-%20*simple
+```
+
+```
+https://componentes.idee.es/api-idee?incicarto=right*true*1*Incicarto%20plugin*Incidencia%20cartográfica%20-%20*simple*profile,elevationGain
 ```
 
 ### Ejemplo de uso API-REST en base64

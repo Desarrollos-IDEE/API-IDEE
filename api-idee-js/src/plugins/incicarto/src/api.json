@@ -31,6 +31,10 @@
       "type": "simple",
       "name": "interfazmode",
       "position": 5
+    }, {
+      "type": "simple",
+      "name": "profileGraphs",
+      "position": 6
     }]
   }],
   "files": {

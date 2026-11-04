@@ -88,6 +88,7 @@ class OGCAPIFeatures extends Vector {
    * - minScale: Escala mínima.
    * - maxScale: Escala máxima.
    * - opacity: Opacidad de capa, por defecto 1.
+   * - renderer: Renderizado ('canvas' | 'webgl'). Por defecto IDEE.config.WEBGL.
    * - height: Define la altura del objeto geográfico. Puede ser un número o una propiedad.
    *   Si se define la altura será constante para todos los puntos del objeto geográfico.
    *   Disponible para gemetrías poligonales.

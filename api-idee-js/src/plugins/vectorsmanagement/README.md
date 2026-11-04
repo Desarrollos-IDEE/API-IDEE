@@ -73,6 +73,13 @@ El constructor se inicializa con un JSON con los siguientes atributos:
   ```javascript
   snapping: { intersection: true, allLayers: true, pixelTolerance: 12 },
   ```
+- **profileGraphs**: Gráficas que muestra el perfil topográfico de la herramienta de análisis (`analysis`). Si se indican varias, se muestran apiladas y con el mismo eje de distancias. Array o texto con los valores separados por comas. Por defecto: 'profile'.
+  - 'profile': perfil topográfico (altitud).
+  - 'elevationGain': desnivel acumulado positivo (suma de las subidas a lo largo del recorrido).
+
+  ```javascript
+  profileGraphs: ['profile', 'elevationGain'],
+  ```
 
 # API-REST
 
@@ -110,11 +117,15 @@ a la extensión visible al iniciarla; guarda, descarta o cancela antes de
 finalizarla o cambiar de capa.
 
 ```javascript
-URL_API?vectorsmanagement=position*!collapsed*!order*!selection*!addlayer*!analysis*!creation*!download*!edition*!help*!style*!snapping*!turf
+URL_API?vectorsmanagement=position*!collapsed*!order*!selection*!addlayer*!analysis*!creation*!download*!edition*!help*!style*!snapping*!turf*!profileGraphs
 ```
 Ejemplo:
 ```javascript
 https://componentes.idee.es/api-idee/?vectorsmanagement=RIGHT*true*true
+```
+Ejemplo con el perfil topográfico y el desnivel acumulado:
+```javascript
+https://componentes.idee.es/api-idee/?vectorsmanagement=right*!true*!1*!true*!true*!true*!true*!true*!true*!true*!true*!true*!true*!profile,elevationGain
 ```
 
 # Geoprocesos con Turf.js
@@ -238,6 +249,7 @@ const mp = new IDEE.plugin.VectorsManagement({
     help: true,
     turf: true,
     snapping: { intersection: true, allLayers: true },
+    profileGraphs: ['profile', 'elevationGain'],
 });
 
 map.addPlugin(mp);

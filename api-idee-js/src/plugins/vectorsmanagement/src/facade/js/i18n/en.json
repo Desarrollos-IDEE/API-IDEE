@@ -163,6 +163,7 @@
   "altitude": "Altitude",
   "distanceT": "Total distance",
   "distanceP": "Partial distance",
+  "elevationGain": "Cumulative elevation gain",
   "ytitle": "Altitud (m)",
   "xtitle": "Distance (km)",
   "title_popup_buffer": "INFLUENCE AREA",
