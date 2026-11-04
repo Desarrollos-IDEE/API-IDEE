@@ -156,6 +156,10 @@ class Base extends MObject {
         return clonedSet;
       }
 
+      if (typeof window.Node !== 'undefined' && obj instanceof window.Node) {
+        return obj.cloneNode(true);
+      }
+
       if (obj instanceof ArrayBuffer) {
         return obj.slice(0);
       }

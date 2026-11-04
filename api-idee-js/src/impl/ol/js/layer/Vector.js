@@ -9,10 +9,11 @@ import geojsonPopupTemplate from 'templates/geojson_popup';
 import * as EventType from 'IDEE/event/eventtype';
 import Style from 'IDEE/style/Style';
 import { get as getProj } from 'ol/proj';
-import OLLayerVector from 'ol/layer/Vector';
+import { unByKey } from 'ol/Observable';
 import OLSourceVector from 'ol/source/Vector';
 import OLSourceCluster from 'ol/source/Cluster';
 import Layer from './Layer';
+import { createVectorLayer } from '../webgl/WebGLLayerProvider';
 import ImplUtils from '../util/Utils';
 import Feature from '../feature/Feature';
 
@@ -90,6 +91,12 @@ class Vector extends Layer {
 
     this.maxExtent_ = options.maxExtent;
 
+    /**
+     * Vector featureStyleKeys_. "Keys" de los eventos que vigilan
+     * objetos geográficos con estilo propio mientras la capa es WebGL.
+     */
+    this.featureStyleKeys_ = [];
+
     // [WARN]
     // applyOLLayerSetStyleHook();
   }
@@ -105,7 +112,8 @@ class Vector extends Layer {
   addTo(map, addLayer = true) {
     this.map = map;
     map.on(EventType.CHANGE_PROJ, this.setProjection_.bind(this), this);
-    this.olLayer = new OLLayerVector(this.vendorOptions_);
+    this.olLayer = createVectorLayer(this.vendorOptions_, this.renderer_);
+    this.watchFeatureStyles_();
     this.updateSource_();
     if (!isNullOrEmpty(this.opacity_)) {
       this.setOpacity(this.opacity_);
@@ -125,6 +133,104 @@ class Vector extends Layer {
 
     this.fire(EventType.ADDED_TO_MAP);
     this.facadeVector_?.fire(EventType.ADDED_TO_MAP);
+  }
+
+  /**
+   * Mientras la capa sea WebGL, vigila los objetos geográficos de su fuente:
+   * WebGL ignora el estilo propio de cada objeto geográfico, por lo que si
+   * alguno lo tiene la capa pasa a renderizarse con Canvas.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   * @api
+   */
+  watchFeatureStyles_() {
+    this.unwatchFeatureStyles_();
+    if (!this.isWebGL()) {
+      return;
+    }
+    const olLayer = this.olLayer;
+    const check = (olFeatures) => {
+      if (this.olLayer === olLayer && olFeatures.some((f) => !isNullOrEmpty(f?.getStyle()))) {
+        this.useCanvasRenderer('webgl_fallback_feature_style');
+      }
+    };
+    const watchSource = () => {
+      unByKey(this.featureStyleKeys_.splice(1));
+      const source = olLayer.getSource();
+      if (isNullOrEmpty(source)) {
+        return;
+      }
+      this.featureStyleKeys_.push(source.on(['addfeature', 'changefeature'], (evt) => check([evt.feature])));
+      check(source.getFeatures());
+    };
+    this.featureStyleKeys_.push(olLayer.on('change:source', watchSource));
+    watchSource();
+  }
+
+  /**
+   * Cambia la capa a Canvas y deja de vigilar los estilos
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   * @param {string} reason Clave i18n (exception) del motivo del cambio.
+   * @returns {Boolean} Verdadero si se ha cambiado la capa.
+   * @api
+   */
+  useCanvasRenderer(reason) {
+    const canvasStyle = this.isWebGL() ? this.getCanvasStyle() : undefined;
+    const changed = super.useCanvasRenderer(reason);
+    if (changed) {
+      this.unwatchFeatureStyles_();
+      if (!isNullOrEmpty(canvasStyle)) {
+        this.olLayer.setStyle(canvasStyle);
+      }
+    }
+    return changed;
+  }
+
+  /**
+   * Elimina la vigilancia de estilos propios de los objetos geográficos.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   * @public
+   * @function
+   * @api
+   */
+  unwatchFeatureStyles_() {
+    unByKey(this.featureStyleKeys_);
+    this.featureStyleKeys_ = [];
+  }
+
+  /**
+   * Devuelve la función de estilo Canvas de la capa,
+   * también cuando la capa se renderiza con WebGL.
+   *
+   * @public
+   * @function
+   * @returns {Function|ol.style.Style|Array<ol.style.Style>|undefined} Estilo Canvas.
+   * @api
+   */
+  getCanvasStyle() {
+    if (!this.isWebGL()) {
+      return this.olLayer?.getStyle();
+    }
+    return this.facadeVector_?.getStyle()?.getImpl()?.olStyleFn;
+  }
+
+  /**
+   * Devuelve la capa para un mapa secundario.
+   *
+   * @public
+   * @function
+   * @returns {ol.layer.Base} Capa de OpenLayers para el mapa secundario.
+   * @api
+   */
+  getSecondaryMapLayer() {
+    const olLayer = super.getSecondaryMapLayer();
+    if (olLayer !== this.olLayer && !isNullOrEmpty(this.getCanvasStyle())) {
+      olLayer.setStyle(this.getCanvasStyle());
+    }
+    return olLayer;
   }
 
   /**
@@ -555,8 +661,10 @@ class Vector extends Layer {
    */
   destroy() {
     this.facadeVector_?.stopAutoRefresh();
+    this.unwatchFeatureStyles_();
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.olLayer)) {
+      this.disposeWebGLLayer_();
       olMap.removeLayer(this.olLayer);
       this.olLayer = null;
     }

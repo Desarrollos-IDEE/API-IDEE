@@ -1,6 +1,7 @@
 /**
  * @module IDEE/style/Choropleth
  */
+import ChoroplethImpl from 'impl/style/Choropleth';
 import StyleBase from './Style';
 import StyleComposite from './Composite';
 import * as StyleQuantification from './Quantification';
@@ -58,7 +59,7 @@ class Choropleth extends StyleComposite {
    * @api
    */
   constructor(attributeName, styles, quantification = StyleQuantification.JENKS(), options = {}) {
-    super(options, {});
+    super(options, new ChoroplethImpl(options));
     if (isNullOrEmpty(attributeName)) {
       Exception(getValue('exception').no_attr_name);
     }
@@ -381,9 +382,17 @@ class Choropleth extends StyleComposite {
           this.breakPoints_ = this.quantification_(this.dataValues_, this.choroplethStyles_.length);
         }
       }
-      for (let i = this.breakPoints_.length - 1; i > -1; i -= 1) {
-        const filterLTE = Filter.LTE(this.attributeName_, this.breakPoints_[i]);
-        filterLTE.execute(features).forEach((f) => f.setStyle(this.choroplethStyles_[i]));
+      const appliedToLayer = this.getImpl().applyToLayer(this.layer_, {
+        attributeName: this.attributeName_,
+        breakPoints: this.breakPoints_,
+        styles: this.choroplethStyles_,
+        composed: this.getStyles().length > 0,
+      });
+      if (!appliedToLayer) {
+        for (let i = this.breakPoints_.length - 1; i > -1; i -= 1) {
+          const filterLTE = Filter.LTE(this.attributeName_, this.breakPoints_[i]);
+          filterLTE.execute(features).forEach((f) => f.setStyle(this.choroplethStyles_[i]));
+        }
       }
       this.updateCanvas();
     }

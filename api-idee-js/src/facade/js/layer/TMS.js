@@ -68,6 +68,7 @@ class TMS extends LayerBase {
    * - extract: Activa la consulta con GetFeatureInfo (color de píxel). Por defecto falso.
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
    * - opacity: Opacidad de capa, por defecto 1.
+   * - renderer: Renderizado ('canvas' | 'webgl'). Por defecto IDEE.config.WEBGL.
    * - minZoom: Zoom mínimo aplicable a la capa.
    * - maxZoom: Zoom máximo aplicable a la capa.
    * - minScale: Escala mínima.

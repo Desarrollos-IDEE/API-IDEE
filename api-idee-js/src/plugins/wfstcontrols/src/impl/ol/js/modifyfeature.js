@@ -94,7 +94,8 @@ export default class ModifyFeature extends IDEE.impl.Control {
         }),
       });
     } else {
-      olStyle = olLayer.getStyle()(olLayer.getSource().getFeatures()[0])[0];
+      const canvasStyle = layerImpl.getCanvasStyle?.() ?? olLayer.getStyle();
+      olStyle = canvasStyle(featureAux)[0];
     }
     let styleImage = olStyle.getImage();
     let olStroke = olStyle.getStroke();

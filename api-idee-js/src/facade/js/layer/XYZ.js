@@ -64,6 +64,7 @@ class XYZ extends LayerBase {
    *   `elevation:16` (o elevation=16) fija ese zoom mínimo de consulta.
    * @param {Mx.parameters.LayerOptions} options Parámetros opcionales para la capa.
    * - opacity: Opacidad de capa, por defecto 1.
+   * - renderer: Renderizado ('canvas' | 'webgl'). Por defecto IDEE.config.WEBGL.
    * - minZoom: Zoom mínimo aplicable a la capa.
    * - maxZoom: Zoom máximo aplicable a la capa.
    * - minScale: Escala mínima.
