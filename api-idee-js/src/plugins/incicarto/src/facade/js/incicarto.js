@@ -72,6 +72,7 @@ export default class Incicarto extends IDEE.Plugin {
 
     this.prefixSubject_ = options.prefixSubject;
     if (this.prefixSubject_ === undefined) this.prefixSubject_ = 'Incidencia cartografía - ';
+    this.profileGraphs_ = options.profileGraphs || 'profile';
 
     /**
      * Metadata from api.json
@@ -147,6 +148,7 @@ export default class Incicarto extends IDEE.Plugin {
       controllist: this.controllist_,
       interfazmode: this.interfazmode_,
       prefixSubject: this.prefixSubject_,
+      profileGraphs: this.profileGraphs_,
       buzones: this.buzones_,
       themes: this.themes_,
       errors: this.errors_,
@@ -185,7 +187,7 @@ export default class Incicarto extends IDEE.Plugin {
   getAPIRest() {
     // eslint-disable-next-line max-len
     // *${JSON.stringify(this.buzones_)}*${JSON.stringify(this.controllist_)}*${JSON.stringify(this.themes_)}*${JSON.stringify(this.errors_)}*${JSON.stringify(this.products_)}
-    return `${this.name}=${this.position}*${this.collapsed_}*${this.tooltip}*${this.prefixSubject_}*${this.interfazmode_}`;
+    return `${this.name}=${this.position}*${this.collapsed_}*${this.order}*${this.tooltip}*${this.prefixSubject_}*${this.interfazmode_}*${[].concat(this.profileGraphs_).join(',')}`;
   }
 
   /**

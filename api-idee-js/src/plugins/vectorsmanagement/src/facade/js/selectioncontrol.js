@@ -1,9 +1,8 @@
 /**
  * @module IDEE/control/SelectionControl
  */
-import SelectionImplControl from 'impl/selectioncontrol';
 // import template from '../../templates/selection';
-import { getValue } from './i18n/language';
+import { FEATURE_EMPHASIS, SELECT_INTERACTION, requireImplementation } from './contracts';
 
 const DISABLED_BUTTON_ID_POINT = ['holedrawing', 'rotatedrawing', 'scaledrawing'];
 const DISABLED_BUTTON_ID_LINE = ['holedrawing'];
@@ -16,19 +15,18 @@ export default class SelectionControl extends IDEE.Control {
    *
    * @constructor
    * @extends {IDEE.Control}
+   * @param {IDEE.Map} map
+   * @param {VectorsManagementControl} managementControl
+   * @param {Object} impl platform implementation (SELECT_INTERACTION, FEATURE_EMPHASIS)
    * @api stable
    */
-  constructor(map, managementControl) {
-    // 1. checks if the implementation can create PluginControl
-    if (IDEE.utils.isUndefined(SelectionImplControl) || (IDEE.utils.isObject(SelectionImplControl)
-      && IDEE.utils.isNullOrEmpty(Object.keys(SelectionImplControl)))) {
-      IDEE.exception(getValue('exception.impl_selectioncontrol'));
-    }
+  constructor(map, managementControl, impl) {
+    // 1. checks if the implementation fulfils the contracts of this control
+    requireImplementation(impl, [SELECT_INTERACTION, FEATURE_EMPHASIS], 'exception.impl_selectioncontrol');
 
     // 2. implementation of this control
-    const impl = new SelectionImplControl(map);
     super('Selection', impl);
-    impl.facadeControl = this;
+    this.getImpl().facadeControl = this;
 
     this.map_ = map;
 
@@ -85,7 +83,6 @@ export default class SelectionControl extends IDEE.Control {
       this.selectionLayer = new IDEE.layer.Vector({
         extract: false,
         name: 'selectLayer',
-        source: this.layer_.getImpl().getLayer().getSource(),
       }, { displayInLayerSwitcher: false });
       this.layer_.getImpl().extract = false;
       this.map_.addLayers(this.selectionLayer);
@@ -179,16 +176,13 @@ export default class SelectionControl extends IDEE.Control {
    * @public
    * @function
    * @api
-   * @param {Event}
+   * @param {{features: Array<IDEE.Feature|undefined>}} e selection event of the implementation
    */
   onSelect(e) {
-    const MFeatures = this.layer_.getFeatures();
-    const olFeatures = e.target.getFeatures().getArray();
     this.selectionLayer.removeFeatures(this.selectionLayer.getFeatures());
     this.removeSelectedFeatures();
-    olFeatures.forEach((olFeature) => {
-      this.feature = MFeatures.filter((f) => f.getImpl().getFeature() === olFeature)[0]
-        || undefined;
+    e.features.forEach((feature) => {
+      this.feature = feature;
       if (this.feature) {
         this.addFeatureToSelection(this.feature);
         this.geometry = this.feature.getGeometry().type;
@@ -214,32 +208,21 @@ export default class SelectionControl extends IDEE.Control {
           this.disabledButton(DISABLED_BUTTON_ID_POINT);
 
           if (referenceEditControl.isHoleActive) {
-            referenceEditControl.isHoleActive = false;
-            referenceEditControl.getImpl().removeDrawHoleInteraction();
+            referenceEditControl.deactivateTool('isHoleActive');
           } else if (referenceEditControl.isRotateActive) {
-            referenceEditControl.isRotateActive = false;
-            referenceEditControl.getImpl().removeRotateInteraction();
+            referenceEditControl.deactivateTool('isRotateActive');
           } else if (referenceEditControl.isScaleActive) {
-            referenceEditControl.isScaleActive = false;
-            referenceEditControl.getImpl().removeScaleInteraction();
+            referenceEditControl.deactivateTool('isScaleActive');
           }
         }
 
         if (geometry === 'LineString') {
           this.disabledButton(DISABLED_BUTTON_ID_LINE);
-
-          if (referenceEditControl.isHoleActive) {
-            referenceEditControl.isHoleActive = false;
-            referenceEditControl.getImpl().removeDrawHoleInteraction();
-          }
+          referenceEditControl.deactivateTool('isHoleActive');
         }
       } else {
         this.disabledButton(DISABLED_BUTTON_ID_LINE);
-
-        if (referenceEditControl.isHoleActive) {
-          referenceEditControl.isHoleActive = false;
-          referenceEditControl.getImpl().removeDrawHoleInteraction();
-        }
+        referenceEditControl.deactivateTool('isHoleActive');
       }
     }
   }
@@ -260,7 +243,7 @@ export default class SelectionControl extends IDEE.Control {
     if (this.feature) {
       // if point vs text vs else
       if ((this.geometry === 'Point' || this.geometry === 'MultiPoint')) {
-        this.emphasis = this.getImpl().getApiIdeeFeatureClone();
+        this.emphasis = this.getImpl().getApiIdeeFeatureClone(this.feature);
 
         this.emphasis.setStyle(new IDEE.style.Point({
           radius: 20,
@@ -270,9 +253,7 @@ export default class SelectionControl extends IDEE.Control {
           },
         }));
       } else {
-        // eslint-disable-next-line no-underscore-dangle
-        const extent = this.getImpl().getFeatureExtent();
-        this.emphasis = IDEE.impl.Feature.feature2Facade(this.getImpl().newPolygonFeature(extent));
+        this.emphasis = this.getImpl().getExtentFeature(this.feature);
         this.emphasis.setStyle(new IDEE.style.Line({
           stroke: {
             color: '#FF0000',

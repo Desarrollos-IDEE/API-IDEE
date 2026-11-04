@@ -169,6 +169,8 @@ export default class IncicartoControl extends IDEE.Control {
 
     this.prefixSubject = options.prefixSubject;
 
+    this.profileGraphs_ = options.profileGraphs;
+
     this.buzones = options.buzones;
 
     this.errThemes = options.errThemes;
@@ -2506,7 +2508,7 @@ export default class IncicartoControl extends IDEE.Control {
       document.querySelector('.ol-profil.ol-unselectable.ol-control').remove();
     }
 
-    this.getImpl().calculateProfile(this.feature);
+    this.getImpl().calculateProfile(this.feature, this.profileGraphs_);
     this.drawingTools.querySelector('.collapsor').click();
     const content = `<div class="m-incicarto-loading"><p>${getValue('generating_profile')}...</p><span class="icon-spinner" /></div>`;
     document.querySelector('.m-plugin-panel-content .m-incicarto-loading-container').innerHTML = content;
