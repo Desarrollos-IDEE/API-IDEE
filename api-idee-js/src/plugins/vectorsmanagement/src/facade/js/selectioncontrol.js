@@ -2,10 +2,214 @@
  * @module IDEE/control/SelectionControl
  */
 // import template from '../../templates/selection';
-import { FEATURE_EMPHASIS, SELECT_INTERACTION, requireImplementation } from './contracts';
+import {
+  FEATURE_EMPHASIS,
+  SELECT_INTERACTION,
+  implementsContracts,
+  requireImplementation,
+} from './contracts';
 
-const DISABLED_BUTTON_ID_POINT = ['holedrawing', 'rotatedrawing', 'scaledrawing'];
-const DISABLED_BUTTON_ID_LINE = ['holedrawing'];
+/**
+ * Name of the layer where selected features are emphasized.
+ * @const
+ * @type {String}
+ */
+const SELECTION_LAYER_NAME = 'selectLayer';
+
+/**
+ * @classdesc
+ * Features selected in the managed layer and their emphasis. It is the only
+ * selection of the plugin: selection, creation and edition controls update it
+ * and the rest of controls read it through VectorsManagementControl.
+ */
+export class FeatureSelection {
+  /**
+   * @constructor
+   * @param {IDEE.Map} map
+   * @param {Object} [impl] platform implementation (FEATURE_EMPHASIS optional,
+   * without it features are selected but not emphasized)
+   * @param {function()} onChange called every time the selection is replaced
+   */
+  constructor(map, impl, onChange) {
+    this.map_ = map;
+
+    this.impl_ = implementsContracts(impl, FEATURE_EMPHASIS) ? impl : null;
+
+    this.onChange_ = onChange;
+
+    /**
+     * Selected features
+     * @private
+     * @type {Array<IDEE.Feature>}
+     */
+    this.features_ = [];
+
+    /**
+     * Emphasis features added to the selection layer, which other plugins can share
+     * @private
+     * @type {Array<IDEE.Feature>}
+     */
+    this.emphasis_ = [];
+  }
+
+  /**
+   * Returns selected features array
+   *
+   * @public
+   * @function
+   * @returns {Array<IDEE.Feature>}
+   * @api
+   */
+  getFeatures() {
+    return this.features_;
+  }
+
+  /**
+   * Replaces the selection, emphasizes it and notifies the change.
+   *
+   * @public
+   * @function
+   * @param {Array<IDEE.Feature|undefined>} features
+   * @api
+   */
+  select(features) {
+    this.features_ = features.filter((f, i) => f && features.indexOf(f) === i);
+    this.refresh();
+    this.onChange_();
+  }
+
+  /**
+   * Adds a feature to the selection.
+   *
+   * @public
+   * @function
+   * @param {IDEE.Feature} feature
+   * @api
+   */
+  add(feature) {
+    if (feature && !this.features_.includes(feature)) {
+      this.select([...this.features_, feature]);
+    }
+  }
+
+  /**
+   * Removes features from the selection, notifying only if it changes.
+   *
+   * @public
+   * @function
+   * @param {Array<IDEE.Feature>} features
+   * @api
+   */
+  remove(features) {
+    const kept = this.features_.filter((f) => !features.includes(f));
+    if (kept.length !== this.features_.length) {
+      this.select(kept);
+    }
+  }
+
+  /**
+   * Empties the selection and notifies the change.
+   *
+   * @public
+   * @function
+   * @api
+   */
+  clear() {
+    this.select([]);
+  }
+
+  /**
+   * Draws again the emphasis of selected features (e.g. after their geometry changes).
+   *
+   * @public
+   * @function
+   * @api
+   */
+  refresh() {
+    const layer = this.findLayer_();
+    if (layer && this.emphasis_.length > 0) {
+      layer.removeFeatures(this.emphasis_);
+    }
+    this.emphasis_ = this.impl_ ? this.features_.map((f) => this.createEmphasis_(f)) : [];
+    if (this.emphasis_.length > 0) {
+      this.getLayer().addFeatures(this.emphasis_);
+    }
+  }
+
+  /**
+   * Empties the selection and removes its emphasis without notifying it.
+   *
+   * @public
+   * @function
+   * @api
+   */
+  destroy() {
+    this.features_ = [];
+    this.refresh();
+  }
+
+  /**
+   * Returns the layer where selected features are emphasized, adding it to the map if needed.
+   *
+   * @public
+   * @function
+   * @returns {IDEE.layer.Vector}
+   * @api
+   */
+  getLayer() {
+    let layer = this.findLayer_();
+    if (!layer) {
+      layer = new IDEE.layer.Vector({
+        extract: false,
+        name: SELECTION_LAYER_NAME,
+      }, { displayInLayerSwitcher: false });
+      this.map_.addLayers(layer);
+      layer.setZIndex(1045);
+    }
+    return layer;
+  }
+
+  /**
+   * Returns the emphasis layer if it is in the map.
+   * @private
+   * @function
+   * @returns {IDEE.layer.Vector|undefined}
+   */
+  findLayer_() {
+    return this.map_.getLayers().find((l) => l.name === SELECTION_LAYER_NAME);
+  }
+
+  /**
+   * Creates the emphasis of a feature: a circle for points, its extent otherwise.
+   * @private
+   * @function
+   * @param {IDEE.Feature} feature
+   * @returns {IDEE.Feature}
+   */
+  createEmphasis_(feature) {
+    const geometryType = feature.getGeometry().type;
+    let emphasis;
+    if (geometryType === 'Point' || geometryType === 'MultiPoint') {
+      emphasis = this.impl_.getApiIdeeFeatureClone(feature);
+      emphasis.setStyle(new IDEE.style.Point({
+        radius: 20,
+        stroke: {
+          color: '#FF0000',
+          width: 2,
+        },
+      }));
+    } else {
+      emphasis = this.impl_.getExtentFeature(feature);
+      emphasis.setStyle(new IDEE.style.Line({
+        stroke: {
+          color: '#FF0000',
+          width: 2,
+        },
+      }));
+    }
+    return emphasis;
+  }
+}
 
 export default class SelectionControl extends IDEE.Control {
   /**
@@ -17,12 +221,12 @@ export default class SelectionControl extends IDEE.Control {
    * @extends {IDEE.Control}
    * @param {IDEE.Map} map
    * @param {VectorsManagementControl} managementControl
-   * @param {Object} impl platform implementation (SELECT_INTERACTION, FEATURE_EMPHASIS)
+   * @param {Object} impl platform implementation (SELECT_INTERACTION)
    * @api stable
    */
   constructor(map, managementControl, impl) {
     // 1. checks if the implementation fulfils the contracts of this control
-    requireImplementation(impl, [SELECT_INTERACTION, FEATURE_EMPHASIS], 'exception.impl_selectioncontrol');
+    requireImplementation(impl, [SELECT_INTERACTION], 'exception.impl_selectioncontrol');
 
     // 2. implementation of this control
     super('Selection', impl);
@@ -42,15 +246,6 @@ export default class SelectionControl extends IDEE.Control {
     this.selection_ = 'layer';
 
     this.layer_ = null;
-
-    this.selectedFeatures_ = [];
-
-    /**
-     * api-idee layer where a square will be drawn around selected feature.
-     * @private
-     * @type {*}
-     */
-    this.selectionLayer = null;
   }
 
   /**
@@ -63,31 +258,19 @@ export default class SelectionControl extends IDEE.Control {
    */
   active(html) {
     this.initializeLayers();
-    this.getImpl().activateSelection();
+    this.getImpl().activateSelection(this.getSelectedFeatures());
     this.selection_ = 'feature';
   }
 
   /**
-   * Adds style and source to vector layer.
    * Adds selection layer to map.
    * @public
    * @function
    * @api
    */
   initializeLayers() {
-    const layers = this.map_.getLayers().filter((l) => l.name === 'selectLayer');
-    if (layers.length > 0) {
-      this.selectionLayer = layers[0];
-      this.layer_.getImpl().extract = false;
-    } else {
-      this.selectionLayer = new IDEE.layer.Vector({
-        extract: false,
-        name: 'selectLayer',
-      }, { displayInLayerSwitcher: false });
-      this.layer_.getImpl().extract = false;
-      this.map_.addLayers(this.selectionLayer);
-      this.selectionLayer.setZIndex(1045);
-    }
+    this.managementControl_.getFeatureSelection().getLayer();
+    this.layer_.getImpl().extract = false;
   }
 
   /**
@@ -120,7 +303,7 @@ export default class SelectionControl extends IDEE.Control {
    * @api stable
    */
   showSelectedLayer() {
-    this.getImpl().activateSelection();
+    this.getImpl().activateSelection(this.getSelectedFeatures());
   }
 
   /**
@@ -131,7 +314,7 @@ export default class SelectionControl extends IDEE.Control {
    * @api stable
    */
   getSelectedFeatures() {
-    return this.selectedFeatures_;
+    return this.managementControl_.getFeatureSelection().getFeatures();
   }
 
   /**
@@ -142,9 +325,7 @@ export default class SelectionControl extends IDEE.Control {
    * @api stable
    */
   getSelectedOLFeatures() {
-    const olFeatures = [];
-    this.selectedFeatures_.forEach((f) => olFeatures.push(f.getImpl().getFeature()));
-    return olFeatures;
+    return this.getSelectedFeatures().map((f) => f.getImpl().getFeature());
   }
 
   /**
@@ -155,7 +336,7 @@ export default class SelectionControl extends IDEE.Control {
    * @api stable
    */
   removeSelectedFeatures() {
-    this.selectedFeatures_ = [];
+    this.managementControl_.getFeatureSelection().clear();
   }
 
   /**
@@ -167,11 +348,11 @@ export default class SelectionControl extends IDEE.Control {
    * @api stable
    */
   addFeatureToSelection(feature) {
-    this.selectedFeatures_.push(feature);
+    this.managementControl_.getFeatureSelection().add(feature);
   }
 
   /**
-   * Modifies drawing tools, updates inputs, emphasizes selection
+   * Replaces the selection with the selected features
    * and shows feature info on select.
    * @public
    * @function
@@ -179,90 +360,23 @@ export default class SelectionControl extends IDEE.Control {
    * @param {{features: Array<IDEE.Feature|undefined>}} e selection event of the implementation
    */
   onSelect(e) {
-    this.selectionLayer.removeFeatures(this.selectionLayer.getFeatures());
-    this.removeSelectedFeatures();
-    e.features.forEach((feature) => {
-      this.feature = feature;
-      if (this.feature) {
-        this.addFeatureToSelection(this.feature);
-        this.geometry = this.feature.getGeometry().type;
-        this.emphasizeSelectedFeature();
-      }
-    });
-    this.managementControl_.refreshSelection();
+    const selection = this.managementControl_.getFeatureSelection();
+    selection.select(e.features);
 
-    if (this.selectedFeatures_.length === 1 && document.querySelector('.m-vectorsmanagement-analysis') !== null) {
-      this.managementControl_.analysisControl.showFeatureInfo(this.selectedFeatures_[0]);
-    }
-
-    const $edit = document.querySelector('#m-vectorsmanagement-edition');
-
-    if ($edit.classList.contains('activated')) {
-      this.enabledButton([...DISABLED_BUTTON_ID_POINT, ...DISABLED_BUTTON_ID_LINE]);
-      const referenceEditControl = this.managementControl_.editionControl;
-
-      if (this.selectedFeatures_.length === 1) {
-        const geometry = this.selectedFeatures_[0].getGeometry().type;
-
-        if (geometry === 'Point') {
-          this.disabledButton(DISABLED_BUTTON_ID_POINT);
-
-          if (referenceEditControl.isHoleActive) {
-            referenceEditControl.deactivateTool('isHoleActive');
-          } else if (referenceEditControl.isRotateActive) {
-            referenceEditControl.deactivateTool('isRotateActive');
-          } else if (referenceEditControl.isScaleActive) {
-            referenceEditControl.deactivateTool('isScaleActive');
-          }
-        }
-
-        if (geometry === 'LineString') {
-          this.disabledButton(DISABLED_BUTTON_ID_LINE);
-          referenceEditControl.deactivateTool('isHoleActive');
-        }
-      } else {
-        this.disabledButton(DISABLED_BUTTON_ID_LINE);
-        referenceEditControl.deactivateTool('isHoleActive');
-      }
+    const features = selection.getFeatures();
+    if (features.length === 1 && document.querySelector('.m-vectorsmanagement-analysis') !== null) {
+      this.managementControl_.analysisControl.showFeatureInfo(features[0]);
     }
   }
 
   /**
-   * Clears selection layer.
-   * Draws square around feature and adds it to selection layer.
-   * For points:
-   *    If feature doesn't have style, sets new style.
-   * For text:
-   *    Colours red text feature point.
+   * Draws again the emphasis of selected features.
    * @public
    * @function
    * @api
    */
   emphasizeSelectedFeature() {
-    this.emphasis = null;
-    if (this.feature) {
-      // if point vs text vs else
-      if ((this.geometry === 'Point' || this.geometry === 'MultiPoint')) {
-        this.emphasis = this.getImpl().getApiIdeeFeatureClone(this.feature);
-
-        this.emphasis.setStyle(new IDEE.style.Point({
-          radius: 20,
-          stroke: {
-            color: '#FF0000',
-            width: 2,
-          },
-        }));
-      } else {
-        this.emphasis = this.getImpl().getExtentFeature(this.feature);
-        this.emphasis.setStyle(new IDEE.style.Line({
-          stroke: {
-            color: '#FF0000',
-            width: 2,
-          },
-        }));
-      }
-      this.selectionLayer.addFeatures([this.emphasis]);
-    }
+    this.managementControl_.getFeatureSelection().refresh();
   }
 
   /**
@@ -317,36 +431,8 @@ export default class SelectionControl extends IDEE.Control {
   deactivate() {
     // this.template.remove();
     this.getImpl().removeSelectInteraction();
-    this.removeSelectedFeatures();
-    if (this.selectionLayer) {
-      this.selectionLayer.removeFeatures(this.selectionLayer.getFeatures());
-    }
     this.selection_ = 'layer';
-    this.managementControl_.refreshSelection();
-
-    this.enabledButton([...DISABLED_BUTTON_ID_POINT, ...DISABLED_BUTTON_ID_LINE]);
-  }
-
-  disabledButton(IdButtons) {
-    IdButtons.forEach((id) => {
-      const $button = document.querySelector(`#${id}`);
-      $button.setAttribute('disabled', 'disabled');
-      $button.classList.add('disabled');
-
-      if ($button.classList.contains('activated')) {
-        $button.classList.remove('activated');
-      }
-    });
-  }
-
-  enabledButton(IdButtons) {
-    IdButtons.forEach((id) => {
-      const $button = document.querySelector(`#${id}`);
-      if ($button && $button.classList.contains('disabled')) {
-        $button.removeAttribute('disabled');
-        $button.classList.remove('disabled');
-      }
-    });
+    this.managementControl_.getFeatureSelection().clear();
   }
 
   /**

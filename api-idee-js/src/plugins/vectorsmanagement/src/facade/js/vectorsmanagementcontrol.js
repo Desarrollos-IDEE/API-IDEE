@@ -5,7 +5,7 @@
 import implementationFactory from 'impl/implementationfactory';
 import template from '../../templates/vectorsmanagement';
 import { getValue } from './i18n/language';
-import SelectionControl from './selectioncontrol';
+import SelectionControl, { FeatureSelection } from './selectioncontrol';
 import AddLayerControl from './addlayercontrol';
 import AnalysisControl from './analysiscontrol';
 import CreationControl from './creationcontrol';
@@ -101,8 +101,19 @@ export default class VectorsManagementControl extends IDEE.Control {
       .sort((a, b) => b.zIndex - a.zIndex);
     this.selectedLayer = null;
 
-    // Determina si el plugin es draggable o no
-    this.isDraggable_ = false;
+    /**
+     * Features selected in the selected layer, shared by all controls
+     * @private
+     * @type {FeatureSelection}
+     */
+    this.featureSelection_ = null;
+
+    /**
+     * Listener of the map layers changes
+     * @private
+     * @type {Function}
+     */
+    this.refreshLayersListener_ = this.refreshLayers.bind(this);
 
     // order
     this.order = order;
@@ -164,6 +175,11 @@ export default class VectorsManagementControl extends IDEE.Control {
         },
       });
       this.html = html;
+      this.featureSelection_ = new FeatureSelection(
+        this.map_,
+        this.createImplementation_('selection'),
+        () => this.refreshSelection(),
+      );
       this.initializeEditing(html);
 
       if (this.selection_) {
@@ -204,22 +220,9 @@ export default class VectorsManagementControl extends IDEE.Control {
 
       this.initLayerSelect();
 
-      this.map_.on(IDEE.evt.ADDED_LAYER, this.refreshLayers.bind(this));
-      this.map_.on(IDEE.evt.REMOVED_LAYER, this.refreshLayers.bind(this));
+      this.map_.on(IDEE.evt.ADDED_LAYER, this.refreshLayersListener_);
+      this.map_.on(IDEE.evt.REMOVED_LAYER, this.refreshLayersListener_);
 
-      if (this.isDraggable_) {
-        setTimeout(() => {
-          const panel = this.getPanel();
-          if (panel) {
-            IDEE.utils.draggabillyPlugin(panel, '#m-vectorsmanagement-titulo');
-          } else {
-            /* eslint-disable-next-line no-console */
-            console.warn(
-              'VectorsManagement: No se pudo activar draggabilly porque el panel es null',
-            );
-          }
-        }, 500);
-      }
       this.accessibilityTab(html);
       success(html);
     });
@@ -346,6 +349,13 @@ export default class VectorsManagementControl extends IDEE.Control {
         .querySelector('#m-vectorsmanagement-edition')
         .classList.remove('activated');
       this.editionControl.deactivate();
+    }
+
+    if (this.creationControl) {
+      this.creationControl.deactivateDrawing();
+    }
+    if (this.getSelectedFeatures().length > 0) {
+      this.featureSelection_.clear();
     }
 
     this.html
@@ -598,6 +608,7 @@ export default class VectorsManagementControl extends IDEE.Control {
         targetLayer.endEditing(false);
         return;
       }
+      this.featureSelection_.clear();
       this.editingSession_ = prepared.session || targetLayer.getEditingSession();
       if (!this.editingSession_) {
         throw new Error(
@@ -618,7 +629,10 @@ export default class VectorsManagementControl extends IDEE.Control {
       this.updateEditingAvailability();
     } catch (error) {
       if (this.editingSession_) this.finishEditing();
-      else if (prepared) targetLayer.endEditing();
+      else if (prepared) {
+        targetLayer.endEditing();
+        this.featureSelection_.clear();
+      }
       this.editingStatus_.textContent = error.message;
     } finally {
       this.editingPreparing_ = false;
@@ -662,6 +676,7 @@ export default class VectorsManagementControl extends IDEE.Control {
     const count = this.editingSession_.count;
     const requiresReview = this.editingSession_.requiresReview;
     this.editingSession_.discard();
+    this.featureSelection_.clear();
     this.editingPanel_.querySelector(
       '#m-vectorsmanagement-editing-save',
     ).disabled = requiresReview;
@@ -695,6 +710,7 @@ export default class VectorsManagementControl extends IDEE.Control {
     this.editingUnsubscribe_ = null;
     this.editingSession_ = null;
     this.selectedLayer.endEditing(refresh);
+    this.featureSelection_.clear();
     this.getImpl().removeEditingBoundary();
     this.toggleEditingActions(false);
     this.updateEditingAvailability();
@@ -1007,7 +1023,19 @@ export default class VectorsManagementControl extends IDEE.Control {
   }
 
   /**
-   * This function gets the selected features of selectionControl.
+   * This function gets the features selection shared by controls.
+   *
+   * @public
+   * @function
+   * @api
+   * @returns {FeatureSelection} selection
+   */
+  getFeatureSelection() {
+    return this.featureSelection_;
+  }
+
+  /**
+   * This function gets the selected features.
    *
    * @public
    * @function
@@ -1015,11 +1043,7 @@ export default class VectorsManagementControl extends IDEE.Control {
    * @returns {Array} features
    */
   getSelectedFeatures() {
-    let selectedFeatures = [];
-    if (this.selectionControl) {
-      selectedFeatures = this.selectionControl.getSelectedFeatures();
-    }
-    return selectedFeatures;
+    return this.featureSelection_ ? this.featureSelection_.getFeatures() : [];
   }
 
   /**
@@ -1039,20 +1063,18 @@ export default class VectorsManagementControl extends IDEE.Control {
   }
 
   /**
-   * This function clear the selected features array of selectionControl.
+   * This function clear the selected features.
    *
    * @public
    * @function
    * @api stable
    */
   removeSelectedFeatures() {
-    if (this.selectionControl) {
-      this.selectionControl.removeSelectedFeatures();
-    }
+    this.featureSelection_.clear();
   }
 
   /**
-   * This function adds a feature to selected features array of selectionControl.
+   * This function adds a feature to selected features.
    *
    * @public
    * @function
@@ -1060,9 +1082,7 @@ export default class VectorsManagementControl extends IDEE.Control {
    * @api stable
    */
   addFeatureToSelection(feature) {
-    if (this.selectionControl) {
-      this.selectionControl.addFeatureToSelection(feature);
-    }
+    this.featureSelection_.add(feature);
   }
 
   /**
@@ -1118,6 +1138,9 @@ export default class VectorsManagementControl extends IDEE.Control {
       if (this.editingSession_) this.finishEditing(false);
       if (pending > 0) {
         IDEE.toast.warning(getValue('editing_removed_notice'), null, 6000);
+      }
+      if (this.getSelectedFeatures().length > 0) {
+        this.featureSelection_.clear();
       }
       this.selectedLayer = null;
     }
@@ -1196,12 +1219,28 @@ export default class VectorsManagementControl extends IDEE.Control {
       .forEach((el) => el.setAttribute('tabindex', this.order));
   }
 
+  /**
+   * This function leaves the map as it was before adding the plugin:
+   * removes interactions, selection, windows and listeners.
+   *
+   * @public
+   * @function
+   * @api stable
+   */
   destroy() {
     document.removeEventListener('click', this.handleDocumentClick);
+    if (this.map_) {
+      this.map_.un(IDEE.evt.ADDED_LAYER, this.refreshLayersListener_);
+      this.map_.un(IDEE.evt.REMOVED_LAYER, this.refreshLayersListener_);
+    }
     if (this.editingSession_) this.finishEditing(false);
     if (this.html) this.deactive(this.html, '');
+    if (this.selectionControl) this.selectionControl.deactivate();
+    if (this.featureSelection_) this.featureSelection_.destroy();
     if (this.analysisControl) this.analysisControl.destroy();
     if (this.turfControl) this.turfControl.destroy();
+    // Dialogs are modal over the map, so the open ones come from the plugin
+    IDEE.dialog.remove();
   }
 
   /**

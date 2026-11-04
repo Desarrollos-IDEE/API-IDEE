@@ -95,6 +95,7 @@ class Profil extends OLControl {
     this.centered_ = Boolean(options.centered);
     this.graphs_ = normalizeGraphs(options.graphs);
     this.hasElevationGain_ = this.graphs_.indexOf(GRAPHS.ELEVATION_GAIN) !== -1;
+    this.pointLayer_ = options.pointLayer;
 
     var element;
     if (options.target) {
@@ -112,12 +113,7 @@ class Profil extends OLControl {
       const button = document.createElement('button');
       button.setAttribute('type', 'button');
       button.setAttribute('class', 'profile-close-button');
-      const close = (e) => {
-        document.querySelector('.' + className + '.ol-unselectable.' + controlClassName).remove();
-        if (options.pointLayer !== undefined) {
-          options.pointLayer.clear();
-        }
-      };
+      const close = () => this.close();
       button.addEventListener('click', close);
       button.addEventListener('touchstart', close);
       elementTitle.appendChild(button);
@@ -453,6 +449,22 @@ class Profil extends OLControl {
    */
   isShown() {
     return (!this.element.classList.contains('ol-collapsed'));
+  }
+
+  /**
+   * Cierra el panel: lo quita del mapa y vacía pointLayer.
+   * @api
+   */
+  close() {
+    var map = this.getMap();
+    if (map) {
+      map.removeControl(this);
+    } else {
+      this.element.remove();
+    }
+    if (this.pointLayer_) {
+      this.pointLayer_.clear();
+    }
   }
 
   /**

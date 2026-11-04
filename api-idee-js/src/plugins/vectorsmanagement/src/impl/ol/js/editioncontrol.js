@@ -1,7 +1,7 @@
 import DrawHole from 'ol-ext/interaction/DrawHole';
 import Transform from 'ol-ext/interaction/Transform';
 import SnapManager from './snapmanager';
-import { cloneFeature, extentFeature, toFacadeFeatures } from './featureutils';
+import { toFacadeFeatures } from './featureutils';
 // import DrawRegular from 'ol-ext/interaction/DrawRegular';
 
 /**
@@ -113,11 +113,24 @@ export default class Editioncontrol extends IDEE.impl.Control {
       features: this.select.getFeatures(),
       pixelTolerance: snapOptions.pixelTolerance,
     });
-    this.edit.on('modifyend', () => {
-      this.facadeControl.onModify();
-    });
+    this.edit.on('modifyend', (e) => this.notifyModify_(e.features));
     this.facadeMap_.getMapImpl().addInteraction(this.edit);
     this.snapManager_.enable(this.edit, () => this.facadeControl.getLayer(), snapOptions);
+  }
+
+  /**
+   * Notifies the modified features to the facade control.
+   * @private
+   * @function
+   * @param {Array<ol.Feature>|ol.Collection} olFeatures modified OL features
+   */
+  notifyModify_(olFeatures) {
+    this.facadeControl.onModify({
+      features: toFacadeFeatures(
+        this.facadeControl.getLayer(),
+        Array.isArray(olFeatures) ? olFeatures : olFeatures.getArray(),
+      ),
+    });
   }
 
   /**
@@ -148,7 +161,7 @@ export default class Editioncontrol extends IDEE.impl.Control {
     this.drawHole = new DrawHole({
       layers: [this.facadeControl.getLayer().getImpl().getLayer()],
     });
-    this.drawHole.on('modifyend', () => this.facadeControl.onModify());
+    this.drawHole.on('modifyend', (e) => this.notifyModify_(e.features));
     olMap.addInteraction(this.drawHole);
     this.snapManager_.enable(this.drawHole, () => this.facadeControl.getLayer(), snapOptions);
   }
@@ -175,9 +188,7 @@ export default class Editioncontrol extends IDEE.impl.Control {
       stretch: false,
       selection: false,
     });
-    this.rotate.on('rotateend', () => {
-      this.facadeControl.onModify();
-    });
+    this.rotate.on('rotateend', (e) => this.notifyModify_(e.features));
     olMap.addInteraction(this.rotate);
     this.rotate.setSelection(collection);
   }
@@ -215,9 +226,7 @@ export default class Editioncontrol extends IDEE.impl.Control {
       stretch: false,
       selection: false,
     });
-    this.move.on('translateend', () => {
-      this.facadeControl.onModify();
-    });
+    this.move.on('translateend', (e) => this.notifyModify_(e.features));
     olMap.addInteraction(this.move);
     this.move.setSelection(collection);
   }
@@ -255,9 +264,7 @@ export default class Editioncontrol extends IDEE.impl.Control {
       stretch: false,
       selection: false,
     });
-    this.scale.on('scaleend', () => {
-      this.facadeControl.onModify();
-    });
+    this.scale.on('scaleend', (e) => this.notifyModify_(e.features));
     olMap.addInteraction(this.scale);
     this.scale.setSelection(collection);
   }
@@ -345,30 +352,6 @@ export default class Editioncontrol extends IDEE.impl.Control {
    */
   getFeatureExtent(feature) {
     return feature.getImpl().getFeature().getGeometry().getExtent();
-  }
-
-  /**
-   * Creates polygon feature from the extent of a feature.
-   * @public
-   * @function
-   * @api
-   * @param {IDEE.Feature} feature
-   * @returns {IDEE.Feature} extent polygon
-   */
-  getExtentFeature(feature) {
-    return extentFeature(feature);
-  }
-
-  /**
-   * Creates feature clone.
-   * @public
-   * @function
-   * @api
-   * @param {IDEE.Feature} feature
-   * @returns {IDEE.Feature} clone
-   */
-  getApiIdeeFeatureClone(feature) {
-    return cloneFeature(feature);
   }
 
   /**
