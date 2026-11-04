@@ -36,8 +36,8 @@
    overflow: auto;
    background-color: var(--idee-color-white);
    padding: .5rem;
-   border-radius: .25rem;
-   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
+   border-radius: var(--idee-shape-border-radius);
+   box-shadow: var(--idee-shape-box-shadow);
 }
 
 
@@ -48,7 +48,7 @@
 .m-dialog div.m-title {
    line-height: 40px;
    text-align: center;
-   font-weight: bold;
+   font-weight: var(--idee-font-weight-bold);
 }
 
 /**************************
@@ -58,7 +58,7 @@
 .m-dialog div.m-message {
    display: flex;
    flex-grow: 1;
-   font-size: 16px;
+   font-size: var(--idee-font-size-body-m);
    overflow: auto;
    padding: .5rem;
 }
@@ -73,7 +73,7 @@
 
 .m-dialog div.m-button>button {
    background-color: white !important;
-   font-size: 14px;
+   font-size: var(--idee-font-size-body-s);
    border: none;
    box-shadow: none;
    cursor: pointer;
@@ -118,7 +118,7 @@
 /* INFO */
 
 .m-dialog.info div.m-title {
-   font-size: 16px;
+   font-size: var(--idee-font-size-body-m);
    color: var(--idee-color-primary-dark);
 }
 
@@ -137,7 +137,7 @@
 /* ERROR */
 
 .m-dialog.error div.m-title {
-   font-size: 16px;
+   font-size: var(--idee-font-size-body-m);
    color: var(--idee-color-danger);
 }
 
@@ -156,7 +156,7 @@
 /* WARNING */
 
 .m-dialog.warning div.m-title {
-   font-size: 16px;
+   font-size: var(--idee-font-size-body-m);
    color: var(--idee-color-warning);
 }
 
@@ -175,7 +175,7 @@
 /* SUCCESS */
 
 .m-dialog.success div.m-title {
-   font-size: 16px;
+   font-size: var(--idee-font-size-body-m);
    color: var(--idee-color-success);
 }
 

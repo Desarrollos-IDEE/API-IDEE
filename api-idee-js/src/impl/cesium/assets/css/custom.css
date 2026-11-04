@@ -5,7 +5,7 @@
 .cesium-viewer-bottom {
     padding-left: 5px;
     background-color: rgba(255, 255, 255, 0.6);
-    border-radius: 0 4px 0 0;
+    border-radius: 0 var(--idee-shape-border-radius) 0 0;
 }
 
 /* Control zoom */
@@ -15,11 +15,12 @@
     padding: 0px;
     color: #404040 !important;
     opacity: .75;
-    font-size: 18px !important;
+    font-size: var(--idee-font-size-body-l) !important;
     text-align: center;
     cursor: pointer;
     width: 30px !important;
     height: 30px !important;
+    /* idee-token-exception: sombra propia de los botones de zoom */
     box-shadow: 0px 1px 3px 0px #CACACA;
 }
 
@@ -37,21 +38,22 @@
 
 .cesium-zoom>button.cesium-zoom-in,
 .cesium-zoom>button.cesium-zoom-out {
-    border-radius: 2px 2px 0 0;
+    border-radius: var(--idee-shape-border-radius) var(--idee-shape-border-radius) 0 0;
     border: 2px solid white;
     color: #fff !important;
     background-color: #71A7D3 !important;
     opacity: 1;
     margin: 0 !important;
     padding: 0px;
-    font-size: 18px !important;
+    font-size: var(--idee-font-size-body-l) !important;
     text-align: center;
     cursor: pointer;
     width: 30px !important;
     height: 30px !important;
+    /* idee-token-exception: sombra propia de los botones de zoom */
     box-shadow: 0px 1px 3px 0px #CACACA;
     display: block;
-    font-weight: bold;
+    font-weight: var(--idee-font-weight-bold);
     text-decoration: none;
     line-height: .4em;
 }

@@ -13,14 +13,13 @@
 }*/
 
 .m-panel.collapsed {
+    /* idee-token-exception: píldora, radio igual a la mitad de la altura del control */
     border-radius: 20px;
 }
 
 .m-panel> div.m-panel-controls {
     opacity: 1;
-    /*background-color: white;*/
-    border-radius: 10px;
-    /*max-width: 50vw;*/
+    border-radius: calc(var(--idee-shape-border-radius) * 2);
     -webkit-transition: max-width 1s ease 0s, opacity .75s ease .1s;
     transition: max-width 1s ease 0s, opacity .75s ease .1s;
 }

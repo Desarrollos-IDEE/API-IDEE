@@ -8,6 +8,7 @@ div.m-panel.m-plugin-contactlink.collapsed {
 
 div.m-plugin-contactlink.collapsed>button.m-panel-btn {
     background-color: var(--idee-color-links) !important;
+    /* idee-token-exception: fuente de iconos */
     font-family: 'g-contactlink' !important;
 }
 
@@ -28,11 +29,11 @@ div.m-plugin-contactlink.opened>button.m-panel-btn {
     color: var(--idee-color-primary-dark) !important;
     background-color: transparent;
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-    font-size: 15px;
+    font-size: var(--idee-font-size-body-m);
     height: 2.5rem;
     line-height: 2.5rem;
     text-align: center;
-    font-weight: 500;
+    font-weight: var(--idee-font-weight-regular);
 }
 
 /*********************

@@ -5,8 +5,8 @@
     border: 1px solid var(--idee-color-neutral-40);
     bottom: 12px;
     left: -50px;
-    border-radius: 5px;
-    box-shadow: 2px 2px 8px -4px rgba(0, 0, 0, 0.53);
+    border-radius: var(--idee-shape-border-radius);
+    box-shadow: var(--idee-shape-box-shadow);
     max-width: 70vw;
 }
 
@@ -59,7 +59,7 @@
     position: absolute;
     top: 2px;
     right: 2px;
-    font-size: 100%;
+    font-size: inherit;
     padding: 0 4px;
     color: var(--idee-color-neutral-60);
     text-decoration: none;
@@ -115,11 +115,11 @@
 .m-popup>div.m-popup-content>div.m-content>p.m-title {
     text-align: center;
     line-height: 30px;
-    font-size: 15px;
+    font-size: var(--idee-font-size-body-m);
     color: var(--idee-color-neutral-70);
     background-color: var(--idee-color-neutral-30);
     margin-top: 0px;
-    font-weight: bold;
+    font-weight: var(--idee-font-weight-bold);
 }
 
 .m-popup>div.m-popup-content>div.m-content:last-child {
@@ -131,12 +131,12 @@
     margin: 10px 0 10px 0;
     padding: 5px;
     background-color: var(--idee-color-white);
-    font-family: 'Muli', 'sans-serif' !important;
+    font-family: var(--idee-font-family) !important;
     cursor: pointer;
     width: 97%;
-    border-radius: 4px;
+    border-radius: var(--idee-shape-border-radius);
     border: 1px solid rgba(0, 0, 0, 0.4);
-    font-size: 15px;
+    font-size: var(--idee-font-size-body-s);
     line-height: 25px;
     cursor: pointer;
     opacity: 0.75;
@@ -175,11 +175,11 @@
 }
 
 .m-popup>div.m-tabs>div.m-tab:first-child {
-    border-top-left-radius: 4px;
+    border-top-left-radius: var(--idee-shape-border-radius);
 }
 
 .m-popup>div.m-tabs>div.m-tab:last-child {
-    border-top-right-radius: 4px;
+    border-top-right-radius: var(--idee-shape-border-radius);
 }
 
 .m-popup>div.m-tabs>div.m-tab.m-activated {
@@ -225,7 +225,7 @@
     .m-popup:not(.m-has-tabs)>div.m-content>div.m-header {
         padding-top: 0px;
         position: relative;
-        box-shadow: 0 0px 7px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
+        box-shadow: var(--idee-shape-box-shadow);
         flex-flow: row;
         justify-content: flex-end;
         height: 10vh;
@@ -254,6 +254,7 @@
         height: 100%;
         width: 100%;
         margin: 0px;
+        /* idee-token-exception: tamaño de glifo de icono */
         font-size: 24px;
         display: flex;
         justify-content: center;
@@ -269,14 +270,14 @@
 
     .m-popup>div.m-content>div.m-header>div.m-title {
         display: initial;
-        font-size: 1.2em;
-        font-weight: bold;
+        font-size: var(--idee-font-size-body-m);
+        font-weight: var(--idee-font-weight-bold);
         width: 100%;
     }
 
     .m-popup>div.m-content>div.m-header>div.m-subtitle {
         display: initial;
-        font-size: 1em;
+        font-size: inherit;
         font-style: italic;
     }
 
@@ -362,11 +363,13 @@
         width: 40px;
         margin: 0px;
         padding: 0px;
+        /* idee-token-exception: fuente de iconos */
         font-family: 'g-cartografia';
         position: inherit;
         display: flex;
         align-items: center;
         justify-content: left;
+        /* idee-token-exception: tamaño de glifo de icono */
         font-size: 22px;
     }
 
@@ -428,7 +431,7 @@
 
 .m-popup>div.m-content>div.m-body>div.m-geojson-content>div.result>table td.key,
 .m-popup>div.m-content>div.m-body>div.m-legend {
-    font-weight: bold;
+    font-weight: var(--idee-font-weight-bold);
 }
 
 .m-popup>div.m-content>div.m-body>div.m-geojson-content>div.result>table td.value,
@@ -437,7 +440,7 @@
 }
 
 .m-popup>div.m-content>div.m-body>div.m-legend {
-    font-size: 15px;
+    font-size: var(--idee-font-size-body-s);
     border-bottom: 1px solid var(--idee-color-neutral-20);
     margin-bottom: 5px;
 }
@@ -471,7 +474,7 @@
     border: none;
     background-color: transparent;
     cursor: pointer;
-    font-size: 18px;
+    font-size: var(--idee-font-size-body-l);
     color: var(--idee-color-links);
     transition: color .3s;
 }
