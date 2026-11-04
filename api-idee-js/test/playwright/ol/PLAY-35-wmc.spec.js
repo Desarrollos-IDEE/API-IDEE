@@ -2,10 +2,12 @@ import { test, expect } from '@playwright/test';
 import { mockProxy } from '../common/proxy';
 
 test.describe('IDEE.layer.WMC', () => {
+  let proxied;
+
   test.beforeEach(async ({ page }) => {
     // Los contextos se piden por el proxy de la API REST (no existe en el servidor de pruebas):
     // el proxy simulado descarga el WMC real
-    await mockProxy(page);
+    proxied = await mockProxy(page);
     await page.goto('/test/playwright/ol/basic-ol.html');
     await page.evaluate(() => {
       IDEE.proxy(true);
@@ -30,6 +32,7 @@ test.describe('IDEE.layer.WMC', () => {
       window.map.addWMC(wmc001);
     });
 
+    await expect.poll(() => proxied[0], { timeout: 45000 }).toMatchObject({ valid: true });
     await expect.poll(() => page.evaluate(() => window.map.getLayers().length), {
       timeout: 15000,
     }).toEqual(6);

@@ -366,7 +366,7 @@ class OverviewMap extends OlControlOverviewMap {
     const olLayers = [];
     this.facadeMap.getLayers().forEach((layer) => {
       if (layer.isBase === true && layer.isVisible()) {
-        const olLayer = layer.getImpl().getLayer();
+        const olLayer = layer.getImpl().getSecondaryMapLayer?.() ?? layer.getImpl().getLayer();
         if (isNullOrEmpty(olLayer)) {
           // layer.getImpl().on(IDEE.evt.ADDED_TO_MAP, this.addLayer_.bind(this));
         } else {

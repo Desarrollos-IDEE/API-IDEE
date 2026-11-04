@@ -161,6 +161,16 @@ const PRECHARGED = {
     }],
   }],
 };
+
+/**
+ * Indica si el valor de precharged es una URL a un fichero JSON (y no un JSON o base64).
+ * No se usa IDEE.utils.isUrl porque también acepta cadenas JSON que contienen URLs.
+ *
+ * @param {*} value Valor a comprobar.
+ * @returns {Boolean} Verdadero si es una URL http(s).
+ */
+const isPrechargedUrl = (value) => typeof value === 'string' && /^(https?:)?\/\/\S+$/i.test(value.trim());
+
 export default class Layerswitcher extends IDEE.Plugin {
   constructor(options = {}) {
     super('layerswitcher', {
@@ -226,26 +236,47 @@ export default class Layerswitcher extends IDEE.Plugin {
     this.statusLayers = options.statusLayers;
 
     /**
+     * URL del JSON de servicios precargados indicada por el usuario (si la hay)
+     * @private
+     * @type {String|undefined}
+     */
+    this.prechargedUrl_ = undefined;
+
+    /**
      * Object with precharged layers to show in the plugin
      * @public
      * @type {Object}
      */
     let { precharged } = options;
     if (typeof precharged === 'string') {
-      try {
-        precharged = JSON.parse(precharged);
-      } catch (e) {
+      if (isPrechargedUrl(precharged)) {
+        this.prechargedUrl_ = precharged.trim();
+        precharged = { services: [], groups: [] };
+      } else {
         try {
-          precharged = IDEE.utils.decodeBase64(precharged);
-        } catch (err) {
-          IDEE.dialog.error(getValue('exception.errorPrecharged'), 'Layerswitcher.precharged');
-          precharged = undefined;
+          precharged = JSON.parse(precharged);
+        } catch (e) {
+          try {
+            precharged = IDEE.utils.decodeBase64(precharged);
+          } catch (err) {
+            IDEE.dialog.error(getValue('exception.errorPrecharged'), 'Layerswitcher.precharged');
+            precharged = undefined;
+          }
         }
       }
     }
-    this.precharged = precharged && Object.keys(precharged).length > 0
-      ? precharged
-      : PRECHARGED;
+    if (this.prechargedUrl_) {
+      this.precharged = precharged;
+      this.loadPrecharged_(this.prechargedUrl_, true);
+    } else if (precharged && Object.keys(precharged).length > 0) {
+      this.precharged = precharged;
+    } else if (isPrechargedUrl(IDEE.config.LIST_PRECHARGED_URL)) {
+      // Catálogo por defecto publicado en LIST_PRECHARGED_URL (configuration.js)
+      this.precharged = PRECHARGED;
+      this.loadPrecharged_(IDEE.config.LIST_PRECHARGED_URL.trim(), false);
+    } else {
+      this.precharged = PRECHARGED;
+    }
 
     /**
      * Option to show or not the label of the layers in the plugin
@@ -373,9 +404,57 @@ export default class Layerswitcher extends IDEE.Plugin {
     this.controls[0].addEventPanel(this.panel);
   }
 
+  /**
+   * Carga el catálogo de servicios precargados desde una URL a un fichero JSON.
+   * Si la carga falla se mantiene el catálogo embebido por defecto.
+   *
+   * @private
+   * @function
+   * @param {String} url URL del fichero JSON.
+   * @param {Boolean} userDefined Verdadero si la URL la ha indicado el usuario
+   * (solo entonces se avisa del error).
+   */
+  loadPrecharged_(url, userDefined) {
+    window.fetch(url)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(String(response.status));
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (!IDEE.utils.isObject(data)) {
+          throw new Error('invalid json');
+        }
+        this.setPrecharged_(data);
+      })
+      .catch(() => {
+        this.setPrecharged_(PRECHARGED);
+        if (userDefined) {
+          IDEE.dialog.error(getValue('exception.errorPrechargedUrl'), 'Layerswitcher.precharged');
+        }
+      });
+  }
+
+  /**
+   * Actualiza el catálogo precargado del plugin y de su control (si ya existe).
+   *
+   * @private
+   * @function
+   * @param {Object} precharged Catálogo de servicios precargados.
+   */
+  setPrecharged_(precharged) {
+    this.precharged = precharged;
+    const control = this.controls?.[0];
+    if (control) {
+      control.precharged = precharged;
+    }
+  }
+
   // Devuelve la cadena API-REST del plugin
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed_}*${this.order}*${this.tooltip}*${this.isMoveLayers}*${this.modeSelectLayers}*${this.tools}*${this.http}*${this.https}*${this.showCatalog}*${this.useProxy}*${this.addLayers}*${this.statusLayers}*${this.displayLabel}*${this.useAttributions}*${JSON.stringify(this.precharged)}`;
+    const precharged = this.prechargedUrl_ || JSON.stringify(this.precharged);
+    return `${this.name}=${this.position}*${this.collapsed_}*${this.order}*${this.tooltip}*${this.isMoveLayers}*${this.modeSelectLayers}*${this.tools}*${this.http}*${this.https}*${this.showCatalog}*${this.useProxy}*${this.addLayers}*${this.statusLayers}*${this.displayLabel}*${this.useAttributions}*${precharged}`;
   }
 
   // Devuelve la cadena API-REST del plugin en base64

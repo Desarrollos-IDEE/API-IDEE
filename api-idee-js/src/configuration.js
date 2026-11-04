@@ -126,6 +126,15 @@
   IDEE.config('STATIC_RESOURCES_URL', '${api-idee.static_resources.url}');
 
   /**
+   * URL del JSON de capas precargadas
+   * @const
+   * @type {string}
+   * @public
+   * @api stable
+   */
+  IDEE.config('LIST_PRECHARGED_URL', '${list.precharged.url}');
+
+  /**
    * The path to the api-idee theme
    * @const
    * @type {string}
@@ -354,6 +363,14 @@
    * @type {Number}
    */
   IDEE.config('DPI_OGC', 25.4 / 0.28);
+
+  /**
+   * MAP Viewer - Renderizado WebGL por defecto de las capas compatibles.
+   *
+   * @private
+   * @type {Boolean}
+   */
+  IDEE.config('WEBGL', false);
 
   /**
    * Mueve el mapa cuando se hace clic sobre un objeto
