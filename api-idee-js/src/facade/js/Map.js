@@ -778,23 +778,14 @@ class Map extends Base {
         let layer;
 
         if (isString(layerParam)) {
-          // Named-param format: 'WMTS*url=http://...;name=MTN;matrixSet=GM'
-          if (isString(layerParam)) {
-            // eslint-disable-next-line
-            layerParam = buildLayer(layerParam);
-          }
-          if (isString(layerParam)) {
-            const splt = layerParam.split('*');
-            if (splt.length === 2 && splt[0] === 'QUICK') {
-              const ly = getQuickLayers(splt[1]);
-              if (!isUndefined(ly)) {
-                // eslint-disable-next-line
-                layerParam = ly;
-              } else {
-                // eslint-disable-next-line
-                console.error(`No se encuentra definida ${splt[1]} como capa rápida`);
-                return null;
-              }
+          const splt = layerParam.split('*');
+          if (splt.length === 2 && splt[0] === 'QUICK') {
+            const ly = getQuickLayers(splt[1]);
+            if (!isUndefined(ly)) {
+              // eslint-disable-next-line
+              layerParam = ly;
+            } else {
+              return null;
             }
           }
         }
@@ -842,25 +833,41 @@ class Map extends Base {
     return this;
   }
 
-  getLayerByString(layerParam) {
+  getLayerByString(layerParameter) {
+    const layerParam = buildLayer(layerParameter);
+    const isNamedFormat = layerParam !== layerParameter;
     let layer = null;
     const parameterVariable = parameter.layer(layerParam);
+    const parameters = isNamedFormat ? { ...layerParam } : parameterVariable;
+    const constructorOptions = {};
+    if (isNamedFormat) {
+      Object.keys(parameterVariable).forEach((key) => {
+        if (!isUndefined(parameterVariable[key]) && (key !== 'transparent' || key in layerParam)) {
+          parameters[key] = parameterVariable[key];
+        }
+      });
+      Object.assign(constructorOptions, layerParam.options);
+      ['visibility', 'opacity', 'displayInLayerSwitcher', 'minZoom', 'maxZoom', 'style'].forEach((key) => {
+        if (!isUndefined(layerParam[key])) constructorOptions[key] = layerParam[key];
+      });
+    }
+    const styleOptions = { ...constructorOptions, style: parameterVariable.style };
     if (!isNullOrEmpty(parameterVariable.type)) {
       switch (parameterVariable.type) {
         case 'WFS':
-          layer = new WFS(layerParam, { style: parameterVariable.style });
+          layer = new WFS(layerParam, styleOptions);
           break;
         case 'WMC':
-          layer = new WMC(layerParam);
+          layer = new WMC(layerParam, constructorOptions);
           break;
         case 'WMS':
-          layer = new WMS(layerParam);
+          layer = new WMS(layerParam, constructorOptions);
           break;
         case 'GeoJSON':
-          layer = new GeoJSON(parameterVariable, { style: parameterVariable.style });
+          layer = new GeoJSON(parameters, styleOptions);
           break;
         case 'GPX':
-          layer = new GPX(parameterVariable);
+          layer = new GPX(parameters, constructorOptions);
           break;
         case 'GeoPackage': {
           const {
@@ -875,66 +882,68 @@ class Map extends Base {
           break;
         }
         case 'GeoTIFF':
-          layer = new GeoTIFF(layerParam);
+          layer = new GeoTIFF(layerParam, constructorOptions);
           break;
         case 'KMZ':
-          layer = new KMZ(layerParam);
+          layer = new KMZ(layerParam, constructorOptions);
           break;
         case 'KML':
-          layer = new KML(layerParam);
+          layer = new KML(layerParam, constructorOptions);
           break;
         case 'Vector':
-          layer = new Vector(layerParam);
+          layer = new Vector(layerParam, constructorOptions);
           break;
         case 'WMTS':
-          layer = new WMTS(layerParam);
+          layer = new WMTS(layerParam, constructorOptions);
           break;
         case 'MVT':
-          layer = new MVT(layerParam);
+          layer = new MVT(layerParam, constructorOptions);
           break;
         case 'MBTiles':
-          layer = new MBTiles(parameterVariable);
+          layer = new MBTiles(parameters, constructorOptions);
           break;
         case 'MBTilesVector':
-          layer = new MBTilesVector(parameterVariable, { style: parameterVariable.style });
+          layer = new MBTilesVector(parameters, styleOptions);
           break;
         case 'XYZ':
-          layer = new XYZ(parameterVariable);
+          layer = new XYZ(parameters, constructorOptions);
           break;
         case 'TMS':
-          layer = new TMS(parameterVariable, { crossOrigin: parameterVariable.crossOrigin });
+          layer = new TMS(parameters, {
+            ...constructorOptions, crossOrigin: parameterVariable.crossOrigin,
+          });
           break;
         case 'OSM':
-          layer = new OSM(layerParam);
+          layer = new OSM(layerParam, constructorOptions);
           break;
         case 'OGCAPIFeatures':
-          layer = new OGCAPIFeatures(layerParam, { style: parameterVariable.style });
+          layer = new OGCAPIFeatures(layerParam, styleOptions);
           break;
         case 'DataIDEE':
           // Un objeto literal puede incluir vendorOptions (p. ej. { getFeature: { token } }).
           layer = new DataIDEE(
             layerParam,
-            { style: parameterVariable.style },
+            styleOptions,
             layerParam.vendorOptions,
           );
           break;
         case 'GenericRaster':
-          layer = new GenericRaster(layerParam);
+          layer = new GenericRaster(layerParam, constructorOptions);
           break;
         case 'GenericVector':
-          layer = new GenericVector(layerParam);
+          layer = new GenericVector(layerParam, constructorOptions);
           break;
         case 'MapLibre':
-          layer = new MapLibre(layerParam);
+          layer = new MapLibre(layerParam, constructorOptions);
           break;
         case 'LayerGroup':
-          layer = new LayerGroup(layerParam);
+          layer = new LayerGroup(layerParam, constructorOptions);
           break;
         case 'Tiles3D':
-          layer = new Tiles3D(parameterVariable);
+          layer = new Tiles3D(parameters, constructorOptions);
           break;
         case 'Terrain':
-          layer = new Terrain(parameterVariable);
+          layer = new Terrain(parameters, constructorOptions);
           break;
         default:
           Dialog.error(getValue('dialog').invalid_type_layer);
