@@ -43,6 +43,14 @@
     css: 'assets/css/apiidee.cesium.min.css',
   }];
 
+  const decodeLayer = (item) => {
+    try {
+      return decodeURIComponent(item);
+    } catch (error) {
+      return item;
+    }
+  };
+
   const params = window.location.search.split('&');
   let center = '';
   let zoom = '';
@@ -50,33 +58,35 @@
   let layers = '';
   let zoomConstrains = '';
   let extentConstrains = '';
+  
   params.forEach((param) => {
-    if (param.indexOf('center') > -1) {
+    const key = param.replace(/^\?/, '').split('=')[0];
+    if (key === 'center') {
       const values = param.split('=')[1].split(',');
       center = [parseFloat(values[0]), parseFloat(values[1])];
-    } else if (param.indexOf('zoomConstrains') > -1) {
+    } else if (key === 'zoomConstrains') {
       const value = param.split('=')[1];
       zoomConstrains = value;
-    } else if (param.indexOf('extentConstrains') > -1) {
+    } else if (key === 'extentConstrains') {
       const value = param.split('=')[1];
       extentConstrains = value;
-    } else if (param.indexOf('zoom') > -1) {
+    } else if (key === 'zoom') {
       const value = param.split('=')[1];
       zoom = parseInt(value, 10);
-    } else if (param.indexOf('srs') > -1) {
+    } else if (key === 'srs') {
       const value = param.split('=')[1];
       srs = value;
-    } else if (param.indexOf('layers') > -1) {
+    } else if (key === 'layers') {
       let value = param.substring(param.indexOf('=') + 1, param.length);
-  
+
       let layerGroups = [];
       const regex = /LayerGroup\*.*?!/g;
       if (value.match(regex) !== null) {
         layerGroups = value.match(regex).map((item) => item.slice(0, -1));
         value = value.replace(regex, '');
       }
-  
-      layers = value.split(',').filter((item) => item !== '').concat(layerGroups);
+
+      layers = value.split(',').filter((item) => item !== '').concat(layerGroups).map(decodeLayer);
     }
   });
   /**
