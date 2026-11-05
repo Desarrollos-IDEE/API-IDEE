@@ -152,11 +152,8 @@ public class BuilderWS {
       List<String> layers = new ArrayList<>();
       String layersParam = queryParams.getFirst("layers");
       if (layersParam != null) {
-         for (String entry : layersParam.split(",")) {
-            entry = entry.trim();
-            if (!entry.isEmpty()) {
-               layers.add(JSBuilder.createLayerWithParams(entry));
-            }
+         for (String entry : ParametersParser.parseLayers(layersParam)) {
+            layers.add(JSBuilder.createLayerWithParams(entry));
          }
       }
       return layers;

@@ -143,5 +143,15 @@
         "name": "Parámetro bgcolorcontainer",
         "description": "Parámetro bgcolorcontainer",
         "url": "/api-idee/?bgcolorcontainer=red&layers=OSM&projection=EPSG:25830&plugins=sharemap"
+    },
+    {
+        "name": "Parámetro baselayer",
+        "description": "Capa base del mapa (cadena de carga REST de una capa) que sustituye a la capa base por defecto",
+        "url": "/api-idee/?baselayer=TMS*name=PNOA_MA;url=https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/%7Bz%7D/%7Bx%7D/%7B-y%7D.jpeg;isBase=true;tileGridMaxZoom=19&layers=WMS*name=AU.AdministrativeUnit;url=https://www.ign.es/wms-inspire/unidades-administrativas?;opacity=0.5&center=-400000,4800000&zoom=6"
+    },
+    {
+        "name": "Parámetro baselayer sin capa base",
+        "description": "baselayer=none crea el mapa sin capa base",
+        "url": "/api-idee/?baselayer=none&layers=WMS*name=AU.AdministrativeUnit;url=https://www.ign.es/wms-inspire/unidades-administrativas?&center=-400000,4800000&zoom=6"
     }
   ]
