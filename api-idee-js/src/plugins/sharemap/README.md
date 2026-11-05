@@ -8,6 +8,8 @@
 
 Plugin que permite copiar la url del mapa actual visualizado. Exporta la información de todas las capas cargadas en el mapa.
 
+La url incluye siempre la capa base (fondo) que se está visualizando en el parámetro `baselayer`, tanto si se ha elegido con el control BackgroundLayers como con el plugin BackImgLayer, con independencia de `shareLayer` y `filterLayers`. Si el mapa no tiene fondo, se comparte `baselayer=none`. Las capas del fondo no se repiten en el parámetro `layers`.
+
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
