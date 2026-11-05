@@ -4719,6 +4719,39 @@ const generic = (userParameters, type) => {
   };
 };
 
+/**
+ * Genera la cadena REST posicional que interpreta "generic" para una capa genérica
+ * creada a partir de otra cadena REST.
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {IDEE.layer.GenericRaster|IDEE.layer.GenericVector} layer Capa genérica.
+ * @param {String} restLayer Cadena REST con la que se creó la capa.
+ * @returns {String} Cadena REST de la capa.
+ */
+export const genericRestLayer = (layer, restLayer) => {
+  const text = (value) => (isNullOrEmpty(value) ? '' : String(value).replace(/[*,]/g, ''));
+  const zoomLevel = (value) => (Number.isFinite(value) ? value : '');
+  let visibility = '';
+  try {
+    visibility = layer.isVisible();
+  } catch (error) {
+    visibility = '';
+  }
+  return [
+    layer.type,
+    restLayer.split('*')[1],
+    text(layer.name),
+    text(layer.legend),
+    !layer.isBase,
+    zoomLevel(layer.minZoom),
+    zoomLevel(layer.maxZoom),
+    layer.displayInLayerSwitcher !== false,
+    visibility,
+  ].join('*');
+};
+
 const genericvector = (userParameters) => {
   return generic(userParameters, 'GenericVector');
 };
