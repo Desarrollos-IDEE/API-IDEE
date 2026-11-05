@@ -53,7 +53,7 @@ export const showCatalogHelp = (order) => showHelp(getValue('turf.title'), [
   },
   {
     title: getValue('turf.help.selectionsTitle'),
-    icon: 'vectorsmanagement-icon-seleccionar',
+    icon: 'vectorsmanagement-icon-seleccionar g-cartografia-seleccionar',
     paragraphs: [{ text: getValue('turf.help.selections') }],
   },
 ], order);

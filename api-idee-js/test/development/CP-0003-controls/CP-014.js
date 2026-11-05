@@ -6,10 +6,56 @@
 import { map as Mmap } from 'IDEE/api-idee';
 import Timeline from 'IDEE/control/Timeline';
 import WMS from 'IDEE/layer/WMS';
+import Vector from 'IDEE/layer/Vector';
+import Feature from 'IDEE/feature/Feature';
 import * as EventType from 'IDEE/event/eventtype';
 import { setLang } from '../../../src/facade/js/i18n/language';
 
 const urlParams = new URLSearchParams(window.location.search);
+const ROUTES = {
+  guadarrama: '/test/development/CP-0003-controls/fixtures/ruta-guadarrama.gpx',
+  penalara: '/test/development/CP-0003-controls/fixtures/ruta-penalara.gpx',
+};
+const ROUTE_INTERVALS = [
+  {
+    id: 'guadarrama',
+    init: '2021-06-05T08:00:00Z',
+    end: '2021-06-05T13:20:00Z',
+    layer: 'ruta_guadarrama',
+    attributeParam: 'time',
+  },
+  {
+    id: 'penalara',
+    init: '2021-07-10T09:00:00Z',
+    end: '2021-07-10T12:00:00Z',
+    layer: 'ruta_penalara',
+    attributeParam: 'time',
+  },
+];
+const TRACK_EXAMPLES = {
+  guadarrama: { layer: 'ruta_guadarrama', feature: 'trk-4' },
+  variante: { layer: 'ruta_guadarrama', feature: 'trk-5' },
+  waypoints: { layer: 'ruta_guadarrama', feature: ['wpt-0', 'wpt-1', 'wpt-2', 'wpt-3'] },
+  penalara: { layer: 'ruta_penalara', feature: 'trk-4' },
+  penalaraRte: { layer: 'ruta_penalara', feature: 'rte-3' },
+  vectorPuntos: { layer: 'vector_sin_tiempo', feature: ['p1', 'p2', 'p3', 'p4', 'p5'] },
+  vectorLinea: { layer: 'vector_sin_tiempo', feature: 'l1' },
+};
+
+const toMercator = ([lon, lat]) => [
+  (lon * 20037508.34) / 180,
+  ((Math.log(Math.tan(((90 + lat) * Math.PI) / 360)) / (Math.PI / 180)) * 20037508.34) / 180,
+];
+
+// base64 de UTF-8, como espera parseUrlParams (base64~).
+const toBase64 = (value) => {
+  let binary = '';
+  new TextEncoder().encode(JSON.stringify(value)).forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+  return window.btoa(binary);
+};
+
 setLang(urlParams.get('language') || 'es');
 // Modo manual por defecto: sin `demo`, `layers` ni `controls` (o con mode=manual).
 const manual = urlParams.get('mode') === 'manual'
@@ -20,7 +66,7 @@ const manual = urlParams.get('mode') === 'manual'
  * ----------------
  * Sin query string la página abre el modo manual: formulario con todas las opciones del
  * control (new Timeline(...)). El selector "Modo de apertura" de la fila de botones
- * cambia a los escenarios GET (?demo=relative|absolute|absoluteSimple) y vuelve al
+ * cambia a los escenarios GET (?demo=relative|absolute|absoluteSimple|track|recorridos) y vuelve al
  * manual; conserva el parámetro `language`.
  *
  * Escenario GET (?demo=...)
@@ -69,8 +115,10 @@ Abre `test/development/CP-0003-controls/CP-014.html` sin query string, en modo m
 **Modalidades y URL propias**
 
 - `?demo=absolute` y `?demo=absoluteSimple` aplican el mismo recorrido GET a las otras modalidades. En `absoluteSimple` cada paso muestra u oculta una GPX.
+- `?demo=track`: `timelineType=track` con dos rutas GPX por GET (`ruta_guadarrama`, `ruta_penalara`). `layerPosition=2` elige `ruta_guadarrama` y su primera línea con fechas, `trk-4` (tres segmentos). Muestra: recorrido completo y realizado, marcador orientado, progreso, perfil sincronizado, capa y objeto (líneas, todos los puntos o los elegidos en el mapa), `speed=0.5`.
+- `?demo=recorridos`: `relative` con las dos rutas (pasos de 10 min) y `track=base64~{"layer":"ruta_guadarrama","feature":"trk-4"}`: el recorrido complementario se sincroniza con el rango.
 - Si la URL ya trae `layers` o `controls`, se respeta y no se redirige. `intervals` debe ir en base64, porque las comas del JSON se interpretarían como separadores.
-- El modo manual (sin query string o `?mode=manual`) es el formulario programático, que usa `new Timeline(...)`: idioma, posición, orden, tooltip, título, colapsado, tipo, `layerPosition`, `animation`, intervalos (ejemplos WMS y GPX o JSON propio), `speed`/`speedDate`, `snapMode`, `paramsDate`, `stepValue`, tamaño, escala y `formatMove`. "Eliminar control" lo retira y, pulsado de nuevo, lo crea con las opciones del formulario. No demuestra el recorrido GET.
+- El modo manual (sin query string o `?mode=manual`) es el formulario programático, que usa `new Timeline(...)`: idioma, posición, orden, tooltip, título, colapsado, tipo (también `track`), `layerPosition`, `animation`, recorrido inicial `track` (GPX trk con y sin fechas, wpt, rte y una capa vectorial sin tiempos), intervalos (ejemplos WMS y GPX o JSON propio), `speed`/`speedDate`, `snapMode`, `paramsDate`, `stepValue`, tamaño, escala y `formatMove`. El mapa incluye las dos rutas GPX y la capa vectorial como fuentes de recorrido. "Eliminar control" lo retira y, pulsado de nuevo, lo crea con las opciones del formulario. No demuestra el recorrido GET.
 
 **Depuración**
 
@@ -98,7 +146,8 @@ Abre `test/development/CP-0003-controls/CP-014.html` sin query string, en modo m
  * window.location.search y los interpretan los parsers generales de la API.
  *
  * No se redirige si la URL ya trae `layers` o `controls` (URL propia) ni en el modo
- * manual (sin `demo`). `demo` elige la modalidad: relative, absolute o absoluteSimple.
+ * manual (sin `demo`). `demo` elige la modalidad: relative, absolute, absoluteSimple, track
+ * o recorridos (relative con recorrido sincronizado).
  *
  * Devuelve true si redirige; en ese caso no debe crearse el mapa.
  */
@@ -108,8 +157,34 @@ const prepareTimelineGetDemo = () => {
   if (manual || params.has('layers') || params.has('controls')) return false;
 
   const gpx = '/test/development/CP-0002-layers/fixtures/CP-035.gpx';
-  const demo = ['relative', 'absolute', 'absoluteSimple'].includes(params.get('demo'))
+  const demo = ['relative', 'absolute', 'absoluteSimple', 'recorridos', 'track'].includes(params.get('demo'))
     ? params.get('demo') : 'relative';
+  if (demo === 'recorridos' || demo === 'track') {
+    params.set('demo', demo);
+    params.set('layers', [
+      'QUICK*Base_IGNBaseTodo_TMS',
+      `GPX*ruta_guadarrama*${ROUTES.guadarrama}*true*true`,
+      `GPX*ruta_penalara*${ROUTES.penalara}*true*true`,
+    ].join(','));
+    const common = ['collapsible=false', 'collapsed=false', 'position=right', 'sizeWidthDinamic=sizeWidthDinamic_medium'];
+    const options = demo === 'track'
+      ? ['timelineType=track', ...common, 'layerPosition=2', 'speed=0.5']
+      : [
+        'timelineType=relative',
+        ...common,
+        'layerPosition=2',
+        'paramsDate=min',
+        'stepValue=10',
+        'speedDate=1',
+        `intervals=base64~${toBase64(ROUTE_INTERVALS)}`,
+        `track=base64~${toBase64(TRACK_EXAMPLES.guadarrama)}`,
+      ];
+    params.set('controls', `timeline*${options.join(';')}`);
+    params.set('center', '-445835,4982151');
+    params.set('zoom', '12');
+    window.location.replace(`${window.location.pathname}?${params.toString()}${window.location.hash}`);
+    return true;
+  }
 
   // Capas del visualizador (orden del parámetro = orden de incorporación).
   // Posiciones resultantes (1 = superior): 1 gpx_definicion, 2 gpx_nombre, 3 base.
@@ -150,11 +225,6 @@ const prepareTimelineGetDemo = () => {
     },
   ];
 
-  // base64 de UTF-8, como espera parseUrlParams (base64~).
-  const bytes = new TextEncoder().encode(JSON.stringify(intervals));
-  let binary = '';
-  bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
-
   const timelineOptions = [
     `timelineType=${demo}`,
     'collapsible=false',
@@ -165,7 +235,7 @@ const prepareTimelineGetDemo = () => {
     'paramsDate=mos',
     'stepValue=1',
     'speedDate=1',
-    `intervals=base64~${window.btoa(binary)}`,
+    `intervals=base64~${toBase64(intervals)}`,
   ];
 
   params.set('demo', demo);
@@ -228,7 +298,7 @@ const setupScenarioSelector = () => {
 };
 
 // Solo para mostrarlas: abrevia la ruta del fixture GPX.
-const shortenPath = (text) => text.replace(/\/test\/development\/CP-0002-layers\/fixtures\//g, '…/');
+const shortenPath = (text) => text.replace(/\/test\/development\/CP-000[23]-[a-z]+\/fixtures\//g, '…/');
 
 // Solo para mostrarlo: recorta el base64 de intervals.
 const shortenControl = (control) => control
@@ -269,12 +339,24 @@ const startGetScenario = () => {
   // Velocidad elegida en el selector del panel y segundos por paso que usa la reproducción.
   const getSpeedText = (control) => {
     const option = control.getElement()?.querySelector('.m-timeline-speed')?.selectedOptions[0];
-    const seconds = control.timelineType === 'absoluteSimple' ? control.speed : control.speedDate;
+    const seconds = ['absoluteSimple', 'track'].includes(control.timelineType) ? control.speed : control.speedDate;
     return `${option?.textContent ?? '–'} (${Number(seconds)} s/paso)`;
   };
 
   // Estado compacto (una línea por elemento). El detalle completo está en window.mapa,
   // window.timeline y window.capasGPX.
+  const describeTrack = (track) => {
+    if (!track) return 'sin recorrido';
+    const time = track.time !== null ? ` · ${new Date(track.time).toISOString()}` : '';
+    return [
+      `${track.label} (${track.kind}, ${track.timed ? 'temporal' : 'secuencial'})`,
+      `paso ${track.step}/${track.steps}${time}`,
+      `segmento ${track.segment === null ? '–' : track.segment + 1}`,
+      `${Math.round(track.fraction * 100)} %`,
+      track.synchronized ? 'sincronizado' : 'sin sincronizar',
+    ].join(' · ');
+  };
+
   const getState = () => {
     const timelineLayers = timeline ? timeline.getLayers() : [];
     // Opciones interpretadas por buildControl, solo las que vienen en `controls` y sin intervals.
@@ -294,7 +376,8 @@ const startGetScenario = () => {
         rango: `${toISO(timeline.date.init)} → ${toISO(timeline.date.end)}`,
         reproduciendo: timeline.running !== false,
         velocidad: getSpeedText(timeline),
-        movimiento: timeline.formatMove === 'discrete' ? 'inicio fijo' : 'ventana deslizante',
+        movimiento: (timeline.formatMove === 'discrete' && 'inicio fijo') || 'ventana deslizante',
+        recorrido: describeTrack(timeline.getTrack()),
       } : 'No hay Timeline en el mapa',
       selector: timeline ? timeline.getSelectableLayers().map((entry) => [
         entry.position ? `[${entry.position}]` : '[–]',
@@ -327,6 +410,7 @@ const startGetScenario = () => {
       typeof t === 'string' ? t
         : `Timeline: ${t.seleccionada ?? 'sin capa'} · ${t.rango} · ${t.reproduciendo ? 'reproduciendo' : 'parado'} · ${t.velocidad} · ${t.movimiento}`,
       typeof t === 'string' ? '' : `  opciones GET: ${t.opciones}`,
+      typeof t === 'string' ? '' : `  recorrido: ${t.recorrido}`,
       `Selector: ${state.selector.join(' | ')}`,
       'Visualizador (1 = superior):',
       ...list(state.visualizador),
@@ -391,10 +475,32 @@ const startManualScenario = () => {
     container: 'map',
     controls: ['rotate'],
     projection: 'EPSG:3857',
-    center: [-467062.8225, 4683459.6216],
-    zoom: 6,
+    center: [-445835, 4982151],
+    zoom: 11,
   });
   window.mapa = map;
+
+  map.addLayers([
+    `GPX*ruta_guadarrama*${ROUTES.guadarrama}*true*true`,
+    `GPX*ruta_penalara*${ROUTES.penalara}*true*true`,
+  ]);
+  const vectorLayer = new Vector({ name: 'vector_sin_tiempo', legend: 'Vector sin tiempos' });
+  map.addLayers(vectorLayer);
+  vectorLayer.addFeatures([
+    [-4.035, 40.765], [-4.015, 40.772], [-3.995, 40.769], [-3.978, 40.776], [-3.962, 40.784],
+  ].map((point, index) => new Feature(`p${index + 1}`, {
+    type: 'Feature',
+    geometry: { type: 'Point', coordinates: toMercator(point) },
+    properties: { name: `Punto ${index + 1}` },
+  })).concat(new Feature('l1', {
+    type: 'Feature',
+    geometry: {
+      type: 'LineString',
+      coordinates: [[-4.05, 40.745], [-4.03, 40.752], [-4.01, 40.748], [-3.99, 40.756], [-3.97, 40.751]]
+        .map(toMercator),
+    },
+    properties: { name: 'Línea sin tiempos' },
+  })));
 
   const create = (options) => {
     if (!map.hasControl(Timeline.NAME)) {
@@ -522,21 +628,20 @@ const startManualScenario = () => {
     layer: 'GPX*gpx_cp035*/test/development/CP-0002-layers/fixtures/CP-035.gpx*true*true',
     attributeParam: 'time',
   }];
-  const dynamicExamples = { wms: time, gpx: gpxIntervals };
+  const routeIntervals = ROUTE_INTERVALS.map((interval) => ({
+    ...interval,
+    layer: `GPX*${interval.layer}*${ROUTES[interval.id]}*true*true`,
+  }));
+  const dynamicExamples = { wms: time, gpx: gpxIntervals, rutas: routeIntervals };
 
   const field = (id) => document.getElementById(id);
   const value = (id) => field(id).value;
   const typeTimeLine = field('typeTimeLine');
 
   const changeTestFormsDisplay = (formValue = typeTimeLine) => {
-    const isDynamic = formValue.value !== 'absoluteSimple';
-
-    document.querySelectorAll('.dynamic').forEach((el) => {
-      el.style.display = isDynamic ? 'flex' : 'none';
-    });
-
-    document.querySelectorAll('.origin').forEach((el) => {
-      el.style.display = isDynamic ? 'none' : 'flex';
+    const group = { absoluteSimple: 'origin', track: 'trackmode' }[formValue.value] ?? 'dynamic';
+    document.querySelectorAll('.origin, .dynamic, .trackmode').forEach((el) => {
+      el.style.display = el.classList.contains(group) ? 'flex' : 'none';
     });
   };
 
@@ -557,8 +662,12 @@ const startManualScenario = () => {
     });
     if (value('inputOrder') !== '') options.order = Number(value('inputOrder'));
     if (value('inputLayerPosition') !== '') options.layerPosition = Number(value('inputLayerPosition'));
+    if (value('selectTrack') !== '') options.track = TRACK_EXAMPLES[value('selectTrack')];
 
-    if (typeTimeLine.value === 'absoluteSimple') {
+    if (typeTimeLine.value === 'track') {
+      if (Number(value('inputSpeed')) > 0) options.speed = Number(value('inputSpeed'));
+      if (value('sizeWidthDinamic') !== '') options.sizeWidthDinamic = value('sizeWidthDinamic');
+    } else if (typeTimeLine.value === 'absoluteSimple') {
       options.intervals = value('inputIntervals') !== '' ? value('inputIntervals') : intervals;
       if (Number(value('inputSpeed')) > 0) options.speed = Number(value('inputSpeed'));
       if (value('selectSnapMode') !== '') options.snapMode = value('selectSnapMode');
@@ -589,13 +698,21 @@ const startManualScenario = () => {
     'selectPosicion', 'inputIntervals', 'selectAnimation', 'inputSpeed', 'time', 'selectTime',
     'speedDate', 'paramsDate', 'stepValue', 'sizeWidthDinamic', 'formatValueDinamic', 'formatMove',
     'inputTooltip', 'inputTitle', 'selectCollapsible', 'selectCollapsed', 'inputOrder',
-    'selectSnapMode', 'inputLayerPosition',
+    'selectSnapMode', 'inputLayerPosition', 'selectTrack',
   ].forEach((id) => field(id).addEventListener('change', changeTest));
 
   field('selectIntervals').addEventListener('change', () => {
     field('inputIntervals').value = value('selectIntervals');
     changeTest();
   });
+
+  field('selectTime').addEventListener('change', () => {
+    if (value('selectTime') !== 'rutas') return;
+    field('paramsDate').value = 'min';
+    field('stepValue').value = '10';
+    field('speedDate').value = '1';
+    if (value('selectTrack') === '') field('selectTrack').value = 'guadarrama';
+  }, true);
 
   typeTimeLine.addEventListener('change', (event) => {
     if (event.target) {

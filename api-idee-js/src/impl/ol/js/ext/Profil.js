@@ -13,12 +13,24 @@ import OLStyle from 'ol/style/Style';
 import OLStyleCircle from 'ol/style/Circle';
 import OLStyleFill from 'ol/style/Fill';
 import { dragElement } from 'IDEE/util/Utils';
+import { getValue } from 'IDEE/i18n/language';
+
+const DEFAULT_UNITS = {
+  altitudeUnits: 'm',
+  distanceUnitsM: 'm',
+  distanceUnitsKM: 'km',
+};
 
 const DEFAULT_CHART = {
   margin: { top: 10, left: 40, bottom: 30, right: 10 },
   fontSize: 10,
   titleFontSize: 12,
   lineWidth: 3,
+};
+
+const DEFAULT_COLORS = {
+  line: '#368',
+  marker: '#ff0000',
 };
 
 /**
@@ -61,6 +73,9 @@ class Profil extends OLControl {
   /**
    * Constructor principal de la clase.
    *
+   * Los textos que no se indican se toman de la sección "profile" de las traducciones de
+   * la API, en el idioma activo.
+   *
    * @constructor
    * @param {Object} [options] Opciones del control.
    * - info: textos y unidades (zmin, zmax, altitude, distance, distanceP, time,
@@ -78,19 +93,31 @@ class Profil extends OLControl {
    * - width, height: tamaño de cada gráfica en píxeles. Por defecto 300 x 150.
    * - chart: aspecto del gráfico ({ margin: { top, left, bottom, right },
    *   fontSize, titleFontSize, lineWidth }).
+   * - colors: colores de la curva y del marcador del mapa ({ line, marker }).
+   *   Por defecto '#368' y '#ff0000'.
+   * - titles: títulos de los botones del panel ({ close, download, move }).
    * - pointLayer: origen de datos (ol.source.Vector) donde se marca la posición del
    *   cursor sobre el mapa. Se vacía al cerrar el panel.
-   * - feature: geometría que se dibuja al crear el control.
+   * - feature: geometría que se dibuja al crear el control. Un MultiLineString se dibuja
+   *   por partes: la distancia no cuenta los huecos y la curva se corta entre partes.
    * @api
    */
   constructor(opt_options) {
     super({});
     var options = opt_options || {};
-    this.info = options.info;
+    var texts = getValue('profile') || {};
+    this.info = Object.assign({}, DEFAULT_UNITS, texts.info, options.info);
+    this.fileName_ = texts.file_name || 'profile.png';
     var self = this;
     var className = options.className || 'ol-profil';
     var controlClassName = options.controlClassName || 'ol-control';
     var chart = Object.assign({}, DEFAULT_CHART, options.chart);
+    var titles = Object.assign({
+      close: texts.close,
+      download: texts.download,
+      move: texts.move,
+    }, options.titles);
+    this.colors_ = Object.assign({}, DEFAULT_COLORS, options.colors);
     this.draggable_ = Boolean(options.draggable) && !options.target;
     this.centered_ = Boolean(options.centered);
     this.graphs_ = normalizeGraphs(options.graphs);
@@ -107,13 +134,17 @@ class Profil extends OLControl {
       element.className = (className + ' ol-unselectable ' + controlClassName + ' ol-collapsed').trim();
       let elementTitle = document.createElement('p');
       if (options.draggable) elementTitle.id = 'titleTopo';
-      elementTitle.textContent = opt_options.title;
+      elementTitle.textContent = options.title || texts.title || '';
       element.appendChild(elementTitle);
       const button = document.createElement('button');
       button.setAttribute('type', 'button');
       button.setAttribute('class', 'profile-close-button');
+      if (titles.close) {
+        button.setAttribute('title', titles.close);
+        button.setAttribute('aria-label', titles.close);
+      }
       const close = (e) => {
-        document.querySelector('.' + className + '.ol-unselectable.' + controlClassName).remove();
+        element.remove();
         if (options.pointLayer !== undefined) {
           options.pointLayer.clear();
         }
@@ -125,11 +156,15 @@ class Profil extends OLControl {
       const button2 = document.createElement('button');
       button2.setAttribute('type', 'button');
       button2.setAttribute('class', 'profile-download-button ' + (options.downloadClassName || 'icon-download'));
+      if (titles.download) {
+        button2.setAttribute('title', titles.download);
+        button2.setAttribute('aria-label', titles.download);
+      }
       const download = (e) => {
         const image = this.getImage();
         const a = document.createElement('a');
         a.href = image;
-        a.download = 'Perfil.png';
+        a.download = this.fileName_;
         a.click();
         a.remove();
       };
@@ -141,11 +176,14 @@ class Profil extends OLControl {
         const buttonMove = document.createElement('button');
         const imgMove = document.createElement('img');
         imgMove.setAttribute('src', 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_mover.svg');
-        imgMove.setAttribute('alt', 'Icon Move');
+        imgMove.setAttribute('alt', titles.move || '');
 
         buttonMove.appendChild(imgMove);
 
-        buttonMove.setAttribute('title', 'Ventana arrastrable');
+        if (titles.move) {
+          buttonMove.setAttribute('title', titles.move);
+          buttonMove.setAttribute('aria-label', titles.move);
+        }
         buttonMove.setAttribute('type', 'button');
         buttonMove.setAttribute('id', 'buttonTopoMove');
         buttonMove.setAttribute('class', 'profile-move-button icon-move');
@@ -327,7 +365,7 @@ class Profil extends OLControl {
           image: new OLStyleCircle({
             radius: 7,
             fill: new OLStyleFill({
-              color: '#ff0000',
+              color: this.colors_.marker,
             }),
           }),
         })]);
@@ -364,10 +402,6 @@ class Profil extends OLControl {
       var ratio = this.ratio;
       if (dx > this.margin_.left / ratio && dx < (this.canvas_.width - this.margin_.right) / ratio
         && dy > this.margin_.top / ratio && dy < (this.canvas_.height - this.margin_.bottom) / ratio) {
-        this.bars_.forEach((bar) => {
-          bar.style.left = dx + 'px';
-          bar.style.display = 'block';
-        });
         var d = (dx * ratio - this.margin_.left) / this.scale_[0];
         var p0 = this.tab_[0];
         for (var i = 1, p; p = this.tab_[i]; i++) {
@@ -375,25 +409,9 @@ class Profil extends OLControl {
             if (d < (p[0] + p0[0]) / 2) p = p0;
             break;
           }
+          p0 = p;
         }
-        if (p) {
-          for (var k = 0; k < this.cursors_.length; k++) {
-            var layout = this.graphLayout_[k];
-            this.cursors_[k].style.left = dx + 'px';
-            this.cursors_[k].style.top = (layout.top + this.graphHeight_ - this.margin_.bottom + p[layout.value] * layout.scy + layout.dy) / ratio + 'px';
-            this.cursors_[k].style.display = 'block';
-          }
-        } else {
-          this.cursors_.forEach((cursor) => { cursor.style.display = 'none'; });
-        }
-        this.bar_.parentElement.classList.add('over');
-        this.element.querySelector('.point-info .z').textContent = `${p[1].toFixed(2).replace(".", ",")} ${this.info.altitudeUnits}`;
-        this.element.querySelector('.point-info .dist').textContent = `${(p[0] / 1000).toFixed(2).replace(".", ",")} ${this.info.distanceUnitsKM}`;
-        this.element.querySelector('.point-info .time').textContent = p[2];
-        if (this.hasElevationGain_) this.element.querySelector('.point-info .gain').textContent = `${p[4].toFixed(2).replace(".", ",")} ${this.info.altitudeUnits}`;
-        if (dx > this.canvas_.width / ratio / 2) this.popup_.classList.add('ol-left');
-        else this.popup_.classList.remove('ol-left');
-        this.dispatchEvent({ type: 'over', click: e.type == 'click', coord: p[3], time: p[2], distance: p[0], elevationGain: p[4] });
+        this.showAt_(dx, p || this.tab_[this.tab_.length - 1], e.type == 'click');
       } else {
         if (this.bar_.parentElement.classList.contains('over')) {
           this.bars_.forEach((bar) => { bar.style.display = 'none'; });
@@ -403,6 +421,58 @@ class Profil extends OLControl {
         }
       }
     }
+  }
+
+  /**
+   * Coloca el cursor del perfil a una fracción de la longitud de una de sus partes (la
+   * parte 0 si la geometría es un LineString). Se busca por distancia y no por cercanía
+   * en el mapa para que un recorrido de ida y vuelta no salte a la otra pasada.
+   * @param {Number} part índice de la parte
+   * @param {Number} fraction fracción de la parte, de 0 a 1
+   * @api
+   */
+  setPositionAt(part, fraction) {
+    var points = this.tab_.filter(function(p) { return p[5] === part; });
+    if (!points.length) return;
+    var start = points[0][0];
+    var target = start + (points[points.length - 1][0] - start) * Math.min(1, Math.max(0, fraction));
+    var best = points.reduce(function(found, p) {
+      return Math.abs(p[0] - target) < Math.abs(found[0] - target) ? p : found;
+    }, points[0]);
+    this.showAt_((best[0] * this.scale_[0] + this.margin_.left) / this.ratio, best, false);
+  }
+
+  /**
+   * Dibuja la barra y los cursores en una posición del perfil y lanza el evento over.
+   * @param {Number} dx posición horizontal en el panel (px)
+   * @param {Array} p punto del perfil
+   * @param {Boolean} click indica si la posición procede de un clic
+   * @private
+   */
+  showAt_(dx, p, click) {
+    var ratio = this.ratio;
+    this.bars_.forEach((bar) => {
+      bar.style.left = dx + 'px';
+      bar.style.display = 'block';
+    });
+    if (p) {
+      for (var k = 0; k < this.cursors_.length; k++) {
+        var layout = this.graphLayout_[k];
+        this.cursors_[k].style.left = dx + 'px';
+        this.cursors_[k].style.top = (layout.top + this.graphHeight_ - this.margin_.bottom + p[layout.value] * layout.scy + layout.dy) / ratio + 'px';
+        this.cursors_[k].style.display = 'block';
+      }
+    } else {
+      this.cursors_.forEach((cursor) => { cursor.style.display = 'none'; });
+    }
+    this.bar_.parentElement.classList.add('over');
+    this.element.querySelector('.point-info .z').textContent = `${p[1].toFixed(2).replace(".", ",")} ${this.info.altitudeUnits}`;
+    this.element.querySelector('.point-info .dist').textContent = `${(p[0] / 1000).toFixed(2).replace(".", ",")} ${this.info.distanceUnitsKM}`;
+    this.element.querySelector('.point-info .time').textContent = p[2];
+    if (this.hasElevationGain_) this.element.querySelector('.point-info .gain').textContent = `${p[4].toFixed(2).replace(".", ",")} ${this.info.altitudeUnits}`;
+    if (dx > this.canvas_.width / ratio / 2) this.popup_.classList.add('ol-left');
+    else this.popup_.classList.remove('ol-left');
+    this.dispatchEvent({ type: 'over', click: click, coord: p[3], time: p[2], distance: p[0], elevationGain: p[4] });
   }
 
   /**
@@ -484,18 +554,18 @@ class Profil extends OLControl {
       if (/IDEE/.test(g.getLayout())) this.element.querySelector('.time').parentElement.style.display = 'block';
       else this.element.querySelector('.time').parentElement.style.display = 'none';
 
-      // Coords
-      var c = g.getCoordinates();
-
+      var parts;
       switch (g.getType()) {
         case 'LineString':
+          parts = [g.getCoordinates()];
           break;
         case 'MultiLineString':
-          c = c[0];
+          parts = g.getCoordinates().filter(function(part) { return part.length > 0; });
           break;
         default:
           return;
       }
+      if (!parts.length) return;
 
       // Distance beetween 2 coords
       var proj = options.projection || this.getMap().getView().getProjection();
@@ -519,19 +589,20 @@ class Profil extends OLControl {
 
       var zmin = Infinity,
         zmax = -Infinity;
-      var i, p, d, z, ti, gain = 0, t = this.tab_ = [];
-      for (i = 0, p; p = c[i]; i++) {
-        z = p[2];
-        if (z < zmin) zmin = z;
-        if (z > zmax) zmax = z;
-        if (i == 0) d = 0;
-        else {
-          d += dist2d(c[i - 1], p);
-          gain += Math.max(0, z - c[i - 1][2]);
+      var d = 0, gain = 0, t = this.tab_ = [];
+      var first = parts[0][0];
+      parts.forEach(function(c, part) {
+        for (var i = 0, p; p = c[i]; i++) {
+          var z = p[2];
+          if (z < zmin) zmin = z;
+          if (z > zmax) zmax = z;
+          if (i > 0) {
+            d += dist2d(c[i - 1], p);
+            gain += Math.max(0, z - c[i - 1][2]);
+          }
+          t.push([d, z, getTime(first[3], p[3]), p, gain, part]);
         }
-        ti = getTime(c[0][3], p[3]);
-        t.push([d, z, ti, p, gain]);
-      }
+      });
 
       // Info
       this.element.querySelector('.track-info .zmin').textContent = `${(zmin.toFixed(2)).replace(".", ",")} ${this.info.altitudeUnits}`;
@@ -663,12 +734,12 @@ class Profil extends OLControl {
 
     ctx.stroke();
 
-    ctx.strokeStyle = '#368';
+    ctx.strokeStyle = this.colors_.line;
     ctx.lineWidth = this.lineWidth_;
     ctx.setLineDash([]);
     ctx.beginPath();
     for (i = 0; p = t[i]; i++) {
-      if (i == 0) ctx.moveTo(p[0] * scx, p[serie.value] * scy + dy);
+      if (i == 0 || p[5] !== t[i - 1][5]) ctx.moveTo(p[0] * scx, p[serie.value] * scy + dy);
       else ctx.lineTo(p[0] * scx, p[serie.value] * scy + dy);
     }
     ctx.stroke();

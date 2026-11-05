@@ -110,6 +110,21 @@
                                 <option value="absoluteSimple" selected="selected">absoluteSimple</option>
                                 <option value="absolute">absolute</option>
                                 <option value="relative">relative</option>
+                                <option value="track">track</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="selectTrack" title="Recorrido que se muestra al crear el control: en track es el principal; en el resto, complementario">Recorrido
+                                inicial "track"</label>
+                            <select name="track" id="selectTrack">
+                                <option value="" selected="selected">(ninguno; en track, layerPosition o la primera capa)</option>
+                                <option value="guadarrama">GPX trk con fechas y 3 segmentos (ruta_guadarrama · trk-4)</option>
+                                <option value="variante">GPX trk sin fechas (ruta_guadarrama · trk-5)</option>
+                                <option value="waypoints">GPX wpt con fechas, unidos (ruta_guadarrama · wpt-0…3)</option>
+                                <option value="penalara">GPX trk con fechas (ruta_penalara · trk-4)</option>
+                                <option value="penalaraRte">GPX rte sin fechas (ruta_penalara · rte-3)</option>
+                                <option value="vectorPuntos">Vector: puntos sin tiempo, por orden (vector_sin_tiempo)</option>
+                                <option value="vectorLinea">Vector: LineString sin tiempos (vector_sin_tiempo · l1)</option>
                             </select>
                         </div>
                         <div>
@@ -136,13 +151,16 @@
                                 <option
                                     value='[["NACIONAL 1981-1986","1986","WMS*NACIONAL_1981-1986*https://www.ign.es/wms/pnoa-historico*NACIONAL_1981-1986"],["OLISTAT","1998","WMS*OLISTAT*https://www.ign.es/wms/pnoa-historico*OLISTAT"],["SIGPAC","2003","WMS*SIGPAC*https://www.ign.es/wms/pnoa-historico*SIGPAC"],["PNOA 2004","2004","WMS*pnoa2004*https://www.ign.es/wms/pnoa-historico*pnoa2004"],["PNOA 2005","2005","WMS*pnoa2005*https://www.ign.es/wms/pnoa-historico*pnoa2005"],["PNOA 2006","2006","WMS*pnoa2006*https://www.ign.es/wms/pnoa-historico*pnoa2006"],["PNOA 2007","2007","WMS*pnoa2007*https://www.ign.es/wms/pnoa-historico*pnoa2007"],["PNOA 2008","2008","WMS*pnoa2008*https://www.ign.es/wms/pnoa-historico*pnoa2008"],["PNOA 2009","2009","WMS*pnoa2009*https://www.ign.es/wms/pnoa-historico*pnoa2009"],["PNOA 2010","2010","WMS*pnoa2010*https://www.ign.es/wms/pnoa-historico*pnoa2010"],["PNOA 2011","2011","WMS*pnoa2011*https://www.ign.es/wms/pnoa-historico*pnoa2011"],["PNOA 2012","2012","WMS*pnoa2012*https://www.ign.es/wms/pnoa-historico*pnoa2012"],["PNOA 2013","2013","WMS*pnoa2013*https://www.ign.es/wms/pnoa-historico*pnoa2013"],["PNOA 2014","2014","WMS*pnoa2014*https://www.ign.es/wms/pnoa-historico*pnoa2014"],["PNOA 2015","2015","WMS*pnoa2015*https://www.ign.es/wms/pnoa-historico*pnoa2015"],["PNOA 2016","2016","WMS*pnoa2016*https://www.ign.es/wms/pnoa-historico*pnoa2016"],["PNOA 2017","2017","WMS*pnoa2017*https://www.ign.es/wms/pnoa-historico*pnoa2017"],["PNOA 2018","2018","WMS*pnoa2018*https://www.ign.es/wms/pnoa-historico*pnoa2018"]]'>
                                     Ej: 18 capas</option>
+                                <option
+                                    value='[["PNOA 2004","2004","WMS*pnoa2004*https://www.ign.es/wms/pnoa-historico*pnoa2004"],["Ruta Guadarrama","2021","GPX*ruta_guadarrama*data/timeline/ruta-guadarrama.gpx*true*true"],["Ruta Peñalara","2021","GPX*ruta_penalara*data/timeline/ruta-penalara.gpx*true*true"]]'>
+                                    Ej: WMS + rutas GPX</option>
                             </select>
                         </div>
                         <div class="origin">
                             <label for="inputIntervals">Intervalos "intervals"</label>
                             <input type="text" name="intervals" id="inputIntervals">
                         </div>
-                        <div class="origin">
+                        <div class="origin trackmode">
                             <label for="inputSpeed">Segundos por paso "speed" (1 = ×1)</label>
                             <input type="number" min="0.1" step="0.1" name="speed" id="inputSpeed">
                         </div>
@@ -159,6 +177,7 @@
                             <select name="selectTime" id="selectTime">
                                 <option value="wms" selected="selected">WMS eventos sísmicos (CQL por date)</option>
                                 <option value="gpx">GPX de ejemplo (filtro por time)</option>
+                                <option value="rutas">Rutas GPX (pasos de 10 min)</option>
                             </select>
                         </div>
                         <div class="dynamic">
@@ -186,7 +205,7 @@
                             <label for="stepValue">Valor del step "stepValue"</label>
                             <input type="number" min="1" name="stepValue" id="stepValue">
                         </div>
-                        <div class="dynamic">
+                        <div class="dynamic trackmode">
                             <label for="sizeWidthDinamic">Tamaño plugin "sizeWidthDinamic"</label>
                             <select name="sizeWidthDinamic" id="sizeWidthDinamic">
                                 <option value="">Pequeño ("")</option>
@@ -218,6 +237,8 @@
                             <option value="relative">GET · relative</option>
                             <option value="absolute">GET · absolute</option>
                             <option value="absoluteSimple">GET · absoluteSimple</option>
+                            <option value="track">GET · track (recorrido y perfil)</option>
+                            <option value="recorridos">GET · relative con recorrido sincronizado</option>
                         </select>
                         <button id="removeButton" type="button" class="timeline-manual">Eliminar control</button>
                         <button id="timeline-refresh" type="button" class="timeline-get">Refrescar diagnóstico</button>
@@ -248,13 +269,18 @@
                              * control; crea el Timeline con new IDEE.control.Timeline(...) y lo recrea al cambiar
                              * cualquier campo. "Eliminar control" lo retira y, pulsado de nuevo, lo crea.
                              *
-                             * Escenarios GET (?demo=relative|absolute|absoluteSimple, desde "Modo de apertura"):
+                             * Escenarios GET (?demo=relative|absolute|absoluteSimple|track|recorridos, desde "Modo de apertura"):
                              * antes de crear el mapa se navega a una URL GET real con `layers` (dos GPX y una base) y
                              * `controls` (Timeline con `intervals` en base64). Como api-idee-rest (BuilderWS), las
                              * entradas se separan por comas y llegan como cadenas a IDEE.map({ layers, controls }):
                              * el GPX lo crea el parser general y el Timeline, buildControl. Si la URL ya trae
                              * `layers` o `controls`, se respeta. El panel inferior muestra el estado y la consola lo
                              * registra; window.mapa, window.timeline y window.timelineDemo.estado() sirven para depurar.
+                             * `track`: timelineType=track con dos rutas GPX por GET; layerPosition=2 elige
+                             * ruta_guadarrama y su primera línea con fechas (trk-4, tres segmentos). `recorridos`:
+                             * relative con las dos rutas (pasos de 10 min) y la opción `track`, sincronizada con el rango.
+                             * En el modo manual el mapa incluye las dos rutas y una capa vectorial sin tiempos como
+                             * fuentes de recorrido, y el campo "track" elige el recorrido inicial en cualquier tipo.
                              *
                              * En las JSP, dólar seguido de llave es una expresión EL: el script no usa plantillas de JS.
                              */
@@ -269,6 +295,47 @@
 
                             // GPX de ejemplo de la webapp: wpt-0 y rte-2 tienen time en 2020; wpt-1 y trk-3, en 2021.
                             const GPX_URL = new URL('data/timeline/timeline-ejemplo.gpx', window.location.href).href;
+                            const ROUTES = {
+                                guadarrama: new URL('data/timeline/ruta-guadarrama.gpx', window.location.href).href,
+                                penalara: new URL('data/timeline/ruta-penalara.gpx', window.location.href).href,
+                            };
+                            const TRACK_EXAMPLES = {
+                                guadarrama: { layer: 'ruta_guadarrama', feature: 'trk-4' },
+                                variante: { layer: 'ruta_guadarrama', feature: 'trk-5' },
+                                waypoints: { layer: 'ruta_guadarrama', feature: ['wpt-0', 'wpt-1', 'wpt-2', 'wpt-3'] },
+                                penalara: { layer: 'ruta_penalara', feature: 'trk-4' },
+                                penalaraRte: { layer: 'ruta_penalara', feature: 'rte-3' },
+                                vectorPuntos: { layer: 'vector_sin_tiempo', feature: ['p1', 'p2', 'p3', 'p4', 'p5'] },
+                                vectorLinea: { layer: 'vector_sin_tiempo', feature: 'l1' },
+                            };
+                            const toMercator = ([lon, lat]) => [
+                                (lon * 20037508.34) / 180,
+                                ((Math.log(Math.tan(((90 + lat) * Math.PI) / 360)) / (Math.PI / 180)) * 20037508.34) / 180,
+                            ];
+                            // base64 de UTF-8, como espera parseUrlParams (base64~).
+                            const toBase64 = (value) => {
+                                let binary = '';
+                                new TextEncoder().encode(JSON.stringify(value)).forEach((byte) => {
+                                    binary += String.fromCharCode(byte);
+                                });
+                                return window.btoa(binary);
+                            };
+                            const ROUTE_INTERVALS = [
+                                {
+                                    id: 'guadarrama',
+                                    init: '2021-06-05T08:00:00Z',
+                                    end: '2021-06-05T13:20:00Z',
+                                    layer: 'ruta_guadarrama',
+                                    attributeParam: 'time',
+                                },
+                                {
+                                    id: 'penalara',
+                                    init: '2021-07-10T09:00:00Z',
+                                    end: '2021-07-10T12:00:00Z',
+                                    layer: 'ruta_penalara',
+                                    attributeParam: 'time',
+                                },
+                            ];
 
                             /*
                              * Escenarios GET: navega (location.replace) a la URL con `layers` y `controls`.
@@ -279,8 +346,35 @@
                                 document.documentElement.dataset.timelineMode = manual ? 'manual' : 'get';
                                 if (manual || params.has('layers') || params.has('controls')) return false;
 
-                                const demo = ['relative', 'absolute', 'absoluteSimple'].includes(params.get('demo'))
+                                const demo = ['relative', 'absolute', 'absoluteSimple', 'recorridos', 'track'].includes(params.get('demo'))
                                     ? params.get('demo') : 'relative';
+                                if (demo === 'recorridos' || demo === 'track') {
+                                    params.set('demo', demo);
+                                    params.set('layers', [
+                                        'QUICK*Base_IGNBaseTodo_TMS',
+                                        'GPX*ruta_guadarrama*' + ROUTES.guadarrama + '*true*true',
+                                        'GPX*ruta_penalara*' + ROUTES.penalara + '*true*true',
+                                    ].join(','));
+                                    const common = ['collapsible=false', 'collapsed=false', 'position=right',
+                                        'sizeWidthDinamic=sizeWidthDinamic_medium'];
+                                    const options = demo === 'track'
+                                        ? ['timelineType=track', ...common, 'layerPosition=2', 'speed=0.5']
+                                        : [
+                                            'timelineType=relative',
+                                            ...common,
+                                            'layerPosition=2',
+                                            'paramsDate=min',
+                                            'stepValue=10',
+                                            'speedDate=1',
+                                            'intervals=base64~' + toBase64(ROUTE_INTERVALS),
+                                            'track=base64~' + toBase64(TRACK_EXAMPLES.guadarrama),
+                                        ];
+                                    params.set('controls', 'timeline*' + options.join(';'));
+                                    params.set('center', '-445835,4982151');
+                                    params.set('zoom', '12');
+                                    window.location.replace(window.location.pathname + '?' + params.toString() + window.location.hash);
+                                    return true;
+                                }
 
                                 // Posiciones resultantes (1 = superior): 1 gpx_definicion, 2 gpx_nombre, 3 base.
                                 const layers = [
@@ -320,11 +414,6 @@
                                     },
                                 ];
 
-                                // base64 de UTF-8, como espera parseUrlParams (base64~).
-                                const bytes = new TextEncoder().encode(JSON.stringify(intervals));
-                                let binary = '';
-                                bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
-
                                 const timelineOptions = [
                                     'timelineType=' + demo,
                                     'collapsible=false',
@@ -335,7 +424,7 @@
                                     'paramsDate=mos',
                                     'stepValue=1',
                                     'speedDate=1',
-                                    'intervals=base64~' + window.btoa(binary),
+                                    'intervals=base64~' + toBase64(intervals),
                                 ];
 
                                 params.set('demo', demo);
@@ -395,7 +484,9 @@
                             };
 
                             // Solo para mostrarlos: abrevia la URL del GPX y recorta el base64 de intervals.
-                            const shortenPath = (text) => text.split(GPX_URL).join('…/timeline-ejemplo.gpx');
+                            const shortenPath = (text) => text.split(GPX_URL).join('…/timeline-ejemplo.gpx')
+                                .split(ROUTES.guadarrama).join('…/ruta-guadarrama.gpx')
+                                .split(ROUTES.penalara).join('…/ruta-penalara.gpx');
                             const shortenControl = (control) => control.replace(/base64~([^;]+)/,
                                 (match, base64) => 'base64~' + base64.slice(0, 8) + '… (' + base64.length + ' car.)');
 
@@ -426,8 +517,21 @@
                             const getSpeedText = (control) => {
                                 const select = control.getElement() && control.getElement().querySelector('.m-timeline-speed');
                                 const option = select && select.selectedOptions[0];
-                                const seconds = control.timelineType === 'absoluteSimple' ? control.speed : control.speedDate;
+                                const seconds = ['absoluteSimple', 'track'].includes(control.timelineType)
+                                    ? control.speed : control.speedDate;
                                 return (option ? option.textContent : '–') + ' (' + Number(seconds) + ' s/paso)';
+                            };
+
+                            const describeTrack = (track) => {
+                                if (!track) return 'sin recorrido';
+                                const time = track.time !== null ? ' · ' + new Date(track.time).toISOString() : '';
+                                return [
+                                    track.label + ' (' + track.kind + ', ' + (track.timed ? 'temporal' : 'secuencial') + ')',
+                                    'paso ' + track.step + '/' + track.steps + time,
+                                    'segmento ' + (track.segment === null ? '–' : track.segment + 1),
+                                    Math.round(track.fraction * 100) + ' %',
+                                    track.synchronized ? 'sincronizado' : 'sin sincronizar',
+                                ].join(' · ');
                             };
 
                             const startGetScenario = () => {
@@ -458,7 +562,8 @@
                                             rango: toISO(timeline.date.init) + ' → ' + toISO(timeline.date.end),
                                             reproduciendo: timeline.running !== false,
                                             velocidad: getSpeedText(timeline),
-                                            movimiento: timeline.formatMove === 'discrete' ? 'inicio fijo' : 'ventana deslizante',
+                                            movimiento: (timeline.formatMove === 'discrete' && 'inicio fijo') || 'ventana deslizante',
+                                            recorrido: describeTrack(timeline.getTrack()),
                                         } : 'No hay Timeline en el mapa',
                                         selector: timeline ? timeline.getSelectableLayers().map((entry) => [
                                             entry.position ? '[' + entry.position + ']' : '[–]',
@@ -493,6 +598,7 @@
                                             : ['Timeline: ' + (t.seleccionada || 'sin capa'), t.rango,
                                                 t.reproduciendo ? 'reproduciendo' : 'parado', t.velocidad, t.movimiento].join(' · '),
                                         typeof t === 'string' ? '' : '  opciones GET: ' + t.opciones,
+                                        typeof t === 'string' ? '' : '  recorrido: ' + t.recorrido,
                                         'Selector: ' + state.selector.join(' | '),
                                         'Visualizador (1 = superior):',
                                         ...list(state.visualizador),
@@ -550,10 +656,32 @@
                                 const map = IDEE.map({
                                     container: 'mapjs',
                                     controls: ['rotate'],
-                                    center: [-467062.8225, 4683459.6216],
-                                    zoom: 6,
+                                    center: [-445835, 4982151],
+                                    zoom: 11,
                                 });
                                 window.mapa = map;
+
+                                map.addLayers([
+                                    'GPX*ruta_guadarrama*' + ROUTES.guadarrama + '*true*true',
+                                    'GPX*ruta_penalara*' + ROUTES.penalara + '*true*true',
+                                ]);
+                                const vectorLayer = new IDEE.layer.Vector({ name: 'vector_sin_tiempo', legend: 'Vector sin tiempos' });
+                                map.addLayers(vectorLayer);
+                                vectorLayer.addFeatures([
+                                    [-4.035, 40.765], [-4.015, 40.772], [-3.995, 40.769], [-3.978, 40.776], [-3.962, 40.784],
+                                ].map((point, index) => new IDEE.Feature('p' + (index + 1), {
+                                    type: 'Feature',
+                                    geometry: { type: 'Point', coordinates: toMercator(point) },
+                                    properties: { name: 'Punto ' + (index + 1) },
+                                })).concat(new IDEE.Feature('l1', {
+                                    type: 'Feature',
+                                    geometry: {
+                                        type: 'LineString',
+                                        coordinates: [[-4.05, 40.745], [-4.03, 40.752], [-4.01, 40.748], [-3.99, 40.756], [-3.97, 40.751]]
+                                            .map(toMercator),
+                                    },
+                                    properties: { name: 'Línea sin tiempos' },
+                                })));
 
                                 const create = (options) => {
                                     if (!map.hasControl(Timeline.NAME)) {
@@ -601,21 +729,20 @@
                                     layer: 'GPX*gpx_ejemplo*' + GPX_URL + '*true*true',
                                     attributeParam: 'time',
                                 }];
-                                const dynamicExamples = { wms: time, gpx: gpxIntervals };
+                                const routeIntervals = ROUTE_INTERVALS.map((interval) => ({
+                                    ...interval,
+                                    layer: 'GPX*' + interval.layer + '*' + ROUTES[interval.id] + '*true*true',
+                                }));
+                                const dynamicExamples = { wms: time, gpx: gpxIntervals, rutas: routeIntervals };
 
                                 const field = (id) => document.getElementById(id);
                                 const value = (id) => field(id).value;
                                 const typeTimeLine = field('typeTimeLine');
 
                                 const changeTestFormsDisplay = (formValue = typeTimeLine) => {
-                                    const isDynamic = formValue.value !== 'absoluteSimple';
-
-                                    document.querySelectorAll('.dynamic').forEach((el) => {
-                                        el.style.display = isDynamic ? 'flex' : 'none';
-                                    });
-
-                                    document.querySelectorAll('.origin').forEach((el) => {
-                                        el.style.display = isDynamic ? 'none' : 'flex';
+                                    const group = { absoluteSimple: 'origin', track: 'trackmode' }[formValue.value] || 'dynamic';
+                                    document.querySelectorAll('.origin, .dynamic, .trackmode').forEach((el) => {
+                                        el.style.display = el.classList.contains(group) ? 'flex' : 'none';
                                     });
                                 };
 
@@ -636,8 +763,12 @@
                                     });
                                     if (value('inputOrder') !== '') options.order = Number(value('inputOrder'));
                                     if (value('inputLayerPosition') !== '') options.layerPosition = Number(value('inputLayerPosition'));
+                                    if (value('selectTrack') !== '') options.track = TRACK_EXAMPLES[value('selectTrack')];
 
-                                    if (typeTimeLine.value === 'absoluteSimple') {
+                                    if (typeTimeLine.value === 'track') {
+                                        if (Number(value('inputSpeed')) > 0) options.speed = Number(value('inputSpeed'));
+                                        if (value('sizeWidthDinamic') !== '') options.sizeWidthDinamic = value('sizeWidthDinamic');
+                                    } else if (typeTimeLine.value === 'absoluteSimple') {
                                         options.intervals = value('inputIntervals') !== '' ? value('inputIntervals') : intervals;
                                         if (Number(value('inputSpeed')) > 0) options.speed = Number(value('inputSpeed'));
                                         if (value('selectSnapMode') !== '') options.snapMode = value('selectSnapMode');
@@ -668,8 +799,16 @@
                                     'selectPosicion', 'inputIntervals', 'selectAnimation', 'inputSpeed', 'time', 'selectTime',
                                     'speedDate', 'paramsDate', 'stepValue', 'sizeWidthDinamic', 'formatValueDinamic', 'formatMove',
                                     'inputTooltip', 'inputTitle', 'selectCollapsible', 'selectCollapsed', 'inputOrder',
-                                    'selectSnapMode', 'inputLayerPosition',
+                                    'selectSnapMode', 'inputLayerPosition', 'selectTrack',
                                 ].forEach((id) => field(id).addEventListener('change', changeTest));
+
+                                field('selectTime').addEventListener('change', () => {
+                                    if (value('selectTime') !== 'rutas') return;
+                                    field('paramsDate').value = 'min';
+                                    field('stepValue').value = '10';
+                                    field('speedDate').value = '1';
+                                    if (value('selectTrack') === '') field('selectTrack').value = 'guadarrama';
+                                }, true);
 
                                 field('selectIntervals').addEventListener('change', () => {
                                     field('inputIntervals').value = value('selectIntervals');

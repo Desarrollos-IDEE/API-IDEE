@@ -63,11 +63,6 @@
     mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_superficial.svg');
 }
 
-.vectorsmanagement-icon-profile:before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_perfil.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_perfil.svg');
-}
-
 .vectorsmanagement-icon-design-tool:before {
     -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_distancias.svg');
     mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_distancias.svg');
@@ -99,8 +94,6 @@
 }
 
 .vectorsmanagement-icon-seleccionar:before {
-    -webkit-mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_seleccion.svg');
-    mask-image: url('https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_seleccion.svg');
     position: relative;
 }
 
