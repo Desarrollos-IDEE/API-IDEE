@@ -480,6 +480,25 @@ class OGCAPIFeatures extends Vector {
     }
     return equals;
   }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa.
+   *
+   * @function
+   * @returns {String|null} Cadena REST de la capa.
+   * @api
+   */
+  getRestLayer() {
+    return this.formatRestLayer_({
+      ...this.getRestVectorParameters_(),
+      limit: this.limit,
+      bbox: this.bbox,
+      id: this.id,
+      offset: this.offset,
+      format: this.format,
+      conditional: this.conditional,
+    });
+  }
 }
 
 /**

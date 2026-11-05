@@ -4,7 +4,7 @@
 import KMLImpl from 'impl/layer/KML';
 import LayerVector from './Vector';
 import {
-  isUndefined, isNullOrEmpty, isObject,
+  isUndefined, isNullOrEmpty, isObject, isBoolean,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import * as LayerType from './Type';
@@ -224,6 +224,28 @@ class KML extends LayerVector {
     }
 
     return equals;
+  }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa. Con URL remota se
+   * comparte la referencia al fichero (con sus propios estilos); en otro caso,
+   * sus objetos geográficos.
+   *
+   * @function
+   * @returns {String|null} Cadena REST de la capa.
+   * @api
+   */
+  getRestLayer() {
+    if (!LayerVector.isAutoRefreshRemoteURL(this.url)) {
+      return super.getRestLayer();
+    }
+    return this.formatRestLayer_({
+      ...this.getRestVectorParameters_(),
+      style: undefined,
+      label: isBoolean(this.label) ? this.label : undefined,
+      layers: this.layers,
+      removeFolderChildren: this.removeFolderChildren === false ? false : undefined,
+    });
   }
 }
 

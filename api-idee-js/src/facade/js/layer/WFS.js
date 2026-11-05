@@ -394,6 +394,24 @@ class WFS extends Vector {
 
     return equals;
   }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa.
+   *
+   * @function
+   * @returns {String|null} Cadena REST de la capa.
+   * @api
+   */
+  getRestLayer() {
+    return this.formatRestLayer_({
+      ...this.getRestVectorParameters_(),
+      namespace: this.namespace,
+      geometry: this.geometry,
+      ids: this.ids,
+      cql: this.cql,
+      version: this.version,
+    });
+  }
 }
 
 /**

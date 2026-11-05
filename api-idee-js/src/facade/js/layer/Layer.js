@@ -5,8 +5,8 @@ import Exception from '../exception/exception';
 import * as parserParameter from '../parameter/parameter';
 import Base from '../Base';
 import {
-  isUndefined, isBoolean, isArray, isNullOrEmpty, isFunction, isObject, isString,
-  normalize, generateRandom, isPositiveNumber,
+  isUndefined, isBoolean, isArray, isNullOrEmpty, isFunction, isObject, isString, isNull,
+  normalize, generateRandom, isPositiveNumber, serializeUrlParams,
 } from '../util/Utils';
 import { getValue } from '../i18n/language';
 import * as EventType from '../event/eventtype';
@@ -155,6 +155,14 @@ class LayerBase extends Base {
      * @api
      */
     this.section_ = null;
+
+    /**
+     * Contenedor que representa la capa en REST
+     *
+     * @private
+     * @type {Object}
+     */
+    this.restContainer_ = null;
 
     // Único intervalo configurado; un mapa con intervalo válido puede sobrescribirlo.
     const interval = parameter.refreshInterval;
@@ -670,6 +678,37 @@ class LayerBase extends Base {
   }
 
   /**
+   * Este método asigna el contenedor que representa la capa en REST
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @function
+   * @param {Object} container Contenedor con el método getRestLayer(keys).
+   * @param {String} key Identificador de la capa dentro del contenedor.
+   * @public
+   */
+  setRestContainer_(container, key) {
+    this.restContainer_ = { container, key };
+  }
+
+  /**
+   * Este método devuelve la cadena REST del contenedor de la capa, si este puede
+   * reconstruirla mediante REST.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @function
+   * @returns {String|null} Cadena REST del contenedor; null si no tiene o no es representable.
+   * @public
+   */
+  getContainerRestLayer_() {
+    if (isNull(this.restContainer_)) {
+      return null;
+    }
+    const { container, key } = this.restContainer_;
+    const restLayer = container.getRestLayer([key]);
+    return isNullOrEmpty(restLayer) ? null : restLayer;
+  }
+
+  /**
    * Este método indica si la capa es visible.
    *
    * @function
@@ -937,6 +976,105 @@ class LayerBase extends Base {
 
   getAttribution() {
     return this.attribution;
+  }
+
+  /**
+   * Este método devuelve la cadena de carga de la capa mediante la API REST,
+   * con el formato de parámetros nombrados documentado en OpenAPI.
+   *
+   * @function
+   * @returns {String|null} Cadena REST de la capa; null si la capa no puede
+   * reconstruirse mediante REST.
+   * @api
+   */
+  getRestLayer() {
+    return this.formatRestLayer_();
+  }
+
+  /**
+   * Este método devuelve los parámetros REST comunes a todas las capas
+   * a partir de su estado actual. Se omiten los valores por defecto.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @function
+   * @returns {Object} Parámetros comunes de la capa.
+   * @public
+   */
+  getRestParameters_() {
+    const read = (getter) => {
+      try {
+        return getter();
+      } catch (error) {
+        return undefined;
+      }
+    };
+    const impl = this.getImpl();
+    const visibility = isFunction(impl.isVisible) ? read(() => this.isVisible()) : undefined;
+    const opacity = isFunction(impl.getOpacity) ? read(() => this.getOpacity()) : undefined;
+    const refreshInterval = this.getAutoRefreshInterval();
+    return {
+      name: this.name,
+      legend: this.legend !== this.name ? this.legend : undefined,
+      url: this.url,
+      isBase: this.isBase === true ? true : undefined,
+      visibility: visibility === false ? false : undefined,
+      displayInLayerSwitcher: this.displayInLayerSwitcher === false ? false : undefined,
+      opacity: Number.isFinite(opacity) && opacity >= 0 && opacity < 1 ? opacity : undefined,
+      minZoom: Number.isFinite(this.minZoom) ? this.minZoom : undefined,
+      maxZoom: Number.isFinite(this.maxZoom) ? this.maxZoom : undefined,
+      maxExtent: this.userMaxExtent || undefined,
+      attribution: this.attribution,
+      refreshInterval: isPositiveNumber(refreshInterval) ? refreshInterval : undefined,
+    };
+  }
+
+  /**
+   * Este método compone la cadena REST con los parámetros comunes y los propios
+   * de cada tipo de capa. Si la capa pertenece a un contenedor representable
+   * devuelve la cadena de este.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @function
+   * @param {Object} parameters Parámetros propios del tipo; sustituyen a los comunes.
+   * @param {String} type Tipo con el que se reconstruirá la capa.
+   * @returns {String|null} Cadena REST; null si la URL no es accesible desde otra sesión.
+   * @public
+   */
+  formatRestLayer_(parameters = {}, type = this.type) {
+    const containerRestLayer = this.getContainerRestLayer_();
+    if (!isNull(containerRestLayer)) {
+      return containerRestLayer;
+    }
+    const values = { ...this.getRestParameters_(), ...parameters };
+    if (isObject(values.attribution) && !isArray(values.attribution)) {
+      values.attribution = { ...values.attribution };
+      delete values.attribution.id;
+    }
+    if (!isNullOrEmpty(values.url)) {
+      values.url = LayerBase.toRestURL(values.url);
+      if (isNull(values.url)) {
+        return null;
+      }
+    }
+    return `${type}*${serializeUrlParams(values)}`;
+  }
+
+  /**
+   * Devuelve la URL absoluta de un recurso remoto para compartirla mediante REST.
+   *
+   * @function
+   * @param {String} url URL del recurso, absoluta o relativa.
+   * @returns {String|null} URL absoluta; null si el recurso es local
+   * @public
+   */
+  static toRestURL(url) {
+    if (!LayerBase.isAutoRefreshRemoteURL(url)) {
+      return null;
+    }
+    if (/^https?:\/\//i.test(url)) {
+      return url;
+    }
+    return new URL(url, window.location.href).href.replace(/%7B/gi, '{').replace(/%7D/gi, '}');
   }
 
   /**

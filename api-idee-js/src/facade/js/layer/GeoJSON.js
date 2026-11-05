@@ -298,6 +298,21 @@ class GeoJSON extends LayerVector {
     const source = JSON.parse(decodeURIComponent(escape(window.atob(encodedSerialized.replace(' ', '+')))));
     return source;
   }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa. Con URL remota se
+   * comparte la referencia al servicio; en otro caso, sus objetos geográficos.
+   *
+   * @function
+   * @returns {String|null} Cadena REST de la capa.
+   * @api
+   */
+  getRestLayer() {
+    if (!LayerVector.isAutoRefreshRemoteURL(this.url)) {
+      return super.getRestLayer();
+    }
+    return this.formatRestLayer_(this.getRestVectorParameters_());
+  }
 }
 
 /**
