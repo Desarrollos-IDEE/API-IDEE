@@ -2274,6 +2274,41 @@ export const serializeUrlParams = (params, fieldSeparator = ';', keyValueSeparat
 };
 
 /**
+ * Devuelve una clave que identifica los recursos de un conjunto de cadenas REST de capas
+ *
+ * @function
+ * @param {Array<String>} restLayers Cadenas REST de las capas.
+ * @returns {String} Clave de los recursos.
+ * @api
+ */
+export const getRestLayerResourceKey = (restLayers) => {
+  const presentation = ['legend', 'visibility', 'opacity', 'displayInLayerSwitcher', 'isBase', 'transparent'];
+  const isRestLayer = (value) => isString(value) && /^\w+\*/.test(value);
+  const sortKeys = (value) => {
+    if (isArray(value)) return value.map(sortKeys);
+    if (isObject(value)) {
+      return Object.keys(value).sort()
+        .reduce((sorted, key) => ({ ...sorted, [key]: sortKeys(value[key]) }), {});
+    }
+    return value;
+  };
+  const resources = (values) => values.flatMap((restLayer) => {
+    if (!isRestLayer(restLayer)) return [restLayer];
+    const index = restLayer.indexOf('*');
+    const type = restLayer.substring(0, index);
+    const params = restLayer.substring(index + 1);
+    if (!/^\w+=/.test(params)) return [{ type, params }];
+    const parsed = parseUrlParams(params, type);
+    if (isArray(parsed.layers) && parsed.layers.length > 0 && parsed.layers.every(isRestLayer)) {
+      return resources(parsed.layers);
+    }
+    presentation.forEach((key) => delete parsed[key]);
+    return [sortKeys({ type, ...parsed })];
+  });
+  return JSON.stringify(resources(restLayers));
+};
+
+/**
  * Copia las variables CSS de los tokens de diseño (--idee-*) del documento actual
  * en otro documento, por ejemplo una ventana abierta con window.open.
  *

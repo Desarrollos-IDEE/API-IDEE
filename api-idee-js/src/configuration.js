@@ -56,9 +56,10 @@
   let zoom = '';
   let srs = '';
   let layers = '';
+  let baseLayer = '';
   let zoomConstrains = '';
   let extentConstrains = '';
-  
+
   params.forEach((param) => {
     const key = param.replace(/^\?/, '').split('=')[0];
     if (key === 'center') {
@@ -87,6 +88,8 @@
       }
 
       layers = value.split(',').filter((item) => item !== '').concat(layerGroups).map(decodeLayer);
+    } else if (key === 'baselayer') {
+      baseLayer = decodeLayer(param.substring(param.indexOf('=') + 1));
     }
   });
   /**
@@ -357,6 +360,14 @@
    * @type {object}
    */
   IDEE.config('MAP_VIEWER_LAYERS', layers);
+
+  /**
+   * MAP Viewer - Base layer (cadena REST de la capa base o "none").
+   *
+   * @private
+   * @type {string}
+   */
+  IDEE.config('MAP_VIEWER_BASE_LAYER', baseLayer);
 
   /**
    * MAP Viewer - DPI (Dots per inch)

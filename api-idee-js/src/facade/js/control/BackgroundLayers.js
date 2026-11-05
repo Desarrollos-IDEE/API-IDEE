@@ -13,7 +13,9 @@ import ControlBase from './Control';
 import { compileSync as compileTemplate } from '../util/Template';
 import { LOAD, ADDED_TO_MAP } from '../event/eventtype';
 import { getValue } from '../i18n/language';
-import { isBoolean, isNumber, isString } from '../util/Utils';
+import {
+  isBoolean, isNumber, isString, isNull, getRestLayerResourceKey,
+} from '../util/Utils';
 import * as Position from '../ui/position';
 
 /**
@@ -151,6 +153,12 @@ class BackgroundLayers extends ControlBase {
       ? options.layerIndex : 0;
 
     /**
+     * isLayerIndexDefined_: Indica si el índice de la capa preactivada es explícito.
+     */
+    this.isLayerIndexDefined_ = isNumber(options.layerIndex)
+      && options.layerIndex < this.layers.length;
+
+    /**
      * visible: Visibility.
      */
     this.visible = isBoolean(options.visible) ? options.visible : true;
@@ -203,6 +211,7 @@ class BackgroundLayers extends ControlBase {
 
         if (visible === false) {
           this.map.removeLayers(this.map.getBaseLayers());
+          this.visible = false;
         }
       });
       success(html);
@@ -219,10 +228,56 @@ class BackgroundLayers extends ControlBase {
    * @export
    */
   addTo(map) {
+    if (!this.isLayerIndexDefined_) {
+      this.selectRequestedBaseLayers_(map);
+    }
     map.getBaseLayers().forEach((layer) => {
       layer.once(LOAD, map.removeLayers(layer));
     });
     super.addTo(map);
+  }
+
+  /**
+   * Este método prepara la opción inicial a partir de las capas recibidas en la opción
+   * "baseLayer" del mapa.
+   *
+   * @function
+   * @param {IDEE.Map} map Mapa.
+   * @private
+   */
+  selectRequestedBaseLayers_(map) {
+    const requested = map.getRequestedBaseLayers();
+    if (isNull(requested)) {
+      return;
+    }
+    if (requested.length === 0) {
+      this.layerIndex = -1;
+      this.visible = false;
+      return;
+    }
+    const key = getRestLayerResourceKey(requested.map((layer) => layer.getRestLayer()));
+    let index = this.layers.findIndex(({ layers }) => layers.length > 0
+      && getRestLayerResourceKey(layers.map((layer) => layer.getRestLayer())) === key);
+    if (index < 0) {
+      const title = requested.map((layer) => layer.legend || layer.name).join(' + ');
+      index = this.layers.length;
+      this.layers.push({
+        id: 'baselayer', title, tooltip: title, layers: requested,
+      });
+      this.flattedLayers = this.flattedLayers.concat(requested);
+    }
+    this.layerIndex = index;
+  }
+
+  /**
+   * Este método devuelve las capas de la opción activa del selector.
+   *
+   * @function
+   * @returns {Array<IDEE.Layer>} Capas de la opción activa; vacío si no hay ninguna.
+   * @api
+   */
+  getSelectedBaseLayers() {
+    return this.visible && this.activeLayer > -1 ? this.layers[this.activeLayer].layers : [];
   }
 
   /**
