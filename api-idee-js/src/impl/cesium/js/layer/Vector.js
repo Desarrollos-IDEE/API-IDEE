@@ -407,9 +407,12 @@ class Vector extends Layer {
     }
     const cesiumMap = this.map.getMapImpl();
     const terrain = this.map.getTerrain();
+    if (terrain.length === 0) {
+      this.handlerAddFeatures_(features, update);
+      return;
+    }
     // eslint-disable-next-line no-underscore-dangle
-    const terrainLoaded = terrain.length === 0 || terrain[0].getImpl().isLoaded_;
-    if (terrainLoaded && cesiumMap.scene.globe.tilesLoaded) {
+    if (terrain[0].getImpl().isLoaded_ && cesiumMap.scene.globe.tilesLoaded) {
       this.handlerAddFeatures_(features, update);
       return;
     }
