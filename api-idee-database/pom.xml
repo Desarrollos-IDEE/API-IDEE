@@ -78,13 +78,13 @@
       <dependency>
          <groupId>org.json</groupId>
          <artifactId>json</artifactId>
-         <version>20140107</version>
+         <version>20260814</version>
       </dependency>
       <!-- PostgreSQL -->
       <dependency>
          <groupId>org.postgresql</groupId>
          <artifactId>postgresql</artifactId>
-         <version>42.2.28</version>
+         <version>42.7.14</version>
       </dependency>
       <!-- PostGIS -->
       <dependency>
