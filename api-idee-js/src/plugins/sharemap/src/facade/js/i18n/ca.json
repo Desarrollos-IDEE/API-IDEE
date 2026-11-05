@@ -1,7 +1,8 @@
 {
     "exception": {
         "impl": "La implementació no pot crear controls d'Atribució.",
-        "baseUrl": "La implementació no pot obtenir la URL base de l'aplicació."
+        "baseUrl": "La implementació no pot obtenir la URL base de l'aplicació.",
+        "unsharedLayer": "La capa «{layer}» no es pot compartir mitjançant una URL (per exemple, perquè prové d'un fitxer local)."
     },
     "textHelp": {
         "help1": "Permet compartir la vista de mapa amb les capes d'informació carregades a través d'un enllaç web. També proporciona el codi HTML per si es vol incrustar el visualitzador en un altre portal web.",

@@ -1,7 +1,8 @@
 {
   "exception": {
     "impl": "The implementation used cannot create Attributions controls.",
-    "baseUrl": "The implementation used cannot obtain the base URL of the application."
+    "baseUrl": "The implementation used cannot obtain the base URL of the application.",
+    "unsharedLayer": "The layer «{layer}» cannot be shared through a URL (for example, because it comes from a local file)."
   },
   "textHelp": {
     "help1": "Allows you to share the map view with the loaded information layers through a Web link. It also provides the HTML code in case you want to embed the viewer in another Web portal.",

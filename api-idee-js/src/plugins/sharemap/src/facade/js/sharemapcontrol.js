@@ -37,6 +37,16 @@ const copyURL = (input) => {
 };
 
 /**
+ * This function encodes a value for a URL parameter, keeping readable
+ * the characters used by the REST syntax that URLs accept unencoded.
+ *
+ * @function
+ * @private
+ */
+const encodeParam = (value) => encodeURIComponent(value)
+  .replace(/%(3A|2F|3F|3D|2C|3B|5B|5D|40|24)/gi, (match) => decodeURIComponent(match));
+
+/**
  * @classdesc
  * ShareMap api-idee control.
  * This control allows current map state sharing via URL.
@@ -209,6 +219,14 @@ export default class ShareMapControl extends IDEE.Control {
       * @type {Boolean}
       */
     this.shareLayer = options.shareLayer;
+
+    /**
+     * Layers already warned as not shareable
+     *
+     * @private
+     * @type {WeakSet}
+     */
+    this.unsharedLayers_ = new WeakSet();
   }
 
   /**
@@ -363,7 +381,8 @@ export default class ShareMapControl extends IDEE.Control {
           shareURL = shareURL.concat(`&controls=${newControls}`).concat('&plugins=layerswitcher,mousesrs');
         }
 
-        shareURL = this.getLayers().length > 0 ? shareURL.concat(`&layers=${this.getLayers()}`) : shareURL.concat('');
+        const layerParam = this.getLayers();
+        shareURL = layerParam.length > 0 ? shareURL.concat(`&layers=${layerParam.map(encodeParam)}`) : shareURL.concat('');
         shareURL = shareURL.concat(`&projection=${code}*${units}`);
         input.value = shareURL;
       } else {
@@ -380,7 +399,7 @@ export default class ShareMapControl extends IDEE.Control {
           layers = this.getLayersInfilterLayers();
         }
 
-        shareURL = layers.length > 0 ? shareURL.concat(`&layers=${layers}`) : shareURL.concat('');
+        shareURL = layers.length > 0 ? shareURL.concat(`&layers=${layers.map(encodeParam)}`) : shareURL.concat('');
         if (!IDEE.utils.isNullOrEmpty(IDEE.config.MAP_VIEWER_LAYERS)) {
           if (layers.length > 0) {
             let includes = '';
@@ -390,10 +409,10 @@ export default class ShareMapControl extends IDEE.Control {
               }
             });
             if (IDEE.utils.isNullOrEmpty(includes)) {
-              shareURL = `${shareURL},${IDEE.config.MAP_VIEWER_LAYERS}`;
+              shareURL = `${shareURL},${IDEE.config.MAP_VIEWER_LAYERS.map(encodeParam)}`;
             }
           } else {
-            shareURL = `${shareURL}&layers=${IDEE.config.MAP_VIEWER_LAYERS}`;
+            shareURL = `${shareURL}&layers=${IDEE.config.MAP_VIEWER_LAYERS.map(encodeParam)}`;
           }
         }
         input.value = shareURL;
@@ -442,7 +461,7 @@ export default class ShareMapControl extends IDEE.Control {
           shareURL = shareURL.concat(`&controls=${newControls}`).concat('&plugins=layerswitcher,mousesrs');
         }
         const layerParam = this.getLayers();
-        shareURL = layerParam.length > 0 ? shareURL.concat(`&layers=${layerParam}`) : shareURL.concat('');
+        shareURL = layerParam.length > 0 ? shareURL.concat(`&layers=${layerParam.map(encodeParam)}`) : shareURL.concat('');
         shareURL = shareURL.concat(`&projection=${code}*${units}`);
       } else {
         const { x, y } = this.map_.getCenter();
@@ -458,7 +477,7 @@ export default class ShareMapControl extends IDEE.Control {
           layers = this.getLayersInfilterLayers();
         }
 
-        shareURL = layers.length > 0 ? shareURL.concat(`&layers=${layers}`) : shareURL.concat('');
+        shareURL = layers.length > 0 ? shareURL.concat(`&layers=${layers.map(encodeParam)}`) : shareURL.concat('');
         if (!IDEE.utils.isNullOrEmpty(IDEE.config.MAP_VIEWER_LAYERS)) {
           if (layers.length > 0) {
             let includes = '';
@@ -468,10 +487,10 @@ export default class ShareMapControl extends IDEE.Control {
               }
             });
             if (IDEE.utils.isNullOrEmpty(includes)) {
-              shareURL = `${shareURL},${IDEE.config.MAP_VIEWER_LAYERS}`;
+              shareURL = `${shareURL},${IDEE.config.MAP_VIEWER_LAYERS.map(encodeParam)}`;
             }
           } else {
-            shareURL = `${shareURL}&layers=${IDEE.config.MAP_VIEWER_LAYERS}`;
+            shareURL = `${shareURL}&layers=${IDEE.config.MAP_VIEWER_LAYERS.map(encodeParam)}`;
           }
         }
         input.value = shareURL;
@@ -553,7 +572,7 @@ export default class ShareMapControl extends IDEE.Control {
       return res;
     });
 
-    return layers.map((layer) => this.layerToParam(layer)).filter((param) => param != null);
+    return this.layersToParams_(layers);
   }
 
   /**
@@ -567,7 +586,7 @@ export default class ShareMapControl extends IDEE.Control {
       return layer.displayInLayerSwitcher === true && layer.isBase === false;
     });
 
-    return layers.map((layer) => this.layerToParam(layer)).filter((param) => param != null);
+    return this.layersToParams_(layers);
   }
 
   /**
@@ -576,235 +595,37 @@ export default class ShareMapControl extends IDEE.Control {
    */
   getLayersInfilterLayers() {
     const layers = this.map_.getLayers().filter((layer) => this.filterLayers.includes(layer.name));
-    return layers.map((layer) => this.layerToParam(layer)).filter((param) => param != null);
+    return this.layersToParams_(layers);
   }
 
   /**
-   * This function gets the url param from layer
+   * This function gets the url param from layer. Each layer provides
+   * its own REST serialization; non representable layers return null.
    *
    * @public
    * @function
    */
-  layerToParam(layer, parent = true) {
-    let param;
-    if (layer.name === 'osm') {
-      param = layer.name;
-    } else if (layer.type === 'WMS') {
-      param = this.getWMS(layer);
-    } else if (layer.type === 'WMTS') {
-      param = this.getWMTS(layer);
-    } else if (layer.type === 'GPX') {
-      // Las fuentes locales se comparten como datos vectoriales, igual que Vector.
-      if (layer.url) {
-        const style = layer.getStyle()?.serialize() || '';
-        param = `GPX*${layer.name}*${encodeURIComponent(layer.url)}*${layer.extract}*${layer.isVisible()}*${style}`;
-      } else {
-        param = this.getVector(layer);
-      }
-    } else if (layer.type === 'KML' || layer.type === 'KMZ') {
-      param = this.getKML(layer);
-    } else if (layer.type === 'WFS') {
-      param = this.getWFS(layer);
-    } else if (layer.type === 'GeoJSON') {
-      param = this.getGeoJSON(layer);
-    } else if (layer.type === 'Vector') {
-      param = this.getVector(layer);
-    } else if (layer.type === 'MVT') {
-      param = this.getMVT(layer);
-    } else if (layer.type === 'OGCAPIFeatures') {
-      param = this.getOGCAPIFeatures(layer);
-    } else if (layer.type === 'GeoTIFF') {
-      param = this.getGeoTIFF(layer);
-    } else if (layer.type === 'MapLibre') {
-      param = this.getMapLibre(layer);
-    } else if (layer.type === 'LayerGroup') {
-      param = this.getLayerGroup(layer, parent);
+  layerToParam(layer) {
+    const param = IDEE.utils.isFunction(layer.getRestLayer) ? layer.getRestLayer() : null;
+    if (IDEE.utils.isNullOrEmpty(param) && !this.unsharedLayers_.has(layer)) {
+      this.unsharedLayers_.add(layer);
+      const name = IDEE.utils.escapeXSS(String(layer.legend || layer.name || layer.type));
+      IDEE.toast.warning(getValue('exception.unsharedLayer').replace('{layer}', name));
     }
     return param;
   }
 
   /**
-   * This methods gets the kml url parameters
+   * This function gets the url params from layers, without repeated params
+   * (e.g. the WMS layers of a WMC share the WMC param).
    *
-   * @public
+   * @private
    * @function
    */
-  getKML(layer) {
-    // Los archivos locales se comparten como datos, igual que el KML importado.
-    if (layer.type === 'KMZ' && /^blob:/i.test(layer.url)) return this.getVector(layer);
-    return `${layer.type === 'KMZ' ? 'KMZ' : 'KML'}*${layer.name}*${layer.url}*${layer.extract}*${layer.label}*${layer.isVisible()}`;
+  layersToParams_(layers) {
+    const params = layers.map((layer) => this.layerToParam(layer)).filter((param) => param != null);
+    return [...new Set(params)];
   }
-
-  /**
-   * This method gets the geojson url parameter
-   *
-   * @public
-   * @function
-   */
-  getGeoJSON(layer) {
-    const source = !IDEE.utils.isUndefined(layer.source)
-      ? layer.serialize()
-      : encodeURIComponent(layer.url);
-    const style = (layer.getStyle()) ? layer.getStyle().serialize() : '';
-    return `GeoJSON*${layer.name}*${source}*${layer.extract}*${style}`;
-  }
-
-  /**
-   * This method gets the ogcApiFeatures url parameter
-   *
-   * @public
-   * @function
-   */
-  getOGCAPIFeatures(layer) {
-    const style = (layer.getStyle()) ? layer.getStyle().serialize() : '';
-    return `OGCAPIFeatures*${layer.legend || layer.name}*${layer.url}*${layer.name}*${layer.limit || ''}*${layer.bbox || ''}*${layer.id || ''}*${layer.offset || ''}*${layer.format || ''}*${style}*${layer.extract || ''}`;
-  }
-
-  /**
-   * This method gets the MapLibre url parameter
-   *
-   * @public
-   * @function
-   */
-  getMapLibre(layer) {
-    return `MapLibre*${layer.legend}*${layer.url}*${layer.name}*${layer.transparent || ''}*${layer.extract || ''}*${layer.visibility || ''}*${layer.displayInLayerSwitcher || ''}*${layer.disableBackgroundColor || ''}`;
-  }
-
-  /**
-   * This method gets the geojson url parameter
-   *
-   * @public
-   * @function
-   */
-  getVector(layer) {
-    let source = Object.assign(layer.toGeoJSON());
-    source.crs = {
-      properties: {
-        name: 'EPSG:4326',
-      },
-      type: 'name',
-    };
-    source = window.btoa(unescape(encodeURIComponent(JSON.stringify(source))));
-    const style = (layer.getStyle()) ? layer.getStyle().serialize() : '';
-    return `GeoJSON*${layer.name}*${source}**${style}`;
-  }
-
-  /**
-   * This method gets the mvt url parameter
-   *
-   * @public
-   * @function
-   */
-  getMVT(layer) {
-    return `MVT*${layer.url}*${layer.name}*${layer.getProjection()}`;
-  }
-
-  /**
-   * This method gets the wms url parameter
-   *
-   * @public
-   * @function
-   */
-  getWMS(layer) {
-    return `WMS*${this.normalizeString(layer.legend || layer.name)}*${layer.url}*${layer.name}*${layer.transparent}*${layer.tiled}*${layer.userMaxExtent || ''}*${layer.version}*${layer.displayInLayerSwitcher}*${layer.isQueryable()}*${layer.isVisible()}`;
-  }
-
-  /**
-   * This method gets the geotiff url parameter
-   *
-   * @public
-   * @function
-   */
-  getGeoTIFF(layer) {
-    const normalize = layer.options?.normalize;
-    let normalizeParam = '';
-    if (!IDEE.utils.isUndefined(normalize)) {
-      normalizeParam = normalize;
-    }
-    return `GeoTIFF*${layer.legend}*${layer.url}*${layer.name}*${layer.transparent}*${layer.projection || ''}*${layer.displayInLayerSwitcher}*${layer.isVisible()}*${normalizeParam}*${layer.extract}`;
-  }
-
-  /**
-   * This method gets the wfs url parameter
-   *
-   * @public
-   * @function
-   */
-  getWFS(layer) {
-    const style = layer.getStyle().serialize();
-    return `WFS*${this.normalizeString(layer.legend || layer.name)}*${layer.url}*${layer.namespace}:${layer.name}:*${layer.geometry || ''}*${layer.ids || ''}*${layer.cql || ''}*${style || ''}`;
-  }
-
-  /**
-   * This method gets the wmts url parameter
-   *
-   * @public
-   * @function
-   */
-  getWMTS(layer) {
-    const { code } = this.map_.getProjection();
-    let legend = null;
-    try {
-      legend = layer.getLegend();
-    } catch (err) {
-      legend = layer.legend;
-    }
-    return `WMTS*${layer.url}*${layer.name}*${layer.matrixSet || code}*${this.normalizeString(legend)}*${layer.transparent}*${layer.options.format || 'image/png'}*${layer.displayInLayerSwitcher}*${layer.isQueryable()}*${layer.isVisible()}`;
-  }
-
-  getLayerGroup(group, parent) {
-    let layers = group.getLayers();
-    layers = layers.map((layer) => {
-      if (this.layerToParam(layer, false) === undefined) {
-        return null;
-      }
-      return `${this.layerToParam(layer, false)}`;
-    })
-      .filter((param) => param != null);
-    return `LayerGroup*${group.name}*${this.normalizeString(group.legend)}*${group.isVisible()}*${group.transparent}*[${layers}]${parent ? '!' : ''}`;
-  }
-
-  // TO-DO
-  // getGeneric(layer) {
-  //   const ol3 = layer.getImpl().getLayer();
-  //   const ol3Source = ol3.getSource();
-  //   const typeSource = layer.getImpl().getSourceType();
-  //   const typeLayer = layer.getImpl().getLayerType();
-  //   const typeFormat = layer.getImpl().getFormatType ? layer.getImpl().getFormatType() : false;
-
-  //   const properties = ol3.getProperties();
-  //   delete properties.source;
-
-  //   const vendorOptions = `
-  //     new ol.layer.${typeLayer}({
-  //        source: new ol.source.${typeSource}({
-  //         ${ol3Source.getParams ? `params:${JSON.stringify(ol3Source.getParams())},` : ''}
-  //         url: ${ol3Source.getUrl ? ol3Source.getUrl() : ol3Source.getUrls()[0]},
-  //         ${ol3Source.getLayer ? `layer: ${ol3Source.getLayer()},` : ''}
-  //         ${ol3Source.getMatrixSet ? `matrixSet: ${ol3Source.getMatrixSet()},` : ''}
-  //         ${ol3Source.getFormat ? `format: ${JSON.stringify(ol3Source.getFormat())},` : ''}
-  //         ${ol3Source.getProjection ? `projection: ${ol3Source.getProjection()},` : ''}
-  //         ${ol3Source.getTileGrid ? `tileGrid: ${ol3Source.getTileGrid()},` : ''}
-  //         ${ol3Source.getStyle ? `style: ${ol3Source.getStyle()},` : ''}
-  //         ${typeFormat ? `format: new ${typeFormat}(),` : ''}
-  //        }),
-  //        properties: ${JSON.stringify(properties)},
-  //     })
-  //   `;
-
-  //   const {
-  //     name = '',
-  //     legend = '',
-  //     transparent,
-  //     minZoom,
-  //     maxZoom,
-  //     displayInLayerSwitcher = true,
-  //     visibility = true,
-  //   } = layer;
-
-  //   return `Generic*${IDEE.utils.encodeBase64(vendorOptions)}*${name}*${legend}
-  // *${transparent}*${minZoom}*${maxZoom}*${displayInLayerSwitcher}*${visibility}`;
-  // }
 
   /**
    * This method gets the plugins url parameter
@@ -829,12 +650,6 @@ export default class ShareMapControl extends IDEE.Control {
    */
   equals(control) {
     return control instanceof ShareMapControl;
-  }
-
-  normalizeString(text) {
-    let newText = text.replace(/,/g, '');
-    newText = newText.replace(/\*/g, '');
-    return newText;
   }
 
   accessibilityTab(html) {
