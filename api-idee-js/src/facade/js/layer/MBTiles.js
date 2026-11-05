@@ -177,5 +177,23 @@ class MBTiles extends LayerBase {
     }
     return equals;
   }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa.
+   *
+   * @function
+   * @returns {String|null} Cadena REST; null si el fichero no tiene URL remota.
+   * @api
+   */
+  getRestLayer() {
+    if (!MBTiles.isAutoRefreshRemoteURL(this.url)) {
+      return null;
+    }
+    const { userParameters } = this.constructorParameters;
+    return this.formatRestLayer_({
+      maxZoomLevel: isObject(userParameters) ? userParameters.maxZoomLevel : undefined,
+      tileSize: isObject(userParameters) ? userParameters.tileSize : undefined,
+    });
+  }
 }
 export default MBTiles;

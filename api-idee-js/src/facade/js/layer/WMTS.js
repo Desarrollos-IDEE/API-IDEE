@@ -349,6 +349,28 @@ class WMTS extends LayerBase {
   setFormat(newFormat) {
     this.options.format = newFormat;
   }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa.
+   *
+   * @function
+   * @returns {String|null} Cadena REST de la capa.
+   * @api
+   */
+  getRestLayer() {
+    let queryable;
+    try {
+      queryable = this.isQueryable();
+    } catch (error) {
+      queryable = undefined;
+    }
+    return this.formatRestLayer_({
+      matrixSet: this.matrixSet,
+      format: this.options?.format,
+      queryable,
+      useCapabilities: this.useCapabilities === false ? false : undefined,
+    });
+  }
 }
 
 export default WMTS;
