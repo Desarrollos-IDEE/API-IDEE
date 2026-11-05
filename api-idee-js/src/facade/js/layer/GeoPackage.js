@@ -317,6 +317,7 @@ class GeoPackage extends MObject {
     });
     Object.keys(layers).forEach((name) => {
       this.tableConnectors_.set(name, this.connector_);
+      // eslint-disable-next-line no-underscore-dangle
       layers[name].setRestContainer_(this, name);
     });
     this.layers_ = layers;

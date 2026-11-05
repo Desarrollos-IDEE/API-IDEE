@@ -243,10 +243,13 @@ class LayerGroup extends LayerBase {
    * @api
    */
   getRestLayer() {
-    const layers = this.getLayers()
-      .map((layer) => layer.getRestLayer())
+    const { userParameters } = this.constructorParameters;
+    const layers = this.getLayers().length > 0 || !isObject(userParameters)
+      ? this.getLayers() : [].concat(userParameters.layers || []);
+    const restLayers = layers
+      .map((layer) => (isString(layer) ? layer : layer.getRestLayer()))
       .filter((restLayer) => !isNullOrEmpty(restLayer));
-    return this.formatRestLayer_({ url: undefined, layers });
+    return this.formatRestLayer_({ url: undefined, layers: restLayers });
   }
 }
 
