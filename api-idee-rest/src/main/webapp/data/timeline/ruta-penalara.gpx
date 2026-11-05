@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="API-IDEE" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata><name>Ruta Cotos - Peñalara</name></metadata>
+  <wpt lat="40.8227" lon="-3.9611"><ele>1830</ele><time>2021-07-10T09:00:00Z</time><name>Puerto de Cotos</name></wpt>
+  <wpt lat="40.8506" lon="-3.9558"><ele>2428</ele><time>2021-07-10T10:20:00Z</time><name>Peñalara</name></wpt>
+  <wpt lat="40.8424" lon="-3.9468"><ele>2020</ele><time>2021-07-10T11:05:00Z</time><name>Laguna Grande de Peñalara</name></wpt>
+  <rte><name>Ruta alternativa sin horario: Cotos - Laguna Grande</name>
+    <rtept lat="40.8227" lon="-3.9611"><ele>1830</ele></rtept>
+    <rtept lat="40.8262" lon="-3.9556"><ele>1890</ele></rtept>
+    <rtept lat="40.8318" lon="-3.9502"><ele>1960</ele></rtept>
+    <rtept lat="40.8371" lon="-3.9471"><ele>2005</ele></rtept>
+    <rtept lat="40.8424" lon="-3.9468"><ele>2020</ele></rtept>
+  </rte>
+  <trk><name>Ruta Cotos - Peñalara - Laguna Grande</name>
+    <trkseg>
+      <trkpt lat="40.8227" lon="-3.9611"><ele>1830</ele><time>2021-07-10T09:00:00Z</time></trkpt>
+      <trkpt lat="40.828" lon="-3.96"><ele>1950</ele><time>2021-07-10T09:15:00Z</time></trkpt>
+      <trkpt lat="40.834" lon="-3.959"><ele>2080</ele><time>2021-07-10T09:32:00Z</time></trkpt>
+      <trkpt lat="40.84" lon="-3.9575"><ele>2200</ele><time>2021-07-10T09:50:00Z</time></trkpt>
+      <trkpt lat="40.846" lon="-3.9565"><ele>2330</ele><time>2021-07-10T10:06:00Z</time></trkpt>
+      <trkpt lat="40.8506" lon="-3.9558"><ele>2428</ele><time>2021-07-10T10:20:00Z</time></trkpt>
+      <trkpt lat="40.847" lon="-3.951"><ele>2250</ele><time>2021-07-10T10:35:00Z</time></trkpt>
+      <trkpt lat="40.8424" lon="-3.9468"><ele>2020</ele><time>2021-07-10T11:05:00Z</time></trkpt>
+      <trkpt lat="40.833" lon="-3.953"><ele>1950</ele><time>2021-07-10T11:30:00Z</time></trkpt>
+      <trkpt lat="40.8227" lon="-3.9611"><ele>1830</ele><time>2021-07-10T12:00:00Z</time></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

@@ -213,17 +213,17 @@
       },
       "TimelineDto": {
         "type": "object",
-        "required": ["timelineType", "intervals"],
+        "required": ["timelineType"],
         "description": "Opciones de configuración del control Timeline.",
         "properties": {
           "timelineType": {
             "type": "string",
-            "description": "**Obligatorio.** Tipo de línea temporal:\n- `absoluteSimple` — capas estáticas intercambiables (sin fechas).\n- `absolute` — capas con rangos de fecha absolutos.\n- `relative` — capas con rangos de fecha relativos.\n",
-            "enum": ["absoluteSimple", "absolute", "relative"],
+            "description": "**Obligatorio.** Tipo de línea temporal:\n- `absoluteSimple` — capas estáticas intercambiables (sin fechas).\n- `absolute` — capas con rangos de fecha absolutos.\n- `relative` — capas con rangos de fecha relativos.\n- `track` — recorre una trayectoria (línea, track GPX o puntos de una capa) con los controles de reproducción; no necesita `intervals`.\n\n**Recorridos** (todos los tipos): si el mapa tiene capas vectoriales con líneas o puntos (p. ej. GPX por GET), el panel ofrece la capa, el objeto (cada línea, todos los puntos o los elegidos en el mapa), la elección en el mapa, el perfil topográfico (altitudes de `IDEE.elevation`, con el cursor sincronizado) y una barra de progreso. Cada segmento de un MultiLineString o track GPX se recorre por separado, sin unirlos. Con fechas por vértice (`coordTimes`) válidas el recorrido es temporal; si no hay, o están incompletas, es secuencial (posición a posición) y no se inventan fechas. En `track` cada paso avanza una posición, o duración/(n−1) si tiene fechas. En el resto de tipos el recorrido es complementario: en `absolute` y `relative` se sincroniza con el rango si sus fechas se solapan con las de la línea de tiempo; si no, y en `absoluteSimple`, se muestra completo con progreso manual. Solo en OpenLayers.\n",
+            "enum": ["absoluteSimple", "absolute", "relative", "track"],
             "example": "absoluteSimple"
           },
           "intervals": {
-            "description": "**Obligatorio.** Lista de intervalos/capas a mostrar en la línea temporal. Puede ser un array de objetos o una cadena JSON.\n\n- **`absoluteSimple`**: objetos con `name`, `tag` y `service`.\n- **`absolute` / `relative`**: objetos con `name`, `tag`, `service`, `init` y `end`.\n",
+            "description": "**Obligatorio** (salvo en `track`). Lista de intervalos/capas a mostrar en la línea temporal. Puede ser un array de objetos o una cadena JSON.\n\n- **`absoluteSimple`**: objetos con `name`, `tag` y `service`.\n- **`absolute` / `relative`**: objetos con `name`, `tag`, `service`, `init` y `end`.\n",
             "oneOf": [
               {
                 "type": "array",
@@ -237,14 +237,23 @@
               }
             ]
           },
-          "layerPosition":    { "type": "integer", "description": "Posición en el visualizador de la capa activada por defecto: base 1 y contada desde arriba, como en el LayerSwitcher (1 = capa superior). Si no se indica, o en esa posición no hay una capa compatible, se activa la primera compatible. No confundir con `position` (posición del panel).", "minimum": 1, "example": 2 },
+          "track": {
+            "description": "Recorrido que se muestra al añadir el control (todos los tipos). Objeto o cadena JSON; por GET, en base64 (`track=base64~...`). Una cadena que no es JSON se toma como la capa.",
+            "type": "object",
+            "properties": {
+              "layer": { "description": "Capa de origen: definición `TIPO*...`, nombre o leyenda de una capa del visualizador, o su posición (base 1).", "oneOf": [{ "type": "string" }, { "type": "integer", "minimum": 1 }], "example": "ruta_guadarrama" },
+              "feature": { "description": "Identificador de una línea, o identificadores de los puntos que forman el recorrido (se unen en el orden de la capa o de sus fechas). Por defecto, la primera línea con fechas, la primera línea o todos los puntos.", "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }], "example": "trk-4" },
+              "attributeParam": { "type": "string", "description": "Atributo temporal de los puntos. Por defecto, `time`.", "example": "time" }
+            }
+          },
+          "layerPosition":    { "type": "integer", "description": "Posición en el visualizador de la capa activada por defecto: base 1 y contada desde arriba, como en el LayerSwitcher (1 = capa superior). Si no se indica, o en esa posición no hay una capa compatible, se activa la primera compatible. En `track` es la capa de origen del recorrido si no se indica `track`. No confundir con `position` (posición del panel).", "minimum": 1, "example": 2 },
           "position":         { "type": "string",  "description": "Posición del control en el mapa.",                                                                    "example": "left"           },
           "tooltip":          { "type": "string",  "description": "Texto del tooltip del control.",                                                                        "example": "Línea temporal" },
           "order":            { "type": "number",  "description": "Accesibilidad: z-index del control.",                                                                   "example": 1                },
           "collapsible":      { "type": "boolean", "description": "Indica si el control puede colapsarse.",                                                                "example": true             },
           "collapsed":        { "type": "boolean", "description": "Indica si el control está colapsado.",                                                                  "example": false            },
           "animation":        { "type": "boolean", "description": "Muestra el botón de play/pausa y el selector de velocidad (todos los `timelineType`). Con `false` solo quedan avance y retroceso.",  "default": true, "example": true },
-          "speed":            { "type": "number",  "description": "(**Solo `absoluteSimple`**) Segundos por paso de la reproducción. El valor por defecto (1) es ×1 en el selector de velocidad del panel (×0,5, ×1, ×2, ×3, ×5); otro valor preselecciona su multiplicador (1 / speed) y, si no es uno de esos, se añade al selector.", "minimum": 0, "exclusiveMinimum": true, "default": 1, "example": 1 },
+          "speed":            { "type": "number",  "description": "(**Solo `absoluteSimple` y `track`**) Segundos por paso de la reproducción (en `track`, un paso es una posición o duración/(n−1) del recorrido si tiene fechas). El valor por defecto (1) es ×1 en el selector de velocidad del panel (×0,5, ×1, ×2, ×3, ×5); otro valor preselecciona su multiplicador (1 / speed) y, si no es uno de esos, se añade al selector.", "minimum": 0, "exclusiveMinimum": true, "default": 1, "example": 1 },
           "speedDate":        { "type": "number",  "description": "(**Solo `absolute`/`relative`**) Segundos por paso de la reproducción. El valor por defecto (2) es ×1 en el selector de velocidad del panel (×0,5, ×1, ×2, ×3, ×5); otro valor preselecciona su multiplicador (2 / speedDate) y, si no es uno de esos, se añade al selector, p. ej. `speedDate=3` añade ×0,67.", "minimum": 0, "exclusiveMinimum": true, "default": 2, "example": 1 },
           "paramsDate":       {
             "type": "string",
@@ -255,7 +264,7 @@
           "stepValue":        { "type": "number",  "description": "(**Solo `absolute`/`relative`**) Valor del paso para la navegación temporal.",       "example": 1 },
           "sizeWidthDinamic": {
             "type": "string",
-            "description": "(**Solo `absolute`/`relative`**) Ancho dinámico del control.",
+            "description": "(**Solo `absolute`/`relative`/`track`**) Ancho dinámico del control.",
             "enum": ["", "sizeWidthDinamic_medium", "sizeWidthDinamic_big"],
             "default": "",
             "example": "sizeWidthDinamic_medium"

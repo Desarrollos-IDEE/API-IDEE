@@ -163,19 +163,6 @@ export default class Analysiscontrol extends IDEE.impl.Control {
     });
 
     const profil = new IDEE.impl.ol.js.ext.Profil({
-      info: {
-        zmin: getValue('zmin'),
-        zmax: getValue('zmax'),
-        altitude: getValue('altitude'),
-        distance: getValue('distanceT'),
-        distanceP: getValue('distanceP'),
-        elevationGain: getValue('elevationGain'),
-        ytitle: getValue('ytitle'),
-        xtitle: getValue('xtitle'),
-        altitudeUnits: 'm',
-        distanceUnitsM: 'm',
-        distanceUnitsKM: 'km',
-      },
       graphs,
       title: getValue('analysisProfile'),
       pointLayer: this.source_,

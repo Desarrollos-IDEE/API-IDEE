@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="API-IDEE" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata><name>Ruta Cercedilla - Bola del Mundo</name></metadata>
+  <wpt lat="40.7414" lon="-4.0573"><ele>1188</ele><time>2021-06-05T08:00:00Z</time><name>Cercedilla</name></wpt>
+  <wpt lat="40.7568" lon="-4.0628"><ele>1310</ele><time>2021-06-05T09:00:00Z</time><name>Las Dehesas</name></wpt>
+  <wpt lat="40.793" lon="-4.0105"><ele>1858</ele><time>2021-06-05T10:50:00Z</time><name>Puerto de Navacerrada</name></wpt>
+  <wpt lat="40.7853" lon="-3.9838"><ele>2258</ele><time>2021-06-05T12:05:00Z</time><name>Bola del Mundo</name></wpt>
+  <trk><name>Ruta Cercedilla - Bola del Mundo</name><desc>Tres etapas</desc>
+    <trkseg>
+      <trkpt lat="40.7414" lon="-4.0573"><ele>1188</ele><time>2021-06-05T08:00:00Z</time></trkpt>
+      <trkpt lat="40.7446" lon="-4.0591"><ele>1215</ele><time>2021-06-05T08:12:00Z</time></trkpt>
+      <trkpt lat="40.748" lon="-4.0603"><ele>1240</ele><time>2021-06-05T08:25:00Z</time></trkpt>
+      <trkpt lat="40.7512" lon="-4.0614"><ele>1268</ele><time>2021-06-05T08:37:00Z</time></trkpt>
+      <trkpt lat="40.7545" lon="-4.0622"><ele>1295</ele><time>2021-06-05T08:50:00Z</time></trkpt>
+      <trkpt lat="40.7568" lon="-4.0628"><ele>1310</ele><time>2021-06-05T09:00:00Z</time></trkpt>
+    </trkseg>
+    <trkseg>
+      <trkpt lat="40.7568" lon="-4.0628"><ele>1310</ele><time>2021-06-05T09:00:00Z</time></trkpt>
+      <trkpt lat="40.7612" lon="-4.057"><ele>1405</ele><time>2021-06-05T09:20:00Z</time></trkpt>
+      <trkpt lat="40.766" lon="-4.05"><ele>1520</ele><time>2021-06-05T09:45:00Z</time></trkpt>
+      <trkpt lat="40.7712" lon="-4.043"><ele>1610</ele><time>2021-06-05T10:10:00Z</time></trkpt>
+      <trkpt lat="40.7765" lon="-4.035"><ele>1700</ele><time>2021-06-05T10:35:00Z</time></trkpt>
+      <trkpt lat="40.782" lon="-4.027"><ele>1765</ele><time>2021-06-05T11:00:00Z</time></trkpt>
+      <trkpt lat="40.7875" lon="-4.019"><ele>1820</ele><time>2021-06-05T11:25:00Z</time></trkpt>
+      <trkpt lat="40.793" lon="-4.0105"><ele>1858</ele><time>2021-06-05T11:50:00Z</time></trkpt>
+    </trkseg>
+    <trkseg>
+      <trkpt lat="40.793" lon="-4.0105"><ele>1858</ele><time>2021-06-05T11:50:00Z</time></trkpt>
+      <trkpt lat="40.7915" lon="-4.005"><ele>1960</ele><time>2021-06-05T12:05:00Z</time></trkpt>
+      <trkpt lat="40.79" lon="-3.9995"><ele>2060</ele><time>2021-06-05T12:20:00Z</time></trkpt>
+      <trkpt lat="40.7885" lon="-3.994"><ele>2150</ele><time>2021-06-05T12:35:00Z</time></trkpt>
+      <trkpt lat="40.7868" lon="-3.9888"><ele>2215</ele><time>2021-06-05T12:50:00Z</time></trkpt>
+      <trkpt lat="40.7853" lon="-3.9838"><ele>2258</ele><time>2021-06-05T13:05:00Z</time></trkpt>
+    </trkseg>
+  </trk>
+  <trk><name>Variante sin horario: Puerto de Navacerrada - Siete Picos</name>
+    <trkseg>
+      <trkpt lat="40.793" lon="-4.0105"><ele>1858</ele></trkpt>
+      <trkpt lat="40.7905" lon="-4.018"><ele>1950</ele></trkpt>
+      <trkpt lat="40.788" lon="-4.026"><ele>2050</ele></trkpt>
+      <trkpt lat="40.786" lon="-4.033"><ele>2138</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>
