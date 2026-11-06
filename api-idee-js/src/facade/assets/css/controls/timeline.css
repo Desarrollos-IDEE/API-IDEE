@@ -528,7 +528,8 @@
         background-color: var(--idee-color-neutral-05);
     }
 
-    .m-control-panel.m-control-timeline.opened .m-timeline-track-tools button[aria-pressed="true"] {
+    .m-control-panel.m-control-timeline.opened .m-timeline-track-tools button[aria-pressed="true"],
+    .m-control-panel.m-control-timeline.opened .m-timeline-track-tools button[aria-expanded="true"] {
         color: var(--idee-color-white);
         background-color: var(--idee-color-primary);
     }
@@ -548,14 +549,23 @@
     }
 
     .m-control-panel.m-control-timeline.opened .m-timeline-track-status,
-    .m-control-panel.m-control-timeline.opened .m-timeline-track-message,
-    .m-control-panel.m-control-timeline.opened .m-timeline-profile-status {
+    .m-control-panel.m-control-timeline.opened .m-timeline-track-message {
         margin: 0;
         width: 100%;
         text-align: center;
         font-size: var(--idee-font-size-caption);
         color: var(--idee-color-neutral-80);
         overflow-wrap: anywhere;
+    }
+
+    .m-control-panel.m-control-timeline.opened .m-timeline-track-message {
+        box-sizing: border-box;
+        padding: .5rem;
+        text-align: left;
+        color: var(--idee-color-neutral-90);
+        background-color: var(--idee-color-neutral-05);
+        border-left: 3px solid var(--idee-color-warning);
+        border-radius: var(--idee-shape-border-radius);
     }
 
     .m-timeline-picking,

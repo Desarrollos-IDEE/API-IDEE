@@ -3306,8 +3306,8 @@ const createOption = (text, value) => {
  * Interfaz del recorrido, igual en todos los modos: se carga desde una plantilla común
  * en el hueco .m-timeline-track-slot. Selector de capa (con "Sin recorrido" fuera del
  * modo "track"), selector del objeto (oculto si solo hay uno), elección en el mapa,
- * botón del perfil, barra de progreso, posición y avisos. Fuera del modo "track" se
- * oculta si el mapa no tiene capas con recorridos.
+ * botón del perfil, botón de avisos (desplegable), barra de progreso y posición. Fuera
+ * del modo "track" se oculta si el mapa no tiene capas con recorridos.
  *
  * @private
  */
@@ -3323,6 +3323,9 @@ class TrackTools {
     this.profile_ = profile;
     this.element_ = null;
     this.layers_ = [];
+    this.trackMessage_ = '';
+    this.profileMessage_ = '';
+    this.warningExpanded_ = false;
   }
 
   /**
@@ -3365,6 +3368,10 @@ class TrackTools {
       pick.setAttribute('aria-pressed', String(picking));
     }));
     this.query('.m-timeline-profile-button').addEventListener('click', () => this.profile_.toggle());
+    this.query('.m-timeline-track-warning').addEventListener('click', () => {
+      this.warningExpanded_ = !this.warningExpanded_;
+      this.renderWarning();
+    });
     this.query('.m-timeline-track-progress').addEventListener('input', ({ target }) => {
       this.track_.seek(Number(target.value));
     });
@@ -3431,7 +3438,7 @@ class TrackTools {
   }
 
   /**
-   * Pinta la barra de progreso, la posición y los avisos.
+   * Pinta la barra de progreso, la posición y los avisos del recorrido.
    */
   renderPosition() {
     if (!this.element_) return;
@@ -3448,15 +3455,30 @@ class TrackTools {
       progress.disabled = this.track_.isSynchronized() || playback.steps === 0;
       this.query('.m-timeline-track-status').textContent = this.describePosition(path, position);
     }
-    const message = this.describeMessage(path, position);
-    const element = this.query('.m-timeline-track-message');
-    element.textContent = message;
-    element.hidden = message === '';
+    this.trackMessage_ = this.describeMessage(path, position);
+    this.renderWarning();
   }
 
   /**
-   * Texto de la posición: fecha y tiempo transcurrido o posición y total, porcentaje y
-   * segmento.
+   * Pinta el botón de avisos (recorrido y perfil): el texto es su título y se despliega
+   * debajo al pulsarlo. Sin avisos, el botón se oculta y se pliega.
+   */
+  renderWarning() {
+    if (!this.element_) return;
+    const text = [this.trackMessage_, this.profileMessage_].filter(Boolean).join(' ');
+    const button = this.query('.m-timeline-track-warning');
+    const element = this.query('.m-timeline-track-message');
+    if (text === '') this.warningExpanded_ = false;
+    button.hidden = text === '';
+    button.title = text;
+    button.setAttribute('aria-label', text);
+    button.setAttribute('aria-expanded', String(this.warningExpanded_));
+    element.textContent = text;
+    element.hidden = !this.warningExpanded_;
+  }
+
+  /**
+   * Texto de la posición: fecha y tiempo transcurrido o posición y total, y segmento.
    * @param {TrackPath} path Recorrido.
    * @param {Object|null} position Posición.
    * @returns {String} Texto.
@@ -3477,9 +3499,6 @@ class TrackTools {
         total: path.size,
       }));
     }
-    parts.push(formatText(translation.track_percent, {
-      percent: Math.round(position.fraction * 100),
-    }));
     if (path.segments.length > 1) {
       parts.push(formatText(translation.track_segment, {
         index: position.segment + 1,
@@ -3520,7 +3539,7 @@ class TrackTools {
   }
 
   /**
-   * Pinta el botón y el estado del perfil.
+   * Pinta el botón del perfil y lleva su estado al botón de avisos.
    */
   renderProfile() {
     if (!this.element_) return;
@@ -3530,10 +3549,8 @@ class TrackTools {
     button.setAttribute('aria-pressed', String(this.profile_.isActive()));
     button.setAttribute('aria-busy', String(status === 'loading'));
     const texts = getValue('profile');
-    const message = { loading: texts.loading, error: texts.error, no_data: texts.no_data }[status] ?? '';
-    const element = this.query('.m-timeline-profile-status');
-    element.textContent = message;
-    element.hidden = message === '';
+    this.profileMessage_ = { loading: texts.loading, error: texts.error, no_data: texts.no_data }[status] ?? '';
+    this.renderWarning();
   }
 }
 

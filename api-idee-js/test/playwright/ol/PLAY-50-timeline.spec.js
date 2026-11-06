@@ -160,6 +160,8 @@ const trackDom = (page) => page.evaluate(() => {
   if (!tools) return null;
   const query = (selector) => tools.querySelector(selector);
   const progress = query('.m-timeline-track-progress');
+  const warning = query('.m-timeline-track-warning');
+  const expanded = query('.m-timeline-track-message');
   return {
     hidden: tools.hidden,
     layers: [...query('.m-timeline-track-layer').options].map((option) => option.textContent),
@@ -174,8 +176,13 @@ const trackDom = (page) => page.evaluate(() => {
       max: Number(progress.max), value: Number(progress.value), disabled: progress.disabled,
     },
     status: query('.m-timeline-track-status').textContent,
-    message: query('.m-timeline-track-message').hidden ? '' : query('.m-timeline-track-message').textContent,
-    profileStatus: query('.m-timeline-profile-status').hidden ? '' : query('.m-timeline-profile-status').textContent,
+    message: warning.hidden ? '' : warning.title,
+    warning: {
+      icon: warning.classList.contains('g-cartografia-warning'),
+      label: warning.getAttribute('aria-label'),
+      expanded: warning.getAttribute('aria-expanded'),
+      text: expanded.hidden ? null : expanded.textContent,
+    },
   };
 });
 
@@ -1472,7 +1479,8 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
       progress: { max: 19, value: 0, disabled: false },
       message: '',
     }));
-    expect(dom.status).toContain('(00:00:00 de 05:05:00) · 0 % · Segmento 1 de 3');
+    expect(dom.status).toMatch(/\(00:00:00 de 05:05:00\) · Segmento 1 de 3$/);
+    expect(dom.status).not.toContain('%');
     expect(await page.evaluate(() => window.timeline.getSelectableLayers()
       .map(({ id, position, selected }) => [id, position, selected])))
       .toEqual([['ruta_penalara', 1, false], ['ruta_guadarrama', 2, true]]);
@@ -1518,7 +1526,7 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
     expect(await trackOf(page)).toEqual(expect.objectContaining({
       key: 'line:rte-3', timed: false, steps: 4, time: null,
     }));
-    expect(await trackDom(page)).toEqual(expect.objectContaining({ status: 'Posición 1 de 5 · 0 %', message: '' }));
+    expect(await trackDom(page)).toEqual(expect.objectContaining({ status: 'Posición 1 de 5', message: '' }));
     expect(await page.evaluate(() => [...window.timeline.getElement().querySelectorAll('.m-timeline-speed option')]
       .map((option) => option.title).slice(0, 2))).toEqual(['2 s por posición', '1 s por posición']);
 
@@ -1619,7 +1627,7 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
     expect(await trackOf(page)).toEqual(expect.objectContaining({ layer: 'parcial', timed: false, steps: 1 }));
     expect(await trackDom(page)).toEqual(expect.objectContaining({
       message: 'Los tiempos del recorrido están incompletos o no son válidos: se recorre en el orden de sus puntos.',
-      status: 'Posición 1 de 2 · 0 %',
+      status: 'Posición 1 de 2',
     }));
     expect((await olTrack(page)).full).toEqual([[points.r1, points.r2]]);
 
@@ -1729,11 +1737,26 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
     expect(await trackOf(page)).toEqual(expect.objectContaining({
       layer: 'ruta_guadarrama', key: 'line:trk-4', timed: true, synchronized: false, step: 0,
     }));
+    const complementary = 'Sin tiempos compatibles con la línea de tiempo: el recorrido se muestra como información complementaria.';
     expect(await trackDom(page)).toEqual(expect.objectContaining({
       layers: ['Sin recorrido', '[1] ruta_penalara', '[2] ruta_guadarrama'],
       progress: { max: 19, value: 0, disabled: false },
-      message: 'Sin tiempos compatibles con la línea de tiempo: el recorrido se muestra como información complementaria.',
+      message: complementary,
+      warning: {
+        icon: true, label: complementary, expanded: 'false', text: null,
+      },
     }));
+    const warningButton = page.locator('.m-timeline-track-warning');
+    const warningText = page.locator('.m-timeline-track-message');
+    await expect(warningText).toBeHidden();
+    await warningButton.click();
+    await expect(warningText).toBeVisible();
+    expect((await trackDom(page)).warning).toEqual({
+      icon: true, label: complementary, expanded: 'true', text: complementary,
+    });
+    await warningButton.click();
+    await expect(warningText).toBeHidden();
+    expect((await trackDom(page)).warning.expanded).toBe('false');
     await clickAction(page, 'forward');
     expect(await page.evaluate(() => ({
       selected: window.timeline.getSelectedLayer().name,
@@ -1907,7 +1930,7 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
     await createTrackMap(page);
     const clickProfile = () => page.evaluate(() => window.timeline.getElement().querySelector('.m-timeline-profile-button').click());
     await clickProfile();
-    await expect.poll(() => trackDom(page).then(({ profileStatus }) => profileStatus))
+    await expect.poll(() => trackDom(page).then(({ message }) => message))
       .toBe('No hay datos de altitud para este recorrido.');
     expect(await profilePanel(page)).toBeNull();
     expect((await trackDom(page)).profile).toBe('false');
@@ -1923,7 +1946,7 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
       return text;
     });
     expect(toastText).toContain('No se han podido consultar los datos de altitud.');
-    expect((await trackDom(page)).profileStatus).toBe('No se han podido consultar los datos de altitud.');
+    expect((await trackDom(page)).message).toBe('No se han podido consultar los datos de altitud.');
     expect(await profilePanel(page)).toBeNull();
 
     await page.unroute('**/processes/elevationProfile/execution');
@@ -1933,7 +1956,7 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
     await chooseValue(page, '.m-timeline-track-layer', '0');
     await chooseValue(page, '.m-timeline-track-feature', 'line:rte-3');
     await clickProfile();
-    expect((await trackDom(page)).profileStatus).toBe('Consultando los datos de altitud…');
+    expect((await trackDom(page)).message).toBe('Consultando los datos de altitud…');
     await chooseValue(page, '.m-timeline-track-feature', 'line:trk-4');
     await expect.poll(() => profilePanel(page).then((panel) => panel?.title ?? null))
       .toBe('Perfil topográfico: Ruta Cotos - Peñalara - Laguna Grande');
@@ -2033,9 +2056,11 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
         window.timeline = await window.whenTimeline(window.map);
         await wait(() => window.timeline.getTrack());
         const relative = window.timeline.getElement();
-        check(relative.querySelector('.m-timeline-track-message').textContent === text.track_complementary, `${lang}: complementario`);
+        const warning = relative.querySelector('.m-timeline-track-warning');
+        check(!warning.hidden && warning.title === text.track_complementary && warning.getAttribute('aria-label') === text.track_complementary, `${lang}: complementario`);
         check(relative.querySelector('.m-timeline-track-layer').options[0].textContent === text.track_none, `${lang}: sin recorrido`);
-        check(relative.querySelector('.m-timeline-track-status').textContent.startsWith(text.track_position.replace('{index}', '1').replace('{total}', '4')), `${lang}: posición`);
+        const status = relative.querySelector('.m-timeline-track-status').textContent;
+        check(status.startsWith(text.track_position.replace('{index}', '1').replace('{total}', '4')) && !status.includes('%'), `${lang}: posición`);
         check(window.timeline.getHelp().title !== undefined, `${lang}: ayuda`);
       }
       /* eslint-enable no-restricted-syntax, no-await-in-loop */
