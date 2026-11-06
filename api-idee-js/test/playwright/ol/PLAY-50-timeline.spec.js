@@ -12,6 +12,18 @@ import { routePng } from '../common/mocks';
  * trk-3 en 2021.
  */
 const GPX = '/test/development/CP-0002-layers/fixtures/CP-035.gpx';
+const ROUTES = {
+  guadarrama: '/test/development/CP-0003-controls/fixtures/ruta-guadarrama.gpx',
+  penalara: '/test/development/CP-0003-controls/fixtures/ruta-penalara.gpx',
+};
+const ROUTE_INTERVALS = [
+  {
+    id: 'guadarrama', init: '2021-06-05T08:00:00Z', end: '2021-06-05T13:20:00Z', layer: 'ruta_guadarrama', attributeParam: 'time',
+  },
+  {
+    id: 'penalara', init: '2021-07-10T09:00:00Z', end: '2021-07-10T12:00:00Z', layer: 'ruta_penalara', attributeParam: 'time',
+  },
+];
 
 const encodeIntervals = (intervals) => Buffer.from(JSON.stringify(intervals), 'utf-8').toString('base64');
 
@@ -84,6 +96,167 @@ const createGetMap = async (page, timelineType, intervals, extra) => page.evalua
   await window.whenGPXLoaded(window.map);
   return window.map.getGPX().length;
 }, getParameters(timelineType, intervals, extra));
+
+const watchFeatureHandler = (page) => page.evaluate(() => {
+  const handler = window.map.getFeatureHandler();
+  let active = true;
+  handler.on(IDEE.evt.ACTIVATED, () => { active = true; });
+  handler.on(IDEE.evt.DEACTIVATED, () => { active = false; });
+  handler.isActive = () => active;
+});
+
+const clickCoordinate = async (page, coordinate) => {
+  const [x, y] = await page.evaluate((coord) => {
+    const olMap = window.map.getMapImpl();
+    const pixel = olMap.getPixelFromCoordinate(coord);
+    const rect = olMap.getTargetElement().getBoundingClientRect();
+    return [pixel[0] + rect.left, pixel[1] + rect.top];
+  }, coordinate);
+  await page.mouse.click(x, y);
+};
+
+const setRange = (page, init, end) => page.evaluate(([from, to]) => {
+  const element = window.timeline.getElement();
+  [['.m-timeline-date-init', from], ['.m-timeline-date-end', to]].forEach(([selector, value]) => {
+    const input = element.querySelector(selector);
+    input.value = value;
+    input.dispatchEvent(new Event('focusout'));
+  });
+}, [init, end]);
+
+const ROUTE_LAYERS = [`GPX*ruta_guadarrama*${ROUTES.guadarrama}*true*true`, `GPX*ruta_penalara*${ROUTES.penalara}*true*true`];
+
+const createTrackMap = (page, controls = 'timeline*timelineType=track;collapsible=false;collapsed=false;layerPosition=2') => page.evaluate(async (params) => {
+  window.map = IDEE.map({
+    container: 'map', center: [-445835, 4982151], zoom: 12, ...params,
+  });
+  window.timeline = await window.whenTimeline(window.map);
+  await window.whenGPXLoaded(window.map);
+  await new Promise((resolve) => {
+    const check = () => (window.timeline.getTrack() ? resolve() : setTimeout(check, 50));
+    check();
+  });
+}, { layers: ROUTE_LAYERS, controls: [controls] });
+
+const addTimeline = (page, options) => page.evaluate(async (config) => {
+  window.map.addControls(new IDEE.control.Timeline({ collapsible: false, collapsed: false, ...config }));
+  window.timeline = await window.whenTimeline(window.map);
+}, options);
+
+const openRoutesMap = (page) => page.evaluate(async (layers) => {
+  window.map = IDEE.map({
+    container: 'map', center: [-445835, 4982151], zoom: 12, layers,
+  });
+  await window.whenGPXLoaded(window.map);
+}, ROUTE_LAYERS);
+
+const trackOf = (page) => page.evaluate(() => {
+  const track = window.timeline.getTrack();
+  return track ? { ...track, layer: track.layer.name } : null;
+});
+
+const trackDom = (page) => page.evaluate(() => {
+  const tools = window.timeline.getElement().querySelector('.m-timeline-track-tools');
+  if (!tools) return null;
+  const query = (selector) => tools.querySelector(selector);
+  const progress = query('.m-timeline-track-progress');
+  const warning = query('.m-timeline-track-warning');
+  const expanded = query('.m-timeline-track-message');
+  return {
+    hidden: tools.hidden,
+    layers: [...query('.m-timeline-track-layer').options].map((option) => option.textContent),
+    layer: query('.m-timeline-track-layer').selectedOptions[0]?.textContent ?? null,
+    features: [...query('.m-timeline-track-feature').options]
+      .map((option) => `${option.parentElement.label}: ${option.textContent}`),
+    featuresHidden: query('.m-timeline-track-feature').hidden,
+    feature: query('.m-timeline-track-feature').value,
+    pick: query('.m-timeline-track-pick').getAttribute('aria-pressed'),
+    profile: query('.m-timeline-profile-button').hidden ? null : query('.m-timeline-profile-button').getAttribute('aria-pressed'),
+    progress: query('.m-timeline-track-progress-row').hidden ? null : {
+      max: Number(progress.max), value: Number(progress.value), disabled: progress.disabled,
+    },
+    status: query('.m-timeline-track-status').textContent,
+    message: warning.hidden ? '' : warning.title,
+    warning: {
+      icon: warning.classList.contains('g-cartografia-warning'),
+      label: warning.getAttribute('aria-label'),
+      expanded: warning.getAttribute('aria-expanded'),
+      text: expanded.checkVisibility() ? expanded.textContent : null,
+    },
+  };
+});
+
+const olTrack = (page) => page.evaluate(() => {
+  const layer = window.map.getMapImpl().getLayers().getArray()
+    .find((item) => item.get('name') === '__timeline_track__');
+  if (!layer) return null;
+  const [full, ends, travelled, marker] = layer.getSource().getFeatures();
+  return {
+    full: full.getGeometry().getCoordinates(),
+    ends: ends.getGeometry().getCoordinates(),
+    travelled: travelled.getGeometry().getCoordinates(),
+    marker: marker.getGeometry()?.getCoordinates() ?? null,
+    style: {
+      travelled: travelled.getStyle().getStroke().getColor(),
+      full: full.getStyle().getStroke().getColor(),
+      dashed: Boolean(full.getStyle().getStroke().getLineDash()),
+      marker: marker.getStyle()?.getImage?.()?.getFill().getColor() ?? null,
+    },
+  };
+});
+
+const routeSegments = (page, name) => page.evaluate((featureName) => {
+  const feature = window.map.getGPX().flatMap((layer) => layer.getFeatures(true))
+    .find((f) => f.getAttribute('name') === featureName);
+  const { type, coordinates } = feature.getGeometry();
+  const parts = type === 'MultiLineString' ? coordinates : [coordinates];
+  return parts.map((part) => part.map(([x, y]) => [x, y]));
+}, name);
+
+const chooseValue = (page, selector, value) => page.evaluate(([css, option]) => {
+  const element = window.timeline.getElement().querySelector(css);
+  element.value = option;
+  element.dispatchEvent(new Event(element.tagName === 'INPUT' ? 'input' : 'change'));
+}, [selector, value]);
+
+const clickAction = (page, name, times = 1) => page.evaluate(([button, count]) => {
+  for (let i = 0; i < count; i += 1) {
+    window.timeline.getElement().querySelector(`[data-timeline-action="${button}"]`).click();
+  }
+}, [name, times]);
+
+const mockElevation = async (page, { status = 200, noData = false, hold = null } = {}) => {
+  const requests = [];
+  await page.route('**/processes/elevationProfile/execution', async (route) => {
+    const headers = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'content-type',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    };
+    if (route.request().method() === 'OPTIONS') {
+      await route.fulfill({ status: 204, headers });
+      return;
+    }
+    const body = JSON.parse(route.request().postData());
+    requests.push(body.inputs);
+    if (hold) await hold(requests.length);
+    const values = noData ? null : JSON.parse(body.inputs.geom).features
+      .map(({ geometry }, index) => [...geometry.coordinates, 600 + index * 10]);
+    await route.fulfill({
+      status, headers, contentType: 'application/json', body: JSON.stringify({ values }),
+    }).catch(() => {});
+  });
+  return requests;
+};
+
+const profilePanel = (page) => page.evaluate(() => {
+  const element = document.querySelector('.ol-profil.m-timeline-profile-panel');
+  return element ? {
+    title: element.querySelector('p').textContent,
+    bar: parseFloat(element.querySelector('.ol-profilbar').style.left),
+    distance: element.querySelector('.point-info .dist').textContent,
+  } : null;
+});
 
 const getState = (page) => page.evaluate(() => ({
   selected: window.timeline.getSelectedLayer()?.name ?? null,
@@ -1093,6 +1266,884 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
       return errorsFound;
     }, RANGE_INTERVALS);
     expect(mismatches).toEqual([]);
+    expect(errors).toEqual([]);
+  });
+  test('modelo de recorrido: líneas, segmentos, puntos, fechas no válidas y coordenadas no válidas', async ({ page }) => {
+    const { errors } = await openPage(page);
+    await createTrackMap(page);
+    const result = await page.evaluate(() => {
+      // eslint-disable-next-line no-underscore-dangle
+      const TrackPath = window.timeline.track_.getPath().constructor;
+      const feature = (geometry, properties = {}) => ({
+        getGeometry: () => geometry,
+        getAttribute: (key) => properties[key],
+      });
+      const line = (coordinates, properties) => feature({ type: 'LineString', coordinates }, properties);
+      const multi = (coordinates, properties) => feature({ type: 'MultiLineString', coordinates }, properties);
+      const point = (coordinates, properties) => feature({ type: 'Point', coordinates }, properties);
+      const context = { key: 'k', label: 'L', layer: null };
+      const summary = (path) => ({
+        size: path.size,
+        timed: path.timed,
+        issue: path.timeIssue,
+        length: path.length,
+        segments: path.segments.map((samples) => samples
+          .map(({
+            coordinate, index, segment, offset, time,
+          }) => [...coordinate, index, segment, offset, time])),
+      });
+      const t = (minute) => `2021-06-05T08:${String(minute).padStart(2, '0')}:00Z`;
+      const ms = (minute) => Date.parse(t(minute));
+      const timesIssue = (coordTimes) => TrackPath.fromLine(line([[0, 0], [1, 0], [2, 0]], { coordTimes }), context).timeIssue;
+      const order = (features) => TrackPath.fromPoints(features, { ...context, kind: 'points' });
+      return {
+        line: summary(TrackPath.fromLine(line([[0, 0, 1200], [3, 4, 1210], [3, 10, 1220]], { coordTimes: [t(0), t(1), t(2)] }), context)),
+        multi: summary(TrackPath.fromLine(multi([[[0, 0], [0, 5], [Number.NaN, 1], null]], { coordTimes: null }), context)),
+        segments: summary(TrackPath.fromLine(multi([[[0, 0], [0, 5]], [], [[100, 0], [100, 10]]]), context)),
+        multiTimes: summary(TrackPath.fromLine(multi([[[0, 0], [0, 5]], [[100, 0], [100, 10]]], { coordTimes: [[t(0), t(5)], [t(20), t(30)]] }), context)),
+        mismatch: timesIssue([t(0), t(1)]),
+        invalid: timesIssue([t(0), 'no es una fecha', t(2)]),
+        incomplete: timesIssue([t(0), null, t(2)]),
+        unordered: timesIssue([t(0), t(10), t(5)]),
+        timedPoints: summary(order([point([1, 1], { time: t(10) }), point([2, 2], { time: t(0) }), point([3, 3], { time: t(20) })])),
+        untimedPoints: summary(order([point([3, 3]), point([1, 1]), point([2, 2])])),
+        partialPoints: summary(order([point([3, 3], { time: t(10) }), point([1, 1]), point([2, 2], { time: t(0) })])),
+        invalidPoints: summary(order([point([Number.NaN, 1]), point(null), point([5, 5])])),
+        empty: summary(TrackPath.fromLine(line([]), context)),
+        missing: summary(TrackPath.fromLine(feature(null), context)),
+        ms: [ms(0), ms(1), ms(2), ms(5), ms(20), ms(30), ms(10)],
+      };
+    });
+    const [m0, m1, m2, m5, m20, m30, m10] = result.ms;
+    expect(result.line).toEqual({
+      size: 3, timed: true, issue: null, length: 11, segments: [[[0, 0, 0, 0, 0, m0], [3, 4, 1, 0, 5, m1], [3, 10, 2, 0, 11, m2]]],
+    });
+    expect(result.multi).toEqual({
+      size: 2, timed: false, issue: null, length: 5, segments: [[[0, 0, 0, 0, 0, null], [0, 5, 1, 0, 5, null]]],
+    });
+    expect(result.segments).toEqual({
+      size: 4,
+      timed: false,
+      issue: null,
+      length: 15,
+      segments: [[[0, 0, 0, 0, 0, null], [0, 5, 1, 0, 5, null]], [[100, 0, 2, 1, 0, null], [100, 10, 3, 1, 10, null]]],
+    });
+    expect(result.multiTimes).toEqual(expect.objectContaining({
+      timed: true, issue: null, length: 15, segments: [[[0, 0, 0, 0, 0, m0], [0, 5, 1, 0, 5, m5]], [[100, 0, 2, 1, 0, m20], [100, 10, 3, 1, 10, m30]]],
+    }));
+    expect([result.mismatch, result.invalid, result.incomplete, result.unordered])
+      .toEqual(['mismatch', 'invalid', 'incomplete', 'unordered']);
+    expect(result.timedPoints.segments[0].map(([x, y, , , , time]) => [x, y, time]))
+      .toEqual([[2, 2, m0], [1, 1, m10], [3, 3, m20]]);
+    expect(result.untimedPoints).toEqual(expect.objectContaining({ timed: false, issue: null }));
+    expect(result.untimedPoints.segments[0].map(([x, y]) => [x, y])).toEqual([[3, 3], [1, 1], [2, 2]]);
+    expect(result.partialPoints).toEqual(expect.objectContaining({ timed: false, issue: 'incomplete' }));
+    expect(result.partialPoints.segments[0].map(([x, y, , , , time]) => [x, y, time])).toEqual([[3, 3, null], [1, 1, null], [2, 2, null]]);
+    expect(result.invalidPoints).toEqual(expect.objectContaining({ size: 1, segments: [[[5, 5, 0, 0, 0, null]]] }));
+    expect(result.empty).toEqual({
+      size: 0, timed: false, issue: null, length: 0, segments: [],
+    });
+    expect(result.missing.size).toBe(0);
+    expect(errors).toEqual([]);
+  });
+
+  test('modelo de reproducción: posición temporal sin cruzar huecos entre segmentos y posición secuencial', async ({ page }) => {
+    const { errors } = await openPage(page);
+    await createTrackMap(page);
+    const result = await page.evaluate(() => {
+      // eslint-disable-next-line no-underscore-dangle
+      const { track_: track } = window.timeline;
+      const TrackPath = track.getPath().constructor;
+      const TrackPlayback = track.getPlayback().constructor;
+      const geometry = { type: 'MultiLineString', coordinates: [[[0, 0], [10, 0], [10, 10]], [[50, 0], [60, 0]]] };
+      const build = (properties) => TrackPath.fromLine({
+        getGeometry: () => geometry,
+        getAttribute: (key) => properties[key],
+      }, { key: 'k', label: 'L', layer: null });
+      const timed = new TrackPlayback(build({ coordTimes: [[1000, 11000, 21000], [41000, 51000]] }));
+      const sequential = new TrackPlayback(build({}));
+      const view = (position) => position && {
+        state: position.state,
+        coordinate: position.coordinate,
+        segment: position.segment,
+        segmentFraction: position.segmentFraction,
+        fraction: position.fraction,
+        heading: position.heading,
+        travelled: position.travelled.filter((part) => part.length > 0),
+      };
+      const moves = [];
+      for (let i = 0; i < 5; i += 1) moves.push(timed.stepForward());
+      const atEnd = timed.isAtEnd();
+      const back = timed.stepBackward();
+      const rewind = timed.rewind();
+      const afterRewind = timed.step;
+      timed.seek(10);
+      const clampedHigh = timed.step;
+      timed.seek(-3);
+      const clampedLow = timed.step;
+      return {
+        steps: timed.steps,
+        interval: timed.interval,
+        stepTime: timed.timeAtStep(2),
+        stepInGap: view(timed.positionAtStep(2)),
+        inside: view(timed.positionAtTime(6000)),
+        gap: view(timed.positionAtTime(31000)),
+        second: view(timed.positionAtTime(46000)),
+        window: view(timed.positionAtTime(46000, 16000)),
+        before: view(timed.positionAtTime(500)),
+        after: view(timed.positionAtTime(99999)),
+        moves,
+        atEnd,
+        back,
+        rewind,
+        afterRewind,
+        clampedHigh,
+        clampedLow,
+        sequentialSteps: sequential.steps,
+        sequentialTime: sequential.positionAtTime(6000),
+        sequential: view(sequential.positionAtSample(3)),
+        sequentialEnd: view(sequential.positionAtSample(4)),
+      };
+    });
+    expect(result.steps).toBe(4);
+    expect(result.interval).toBe(12500);
+    expect(result.stepTime).toBe(26000);
+    expect(result.stepInGap).toEqual(expect.objectContaining({ coordinate: [10, 10], segment: 0, segmentFraction: 1 }));
+    expect(result.inside).toEqual({
+      state: 'inside', coordinate: [5, 0], segment: 0, segmentFraction: 0.25, fraction: 0.1, heading: 0, travelled: [[[0, 0], [5, 0]]],
+    });
+    expect(result.gap).toEqual({
+      state: 'inside', coordinate: [10, 10], segment: 0, segmentFraction: 1, fraction: 0.6, heading: Math.PI / 2, travelled: [[[0, 0], [10, 0], [10, 10]]],
+    });
+    expect(result.second).toEqual({
+      state: 'inside',
+      coordinate: [55, 0],
+      segment: 1,
+      segmentFraction: 0.5,
+      fraction: 0.9,
+      heading: 0,
+      travelled: [[[0, 0], [10, 0], [10, 10]], [[50, 0], [55, 0]]],
+    });
+    expect(result.window.travelled).toEqual([[[10, 5], [10, 10]], [[50, 0], [55, 0]]]);
+    expect(result.before).toEqual(expect.objectContaining({ state: 'before', coordinate: null, travelled: [] }));
+    expect(result.after).toEqual(expect.objectContaining({ state: 'end', coordinate: [60, 0], fraction: 1 }));
+    expect(result.moves).toEqual([true, true, true, true, false]);
+    expect([result.atEnd, result.back, result.rewind, result.afterRewind]).toEqual([true, true, true, 0]);
+    expect([result.clampedHigh, result.clampedLow]).toEqual([4, 0]);
+    expect(result.sequentialSteps).toBe(4);
+    expect(result.sequentialTime).toBeNull();
+    expect(result.sequential).toEqual({
+      state: 'inside', coordinate: [50, 0], segment: 1, segmentFraction: 0, fraction: 0.75, heading: 0, travelled: [[[0, 0], [10, 0], [10, 10]], [[50, 0]]],
+    });
+    expect(result.sequentialEnd).toEqual(expect.objectContaining({ state: 'end', coordinate: [60, 0], fraction: 1 }));
+    expect(errors).toEqual([]);
+  });
+
+  test('track: GPX por GET con layerPosition, selector de capa y objeto y recorrido temporal por segmentos', async ({ page }) => {
+    const { errors } = await openPage(page);
+    await createTrackMap(page);
+    await page.evaluate(() => {
+      window.changes = [];
+      window.timeline.on(IDEE.evt.CHANGE, ({ reason, track }) => window.changes.push([reason, track?.step ?? null]));
+    });
+    const segments = await routeSegments(page, 'Ruta Cercedilla - Bola del Mundo');
+    expect(segments.map((segment) => segment.length)).toEqual([6, 8, 6]);
+    expect(await trackOf(page)).toEqual(expect.objectContaining({
+      layer: 'ruta_guadarrama',
+      key: 'line:trk-4',
+      label: 'Ruta Cercedilla - Bola del Mundo',
+      kind: 'line',
+      timed: true,
+      synchronized: false,
+      step: 0,
+      steps: 19,
+      segment: 0,
+      fraction: 0,
+      time: Date.parse('2021-06-05T08:00:00Z'),
+      coordinate: segments[0][0],
+    }));
+    const dom = await trackDom(page);
+    expect(dom).toEqual(expect.objectContaining({
+      hidden: false,
+      layers: ['[1] ruta_penalara', '[2] ruta_guadarrama'],
+      layer: '[2] ruta_guadarrama',
+      features: [
+        'Líneas: Ruta Cercedilla - Bola del Mundo',
+        'Líneas: Variante sin horario: Puerto de Navacerrada - Siete Picos',
+        'Recorrido por puntos: Todos los puntos de la capa (4)',
+      ],
+      featuresHidden: false,
+      feature: 'line:trk-4',
+      pick: 'false',
+      profile: 'false',
+      progress: { max: 19, value: 0, disabled: false },
+      message: '',
+    }));
+    expect(dom.status).toMatch(/\(00:00:00 de 05:05:00\) · Segmento 1 de 3$/);
+    expect(dom.status).not.toContain('%');
+    expect(await page.evaluate(() => window.timeline.getSelectableLayers()
+      .map(({ id, position, selected }) => [id, position, selected])))
+      .toEqual([['ruta_penalara', 1, false], ['ruta_guadarrama', 2, true]]);
+    expect(await page.evaluate(() => window.timeline.getSelectedLayer().name)).toBe('ruta_guadarrama');
+
+    const drawn = await olTrack(page);
+    expect(drawn.full).toEqual(segments);
+    expect(drawn.ends).toEqual(segments.flatMap((segment) => [segment[0], segment[segment.length - 1]]));
+    expect(drawn.marker).toEqual(segments[0][0]);
+    expect(drawn.style).toEqual(await page.evaluate(() => {
+      const css = window.getComputedStyle(document.documentElement);
+      const primary = css.getPropertyValue('--idee-color-primary').trim();
+      const secondary = css.getPropertyValue('--idee-color-primary-dark').trim();
+      return {
+        travelled: primary, full: secondary, dashed: true, marker: primary,
+      };
+    }));
+
+    await clickAction(page, 'forward', 7);
+    const moved = await trackOf(page);
+    expect(moved).toEqual(expect.objectContaining({ step: 7, segment: 1 }));
+    const after = await olTrack(page);
+    expect(after.travelled).toHaveLength(2);
+    expect(after.travelled[0]).toEqual(segments[0]);
+    expect(after.travelled[1].slice(0, 3)).toEqual(segments[1].slice(0, 3));
+    expect(after.travelled[1]).toHaveLength(4);
+    expect(after.marker).toEqual(after.travelled[1][3]);
+    expect((await trackDom(page)).status).toContain('Segmento 2 de 3');
+
+    await clickAction(page, 'back');
+    expect((await trackOf(page)).step).toBe(6);
+
+    await chooseValue(page, '.m-timeline-track-layer', '0');
+    expect(await trackOf(page)).toEqual(expect.objectContaining({
+      layer: 'ruta_penalara', key: 'line:trk-4', step: 0, steps: 9, timed: true,
+    }));
+    expect((await trackDom(page)).features).toEqual([
+      'Líneas: Ruta alternativa sin horario: Cotos - Laguna Grande',
+      'Líneas: Ruta Cotos - Peñalara - Laguna Grande',
+      'Recorrido por puntos: Todos los puntos de la capa (3)',
+    ]);
+    await chooseValue(page, '.m-timeline-track-feature', 'line:rte-3');
+    expect(await trackOf(page)).toEqual(expect.objectContaining({
+      key: 'line:rte-3', timed: false, steps: 4, time: null,
+    }));
+    expect(await trackDom(page)).toEqual(expect.objectContaining({ status: 'Posición 1 de 5', message: '' }));
+    expect(await page.evaluate(() => [...window.timeline.getElement().querySelectorAll('.m-timeline-speed option')]
+      .map((option) => option.title).slice(0, 2))).toEqual(['2 s por posición', '1 s por posición']);
+
+    expect(await page.evaluate(() => window.timeline.selectLayer(2))).toBe(true);
+    expect(await trackOf(page)).toEqual(expect.objectContaining({ layer: 'ruta_guadarrama', key: 'line:trk-4' }));
+    expect(await page.evaluate(() => window.changes.map(([reason]) => reason)))
+      .toEqual(['position', 'position', 'position', 'position', 'position', 'position', 'position', 'position', 'track', 'track', 'track']);
+    expect(errors).toEqual([]);
+  });
+
+  test('track: el transporte común reproduce, pausa, reanuda, cambia la velocidad, termina y vuelve a empezar', async ({ page }) => {
+    const { errors } = await openPage(page);
+    await createTrackMap(page, 'timeline*timelineType=track;collapsible=false;collapsed=false;layerPosition=2;speed=0.05');
+    const step = async () => (await trackOf(page)).step;
+    await clickAction(page, 'play');
+    expect(await page.evaluate(() => window.timeline.running !== false)).toBe(true);
+    await expect.poll(step).toBeGreaterThan(1);
+    await clickAction(page, 'play');
+    expect(await page.evaluate(() => window.timeline.running)).toBe(false);
+    const paused = await trackOf(page);
+    await page.waitForTimeout(300);
+    expect(await trackOf(page)).toEqual(paused);
+
+    await clickAction(page, 'play');
+    await expect.poll(step).toBeGreaterThan(paused.step);
+    await chooseValue(page, '.m-timeline-speed', '5');
+    expect(await page.evaluate(() => ({ speed: window.timeline.speed, running: window.timeline.running !== false })))
+      .toEqual({ speed: 0.2, running: true });
+    await page.waitForFunction(() => window.timeline.running === false, null, { timeout: 15000 });
+    expect(await trackOf(page)).toEqual(expect.objectContaining({ step: 19, fraction: 1 }));
+    expect(await page.evaluate(() => window.timeline.getElement().querySelector('[data-timeline-action="play"]').title))
+      .toBe('Iniciar');
+
+    await clickAction(page, 'play');
+    expect(await step()).toBeLessThan(19);
+    await clickAction(page, 'play');
+
+    await chooseValue(page, '.m-timeline-track-progress', '10');
+    expect(await trackOf(page)).toEqual(expect.objectContaining({ step: 10 }));
+    await clickAction(page, 'forward');
+    expect(await step()).toBe(11);
+    await clickAction(page, 'back');
+    await clickAction(page, 'back');
+    expect(await step()).toBe(9);
+    expect((await trackDom(page)).progress).toEqual({ max: 19, value: 9, disabled: false });
+    expect(errors).toEqual([]);
+  });
+
+  test('track: recorridos por puntos (con fechas, sin fechas o incompletas) y elección de líneas y puntos en el mapa', async ({ page }) => {
+    const { errors } = await openPage(page);
+    const points = {
+      p1: [-447000, 4984000],
+      p2: [-446000, 4984500],
+      p3: [-445000, 4984200],
+      q1: [-447500, 4980000],
+      q2: [-446500, 4980400],
+      q3: [-445500, 4980100],
+      r1: [-443000, 4982000],
+      r2: [-442500, 4982500],
+    };
+    await page.evaluate(async (coords) => {
+      window.map = IDEE.map({ container: 'map', center: [-445500, 4982000], zoom: 14 });
+      const vector = (name, features) => {
+        const layer = new IDEE.layer.Vector({ name });
+        window.map.addLayers(layer);
+        layer.addFeatures(features.map(([id, geometry, properties]) => new IDEE.Feature(id, { type: 'Feature', geometry, properties })));
+        return layer;
+      };
+      vector('puntos', [
+        ['p1', { type: 'Point', coordinates: coords.p1 }, { name: 'P1', time: '2021-06-05T10:00:00Z' }],
+        ['p2', { type: 'Point', coordinates: coords.p2 }, { name: 'P2', time: '2021-06-05T09:00:00Z' }],
+        ['p3', { type: 'Point', coordinates: coords.p3 }, { name: 'P3', time: '2021-06-05T11:00:00Z' }],
+      ]);
+      vector('sin_tiempo', [
+        ['q1', { type: 'Point', coordinates: coords.q1 }, { name: 'Q1' }],
+        ['q2', { type: 'Point', coordinates: coords.q2 }, { name: 'Q2' }],
+        ['q3', { type: 'Point', coordinates: coords.q3 }, { name: 'Q3' }],
+        ['l1', { type: 'LineString', coordinates: [[-448000, 4982000], [-447000, 4982300], [-446000, 4981800]] }, {}],
+      ]);
+      vector('parcial', [
+        ['r1', { type: 'Point', coordinates: coords.r1 }, { time: '2021-06-05T09:00:00Z' }],
+        ['r2', { type: 'Point', coordinates: coords.r2 }, {}],
+      ]);
+      window.map.addControls(new IDEE.control.Timeline({
+        timelineType: 'track', collapsible: false, collapsed: false, position: 'right', track: { layer: 'puntos' },
+      }));
+      window.timeline = await window.whenTimeline(window.map);
+    }, points);
+    expect(await trackOf(page)).toEqual(expect.objectContaining({
+      layer: 'puntos', key: 'points', kind: 'points', timed: true, steps: 2,
+    }));
+    expect((await olTrack(page)).full).toEqual([[points.p2, points.p1, points.p3]]);
+    expect(await trackDom(page)).toEqual(expect.objectContaining({
+      features: ['Recorrido por puntos: Todos los puntos de la capa (3)'], featuresHidden: true,
+    }));
+
+    expect(await page.evaluate(() => window.timeline.selectTrack({ layer: 'parcial' }))).toBe(true);
+    expect(await trackOf(page)).toEqual(expect.objectContaining({ layer: 'parcial', timed: false, steps: 1 }));
+    expect(await trackDom(page)).toEqual(expect.objectContaining({
+      message: 'Los tiempos del recorrido están incompletos o no son válidos: se recorre en el orden de sus puntos.',
+      status: 'Posición 1 de 2',
+    }));
+    expect((await olTrack(page)).full).toEqual([[points.r1, points.r2]]);
+
+    expect(await page.evaluate(() => window.timeline.selectTrack({ layer: 'sin_tiempo' }))).toBe(true);
+    expect(await trackOf(page)).toEqual(expect.objectContaining({
+      layer: 'sin_tiempo', key: 'line:l1', kind: 'line', label: 'Recorrido 1', timed: false,
+    }));
+    expect((await trackDom(page)).features).toEqual(['Líneas: Recorrido 1', 'Recorrido por puntos: Todos los puntos de la capa (3)']);
+    expect(await page.evaluate(() => window.timeline.selectTrack({ layer: 'sin_tiempo', feature: ['q3', 'q1'] }))).toBe(true);
+    expect(await trackOf(page)).toEqual(expect.objectContaining({ key: 'picked', kind: 'picked', steps: 1 }));
+    expect((await olTrack(page)).full).toEqual([[points.q1, points.q3]]);
+
+    await watchFeatureHandler(page);
+    await page.evaluate(() => window.timeline.selectTrack({ layer: 'sin_tiempo' }));
+    await page.evaluate(() => window.timeline.getElement().querySelector('.m-timeline-track-pick').click());
+    expect(await page.evaluate(() => ({
+      pressed: window.timeline.getElement().querySelector('.m-timeline-track-pick').getAttribute('aria-pressed'),
+      picking: window.map.getContainer().classList.contains('m-timeline-picking'),
+      notice: window.timeline.getElement().querySelector('.m-timeline-notice').textContent,
+      handler: window.map.getFeatureHandler().isActive(),
+    }))).toEqual({
+      pressed: 'true',
+      picking: true,
+      notice: 'Haz clic en una línea, o en los puntos que formarán el recorrido (Esc para terminar).',
+      handler: false,
+    });
+    await clickCoordinate(page, points.q3);
+    await expect.poll(() => trackOf(page).then((track) => track.key)).toBe('picked');
+    await clickCoordinate(page, points.q1);
+    await expect.poll(() => olTrack(page).then(({ full }) => full)).toEqual([[points.q1, points.q3]]);
+    expect(await trackDom(page)).toEqual(expect.objectContaining({
+      pick: 'true',
+      feature: 'picked',
+      features: ['Líneas: Recorrido 1', 'Recorrido por puntos: Todos los puntos de la capa (3)', 'Recorrido por puntos: Puntos elegidos en el mapa (2)'],
+    }));
+    await clickCoordinate(page, points.q3);
+    await expect.poll(() => olTrack(page).then(({ full }) => full)).toEqual([[points.q1]]);
+    await clickCoordinate(page, [-447000, 4982300]);
+    await expect.poll(() => trackOf(page).then((track) => track.key)).toBe('line:l1');
+    expect(await page.evaluate(() => ({
+      handler: window.map.getFeatureHandler().isActive(),
+      picking: window.map.getContainer().classList.contains('m-timeline-picking'),
+      popup: document.querySelector('.m-popup') !== null,
+      pressed: window.timeline.getElement().querySelector('.m-timeline-track-pick').getAttribute('aria-pressed'),
+    }))).toEqual({
+      handler: true, picking: false, popup: false, pressed: 'false',
+    });
+
+    await page.evaluate(() => window.timeline.getElement().querySelector('.m-timeline-track-pick').click());
+    await page.keyboard.press('Escape');
+    expect(await page.evaluate(() => window.map.getContainer().classList.contains('m-timeline-picking'))).toBe(false);
+    await clickCoordinate(page, points.p1);
+    expect((await trackOf(page)).key).toBe('line:l1');
+    expect(errors).toEqual([]);
+  });
+
+  test('track: sin capas con recorridos, capa sin líneas ni puntos y capa GPX añadida después', async ({ page }) => {
+    const { errors } = await openPage(page);
+    await page.evaluate(async () => {
+      window.map = IDEE.map({ container: 'map', center: [-445835, 4982151], zoom: 12 });
+      window.map.addControls(new IDEE.control.Timeline({ timelineType: 'track', collapsible: false, collapsed: false }));
+      window.timeline = await window.whenTimeline(window.map);
+    });
+    expect(await trackOf(page)).toBeNull();
+    expect(await trackDom(page)).toEqual(expect.objectContaining({
+      hidden: false, layers: ['Sin recorrido'], progress: null, profile: null, message: 'No hay capas con líneas o puntos que recorrer.',
+    }));
+    await clickAction(page, 'play');
+    expect(await page.evaluate(() => window.timeline.running)).toBe(false);
+
+    await page.evaluate(() => {
+      const layer = new IDEE.layer.Vector({ name: 'poligonos' });
+      window.map.addLayers(layer);
+      layer.addFeatures([new IDEE.Feature('a', {
+        type: 'Feature',
+        geometry: { type: 'Polygon', coordinates: [[[-446000, 4982000], [-445000, 4982000], [-445000, 4983000], [-446000, 4982000]]] },
+        properties: {},
+      })]);
+    });
+    expect((await trackDom(page)).layers).toEqual(['Sin recorrido']);
+    expect(await page.evaluate(() => window.timeline.selectTrack({ layer: 'poligonos' }))).toBe(false);
+    expect(await trackDom(page)).toEqual(expect.objectContaining({
+      layers: ['[1] poligonos'], progress: null, message: 'La capa no tiene líneas ni puntos válidos.',
+    }));
+    expect(await page.evaluate(() => window.timeline.selectTrack(null))).toBe(false);
+    expect((await trackDom(page)).layers).toEqual(['Sin recorrido']);
+
+    await page.evaluate((url) => window.map.addLayers(`GPX*ruta_penalara*${url}*true*true`), ROUTES.penalara);
+    await expect.poll(() => trackOf(page).then((track) => track?.key ?? null)).toBe('line:trk-4');
+    expect(await trackDom(page)).toEqual(expect.objectContaining({ layers: ['[1] ruta_penalara'], message: '' }));
+    await page.evaluate(() => window.map.removeLayers(window.map.getGPX()));
+    expect(await trackOf(page)).toBeNull();
+    expect(await olTrack(page)).toBeNull();
+    expect((await trackDom(page)).message).toBe('No hay capas con líneas o puntos que recorrer.');
+    expect(errors).toEqual([]);
+  });
+
+  test('absoluteSimple: el recorrido complementario se mantiene mientras se recorren las capas, sin sincronizarse', async ({ page }) => {
+    const { errors } = await openPage(page);
+    await openRoutesMap(page);
+    await addTimeline(page, {
+      timelineType: 'absoluteSimple',
+      speed: 0.05,
+      intervals: [['Guadarrama', '2021', 'ruta_guadarrama'], ['Peñalara', '2022', 'ruta_penalara']],
+      track: { layer: 'ruta_guadarrama', feature: 'trk-4' },
+    });
+    expect(await trackOf(page)).toEqual(expect.objectContaining({
+      layer: 'ruta_guadarrama', key: 'line:trk-4', timed: true, synchronized: false, step: 0,
+    }));
+    const complementary = 'Sin tiempos compatibles con la línea de tiempo: el recorrido se muestra como información complementaria.';
+    expect(await trackDom(page)).toEqual(expect.objectContaining({
+      layers: ['Sin recorrido', '[1] ruta_penalara', '[2] ruta_guadarrama'],
+      progress: { max: 19, value: 0, disabled: false },
+      message: complementary,
+      warning: {
+        icon: true, label: complementary, expanded: 'false', text: null,
+      },
+    }));
+    const warningButton = page.locator('.m-timeline-track-warning');
+    const warningText = page.locator('.m-timeline-track-message');
+    const card = page.locator('.m-control-timeline');
+    const cardBox = await card.boundingBox();
+    await expect(warningText).toBeHidden();
+    await warningButton.click();
+    await expect(warningText).toBeVisible();
+    expect((await trackDom(page)).warning).toEqual({
+      icon: true, label: complementary, expanded: 'true', text: complementary,
+    });
+    expect(await card.boundingBox()).toEqual(cardBox);
+    const placement = await page.evaluate(() => {
+      const button = document.querySelector('.m-timeline-track-warning').getBoundingClientRect();
+      const popup = document.querySelector('.m-timeline-track-message');
+      const box = popup.getBoundingClientRect();
+      const { clientWidth, clientHeight } = document.documentElement;
+      return {
+        popover: popup.matches(':popover-open'),
+        rightAligned: Math.abs(box.right - button.right) <= 1,
+        anchored: box.top >= button.bottom || box.bottom <= button.top,
+        inViewport: box.left >= 0 && box.top >= 0 && box.right <= clientWidth && box.bottom <= clientHeight,
+      };
+    });
+    expect(placement).toEqual({
+      popover: true, rightAligned: true, anchored: true, inViewport: true,
+    });
+    await warningButton.click();
+    await expect(warningText).toBeHidden();
+    expect((await trackDom(page)).warning.expanded).toBe('false');
+    await warningButton.click();
+    await expect(warningText).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(warningText).toBeHidden();
+    expect((await trackDom(page)).warning.expanded).toBe('false');
+    await warningButton.click();
+    await expect(warningText).toBeVisible();
+    await page.locator('.m-control-timeline .m-timeline-title').click();
+    await expect(warningText).toBeHidden();
+    expect((await trackDom(page)).warning.expanded).toBe('false');
+    await clickAction(page, 'forward');
+    expect(await page.evaluate(() => ({
+      selected: window.timeline.getSelectedLayer().name,
+      guadarrama: window.map.getGPX().find((layer) => layer.name === 'ruta_guadarrama').isVisible(),
+    }))).toEqual({ selected: 'ruta_penalara', guadarrama: false });
+    expect((await trackOf(page)).step).toBe(0);
+    expect((await olTrack(page)).full).toHaveLength(3);
+
+    await chooseValue(page, '.m-timeline-track-progress', '5');
+    expect((await trackOf(page)).step).toBe(5);
+    expect(await page.evaluate(() => window.timeline.getSelectedLayer().name)).toBe('ruta_penalara');
+
+    await clickAction(page, 'back');
+    await clickAction(page, 'play');
+    await page.waitForFunction(() => window.timeline.running === false);
+    expect(await page.evaluate(() => window.timeline.getSelectedLayer().name)).toBe('ruta_penalara');
+    expect((await trackOf(page)).step).toBe(5);
+
+    await warningButton.click();
+    await expect(warningText).toBeVisible();
+    await chooseValue(page, '.m-timeline-track-layer', '');
+    expect(await trackOf(page)).toBeNull();
+    expect(await olTrack(page)).toBeNull();
+    expect((await trackDom(page)).progress).toBeNull();
+    await expect(warningText).toBeHidden();
+    await expect(warningButton).toBeHidden();
+    expect((await trackDom(page)).warning.expanded).toBe('false');
+
+    await chooseValue(page, '.m-timeline-track-layer', '1');
+    await warningButton.click();
+    await expect(warningText).toBeVisible();
+    await page.evaluate(() => {
+      window.map.removeControls(window.timeline);
+      window.dispatchEvent(new Event('resize'));
+      window.dispatchEvent(new Event('scroll'));
+    });
+    expect(await page.evaluate(() => document.querySelectorAll(':popover-open').length)).toBe(0);
+    await expect(warningText).toHaveCount(0);
+    expect(errors).toEqual([]);
+  });
+
+  test('absolute: el filtro temporal se mantiene y el marcador sigue el instante al avanzar, retroceder y cambiar la fecha', async ({ page }) => {
+    const { errors } = await openPage(page);
+    await openRoutesMap(page);
+    await addTimeline(page, {
+      timelineType: 'absolute',
+      paramsDate: 'min',
+      stepValue: 30,
+      intervals: [{
+        id: 'guadarrama', init: '2021-06-05T07:00:00Z', end: '2021-06-05T13:20:00Z', layer: 'ruta_guadarrama', attributeParam: 'time',
+      }],
+      track: { layer: 'ruta_guadarrama', feature: 'trk-4' },
+    });
+    const sync = () => page.evaluate(() => ({
+      end: window.timeline.date.end,
+      time: window.timeline.getTrack().time,
+      synchronized: window.timeline.getTrack().synchronized,
+      filtered: window.map.getGPX().find((layer) => layer.name === 'ruta_guadarrama').getFilter() !== null,
+    }));
+    const endTime = Date.parse('2021-06-05T13:05:00Z');
+    expect(await sync()).toEqual({
+      end: Date.parse('2021-06-05T13:20:00Z'), time: endTime, synchronized: true, filtered: true,
+    });
+    expect((await trackDom(page)).message).toBe('Sincronizado con la línea de tiempo.');
+    expect((await trackDom(page)).progress).toEqual({ max: 19, value: 19, disabled: true });
+
+    await setRange(page, '2021-06-05T07:00:00Z', '2021-06-05T07:30:00Z');
+    expect(await trackDom(page)).toEqual(expect.objectContaining({
+      message: expect.stringMatching(/^El recorrido empieza el .*2021.*08:00:00/),
+      status: '',
+    }));
+    expect((await olTrack(page)).marker).toBeNull();
+
+    await setRange(page, '2021-06-05T08:00:00Z', '2021-06-05T09:30:00Z');
+    let state = await sync();
+    expect(state.time).toBe(state.end);
+    expect(state.end).toBe(Date.parse('2021-06-05T09:30:00Z'));
+    expect((await trackOf(page)).segment).toBe(1);
+
+    await clickAction(page, 'forward');
+    state = await sync();
+    expect(state.end).toBe(Date.parse('2021-06-05T10:00:00Z'));
+    expect(state.time).toBe(state.end);
+    await clickAction(page, 'back');
+    state = await sync();
+    expect(state.end).toBe(Date.parse('2021-06-05T09:30:00Z'));
+    expect(state.time).toBe(state.end);
+    expect(await page.evaluate(() => window.timeline.getElement().querySelector('.m-timeline-date-init').disabled)).toBe(true);
+    expect(errors).toEqual([]);
+  });
+
+  test('relative: el inicio fijo se conserva; el recorrido se sincroniza con el rango o queda complementario si no se solapa', async ({ page }) => {
+    const { errors } = await openPage(page);
+    await openRoutesMap(page);
+    await addTimeline(page, {
+      timelineType: 'relative',
+      layerPosition: 2,
+      paramsDate: 'min',
+      stepValue: 30,
+      intervals: ROUTE_INTERVALS,
+      track: { layer: 'ruta_guadarrama', feature: 'trk-4' },
+    });
+    const init = Date.parse('2021-06-05T08:00:00Z');
+    expect(await page.evaluate(() => ({ ...window.timeline.date })))
+      .toEqual({ init, end: Date.parse('2021-06-05T13:20:00Z') });
+    await clickAction(page, 'back');
+    await clickAction(page, 'back');
+    const date = await page.evaluate(() => ({ ...window.timeline.date }));
+    expect(date).toEqual({ init, end: Date.parse('2021-06-05T12:20:00Z') });
+    expect(await trackOf(page)).toEqual(expect.objectContaining({ synchronized: true, time: date.end, segment: 2 }));
+
+    await setRange(page, '2021-06-05T09:30:00Z', '2021-06-05T10:00:00Z');
+    const travelled = (await olTrack(page)).travelled;
+    const segments = await routeSegments(page, 'Ruta Cercedilla - Bola del Mundo');
+    expect(travelled).toHaveLength(1);
+    expect(travelled[0]).toHaveLength(3);
+    expect(travelled[0][1]).toEqual(segments[1][2]);
+    expect((await trackOf(page)).time).toBe(Date.parse('2021-06-05T10:00:00Z'));
+
+    expect(await page.evaluate(() => window.timeline.selectTrack({ layer: 'ruta_penalara', feature: 'trk-4' }))).toBe(true);
+    expect(await trackOf(page)).toEqual(expect.objectContaining({ layer: 'ruta_penalara', synchronized: false }));
+    expect(await trackDom(page)).toEqual(expect.objectContaining({
+      message: 'Sin tiempos compatibles con la línea de tiempo: el recorrido se muestra como información complementaria.',
+      progress: { max: 9, value: 0, disabled: false },
+    }));
+    expect(await page.evaluate(() => window.timeline.selectLayer('penalara'))).toBe(true);
+    expect(await trackOf(page)).toEqual(expect.objectContaining({ synchronized: true, time: Date.parse('2021-07-10T12:00:00Z') }));
+    expect((await trackDom(page)).message).toBe('Sincronizado con la línea de tiempo.');
+    expect(errors).toEqual([]);
+  });
+
+  test('perfil: una petición por segmento, cursor sincronizado al avanzar, retroceder y buscar, y recarga al cambiar de recorrido', async ({ page }) => {
+    const { errors } = await openPage(page);
+    const requests = await mockElevation(page);
+    await createTrackMap(page);
+    await page.evaluate(() => window.timeline.getElement().querySelector('.m-timeline-profile-button').click());
+    await page.waitForSelector('.ol-profil.m-timeline-profile-panel');
+    expect(requests.map(({ crs, geom }) => [crs, JSON.parse(geom).features.length])).toEqual([[3857, 6], [3857, 8], [3857, 6]]);
+    requests.forEach(({ distance }) => {
+      expect(distance).toBeGreaterThanOrEqual(10);
+      expect(distance).toBeLessThanOrEqual(1000);
+    });
+    expect(await page.evaluate(() => {
+      // eslint-disable-next-line no-underscore-dangle
+      const { tab_: points } = window.timeline.getImpl().profile_;
+      return [...new Set(points.map((point) => point[5]))];
+    })).toEqual([0, 1, 2]);
+    expect((await trackDom(page)).profile).toBe('true');
+    const start = await profilePanel(page);
+    expect(start.title).toBe('Perfil topográfico: Ruta Cercedilla - Bola del Mundo');
+
+    await clickAction(page, 'forward', 7);
+    const forward = await profilePanel(page);
+    expect(forward.bar).toBeGreaterThan(start.bar);
+    await clickAction(page, 'back', 4);
+    const back = await profilePanel(page);
+    expect(back.bar).toBeLessThan(forward.bar);
+    expect(back.bar).toBeGreaterThan(start.bar);
+    await chooseValue(page, '.m-timeline-track-progress', '19');
+    const end = await profilePanel(page);
+    expect(end.bar).toBeGreaterThan(forward.bar);
+    await chooseValue(page, '.m-timeline-track-progress', '0');
+    expect((await profilePanel(page)).bar).toBe(start.bar);
+
+    await chooseValue(page, '.m-timeline-track-layer', '0');
+    await expect.poll(() => profilePanel(page).then((panel) => panel?.title ?? null))
+      .toBe('Perfil topográfico: Ruta Cotos - Peñalara - Laguna Grande');
+    expect(requests).toHaveLength(4);
+
+    await page.evaluate(() => document.querySelector('.ol-profil.m-timeline-profile-panel .profile-close-button').click());
+    expect(await profilePanel(page)).toBeNull();
+    expect((await trackDom(page)).profile).toBe('false');
+
+    await page.evaluate(() => window.timeline.getElement().querySelector('.m-timeline-profile-button').click());
+    await page.waitForSelector('.ol-profil.m-timeline-profile-panel');
+    const before = await page.evaluate(() => window.map.getMapImpl().getLayers().getLength());
+    await page.evaluate(() => window.map.removeControls(window.timeline));
+    expect(await profilePanel(page)).toBeNull();
+    expect(await olTrack(page)).toBeNull();
+    expect(await page.evaluate(() => window.map.getMapImpl().getLayers().getLength())).toBe(before - 2);
+    expect(errors).toEqual([]);
+  });
+
+  test('perfil: sin datos de altitud, error del servicio, respuesta obsoleta y destrucción con la petición pendiente', async ({ page }) => {
+    const { errors } = await openPage(page);
+    await mockElevation(page, { noData: true });
+    await createTrackMap(page);
+    const clickProfile = () => page.evaluate(() => window.timeline.getElement().querySelector('.m-timeline-profile-button').click());
+    await clickProfile();
+    await expect.poll(() => trackDom(page).then(({ message }) => message))
+      .toBe('No hay datos de altitud para este recorrido.');
+    expect(await profilePanel(page)).toBeNull();
+    expect((await trackDom(page)).profile).toBe('false');
+
+    await page.unroute('**/processes/elevationProfile/execution');
+    await mockElevation(page, { status: 500 });
+    await clickProfile();
+    await page.waitForSelector('.m-toast');
+    const toastText = await page.evaluate(() => {
+      const toast = document.querySelector('.m-toast');
+      const text = toast.textContent.trim();
+      toast.style.display = 'none';
+      return text;
+    });
+    expect(toastText).toContain('No se han podido consultar los datos de altitud.');
+    expect((await trackDom(page)).message).toBe('No se han podido consultar los datos de altitud.');
+    expect(await profilePanel(page)).toBeNull();
+
+    await page.unroute('**/processes/elevationProfile/execution');
+    let release;
+    const gate = new Promise((resolve) => { release = resolve; });
+    await mockElevation(page, { hold: (count) => (count === 1 ? gate : null) });
+    await chooseValue(page, '.m-timeline-track-layer', '0');
+    await chooseValue(page, '.m-timeline-track-feature', 'line:rte-3');
+    await clickProfile();
+    expect((await trackDom(page)).message).toBe('Consultando los datos de altitud…');
+    await chooseValue(page, '.m-timeline-track-feature', 'line:trk-4');
+    await expect.poll(() => profilePanel(page).then((panel) => panel?.title ?? null))
+      .toBe('Perfil topográfico: Ruta Cotos - Peñalara - Laguna Grande');
+    release();
+    await page.waitForTimeout(300);
+    expect((await profilePanel(page)).title).toBe('Perfil topográfico: Ruta Cotos - Peñalara - Laguna Grande');
+
+    await page.evaluate(() => document.querySelector('.ol-profil.m-timeline-profile-panel .profile-close-button').click());
+    await page.unroute('**/processes/elevationProfile/execution');
+    let releaseLast;
+    const last = new Promise((resolve) => { releaseLast = resolve; });
+    await mockElevation(page, { hold: () => last });
+    await clickProfile();
+    await page.evaluate(() => window.map.removeControls(window.timeline));
+    releaseLast();
+    await page.waitForTimeout(300);
+    expect(await profilePanel(page)).toBeNull();
+    expect(errors).toEqual([]);
+  });
+
+  test('recorridos: textos traducidos (es, en, ca), iconos compartidos de icons_cota y perfil con los textos comunes', async ({ page }) => {
+    const { errors } = await openPage(page);
+    await mockElevation(page);
+    await openRoutesMap(page);
+    const mismatches = await page.evaluate(async () => {
+      const found = [];
+      const check = (condition, message) => { if (!condition) found.push(message); };
+      const icon = (element) => {
+        const style = window.getComputedStyle(element, '::before');
+        return style.maskImage || style.webkitMaskImage;
+      };
+      const wait = (fn) => new Promise((resolve) => {
+        const poll = () => (fn() ? resolve() : setTimeout(poll, 50));
+        poll();
+      });
+      const keys = (lang) => {
+        const translation = IDEE.language.getTranslation(lang);
+        return [
+          ...Object.keys(translation.timeline).filter((key) => key.startsWith('track') || key.startsWith('speed_option')),
+          ...Object.keys(translation.profile).map((key) => `profile.${key}`),
+          ...Object.keys(translation.profile.info).map((key) => `profile.info.${key}`),
+          translation.timeline.textHelp.help6 ? 'help6' : '',
+        ].sort();
+      };
+      check(JSON.stringify(keys('es')) === JSON.stringify(keys('en')) && JSON.stringify(keys('es')) === JSON.stringify(keys('ca')), 'mismas claves en es, en y ca');
+      /* eslint-disable no-restricted-syntax, no-await-in-loop */
+      for (const lang of ['es', 'en', 'ca']) {
+        IDEE.language.setLang(lang);
+        const text = IDEE.language.getValue('timeline');
+        const profileText = IDEE.language.getValue('profile');
+        if (window.map.getControls('timeline').length > 0) window.map.removeControls(window.map.getControls('timeline'));
+        window.timeline = new IDEE.control.Timeline({
+          timelineType: 'track', collapsible: false, collapsed: false, track: { layer: 'ruta_guadarrama', feature: 'trk-4' },
+        });
+        window.map.addControls(window.timeline);
+        await window.whenTimeline(window.map);
+        await wait(() => window.timeline.getTrack());
+        const element = window.timeline.getElement();
+        const query = (selector) => element.querySelector(selector);
+        const labelled = (selector, value, name) => {
+          const node = query(selector);
+          check(node.title === value && node.getAttribute('aria-label') === value, `${lang}: ${name}`);
+        };
+        check(query('.m-timeline-track-tools').getAttribute('aria-label') === text.track, `${lang}: grupo`);
+        labelled('.m-timeline-track-layer', text.track_layer, 'capa');
+        labelled('.m-timeline-track-feature', text.track_feature, 'objeto');
+        labelled('.m-timeline-track-pick', text.track_pick, 'elegir');
+        labelled('.m-timeline-profile-button', text.track_profile, 'perfil');
+        labelled('.m-timeline-track-progress', text.track_progress, 'progreso');
+        const groups = [...query('.m-timeline-track-feature').querySelectorAll('optgroup')].map((group) => group.label);
+        check(JSON.stringify(groups) === JSON.stringify([text.track_group_lines, text.track_group_points]), `${lang}: grupos de objetos`);
+        check([...query('.m-timeline-track-feature').options].pop().textContent === text.track_points_all.replace('{count}', '4'), `${lang}: todos los puntos`);
+        check(query('.m-timeline-track-status').textContent.includes(text.track_segment.replace('{index}', '1').replace('{total}', '3')), `${lang}: segmento`);
+        const seconds = (1).toLocaleString(lang);
+        check(query('.m-timeline-speed').options[1].title === text.speed_option_track_time.replace('{seconds}', seconds).replace('{interval}', '00:16:03'), `${lang}: velocidad (${query('.m-timeline-speed').options[1].title})`);
+        check(icon(query('.m-timeline-track-pick')).includes('icons_cota/icn_seleccion.svg'), `${lang}: icono elegir`);
+        check(icon(query('.m-timeline-profile-button')).includes('icons_cota/icn_perfil.svg'), `${lang}: icono perfil`);
+        query('.m-timeline-profile-button').click();
+        await wait(() => document.querySelector('.ol-profil.m-timeline-profile-panel'));
+        const panel = document.querySelector('.ol-profil.m-timeline-profile-panel');
+        check(panel.querySelector('p').textContent.startsWith(`${profileText.title}: `), `${lang}: título del panel`);
+        check(panel.querySelector('.profile-close-button').title === profileText.close, `${lang}: cerrar`);
+        check(panel.querySelector('.profile-move-button').title === profileText.move, `${lang}: mover`);
+        check(panel.querySelector('.profile-download-button').title === profileText.download, `${lang}: descargar`);
+        check(panel.querySelector('.track-info td').textContent.startsWith(profileText.info.zmin), `${lang}: altitud mínima`);
+        check(icon(panel.querySelector('.profile-close-button')).includes('icons_cota/icn_cruz.svg'), `${lang}: icono cerrar`);
+        window.map.removeControls(window.timeline);
+        window.map.addControls(new IDEE.control.Timeline({
+          timelineType: 'relative',
+          collapsible: false,
+          collapsed: false,
+          intervals: [{
+            id: 'g', init: '2021-06-05T08:00:00Z', end: '2021-06-05T13:20:00Z', layer: 'ruta_guadarrama', attributeParam: 'time',
+          }],
+          track: { layer: 'ruta_guadarrama', feature: 'trk-5' },
+        }));
+        window.timeline = await window.whenTimeline(window.map);
+        await wait(() => window.timeline.getTrack());
+        const relative = window.timeline.getElement();
+        const warning = relative.querySelector('.m-timeline-track-warning');
+        check(!warning.hidden && warning.title === text.track_complementary && warning.getAttribute('aria-label') === text.track_complementary, `${lang}: complementario`);
+        check(relative.querySelector('.m-timeline-track-layer').options[0].textContent === text.track_none, `${lang}: sin recorrido`);
+        const status = relative.querySelector('.m-timeline-track-status').textContent;
+        check(status.startsWith(text.track_position.replace('{index}', '1').replace('{total}', '4')) && !status.includes('%'), `${lang}: posición`);
+        check(window.timeline.getHelp().title !== undefined, `${lang}: ayuda`);
+      }
+      /* eslint-enable no-restricted-syntax, no-await-in-loop */
+      IDEE.language.setLang('es');
+      return found;
+    });
+    expect(mismatches).toEqual([]);
+    expect(errors).toEqual([]);
+  });
+
+  test('ciclo de vida: destruir durante la reproducción, capa de origen creada por "track" y capas del usuario intactas', async ({ page }) => {
+    const { errors } = await openPage(page);
+    await createTrackMap(page, 'timeline*timelineType=track;collapsible=false;collapsed=false;layerPosition=2;speed=0.05');
+    await clickAction(page, 'play');
+    await expect.poll(() => trackOf(page).then(({ step }) => step)).toBeGreaterThan(0);
+    const before = await page.evaluate(() => window.map.getGPX().map((layer) => [layer.name, layer.isVisible()]));
+    await page.evaluate(() => window.map.removeControls(window.timeline));
+    await page.waitForTimeout(200);
+    expect(await page.evaluate(() => window.timeline.running)).toBe(false);
+    expect(await olTrack(page)).toBeNull();
+    expect(await page.evaluate(() => window.map.getGPX().map((layer) => [layer.name, layer.isVisible()]))).toEqual(before);
+
+    await page.evaluate(async (url) => {
+      window.map.addControls(new IDEE.control.Timeline({
+        timelineType: 'relative',
+        collapsible: false,
+        collapsed: false,
+        intervals: [{
+          id: 'g', init: '2021-06-05T08:00:00Z', end: '2021-06-05T13:20:00Z', layer: 'ruta_guadarrama', attributeParam: 'time',
+        }],
+        track: { layer: `GPX*ruta_creada*${url}*true*true` },
+      }));
+      window.timeline = await window.whenTimeline(window.map);
+    }, ROUTES.penalara);
+    await expect.poll(() => trackOf(page).then((track) => track?.layer ?? null)).toBe('ruta_creada');
+    expect(await page.evaluate(() => window.map.getGPX().map((layer) => layer.name))).toEqual(['ruta_guadarrama', 'ruta_penalara', 'ruta_creada']);
+    await page.evaluate(() => window.map.removeControls(window.timeline));
+    expect(await page.evaluate(() => window.map.getGPX().map((layer) => layer.name))).toEqual(['ruta_guadarrama', 'ruta_penalara']);
+    expect(await olTrack(page)).toBeNull();
     expect(errors).toEqual([]);
   });
 });

@@ -68,6 +68,98 @@ class Timeline extends Control {
    * @api
    */
   removeTemporalFilter() {}
+
+  /**
+   * Indica si las líneas o puntos de la capa pueden formar un recorrido.
+   * No disponible para Cesium.
+   *
+   * @public
+   * @function
+   * @returns {Boolean} Falso en Cesium.
+   * @api
+   */
+  supportsTrackSource() {
+    return false;
+  }
+
+  /**
+   * Dibuja un recorrido.
+   * No disponible para Cesium.
+   *
+   * @public
+   * @function
+   * @returns {Boolean} Falso, no se dibuja ningún recorrido.
+   * @api
+   */
+  showTrack() {
+    return false;
+  }
+
+  /**
+   * Dibuja el tramo realizado y la posición actual del recorrido.
+   * No disponible para Cesium.
+   *
+   * @public
+   * @function
+   * @api
+   */
+  updateTrack() {}
+
+  /**
+   * Retira el recorrido.
+   * No disponible para Cesium.
+   *
+   * @public
+   * @function
+   * @api
+   */
+  hideTrack() {}
+
+  /**
+   * Indica si la implementación puede mostrar perfiles topográficos.
+   * No disponible para Cesium.
+   *
+   * @public
+   * @function
+   * @returns {Boolean} Falso en Cesium.
+   * @api
+   */
+  supportsTopographicProfile() {
+    return false;
+  }
+
+  /**
+   * Muestra un perfil topográfico.
+   * No disponible para Cesium.
+   *
+   * @public
+   * @function
+   * @returns {Boolean} Falso, no se muestra ningún perfil.
+   * @api
+   */
+  showTopographicProfile() {
+    return false;
+  }
+
+  /**
+   * Coloca el cursor del perfil abierto.
+   * No disponible para Cesium.
+   *
+   * @public
+   * @function
+   * @api
+   */
+  setTopographicProfilePosition() {}
+
+  /**
+   * Cierra el perfil topográfico.
+   * No disponible para Cesium.
+   *
+   * @public
+   * @function
+   * @api
+   */
+  hideTopographicProfile() {}
 }
 
 export default Timeline;

@@ -54,6 +54,7 @@ test.describe('IDEE.control.Timeline (Cesium)', () => {
         implExported: typeof IDEE.impl.control.Timeline,
         notice: { hidden: notice.hidden, text: notice.textContent },
         disabled: [...timeline.getElement().querySelectorAll('input, select, button')].every((element) => element.disabled),
+        trackTools: timeline.getElement().querySelector('.m-timeline-track-tools'),
         transport: [...timeline.getElement().querySelectorAll('[data-timeline-action], .m-timeline-speed')]
           .map((element) => element.disabled),
         selectable: timeline.getSelectableLayers(),
@@ -83,6 +84,7 @@ test.describe('IDEE.control.Timeline (Cesium)', () => {
     expect(result.notice.hidden).toBe(false);
     expect(result.notice.text).toContain('3D');
     expect(result.disabled).toBe(true);
+    expect(result.trackTools).toBeNull();
     expect(result.transport).toEqual([true, true, true, true]);
     expect(result.selectable).toEqual([]);
     expect(result.selected).toBe(null);
@@ -115,6 +117,51 @@ test.describe('IDEE.control.Timeline (Cesium)', () => {
     });
     expect(result).toEqual({
       notice: true, gpx: [['gpx_get', true]], valid: false, transport: [true, true, true, true], running: false,
+    });
+    expect(errors).toEqual([]);
+  });
+
+  test('track: no soportado; sin herramientas ni recorrido y sin tocar las capas', async ({ page }) => {
+    test.setTimeout(60000);
+    const errors = await openMap(page, 'track', []);
+    const result = await page.evaluate(async () => {
+      const timeline = window.map.getControls('timeline')[0];
+      const impl = timeline.getImpl();
+      const layer = window.map.getGPX()[0];
+      timeline.playTimeline(false);
+      const state = {
+        contract: ['supportsTrackSource', 'showTrack', 'updateTrack', 'hideTrack', 'supportsTopographicProfile',
+          'showTopographicProfile', 'setTopographicProfilePosition', 'hideTopographicProfile']
+          .map((method) => typeof impl[method]),
+        supportsTrackSource: impl.supportsTrackSource(layer),
+        showTrack: impl.showTrack([[[0, 0], [1, 1]]], {}),
+        notice: timeline.getElement().querySelector('.m-timeline-notice').textContent,
+        trackTools: timeline.getElement().querySelector('.m-timeline-track-tools'),
+        transport: [...timeline.getElement().querySelectorAll('[data-timeline-action], .m-timeline-speed')]
+          .map((element) => element.disabled),
+        track: timeline.getTrack(),
+        selectTrack: timeline.selectTrack({ layer: 'gpx_get' }),
+        selectable: timeline.getSelectableLayers(),
+        running: timeline.running,
+        gpx: window.map.getGPX().map((item) => [item.name, item.isVisible(), item.getFeatures().length === item.getFeatures(true).length]),
+      };
+      window.map.removeControls(timeline);
+      state.afterDestroy = window.map.getGPX().length;
+      return state;
+    });
+    expect(result).toEqual({
+      contract: Array(8).fill('function'),
+      supportsTrackSource: false,
+      showTrack: false,
+      notice: expect.stringContaining('3D'),
+      trackTools: null,
+      transport: [true, true, true, true],
+      track: null,
+      selectTrack: false,
+      selectable: [],
+      running: false,
+      gpx: [['gpx_get', true, true]],
+      afterDestroy: 1,
     });
     expect(errors).toEqual([]);
   });

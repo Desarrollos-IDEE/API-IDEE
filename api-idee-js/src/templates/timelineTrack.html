@@ -1,0 +1,16 @@
+<div class="m-timeline-container m-timeline-track {{sizeWidthDinamic}}">
+    <div class="m-timeline-title">{{translations.title}}</div>
+    <div class="m-timeline-notice" role="status" hidden></div>
+    <div class="m-timeline-track-panel">
+        <div class="m-timeline-track-slot"></div>
+        <div class="m-timeline-button m-timeline-transport" role="group" aria-label="{{translations.playback}}">
+            <button type="button" data-timeline-action="back" class="m-timeline-back g-cartografia-flecha-izquierda"
+                title="{{translations.previous}}" aria-label="{{translations.previous}}"></button>
+            <button type="button" data-timeline-action="play" class="m-timeline-play g-cartografia-control-siguiente"
+                title="{{translations.play}}" aria-label="{{translations.play}}"></button>
+            <button type="button" data-timeline-action="forward" class="m-timeline-forward g-cartografia-flecha-derecha"
+                title="{{translations.next}}" aria-label="{{translations.next}}"></button>
+            <select class="m-timeline-speed" title="{{translations.speed}}" aria-label="{{translations.speed}}"></select>
+        </div>
+    </div>
+</div>

@@ -6,6 +6,8 @@ import 'assets/css/controls/timeline';
 import timelineTemplate from 'templates/timeline';
 import myhelp from 'templates/timelineHelp';
 import timelineDinamicTemplate from 'templates/timelineDinamic';
+import timelineTrackTemplate from 'templates/timelineTrack';
+import timelineTrackToolsTemplate from 'templates/timelineTrackTools';
 import TimelineImpl from 'impl/control/Timeline';
 import Layer from 'IDEE/layer/Layer';
 import * as EventType from 'IDEE/event/eventtype';
@@ -19,8 +21,10 @@ import * as Position from '../ui/position';
 import { compileSync } from '../util/Template';
 import * as parameter from '../parameter/parameter';
 import { buildLayer } from '../builder/builder';
+import Elevation from '../util/Elevation';
+import * as toast from '../toast';
+import { readDesignTokenCssVariables } from '../theme/tokens';
 
-const typesTimeline = ['absoluteSimple', 'absolute', 'relative'];
 const EMPTY_LAYER_ID = '__timeline_empty_layer__';
 
 /**
@@ -47,6 +51,51 @@ const SPEED_FACTORS = [0.5, 1, 2, 3, 5];
 const INTERNAL_LAYER_NAMES = ['__draw__'];
 
 /**
+ * Tipos de geometría lineal que pueden formar un recorrido.
+ * @const
+ * @private
+ */
+const LINE_TYPES = ['LineString', 'MultiLineString'];
+
+/**
+ * Indica si una entidad es una línea.
+ * @private
+ * @param {IDEE.Feature} feature Entidad.
+ * @returns {Boolean} Verdadero si su geometría es LineString o MultiLineString.
+ */
+const isLineFeature = (feature) => LINE_TYPES.includes(feature?.getGeometry?.()?.type);
+
+/**
+ * Indica si una entidad es un punto.
+ * @private
+ * @param {IDEE.Feature} feature Entidad.
+ * @returns {Boolean} Verdadero si su geometría es Point.
+ */
+const isPointFeature = (feature) => feature?.getGeometry?.()?.type === 'Point';
+
+/**
+ * Entidades de una capa sin filtrar; vacío si la capa no es vectorial.
+ * @private
+ * @param {IDEE.layer.Layer} layer Capa.
+ * @returns {Array<IDEE.Feature>} Entidades.
+ */
+const getAllFeatures = (layer) => (isFunction(layer?.getFeatures)
+  ? layer.getFeatures(true) ?? [] : []);
+
+/**
+ * Colores primario y secundario (primario oscuro) del token de diseño activo.
+ * @private
+ * @returns {Object} {primary, secondary}.
+ */
+const getTokenColors = () => {
+  const variables = readDesignTokenCssVariables();
+  return {
+    primary: variables['--idee-color-primary'],
+    secondary: variables['--idee-color-primary-dark'],
+  };
+};
+
+/**
  * Contador de instancias para generar identificadores DOM únicos.
  * @private
  */
@@ -71,6 +120,33 @@ const warn = (message) => {
  */
 const formatText = (text, values) => Object.keys(values)
   .reduce((result, key) => result.replace(`{${key}}`, values[key]), text ?? '');
+
+/**
+ * Normaliza la opción "track": objeto, cadena JSON (como llega por GET) o referencia a
+ * una capa.
+ * @private
+ * @param {Object|String|Number} value Valor de la opción.
+ * @returns {Object|null} {layer, feature, attributeParam} o null.
+ */
+const normalizeTrackOption = (value) => {
+  let option = value;
+  if (isString(value) && value.trim().startsWith('{')) {
+    try {
+      option = JSON.parse(value);
+    } catch (error) {
+      option = null;
+    }
+  }
+  if (isNullOrEmpty(option)) return null;
+  if (!isObject(option) || option instanceof Layer) return { layer: option };
+  const layer = option.layer ?? option.service;
+  if (isNullOrEmpty(layer)) return null;
+  return {
+    layer,
+    feature: option.feature,
+    attributeParam: isString(option.attributeParam) ? option.attributeParam : undefined,
+  };
+};
 
 /**
  * Convierte un instante en milisegundos a ISO 8601 (UTC).
@@ -1315,7 +1391,8 @@ class TimelineIntervals {
  * Controles de reproducción del panel: retroceso, play/pausa, avance y velocidad.
  * Lleva el bucle de reproducción y el estado de los botones; el movimiento lo hace el
  * modo, que implementa speedProperty, speedBase, canPlay(), stepForward(),
- * stepBackward(), isAtEnd(), rewind() y onPlaybackChange(playing).
+ * stepBackward(), isAtEnd(), rewind() y onPlaybackChange(playing), y opcionalmente
+ * formatSpeedOption(seconds, value) para el título de cada velocidad.
  *
  * Play desde el final vuelve a empezar; si no, avanza un paso en el acto. Después
  * avanza un paso cada host[speedProperty] segundos y se detiene en el último estado.
@@ -1392,19 +1469,35 @@ class TimelineTransport {
     const select = this.speedSelect;
     if (!select) return;
     const lang = getLang();
-    const { translation } = this.host_;
     select.textContent = '';
     this.speed_.options.forEach((option) => {
       const element = document.createElement('option');
       element.value = String(option.factor);
       element.textContent = `×${TimelineSpeed.formatNumber(option.factor, lang)}`;
-      element.title = formatText(translation.speed_option, {
-        seconds: TimelineSpeed.formatNumber(option.seconds, lang),
-      });
       element.selected = option === this.speed_.selected;
       select.appendChild(element);
     });
+    this.refreshSpeedTitles();
     select.addEventListener('change', () => this.setSpeed(select.value));
+  }
+
+  /**
+   * Escribe el título de cada velocidad: los segundos por paso y, si el modo lo indica,
+   * lo que avanza cada paso.
+   */
+  refreshSpeedTitles() {
+    const select = this.speedSelect;
+    if (!select) return;
+    const lang = getLang();
+    const { translation } = this.host_;
+    [...select.options].forEach((element, index) => {
+      const { seconds } = this.speed_.options[index];
+      const value = TimelineSpeed.formatNumber(seconds, lang);
+      // eslint-disable-next-line no-param-reassign
+      element.title = isFunction(this.mode_.formatSpeedOption)
+        ? this.mode_.formatSpeedOption(seconds, value)
+        : formatText(translation.speed_option, { seconds: value });
+    });
   }
 
   /**
@@ -1516,6 +1609,2012 @@ class TimelineTransport {
         // eslint-disable-next-line no-param-reassign
         element.disabled = disabled;
       });
+  }
+}
+
+/**
+ * @classdesc
+ * Recorrido normalizado, independiente del formato de origen y del motor cartográfico:
+ * segmentos de muestras {coordinate, time, index, segment, offset}, donde "index" es la
+ * posición en todo el recorrido y "offset" la distancia desde el inicio de su segmento,
+ * en unidades del mapa. Los segmentos nunca se unen entre sí.
+ *
+ * Las fechas solo se usan si todas son válidas y no decrecen; si no, el recorrido es
+ * secuencial y "timeIssue" indica el motivo ('mismatch', 'invalid', 'incomplete' o
+ * 'unordered'). Las coordenadas se copian: la entidad de origen no se modifica.
+ *
+ * @private
+ */
+class TrackPath {
+  /**
+   * @param {Object} options Opciones.
+   * @param {String} options.key Clave de la opción de origen.
+   * @param {String} options.label Nombre del recorrido.
+   * @param {IDEE.layer.Layer} options.layer Capa de origen.
+   * @param {Array<IDEE.Feature>} options.features Entidades de origen.
+   * @param {String} options.kind 'line', 'points' o 'picked'.
+   * @param {Array<Array<Object>>} options.segments Segmentos de muestras {coordinate, time}.
+   * @param {String|null} [options.timeIssue] Motivo por el que se descartan las fechas.
+   */
+  constructor({
+    key, label, layer, features, kind, segments, timeIssue = null,
+  }) {
+    this.key = key;
+    this.label = label;
+    this.source = { layer, features, kind };
+    this.timeIssue = timeIssue;
+    let index = 0;
+    this.segments = segments.map((samples, segment) => {
+      let offset = 0;
+      return samples.map((sample, position) => {
+        if (position > 0) {
+          const [x, y] = samples[position - 1].coordinate;
+          offset += Math.hypot(sample.coordinate[0] - x, sample.coordinate[1] - y);
+        }
+        const normalized = {
+          coordinate: sample.coordinate,
+          time: timeIssue ? null : sample.time,
+          index,
+          segment,
+          offset,
+        };
+        index += 1;
+        return normalized;
+      });
+    });
+    this.samples = this.segments.flat();
+    this.timed = this.samples.length > 1 && this.samples.every(({ time }) => time !== null);
+  }
+
+  /**
+   * Convierte un valor temporal en milisegundos.
+   * @param {*} value Valor.
+   * @returns {Number|null} Milisegundos, null si no hay valor o NaN si no es válido.
+   */
+  static toTime(value) {
+    if (isNullOrEmpty(value)) return null;
+    return TimelineDates.toTimestamp(value);
+  }
+
+  /**
+   * Indica si una coordenada tiene X e Y numéricas.
+   * @param {*} coordinate Coordenada.
+   * @returns {Boolean} Verdadero si es válida.
+   */
+  static isCoordinate(coordinate) {
+    return isArray(coordinate) && Number.isFinite(coordinate[0]) && Number.isFinite(coordinate[1]);
+  }
+
+  /**
+   * Motivo por el que no se pueden usar las fechas de unas muestras ordenadas.
+   * @param {Array<Number|null>} times Fechas en milisegundos.
+   * @param {Boolean} ordered Exige que no decrezcan.
+   * @returns {String|null} Motivo o null si se pueden usar (o no hay ninguna).
+   */
+  static checkTimes(times, ordered) {
+    if (times.every((time) => time === null)) return null;
+    if (times.some((time) => Number.isNaN(time))) return 'invalid';
+    if (times.some((time) => time === null)) return 'incomplete';
+    if (ordered && times.some((time, index) => index > 0 && time < times[index - 1])) {
+      return 'unordered';
+    }
+    return null;
+  }
+
+  /**
+   * Fechas por vértice de una línea (atributo coordTimes: una lista por segmento en
+   * MultiLineString y una lista plana en LineString).
+   * @param {IDEE.Feature} feature Línea.
+   * @param {Array<Array>} parts Coordenadas por segmento.
+   * @param {Boolean} multi Verdadero si es MultiLineString.
+   * @returns {Object} {times, issue}: fechas por segmento y 'mismatch' si no encajan.
+   */
+  static readLineTimes(feature, parts, multi) {
+    const empty = parts.map((part) => part.map(() => null));
+    const coordTimes = feature.getAttribute('coordTimes');
+    if (isNullOrEmpty(coordTimes)) return { times: empty, issue: null };
+    const perSegment = multi ? coordTimes : [coordTimes];
+    const aligned = isArray(perSegment) && perSegment.length === parts.length
+      && parts.every((part, s) => isArray(perSegment[s]) && perSegment[s].length === part.length);
+    if (!aligned) return { times: empty, issue: 'mismatch' };
+    return {
+      times: parts.map((part, s) => part
+        .map((coordinate, i) => TrackPath.toTime(perSegment[s][i]))),
+      issue: null,
+    };
+  }
+
+  /**
+   * Recorrido de una línea: sus vértices en orden, un segmento por parte. Descarta las
+   * coordenadas no válidas y los segmentos vacíos.
+   * @param {IDEE.Feature} feature LineString o MultiLineString.
+   * @param {Object} options {key, label, layer}.
+   * @returns {TrackPath} Recorrido.
+   */
+  static fromLine(feature, { key, label, layer }) {
+    const geometry = feature.getGeometry();
+    const multi = geometry?.type === 'MultiLineString';
+    const parts = (multi ? geometry.coordinates : [geometry?.coordinates])
+      .map((part) => (isArray(part) ? part : []));
+    const { times, issue } = TrackPath.readLineTimes(feature, parts, multi);
+    const segments = parts
+      .map((part, s) => part
+        .map((coordinate, i) => ({ coordinate, time: times[s][i] }))
+        .filter(({ coordinate }) => TrackPath.isCoordinate(coordinate))
+        .map(({ coordinate, time }) => ({ coordinate: [coordinate[0], coordinate[1]], time })))
+      .filter((segment) => segment.length > 0);
+    const allTimes = segments.flat().map(({ time }) => time);
+    return new TrackPath({
+      key,
+      label,
+      layer,
+      features: [feature],
+      kind: 'line',
+      segments,
+      timeIssue: issue ?? TrackPath.checkTimes(allTimes, true),
+    });
+  }
+
+  /**
+   * Recorrido que une puntos en un solo segmento: por su atributo temporal si todos
+   * tienen una fecha válida y, si no, en el orden de la capa. No se inventan fechas.
+   * @param {Array<IDEE.Feature>} features Puntos en el orden de la capa.
+   * @param {Object} options {key, label, layer, kind, attributeParam}.
+   * @returns {TrackPath} Recorrido.
+   */
+  static fromPoints(features, {
+    key, label, layer, kind = 'points', attributeParam = 'time',
+  }) {
+    const items = features
+      .map((feature, order) => ({
+        feature,
+        order,
+        coordinate: feature.getGeometry()?.coordinates,
+        time: TrackPath.toTime(feature.getAttribute(attributeParam)),
+      }))
+      .filter(({ coordinate }) => TrackPath.isCoordinate(coordinate));
+    const issue = TrackPath.checkTimes(items.map(({ time }) => time), false);
+    const timed = issue === null && items.length > 0 && items.every(({ time }) => time !== null);
+    if (timed) items.sort((a, b) => (a.time - b.time) || (a.order - b.order));
+    const samples = items.map(({ coordinate, time }) => ({
+      coordinate: [coordinate[0], coordinate[1]],
+      time: timed ? time : null,
+    }));
+    return new TrackPath({
+      key,
+      label,
+      layer,
+      features: items.map(({ feature }) => feature),
+      kind,
+      segments: samples.length > 0 ? [samples] : [],
+      timeIssue: issue,
+    });
+  }
+
+  /**
+   * Número de posiciones.
+   * @returns {Number} Posiciones.
+   */
+  get size() {
+    return this.samples.length;
+  }
+
+  /**
+   * Primera fecha del recorrido.
+   * @returns {Number|null} Milisegundos o null si es secuencial.
+   */
+  get startTime() {
+    return this.timed ? this.samples[0].time : null;
+  }
+
+  /**
+   * Última fecha del recorrido.
+   * @returns {Number|null} Milisegundos o null si es secuencial.
+   */
+  get endTime() {
+    return this.timed ? this.samples[this.samples.length - 1].time : null;
+  }
+
+  /**
+   * Duración del recorrido.
+   * @returns {Number|null} Milisegundos o null si es secuencial.
+   */
+  get duration() {
+    return this.timed ? this.endTime - this.startTime : null;
+  }
+
+  /**
+   * Longitud de un segmento.
+   * @param {Number} segment Índice del segmento.
+   * @returns {Number} Longitud en unidades del mapa.
+   */
+  segmentLength(segment) {
+    const samples = this.segments[segment] ?? [];
+    return samples.length > 0 ? samples[samples.length - 1].offset : 0;
+  }
+
+  /**
+   * Longitud total, sin contar los huecos entre segmentos.
+   * @returns {Number} Longitud en unidades del mapa.
+   */
+  get length() {
+    return this.segments
+      .reduce((total, samples, segment) => total + this.segmentLength(segment), 0);
+  }
+
+  /**
+   * Coordenadas por segmento.
+   * @returns {Array<Array<Array<Number>>>} Segmentos.
+   */
+  toCoordinates() {
+    return this.segments.map((samples) => samples.map(({ coordinate }) => coordinate));
+  }
+}
+
+/**
+ * @classdesc
+ * Posición de reproducción sobre un recorrido. Un recorrido de n posiciones tiene n−1
+ * pasos: en uno secuencial cada paso es la posición siguiente; en uno temporal cada
+ * paso avanza duración/(n−1) y la posición se interpola por tiempo dentro de su
+ * segmento, nunca a través del hueco entre dos segmentos. También calcula la posición
+ * en un instante y un tramo [inicio, fin] dados por otra línea de tiempo.
+ *
+ * @private
+ */
+class TrackPlayback {
+  /**
+   * @param {TrackPath} path Recorrido.
+   */
+  constructor(path) {
+    this.path_ = path;
+    this.step_ = 0;
+  }
+
+  /**
+   * Número de pasos.
+   * @returns {Number} Pasos.
+   */
+  get steps() {
+    return Math.max(0, this.path_.size - 1);
+  }
+
+  /**
+   * Paso actual.
+   * @returns {Number} Paso.
+   */
+  get step() {
+    return this.step_;
+  }
+
+  /**
+   * Tiempo del recorrido que avanza cada paso.
+   * @returns {Number|null} Milisegundos o null si es secuencial.
+   */
+  get interval() {
+    return this.path_.timed && this.steps > 0 ? this.path_.duration / this.steps : null;
+  }
+
+  /**
+   * Instante de un paso.
+   * @param {Number} step Paso.
+   * @returns {Number|null} Milisegundos o null si es secuencial.
+   */
+  timeAtStep(step) {
+    if (!this.path_.timed) return null;
+    return step >= this.steps ? this.path_.endTime : this.path_.startTime + step * this.interval;
+  }
+
+  /**
+   * Va a un paso.
+   * @param {Number} step Paso.
+   * @returns {Boolean} Verdadero si ha cambiado.
+   */
+  seek(step) {
+    const value = Math.min(this.steps, Math.max(0, Math.round(Number(step) || 0)));
+    const moved = value !== this.step_;
+    this.step_ = value;
+    return moved;
+  }
+
+  /**
+   * Avanza un paso.
+   * @returns {Boolean} Verdadero si se ha movido.
+   */
+  stepForward() {
+    return this.step_ < this.steps && this.seek(this.step_ + 1);
+  }
+
+  /**
+   * Retrocede un paso.
+   * @returns {Boolean} Verdadero si se ha movido.
+   */
+  stepBackward() {
+    return this.step_ > 0 && this.seek(this.step_ - 1);
+  }
+
+  /**
+   * Vuelve al principio.
+   * @returns {Boolean} Verdadero si hay recorrido que reproducir.
+   */
+  rewind() {
+    this.step_ = 0;
+    return this.steps > 0;
+  }
+
+  /**
+   * Indica si está en la última posición.
+   * @returns {Boolean} Verdadero en el final.
+   */
+  isAtEnd() {
+    return this.step_ >= this.steps;
+  }
+
+  /**
+   * Posición del paso actual.
+   * @returns {Object|null} Posición.
+   */
+  current() {
+    return this.positionAtStep(this.step_);
+  }
+
+  /**
+   * Posición de un paso.
+   * @param {Number} step Paso.
+   * @returns {Object|null} Posición.
+   */
+  positionAtStep(step) {
+    if (this.path_.timed) return this.positionAtTime(this.timeAtStep(step));
+    return this.positionAtSample(step);
+  }
+
+  /**
+   * Posición en una muestra (recorrido secuencial).
+   * @param {Number} index Índice de la muestra.
+   * @returns {Object|null} Posición.
+   */
+  positionAtSample(index) {
+    const { samples, segments } = this.path_;
+    const sample = samples[Math.min(Math.max(0, index), samples.length - 1)];
+    if (!sample) return null;
+    const travelled = segments.map((segment, s) => {
+      if (s > sample.segment) return [];
+      return segment.filter((item) => item.index <= sample.index)
+        .map(({ coordinate }) => coordinate);
+    });
+    const fraction = this.steps > 0 ? sample.index / this.steps : 1;
+    return this.describe(sample, 0, null, travelled, fraction);
+  }
+
+  /**
+   * Posición en un instante y tramo realizado desde "init" (o desde el principio).
+   * @param {Number} end Instante en milisegundos.
+   * @param {Number} [init] Inicio del tramo realizado en milisegundos.
+   * @returns {Object|null} Posición o null si el recorrido es secuencial.
+   */
+  positionAtTime(end, init) {
+    const path = this.path_;
+    if (!path.timed || !Number.isFinite(end)) return null;
+    if (end < path.startTime) {
+      return {
+        state: 'before',
+        coordinate: null,
+        heading: null,
+        segment: 0,
+        segmentFraction: 0,
+        fraction: 0,
+        index: 0,
+        time: end,
+        travelled: [],
+      };
+    }
+    const time = Math.min(end, path.endTime);
+    const start = Number.isFinite(init) ? Math.max(init, path.startTime) : path.startTime;
+    const from = Math.min(time, start);
+    const { sample, ratio } = this.locate(time);
+    const fraction = path.duration > 0 ? (time - path.startTime) / path.duration : 1;
+    return this.describe(sample, ratio, time, this.slice(from, time), fraction);
+  }
+
+  /**
+   * Última muestra no posterior a un instante y fracción hasta la siguiente del mismo
+   * segmento (0 en el hueco entre segmentos).
+   * @param {Number} time Milisegundos.
+   * @returns {Object} {sample, ratio}.
+   */
+  locate(time) {
+    const { samples } = this.path_;
+    const after = samples.findIndex((sample) => sample.time > time);
+    const sample = samples[after === -1 ? samples.length - 1 : Math.max(0, after - 1)];
+    const next = samples[sample.index + 1];
+    if (!next || next.segment !== sample.segment) return { sample, ratio: 0 };
+    return { sample, ratio: (time - sample.time) / (next.time - sample.time) };
+  }
+
+  /**
+   * Coordenadas recorridas entre dos instantes, por segmento.
+   * @param {Number} from Inicio en milisegundos.
+   * @param {Number} to Fin en milisegundos.
+   * @returns {Array<Array<Array<Number>>>} Tramo por segmento.
+   */
+  slice(from, to) {
+    return this.path_.segments.map((segment) => {
+      const first = segment[0].time;
+      const last = segment[segment.length - 1].time;
+      if (to < first || from > last) return [];
+      const start = Math.max(from, first);
+      const end = Math.min(to, last);
+      const inner = segment.filter(({ time }) => time > start && time < end)
+        .map(({ coordinate }) => coordinate);
+      return [
+        TrackPlayback.coordinateAt(segment, start),
+        ...inner,
+        TrackPlayback.coordinateAt(segment, end),
+      ];
+    });
+  }
+
+  /**
+   * Coordenada de un instante dentro de un segmento, interpolada por tiempo.
+   * @param {Array<Object>} segment Muestras del segmento.
+   * @param {Number} time Milisegundos.
+   * @returns {Array<Number>} Coordenada.
+   */
+  static coordinateAt(segment, time) {
+    const next = segment.findIndex((sample) => sample.time >= time);
+    if (next <= 0) return segment[next === 0 ? 0 : segment.length - 1].coordinate;
+    if (segment[next].time === time) return segment[next].coordinate;
+    const previous = segment[next - 1];
+    const ratio = (time - previous.time) / (segment[next].time - previous.time);
+    return TrackPlayback.interpolate(previous.coordinate, segment[next].coordinate, ratio);
+  }
+
+  /**
+   * Punto intermedio entre dos coordenadas.
+   * @param {Array<Number>} from Origen.
+   * @param {Array<Number>} to Destino.
+   * @param {Number} ratio Fracción de 0 a 1.
+   * @returns {Array<Number>} Coordenada.
+   */
+  static interpolate(from, to, ratio) {
+    return [from[0] + (to[0] - from[0]) * ratio, from[1] + (to[1] - from[1]) * ratio];
+  }
+
+  /**
+   * Sentido de avance entre dos coordenadas.
+   * @param {Array<Number>} from Origen.
+   * @param {Array<Number>} to Destino.
+   * @returns {Number|null} Ángulo en radianes desde el este, antihorario.
+   */
+  static heading(from, to) {
+    if (!from || !to) return null;
+    const dx = to[0] - from[0];
+    const dy = to[1] - from[1];
+    return dx === 0 && dy === 0 ? null : Math.atan2(dy, dx);
+  }
+
+  /**
+   * Describe una posición: coordenada (interpolada hacia la muestra siguiente del mismo
+   * segmento), sentido, segmento, fracciones y tramo realizado.
+   * @param {Object} sample Muestra.
+   * @param {Number} ratio Fracción hacia la muestra siguiente.
+   * @param {Number|null} time Instante.
+   * @param {Array} travelled Tramo realizado por segmento.
+   * @param {Number} fraction Progreso de 0 a 1.
+   * @returns {Object} Posición.
+   */
+  describe(sample, ratio, time, travelled, fraction) {
+    const path = this.path_;
+    const segment = path.segments[sample.segment];
+    const local = sample.index - segment[0].index;
+    const next = segment[local + 1];
+    const previous = segment[local - 1];
+    const moving = next && ratio > 0;
+    const coordinate = moving
+      ? TrackPlayback.interpolate(sample.coordinate, next.coordinate, ratio) : sample.coordinate;
+    const offset = moving ? sample.offset + (next.offset - sample.offset) * ratio : sample.offset;
+    const length = path.segmentLength(sample.segment);
+    const progress = Math.min(1, Math.max(0, fraction));
+    return {
+      state: progress >= 1 ? 'end' : 'inside',
+      coordinate,
+      heading: next
+        ? TrackPlayback.heading(sample.coordinate, next.coordinate)
+        : TrackPlayback.heading(previous?.coordinate, sample.coordinate),
+      segment: sample.segment,
+      segmentFraction: length > 0 ? offset / length : 0,
+      fraction: progress,
+      index: sample.index,
+      time,
+      travelled,
+    };
+  }
+}
+
+/**
+ * @classdesc
+ * Fuentes de recorrido: capas del mapa con líneas o puntos que la implementación admite
+ * (supportsTrackSource) y, para cada capa, sus opciones: cada línea, todos sus puntos o
+ * los puntos elegidos en el mapa. El recorrido solo se construye para la opción
+ * elegida.
+ *
+ * @private
+ */
+class TrackSources {
+  /**
+   * @param {IDEE.control.Timeline} host Control.
+   * @param {TimelineLayers} layers Capas del control.
+   */
+  constructor(host, layers) {
+    this.host_ = host;
+    this.layers_ = layers;
+  }
+
+  /**
+   * Indica si la implementación admite la capa como origen de recorridos.
+   * @param {IDEE.layer.Layer} layer Capa.
+   * @returns {Boolean} Verdadero si la admite.
+   */
+  supports(layer) {
+    const impl = this.layers_.getImpl();
+    return layer instanceof Layer && isFunction(impl?.supportsTrackSource)
+      && impl.supportsTrackSource(layer) === true;
+  }
+
+  /**
+   * Capas del mapa que admiten recorridos, en el orden del visualizador.
+   * @param {Function} [keep] Indica si se conserva una capa sin opciones.
+   * @returns {Array<IDEE.layer.Layer>} Capas.
+   */
+  getLayers(keep = () => false) {
+    const layers = this.layers_.mapLayers()
+      .filter((layer) => this.supports(layer)
+        && (this.getOptions(layer).length > 0 || keep(layer)));
+    return this.layers_.sortByViewer(layers);
+  }
+
+  /**
+   * Nombre de una capa con su posición en el visualizador.
+   * @param {IDEE.layer.Layer} layer Capa.
+   * @returns {String} Texto.
+   */
+  getLabel(layer) {
+    const position = this.layers_.positionOf(layer);
+    const name = layer.legend || layer.name;
+    return position === null ? name : `[${position}] ${name}`;
+  }
+
+  /**
+   * Opciones de recorrido de una capa.
+   * @param {IDEE.layer.Layer} layer Capa.
+   * @param {Array<IDEE.Feature>} [picked] Puntos elegidos en el mapa.
+   * @returns {Array<Object>} Opciones {key, kind, label, features}.
+   */
+  getOptions(layer, picked = []) {
+    const { translation } = this.host_;
+    const features = getAllFeatures(layer);
+    const options = [];
+    features.forEach((feature, order) => {
+      if (!isLineFeature(feature)) return;
+      const name = feature.getAttribute('name');
+      const id = feature.getId();
+      options.push({
+        key: `line:${isNullOrEmpty(id) ? `#${order}` : id}`,
+        kind: 'line',
+        label: isNullOrEmpty(name)
+          ? formatText(translation.track_unnamed, { n: options.length + 1 }) : String(name),
+        features: [feature],
+      });
+    });
+    const points = features.filter(isPointFeature);
+    if (points.length > 0) {
+      options.push({
+        key: 'points',
+        kind: 'points',
+        label: formatText(translation.track_points_all, { count: points.length }),
+        features: points,
+      });
+    }
+    const chosen = points.filter((feature) => picked.includes(feature));
+    if (chosen.length > 0) {
+      options.push({
+        key: 'picked',
+        kind: 'picked',
+        label: formatText(translation.track_points_picked, { count: chosen.length }),
+        features: chosen,
+      });
+    }
+    return options;
+  }
+
+  /**
+   * Opción por defecto: la primera línea con fechas por vértice, la primera línea o los
+   * puntos de la capa.
+   * @param {Array<Object>} options Opciones.
+   * @returns {Object|null} Opción.
+   */
+  static getDefault(options) {
+    const lines = options.filter(({ kind }) => kind === 'line');
+    return lines.find(({ features }) => !isNullOrEmpty(features[0].getAttribute('coordTimes')))
+      ?? lines[0] ?? options.find(({ kind }) => kind === 'points') ?? null;
+  }
+
+  /**
+   * Opción que corresponde a unos identificadores de entidad: una línea, o los puntos
+   * indicados de la capa.
+   * @param {IDEE.layer.Layer} layer Capa.
+   * @param {String|Number|Array} reference Identificador o identificadores.
+   * @returns {Object} {option, picked}.
+   */
+  findByIds(layer, reference) {
+    const ids = [].concat(reference).map(String);
+    const features = getAllFeatures(layer);
+    const line = features.find((feature) => isLineFeature(feature)
+      && ids.includes(String(feature.getId())));
+    if (line) {
+      return {
+        option: this.getOptions(layer).find(({ features: items }) => items[0] === line),
+        picked: [],
+      };
+    }
+    const picked = features.filter((feature) => isPointFeature(feature)
+      && ids.includes(String(feature.getId())));
+    return {
+      option: this.getOptions(layer, picked).find(({ key }) => key === 'picked') ?? null,
+      picked,
+    };
+  }
+
+  /**
+   * Construye el recorrido de una opción.
+   * @param {IDEE.layer.Layer} layer Capa.
+   * @param {Object} option Opción.
+   * @param {String} [attributeParam] Atributo temporal de los puntos.
+   * @returns {TrackPath} Recorrido.
+   */
+  static build(layer, option, attributeParam) {
+    const context = { key: option.key, label: option.label, layer };
+    return option.kind === 'line'
+      ? TrackPath.fromLine(option.features[0], context)
+      : TrackPath.fromPoints(option.features, { ...context, kind: option.kind, attributeParam });
+  }
+}
+
+/**
+ * @classdesc
+ * Adaptador de la representación cartográfica del recorrido: traslada a la
+ * implementación (showTrack, updateTrack, hideTrack) el recorrido completo y la
+ * posición, con los colores primario y primario oscuro del token de diseño activo.
+ * Conserva el último estado para redibujarlo cuando la implementación está lista.
+ *
+ * @private
+ */
+class TrackRenderer {
+  /**
+   * @param {TimelineLayers} layers Capas del control (acceso a la implementación).
+   */
+  constructor(layers) {
+    this.layers_ = layers;
+    this.path_ = null;
+    this.position_ = null;
+    this.shown_ = false;
+  }
+
+  /**
+   * Datos de la posición que necesita la implementación.
+   * @param {Object|null} position Posición.
+   * @returns {Object} {coordinate, travelled, heading}.
+   */
+  static toView(position) {
+    return {
+      coordinate: position?.coordinate ?? null,
+      travelled: position?.travelled ?? [],
+      heading: position?.heading ?? null,
+    };
+  }
+
+  /**
+   * Dibuja un recorrido nuevo.
+   * @param {TrackPath} path Recorrido.
+   */
+  show(path) {
+    this.path_ = path;
+    this.position_ = null;
+    this.draw();
+  }
+
+  /**
+   * Actualiza la posición.
+   * @param {Object|null} position Posición.
+   */
+  update(position) {
+    this.position_ = position;
+    if (this.shown_) this.layers_.getImpl().updateTrack(TrackRenderer.toView(position));
+    else if (this.path_) this.draw();
+  }
+
+  /**
+   * Redibuja el estado actual (por ejemplo, cuando la implementación ya está en el mapa).
+   */
+  draw() {
+    const impl = this.layers_.getImpl();
+    if (!this.path_) {
+      impl?.hideTrack?.();
+      this.shown_ = false;
+      return;
+    }
+    this.shown_ = isFunction(impl?.showTrack)
+      && impl.showTrack(this.path_.toCoordinates(), { colors: getTokenColors() }) === true;
+    if (this.shown_) impl.updateTrack(TrackRenderer.toView(this.position_));
+  }
+
+  /**
+   * Retira el recorrido.
+   */
+  hide() {
+    this.path_ = null;
+    this.position_ = null;
+    this.draw();
+  }
+}
+
+/**
+ * @classdesc
+ * Perfil topográfico del recorrido: pide las altitudes de cada segmento a
+ * IDEE.elevation, de modo que los huecos entre segmentos no se muestrean, y la
+ * implementación dibuja el panel. El cursor sigue la posición de reproducción. Una
+ * respuesta de una selección anterior, o que llega tras cerrar o destruir, se descarta.
+ * Estados: 'idle', 'loading', 'ready', 'error' y 'no_data'.
+ *
+ * @private
+ */
+class TrackProfile {
+  /**
+   * @param {IDEE.control.Timeline} host Control.
+   * @param {TimelineLayers} layers Capas del control (acceso a la implementación).
+   */
+  constructor(host, layers) {
+    this.host_ = host;
+    this.layers_ = layers;
+    this.token_ = 0;
+    this.open_ = false;
+    this.path_ = null;
+    this.position_ = null;
+    this.status_ = 'idle';
+    this.subscribers_ = [];
+  }
+
+  /**
+   * Separación entre los puntos del perfil: la longitud entre 100, de 10 a 1000 m.
+   * @param {Number} length Longitud en unidades del mapa.
+   * @param {String} units Unidades de la proyección.
+   * @returns {Number} Metros.
+   */
+  static getSampling(length, units) {
+    const meters = ['d', 'degrees'].includes(units) ? length * 111320 : length;
+    return Math.min(1000, Math.max(10, Math.round(meters / 100)));
+  }
+
+  /**
+   * Sigue el recorrido de un controlador.
+   * @param {TrackController} track Controlador del recorrido.
+   */
+  bind(track) {
+    track.subscribe((type) => {
+      if (type === 'source') this.setPath(track.getPath(), track.getPosition());
+      if (type === 'position') this.moveTo(track.getPosition());
+    });
+  }
+
+  /**
+   * Suscribe una función a los cambios de estado.
+   * @param {Function} subscriber Función.
+   */
+  subscribe(subscriber) {
+    this.subscribers_.push(subscriber);
+  }
+
+  /**
+   * Cambia el estado y avisa.
+   * @param {String} status Estado.
+   */
+  setStatus(status) {
+    this.status_ = status;
+    this.subscribers_.forEach((subscriber) => subscriber(status));
+  }
+
+  /**
+   * Estado actual.
+   * @returns {String} Estado.
+   */
+  get status() {
+    return this.status_;
+  }
+
+  /**
+   * Indica si el panel está abierto o cargándose.
+   * @returns {Boolean} Verdadero si lo está.
+   */
+  isActive() {
+    return this.open_ || this.status_ === 'loading';
+  }
+
+  /**
+   * Indica si la implementación puede mostrar perfiles.
+   * @returns {Boolean} Verdadero si puede.
+   */
+  isSupported() {
+    const impl = this.layers_.getImpl();
+    return isFunction(impl?.supportsTopographicProfile)
+      && impl.supportsTopographicProfile() === true;
+  }
+
+  /**
+   * Indica si el recorrido actual tiene perfil: algún segmento con dos posiciones.
+   * @returns {Boolean} Verdadero si lo tiene.
+   */
+  isAvailable() {
+    return this.isSupported() && (this.path_?.segments ?? []).some((samples) => samples.length > 1);
+  }
+
+  /**
+   * Cambia de recorrido: si el perfil estaba abierto, se carga el del nuevo.
+   * @param {TrackPath|null} path Recorrido.
+   * @param {Object|null} position Posición.
+   */
+  setPath(path, position) {
+    const active = this.isActive();
+    this.path_ = path;
+    this.position_ = position;
+    if (active && this.isAvailable()) this.load();
+    else this.close();
+  }
+
+  /**
+   * Abre o cierra el perfil.
+   * @returns {Promise} Consulta.
+   */
+  toggle() {
+    if (this.isActive()) {
+      this.close();
+      return Promise.resolve();
+    }
+    return this.load();
+  }
+
+  /**
+   * Pide las altitudes del recorrido y muestra su perfil.
+   * @returns {Promise} Consulta.
+   */
+  load() {
+    const path = this.path_;
+    if (!path || !this.isAvailable()) return Promise.resolve();
+    this.token_ += 1;
+    const token = this.token_;
+    const impl = this.layers_.getImpl();
+    if (this.open_) impl.hideTopographicProfile();
+    this.open_ = false;
+    this.setStatus('loading');
+    const projection = this.host_.map.getProjection();
+    const parts = path.segments.filter((samples) => samples.length > 1);
+    const distance = TrackProfile.getSampling(path.length, projection.units);
+    return Promise.all(parts.map((samples) => Elevation.getProfile(
+      samples.map(({ coordinate }) => coordinate),
+      projection.code.split(':')[1],
+      { distance },
+    ))).then((results) => {
+      if (token !== this.token_) return;
+      const segments = results.map((values) => (isArray(values) ? values : [])
+        .map(([x, y, z]) => [Number(x), Number(y), Number(z)])
+        .filter((point) => point.every(Number.isFinite) && point[2] !== -9999)
+        .map(([x, y, z]) => [x, y, Number(z.toFixed(2))]));
+      if (segments.some((points) => points.length < 2)) {
+        this.setStatus('no_data');
+        return;
+      }
+      const colors = getTokenColors();
+      this.open_ = impl.showTopographicProfile(segments, {
+        title: `${getValue('profile').title}: ${path.label}`,
+        colors: { line: colors.primary, marker: colors.secondary },
+        onClose: () => this.onClosed(),
+      }) === true;
+      this.setStatus(this.open_ ? 'ready' : 'idle');
+      this.moveTo(this.position_);
+    }).catch(() => {
+      if (token !== this.token_) return;
+      this.setStatus('error');
+      toast.error(getValue('profile').error);
+    });
+  }
+
+  /**
+   * Coloca el cursor del perfil en una posición del recorrido.
+   * @param {Object|null} position Posición.
+   */
+  moveTo(position) {
+    this.position_ = position;
+    if (!this.open_ || !position?.coordinate || !this.path_) return;
+    const { segments } = this.path_;
+    if ((segments[position.segment]?.length ?? 0) < 2) return;
+    const part = segments.slice(0, position.segment).filter((samples) => samples.length > 1).length;
+    this.layers_.getImpl().setTopographicProfilePosition({
+      segment: part,
+      fraction: position.segmentFraction,
+    });
+  }
+
+  /**
+   * El usuario ha cerrado el panel.
+   */
+  onClosed() {
+    this.token_ += 1;
+    this.open_ = false;
+    this.setStatus('idle');
+  }
+
+  /**
+   * Cierra el perfil y descarta las consultas pendientes.
+   */
+  close() {
+    this.token_ += 1;
+    if (this.open_) this.layers_.getImpl()?.hideTopographicProfile?.();
+    this.open_ = false;
+    if (this.status_ !== 'idle') this.setStatus('idle');
+  }
+
+  /**
+   * Cierra el perfil al destruir el control.
+   */
+  destroy() {
+    this.token_ += 1;
+    this.layers_.getImpl()?.hideTopographicProfile?.();
+    this.open_ = false;
+    this.subscribers_ = [];
+  }
+}
+
+/**
+ * @classdesc
+ * Selección de entidades con clics en el mapa. Mientras está activa, desactiva el
+ * manejador de entidades del mapa (sin popups), marca el cursor y muestra una
+ * indicación en el panel. Cada clic entrega la entidad bajo el cursor (los puntos tienen
+ * preferencia sobre las líneas que pasan por ellos); la selección termina cuando onPick
+ * no devuelve true, con Escape o con stop().
+ *
+ * @private
+ */
+class TimelineFeaturePicker {
+  /**
+   * @param {IDEE.control.Timeline} host Control.
+   * @param {Object} context Colaboradores del control.
+   * @param {Function} context.showNotice Muestra un aviso en el panel.
+   * @param {Function} context.hideNotice Oculta el aviso.
+   */
+  constructor(host, context) {
+    this.host_ = host;
+    this.context_ = context;
+    this.active_ = null;
+  }
+
+  /**
+   * Indica si hay una selección en curso.
+   * @returns {Boolean} Verdadero si está activa.
+   */
+  isActive() {
+    return this.active_ !== null;
+  }
+
+  /**
+   * Inicia una selección y cancela la anterior.
+   * @param {Object} options Opciones.
+   * @param {Array<IDEE.layer.Layer>} options.layers Capas en las que se busca.
+   * @param {Function} options.accept Indica si una entidad es válida.
+   * @param {String} options.hint Indicación para el panel.
+   * @param {Function} options.onPick Recibe la entidad y su capa; true para seguir.
+   * @param {Function} [options.onStop] Se llama al terminar la selección.
+   * @returns {Boolean} Verdadero si se ha iniciado.
+   */
+  start({
+    layers, accept, hint, onPick, onStop,
+  }) {
+    this.stop();
+    const { map } = this.host_;
+    if (isNullOrEmpty(map)) return false;
+    const handler = map.getFeatureHandler();
+    const state = {
+      layers, accept, onPick, onStop, restoreHandler: false,
+    };
+    const onDeactivated = () => { state.restoreHandler = true; };
+    handler.on(EventType.DEACTIVATED, onDeactivated);
+    handler.deactivate();
+    handler.un(EventType.DEACTIVATED, onDeactivated);
+    state.onClick = (evt) => this.onClick(evt);
+    state.onKeyDown = ({ key }) => {
+      if (key === 'Escape') this.stop();
+    };
+    map.on(EventType.CLICK, state.onClick);
+    document.addEventListener('keydown', state.onKeyDown);
+    map.getContainer()?.classList.add('m-timeline-picking');
+    this.context_.showNotice(hint);
+    this.active_ = state;
+    return true;
+  }
+
+  /**
+   * Entrega la entidad válida bajo el clic, si la hay.
+   * @param {Object} evt Evento CLICK del mapa.
+   */
+  onClick(evt) {
+    const state = this.active_;
+    if (!state) return;
+    const impl = this.host_.map.getFeatureHandler().getImpl();
+    let picked = null;
+    state.layers.some((layer) => {
+      const features = (impl.getFeaturesByLayer(evt, layer) ?? []).filter(state.accept);
+      const feature = features.find(isPointFeature) ?? features[0];
+      if (feature) picked = { feature, layer };
+      return Boolean(feature);
+    });
+    if (!picked) return;
+    if (state.onPick(picked.feature, picked.layer) !== true) this.stop();
+  }
+
+  /**
+   * Termina la selección en curso y restaura el mapa.
+   */
+  stop() {
+    const state = this.active_;
+    if (!state) return;
+    this.active_ = null;
+    const { map } = this.host_;
+    if (map) {
+      map.un(EventType.CLICK, state.onClick);
+      map.getContainer()?.classList.remove('m-timeline-picking');
+      if (state.restoreHandler) map.getFeatureHandler().activate();
+    }
+    document.removeEventListener('keydown', state.onKeyDown);
+    this.context_.hideNotice();
+    if (isFunction(state.onStop)) state.onStop();
+  }
+}
+
+/**
+ * @classdesc
+ * Subsistema de seguimiento de trayectorias: capa y opción de origen, recorrido
+ * normalizado (TrackPath), posición (TrackPlayback) y su representación (TrackRenderer).
+ * No tiene reloj propio.
+ *
+ * - Como conductor (modo "track", mode.drivesTrack) el transporte común le pide los
+ *   pasos: canPlay, stepForward, stepBackward, rewind e isAtEnd.
+ * - Como complemento (resto de modos) sigue los cambios del control: si el modo da una
+ *   referencia temporal (getTrackTime) y el recorrido tiene fechas que se solapan con su
+ *   dominio (getTimeDomain), la posición es la del instante; si no, el recorrido se
+ *   muestra completo y su posición solo cambia a mano (seek).
+ *
+ * Avisa a sus suscriptores con 'sources' (capas u opciones), 'source' (recorrido) y
+ * 'position', y lanza CHANGE con 'track' y 'position'.
+ *
+ * @private
+ */
+class TrackController {
+  /**
+   * @param {IDEE.control.Timeline} host Control.
+   * @param {Object} mode Modo del control.
+   * @param {Object} context Colaboradores del control.
+   * @param {TimelineLayers} context.layers Capas del control.
+   * @param {TimelineFeaturePicker} context.picker Selección por clic.
+   * @param {Function} context.fireChange Notifica un cambio de estado.
+   * @param {Function} context.pausePlayback Pausa la reproducción.
+   */
+  constructor(host, mode, context) {
+    this.host_ = host;
+    this.mode_ = mode;
+    this.context_ = context;
+    this.layers_ = context.layers;
+    this.picker_ = context.picker;
+    this.sources_ = new TrackSources(host, context.layers);
+    this.renderer_ = new TrackRenderer(context.layers);
+    this.driver_ = mode.drivesTrack === true;
+    this.config_ = host.track;
+    this.pending_ = !isNullOrEmpty(this.config_?.layer);
+    this.configLayer_ = null;
+    this.attaching_ = false;
+    this.layer_ = null;
+    this.option_ = null;
+    this.picked_ = [];
+    this.path_ = null;
+    this.playback_ = null;
+    this.position_ = null;
+    this.synchronized_ = false;
+    this.watched_ = [];
+    this.subscribers_ = [];
+    this.bound_ = false;
+    this.onChange_ = (state) => this.onChange(state);
+    this.onAdded_ = () => this.onMapChange();
+    this.onRemoved_ = () => this.onMapChange();
+    this.onLoad_ = (layer) => () => this.onLoad(layer);
+    this.onAddedToMap_ = () => this.renderer_.draw();
+  }
+
+  /**
+   * Indica si el recorrido es el mecanismo principal de navegación (modo "track").
+   * @returns {Boolean} Verdadero en el modo "track".
+   */
+  get driver() {
+    return this.driver_;
+  }
+
+  /**
+   * Empieza a escuchar el control y el mapa y aplica la selección inicial.
+   */
+  bind() {
+    const { map } = this.host_;
+    this.host_.on(EventType.CHANGE, this.onChange_);
+    this.host_.on(EventType.ADDED_TO_MAP, this.onAddedToMap_);
+    map?.on(EventType.ADDED_LAYER, this.onAdded_);
+    map?.on(EventType.REMOVED_LAYER, this.onRemoved_);
+    this.bound_ = true;
+    this.watch();
+    this.start();
+  }
+
+  /**
+   * Suscribe una función a los cambios: recibe 'sources', 'source' o 'position'.
+   * @param {Function} subscriber Función.
+   */
+  subscribe(subscriber) {
+    this.subscribers_.push(subscriber);
+  }
+
+  /**
+   * Avisa a los suscriptores.
+   * @param {String} type Tipo de cambio.
+   */
+  notify(type) {
+    this.subscribers_.forEach((subscriber) => subscriber(type));
+  }
+
+  /**
+   * Selección inicial: la opción "track" o, en el modo "track", la capa de
+   * layerPosition o la primera capa con recorridos.
+   */
+  start() {
+    if (this.pending_ && this.applyConfig()) return;
+    if (!this.driver_) {
+      this.notify('sources');
+      return;
+    }
+    const layers = this.sources_.getLayers((layer) => TrackController.isLoading(layer));
+    const { layerPosition, translation } = this.host_;
+    let layer = null;
+    if (!isNullOrEmpty(layerPosition)) {
+      const target = this.layers_.layerAt(layerPosition);
+      layer = layers.includes(target) ? target : null;
+      if (!layer && layers.length > 0) {
+        warn(formatText(translation.invalid_layer_position, { position: layerPosition }));
+      }
+    }
+    this.useLayer(layer ?? layers[0] ?? null, { silent: true });
+  }
+
+  /**
+   * Indica si una capa todavía está cargando sus entidades.
+   * @param {IDEE.layer.Layer|null} layer Capa.
+   * @returns {Boolean} Verdadero si está cargando.
+   */
+  static isLoading(layer) {
+    return layer?.getImpl?.()?.isLoaded?.() === false;
+  }
+
+  /**
+   * Resuelve una capa de origen por posición en el visualizador, instancia, nombre o
+   * definición "TIPO*..."; si Timeline la crea, la añade al mapa sin reaccionar a esa
+   * incorporación.
+   * @param {*} reference Referencia.
+   * @returns {IDEE.layer.Layer|null} Capa si admite recorridos.
+   */
+  resolveLayer(reference) {
+    const layer = typeof reference === 'number'
+      ? this.layers_.layerAt(reference) : this.layers_.resolve(reference, { quiet: true });
+    if (!layer || !this.sources_.supports(layer)) return null;
+    this.attaching_ = true;
+    try {
+      this.layers_.attach(layer);
+    } finally {
+      this.attaching_ = false;
+    }
+    this.watch();
+    return layer;
+  }
+
+  /**
+   * Aplica la opción "track" (o la última selección por API): resuelve su capa una sola
+   * vez (se crea si es una definición) y selecciona sus entidades. Si la capa aún no
+   * tiene entidades, queda seleccionada a la espera de su carga.
+   * @param {Object} [options] Opciones.
+   * @param {Boolean} [options.silent=true] No lanza CHANGE.
+   * @returns {Boolean} Verdadero si la capa está resuelta.
+   */
+  applyConfig({ silent = true } = {}) {
+    if (!this.configLayer_) this.configLayer_ = this.resolveLayer(this.config_.layer);
+    const layer = this.configLayer_;
+    if (!layer) return false;
+    this.layer_ = layer;
+    this.picked_ = [];
+    if (this.sources_.getOptions(layer).length === 0) {
+      this.applyOption(null, { silent });
+      return true;
+    }
+    this.pending_ = false;
+    const { feature } = this.config_;
+    const found = isNullOrEmpty(feature) ? null : this.sources_.findByIds(layer, feature);
+    this.picked_ = found?.picked ?? [];
+    this.applyOption(found?.option ?? TrackSources.getDefault(this.getOptions()), { silent });
+    return true;
+  }
+
+  /**
+   * Capas con recorridos, en el orden del visualizador. Se conserva la seleccionada
+   * aunque se haya quedado sin entidades.
+   * @returns {Array<IDEE.layer.Layer>} Capas.
+   */
+  getLayers() {
+    return this.sources_.getLayers((layer) => layer === this.layer_);
+  }
+
+  /**
+   * Nombre de una capa con su posición en el visualizador.
+   * @param {IDEE.layer.Layer} layer Capa.
+   * @returns {String} Texto.
+   */
+  getLayerLabel(layer) {
+    return this.sources_.getLabel(layer);
+  }
+
+  /**
+   * Capa de origen seleccionada.
+   * @returns {IDEE.layer.Layer|null} Capa.
+   */
+  getLayer() {
+    return this.layer_;
+  }
+
+  /**
+   * Opciones de recorrido de la capa seleccionada.
+   * @returns {Array<Object>} Opciones.
+   */
+  getOptions() {
+    return this.layer_ ? this.sources_.getOptions(this.layer_, this.picked_) : [];
+  }
+
+  /**
+   * Opción seleccionada.
+   * @returns {Object|null} Opción.
+   */
+  getOption() {
+    return this.option_;
+  }
+
+  /**
+   * Recorrido seleccionado.
+   * @returns {TrackPath|null} Recorrido.
+   */
+  getPath() {
+    return this.path_;
+  }
+
+  /**
+   * Posición actual.
+   * @returns {Object|null} Posición.
+   */
+  getPosition() {
+    return this.position_;
+  }
+
+  /**
+   * Pasos de reproducción del recorrido.
+   * @returns {TrackPlayback|null} Reproducción.
+   */
+  getPlayback() {
+    return this.playback_;
+  }
+
+  /**
+   * Indica si la posición sigue la referencia temporal del modo.
+   * @returns {Boolean} Verdadero si está sincronizada.
+   */
+  isSynchronized() {
+    return this.synchronized_;
+  }
+
+  /**
+   * Indica si la capa seleccionada todavía está cargando sus entidades.
+   * @returns {Boolean} Verdadero si está cargando.
+   */
+  isLoading() {
+    return TrackController.isLoading(this.layer_);
+  }
+
+  /**
+   * Selecciona una capa de origen y su opción por defecto. Sustituye a la opción "track"
+   * pendiente.
+   * @param {IDEE.layer.Layer|null} layer Capa o null para ninguna.
+   * @returns {Boolean} Verdadero si hay recorrido.
+   */
+  selectLayer(layer) {
+    this.pending_ = false;
+    return this.useLayer(layer);
+  }
+
+  /**
+   * Usa una capa de origen con su opción por defecto.
+   * @param {IDEE.layer.Layer|null} layer Capa o null para ninguna.
+   * @param {Object} [options] Opciones.
+   * @param {Boolean} [options.silent=false] No lanza CHANGE.
+   * @returns {Boolean} Verdadero si hay recorrido.
+   */
+  useLayer(layer, { silent = false } = {}) {
+    this.layer_ = layer ?? null;
+    this.picked_ = [];
+    return this.applyOption(TrackSources.getDefault(this.getOptions()), { silent });
+  }
+
+  /**
+   * Selecciona una opción de la capa seleccionada.
+   * @param {String} key Clave de la opción.
+   * @returns {Boolean} Verdadero si hay recorrido.
+   */
+  selectOption(key) {
+    this.pending_ = false;
+    return this.applyOption(this.getOptions().find((option) => option.key === key) ?? null);
+  }
+
+  /**
+   * Selecciona un recorrido por API, como la opción "track": {layer, feature} o null
+   * para ninguno. Si la capa aún está cargando, se aplica al terminar la carga.
+   * @param {Object|null} selection Capa (instancia, nombre, posición o definición) e
+   * identificador o identificadores de entidad.
+   * @returns {Boolean} Verdadero si ya hay recorrido.
+   */
+  select(selection) {
+    if (isNullOrEmpty(selection)) return this.selectLayer(null);
+    const { layer, feature, attributeParam } = selection;
+    this.config_ = {
+      layer,
+      feature,
+      attributeParam: attributeParam ?? this.config_?.attributeParam,
+    };
+    this.pending_ = true;
+    this.configLayer_ = null;
+    if (!this.applyConfig({ silent: false })) {
+      this.pending_ = false;
+      return false;
+    }
+    return this.path_ !== null;
+  }
+
+  /**
+   * Sigue una opción: construye su recorrido, lo dibuja y coloca la posición.
+   * @param {Object|null} option Opción.
+   * @param {Object} [options] Opciones.
+   * @param {Boolean} [options.silent=false] No lanza CHANGE.
+   * @returns {Boolean} Verdadero si hay recorrido.
+   */
+  applyOption(option, { silent = false } = {}) {
+    if (this.driver_) this.context_.pausePlayback();
+    this.option_ = option;
+    const path = option ? TrackSources.build(this.layer_, option, this.config_?.attributeParam)
+      : null;
+    this.path_ = path && path.size > 0 ? path : null;
+    this.playback_ = this.path_ ? new TrackPlayback(this.path_) : null;
+    if (this.path_) this.renderer_.show(this.path_);
+    else this.renderer_.hide();
+    this.update();
+    this.notify('sources');
+    this.notify('source');
+    if (!silent) this.context_.fireChange('track');
+    return this.path_ !== null;
+  }
+
+  /**
+   * Referencia temporal del modo con la que se sincroniza el recorrido, si es
+   * compatible.
+   * @returns {Object|null} {init, end} en milisegundos.
+   */
+  getSync() {
+    const path = this.path_;
+    if (this.driver_ || !path?.timed || !isFunction(this.mode_.getTrackTime)) return null;
+    const reference = this.mode_.getTrackTime();
+    if (!reference || !Number.isFinite(reference.end)) return null;
+    const domain = this.mode_.getTimeDomain?.() ?? { min: reference.init, max: reference.end };
+    return domain.min <= path.endTime && domain.max >= path.startTime ? reference : null;
+  }
+
+  /**
+   * Recalcula la posición y la dibuja.
+   */
+  update() {
+    const sync = this.path_ ? this.getSync() : null;
+    this.synchronized_ = sync !== null;
+    if (!this.playback_) this.position_ = null;
+    else if (sync) this.position_ = this.playback_.positionAtTime(sync.end, sync.init);
+    else this.position_ = this.playback_.current();
+    this.renderer_.update(this.position_);
+    this.notify('position');
+  }
+
+  /**
+   * Aplica un movimiento de la reproducción.
+   * @param {Function} operation Movimiento; devuelve si ha cambiado.
+   * @returns {Boolean} Verdadero si se ha movido.
+   */
+  move(operation) {
+    if (!this.playback_ || this.synchronized_) return false;
+    const moved = operation(this.playback_);
+    if (moved) {
+      this.update();
+      this.context_.fireChange('position');
+    }
+    return moved;
+  }
+
+  /**
+   * Indica si hay pasos que reproducir.
+   * @returns {Boolean} Verdadero si los hay.
+   */
+  canPlay() {
+    return (this.playback_?.steps ?? 0) > 0;
+  }
+
+  /**
+   * Avanza un paso.
+   * @returns {Boolean} Verdadero si se ha movido.
+   */
+  stepForward() {
+    return this.move((playback) => playback.stepForward());
+  }
+
+  /**
+   * Retrocede un paso.
+   * @returns {Boolean} Verdadero si se ha movido.
+   */
+  stepBackward() {
+    return this.move((playback) => playback.stepBackward());
+  }
+
+  /**
+   * Vuelve al principio.
+   * @returns {Boolean} Verdadero si hay recorrido que reproducir.
+   */
+  rewind() {
+    return this.move((playback) => playback.rewind());
+  }
+
+  /**
+   * Indica si está en la última posición.
+   * @returns {Boolean} Verdadero en el final o sin recorrido.
+   */
+  isAtEnd() {
+    return !this.playback_ || this.playback_.isAtEnd();
+  }
+
+  /**
+   * Va a un paso a mano; en el modo "track" pausa la reproducción.
+   * @param {Number} step Paso.
+   * @returns {Boolean} Verdadero si se ha movido.
+   */
+  seek(step) {
+    if (this.driver_) this.context_.pausePlayback();
+    return this.move((playback) => playback.seek(step));
+  }
+
+  /**
+   * Reacciona a los cambios del control: en los modos complementarios, los cambios de
+   * rango, paso o capa mueven la posición sincronizada.
+   * @param {Object} state Estado del evento CHANGE.
+   */
+  onChange({ reason } = {}) {
+    if (!this.driver_ && ['range', 'step', 'layer'].includes(reason)) this.update();
+  }
+
+  /**
+   * Reacciona a capas añadidas o retiradas del mapa.
+   */
+  onMapChange() {
+    if (this.attaching_) return;
+    this.watch();
+    if (this.layer_ && !this.layers_.inMap(this.layer_)) {
+      this.layer_ = null;
+      this.picked_ = [];
+      this.picker_.stop();
+      if (this.driver_) this.start();
+      else this.applyOption(null);
+      return;
+    }
+    if (!this.layer_ && (this.pending_ || this.driver_)) this.start();
+    else this.notify('sources');
+  }
+
+  /**
+   * Reacciona a la carga de entidades de una capa: si es la seleccionada, mantiene la
+   * opción si sigue existiendo y, si no, toma la opción por defecto.
+   * @param {IDEE.layer.Layer} layer Capa cargada.
+   */
+  onLoad(layer) {
+    if (this.pending_ && this.applyConfig()) return;
+    if (!this.layer_) {
+      if (this.driver_) this.start();
+      else this.notify('sources');
+      return;
+    }
+    if (layer !== this.layer_) {
+      this.notify('sources');
+      return;
+    }
+    const options = this.getOptions();
+    const same = options.find((option) => option.key === this.option_?.key);
+    this.applyOption(same ?? TrackSources.getDefault(options), { silent: Boolean(same) });
+  }
+
+  /**
+   * Escucha la carga de entidades de las capas que pueden tener recorridos.
+   */
+  watch() {
+    const layers = this.bound_
+      ? this.layers_.mapLayers().filter((layer) => this.sources_.supports(layer)) : [];
+    this.watched_.filter(({ layer }) => !layers.includes(layer)).forEach(({ layer, listener }) => {
+      layer.un(EventType.LOAD, listener);
+    });
+    this.watched_ = layers.map((layer) => {
+      const existing = this.watched_.find((item) => item.layer === layer);
+      if (existing) return existing;
+      const listener = this.onLoad_(layer);
+      layer.on(EventType.LOAD, listener);
+      return { layer, listener };
+    });
+  }
+
+  /**
+   * Inicia o termina la elección del recorrido con clics en el mapa: una línea se sigue
+   * y termina la elección; cada punto se añade o se quita de los puntos elegidos.
+   * @param {Function} onPickingChange Recibe si la elección está en curso.
+   */
+  togglePicking(onPickingChange) {
+    if (this.picker_.isActive()) {
+      this.picker_.stop();
+      return;
+    }
+    const started = this.picker_.start({
+      layers: this.getLayers(),
+      accept: (feature) => isLineFeature(feature) || isPointFeature(feature),
+      hint: this.host_.translation.track_pick_hint,
+      onPick: (feature, layer) => this.onPick(feature, layer),
+      onStop: () => onPickingChange(false),
+    });
+    if (started) onPickingChange(true);
+  }
+
+  /**
+   * Aplica la entidad elegida en el mapa.
+   * @param {IDEE.Feature} feature Entidad.
+   * @param {IDEE.layer.Layer} layer Capa.
+   * @returns {Boolean} Verdadero para seguir eligiendo (puntos).
+   */
+  onPick(feature, layer) {
+    this.pending_ = false;
+    if (layer !== this.layer_) {
+      this.layer_ = layer;
+      this.picked_ = [];
+    }
+    if (isLineFeature(feature)) {
+      this.picked_ = [];
+      this.applyOption(this.getOptions().find(({ features }) => features[0] === feature) ?? null);
+      return false;
+    }
+    this.picked_ = this.picked_.includes(feature)
+      ? this.picked_.filter((item) => item !== feature) : [...this.picked_, feature];
+    const options = this.getOptions();
+    this.applyOption(options.find(({ key }) => key === 'picked') ?? TrackSources.getDefault(options));
+    return true;
+  }
+
+  /**
+   * Estado para el evento CHANGE.
+   * @returns {Object|null} Estado o null sin recorrido.
+   */
+  getState() {
+    if (!this.path_) return null;
+    const position = this.position_;
+    return {
+      layer: this.layer_,
+      key: this.option_?.key ?? null,
+      label: this.path_.label,
+      kind: this.path_.source.kind,
+      timed: this.path_.timed,
+      synchronized: this.synchronized_,
+      step: this.playback_.step,
+      steps: this.playback_.steps,
+      time: position?.time ?? null,
+      segment: position?.segment ?? null,
+      coordinate: position?.coordinate ?? null,
+      fraction: position?.fraction ?? 0,
+    };
+  }
+
+  /**
+   * Deja de escuchar y retira el recorrido del mapa.
+   */
+  destroy() {
+    if (this.bound_) {
+      this.host_.un(EventType.CHANGE, this.onChange_);
+      this.host_.un(EventType.ADDED_TO_MAP, this.onAddedToMap_);
+      this.host_.map?.un(EventType.ADDED_LAYER, this.onAdded_);
+      this.host_.map?.un(EventType.REMOVED_LAYER, this.onRemoved_);
+    }
+    this.bound_ = false;
+    this.watch();
+    this.picker_.stop();
+    this.renderer_.hide();
+    this.subscribers_ = [];
+  }
+}
+
+/**
+ * Formatea una duración como horas:minutos:segundos.
+ * @private
+ * @param {Number} milliseconds Duración.
+ * @returns {String} Texto.
+ */
+const formatDuration = (milliseconds) => {
+  const total = Math.max(0, Math.floor(milliseconds / 1000));
+  return [Math.floor(total / 3600), Math.floor((total % 3600) / 60), total % 60]
+    .map((value) => String(value).padStart(2, '0')).join(':');
+};
+
+/**
+ * Formatea un instante en el idioma de la API, en UTC como los campos de fecha.
+ * @private
+ * @param {Number} time Milisegundos.
+ * @returns {String} Texto.
+ */
+const formatDateTime = (time) => new Intl.DateTimeFormat(getLang(), {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+  timeZone: 'UTC',
+  timeZoneName: 'short',
+}).format(time);
+
+/**
+ * Crea una opción de un selector.
+ * @private
+ * @param {String} text Texto.
+ * @param {String} value Valor.
+ * @returns {HTMLOptionElement} Opción.
+ */
+const createOption = (text, value) => {
+  const option = document.createElement('option');
+  option.value = value;
+  option.textContent = text;
+  return option;
+};
+
+/**
+ * @classdesc
+ * Interfaz del recorrido, igual en todos los modos: se carga desde una plantilla común
+ * en el hueco .m-timeline-track-slot. Selector de capa (con "Sin recorrido" fuera del
+ * modo "track"), selector del objeto (oculto si solo hay uno), elección en el mapa,
+ * botón del perfil, botón de avisos (ventana emergente), barra de progreso y posición.
+ * Fuera del modo "track" se oculta si el mapa no tiene capas con recorridos.
+ *
+ * @private
+ */
+class TrackTools {
+  /**
+   * @param {IDEE.control.Timeline} host Control.
+   * @param {TrackController} track Controlador del recorrido.
+   * @param {TrackProfile} profile Perfil topográfico.
+   */
+  constructor(host, track, profile) {
+    this.host_ = host;
+    this.track_ = track;
+    this.profile_ = profile;
+    this.element_ = null;
+    this.layers_ = [];
+    this.trackMessage_ = '';
+    this.profileMessage_ = '';
+    this.popover_ = false;
+    this.placeWarning_ = () => this.placeWarning();
+  }
+
+  /**
+   * Busca un elemento de las herramientas.
+   * @param {String} selector Selector CSS.
+   * @returns {HTMLElement|null} Elemento.
+   */
+  query(selector) {
+    return this.element_?.querySelector(selector) ?? null;
+  }
+
+  /**
+   * Inserta la plantilla en el hueco del modo y enlaza sus controles.
+   */
+  bind() {
+    const slot = this.host_.getElement()?.querySelector('.m-timeline-track-slot');
+    if (!slot) return;
+    const { translation } = this.host_;
+    this.element_ = compileSync(timelineTrackToolsTemplate, {
+      vars: {
+        translations: {
+          track: translation.track,
+          layer: translation.track_layer,
+          feature: translation.track_feature,
+          pick: translation.track_pick,
+          profile: translation.track_profile,
+          progress: translation.track_progress,
+        },
+      },
+    });
+    slot.appendChild(this.element_);
+    this.query('.m-timeline-track-layer').addEventListener('change', ({ target }) => {
+      this.track_.selectLayer(target.value === '' ? null : this.layers_[Number(target.value)] ?? null);
+    });
+    this.query('.m-timeline-track-feature').addEventListener('change', ({ target }) => {
+      this.track_.selectOption(target.value);
+    });
+    const pick = this.query('.m-timeline-track-pick');
+    pick.addEventListener('click', () => this.track_.togglePicking((picking) => {
+      pick.setAttribute('aria-pressed', String(picking));
+    }));
+    this.query('.m-timeline-profile-button').addEventListener('click', () => this.profile_.toggle());
+    const warning = this.query('.m-timeline-track-warning');
+    const message = this.query('.m-timeline-track-message');
+    this.popover_ = 'popoverTargetElement' in warning;
+    if (this.popover_) {
+      message.hidden = false;
+      message.popover = 'auto';
+      warning.popoverTargetElement = message;
+      message.addEventListener('beforetoggle', ({ newState }) => this.onWarningToggle(newState === 'open'));
+    } else {
+      warning.addEventListener('click', () => {
+        message.hidden = !message.hidden;
+        this.renderWarning();
+      });
+    }
+    this.query('.m-timeline-track-progress').addEventListener('input', ({ target }) => {
+      this.track_.seek(Number(target.value));
+    });
+    this.track_.subscribe((type) => {
+      if (type === 'position') this.renderPosition();
+      else this.render();
+    });
+    this.profile_.subscribe(() => this.renderProfile());
+    this.render();
+  }
+
+  /**
+   * Pinta todo el estado.
+   */
+  render() {
+    if (!this.element_) return;
+    this.renderLayers();
+    this.renderOptions();
+    this.renderPosition();
+    this.renderProfile();
+  }
+
+  /**
+   * Pinta el selector de capas.
+   */
+  renderLayers() {
+    const { translation } = this.host_;
+    const select = this.query('.m-timeline-track-layer');
+    this.layers_ = this.track_.getLayers();
+    const current = this.track_.getLayer();
+    select.textContent = '';
+    if (!this.track_.driver || this.layers_.length === 0) {
+      select.appendChild(createOption(translation.track_none, ''));
+    }
+    this.layers_.forEach((layer, index) => {
+      select.appendChild(createOption(this.track_.getLayerLabel(layer), String(index)));
+    });
+    const index = this.layers_.indexOf(current);
+    select.value = index === -1 ? '' : String(index);
+    this.element_.hidden = !this.track_.driver && this.layers_.length === 0;
+    this.query('.m-timeline-track-pick').disabled = this.layers_.length === 0;
+  }
+
+  /**
+   * Pinta el selector de objeto, agrupado en líneas y recorridos por puntos.
+   */
+  renderOptions() {
+    const { translation } = this.host_;
+    const select = this.query('.m-timeline-track-feature');
+    const options = this.track_.getOptions();
+    select.textContent = '';
+    const groups = [
+      [translation.track_group_lines, options.filter(({ kind }) => kind === 'line')],
+      [translation.track_group_points, options.filter(({ kind }) => kind !== 'line')],
+    ];
+    groups.filter(([, items]) => items.length > 0).forEach(([label, items]) => {
+      const group = document.createElement('optgroup');
+      group.label = label;
+      items.forEach((option) => group.appendChild(createOption(option.label, option.key)));
+      select.appendChild(group);
+    });
+    select.value = this.track_.getOption()?.key ?? '';
+    select.hidden = options.length < 2;
+  }
+
+  /**
+   * Pinta la barra de progreso, la posición y los avisos del recorrido.
+   */
+  renderPosition() {
+    if (!this.element_) return;
+    const path = this.track_.getPath();
+    const playback = this.track_.getPlayback();
+    const position = this.track_.getPosition();
+    const progress = this.query('.m-timeline-track-progress');
+    const row = this.query('.m-timeline-track-progress-row');
+    row.hidden = !path;
+    if (path) {
+      progress.max = String(playback.steps);
+      progress.value = String(this.track_.isSynchronized()
+        ? Math.round((position?.fraction ?? 0) * playback.steps) : playback.step);
+      progress.disabled = this.track_.isSynchronized() || playback.steps === 0;
+      this.query('.m-timeline-track-status').textContent = this.describePosition(path, position);
+    }
+    this.trackMessage_ = this.describeMessage(path, position);
+    this.renderWarning();
+  }
+
+  /**
+   * Pinta el botón de avisos (recorrido y perfil): el texto es su título y se abre en
+   * una ventana emergente anclada al botón (popover) o, sin soporte de popover,
+   * desplegado debajo. Sin avisos, el botón se oculta y la ventana se cierra.
+   */
+  renderWarning() {
+    if (!this.element_) return;
+    const text = [this.trackMessage_, this.profileMessage_].filter(Boolean).join(' ');
+    const button = this.query('.m-timeline-track-warning');
+    const element = this.query('.m-timeline-track-message');
+    button.hidden = text === '';
+    button.title = text;
+    button.setAttribute('aria-label', text);
+    element.textContent = text;
+    if (this.popover_) {
+      if (!element.matches(':popover-open')) return;
+      if (text === '') element.hidePopover();
+      else this.placeWarning();
+    } else {
+      if (text === '') element.hidden = true;
+      button.setAttribute('aria-expanded', String(!element.hidden));
+    }
+  }
+
+  /**
+   * Apertura o cierre de la ventana de avisos: estado del botón y seguimiento del
+   * botón al redimensionar o desplazar mientras está abierta.
+   * @param {Boolean} open Si se abre.
+   */
+  onWarningToggle(open) {
+    const method = open ? 'addEventListener' : 'removeEventListener';
+    window[method]('resize', this.placeWarning_);
+    window[method]('scroll', this.placeWarning_, true);
+    this.query('.m-timeline-track-warning')?.setAttribute('aria-expanded', String(open));
+    if (open) this.placeWarning();
+  }
+
+  /**
+   * Coloca la ventana de avisos junto al botón, alineada a su derecha, por debajo o
+   * por encima según el espacio disponible en la ventana del navegador.
+   */
+  placeWarning() {
+    const button = this.query('.m-timeline-track-warning');
+    const element = this.query('.m-timeline-track-message');
+    if (!button || !element) return;
+    const gap = 4;
+    const rect = button.getBoundingClientRect();
+    const { clientWidth, clientHeight } = document.documentElement;
+    const below = clientHeight - rect.bottom;
+    const down = below >= rect.top;
+    const right = Math.max(gap, clientWidth - rect.right);
+    Object.assign(element.style, {
+      top: down ? `${rect.bottom + gap}px` : 'auto',
+      bottom: down ? 'auto' : `${clientHeight - rect.top + gap}px`,
+      right: `${right}px`,
+      left: 'auto',
+      maxWidth: `min(18rem, ${Math.max(clientWidth - right - gap, 0)}px)`,
+      maxHeight: `${Math.max((down ? below : rect.top) - 2 * gap, 0)}px`,
+    });
+  }
+
+  /**
+   * Cierra la ventana de avisos y deja de seguir el botón.
+   */
+  destroy() {
+    const element = this.query('.m-timeline-track-message');
+    if (this.popover_ && element?.matches(':popover-open')) element.hidePopover();
+    this.onWarningToggle(false);
+    this.element_ = null;
+  }
+
+  /**
+   * Texto de la posición: fecha y tiempo transcurrido o posición y total, y segmento.
+   * @param {TrackPath} path Recorrido.
+   * @param {Object|null} position Posición.
+   * @returns {String} Texto.
+   */
+  describePosition(path, position) {
+    const { translation } = this.host_;
+    if (!position || position.state === 'before') return '';
+    const parts = [];
+    if (path.timed && position.time !== null) {
+      parts.push(formatText(translation.track_time, {
+        time: formatDateTime(position.time),
+        elapsed: formatDuration(position.time - path.startTime),
+        duration: formatDuration(path.duration),
+      }));
+    } else {
+      parts.push(formatText(translation.track_position, {
+        index: position.index + 1,
+        total: path.size,
+      }));
+    }
+    if (path.segments.length > 1) {
+      parts.push(formatText(translation.track_segment, {
+        index: position.segment + 1,
+        total: path.segments.length,
+      }));
+    }
+    return parts.join(' · ');
+  }
+
+  /**
+   * Avisos del recorrido: sin capas, carga, capa vacía, fechas descartadas y
+   * sincronización con la línea de tiempo.
+   * @param {TrackPath|null} path Recorrido.
+   * @param {Object|null} position Posición.
+   * @returns {String} Texto.
+   */
+  describeMessage(path, position) {
+    const { translation } = this.host_;
+    if (this.layers_.length === 0) return this.track_.driver ? translation.track_no_sources : '';
+    if (!path) {
+      if (!this.track_.getLayer()) return '';
+      return this.track_.isLoading() ? translation.track_loading : translation.track_empty;
+    }
+    const messages = [];
+    if (path.timeIssue) messages.push(translation.track_times_ignored);
+    if (!this.track_.driver) {
+      if (!this.track_.isSynchronized()) {
+        messages.push(translation.track_complementary);
+      } else if (position?.state === 'before') {
+        messages.push(formatText(translation.track_before, {
+          date: formatDateTime(path.startTime),
+        }));
+      } else {
+        messages.push(translation.track_synced);
+      }
+    }
+    return messages.join(' ');
+  }
+
+  /**
+   * Pinta el botón del perfil y lleva su estado al botón de avisos.
+   */
+  renderProfile() {
+    if (!this.element_) return;
+    const button = this.query('.m-timeline-profile-button');
+    const { status } = this.profile_;
+    button.hidden = !this.profile_.isAvailable();
+    button.setAttribute('aria-pressed', String(this.profile_.isActive()));
+    button.setAttribute('aria-busy', String(status === 'loading'));
+    const texts = getValue('profile');
+    this.profileMessage_ = { loading: texts.loading, error: texts.error, no_data: texts.no_data }[status] ?? '';
+    this.renderWarning();
   }
 }
 
@@ -2593,6 +4692,25 @@ class DynamicTimelineMode {
   }
 
   /**
+   * Referencia temporal para los recorridos complementarios: el instante es el fin del
+   * rango y el tramo realizado empieza en su inicio.
+   * @returns {Object|null} {init, end} en milisegundos o null sin entrada seleccionada.
+   */
+  getTrackTime() {
+    return this.selected_ ? { init: this.host_.date.init, end: this.host_.date.end } : null;
+  }
+
+  /**
+   * Dominio temporal de la entrada seleccionada (límites de los deslizadores).
+   * @returns {Object|null} {min, max} en milisegundos o null sin entrada seleccionada.
+   */
+  getTimeDomain() {
+    if (!this.selected_) return null;
+    const { min, max } = this.getValueSliderB();
+    return { min, max };
+  }
+
+  /**
    * Selecciona una entrada por clave, id del intervalo, nombre, posición o capa.
    * @param {String|Number|IDEE.layer.Layer} reference Referencia.
    * @returns {Boolean} Verdadero si se ha seleccionado.
@@ -2727,21 +4845,216 @@ class DynamicTimelineMode {
 }
 
 /**
+ * @classdesc
+ * Estrategia de timelineType "track": el recorrido es el mecanismo principal de
+ * navegación. Cumple el contrato del transporte común delegando en el controlador del
+ * recorrido, de modo que no hay otro reloj; "speed" son los segundos por paso (una
+ * posición, o duración/(n−1) del recorrido si tiene fechas). La capa es la de origen
+ * del recorrido.
+ *
+ * @private
+ */
+class TrackTimelineMode {
+  /**
+   * @param {IDEE.control.Timeline} host Control.
+   * @param {Object} context Colaboradores del control.
+   * @param {TimelineLayers} context.layers Capas del control.
+   * @param {Function} context.getTrack Devuelve el controlador del recorrido.
+   * @param {Function} context.showNotice Muestra un aviso en el panel.
+   */
+  constructor(host, context) {
+    this.host_ = host;
+    this.context_ = context;
+    this.layers = context.layers;
+    this.speedProperty = 'speed';
+    this.speedBase = DEFAULT_SPEED;
+  }
+
+  /**
+   * El recorrido marca el avance.
+   * @returns {Boolean} Verdadero.
+   */
+  get drivesTrack() {
+    return true;
+  }
+
+  /**
+   * Controlador del recorrido.
+   * @returns {TrackController|null} Controlador.
+   */
+  get track() {
+    return this.context_.getTrack();
+  }
+
+  /**
+   * Sin vista propia: la interfaz es la de las herramientas de recorrido.
+   */
+  build() {}
+
+  /**
+   * Indica si hay pasos que reproducir.
+   * @returns {Boolean} Verdadero si los hay.
+   */
+  canPlay() {
+    return this.track?.canPlay() ?? false;
+  }
+
+  /**
+   * Avanza un paso.
+   * @returns {Boolean} Verdadero si se ha movido.
+   */
+  stepForward() {
+    return this.track?.stepForward() ?? false;
+  }
+
+  /**
+   * Retrocede un paso.
+   * @returns {Boolean} Verdadero si se ha movido.
+   */
+  stepBackward() {
+    return this.track?.stepBackward() ?? false;
+  }
+
+  /**
+   * Vuelve al principio.
+   * @returns {Boolean} Verdadero si hay recorrido que reproducir.
+   */
+  rewind() {
+    return this.track?.rewind() ?? false;
+  }
+
+  /**
+   * Indica si está en la última posición.
+   * @returns {Boolean} Verdadero en el final.
+   */
+  isAtEnd() {
+    return this.track?.isAtEnd() ?? true;
+  }
+
+  /**
+   * Sin efecto: elegir otro recorrido pausa la reproducción.
+   */
+  onPlaybackChange() {}
+
+  /**
+   * Título de una opción de velocidad según lo que avanza cada paso.
+   * @param {Number} seconds Segundos por paso.
+   * @param {String} value Segundos formateados.
+   * @returns {String} Texto.
+   */
+  formatSpeedOption(seconds, value) {
+    const { translation } = this.host_;
+    const interval = this.track?.getPlayback()?.interval;
+    if (Number.isFinite(interval)) {
+      return formatText(translation.speed_option_track_time, {
+        seconds: value,
+        interval: formatDuration(interval),
+      });
+    }
+    return formatText(translation.speed_option_track_position, { seconds: value });
+  }
+
+  /**
+   * Capas con recorridos en el orden del selector.
+   * @returns {Array<Object>} [{id, name, layers, position, selected}].
+   */
+  getSelectable() {
+    const track = this.track;
+    if (!track) return [];
+    return track.getLayers().map((layer) => ({
+      id: layer.name,
+      name: layer.legend || layer.name,
+      layers: [layer],
+      position: this.layers.positionOf(layer),
+      selected: layer === track.getLayer(),
+    }));
+  }
+
+  /**
+   * Capa de origen del recorrido.
+   * @returns {IDEE.layer.Layer|null} Capa.
+   */
+  getSelectedLayer() {
+    return this.track?.getLayer() ?? null;
+  }
+
+  /**
+   * Selecciona la capa de origen por posición, nombre o instancia.
+   * @param {String|Number|IDEE.layer.Layer} reference Referencia.
+   * @returns {Boolean} Verdadero si hay recorrido.
+   */
+  select(reference) {
+    const track = this.track;
+    if (!track) return false;
+    const target = typeof reference === 'number' ? this.layers.layerAt(reference) : reference;
+    const layer = track.getLayers().find((item) => item === target || item.name === target
+      || item.legend === target);
+    return layer ? track.selectLayer(layer) : false;
+  }
+
+  /**
+   * Vista sin funcionalidad (implementación no soportada).
+   */
+  renderUnsupported() {
+    this.context_.showNotice(this.host_.translation.not_supported);
+    this.host_.getElement().querySelectorAll('input, select, button').forEach((element) => {
+      element.setAttribute('disabled', '');
+    });
+  }
+}
+
+/**
+ * Tipos de línea de tiempo: plantilla y estrategia de cada uno.
+ * @const
+ * @private
+ */
+const TIMELINE_MODES = {
+  absoluteSimple: {
+    template: timelineTemplate,
+    create: (host, context) => new SimpleTimelineMode(host, context),
+  },
+  absolute: {
+    template: timelineDinamicTemplate,
+    create: (host, context) => new DynamicTimelineMode(host, context),
+  },
+  relative: {
+    template: timelineDinamicTemplate,
+    create: (host, context) => new DynamicTimelineMode(host, context),
+  },
+  track: {
+    template: timelineTrackTemplate,
+    create: (host, context) => new TrackTimelineMode(host, context),
+  },
+};
+
+const typesTimeline = Object.keys(TIMELINE_MODES);
+
+/**
  * @typedef {Object} module:IDEE/control/Timeline~Options
  * @api
  * @property {String} timelineType Tipo de línea de tiempo (obligatorio):
- * 'absoluteSimple', 'absolute' o 'relative'.
- * @property {Array|String} intervals Intervalos (obligatorio). Array o cadena JSON; por
- * GET, en base64 (`intervals=base64~...`). Cada intervalo puede ser clásico
+ * 'absoluteSimple', 'absolute', 'relative' o 'track'.
+ * @property {Array|String} intervals Intervalos (obligatorio salvo en 'track'). Array o
+ * cadena JSON; por GET, en base64 (`intervals=base64~...`). Cada intervalo puede ser clásico
  * `[name, tag, service]` o extendido `{id, init, end, layer, attributeParam, grupo,
  * equalsTimeLine}`, en cualquier timelineType; "service" es un alias de "layer".
  * "layer" admite una capa de la API, una configuración con "type", una definición
  * "TIPO*..." (GPX, WMS, WMTS, KML, GeoJSON...), que se interpreta con el mecanismo
  * general de la API, o el nombre o la leyenda de una capa del visualizador.
+ * @property {Object|String} [track] Recorrido que se muestra al añadir el control, en
+ * cualquier timelineType. Objeto o cadena JSON (por GET, `track=base64~...`); una cadena
+ * que no es JSON se toma como la capa.
+ * - layer: capa de origen, como en "intervals" (capa de la API, definición "TIPO*...",
+ *   nombre o leyenda de una capa del visualizador) o su posición en el visualizador.
+ * - feature: identificador de una línea, o identificadores de los puntos que forman el
+ *   recorrido (se unen en el orden de la capa o de sus fechas). Por defecto, la primera
+ *   línea con fechas por vértice, la primera línea o todos los puntos de la capa.
+ * - attributeParam: atributo temporal de los puntos. Por defecto, 'time'.
  * @property {Number} [layerPosition] Posición en el visualizador de la capa que se activa
  * por defecto. Base 1 y contada desde arriba, como la lista del LayerSwitcher
  * (1 = capa superior). Si no se indica, o no hay una capa compatible en esa posición,
- * se activa la primera capa compatible en el orden del visualizador.
+ * se activa la primera capa compatible en el orden del visualizador. En 'track' es la
+ * capa de origen del recorrido, si no se indica "track".
  * No confundir con "position", que es la posición del panel.
  * @property {String} [position] Posición del panel en el mapa. Por defecto, 'left'.
  * @property {String} [tooltip] Texto del tooltip del control.
@@ -2751,8 +5064,8 @@ class DynamicTimelineMode {
  * @property {Boolean} [collapsed] Indica si el panel empieza colapsado. Por defecto, true.
  * @property {Boolean} [animation] Muestra el botón de play/pausa y el selector de
  * velocidad. Por defecto, true; con false solo quedan avance y retroceso.
- * @property {Number} [speed] Segundos por paso de la reproducción en absoluteSimple.
- * Por defecto, 1 (×1 en el selector de velocidad).
+ * @property {Number} [speed] Segundos por paso de la reproducción en absoluteSimple y
+ * track. Por defecto, 1 (×1 en el selector de velocidad).
  * @property {Number} [speedDate] Segundos por paso de la reproducción en absolute y
  * relative. Por defecto, 2 (×1 en el selector de velocidad).
  * @property {String} [paramsDate] Unidad del paso en absolute y relative: 'sec', 'min',
@@ -2788,6 +5101,8 @@ class DynamicTimelineMode {
  * - **relative**: filtra las capas por el rango [inicio, fin]. Por defecto el límite
  *   inferior queda fijo y la reproducción, el avance y el retroceso mueven el superior
  *   ("formatMove" 'discrete'); con 'continuous' se mueven los dos.
+ * - **track**: recorre una trayectoria; los controles de reproducción mueven su
+ *   posición. No necesita "intervals".
  *
  * Controles de reproducción, en todos los tipos: retroceso, play/pausa, avance y
  * selector de velocidad (×0,5, ×1, ×2, ×3 y ×5; ×1 es el valor por defecto de "speed"
@@ -2796,6 +5111,36 @@ class DynamicTimelineMode {
  * aplica en el siguiente paso. La reproducción se detiene en el último paso y play
  * vuelve a empezar desde el principio. Mover el deslizador o las fechas, o cambiar de
  * capa, la pausa. Los textos se traducen con el idioma de la API.
+ *
+ * Recorridos, en todos los tipos: si el mapa tiene capas vectoriales con líneas o puntos
+ * (por ejemplo IDEE.layer.GPX, también por GET), el panel ofrece la capa de origen, el
+ * objeto (cada línea, todos los puntos de la capa o los puntos elegidos en el mapa), el
+ * botón de elegir en el mapa y el del perfil topográfico, con una barra de progreso y la
+ * posición actual.
+ * - Geometrías: LineString (sus vértices en orden), MultiLineString y tracks GPX (cada
+ *   segmento por separado: nunca se unen ni se interpola a través del hueco) y puntos,
+ *   que se unen en un segmento por su atributo temporal ("track.attributeParam") si
+ *   todos tienen fecha válida y, si no, en el orden de la capa. Las fechas por vértice
+ *   salen de "coordTimes" (GPX).
+ * - Recorrido temporal: si todas las fechas son válidas y no decrecen, cada paso avanza
+ *   duración/(n−1) del recorrido y la posición se interpola por tiempo. Recorrido
+ *   secuencial: si no hay fechas, o están incompletas o no son válidas (se avisa), cada
+ *   paso es la posición siguiente y se muestra "posición i de n". No se inventan fechas.
+ * - En 'track' los controles de reproducción comunes mueven el recorrido y "speed" son
+ *   los segundos por paso (el título de cada velocidad indica qué avanza un paso).
+ * - En el resto de tipos el recorrido es complementario y no tiene reloj propio. En
+ *   absolute y relative, si sus fechas se solapan con las de la línea de tiempo, el
+ *   marcador sigue el fin del rango y el tramo realizado empieza en su inicio; si no, y
+ *   siempre en absoluteSimple, se muestra completo y su posición solo cambia con la
+ *   barra de progreso. El panel indica si está sincronizado.
+ * - El mapa muestra el recorrido completo, el tramo realizado, los extremos de cada
+ *   segmento y un marcador que apunta en el sentido de avance, con los colores primario
+ *   y primario oscuro del token de diseño activo. Las entidades de origen no se
+ *   modifican.
+ * - Perfil topográfico: las altitudes de cada segmento se consultan con IDEE.elevation y
+ *   el cursor del perfil sigue la posición de reproducción. Si no hay datos de altitud o
+ *   falla la consulta, el panel lo indica.
+ * - Solo en OpenLayers: en Cesium la línea de tiempo no está disponible.
  *
  * Capas: en absolute y relative el selector las ordena por su posición en el
  * visualizador y activa la de "layerPosition" o, si no, la primera compatible. Una capa
@@ -2812,13 +5157,17 @@ class DynamicTimelineMode {
  * funcionalidad temporal todavía no está disponible: el panel lo indica y los controles
  * quedan desactivados.
  *
- * Cada cambio de capa, rango, paso, reproducción o velocidad lanza el evento
- * `IDEE.evt.CHANGE` con `{reason, timelineType, selectedLayer, date, running}`, donde
- * "reason" es 'layer', 'range', 'step', 'play' o 'speed'.
+ * Cada cambio de capa, rango, paso, recorrido, posición del recorrido, reproducción o
+ * velocidad lanza el evento `IDEE.evt.CHANGE` con
+ * `{reason, timelineType, selectedLayer, date, running, track}`, donde "reason" es
+ * 'layer', 'range', 'step', 'track', 'position', 'play' o 'speed' y "track" es el estado
+ * del recorrido (ver getTrack) o null.
  *
  * @property {String|Boolean} timelineType Tipo de línea de tiempo: 'absoluteSimple',
- * 'absolute' o 'relative' (false si no se ha indicado; es obligatorio para añadir el
- * control al mapa).
+ * 'absolute', 'relative' o 'track' (false si no se ha indicado; es obligatorio para
+ * añadir el control al mapa).
+ * @property {Object|null} track Recorrido inicial normalizado ({layer, feature,
+ * attributeParam}) o null.
  * @property {Array} intervals Intervalos normalizados. En absoluteSimple, tras añadir el
  * control, son los pasos del deslizador `{number, name, tag, service}`; en absolute y
  * relative, `{id, init, end, layer, attributeParam, grupo, equalsTimeLine}` con las
@@ -2834,7 +5183,8 @@ class DynamicTimelineMode {
  * si collapsible es true.
  * @property {Boolean} [animation=true] Indica si se muestran play/pausa y el selector de
  * velocidad.
- * @property {Number} [speed=1] Segundos por paso de la reproducción en absoluteSimple.
+ * @property {Number} [speed=1] Segundos por paso de la reproducción en absoluteSimple y
+ * track.
  * @property {Number} [speedDate=2] Segundos por paso de la reproducción en absolute y
  * relative.
  * @property {String} [paramsDate='yr'] Unidad del paso en absolute y relative: 'sec',
@@ -2906,6 +5256,16 @@ class Timeline extends Control {
    * });
    * control.on(IDEE.evt.CHANGE, ({ reason, date }) => console.log(reason, date));
    * map.addControls(control);
+   * @example
+   * // track: recorre el track "trk-2" de un GPX añadido por GET
+   * // (layers=GPX*rutas*https://servidor/rutas.gpx); 0,5 s por paso (×2).
+   * const control = new IDEE.control.Timeline({
+   *   timelineType: 'track',
+   *   speed: 0.5,
+   *   track: { layer: 'rutas', feature: 'trk-2' },
+   * });
+   * control.on(IDEE.evt.CHANGE, ({ reason, track }) => console.log(reason, track));
+   * map.addControls(control);
    * @api
    */
   constructor(options = {}) {
@@ -2958,6 +5318,40 @@ class Timeline extends Control {
     this.transport_ = null;
 
     /**
+     * Selección de entidades con clics en el mapa (se crea en createView).
+     * @private
+     * @type {TimelineFeaturePicker|null}
+     */
+    this.picker_ = null;
+
+    /**
+     * Seguimiento del recorrido (se crea en createView).
+     * @private
+     * @type {TrackController|null}
+     */
+    this.track_ = null;
+
+    /**
+     * Perfil topográfico del recorrido (se crea en createView).
+     * @private
+     * @type {TrackProfile|null}
+     */
+    this.profile_ = null;
+
+    /**
+     * Interfaz del recorrido (se crea en createView).
+     * @private
+     * @type {TrackTools|null}
+     */
+    this.trackTools_ = null;
+
+    /**
+     * Recorrido que se muestra al añadir el control: {layer, feature, attributeParam}.
+     * @type {Object|null}
+     */
+    this.track = normalizeTrackOption(options.track);
+
+    /**
      * Clave de la última entrada seleccionada en timelines dinámicos.
      * @private
      * @type {String|null}
@@ -2973,7 +5367,7 @@ class Timeline extends Control {
     if (this.animation === undefined) this.animation = true;
 
     /**
-    * Segundos por paso de la reproducción en absoluteSimple (×1 = 1 s).
+    * Segundos por paso de la reproducción en absoluteSimple y track (×1 = 1 s).
     * El selector de velocidad lo actualiza.
     * @type {number}
     */
@@ -3097,7 +5491,8 @@ class Timeline extends Control {
 
   /**
    * Crea la vista del control: la plantilla del tipo de línea de tiempo, el
-   * comportamiento del tipo y los controles de reproducción.
+   * comportamiento del tipo, los controles de reproducción y el seguimiento del
+   * recorrido.
    *
    * @public
    * @function
@@ -3107,14 +5502,14 @@ class Timeline extends Control {
    */
   createView(map) {
     return new Promise((success) => {
-      const dynamic = this.isDynamicTimeline();
+      const timelineMode = TIMELINE_MODES[this.timelineType] ?? TIMELINE_MODES.absoluteSimple;
       let step = 'any';
       if (this.snapMode === 'bySpep') {
         step = 1;
       } else if (this.snapMode === 'byStepIntersection') {
         step = 0.5;
       }
-      const template = compileSync((dynamic) ? timelineDinamicTemplate : timelineTemplate, {
+      const template = compileSync(timelineMode.template, {
         vars: {
           translations: {
             title: this.title || this.translation.title,
@@ -3146,21 +5541,30 @@ class Timeline extends Control {
         fireChange: (reason) => this.fireChange_(reason),
         getPreviousKey: () => this.selectedKey_,
         pausePlayback: () => this.transport_?.pause(),
+        getTrack: () => this.track_,
       };
-      this.mode_ = dynamic
-        ? new DynamicTimelineMode(this, context)
-        : new SimpleTimelineMode(this, context);
+      this.mode_ = timelineMode.create(this, context);
       this.transport_ = new TimelineTransport(this, this.mode_, {
         player: this.player_,
         fireChange: context.fireChange,
       });
+      this.picker_ = new TimelineFeaturePicker(this, context);
+      this.track_ = new TrackController(this, this.mode_, { ...context, picker: this.picker_ });
+      this.profile_ = new TrackProfile(this, this.layers_);
       if (this.layers_.isSupported()) {
         this.mode_.build();
         this.transport_.bind();
+        this.profile_.bind(this.track_);
+        this.trackTools_ = new TrackTools(this, this.track_, this.profile_);
+        this.trackTools_.bind();
+        this.track_.subscribe((type) => {
+          if (type === 'source') this.transport_?.refreshSpeedTitles();
+        });
+        this.track_.bind();
       } else {
-        this.mode_.renderUnsupported();
         this.transport_.bind();
         this.transport_.setDisabled(true);
+        this.mode_.renderUnsupported();
       }
       success(this.getElement());
     });
@@ -3177,7 +5581,7 @@ class Timeline extends Control {
    */
   addTo(map) {
     if (!this.timelineType || !typesTimeline.includes(this.timelineType)) {
-      throw new Error('Add correct typesTimeline, (absoluteSimple', 'absolute', 'relative)');
+      throw new Error(`Add correct typesTimeline (${typesTimeline.join(', ')})`);
     }
     super.addTo(map);
   }
@@ -3316,6 +5720,7 @@ class Timeline extends Control {
   removeTimelineLayers() {
     this.transport_?.pause();
     this.player_.stop();
+    this.picker_?.stop();
     this.layers_.releaseAll();
   }
 
@@ -3384,6 +5789,36 @@ class Timeline extends Control {
   }
 
   /**
+   * Selecciona el recorrido que se sigue, en cualquier timelineType.
+   *
+   * @public
+   * @function
+   * @param {Object|null} selection Recorrido, como la opción "track": {layer, feature},
+   * donde "layer" es una capa, su nombre, su definición "TIPO*..." o su posición en el
+   * visualizador y "feature" el identificador de una línea o los de los puntos que lo
+   * forman. Con null no se sigue ninguno.
+   * @returns {Boolean} Verdadero si hay recorrido seleccionado.
+   * @api
+   */
+  selectTrack(selection) {
+    if (!this.track_ || !this.layers_.isSupported()) return false;
+    return this.track_.select(selection);
+  }
+
+  /**
+   * Estado del recorrido seguido: {layer, key, label, kind ('line', 'points' o
+   * 'picked'), timed, synchronized, step, steps, time, segment, coordinate, fraction}.
+   *
+   * @public
+   * @function
+   * @returns {Object|null} Estado o null si no se sigue ningún recorrido.
+   * @api
+   */
+  getTrack() {
+    return this.track_?.getState() ?? null;
+  }
+
+  /**
    * Muestra un aviso en el panel.
    *
    * @private
@@ -3408,11 +5843,12 @@ class Timeline extends Control {
   }
 
   /**
-   * Notifica un cambio de estado (capa, rango, paso, reproducción o velocidad) con el
-   * evento EventType.CHANGE.
+   * Notifica un cambio de estado (capa, rango, paso, recorrido, posición del recorrido,
+   * reproducción o velocidad) con el evento EventType.CHANGE.
    *
    * @private
-   * @param {String} reason Motivo: 'layer', 'range', 'step', 'play' o 'speed'.
+   * @param {String} reason Motivo: 'layer', 'range', 'step', 'track', 'position', 'play'
+   * o 'speed'.
    */
   fireChange_(reason) {
     if (this.mode_ instanceof DynamicTimelineMode) {
@@ -3424,6 +5860,7 @@ class Timeline extends Control {
       selectedLayer: this.getSelectedLayer(),
       date: { ...this.date },
       running: this.running,
+      track: this.getTrack(),
     }]);
   }
 
@@ -3463,6 +5900,7 @@ class Timeline extends Control {
               help3: this.translation.textHelp.help3,
               help4: this.translation.textHelp.help4,
               help5: this.translation.textHelp.help5,
+              help6: this.translation.textHelp.help6,
             },
           },
         });
@@ -3483,10 +5921,17 @@ class Timeline extends Control {
    */
   destroy() {
     this.player_.stop();
+    this.trackTools_?.destroy();
+    this.profile_?.destroy();
+    this.track_?.destroy();
+    this.picker_?.stop();
     this.layers_.unlisten();
     this.layers_.releaseAll();
     this.mode_ = null;
     this.transport_ = null;
+    this.trackTools_ = null;
+    this.track_ = null;
+    this.profile_ = null;
     const element = this.getElement();
     if (element) element.remove();
     if (this.parentContainer) super.destroy();

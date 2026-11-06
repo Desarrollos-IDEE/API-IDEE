@@ -66,6 +66,29 @@ export const registerBasicTests = (impl) => {
       await expect(layerRow(page, 'teselas')).toHaveCount(1);
     });
 
+    test('muestra y oculta todas las capas', async ({ page }) => {
+      await expect(layerRow(page, 'puntos')).toHaveCount(1, { timeout });
+      const toggleAll = page.locator('#layerswitcher-hide-show-all-layers');
+      await toggleAll.click();
+      await expect.poll(() => page
+        .evaluate(() => [window.puntos.isVisible(), window.teselas.isVisible()]), { timeout })
+        .toEqual([false, false]);
+      await page.locator('#layerswitcher-hide-show-all-layers').click();
+      await expect.poll(() => page
+        .evaluate(() => [window.puntos.isVisible(), window.teselas.isVisible()]), { timeout })
+        .toEqual([true, true]);
+    });
+  });
+
+  test.describe(`Layerswitcher: zoom a la capa (${impl})`, () => {
+    configureEngine(impl);
+    const timeout = TIMEOUT[impl];
+
+    test.beforeEach(async ({ page }) => {
+      await openMap(page, impl);
+      await addSampleLayers(page, { raster: false });
+    });
+
     test('el zoom a la capa encuadra sus datos', async ({ page }) => {
       // Esperar a que la capa vectorial tenga sus objetos (Cesium tarda varios segundos)
       await expect.poll(() => page.evaluate(() => window.puntos.getFeatures().length), { timeout })
@@ -82,19 +105,6 @@ export const registerBasicTests = (impl) => {
           return Math.abs(lon - 2.15) < 0.5 && Math.abs(lat - 41.45) < 0.5;
         }, { cx: (minx + maxx) / 2, cy: (miny + maxy) / 2 });
       }, { timeout }).toBe(true);
-    });
-
-    test('muestra y oculta todas las capas', async ({ page }) => {
-      await expect(layerRow(page, 'puntos')).toHaveCount(1, { timeout });
-      const toggleAll = page.locator('#layerswitcher-hide-show-all-layers');
-      await toggleAll.click();
-      await expect.poll(() => page
-        .evaluate(() => [window.puntos.isVisible(), window.teselas.isVisible()]), { timeout })
-        .toEqual([false, false]);
-      await page.locator('#layerswitcher-hide-show-all-layers').click();
-      await expect.poll(() => page
-        .evaluate(() => [window.puntos.isVisible(), window.teselas.isVisible()]), { timeout })
-        .toEqual([true, true]);
     });
   });
 

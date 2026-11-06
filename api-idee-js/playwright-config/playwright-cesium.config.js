@@ -14,6 +14,7 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: '../',
   testMatch: ['test/playwright/cesium/**/*.spec.js', 'src/plugins/**/test/playwright/cesium/**/*.spec.js'],
+  globalSetup: './print-environment.js',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -33,7 +34,7 @@ export default defineConfig({
     // headless: false,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    // trace: 'on-first-retry',
+    trace: process.env.CI ? 'on-first-retry' : 'off',
   },
 
   /* Configure projects for major browsers */
