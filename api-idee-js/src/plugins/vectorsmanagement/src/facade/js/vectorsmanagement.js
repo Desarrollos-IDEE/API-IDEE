@@ -280,6 +280,7 @@ export default class VectorsManagement extends IDEE.Plugin {
   destroy() {
     this.map.removeButton(this.button);
     this.map.removePanel(this.panel);
+    this.map.removeControls(this.controls);
   }
 
   /**

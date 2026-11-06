@@ -120,8 +120,7 @@ export default class AnalysisControl extends IDEE.Control {
     this.addEvents();
     this.managementControl_.accessibilityTab(this.template);
 
-    // eslint-disable-next-line no-underscore-dangle
-    const feature = this.managementControl_.selectionControl.selectedFeatures_[0];
+    const feature = this.managementControl_.getSelectedFeatures()[0];
     if (feature) {
       this.showFeatureInfo(feature);
     }
@@ -421,9 +420,7 @@ export default class AnalysisControl extends IDEE.Control {
    * @api
    */
   showPointProfile(pointXYZ) {
-    if (this.pointTemplate) {
-      document.body.removeChild(this.pointTemplate);
-    }
+    this.closePointProfile();
     const mapProj = this.getImpl().getProjectionInfo(pointXYZ.map.projection);
     const mapUnit = mapProj.units === 'm' ? 'm' : '°';
     const mapLabels = mapProj.units === 'm' ? ['X', 'Y'] : [getValue('creationLongitude'), getValue('creationLatitude')];
@@ -452,12 +449,22 @@ export default class AnalysisControl extends IDEE.Control {
     document.body.appendChild(this.pointTemplate);
     this.managementControl_.accessibilityTab(this.pointTemplate);
 
-    this.pointTemplate.querySelector('.m-panel-btn').addEventListener('click', () => {
-      this.removeModalEvents();
-      document.body.removeChild(this.pointTemplate);
-      this.pointTemplate = null;
-    });
+    this.pointTemplate.querySelector('.m-panel-btn').addEventListener('click', () => this.closePointProfile());
     // this.addModalEvents();
+  }
+
+  /**
+   * This function closes the modal with point data profile.
+   * @public
+   * @function
+   * @api
+   */
+  closePointProfile() {
+    if (this.pointTemplate) {
+      this.removeModalEvents();
+      this.pointTemplate.remove();
+      this.pointTemplate = null;
+    }
   }
 
   /**
@@ -616,6 +623,8 @@ export default class AnalysisControl extends IDEE.Control {
    */
   destroy() {
     this.map_.un(IDEE.evt.REMOVED_LAYER, this.destroyLayerBufferFN);
+    this.closePointProfile();
+    this.getImpl().closeProfile();
   }
 
   /**

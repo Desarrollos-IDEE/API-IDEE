@@ -1,6 +1,5 @@
 import DrawRegular from 'ol-ext/interaction/DrawRegular';
 import SnapManager from './snapmanager';
-import { cloneFeature, extentFeature } from './featureutils';
 
 /**
  * @module IDEE/impl/control/Creationcontrol
@@ -80,6 +79,20 @@ export default class Creationcontrol extends IDEE.impl.Control {
    */
   clearVectorSource() {
     this.vectorSource_.clear(true);
+  }
+
+  /**
+   * Checks if the drawing vector source contains a feature
+   *
+   * @public
+   * @function
+   * @param {IDEE.Feature} feature
+   * @returns {Boolean} true if the layer has incorporated the feature
+   * @api stable
+   */
+  hasFeature(feature) {
+    const olFeature = feature.getImpl().getFeature();
+    return this.vectorSource_.getFeatures().includes(olFeature);
   }
 
   /**
@@ -262,30 +275,6 @@ export default class Creationcontrol extends IDEE.impl.Control {
    */
   getFeatureCoordinates(feature) {
     return feature.getImpl().getFeature().getGeometry().getCoordinates();
-  }
-
-  /**
-   * Creates feature clone.
-   * @public
-   * @function
-   * @api
-   * @param {IDEE.Feature} feature
-   * @returns {IDEE.Feature} clone
-   */
-  getApiIdeeFeatureClone(feature) {
-    return cloneFeature(feature);
-  }
-
-  /**
-   * Creates polygon feature from the extent of a feature.
-   * @public
-   * @function
-   * @api
-   * @param {IDEE.Feature} feature
-   * @returns {IDEE.Feature} extent polygon
-   */
-  getExtentFeature(feature) {
-    return extentFeature(feature);
   }
 
   /**
