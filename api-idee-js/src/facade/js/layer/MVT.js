@@ -332,6 +332,21 @@ class MVT extends Vector {
    * @api
    */
   toGeoJSON() {}
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa.
+   *
+   * @function
+   * @returns {String|null} Cadena REST de la capa.
+   * @api
+   */
+  getRestLayer() {
+    return this.formatRestLayer_({
+      ...this.getRestVectorParameters_(),
+      projection: this.getProjection(),
+      mode: this.mode !== mode.RENDER ? this.mode : undefined,
+    });
+  }
 }
 
 /**

@@ -266,6 +266,23 @@ class MBTilesVector extends Vector {
    * @api
    */
   toGeoJSON() {}
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa.
+   *
+   * @function
+   * @returns {String|null} Cadena REST; null si el fichero no tiene URL remota.
+   * @api
+   */
+  getRestLayer() {
+    if (!Vector.isAutoRefreshRemoteURL(this.url)) {
+      return null;
+    }
+    return this.formatRestLayer_({
+      ...this.getRestVectorParameters_(),
+      tileSize: this.constructorParameters.userParameters?.tileSize,
+    });
+  }
 }
 
 /**

@@ -45,6 +45,33 @@ CONTENT
     text-align: center;
 }
 
+.m-plugin-sharemap-qr {
+    position: relative;
+}
+
+.m-plugin-sharemap-qr svg {
+    display: block;
+    width: 260px;
+    max-width: 75vw;
+    height: auto;
+}
+
+.m-plugin-sharemap-qr img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 25%;
+    max-height: 25%;
+    background-color: var(--idee-color-white);
+}
+
+.m-plugin-sharemap-qr p {
+    margin: 0;
+    text-align: center;
+    color: var(--idee-color-neutral-50);
+}
+
 .m-plugin-sharemap-button button {
     padding: 0 32px;
 }

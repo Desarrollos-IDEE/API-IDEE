@@ -442,7 +442,11 @@ const getControlBuilders = (map) => ({
   [Location.NAME]: (options) => new Location(options),
   [GetFeatureInfo.NAME]: (options) => new GetFeatureInfo(options),
   [Rotate.NAME]: (options) => new Rotate(options),
-  [BackgroundLayers.NAME]: (options) => new BackgroundLayers(options),
+  [BackgroundLayers.NAME]: (options, params) => {
+    const legacy = /^(\d+)(\*(true|false))?$/.exec(params || '');
+    return new BackgroundLayers(isNullOrEmpty(options) && legacy
+      ? { layerIndex: Number(legacy[1]), visible: legacy[3] !== 'false' } : options);
+  },
   [ImplementationSwitcher.NAME]: (options) => new ImplementationSwitcher(options),
   [WMCSelector.NAME]: (options) => new WMCSelector(options),
   [Timeline.NAME]: (options) => new Timeline({
@@ -484,7 +488,7 @@ export const buildControl = (controlParam, map) => {
     if (isFunction(builderFunction)) {
       const controlParams = controlParam.split(controlNameSeparator).slice(1).join(controlNameSeparator);
       const controlOptions = parseUrlParams(controlParams, controlName);
-      control = builderFunction(controlOptions);
+      control = builderFunction(controlOptions, controlParams);
       if (control) {
         control.builderParams = controlOptions;
       }

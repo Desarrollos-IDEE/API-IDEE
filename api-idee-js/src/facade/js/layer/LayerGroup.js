@@ -233,6 +233,24 @@ class LayerGroup extends LayerBase {
 
     return equals;
   }
+
+  /**
+   * Este método devuelve la cadena de carga REST del grupo. Cada capa del grupo
+   * aporta su propia cadena REST; se omiten las que no son representables.
+   *
+   * @function
+   * @returns {String|null} Cadena REST del grupo.
+   * @api
+   */
+  getRestLayer() {
+    const { userParameters } = this.constructorParameters;
+    const layers = this.getLayers().length > 0 || !isObject(userParameters)
+      ? this.getLayers() : [].concat(userParameters.layers || []);
+    const restLayers = layers
+      .map((layer) => (isString(layer) ? layer : layer.getRestLayer()))
+      .filter((restLayer) => !isNullOrEmpty(restLayer));
+    return this.formatRestLayer_({ url: undefined, layers: restLayers });
+  }
 }
 
 export default LayerGroup;

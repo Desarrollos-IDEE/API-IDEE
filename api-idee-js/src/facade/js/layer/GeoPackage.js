@@ -7,7 +7,9 @@ import Layer from './Layer';
 import * as LayerType from './Type';
 import GeoPackageTile from './GeoPackageTile';
 import GeoJSON from './GeoJSON';
-import { generateRandom, escapeXSS, addParameters } from '../util/Utils';
+import {
+  generateRandom, escapeXSS, addParameters, isArray, isNull, isUndefined, serializeUrlParams,
+} from '../util/Utils';
 import * as EventType from '../event/eventtype';
 import * as Dialog from '../dialog';
 import Style from '../style/Style';
@@ -66,6 +68,7 @@ class GeoPackage extends MObject {
    * tables, cuyas claves son los nombres de tabla y cuyos valores sobrescriben las comunes.
    * tiled activa la consulta de las tablas vectoriales según la extensión visible en OpenLayers.
    * tile y vector mantienen las opciones de los proveedores, indexadas por tabla.
+   * tableNames limita las tablas que se cargan (p. ej. al reconstruir una cadena REST).
    * No se modifican los objetos del llamador. Las instancias de estilo se conservan.
    * La firma histórica mantiene las opciones de tabla directamente en el segundo argumento:
    * <pre><code>
@@ -146,10 +149,17 @@ class GeoPackage extends MObject {
     this.options = this.copyOptions_(normalizedOptions);
     this.tiled = this.options.tiled === true;
     const {
-      tables = {}, tile, vector, ...commonOptions
+      tables = {}, tile, vector, tableNames, ...commonOptions
     } = this.options;
     this.tableOptions_ = this.legacyParameters_ ? this.options : tables;
     this.commonOptions_ = this.legacyParameters_ ? {} : commonOptions;
+
+    /**
+     * Tablas que se cargan; null carga todas.
+     * @private
+     * @type {Array<String>|null}
+     */
+    this.tableNames_ = !this.legacyParameters_ && Array.isArray(tableNames) ? tableNames : null;
 
     /**
      * Conector
@@ -261,7 +271,9 @@ class GeoPackage extends MObject {
   createLayers_(vectorProviders, tileProviders, metadata) {
     const layers = Object.create(null);
     const tables = Object.create(null);
-    vectorProviders.forEach((vectorProvider) => {
+    const isLoaded = (provider) => isNull(this.tableNames_)
+      || this.tableNames_.includes(provider.getTableName());
+    vectorProviders.filter(isLoaded).forEach((vectorProvider) => {
       const tableName = vectorProvider.getTableName();
       const options = this.getTableOptions_(tableName);
       const tiled = options.tiled === true;
@@ -286,7 +298,7 @@ class GeoPackage extends MObject {
         data: source,
       };
     });
-    tileProviders.forEach((tileProvider) => {
+    tileProviders.filter(isLoaded).forEach((tileProvider) => {
       const tableName = tileProvider.getTableName();
       layers[tableName] = new GeoPackageTile({
         ...this.getTableOptions_(tableName, true),
@@ -303,7 +315,11 @@ class GeoPackage extends MObject {
         metadata: this.copyOptions_(metadata.tables[tableName]),
       };
     });
-    Object.keys(layers).forEach((name) => this.tableConnectors_.set(name, this.connector_));
+    Object.keys(layers).forEach((name) => {
+      this.tableConnectors_.set(name, this.connector_);
+      // eslint-disable-next-line no-underscore-dangle
+      layers[name].setRestContainer_(this, name);
+    });
     this.layers_ = layers;
     this.properties = { tables };
     this.loadedVectorLayers_ = true;
@@ -484,6 +500,63 @@ class GeoPackage extends MObject {
       metadata,
       properties: this.copyOptions_(this.properties),
     };
+  }
+
+  /**
+   * Este método devuelve la cadena de carga REST del GeoPackage, con el estado
+   * actual de sus tablas. Solo es representable si el fichero tiene URL remota.
+   *
+   * @function
+   * @param {Array<String>} tableNames Tablas que se comparten; por defecto, todas.
+   * @returns {String|null} Cadena REST; null si el fichero es local o no hay tablas.
+   * @api
+   */
+  getRestLayer(tableNames) {
+    if (this.legacyParameters_ || !Layer.isAutoRefreshRemoteURL(this.url)) {
+      return null;
+    }
+    const sharedTables = isArray(tableNames)
+      ? tableNames.filter((tableName) => !isUndefined(this.layers_[tableName]))
+      : Object.keys(this.layers_);
+    if (isArray(tableNames) && sharedTables.length === 0) {
+      return null;
+    }
+    const read = (getter) => {
+      try {
+        return getter();
+      } catch (error) {
+        return undefined;
+      }
+    };
+    const options = this.getSerializableOptions_(this.options);
+    const tables = { ...options.tables };
+    delete options.tables;
+    sharedTables.forEach((tableName) => {
+      const layer = this.layers_[tableName];
+      /* eslint-disable no-underscore-dangle */
+      const state = {
+        ...layer.getRestParameters_(),
+        ...layer.getRestVectorParameters_?.(),
+        name: layer.name,
+        legend: layer.legend,
+        visibility: read(() => layer.isVisible()),
+        opacity: read(() => layer.getOpacity()),
+        displayInLayerSwitcher: layer.displayInLayerSwitcher,
+      };
+      /* eslint-enable no-underscore-dangle */
+      delete state.url;
+      Object.keys(state).forEach((key) => {
+        if (isUndefined(state[key])) delete state[key];
+      });
+      tables[tableName] = { ...tables[tableName], ...state };
+    });
+    const restricted = isArray(tableNames) || !isNull(this.tableNames_);
+    return `${LayerType.GeoPackage}*${serializeUrlParams({
+      url: Layer.toRestURL(this.url),
+      name: this.name,
+      legend: this.legend !== this.name ? this.legend : undefined,
+      options: { ...options, tables, tableNames: restricted ? sharedTables : undefined },
+    })}`;
   }
 
   /**

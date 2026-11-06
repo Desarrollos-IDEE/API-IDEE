@@ -198,6 +198,21 @@ class OSM extends LayerBase {
     // eslint-disable-next-line no-console
     console.log('si me destruyo');
   }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa. La atribución de
+   * OpenStreetMap la genera la propia capa, por lo que solo se comparte la del usuario.
+   *
+   * @function
+   * @returns {String|null} Cadena REST de la capa.
+   * @api
+   */
+  getRestLayer() {
+    const { userParametersVar } = this.constructorParameters;
+    return this.formatRestLayer_({
+      attribution: isObject(userParametersVar) ? userParametersVar.attribution : undefined,
+    });
+  }
 }
 
 export default OSM;

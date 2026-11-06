@@ -176,7 +176,7 @@ export default class BackImgLayer extends IDEE.Plugin {
       map,
       visible: this.visible,
       layerOpts: this.layerOpts,
-      layerId: this.layerId,
+      layerId: this.options.layerId === undefined ? null : this.layerId,
       layerVisibility: this.layerVisibility,
       ids: this.ids,
       titles: this.titles,

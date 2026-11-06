@@ -616,6 +616,36 @@ class WMS extends LayerBase {
 
     return equals;
   }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa.
+   *
+   * @function
+   * @returns {String|null} Cadena REST de la capa o, si procede de un WMC,
+   * la del WMC, que es quien la reconstruye.
+   * @api
+   */
+  getRestLayer() {
+    if (!isNullOrEmpty(this.getWMCParent())) {
+      return this.getWMCParent().getRestLayer();
+    }
+    const options = this.options || {};
+    let queryable;
+    try {
+      queryable = this.isQueryable();
+    } catch (error) {
+      queryable = undefined;
+    }
+    return this.formatRestLayer_({
+      tiled: this.tiled,
+      version: this.version,
+      queryable,
+      useCapabilities: this.useCapabilities === false ? false : undefined,
+      styles: options.styles,
+      sldVersion: options.sldVersion !== '1.1.0' ? options.sldVersion : undefined,
+      cql: this.cql,
+    });
+  }
 }
 
 export default WMS;

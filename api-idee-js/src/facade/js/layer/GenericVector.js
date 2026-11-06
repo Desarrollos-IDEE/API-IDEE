@@ -429,6 +429,19 @@ class GenericVector extends Vector {
       }
     }
   }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa. Solo es representable
+   * si se creó desde REST: los objetos del proveedor no se serializan.
+   *
+   * @function
+   * @returns {String|null} Cadena REST de la capa.
+   * @api
+   */
+  getRestLayer() {
+    const { userParameters } = this.constructorParameters;
+    return isString(userParameters) ? parameter.genericRestLayer(this, userParameters) : null;
+  }
 }
 
 export default GenericVector;

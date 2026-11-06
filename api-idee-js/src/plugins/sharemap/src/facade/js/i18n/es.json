@@ -1,7 +1,9 @@
 {
   "exception": {
     "impl": "La implementación no puede crear controles de Attribution.",
-    "baseUrl": "La implementación no puede obtener la URL base de la aplicación."
+    "baseUrl": "La implementación no puede obtener la URL base de la aplicación.",
+    "unsharedLayer": "La capa «{layer}» no se puede compartir mediante una URL (por ejemplo, porque procede de un fichero local).",
+    "tooLong": "La URL es demasiado larga para generar un código QR. Utilice el enlace."
   },
   "textHelp": {
     "help1": "Permite compartir la vista de mapa con las capas de información cargadas a través de un enlace Web. También proporciona el código HTML por si se quiere embeber el visualizador en otro portal Web.",
@@ -10,7 +12,8 @@
     "help4": "3. Genera el código HTML necesario para incrustar en una página web la vista actual.",
     "help5": "Pulse 'Aceptar' para cerrar el panel.",
     "help6": "La información relevante a la extensión y su posible parametrización está documentada en",
-    "help7": "El ejemplo de uso de sus parámetros puede comprobarse en"
+    "help7": "El ejemplo de uso de sus parámetros puede comprobarse en",
+    "help8": "4. Escanee el código QR con la cámara de un dispositivo móvil para abrir en él la vista actual."
   },
   "modalTitle": "Compartir mapa",
   "title": "Compartir URL",
@@ -18,5 +21,9 @@
   "accept": "Aceptar",
   "copy": "Copiar",
   "tooltip": "Compartir",
-  "tooltipCopy": "¡Copiado!"
+  "tooltipCopy": "¡Copiado!",
+  "qr": {
+    "title": "Código QR",
+    "alt": "Código QR con la URL del mapa"
+  }
 }

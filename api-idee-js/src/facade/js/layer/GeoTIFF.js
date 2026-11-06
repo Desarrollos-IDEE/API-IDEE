@@ -397,6 +397,25 @@ class GeoTIFF extends LayerBase {
 
     return equals;
   }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa.
+   *
+   * @function
+   * @returns {String|null} Cadena REST; null si el fichero no tiene URL remota.
+   * @api
+   */
+  getRestLayer() {
+    if (!GeoTIFF.isAutoRefreshRemoteURL(this.url)) {
+      return null;
+    }
+    const options = this.options || {};
+    return this.formatRestLayer_({
+      projection: options.projection,
+      normalize: options.normalize,
+      extract: this.extract === false ? false : undefined,
+    });
+  }
 }
 
 export default GeoTIFF;

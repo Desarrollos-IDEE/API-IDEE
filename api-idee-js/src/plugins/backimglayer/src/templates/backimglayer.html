@@ -2,7 +2,11 @@
     <div id="backimglayer-previews" style="--columns-number: {{columnsNumber}}">
         {{#each layers}}
         <div id="backimglayer-layer-{{this.id}}" title="{{this.title}}" role="button" tabindex="0" aria-label="{{this.title}}">
+            {{#if this.preview}}
             <img src="{{this.preview}}" alt="{{this.title}}" tabindex="-1" />
+            {{else}}
+            <div height="100px" width="100px" tabindex="-1"></div>
+            {{/if}}
             <span aria-hidden="true" tabindex="-1">{{this.title}}</span>
         </div>
         {{/each}}

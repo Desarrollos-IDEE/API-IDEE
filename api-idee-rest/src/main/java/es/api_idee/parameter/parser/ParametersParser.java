@@ -36,7 +36,8 @@ public abstract class ParametersParser {
       String zoomconstrains = queryParams.getFirst("zoomConstrains");
       String viewextent = queryParams.getFirst("viewextent");
       String bgcolorcontainer = queryParams.getFirst("bgcolorcontainer");
-      
+      String baselayer = queryParams.getFirst("baselayer");
+
       Parameters parameters = new Parameters();
       parameters.addContainer(container);
       parameters.addWmcfiles(wmcfiles);
@@ -54,7 +55,8 @@ public abstract class ParametersParser {
       parameters.addZoomConstrains(zoomconstrains);
       parameters.addViewExtent(viewextent);
       parameters.addBGColorContainer(bgcolorcontainer);
-      
+      parameters.addBaseLayer(baselayer);
+
       return parameters;
    }
    
@@ -79,27 +81,27 @@ public abstract class ParametersParser {
    public static List<String> parseLayers (String layerParameter) {
       List<String> layers = new LinkedList<String>();
       if (!StringUtils.isEmpty(layerParameter)) {
-         List<String> layerGroups = new LinkedList<>();
-         Pattern pattern = Pattern.compile("LayerGroup\\*.*?!");
-         Matcher matcher = pattern.matcher(layerParameter);
-
-         while (matcher.find()) {
-            layerGroups.add(matcher.group().substring(0, matcher.group().length() - 1));
-         }
-
-         layerParameter = matcher.replaceAll("");
-         
-         String[] layersArray = layerParameter.split(",");
-         
-         for (String item : layersArray) {
+         Matcher positionalGroup = Pattern.compile("LayerGroup\\*(?!\\w+=)").matcher(layerParameter);
+         int start = 0;
+         while (start < layerParameter.length()) {
+            int end;
+            int next;
+            if (positionalGroup.region(start, layerParameter.length()).lookingAt()
+                  && layerParameter.indexOf('!', start) != -1) {
+               end = layerParameter.indexOf('!', start);
+               next = layerParameter.indexOf(',', end);
+               next = next == -1 ? layerParameter.length() : next + 1;
+            } else {
+               end = layerParameter.indexOf(',', start);
+               end = end == -1 ? layerParameter.length() : end;
+               next = end + 1;
+            }
+            String item = layerParameter.substring(start, end).trim();
             if (!item.isEmpty()) {
                layers.add(item);
             }
+            start = next;
          }
-
-         layers.addAll(layerGroups);
-         /* String[] layersValues = layerParameter.split(",");
-         layers = Arrays.asList(layersValues); */
       }
       return layers;
    }

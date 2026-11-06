@@ -6,6 +6,7 @@
 import { get as remoteGet } from 'IDEE/util/Remote';
 import chroma from 'chroma-js';
 import Draggabilly from 'draggabilly';
+import { deflate, inflate } from 'pako';
 import reproj from 'impl/util/reprojection';
 import getImplWMTSCapabilities from 'impl/util/GetCapabilities';
 import { getValue } from '../i18n/language';
@@ -2115,6 +2116,7 @@ export function decodeBase64Utf8(base64) {
  * Intelligently parses a value based on its content.
  * Supports: boolean, number, JSON (object/array), base64-encoded values, and strings.
  * If a value starts with 'base64~', it will be decoded and recursively parsed.
+ * Values starting with 'deflate~' are base64 of a deflate-compressed UTF-8 text.
  * @private
  * @function
  * @param {string} rawValue The raw value to parse.
@@ -2125,10 +2127,13 @@ export function decodeBase64Utf8(base64) {
 const parseValueByType = (rawValue, paramKey, objectName) => {
   if (!rawValue) return rawValue;
   const value = rawValue.trim();
-  if (value.startsWith('base64~')) {
+  if (value.startsWith('base64~') || value.startsWith('deflate~')) {
     try {
-      const encoded = value.substring(7);
-      const decoded = decodeBase64Utf8(encoded);
+      const compressed = value.startsWith('deflate~');
+      const encoded = value.substring(compressed ? 8 : 7);
+      const decoded = compressed
+        ? inflate(Uint8Array.from(window.atob(encoded), (char) => char.charCodeAt(0)), { to: 'string' })
+        : decodeBase64Utf8(encoded);
       return parseValueByType(decoded, paramKey, objectName);
     } catch (e) {
       dialog.error(getValue('exception').parseParamError
@@ -2197,15 +2202,110 @@ export const parseUrlParams = (stringToParse, objectName, fieldSeparator = ';', 
 
   const fields = stringToParse.split(fieldSeparator);
   fields.forEach((field) => {
-    const parts = field.split(keyValueSeparator, 2);
-    if (parts.length === 2) {
-      const [key, rawValue] = parts;
+    const index = field.indexOf(keyValueSeparator);
+    if (index !== -1) {
+      const key = field.substring(0, index);
+      const rawValue = field.substring(index + keyValueSeparator.length);
       if (key && rawValue) {
         result[key] = parseValueByType(rawValue, key, objectName);
       }
     }
   });
   return result;
+};
+
+/**
+ * Codifica un valor para que parseValueByType lo recupere con su mismo tipo.
+ *
+ * @function
+ * @param {*} value Valor que se quiere codificar.
+ * @returns {String|undefined} Valor codificado; undefined si no es serializable.
+ */
+const serializeValueByType = (value) => {
+  const toBase64 = (text) => {
+    const encoded = `base64~${window.btoa(unescape(encodeURIComponent(text)))}`;
+    if (text.length < 512) {
+      return encoded;
+    }
+    let binary = '';
+    deflate(text).forEach((byte) => {
+      binary += String.fromCharCode(byte);
+    });
+    const compressed = `deflate~${window.btoa(binary)}`;
+    return compressed.length < encoded.length ? compressed : encoded;
+  };
+  let serialized;
+  if (isBoolean(value) || (isNumber(value) && Number.isFinite(value))) {
+    serialized = String(value);
+  } else if (isString(value)) {
+    const isPlain = value === value.trim() && !/[;,*!]/.test(value)
+      && !/^(\[|\{|'|base64~|deflate~)/.test(value);
+    const isAmbiguous = value === 'true' || value === 'false' || !Number.isNaN(Number(value));
+    if (!isPlain) {
+      serialized = toBase64(`'${value}'`);
+    } else {
+      serialized = isAmbiguous ? `'${value}'` : value;
+    }
+  } else if (isArray(value)
+    || (isObject(value) && Object.getPrototypeOf(value) === Object.prototype)) {
+    serialized = toBase64(JSON.stringify(value));
+  }
+  return serialized;
+};
+
+/**
+ * Genera una cadena de parámetros nombrados.
+ * Se omiten los valores vacíos o no serializables.
+ *
+ * @function
+ * @param {Object} params Parámetros.
+ * @param {string} fieldSeparator Separador de campos.
+ * @param {string} keyValueSeparator Separador entre clave y valor.
+ * @returns {String} Cadena de parámetros.
+ * @api
+ */
+export const serializeUrlParams = (params, fieldSeparator = ';', keyValueSeparator = '=') => {
+  return Object.keys(params)
+    .filter((key) => !isNullOrEmpty(params[key]))
+    .map((key) => [key, serializeValueByType(params[key])])
+    .filter(([, value]) => !isUndefined(value))
+    .map(([key, value]) => `${key}${keyValueSeparator}${value}`)
+    .join(fieldSeparator);
+};
+
+/**
+ * Devuelve una clave que identifica los recursos de un conjunto de cadenas REST de capas
+ *
+ * @function
+ * @param {Array<String>} restLayers Cadenas REST de las capas.
+ * @returns {String} Clave de los recursos.
+ * @api
+ */
+export const getRestLayerResourceKey = (restLayers) => {
+  const presentation = ['legend', 'visibility', 'opacity', 'displayInLayerSwitcher', 'isBase', 'transparent'];
+  const isRestLayer = (value) => isString(value) && /^\w+\*/.test(value);
+  const sortKeys = (value) => {
+    if (isArray(value)) return value.map(sortKeys);
+    if (isObject(value)) {
+      return Object.keys(value).sort()
+        .reduce((sorted, key) => ({ ...sorted, [key]: sortKeys(value[key]) }), {});
+    }
+    return value;
+  };
+  const resources = (values) => values.flatMap((restLayer) => {
+    if (!isRestLayer(restLayer)) return [restLayer];
+    const index = restLayer.indexOf('*');
+    const type = restLayer.substring(0, index);
+    const params = restLayer.substring(index + 1);
+    if (!/^\w+=/.test(params)) return [{ type, params }];
+    const parsed = parseUrlParams(params, type);
+    if (isArray(parsed.layers) && parsed.layers.length > 0 && parsed.layers.every(isRestLayer)) {
+      return resources(parsed.layers);
+    }
+    presentation.forEach((key) => delete parsed[key]);
+    return [sortKeys({ type, ...parsed })];
+  });
+  return JSON.stringify(resources(restLayers));
 };
 
 /**

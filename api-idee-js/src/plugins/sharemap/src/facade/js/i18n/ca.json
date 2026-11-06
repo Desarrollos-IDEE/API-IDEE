@@ -1,7 +1,9 @@
 {
     "exception": {
         "impl": "La implementació no pot crear controls d'Atribució.",
-        "baseUrl": "La implementació no pot obtenir la URL base de l'aplicació."
+        "baseUrl": "La implementació no pot obtenir la URL base de l'aplicació.",
+        "unsharedLayer": "La capa «{layer}» no es pot compartir mitjançant una URL (per exemple, perquè prové d'un fitxer local).",
+        "tooLong": "La URL és massa llarga per generar un codi QR. Utilitzeu l'enllaç."
     },
     "textHelp": {
         "help1": "Permet compartir la vista de mapa amb les capes d'informació carregades a través d'un enllaç web. També proporciona el codi HTML per si es vol incrustar el visualitzador en un altre portal web.",
@@ -10,7 +12,8 @@
         "help4": "3. Genera el codi HTML necessari per incrustar en una pàgina web la vista actual.",
         "help5": "Premeu 'Accepta' per tancar el panell.",
         "help6": "La informació rellevant a l'extensió i la seva possible parametrització està documentada a",
-        "help7": "L'exemple d'ús dels seus paràmetres es pot comprovar a"
+        "help7": "L'exemple d'ús dels seus paràmetres es pot comprovar a",
+        "help8": "4. Escanegeu el codi QR amb la càmera d'un dispositiu mòbil per obrir-hi la vista actual."
     },
     "modalTitle": "Compartir mapa",
     "title": "Compartir URL",
@@ -18,5 +21,9 @@
     "accept": "Acceptar",
     "copy": "Copiar",
     "tooltip": "Compartir",
-    "tooltipCopy": "Copiat!"
+    "tooltipCopy": "Copiat!",
+    "qr": {
+        "title": "Codi QR",
+        "alt": "Codi QR amb la URL del mapa"
+    }
 }

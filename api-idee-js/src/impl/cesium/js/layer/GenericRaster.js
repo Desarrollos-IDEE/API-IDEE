@@ -12,7 +12,9 @@ import {
 import {
   WebMapServiceImageryProvider,
   WebMapTileServiceImageryProvider,
+  UrlTemplateImageryProvider,
 } from 'cesium';
+import * as LayerType from 'IDEE/layer/Type';
 import { get as getRemote } from 'IDEE/util/Remote';
 
 import LayerBase from './Layer';
@@ -353,6 +355,37 @@ class GenericRaster extends LayerBase {
       }
     }
     return url;
+  }
+
+  /**
+   * Este método devuelve los parámetros de la capa REST equivalente al proveedor
+   * de Cesium.
+   *
+   * @function
+   * @returns {Object|null} Tipo y parámetros de la capa REST; null si el proveedor
+   * no tiene equivalente.
+   * @public
+   * @api
+   */
+  getRestParameters() {
+    const provider = this.cesiumLayer?.imageryProvider;
+    let parameters = null;
+    if (provider instanceof WebMapServiceImageryProvider) {
+      parameters = { type: LayerType.WMS, url: provider.url, name: provider.layers };
+    } else if (provider instanceof WebMapTileServiceImageryProvider) {
+      parameters = {
+        type: LayerType.WMTS,
+        url: provider.url,
+        // eslint-disable-next-line no-underscore-dangle
+        name: provider._layer,
+        // eslint-disable-next-line no-underscore-dangle
+        matrixSet: provider._tileMatrixSetID,
+        format: provider.format,
+      };
+    } else if (provider instanceof UrlTemplateImageryProvider) {
+      parameters = { type: LayerType.XYZ, url: provider.url };
+    }
+    return parameters;
   }
 
   /**

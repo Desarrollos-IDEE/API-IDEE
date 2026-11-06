@@ -11,6 +11,7 @@ import { getValue } from 'IDEE/i18n/language';
 import TileWMS from 'ol/source/TileWMS';
 import ImageWMS from 'ol/source/ImageWMS';
 import OLSourceWMTS from 'ol/source/WMTS';
+import XYZ from 'ol/source/XYZ';
 import OLFormatWMTSCapabilities from 'ol/format/WMTSCapabilities';
 import { get as getRemote } from 'IDEE/util/Remote';
 import { get as getProj } from 'ol/proj';
@@ -365,6 +366,43 @@ class GenericRaster extends LayerBase {
       }
     }
     return url;
+  }
+
+  /**
+   * Este método devuelve los parámetros de la capa REST equivalente a la fuente
+   * de OpenLayers (WMS, WMTS o XYZ).
+   *
+   * @function
+   * @returns {Object|null} Tipo y parámetros de la capa REST; null si la fuente
+   * no tiene equivalente.
+   * @public
+   * @api
+   */
+  getRestParameters() {
+    const source = this.olLayer?.getSource?.();
+    let parameters = null;
+    if (source instanceof TileWMS || source instanceof ImageWMS) {
+      const params = source.getParams();
+      parameters = {
+        type: LayerType.WMS,
+        url: source instanceof TileWMS ? source.getUrls()?.[0] : source.getUrl(),
+        name: params.LAYERS,
+        version: params.VERSION,
+        styles: params.STYLES,
+        tiled: source instanceof TileWMS,
+      };
+    } else if (source instanceof OLSourceWMTS) {
+      parameters = {
+        type: LayerType.WMTS,
+        url: source.getUrls()?.[0],
+        name: source.getLayer(),
+        matrixSet: source.getMatrixSet(),
+        format: source.getFormat(),
+      };
+    } else if (source instanceof XYZ) {
+      parameters = { type: LayerType.XYZ, url: source.getUrls()?.[0] };
+    }
+    return parameters;
   }
 
   /**

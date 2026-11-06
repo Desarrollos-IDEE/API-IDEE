@@ -641,6 +641,32 @@ class DataIDEE extends Vector {
     }
     return equals;
   }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa. De las opciones del
+   * proveedor solo se comparten los filtros; nunca credenciales.
+   *
+   * @function
+   * @returns {String|null} Cadena REST de la capa.
+   * @api
+   */
+  getRestLayer() {
+    const { filter, filterLang } = this.constructorParameters.vendorOpts || {};
+    const vendorOptions = { cql: this.cql, filter, filterLang };
+    Object.keys(vendorOptions).forEach((key) => {
+      if (isUndefined(vendorOptions[key])) delete vendorOptions[key];
+    });
+    return this.formatRestLayer_({
+      ...this.getRestVectorParameters_(),
+      limit: this.limit,
+      bbox: this.bbox,
+      id: this.id,
+      offset: this.offset,
+      format: this.format,
+      conditional: this.conditional,
+      vendorOptions,
+    });
+  }
 }
 
 /**

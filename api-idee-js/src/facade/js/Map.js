@@ -19,6 +19,7 @@ import {
   getResolutionFromScale,
   getImageMap,
   generateResolutionsFromExtent,
+  serializeUrlParams,
 } from './util/Utils';
 import { addFileToMap } from './util/LoadFiles';
 import { getValue } from './i18n/language';
@@ -89,6 +90,9 @@ class Map extends Base {
    * @constructor
    * @extends { IDEE.facade.Base }
    * @param { string | Mx.parameters.Map } userParameters Parámetros.
+   * - baseLayer: Capa base del mapa (cadena REST de la capa, capa rápida o capa); sustituye
+   * a la capa base por defecto. "none" crea el mapa sin capa base. Equivale al parámetro
+   * GET "baselayer".
    * - bbox: Extensión del mapa.
    * - center: Centro del mapa.
    * - container: Contenedor del mapa.
@@ -351,9 +355,22 @@ class Map extends Base {
       this.addQuickLayers(IDEE.config.terrain.default);
     }
 
+    /**
+     * Map: Capas recibidas en la opción "baseLayer"; [] para "none" y null si no se indicó.
+     * Se añaden antes que el resto para que sean la capa base visible.
+     */
+    this.requestedBaseLayers_ = this.createBaseLayers_(params.baseLayer);
+    let { layers } = params;
+    if (!isNull(this.requestedBaseLayers_)) {
+      this.addLayers(this.requestedBaseLayers_);
+      if (isString(params.baseLayer) && !isNullOrEmpty(layers)) {
+        layers = [].concat(layers).filter((layer) => layer !== params.baseLayer);
+      }
+    }
+
     // layers
-    if (!isNullOrEmpty(params.layers)) {
-      this.addLayers(params.layers);
+    if (!isNullOrEmpty(layers)) {
+      this.addLayers(layers);
     }
 
     // wms
@@ -381,7 +398,8 @@ class Map extends Base {
     }
 
     // default TMS
-    if (isNullOrEmpty(params.layers) && !isArray(params.layers) && isNullOrEmpty(params.wmc)) {
+    if (isNull(this.requestedBaseLayers_) && isNullOrEmpty(params.layers)
+      && !isArray(params.layers) && isNullOrEmpty(params.wmc)) {
       this.addLayers(IDEE.config.baseLayer);
     }
 
@@ -704,6 +722,100 @@ class Map extends Base {
   }
 
   /**
+   * Este método devuelve las capas que forman la capa base (fondo) activa, en orden de dibujo.
+   *
+   * @function
+   * @returns {Array<IDEE.Layer>} Capas del fondo activo; vacío si el mapa no tiene fondo.
+   * @api
+   */
+  getActiveBaseLayers() {
+    const present = this.getLayers();
+    const isActive = (layer) => present.includes(layer) && layer.isVisible();
+    const selector = this.getControls().find((control) => isFunction(control.getSelectedBaseLayers)
+      && control.getSelectedBaseLayers().some(isActive));
+    return selector
+      ? selector.getSelectedBaseLayers().filter(isActive)
+      : this.getBaseLayers().filter((layer) => layer.isVisible());
+  }
+
+  /**
+   * Este método devuelve la cadena REST de la capa base activa.
+   *
+   * @function
+   * @returns {String|undefined} Cadena REST; "none" si el mapa no tiene fondo y undefined
+   * si alguna de sus capas no puede representarse mediante REST.
+   * @api
+   */
+  getRestBaseLayer() {
+    const layers = this.getActiveBaseLayers();
+    if (layers.length === 0) {
+      return Map.NO_BASE_LAYER;
+    }
+    const restLayers = layers.map((layer) => layer.getRestLayer());
+    if (restLayers.some((restLayer) => isNullOrEmpty(restLayer))) {
+      return undefined;
+    }
+    if (restLayers.length === 1) {
+      return restLayers[0];
+    }
+    return `${LayerType.LayerGroup}*${serializeUrlParams({
+      name: layers.map((layer) => layer.name).join('+'),
+      legend: layers.map((layer) => layer.legend || layer.name).join(' + '),
+      isBase: true,
+      layers: restLayers,
+    })}`;
+  }
+
+  /**
+   * Este método devuelve las capas recibidas en la opción "baseLayer" al crear el mapa.
+   *
+   * @function
+   * @returns {Array<IDEE.Layer>|null} Capas solicitadas ([] si se pidió "none"); null si el
+   * mapa se creó sin "baseLayer".
+   * @api
+   */
+  getRequestedBaseLayers() {
+    return this.requestedBaseLayers_;
+  }
+
+  /**
+   * Este método crea la capa base indicada en la opción "baseLayer".
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @function
+   * @param {String|IDEE.Layer} baseLayerParam Cadena REST, capa rápida, capa o "none".
+   * @returns {Array<IDEE.Layer>|null} Capas creadas ([] para "none"); null si no se indicó o
+   * no se ha podido crear, en cuyo caso el mapa usa su capa base por defecto.
+   * @public
+   */
+  createBaseLayers_(baseLayerParam) {
+    if (isNullOrEmpty(baseLayerParam)) {
+      return null;
+    }
+    if (baseLayerParam === Map.NO_BASE_LAYER) {
+      return [];
+    }
+    let layer = baseLayerParam;
+    try {
+      if (isString(layer) && layer.startsWith('QUICK*')) {
+        layer = getQuickLayers(layer.substring('QUICK*'.length));
+      }
+      if (isString(layer)) {
+        layer = this.getLayerByString(layer);
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.warn(error);
+      layer = null;
+    }
+    if (!(layer instanceof Layer)) {
+      return null;
+    }
+    layer.isBase = true;
+    return [layer];
+  }
+
+  /**
    * Este método devuelve los manejadores de objetos geográficos.
    *
    * @function
@@ -778,23 +890,14 @@ class Map extends Base {
         let layer;
 
         if (isString(layerParam)) {
-          // Named-param format: 'WMTS*url=http://...;name=MTN;matrixSet=GM'
-          if (isString(layerParam)) {
-            // eslint-disable-next-line
-            layerParam = buildLayer(layerParam);
-          }
-          if (isString(layerParam)) {
-            const splt = layerParam.split('*');
-            if (splt.length === 2 && splt[0] === 'QUICK') {
-              const ly = getQuickLayers(splt[1]);
-              if (!isUndefined(ly)) {
-                // eslint-disable-next-line
-                layerParam = ly;
-              } else {
-                // eslint-disable-next-line
-                console.error(`No se encuentra definida ${splt[1]} como capa rápida`);
-                return null;
-              }
+          const splt = layerParam.split('*');
+          if (splt.length === 2 && splt[0] === 'QUICK') {
+            const ly = getQuickLayers(splt[1]);
+            if (!isUndefined(ly)) {
+              // eslint-disable-next-line
+              layerParam = ly;
+            } else {
+              return null;
             }
           }
         }
@@ -842,25 +945,41 @@ class Map extends Base {
     return this;
   }
 
-  getLayerByString(layerParam) {
+  getLayerByString(layerParameter) {
+    const layerParam = buildLayer(layerParameter);
+    const isNamedFormat = layerParam !== layerParameter;
     let layer = null;
     const parameterVariable = parameter.layer(layerParam);
+    const parameters = isNamedFormat ? { ...layerParam } : parameterVariable;
+    const constructorOptions = {};
+    if (isNamedFormat) {
+      Object.keys(parameterVariable).forEach((key) => {
+        if (!isUndefined(parameterVariable[key]) && (key !== 'transparent' || key in layerParam)) {
+          parameters[key] = parameterVariable[key];
+        }
+      });
+      Object.assign(constructorOptions, layerParam.options);
+      ['visibility', 'opacity', 'displayInLayerSwitcher', 'minZoom', 'maxZoom', 'style'].forEach((key) => {
+        if (!isUndefined(layerParam[key])) constructorOptions[key] = layerParam[key];
+      });
+    }
+    const styleOptions = { ...constructorOptions, style: parameterVariable.style };
     if (!isNullOrEmpty(parameterVariable.type)) {
       switch (parameterVariable.type) {
         case 'WFS':
-          layer = new WFS(layerParam, { style: parameterVariable.style });
+          layer = new WFS(layerParam, styleOptions);
           break;
         case 'WMC':
-          layer = new WMC(layerParam);
+          layer = new WMC(layerParam, constructorOptions);
           break;
         case 'WMS':
-          layer = new WMS(layerParam);
+          layer = new WMS(layerParam, constructorOptions);
           break;
         case 'GeoJSON':
-          layer = new GeoJSON(parameterVariable, { style: parameterVariable.style });
+          layer = new GeoJSON(parameters, styleOptions);
           break;
         case 'GPX':
-          layer = new GPX(parameterVariable);
+          layer = new GPX(parameters, constructorOptions);
           break;
         case 'GeoPackage': {
           const {
@@ -875,66 +994,68 @@ class Map extends Base {
           break;
         }
         case 'GeoTIFF':
-          layer = new GeoTIFF(layerParam);
+          layer = new GeoTIFF(layerParam, constructorOptions);
           break;
         case 'KMZ':
-          layer = new KMZ(layerParam);
+          layer = new KMZ(layerParam, constructorOptions);
           break;
         case 'KML':
-          layer = new KML(layerParam);
+          layer = new KML(layerParam, constructorOptions);
           break;
         case 'Vector':
-          layer = new Vector(layerParam);
+          layer = new Vector(layerParam, constructorOptions);
           break;
         case 'WMTS':
-          layer = new WMTS(layerParam);
+          layer = new WMTS(layerParam, constructorOptions);
           break;
         case 'MVT':
-          layer = new MVT(layerParam);
+          layer = new MVT(layerParam, constructorOptions);
           break;
         case 'MBTiles':
-          layer = new MBTiles(parameterVariable);
+          layer = new MBTiles(parameters, constructorOptions);
           break;
         case 'MBTilesVector':
-          layer = new MBTilesVector(parameterVariable, { style: parameterVariable.style });
+          layer = new MBTilesVector(parameters, styleOptions);
           break;
         case 'XYZ':
-          layer = new XYZ(parameterVariable);
+          layer = new XYZ(parameters, constructorOptions);
           break;
         case 'TMS':
-          layer = new TMS(parameterVariable, { crossOrigin: parameterVariable.crossOrigin });
+          layer = new TMS(parameters, {
+            ...constructorOptions, crossOrigin: parameterVariable.crossOrigin,
+          });
           break;
         case 'OSM':
-          layer = new OSM(layerParam);
+          layer = new OSM(layerParam, constructorOptions);
           break;
         case 'OGCAPIFeatures':
-          layer = new OGCAPIFeatures(layerParam, { style: parameterVariable.style });
+          layer = new OGCAPIFeatures(layerParam, styleOptions);
           break;
         case 'DataIDEE':
           // Un objeto literal puede incluir vendorOptions (p. ej. { getFeature: { token } }).
           layer = new DataIDEE(
             layerParam,
-            { style: parameterVariable.style },
+            styleOptions,
             layerParam.vendorOptions,
           );
           break;
         case 'GenericRaster':
-          layer = new GenericRaster(layerParam);
+          layer = new GenericRaster(layerParam, constructorOptions);
           break;
         case 'GenericVector':
-          layer = new GenericVector(layerParam);
+          layer = new GenericVector(layerParam, constructorOptions);
           break;
         case 'MapLibre':
-          layer = new MapLibre(layerParam);
+          layer = new MapLibre(layerParam, constructorOptions);
           break;
         case 'LayerGroup':
-          layer = new LayerGroup(layerParam);
+          layer = new LayerGroup(layerParam, constructorOptions);
           break;
         case 'Tiles3D':
-          layer = new Tiles3D(parameterVariable);
+          layer = new Tiles3D(parameters, constructorOptions);
           break;
         case 'Terrain':
-          layer = new Terrain(parameterVariable);
+          layer = new Terrain(parameters, constructorOptions);
           break;
         default:
           Dialog.error(getValue('dialog').invalid_type_layer);
@@ -5998,6 +6119,16 @@ class Map extends Base {
     this.enablePan(active);
   }
 }
+
+/**
+ * Valor de la opción "baseLayer" para un mapa sin capa base.
+ *
+ * @const
+ * @type {String}
+ * @public
+ * @api
+ */
+Map.NO_BASE_LAYER = 'none';
 
 /**
  * Opciones de estilo de capa.

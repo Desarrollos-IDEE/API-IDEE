@@ -228,5 +228,22 @@ class TMS extends LayerBase {
     }
     return impl.getData(pixel);
   }
+
+  /**
+   * Devuelve la cadena de carga REST de la capa.
+   *
+   * @function
+   * @returns {String|null} Cadena REST de la capa.
+   * @api
+   */
+  getRestLayer() {
+    const { userParameters } = this.constructorParameters;
+    return this.formatRestLayer_({
+      tileGridMaxZoom: this.tileGridMaxZoom,
+      tileSize: isObject(userParameters) ? userParameters.tileSize : undefined,
+      crossOrigin: this.options?.crossOrigin,
+      extract: this.extract === true ? true : undefined,
+    });
+  }
 }
 export default TMS;
