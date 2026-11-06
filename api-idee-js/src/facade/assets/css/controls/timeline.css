@@ -564,8 +564,19 @@
         text-align: left;
         color: var(--idee-color-neutral-90);
         background-color: var(--idee-color-neutral-05);
+        border: 0;
         border-left: 3px solid var(--idee-color-warning);
         border-radius: var(--idee-shape-border-radius);
+    }
+
+    .m-control-panel.m-control-timeline.opened .m-timeline-track-message[popover] {
+        position: fixed;
+        inset: auto;
+        width: max-content;
+        max-width: 18rem;
+        overflow: auto;
+        background-color: var(--idee-color-white);
+        box-shadow: var(--idee-shape-box-shadow);
     }
 
     .m-timeline-picking,

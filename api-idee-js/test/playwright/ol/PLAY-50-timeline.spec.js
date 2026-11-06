@@ -181,7 +181,7 @@ const trackDom = (page) => page.evaluate(() => {
       icon: warning.classList.contains('g-cartografia-warning'),
       label: warning.getAttribute('aria-label'),
       expanded: warning.getAttribute('aria-expanded'),
-      text: expanded.hidden ? null : expanded.textContent,
+      text: expanded.checkVisibility() ? expanded.textContent : null,
     },
   };
 });
@@ -1748,13 +1748,41 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
     }));
     const warningButton = page.locator('.m-timeline-track-warning');
     const warningText = page.locator('.m-timeline-track-message');
+    const card = page.locator('.m-control-timeline');
+    const cardBox = await card.boundingBox();
     await expect(warningText).toBeHidden();
     await warningButton.click();
     await expect(warningText).toBeVisible();
     expect((await trackDom(page)).warning).toEqual({
       icon: true, label: complementary, expanded: 'true', text: complementary,
     });
+    expect(await card.boundingBox()).toEqual(cardBox);
+    const placement = await page.evaluate(() => {
+      const button = document.querySelector('.m-timeline-track-warning').getBoundingClientRect();
+      const popup = document.querySelector('.m-timeline-track-message');
+      const box = popup.getBoundingClientRect();
+      const { clientWidth, clientHeight } = document.documentElement;
+      return {
+        popover: popup.matches(':popover-open'),
+        rightAligned: Math.abs(box.right - button.right) <= 1,
+        anchored: box.top >= button.bottom || box.bottom <= button.top,
+        inViewport: box.left >= 0 && box.top >= 0 && box.right <= clientWidth && box.bottom <= clientHeight,
+      };
+    });
+    expect(placement).toEqual({
+      popover: true, rightAligned: true, anchored: true, inViewport: true,
+    });
     await warningButton.click();
+    await expect(warningText).toBeHidden();
+    expect((await trackDom(page)).warning.expanded).toBe('false');
+    await warningButton.click();
+    await expect(warningText).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(warningText).toBeHidden();
+    expect((await trackDom(page)).warning.expanded).toBe('false');
+    await warningButton.click();
+    await expect(warningText).toBeVisible();
+    await page.locator('.m-control-timeline .m-timeline-title').click();
     await expect(warningText).toBeHidden();
     expect((await trackDom(page)).warning.expanded).toBe('false');
     await clickAction(page, 'forward');
@@ -1775,10 +1803,26 @@ test.describe('IDEE.control.Timeline (OpenLayers)', () => {
     expect(await page.evaluate(() => window.timeline.getSelectedLayer().name)).toBe('ruta_penalara');
     expect((await trackOf(page)).step).toBe(5);
 
+    await warningButton.click();
+    await expect(warningText).toBeVisible();
     await chooseValue(page, '.m-timeline-track-layer', '');
     expect(await trackOf(page)).toBeNull();
     expect(await olTrack(page)).toBeNull();
     expect((await trackDom(page)).progress).toBeNull();
+    await expect(warningText).toBeHidden();
+    await expect(warningButton).toBeHidden();
+    expect((await trackDom(page)).warning.expanded).toBe('false');
+
+    await chooseValue(page, '.m-timeline-track-layer', '1');
+    await warningButton.click();
+    await expect(warningText).toBeVisible();
+    await page.evaluate(() => {
+      window.map.removeControls(window.timeline);
+      window.dispatchEvent(new Event('resize'));
+      window.dispatchEvent(new Event('scroll'));
+    });
+    expect(await page.evaluate(() => document.querySelectorAll(':popover-open').length)).toBe(0);
+    await expect(warningText).toHaveCount(0);
     expect(errors).toEqual([]);
   });
 

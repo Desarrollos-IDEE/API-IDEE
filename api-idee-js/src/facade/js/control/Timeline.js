@@ -3306,8 +3306,8 @@ const createOption = (text, value) => {
  * Interfaz del recorrido, igual en todos los modos: se carga desde una plantilla común
  * en el hueco .m-timeline-track-slot. Selector de capa (con "Sin recorrido" fuera del
  * modo "track"), selector del objeto (oculto si solo hay uno), elección en el mapa,
- * botón del perfil, botón de avisos (desplegable), barra de progreso y posición. Fuera
- * del modo "track" se oculta si el mapa no tiene capas con recorridos.
+ * botón del perfil, botón de avisos (ventana emergente), barra de progreso y posición.
+ * Fuera del modo "track" se oculta si el mapa no tiene capas con recorridos.
  *
  * @private
  */
@@ -3325,7 +3325,8 @@ class TrackTools {
     this.layers_ = [];
     this.trackMessage_ = '';
     this.profileMessage_ = '';
-    this.warningExpanded_ = false;
+    this.popover_ = false;
+    this.placeWarning_ = () => this.placeWarning();
   }
 
   /**
@@ -3368,10 +3369,20 @@ class TrackTools {
       pick.setAttribute('aria-pressed', String(picking));
     }));
     this.query('.m-timeline-profile-button').addEventListener('click', () => this.profile_.toggle());
-    this.query('.m-timeline-track-warning').addEventListener('click', () => {
-      this.warningExpanded_ = !this.warningExpanded_;
-      this.renderWarning();
-    });
+    const warning = this.query('.m-timeline-track-warning');
+    const message = this.query('.m-timeline-track-message');
+    this.popover_ = 'popoverTargetElement' in warning;
+    if (this.popover_) {
+      message.hidden = false;
+      message.popover = 'auto';
+      warning.popoverTargetElement = message;
+      message.addEventListener('beforetoggle', ({ newState }) => this.onWarningToggle(newState === 'open'));
+    } else {
+      warning.addEventListener('click', () => {
+        message.hidden = !message.hidden;
+        this.renderWarning();
+      });
+    }
     this.query('.m-timeline-track-progress').addEventListener('input', ({ target }) => {
       this.track_.seek(Number(target.value));
     });
@@ -3460,21 +3471,74 @@ class TrackTools {
   }
 
   /**
-   * Pinta el botón de avisos (recorrido y perfil): el texto es su título y se despliega
-   * debajo al pulsarlo. Sin avisos, el botón se oculta y se pliega.
+   * Pinta el botón de avisos (recorrido y perfil): el texto es su título y se abre en
+   * una ventana emergente anclada al botón (popover) o, sin soporte de popover,
+   * desplegado debajo. Sin avisos, el botón se oculta y la ventana se cierra.
    */
   renderWarning() {
     if (!this.element_) return;
     const text = [this.trackMessage_, this.profileMessage_].filter(Boolean).join(' ');
     const button = this.query('.m-timeline-track-warning');
     const element = this.query('.m-timeline-track-message');
-    if (text === '') this.warningExpanded_ = false;
     button.hidden = text === '';
     button.title = text;
     button.setAttribute('aria-label', text);
-    button.setAttribute('aria-expanded', String(this.warningExpanded_));
     element.textContent = text;
-    element.hidden = !this.warningExpanded_;
+    if (this.popover_) {
+      if (!element.matches(':popover-open')) return;
+      if (text === '') element.hidePopover();
+      else this.placeWarning();
+    } else {
+      if (text === '') element.hidden = true;
+      button.setAttribute('aria-expanded', String(!element.hidden));
+    }
+  }
+
+  /**
+   * Apertura o cierre de la ventana de avisos: estado del botón y seguimiento del
+   * botón al redimensionar o desplazar mientras está abierta.
+   * @param {Boolean} open Si se abre.
+   */
+  onWarningToggle(open) {
+    const method = open ? 'addEventListener' : 'removeEventListener';
+    window[method]('resize', this.placeWarning_);
+    window[method]('scroll', this.placeWarning_, true);
+    this.query('.m-timeline-track-warning')?.setAttribute('aria-expanded', String(open));
+    if (open) this.placeWarning();
+  }
+
+  /**
+   * Coloca la ventana de avisos junto al botón, alineada a su derecha, por debajo o
+   * por encima según el espacio disponible en la ventana del navegador.
+   */
+  placeWarning() {
+    const button = this.query('.m-timeline-track-warning');
+    const element = this.query('.m-timeline-track-message');
+    if (!button || !element) return;
+    const gap = 4;
+    const rect = button.getBoundingClientRect();
+    const { clientWidth, clientHeight } = document.documentElement;
+    const below = clientHeight - rect.bottom;
+    const down = below >= rect.top;
+    const right = Math.max(gap, clientWidth - rect.right);
+    Object.assign(element.style, {
+      top: down ? `${rect.bottom + gap}px` : 'auto',
+      bottom: down ? 'auto' : `${clientHeight - rect.top + gap}px`,
+      right: `${right}px`,
+      left: 'auto',
+      maxWidth: `min(18rem, ${Math.max(clientWidth - right - gap, 0)}px)`,
+      maxHeight: `${Math.max((down ? below : rect.top) - 2 * gap, 0)}px`,
+    });
+  }
+
+  /**
+   * Cierra la ventana de avisos y deja de seguir el botón.
+   */
+  destroy() {
+    const element = this.query('.m-timeline-track-message');
+    if (this.popover_ && element?.matches(':popover-open')) element.hidePopover();
+    this.onWarningToggle(false);
+    this.element_ = null;
   }
 
   /**
@@ -5275,6 +5339,13 @@ class Timeline extends Control {
     this.profile_ = null;
 
     /**
+     * Interfaz del recorrido (se crea en createView).
+     * @private
+     * @type {TrackTools|null}
+     */
+    this.trackTools_ = null;
+
+    /**
      * Recorrido que se muestra al añadir el control: {layer, feature, attributeParam}.
      * @type {Object|null}
      */
@@ -5484,7 +5555,8 @@ class Timeline extends Control {
         this.mode_.build();
         this.transport_.bind();
         this.profile_.bind(this.track_);
-        new TrackTools(this, this.track_, this.profile_).bind();
+        this.trackTools_ = new TrackTools(this, this.track_, this.profile_);
+        this.trackTools_.bind();
         this.track_.subscribe((type) => {
           if (type === 'source') this.transport_?.refreshSpeedTitles();
         });
@@ -5849,6 +5921,7 @@ class Timeline extends Control {
    */
   destroy() {
     this.player_.stop();
+    this.trackTools_?.destroy();
     this.profile_?.destroy();
     this.track_?.destroy();
     this.picker_?.stop();
@@ -5856,6 +5929,7 @@ class Timeline extends Control {
     this.layers_.releaseAll();
     this.mode_ = null;
     this.transport_ = null;
+    this.trackTools_ = null;
     this.track_ = null;
     this.profile_ = null;
     const element = this.getElement();
