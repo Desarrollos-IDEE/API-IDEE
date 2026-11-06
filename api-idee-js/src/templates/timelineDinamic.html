@@ -1,37 +1,43 @@
-<div id="div-contenedor" class="m-timeline-container {{sizeWidthDinamic}}">
-    <div id="m-timeline-title">{{translations.title}}</div>
+<div class="m-timeline-container m-timeline-dynamic {{sizeWidthDinamic}}">
+    <div class="m-timeline-title">{{translations.title}}</div>
+    <div class="m-timeline-notice" role="status" hidden></div>
     <div>
         <div>
             <div>  <!-- Movil class rotate -->
                 <!-- Basic structure -->
                 <div class='wrap' style='--a: -30; --b: 20; --min: -50; --max: 50'>
-                    <input id='a' type='range' min='0' value='0' max='0'/>
-                    <input id='b' type='range' min='0' value='0' max='0'/>
+                    <input class='m-timeline-range-init' type='range' min='0' value='0' max='0' aria-label="{{translations.initValue}}"/>
+                    <input class='m-timeline-range-end' type='range' min='0' value='0' max='0' aria-label="{{translations.endValue}}"/>
                 </div>
             </div>
 
             <div class='slider-tags-dinamic'>
                 <div>
-                    <label for="init">{{translations.initValue}}: </label>
-                    <input id="init" type="text">
+                    <label for="{{ids.init}}">{{translations.initValue}}: </label>
+                    <input id="{{ids.init}}" class="m-timeline-date-init" type="text">
                 </div>
 
                 <div>
-                    <label for="init">{{translations.endValue}}: </label>
-                    <input id="end" type="text">
+                    <label for="{{ids.end}}">{{translations.endValue}}: </label>
+                    <input id="{{ids.end}}" class="m-timeline-date-end" type="text">
                 </div>
             </div>
         </div>
         <div class="m-timelineDinamic-button">
 
-            <select class="selectDinamicLayer" name="dinamicLayer" id="selectDinamicLayer">
-                <option value=""> Sin Capa </option>
+            <select class="selectDinamicLayer m-timeline-layer-select" name="dinamicLayer" aria-label="{{translations.title}}">
             </select>
 
-            <button id="m-timelineDinamic-back" class="timelineDinamic-control-play" title="Iniciar paso del tiempo"><<</button>
-            <button id="m-timelineDinamic-play" class="timelineDinamic-control-play" title="Iniciar paso del tiempo">Play/Pausa</button>
-            <button id="m-timelineDinamic-before" class="timelineDinamic-control-play" title="Iniciar paso del tiempo">>></button>
-            <!-- Parametrización del valor incremento de paso -->
+            <div class="m-timeline-transport" role="group" aria-label="{{translations.playback}}">
+                <button type="button" data-timeline-action="back" class="timelineDinamic-control-play m-timelineDinamic-back g-cartografia-flecha-izquierda"
+                    title="{{translations.previous}}" aria-label="{{translations.previous}}"></button>
+                <button type="button" data-timeline-action="play" class="timelineDinamic-control-play m-timelineDinamic-play g-cartografia-control-siguiente"
+                    title="{{translations.play}}" aria-label="{{translations.play}}"></button>
+                <button type="button" data-timeline-action="forward" class="timelineDinamic-control-play m-timelineDinamic-before g-cartografia-flecha-derecha"
+                    title="{{translations.next}}" aria-label="{{translations.next}}"></button>
+                <select class="m-timeline-speed" title="{{translations.speed}}" aria-label="{{translations.speed}}"></select>
+            </div>
         </div>
+        <div class="m-timeline-track-slot"></div>
     </div>
 </div>

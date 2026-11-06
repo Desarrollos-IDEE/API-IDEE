@@ -6,11 +6,11 @@ import {
 } from 'IDEE/util/Utils';
 import { DEFAULT_WHITE_TILE } from 'IDEE/provider/Tile';
 import * as EventType from 'IDEE/event/eventtype';
-import OLLayerTile from 'ol/layer/Tile';
 import XYZSource from 'ol/source/XYZ';
 import { get as getProj } from 'ol/proj';
 import ImplMap from '../Map';
 import Layer from './Layer';
+import { createTileLayer } from '../webgl/WebGLLayerProvider';
 
 /**
  * @classdesc
@@ -163,7 +163,7 @@ class GeoPackageTile extends Layer {
     const minZoom = this.minZoom_ || this.provider.getMinZoom();
     const maxZoom = this.maxZoom_ || this.provider.getMaxZoom();
 
-    this.olLayer = new OLLayerTile({
+    this.olLayer = createTileLayer({
       visible: this.visibility,
       opacity: this.opacity_,
       zIndex: this.zIndex_,
@@ -177,7 +177,7 @@ class GeoPackageTile extends Layer {
         tileLoadFunction: (tile) => tileLoadFn(tile, this),
         zDirection: this.zDirection,
       }),
-    });
+    }, this.renderer_);
 
     if (addLayer) {
       this.map.getMapImpl().addLayer(this.olLayer);
@@ -283,6 +283,7 @@ class GeoPackageTile extends Layer {
     this.facadeLayer_?.stopAutoRefresh();
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.olLayer)) {
+      this.disposeWebGLLayer_();
       olMap.removeLayer(this.olLayer);
       this.olLayer = null;
     }

@@ -1,7 +1,6 @@
 /**
  * @module IDEE/control/AddLayer
  */
-import AddLayerImplControl from 'impl/addlayercontrol';
 import { getValue } from './i18n/language';
 
 /**
@@ -20,14 +19,7 @@ export default class AddLayerControl extends IDEE.Control {
    * @api stable
    */
   constructor(map) {
-    // 1. checks if the implementation can create PluginControl
-    if (IDEE.utils.isUndefined(AddLayerImplControl) || (IDEE.utils.isObject(AddLayerImplControl)
-      && IDEE.utils.isNullOrEmpty(Object.keys(AddLayerImplControl)))) {
-      IDEE.exception(getValue('exception.impl_addlayercontrol'));
-    }
-
-    // 2. implementation of this control
-    const impl = new AddLayerImplControl();
+    const impl = new IDEE.impl.Control();
     super('Help', impl);
 
     this.map_ = map;
@@ -185,7 +177,7 @@ export default class AddLayerControl extends IDEE.Control {
    * @api stable
    */
   deactivate() {
-    document.querySelector('#layerdrawing').classList.remove('activated');
+    document.querySelector('#layerdrawing')?.classList.remove('activated');
   }
 
   /**

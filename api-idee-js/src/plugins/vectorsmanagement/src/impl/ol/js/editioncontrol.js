@@ -1,11 +1,19 @@
 import DrawHole from 'ol-ext/interaction/DrawHole';
 import Transform from 'ol-ext/interaction/Transform';
 import SnapManager from './snapmanager';
+import { toFacadeFeatures } from './featureutils';
 // import DrawRegular from 'ol-ext/interaction/DrawRegular';
 
 /**
  * @module IDEE/impl/control/Editioncontrol
  */
+
+/**
+ * Creates an OL collection with the OL features of api-idee features.
+ * @param {Array<IDEE.Feature>} features api-idee features
+ * @return {ol.Collection} OL features collection
+ */
+const toCollection = (features) => new ol.Collection(features.map((f) => f.getImpl().getFeature()));
 
 export default class Editioncontrol extends IDEE.impl.Control {
   /**
@@ -80,8 +88,11 @@ export default class Editioncontrol extends IDEE.impl.Control {
       });
 
       this.select.on('select', (e) => {
-        if (e.target.getFeatures().getArray().length > 0) {
-          this.facadeControl.onSelect(e);
+        const olFeatures = e.target.getFeatures().getArray();
+        if (olFeatures.length > 0) {
+          this.facadeControl.onSelect({
+            features: toFacadeFeatures(this.facadeControl.getLayer(), olFeatures),
+          });
         }
       });
 
@@ -102,11 +113,24 @@ export default class Editioncontrol extends IDEE.impl.Control {
       features: this.select.getFeatures(),
       pixelTolerance: snapOptions.pixelTolerance,
     });
-    this.edit.on('modifyend', () => {
-      this.facadeControl.onModify();
-    });
+    this.edit.on('modifyend', (e) => this.notifyModify_(e.features));
     this.facadeMap_.getMapImpl().addInteraction(this.edit);
     this.snapManager_.enable(this.edit, () => this.facadeControl.getLayer(), snapOptions);
+  }
+
+  /**
+   * Notifies the modified features to the facade control.
+   * @private
+   * @function
+   * @param {Array<ol.Feature>|ol.Collection} olFeatures modified OL features
+   */
+  notifyModify_(olFeatures) {
+    this.facadeControl.onModify({
+      features: toFacadeFeatures(
+        this.facadeControl.getLayer(),
+        Array.isArray(olFeatures) ? olFeatures : olFeatures.getArray(),
+      ),
+    });
   }
 
   /**
@@ -137,7 +161,7 @@ export default class Editioncontrol extends IDEE.impl.Control {
     this.drawHole = new DrawHole({
       layers: [this.facadeControl.getLayer().getImpl().getLayer()],
     });
-    this.drawHole.on('modifyend', (event) => this.facadeControl.onModify(event));
+    this.drawHole.on('modifyend', (e) => this.notifyModify_(e.features));
     olMap.addInteraction(this.drawHole);
     this.snapManager_.enable(this.drawHole, () => this.facadeControl.getLayer(), snapOptions);
   }
@@ -146,12 +170,12 @@ export default class Editioncontrol extends IDEE.impl.Control {
    * This function adds rotate interaction to map.
    * @public
    * @function
-   * @param {Array} olFeatures features to edit
+   * @param {Array<IDEE.Feature>} features features to edit
    * @api
    */
-  addRotateInteraction(olFeatures) {
+  addRotateInteraction(features) {
     const olMap = this.facadeMap_.getMapImpl();
-    const collection = new ol.Collection(olFeatures);
+    const collection = toCollection(features);
     this.rotate = new Transform({
       enableRotatedTransform: false,
       hitTolerance: 2,
@@ -164,9 +188,7 @@ export default class Editioncontrol extends IDEE.impl.Control {
       stretch: false,
       selection: false,
     });
-    this.rotate.on('rotateend', (evt) => {
-      this.facadeControl.onModify(evt);
-    });
+    this.rotate.on('rotateend', (e) => this.notifyModify_(e.features));
     olMap.addInteraction(this.rotate);
     this.rotate.setSelection(collection);
   }
@@ -175,24 +197,23 @@ export default class Editioncontrol extends IDEE.impl.Control {
    * This function update rotate interaction features .
    * @public
    * @function
-   * @param {Array} olFeatures features to edit
+   * @param {Array<IDEE.Feature>} features features to edit
    * @api
    */
-  refreshRotateSelection(olFeatures) {
-    const collection = new ol.Collection(olFeatures);
-    this.rotate.setSelection(collection);
+  refreshRotateSelection(features) {
+    this.rotate.setSelection(toCollection(features));
   }
 
   /**
    * This function adds move interaction to map.
    * @public
    * @function
-   * @param {Array} olFeatures features to edit
+   * @param {Array<IDEE.Feature>} features features to edit
    * @api
    */
-  addMoveInteraction(olFeatures) {
+  addMoveInteraction(features) {
     const olMap = this.facadeMap_.getMapImpl();
-    const collection = new ol.Collection(olFeatures);
+    const collection = toCollection(features);
     this.move = new Transform({
       enableRotatedTransform: true,
       hitTolerance: 2,
@@ -205,9 +226,7 @@ export default class Editioncontrol extends IDEE.impl.Control {
       stretch: false,
       selection: false,
     });
-    this.move.on('translateend', (evt) => {
-      this.facadeControl.onModify(evt);
-    });
+    this.move.on('translateend', (e) => this.notifyModify_(e.features));
     olMap.addInteraction(this.move);
     this.move.setSelection(collection);
   }
@@ -216,24 +235,23 @@ export default class Editioncontrol extends IDEE.impl.Control {
    * This function update move interaction features .
    * @public
    * @function
-   * @param {Array} olFeatures features to edit
+   * @param {Array<IDEE.Feature>} features features to edit
    * @api
    */
-  refreshMoveSelection(olFeatures) {
-    const collection = new ol.Collection(olFeatures);
-    this.move.setSelection(collection);
+  refreshMoveSelection(features) {
+    this.move.setSelection(toCollection(features));
   }
 
   /**
    * This function adds scale interaction to map.
    * @public
    * @function
-   * @param {Array} olFeatures features to edit
+   * @param {Array<IDEE.Feature>} features features to edit
    * @api
    */
-  addScaleInteraction(olFeatures) {
+  addScaleInteraction(features) {
     const olMap = this.facadeMap_.getMapImpl();
-    const collection = new ol.Collection(olFeatures);
+    const collection = toCollection(features);
     this.scale = new Transform({
       enableRotatedTransform: false,
       hitTolerance: 2,
@@ -246,9 +264,7 @@ export default class Editioncontrol extends IDEE.impl.Control {
       stretch: false,
       selection: false,
     });
-    this.scale.on('scaleend', (evt) => {
-      this.facadeControl.onModify(evt);
-    });
+    this.scale.on('scaleend', (e) => this.notifyModify_(e.features));
     olMap.addInteraction(this.scale);
     this.scale.setSelection(collection);
   }
@@ -257,12 +273,11 @@ export default class Editioncontrol extends IDEE.impl.Control {
    * This function update scale interaction features .
    * @public
    * @function
-   * @param {Array} olFeatures features to edit
+   * @param {Array<IDEE.Feature>} features features to edit
    * @api
    */
-  refreshScaleSelection(olFeatures) {
-    const collection = new ol.Collection(olFeatures);
-    this.scale.setSelection(collection);
+  refreshScaleSelection(features) {
+    this.scale.setSelection(toCollection(features));
   }
 
   /**
@@ -332,33 +347,22 @@ export default class Editioncontrol extends IDEE.impl.Control {
    * @public
    * @function
    * @api
-   * @param {IDEE.Featuer} apiIdeeFeature
+   * @param {IDEE.Feature} feature
+   * @returns {Array<Number>} extent in map projection
    */
   getFeatureExtent(feature) {
     return feature.getImpl().getFeature().getGeometry().getExtent();
   }
 
   /**
-   * Creates polygon feature from extent.
+   * Removes an attribute from a feature.
    * @public
    * @function
    * @api
-   * @param {Array} extent - geometry extent
+   * @param {IDEE.Feature} feature
+   * @param {String} name attribute name
    */
-  newPolygonFeature(extent) {
-    return new ol.Feature({ geometry: ol.geom.Polygon.fromExtent(extent) });
-  }
-
-  /**
-   * Creates current feature clone.
-   * @public
-   * @function
-   * @api
-   */
-  getApiIdeeFeatureClone(feature) {
-    // eslint-disable-next-line no-underscore-dangle
-    const implFeatureClone = feature.getImpl().olFeature_.clone();
-    const emphasis = IDEE.impl.Feature.feature2Facade(implFeatureClone);
-    return emphasis;
+  unsetAttribute(feature, name) {
+    feature.getImpl().getFeature().unset(name);
   }
 }

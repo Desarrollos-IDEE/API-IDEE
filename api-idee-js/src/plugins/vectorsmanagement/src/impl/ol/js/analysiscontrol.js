@@ -2,13 +2,13 @@
  * @module IDEE/impl/control/Analysiscontrol
  */
 
-import Profil from './profilcontrol';
+import { cloneFeature } from './featureutils';
 import { getValue } from '../../../facade/js/i18n/language';
 
 const WGS84 = 'EPSG:4326';
 const MERCATOR = 'EPSG:900913';
 const ELEVATION_PROCESS_URL = 'https://api-processes.idee.es/processes/getElevation/execution';
-const ELEVATION_PROFILE_PROCESS_URL = 'https://api-processes.idee.es/processes/elevationProfile/execution';
+const ELEVATION_PROFILE_DISTANCE = 1000;
 const NO_DATA_VALUE = -9999;
 const { measurements } = require('../../../../../../geoprocesses');
 
@@ -41,7 +41,12 @@ export default class Analysiscontrol extends IDEE.impl.Control {
 
     this.distance_ = 30;
 
-    this.arrayXYZ = null;
+    /**
+     * Topographic profile shown
+     * @private
+     * @type {IDEE.impl.ol.js.ext.Profil}
+     */
+    this.profil_ = null;
   }
 
   /**
@@ -62,39 +67,6 @@ export default class Analysiscontrol extends IDEE.impl.Control {
      * @type {IDEE.map}
      */
     this.facadeMap_ = map;
-
-    /**
-     * OL vector source for draw interactions.
-     * @private
-     * @type {*} - OpenLayers vector source
-     */
-    this.olLayer_ = undefined;
-  }
-
-  /**
-   * This function set the OL layer selected for management
-   *
-   * @public
-   * @function
-   * @api stable
-   * @param {ol.layer} olLayer
-   */
-  setOLLayer(olLayer) {
-    this.olLayer_ = olLayer;
-  }
-
-  /**
-   * Creates feature clone.
-   * @public
-   * @function
-   * @api
-   * @param {IDEE.Feature} mFeature
-   */
-  getApiIdeeFeatureClone(mFeature) {
-    // eslint-disable-next-line no-underscore-dangle
-    const implFeatureClone = mFeature.getImpl().olFeature_.clone();
-    const emphasis = IDEE.impl.Feature.feature2Facade(implFeatureClone);
-    return emphasis;
   }
 
   /**
@@ -103,9 +75,9 @@ export default class Analysiscontrol extends IDEE.impl.Control {
    * @function
    * @api
    * @param {IDEE.Feature} feature
+   * @returns {Promise<Array|undefined>} profile coordinates [x, y, altitude],
    */
-  calculateProfile(feature, id, show = true) {
-    const altitudes = [];
+  calculateProfile(feature) {
     let coordinates = [];
 
     if (feature.getGeometry().type === 'MultiLineString') {
@@ -122,34 +94,18 @@ export default class Analysiscontrol extends IDEE.impl.Control {
       coordinates = [].concat(feature.getGeometry().coordinates);
     }
 
-    let altitudeFromElevationProfileProcess;
-    const promesa = new Promise((success) => {
-      altitudeFromElevationProfileProcess = this
-        .readAltitudeFromElevationProfileProcess(coordinates, this.facadeMap_.getProjection().code.split(':')[1]);
-      success(altitudeFromElevationProfileProcess);
-    });
-
-    // IDEE.proxy(false);
-    promesa.then((response) => {
-      // IDEE.proxy(true);
-      document.querySelector('#vectorsmanagement-analysis-btn-container').classList.add('closed');
-      document.querySelector('#vectorsmanagement-analysis-div').innerHTML = '';
-      document.querySelector('#vectorsmanagement-analysis-div').style.height = '0';
-
-      if (response && response !== NO_DATA_VALUE) {
-        response.forEach((resp) => {
-          altitudes.push([resp[0], resp[1], Number(parseFloat(resp[2]).toFixed(2))]);
-        });
-        if (show) {
-          this.showProfile(altitudes);
+    const crs = this.facadeMap_.getProjection().code.split(':')[1];
+    return IDEE.elevation.getProfile(coordinates, crs, { distance: ELEVATION_PROFILE_DISTANCE })
+      .catch(() => {
+        IDEE.toast.error(getValue('exception.query_profile'), 6000);
+        return undefined;
+      })
+      .then((response) => {
+        if (!response) {
+          return undefined;
         }
-        this.arrayXYZ = altitudes;
-        this.calculate3DLength(id);
-      }
-    }).catch(() => {
-      console.warn('Error reading elevation profile'); // eslint-disable-line no-console
-      // IDEE.proxy(true)
-    });
+        return response.map((resp) => [resp[0], resp[1], Number(parseFloat(resp[2]).toFixed(2))]);
+      });
   }
 
   /**
@@ -158,6 +114,8 @@ export default class Analysiscontrol extends IDEE.impl.Control {
    * @function
    * @api
    * @param {IDEE.Feature} feature
+   * @returns {Promise<Object|undefined>} point coordinates in map and geographic
+   * projections with its altitude in meters.
    */
   calculatePoint(feature) {
     const coordinates = feature.getGeometry().coordinates;
@@ -177,93 +135,71 @@ export default class Analysiscontrol extends IDEE.impl.Control {
       },
     };
 
-    let altitudeFromElevationProcess;
-    const promesa = new Promise((success) => {
-      altitudeFromElevationProcess = this
-        .readAltitudeFromElevationProcess(coordinates, this.facadeMap_.getProjection().code.split(':')[1]);
-      success(altitudeFromElevationProcess);
-    });
-
-    // IDEE.proxy(false);
-    promesa.then((response) => {
-      // IDEE.proxy(true);
-      document.querySelector('#vectorsmanagement-analysis-btn-container').classList.remove('closed');
-      document.querySelector('#vectorsmanagement-analysis-div').innerHTML = '';
-      document.querySelector('#vectorsmanagement-analysis-div').style.height = '0';
-      if (response && response !== NO_DATA_VALUE) {
-        altitudeFromElevationProcess = parseFloat(response).toFixed(2).replace('.', ',');
-        pointXYZ.altitude = altitudeFromElevationProcess;
-        this.facadeControl.showPointProfile(pointXYZ);
-      }
-    }).catch(() => {
-      console.warn('Error reading elevation profile'); // eslint-disable-line no-console
-      // IDEE.proxy(true)
-    });
+    return this
+      .readAltitudeFromElevationProcess(coordinates, this.facadeMap_.getProjection().code.split(':')[1])
+      .then((response) => {
+        if (!response || response === NO_DATA_VALUE) {
+          return undefined;
+        }
+        pointXYZ.altitude = parseFloat(response);
+        return pointXYZ;
+      });
   }
 
   /**
-   * Show topographic profile window
+   * Show topographic profile window, replacing the shown one
    * @public
    * @function
    * @api
    * @param {Array} coord
+   * @param {Array<String>|String} graphs
    */
-  showProfile(coord) {
+  showProfile(coord, graphs) {
+    this.closeProfile();
     const lineString = new ol.geom.LineString(coord);
     const feature = new ol.Feature({
       geometry: lineString,
       name: 'Line',
     });
 
-    this.pt = new ol.Feature(new ol.geom.Point([0, 0]));
-    const profil = new Profil({
-      info: {
-        zmin: getValue('zmin'),
-        zmax: getValue('zmax'),
-        altitude: getValue('altitude'),
-        distance: getValue('distanceT'),
-        ytitle: getValue('ytitle'),
-        xtitle: getValue('xtitle'),
-        altitudeUnits: 'm',
-        distanceUnitsM: 'm',
-        distanceUnitsKM: 'km',
-      },
-      projection: this.facadeMap_.getProjection().code,
-      map: this.facadeMap_.getMapImpl(),
+    const profil = new IDEE.impl.ol.js.ext.Profil({
+      graphs,
       title: getValue('analysisProfile'),
       pointLayer: this.source_,
       width: 400,
       height: 200,
+      controlClassName: 'ol-control-vector',
+      downloadClassName: 'vectorsmanagement-icon-descargar',
+      draggable: true,
+      centered: true,
+      chart: {
+        margin: {
+          top: 25, left: 55, bottom: 45, right: 25,
+        },
+        fontSize: 12,
+        titleFontSize: 14,
+        lineWidth: 5,
+      },
     });
 
     this.facadeMap_.getMapImpl().addControl(profil);
-    const drawPoint = (e) => {
-      if (!this.pt) return;
-      if (e.type === 'over') {
-        this.pt.setGeometry(new ol.geom.Point(e.coord));
-        this.pt.setStyle([new ol.style.Style({
-          image: new ol.style.Circle({
-            radius: 7,
-            fill: new ol.style.Fill({
-              color: '#ff0000',
-            }),
-          }),
-        })]);
-      } else {
-        this.pt.setStyle([]);
-      }
-    };
-
     profil.setGeometry(feature);
-    this.pt.setStyle([]);
-    this.source_.addFeature(this.pt);
-    profil.on(['over', 'out'], (e) => {
-      if (e.type === 'over') profil.popup(`${e.coord[2]} m`);
-      drawPoint(e);
-    });
-
     profil.show();
+    this.profil_ = profil;
     // document.querySelector('.m-vectors .m-vectors-loading-container').innerHTML = '';
+  }
+
+  /**
+   * Closes the topographic profile window, if any
+   * @public
+   * @function
+   * @api
+   */
+  closeProfile() {
+    if (this.profil_) {
+      this.profil_.close();
+      this.profil_ = null;
+    }
   }
 
   /**
@@ -378,9 +314,15 @@ export default class Analysiscontrol extends IDEE.impl.Control {
     return length;
   }
 
-  calculate3DLength(elem) {
-    const $td = elem;
-    const points = this.arrayXYZ;
+  /**
+   * Calculates the 3D length of a topographic profile
+   * @public
+   * @function
+   * @api
+   * @param {Array} points profile coordinates [x, y, altitude]
+   * @returns {Number} length in meters
+   */
+  get3DLength(points) {
     let length = 0;
     for (let i = 0; i < points.length - 1; i += 1) {
       const a = points[i];
@@ -397,12 +339,7 @@ export default class Analysiscontrol extends IDEE.impl.Control {
       }
     }
 
-    let m = `${((length / 1000).toFixed(2)).replace('.', ',')} km`;
-    if (length < 1000) {
-      m = `${((length).toFixed(2)).replace('.', ',')} m`;
-    }
-
-    $td.innerHTML = `${m}`;
+    return length;
   }
 
   calculateFeatureLengthEllipsoidal(feature) {
@@ -422,10 +359,6 @@ export default class Analysiscontrol extends IDEE.impl.Control {
     }
 
     return length;
-  }
-
-  get3DLength(id, feature) {
-    this.calculateProfile(feature, id, false);
   }
 
   getAreaGeoJSON(features) {
@@ -448,47 +381,64 @@ export default class Analysiscontrol extends IDEE.impl.Control {
     });
   }
 
-  readAltitudeFromElevationProfileProcess(coordinates, srcMapa) {
-    let features = '';
-    coordinates.forEach((element) => {
-      features += `,{"geometry": { "type": "Point", "coordinates": [${element[0]},${element[1]}] } }`;
-    });
-    features = features.substring(1);
-    return new Promise((resolve) => {
-      fetch(ELEVATION_PROFILE_PROCESS_URL, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          'inputs': {
-            'crs': parseInt(srcMapa, 10),
-            'distance': 1000,
-            'geom': `{ "type": "FeatureCollection", "features": [${features}] }`,
-            'withCoord': true,
-          },
-        }),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            IDEE.toast.error(getValue('exception.query_profile'), 6000);
-            return undefined;
-          }
-          return response.json();
-        })
-        .then((response) => {
-          if (!response) {
-            resolve(undefined);
-          } else {
-            resolve(response.values);
-          }
-        })
-        .catch(() => {
-          IDEE.toast.error(getValue('exception.query_profile'), 6000);
-          resolve(undefined);
-        });
-    });
+  /**
+   * Creates a buffer feature of a feature.
+   * @public
+   * @function
+   * @api
+   * @param {IDEE.Feature} feature
+   * @param {Number} distance buffer distance in meters
+   * @param {*} parentId identifier of the layer of the feature
+   * @returns {IDEE.Feature} buffer feature
+   */
+  createBufferFeature(feature, distance, parentId) {
+    const projection = this.facadeMap_.getProjection().code;
+    const olFeature = cloneFeature(feature).getImpl().getFeature();
+    this.setStyle('rgba(113, 167, 211)', olFeature);
+    const format = new ol.format.GeoJSON();
+    olFeature.getGeometry().transform(projection, 'EPSG:4326');
+    const turfGeom = format.writeFeatureObject(olFeature);
+    const buffered = turf.buffer(turfGeom, parseInt(distance, 10), { units: 'meters' });
+    olFeature.setGeometry(format.readFeature(buffered).getGeometry().transform('EPSG:4326', projection));
+    olFeature.set('parentID', parentId);
+    return IDEE.impl.Feature.feature2Facade(olFeature);
+  }
+
+  /**
+   * Gets the identifier of a layer
+   * @public
+   * @function
+   * @api
+   * @param {IDEE.layer.Vector} layer
+   * @returns {*} layer identifier
+   */
+  getLayerId(layer) {
+    return layer.getImpl().getLayer().ol_uid;
+  }
+
+  /**
+   * Gets the identifier of the layer a buffer feature was created from
+   * @public
+   * @function
+   * @api
+   * @param {IDEE.Feature} feature buffer feature
+   * @returns {*} layer identifier
+   */
+  getParentId(feature) {
+    return feature.getImpl().getFeature().get('parentID');
+  }
+
+  /**
+   * Gets the description of a supported projection
+   * @public
+   * @function
+   * @api
+   * @param {String} code projection code
+   * @returns {Object} projection description (codes, units, datum, proj)
+   */
+  getProjectionInfo(code) {
+    return IDEE.impl.ol.js.projections.getSupportedProjs()
+      .filter((p) => p.codes.includes(code))[0];
   }
 
   readAltitudeFromElevationProcess(coordinates, srcMapa) {

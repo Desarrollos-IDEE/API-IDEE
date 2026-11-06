@@ -1,0 +1,17 @@
+<div class="m-timeline-track-tools" role="group" aria-label="{{translations.track}}">
+    <div class="m-timeline-track-source">
+        <select class="m-timeline-track-layer" title="{{translations.layer}}" aria-label="{{translations.layer}}"></select>
+        <select class="m-timeline-track-feature" title="{{translations.feature}}" aria-label="{{translations.feature}}" hidden></select>
+        <button type="button" class="m-timeline-track-pick g-cartografia-seleccionar" aria-pressed="false"
+            title="{{translations.pick}}" aria-label="{{translations.pick}}"></button>
+        <button type="button" class="m-timeline-profile-button g-cartografia-perfil" aria-pressed="false"
+            title="{{translations.profile}}" aria-label="{{translations.profile}}" hidden></button>
+        <button type="button" class="m-timeline-track-warning g-cartografia-warning" aria-expanded="false" hidden></button>
+    </div>
+    <div class="m-timeline-track-progress-row" hidden>
+        <input type="range" class="m-timeline-track-progress" min="0" max="0" step="1" value="0"
+            title="{{translations.progress}}" aria-label="{{translations.progress}}">
+        <span class="m-timeline-track-status"></span>
+    </div>
+    <p class="m-timeline-track-message" aria-live="polite" hidden></p>
+</div>

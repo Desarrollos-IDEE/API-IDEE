@@ -2,9 +2,10 @@
  * @module IDEE/control/VectorsManagementControl
  */
 
+import implementationFactory from 'impl/implementationfactory';
 import template from '../../templates/vectorsmanagement';
 import { getValue } from './i18n/language';
-import SelectionControl from './selectioncontrol';
+import SelectionControl, { FeatureSelection } from './selectioncontrol';
 import AddLayerControl from './addlayercontrol';
 import AnalysisControl from './analysiscontrol';
 import CreationControl from './creationcontrol';
@@ -14,6 +15,7 @@ import HelpControl from './helpcontrol';
 import StyleControl from './stylecontrol';
 import TurfControl from './turfcontrol';
 import { getSnapOptions } from './snapoptions';
+import { EDITING_AREA, implementsContracts } from './contracts';
 
 /**
  * @classdesc
@@ -60,9 +62,12 @@ export default class VectorsManagementControl extends IDEE.Control {
     style,
     turf,
     snapping,
+    profileGraphs,
     order,
   }) {
-    const impl = new IDEE.impl.Control();
+    const impl = typeof implementationFactory.vectorsManagement === 'function'
+      ? implementationFactory.vectorsManagement()
+      : new IDEE.impl.Control();
     super('VectorsManagement', impl, {});
 
     const allLayers = map
@@ -75,6 +80,8 @@ export default class VectorsManagementControl extends IDEE.Control {
     this.download_ = download;
     this.edition_ = edition;
     this.snapOptions = getSnapOptions(snapping);
+    // Graphs of the topographic profile
+    this.profileGraphs = profileGraphs;
     this.help_ = help;
     this.style_ = style;
     this.turf_ = turf;
@@ -94,11 +101,35 @@ export default class VectorsManagementControl extends IDEE.Control {
       .sort((a, b) => b.zIndex - a.zIndex);
     this.selectedLayer = null;
 
-    // Determina si el plugin es draggable o no
-    this.isDraggable_ = false;
+    /**
+     * Features selected in the selected layer, shared by all controls
+     * @private
+     * @type {FeatureSelection}
+     */
+    this.featureSelection_ = null;
+
+    /**
+     * Listener of the map layers changes
+     * @private
+     * @type {Function}
+     */
+    this.refreshLayersListener_ = this.refreshLayers.bind(this);
 
     // order
     this.order = order;
+  }
+
+  /**
+   * Creates the platform implementation of a control.
+   *
+   * @private
+   * @function
+   * @param {String} capability factory entry
+   * @returns {Object|undefined} implementation, undefined if the platform does not provide it
+   */
+  createImplementation_(capability) {
+    const create = implementationFactory[capability];
+    return typeof create === 'function' ? create(this.map_) : undefined;
   }
 
   /**
@@ -144,6 +175,11 @@ export default class VectorsManagementControl extends IDEE.Control {
         },
       });
       this.html = html;
+      this.featureSelection_ = new FeatureSelection(
+        this.map_,
+        this.createImplementation_('selection'),
+        () => this.refreshSelection(),
+      );
       this.initializeEditing(html);
 
       if (this.selection_) {
@@ -184,22 +220,9 @@ export default class VectorsManagementControl extends IDEE.Control {
 
       this.initLayerSelect();
 
-      this.map_.on(IDEE.evt.ADDED_LAYER, this.refreshLayers.bind(this));
-      this.map_.on(IDEE.evt.REMOVED_LAYER, this.refreshLayers.bind(this));
+      this.map_.on(IDEE.evt.ADDED_LAYER, this.refreshLayersListener_);
+      this.map_.on(IDEE.evt.REMOVED_LAYER, this.refreshLayersListener_);
 
-      if (this.isDraggable_) {
-        setTimeout(() => {
-          const panel = this.getPanel();
-          if (panel) {
-            IDEE.utils.draggabillyPlugin(panel, '#m-vectorsmanagement-titulo');
-          } else {
-            /* eslint-disable-next-line no-console */
-            console.warn(
-              'VectorsManagement: No se pudo activar draggabilly porque el panel es null',
-            );
-          }
-        }, 500);
-      }
       this.accessibilityTab(html);
       success(html);
     });
@@ -328,6 +351,13 @@ export default class VectorsManagementControl extends IDEE.Control {
       this.editionControl.deactivate();
     }
 
+    if (this.creationControl) {
+      this.creationControl.deactivateDrawing();
+    }
+    if (this.getSelectedFeatures().length > 0) {
+      this.featureSelection_.clear();
+    }
+
     this.html
       .querySelector('#m-vectorsmanagement-previews')
       .classList.remove('closed');
@@ -427,7 +457,7 @@ export default class VectorsManagementControl extends IDEE.Control {
 
   updateEditingAvailability() {
     const isEditing = this.isSessionLayer_(this.selectedLayer)
-      && this.map_.getImplementation() === 'ol';
+      && implementsContracts(this.getImpl(), EDITING_AREA);
     this.editingPanel_.hidden = !isEditing;
     const isEditable = !isEditing || Boolean(this.editingSession_);
     ['creation', 'edition'].forEach((id) => {
@@ -572,19 +602,13 @@ export default class VectorsManagementControl extends IDEE.Control {
     let prepared = null;
     const targetLayer = this.selectedLayer;
     try {
-      const nativeMap = this.map_.getMapImpl();
-      const size = nativeMap.getSize();
-      const view = nativeMap.getView();
-      const bbox = ol.proj.transformExtent(
-        view.calculateExtent(size),
-        view.getProjection(),
-        'EPSG:4326',
-      );
+      const bbox = this.getImpl().getViewExtent();
       prepared = await targetLayer.beginEditing({ bbox });
       if (targetLayer !== this.selectedLayer) {
         targetLayer.endEditing(false);
         return;
       }
+      this.featureSelection_.clear();
       this.editingSession_ = prepared.session || targetLayer.getEditingSession();
       if (!this.editingSession_) {
         throw new Error(
@@ -596,7 +620,7 @@ export default class VectorsManagementControl extends IDEE.Control {
         this.editingStatus_.textContent = state.error?.message
           || getValue('editing_pending').replace('{count}', String(state.count));
       });
-      this.addEditingBoundary_(nativeMap, bbox, view.getProjection());
+      this.getImpl().addEditingBoundary(bbox);
       this.editingStatus_.textContent = getValue('editing_fixed_area').replace(
         '{count}',
         String(prepared.features.length),
@@ -605,7 +629,10 @@ export default class VectorsManagementControl extends IDEE.Control {
       this.updateEditingAvailability();
     } catch (error) {
       if (this.editingSession_) this.finishEditing();
-      else if (prepared) targetLayer.endEditing();
+      else if (prepared) {
+        targetLayer.endEditing();
+        this.featureSelection_.clear();
+      }
       this.editingStatus_.textContent = error.message;
     } finally {
       this.editingPreparing_ = false;
@@ -649,6 +676,7 @@ export default class VectorsManagementControl extends IDEE.Control {
     const count = this.editingSession_.count;
     const requiresReview = this.editingSession_.requiresReview;
     this.editingSession_.discard();
+    this.featureSelection_.clear();
     this.editingPanel_.querySelector(
       '#m-vectorsmanagement-editing-save',
     ).disabled = requiresReview;
@@ -682,29 +710,11 @@ export default class VectorsManagementControl extends IDEE.Control {
     this.editingUnsubscribe_ = null;
     this.editingSession_ = null;
     this.selectedLayer.endEditing(refresh);
-    if (this.editingBoundary_) this.map_.getMapImpl().removeLayer(this.editingBoundary_);
-    this.editingBoundary_ = null;
+    this.featureSelection_.clear();
+    this.getImpl().removeEditingBoundary();
     this.toggleEditingActions(false);
     this.updateEditingAvailability();
     this.editingStatus_.textContent = '';
-  }
-
-  addEditingBoundary_(nativeMap, bbox, projection) {
-    const extent = ol.proj.transformExtent(bbox, 'EPSG:4326', projection);
-    const feature = new ol.Feature(ol.geom.Polygon.fromExtent(extent));
-    this.editingBoundary_ = new ol.layer.Vector({
-      source: new ol.source.Vector({ features: [feature] }),
-      style: new ol.style.Style({
-        fill: new ol.style.Fill({ color: 'rgba(0, 0, 0, 0)' }),
-        stroke: new ol.style.Stroke({
-          color: '#e67e22',
-          width: 2,
-          lineDash: [8, 5],
-        }),
-      }),
-    });
-    this.editingBoundary_.setZIndex(20000);
-    nativeMap.addLayer(this.editingBoundary_);
   }
 
   /**
@@ -716,7 +726,7 @@ export default class VectorsManagementControl extends IDEE.Control {
    * @api stable
    */
   addSelectionControl(html) {
-    this.selectionControl = new SelectionControl(this.map_, this);
+    this.selectionControl = new SelectionControl(this.map_, this, this.createImplementation_('selection'));
     html
       .querySelector('#m-vectorsmanagement-selection')
       .addEventListener('click', (event) => {
@@ -763,7 +773,7 @@ export default class VectorsManagementControl extends IDEE.Control {
    * @api stable
    */
   addAnalysisControl(html) {
-    this.analysisControl = new AnalysisControl(this.map_, this);
+    this.analysisControl = new AnalysisControl(this.map_, this, this.createImplementation_('analysis'));
     html
       .querySelector('#m-vectorsmanagement-analysis')
       .addEventListener('click', (event) => {
@@ -784,7 +794,7 @@ export default class VectorsManagementControl extends IDEE.Control {
    * @api stable
    */
   addCreationControl(html) {
-    this.creationControl = new CreationControl(this.map_, this);
+    this.creationControl = new CreationControl(this.map_, this, this.createImplementation_('creation'));
     html
       .querySelector('#m-vectorsmanagement-creation')
       .addEventListener('click', (event) => {
@@ -836,7 +846,7 @@ export default class VectorsManagementControl extends IDEE.Control {
    * @api stable
    */
   addEditionControl(html) {
-    this.editionControl = new EditionControl(this.map_, this);
+    this.editionControl = new EditionControl(this.map_, this, this.createImplementation_('edition'));
     html
       .querySelector('#m-vectorsmanagement-edition')
       .addEventListener('click', (event) => {
@@ -916,7 +926,7 @@ export default class VectorsManagementControl extends IDEE.Control {
    * @api stable
    */
   addTurfControl(html) {
-    this.turfControl = new TurfControl(this.map_, this);
+    this.turfControl = new TurfControl(this.map_, this, this.createImplementation_('turf'));
     html
       .querySelector('#m-vectorsmanagement-turf')
       .addEventListener('click', (event) => {
@@ -1013,7 +1023,19 @@ export default class VectorsManagementControl extends IDEE.Control {
   }
 
   /**
-   * This function gets the selected features of selectionControl.
+   * This function gets the features selection shared by controls.
+   *
+   * @public
+   * @function
+   * @api
+   * @returns {FeatureSelection} selection
+   */
+  getFeatureSelection() {
+    return this.featureSelection_;
+  }
+
+  /**
+   * This function gets the selected features.
    *
    * @public
    * @function
@@ -1021,11 +1043,7 @@ export default class VectorsManagementControl extends IDEE.Control {
    * @returns {Array} features
    */
   getSelectedFeatures() {
-    let selectedFeatures = [];
-    if (this.selectionControl) {
-      selectedFeatures = this.selectionControl.getSelectedFeatures();
-    }
-    return selectedFeatures;
+    return this.featureSelection_ ? this.featureSelection_.getFeatures() : [];
   }
 
   /**
@@ -1045,20 +1063,18 @@ export default class VectorsManagementControl extends IDEE.Control {
   }
 
   /**
-   * This function clear the selected features array of selectionControl.
+   * This function clear the selected features.
    *
    * @public
    * @function
    * @api stable
    */
   removeSelectedFeatures() {
-    if (this.selectionControl) {
-      this.selectionControl.removeSelectedFeatures();
-    }
+    this.featureSelection_.clear();
   }
 
   /**
-   * This function adds a feature to selected features array of selectionControl.
+   * This function adds a feature to selected features.
    *
    * @public
    * @function
@@ -1066,9 +1082,7 @@ export default class VectorsManagementControl extends IDEE.Control {
    * @api stable
    */
   addFeatureToSelection(feature) {
-    if (this.selectionControl) {
-      this.selectionControl.addFeatureToSelection(feature);
-    }
+    this.featureSelection_.add(feature);
   }
 
   /**
@@ -1124,6 +1138,9 @@ export default class VectorsManagementControl extends IDEE.Control {
       if (this.editingSession_) this.finishEditing(false);
       if (pending > 0) {
         IDEE.toast.warning(getValue('editing_removed_notice'), null, 6000);
+      }
+      if (this.getSelectedFeatures().length > 0) {
+        this.featureSelection_.clear();
       }
       this.selectedLayer = null;
     }
@@ -1202,12 +1219,28 @@ export default class VectorsManagementControl extends IDEE.Control {
       .forEach((el) => el.setAttribute('tabindex', this.order));
   }
 
+  /**
+   * This function leaves the map as it was before adding the plugin:
+   * removes interactions, selection, windows and listeners.
+   *
+   * @public
+   * @function
+   * @api stable
+   */
   destroy() {
     document.removeEventListener('click', this.handleDocumentClick);
+    if (this.map_) {
+      this.map_.un(IDEE.evt.ADDED_LAYER, this.refreshLayersListener_);
+      this.map_.un(IDEE.evt.REMOVED_LAYER, this.refreshLayersListener_);
+    }
     if (this.editingSession_) this.finishEditing(false);
     if (this.html) this.deactive(this.html, '');
+    if (this.selectionControl) this.selectionControl.deactivate();
+    if (this.featureSelection_) this.featureSelection_.destroy();
     if (this.analysisControl) this.analysisControl.destroy();
     if (this.turfControl) this.turfControl.destroy();
+    // Dialogs are modal over the map, so the open ones come from the plugin
+    IDEE.dialog.remove();
   }
 
   /**

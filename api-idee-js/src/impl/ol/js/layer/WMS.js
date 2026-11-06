@@ -21,7 +21,6 @@ import * as LayerType from 'IDEE/layer/Type';
 import { get as getRemote } from 'IDEE/util/Remote';
 import FacadeWMS from 'IDEE/layer/WMS';
 import * as EventType from 'IDEE/event/eventtype';
-import OLLayerTile from 'ol/layer/Tile';
 import OLLayerImage from 'ol/layer/Image';
 import { get as getProj } from 'ol/proj';
 import OLTileGrid from 'ol/tilegrid/TileGrid';
@@ -29,6 +28,7 @@ import { getBottomLeft } from 'ol/extent';
 import ImplUtils from '../util/Utils';
 import ImplMap from '../Map';
 import LayerBase from './Layer';
+import { createTileLayer } from '../webgl/WebGLLayerProvider';
 import GetCapabilities from '../util/WMSCapabilities';
 import FormatWMS from '../format/WMS';
 import TileWMS from '../source/TileWMS';
@@ -348,8 +348,9 @@ class WMS extends LayerBase {
     }
 
     if (this.tiled === true) {
-      this.olLayer = new OLLayerTile(this.paramsOLLayers());
+      this.olLayer = createTileLayer(this.paramsOLLayers(), this.renderer_);
     } else {
+      // WebGL no admite fuentes de imagen única (ImageWMS).
       this.olLayer = new OLLayerImage(this.paramsOLLayers());
     }
 
@@ -361,6 +362,8 @@ class WMS extends LayerBase {
     } else if (this.useCapabilities || this.isWMSfull) {
       // just one WMS layer and useCapabilities
       this.getCapabilities().then((capabilities) => {
+        // La capa se ha retirado del mapa antes de recibir las capacidades.
+        if (isNullOrEmpty(this.map)) return;
         this.addSingleLayer_(capabilities);
       });
     } else {
@@ -1111,6 +1114,7 @@ class WMS extends LayerBase {
     this.facadeLayer_?.stopAutoRefresh();
     const olMap = this.map.getMapImpl();
     if (!isNullOrEmpty(this.olLayer)) {
+      this.disposeWebGLLayer_();
       olMap.removeLayer(this.olLayer);
       this.olLayer = null;
     }
@@ -1138,6 +1142,8 @@ class WMS extends LayerBase {
 
     if (this.useCapabilities || this.isWMSfull) {
       this.getCapabilities().then((capabilities) => {
+        // La capa se ha retirado del mapa antes de recibir las capacidades.
+        if (isNullOrEmpty(this.map)) return;
         this.addSingleLayer_(capabilities);
       });
     } else {

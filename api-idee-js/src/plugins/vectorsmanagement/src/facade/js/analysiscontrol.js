@@ -1,11 +1,21 @@
 /**
  * @module IDEE/control/AnalysisControl
  */
-import AnalysisImplControl from 'impl/analysiscontrol';
 import template from '../../templates/analysis';
 import infoanalysis from '../../templates/infoanalysis';
 import pointProfileTemplate from '../../templates/pointprofile';
 import { getValue } from './i18n/language';
+import {
+  BUFFER,
+  ELEVATION,
+  MEASUREMENT,
+  PROJECTION_INFO,
+  requireImplementation,
+} from './contracts';
+
+const warnElevationError = () => {
+  console.warn('Error reading elevation profile'); // eslint-disable-line no-console
+};
 
 export default class AnalysisControl extends IDEE.Control {
   /**
@@ -15,20 +25,20 @@ export default class AnalysisControl extends IDEE.Control {
   *
   * @constructor
   * @extends {IDEE.Control}
+  * @param {IDEE.Map} map
+  * @param {VectorsManagementControl} managementControl
+  * @param {Object} impl platform implementation (MEASUREMENT, ELEVATION, BUFFER,
+  * PROJECTION_INFO)
   * @api stable
   */
-  constructor(map, managementControl) {
-    // 1. checks if the implementation can create PluginControl
-    if (IDEE.utils.isUndefined(AnalysisImplControl) || (IDEE.utils.isObject(AnalysisImplControl)
-      && IDEE.utils.isNullOrEmpty(Object.keys(AnalysisImplControl)))) {
-      IDEE.exception(getValue('exception.impl_analysiscontrol'));
-    }
+  constructor(map, managementControl, impl) {
+    // 1. checks if the implementation fulfils the contracts of this control
+    requireImplementation(impl, [MEASUREMENT, ELEVATION, BUFFER, PROJECTION_INFO], 'exception.impl_analysiscontrol');
 
     // 2. implementation of this control
-    const impl = new AnalysisImplControl(map);
     super('Analysis', impl);
 
-    impl.facadeControl = this;
+    this.getImpl().facadeControl = this;
 
     this.map_ = map;
 
@@ -110,8 +120,7 @@ export default class AnalysisControl extends IDEE.Control {
     this.addEvents();
     this.managementControl_.accessibilityTab(this.template);
 
-    // eslint-disable-next-line no-underscore-dangle
-    const feature = this.managementControl_.selectionControl.selectedFeatures_[0];
+    const feature = this.managementControl_.getSelectedFeatures()[0];
     if (feature) {
       this.showFeatureInfo(feature);
     }
@@ -159,7 +168,7 @@ export default class AnalysisControl extends IDEE.Control {
       const controlSelected = this.managementControl_.selectionControl;
       // eslint-disable-next-line no-underscore-dangle
       const selectFeatures = controlSelected.selection_ === 'layer' ? this.layer_.getFeatures() : controlSelected.getSelectedFeatures();
-      const featuresArea = this.impl_.getAreaGeoJSON(selectFeatures);
+      const featuresArea = this.getImpl().getAreaGeoJSON(selectFeatures);
       const pre = JSON.stringify(featuresArea.length === 1
         ? featuresArea[0] : featuresArea, null, 2);
       IDEE.dialog.info(`<pre class="vectorsmanagement-dialogCode"><code>${pre}</code></pre>`, 'GeoJSON');
@@ -204,23 +213,17 @@ export default class AnalysisControl extends IDEE.Control {
    */
   setLayer(layer) {
     this.layer_ = layer;
-    this.getImpl().setOLLayer(this.layer_.getImpl().getLayer());
   }
 
   /**
    * This function set the selected feature after selection interaction
    * @public
    * @function
-   * @param {Event} e
+   * @param {{features: Array<IDEE.Feature|undefined>}} e selection event of the implementation
    * @api
    */
   onSelect(e) {
-    const MFeatures = this.layer_.getFeatures();
-    const olFeature = e.target.getFeatures().getArray()[0];
-
-    this.feature = MFeatures.filter((f) => f.getImpl().getFeature() === olFeature)[0]
-      || undefined;
-
+    this.feature = e.features[0];
     this.calculateAnalysis();
   }
 
@@ -256,14 +259,53 @@ export default class AnalysisControl extends IDEE.Control {
       } else {
         this.feature = selectedFeatures[0];
         if (this.feature.getGeometry().type === 'Point') {
-          this.getImpl().calculatePoint(this.feature);
+          this.getImpl().calculatePoint(this.feature).then((pointXYZ) => {
+            document.querySelector('#vectorsmanagement-analysis-btn-container').classList.remove('closed');
+            this.clearAnalysisResult_();
+            if (pointXYZ) {
+              this.showPointProfile({
+                ...pointXYZ,
+                altitude: pointXYZ.altitude.toFixed(2).replace('.', ','),
+              });
+            }
+          }).catch(warnElevationError);
         } else {
-          this.getImpl().calculateProfile(this.feature);
+          this.requestProfile_(this.feature).then((profile) => {
+            if (profile) {
+              this.getImpl().showProfile(profile, this.managementControl_.profileGraphs);
+            }
+          }).catch(warnElevationError);
         }
       }
     } else {
       IDEE.dialog.info(getValue('exception.featuresel'));
     }
+  }
+
+  /**
+   * Requests the topographic profile of a feature
+   * and clears the analysis result area.
+   * @private
+   * @function
+   * @param {IDEE.Feature} feature
+   * @returns {Promise<Array|undefined>} profile coordinates [x, y, altitude]
+   */
+  requestProfile_(feature) {
+    return this.getImpl().calculateProfile(feature).then((profile) => {
+      document.querySelector('#vectorsmanagement-analysis-btn-container').classList.add('closed');
+      this.clearAnalysisResult_();
+      return profile;
+    });
+  }
+
+  /**
+   * Clears the analysis result area.
+   * @private
+   * @function
+   */
+  clearAnalysisResult_() {
+    document.querySelector('#vectorsmanagement-analysis-div').innerHTML = '';
+    document.querySelector('#vectorsmanagement-analysis-div').style.height = '0';
   }
 
   /**
@@ -344,8 +386,7 @@ export default class AnalysisControl extends IDEE.Control {
     const selection = this.managementControl_.getSelection();
     const bufferFeatures = [];
     let features = [];
-    const layerID = this.managementControl_.selectionControl
-      .getLayer().getImpl().getLayer().ol_uid;
+    const layerID = this.getImpl().getLayerId(this.managementControl_.selectionControl.getLayer());
     if (selection === 'feature') { // buffer de los features seleccionados
       features = this.managementControl_.getSelectedFeatures();
     } else { // buffer de toda la capa
@@ -364,19 +405,11 @@ export default class AnalysisControl extends IDEE.Control {
    * @function
    * @param {IDEE.Feature} feature
    * @param {Integer} distance
+   * @param {*} layerID identifier of the layer of the feature
    * @api
    */
   createFeatureBuffer(feature, distance, layerID) {
-    const olFeature = this.getImpl().getApiIdeeFeatureClone(feature).getImpl().getFeature();
-    this.getImpl().setStyle('rgba(113, 167, 211)', olFeature);
-    const format = new ol.format.GeoJSON();
-    olFeature.getGeometry().transform(this.map_.getProjection().code, 'EPSG:4326');
-    const turfGeom = format.writeFeatureObject(olFeature);
-    const buffered = turf.buffer(turfGeom, parseInt(distance, 10), { units: 'meters' });
-    olFeature.setGeometry(format.readFeature(buffered).getGeometry().transform('EPSG:4326', this.map_.getProjection().code));
-    olFeature.set('parentID', layerID);
-    const MFeature = IDEE.impl.Feature.feature2Facade(olFeature);
-    return MFeature;
+    return this.getImpl().createBufferFeature(feature, distance, layerID);
   }
 
   /**
@@ -387,15 +420,11 @@ export default class AnalysisControl extends IDEE.Control {
    * @api
    */
   showPointProfile(pointXYZ) {
-    if (this.pointTemplate) {
-      document.body.removeChild(this.pointTemplate);
-    }
-    const mapProj = IDEE.impl.ol.js.projections.getSupportedProjs()
-      .filter((p) => p.codes.includes(pointXYZ.map.projection))[0];
+    this.closePointProfile();
+    const mapProj = this.getImpl().getProjectionInfo(pointXYZ.map.projection);
     const mapUnit = mapProj.units === 'm' ? 'm' : '°';
     const mapLabels = mapProj.units === 'm' ? ['X', 'Y'] : [getValue('creationLongitude'), getValue('creationLatitude')];
-    const geographicProj = IDEE.impl.ol.js.projections.getSupportedProjs()
-      .filter((p) => p.codes.includes(pointXYZ.geographic.projection))[0];
+    const geographicProj = this.getImpl().getProjectionInfo(pointXYZ.geographic.projection);
     const dist = mapProj.codes[0] !== geographicProj.codes[0];
     this.pointTemplate = IDEE.template.compileSync(pointProfileTemplate, {
       vars: {
@@ -420,12 +449,22 @@ export default class AnalysisControl extends IDEE.Control {
     document.body.appendChild(this.pointTemplate);
     this.managementControl_.accessibilityTab(this.pointTemplate);
 
-    this.pointTemplate.querySelector('.m-panel-btn').addEventListener('click', () => {
-      this.removeModalEvents();
-      document.body.removeChild(this.pointTemplate);
-      this.pointTemplate = null;
-    });
+    this.pointTemplate.querySelector('.m-panel-btn').addEventListener('click', () => this.closePointProfile());
     // this.addModalEvents();
+  }
+
+  /**
+   * This function closes the modal with point data profile.
+   * @public
+   * @function
+   * @api
+   */
+  closePointProfile() {
+    if (this.pointTemplate) {
+      this.removeModalEvents();
+      this.pointTemplate.remove();
+      this.pointTemplate = null;
+    }
   }
 
   /**
@@ -564,7 +603,14 @@ export default class AnalysisControl extends IDEE.Control {
 
     const infoLine3D = document.querySelector('#ellipsoidal3DLength');
     if (infoLine3D) {
-      this.getImpl().get3DLength(infoLine3D, feature);
+      this.requestProfile_(feature).then((profile) => {
+        if (profile) {
+          const length3D = this.getImpl().get3DLength(profile);
+          infoLine3D.innerHTML = length3D < 1000
+            ? `${((length3D).toFixed(2)).replace('.', ',')} m`
+            : `${((length3D / 1000).toFixed(2)).replace('.', ',')} km`;
+        }
+      }).catch(warnElevationError);
     }
   }
 
@@ -577,6 +623,8 @@ export default class AnalysisControl extends IDEE.Control {
    */
   destroy() {
     this.map_.un(IDEE.evt.REMOVED_LAYER, this.destroyLayerBufferFN);
+    this.closePointProfile();
+    this.getImpl().closeProfile();
   }
 
   /**
@@ -596,8 +644,9 @@ export default class AnalysisControl extends IDEE.Control {
     }
 
     const selectLayer = this.managementControl_.selectionControl.getLayer();
-    const layerID = selectLayer.getImpl().getLayer().ol_uid;
-    const features = this.bufferLayer.getFeatures().filter((f) => f.getImpl().getFeature().get('parentID') === layerID);
+    const layerID = this.getImpl().getLayerId(selectLayer);
+    const features = this.bufferLayer.getFeatures()
+      .filter((f) => this.getImpl().getParentId(f) === layerID);
     this.bufferLayer.removeFeatures(features);
   }
 

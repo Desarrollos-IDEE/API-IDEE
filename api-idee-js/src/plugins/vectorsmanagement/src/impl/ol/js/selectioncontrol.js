@@ -1,6 +1,7 @@
 /**
  * @module IDEE/impl/control/Selectioncontrol
  */
+import { cloneFeature, extentFeature, toFacadeFeatures } from './featureutils';
 
 export default class Selectioncontrol extends IDEE.impl.Control {
   /**
@@ -49,20 +50,17 @@ export default class Selectioncontrol extends IDEE.impl.Control {
   }
 
   /**
-   * Activates selection mode.
+   * Activates selection mode starting from the selected features.
    * @public
    * @function
+   * @param {Array<IDEE.Feature>} features selected features
    * @api
    */
-  activateSelection() {
+  activateSelection(features = []) {
     const olMap = this.facadeMap_.getMapImpl();
     const drawingLayer = this.facadeControl.getLayer().getImpl().getLayer();
 
     // this.facadeControl.hideTextPoint();
-
-    if (document.querySelector('.m-geometrydraw>#downloadFormat') !== null) {
-      document.querySelector('.m-geometrydraw').removeChild(this.facadeControl.downloadingTemplate);
-    }
 
     if (drawingLayer) {
       this.select = new ol.interaction.Select({
@@ -71,10 +69,14 @@ export default class Selectioncontrol extends IDEE.impl.Control {
         style: null,
         toggleCondition: ol.events.condition.platformModifierKeyOnly,
       });
+      this.select.getFeatures().extend(features.map((f) => f.getImpl().getFeature()));
 
       this.select.on('select', (e) => {
-        if (e.target.getFeatures().getArray().length > 0) {
-          this.facadeControl.onSelect(e);
+        const olFeatures = e.target.getFeatures().getArray();
+        if (olFeatures.length > 0) {
+          this.facadeControl.onSelect({
+            features: toFacadeFeatures(this.facadeControl.getLayer(), olFeatures),
+          });
         }
       });
 
@@ -93,37 +95,26 @@ export default class Selectioncontrol extends IDEE.impl.Control {
   }
 
   /**
-   * Creates current feature clone.
+   * Creates feature clone.
    * @public
    * @function
    * @api
+   * @param {IDEE.Feature} feature
+   * @returns {IDEE.Feature} clone
    */
-  getApiIdeeFeatureClone() {
-    // eslint-disable-next-line no-underscore-dangle
-    const implFeatureClone = this.facadeControl.feature.getImpl().olFeature_.clone();
-    const emphasis = IDEE.impl.Feature.feature2Facade(implFeatureClone);
-    return emphasis;
+  getApiIdeeFeatureClone(feature) {
+    return cloneFeature(feature);
   }
 
   /**
-   * Gets extent of feature
+   * Creates polygon feature from the extent of a feature.
    * @public
    * @function
    * @api
-   * @param {IDEE.Featuer} apiIdeeFeature
+   * @param {IDEE.Feature} feature
+   * @returns {IDEE.Feature} extent polygon
    */
-  getFeatureExtent() {
-    return this.facadeControl.feature.getImpl().getFeature().getGeometry().getExtent();
-  }
-
-  /**
-   * Creates polygon feature from extent.
-   * @public
-   * @function
-   * @api
-   * @param {Array} extent - geometry extent
-   */
-  newPolygonFeature(extent) {
-    return new ol.Feature({ geometry: ol.geom.Polygon.fromExtent(extent) });
+  getExtentFeature(feature) {
+    return extentFeature(feature);
   }
 }

@@ -105,6 +105,15 @@ function fun(IDEE_) {
   IDEE.config('STATIC_RESOURCES_URL', 'https://componentes.idee.es/estaticos');
 
   /**
+   * URL del JSON de capas precargadas
+   * @const
+   * @type {string}
+   * @public
+   * @api stable
+   */
+  IDEE.config('LIST_PRECHARGED_URL', 'https://componentes.idee.es/estaticos/Datos/json/precharged_layerswitcher_cnig.json');
+
+  /**
    * The path to the API IDEE theme
    * @const
    * @type {string}
@@ -308,6 +317,15 @@ function fun(IDEE_) {
    * @type {Number}
    */
   IDEE.config('DPI_OGC', 90.714285714);
+
+  /**
+   * MAP Viewer - Renderizado WebGL por defecto de las capas compatibles.
+   * Cada capa puede sobrescribirlo con la opción 'renderer' ('canvas' | 'webgl').
+   *
+   * @private
+   * @type {Boolean}
+   */
+  IDEE.config('WEBGL', false);
 
   /**
    * Mueve el mapa cuando se hace clic sobre un objeto

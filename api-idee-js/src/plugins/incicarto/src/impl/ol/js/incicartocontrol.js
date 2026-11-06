@@ -2,14 +2,12 @@
  * @module IDEE/impl/control/IncicartoControl
  */
 
-import Profil from './profilcontrol';
 import { getValue } from '../../../facade/js/i18n/language';
 
 const WGS84 = 'EPSG:4326';
 const MERCATOR = 'EPSG:900913';
 const GML_FORMAT = 'text/xml; subtype=gml/3.1.1';
-const ELEVATION_PROFILE_PROCESS_URL = 'https://api-processes.idee.es/processes/elevationProfile/execution';
-const NO_DATA_VALUE = -9999;
+const ELEVATION_PROFILE_DISTANCE = 9999999;
 
 const WFS_EXCEPTIONS = [
   'https://servicios.idee.es/wfs-inspire/hidrografia?',
@@ -1181,40 +1179,38 @@ export default class IncicartoControl extends IDEE.impl.Control {
       coordinates = [].concat(geometry.coordinates);
     }
 
-    let altitudeFromElevationProfileProcess;
-    const promesa = new Promise((success) => {
-      altitudeFromElevationProfileProcess = this
-        .readAltitudeFromElevationProfileProcess(coordinates, this.facadeMap_.getProjection().code.split(':')[1]);
-      success(altitudeFromElevationProfileProcess);
-    });
-
-    // IDEE.proxy(false);
-    promesa.then((response) => {
-      // IDEE.proxy(true);
-
-      if (response && response !== NO_DATA_VALUE) {
-        if (calculateProfile) {
-          this.showProfile(response);
-        } else if (calculateProfilePoints) {
-          if (typeof callback === 'function') callback(response);
-        } else {
-          const geom = feature.getGeometry();
-          const gType = (geom.type || '').toLowerCase();
-          if (gType.indexOf('point') > -1) {
-            geom.coordinates = response[0];
-          } else if (gType.indexOf('linestring') > -1) {
-            geom.coordinates = response;
-          } else if (gType.indexOf('polygon') > -1) {
-            geom.coordinates = [response];
+    const crs = this.facadeMap_.getProjection().code.split(':')[1];
+    IDEE.elevation.getProfile(coordinates, crs, { distance: ELEVATION_PROFILE_DISTANCE })
+      .catch(() => {
+        IDEE.toast.error(getValue('exception.query_profile'), 6000);
+        return undefined;
+      })
+      .then((response) => {
+        if (response) {
+          if (calculateProfile) {
+            if (typeof callback === 'function') callback(response);
+            else this.showProfile(response);
+          } else if (calculateProfilePoints) {
+            if (typeof callback === 'function') callback(response);
+          } else {
+            const geom = feature.getGeometry();
+            const gType = (geom.type || '').toLowerCase();
+            if (gType.indexOf('point') > -1) {
+              geom.coordinates = response[0];
+            } else if (gType.indexOf('linestring') > -1) {
+              geom.coordinates = response;
+            } else if (gType.indexOf('polygon') > -1) {
+              geom.coordinates = [response];
+            }
+            feature.setGeometry(geom);
           }
-          feature.setGeometry(geom);
         }
-      }
-      this._cleanLoading(calculateProfile);
-    }).catch((err) => {
-      // console.error('Error en perfil:', err);
-      this._cleanLoading(calculateProfile);
-    });
+        this._cleanLoading(calculateProfile);
+      })
+      .catch((err) => {
+        // console.error('Error en perfil:', err);
+        this._cleanLoading(calculateProfile);
+      });
   }
 
   _cleanLoading(calculateProfile) {
@@ -1230,32 +1226,33 @@ export default class IncicartoControl extends IDEE.impl.Control {
     this.calculateElevations(feature, false, true, callback);
   }
 
-  calculateProfile(feature) {
-    this.calculateElevations(feature, true);
+  calculateProfile(feature, graphs) {
+    const showProfile = (response) => this.showProfile(response, graphs);
+    this.calculateElevations(feature, true, false, showProfile);
   }
 
-  showProfile(coord) {
+  showProfile(coord, graphs) {
     const lineString = new ol.geom.LineString(coord);
     const feature = new ol.Feature({
       geometry: lineString,
       name: 'Line',
     });
 
-    this.pt = new ol.Feature(new ol.geom.Point([0, 0]));
-    const profil = new Profil({
+    const profil = new IDEE.impl.ol.js.ext.Profil({
       info: {
         zmin: getValue('zmin'),
         zmax: getValue('zmax'),
         altitude: getValue('altitude'),
         distance: getValue('distanceT'),
+        distanceP: getValue('distanceP'),
+        elevationGain: getValue('elevationGain'),
         ytitle: getValue('ytitle'),
         xtitle: getValue('xtitle'),
         altitudeUnits: 'm',
         distanceUnitsM: 'm',
         distanceUnitsKM: 'km',
       },
-      projection: this.facadeMap_.getProjection().code,
-      map: this.facadeMap_.getMapImpl(),
+      graphs,
       title: getValue('profile'),
       pointLayer: this.source_,
       width: 400,
@@ -1263,31 +1260,7 @@ export default class IncicartoControl extends IDEE.impl.Control {
     });
 
     this.facadeMap_.getMapImpl().addControl(profil);
-    const drawPoint = (e) => {
-      if (!this.pt) return;
-      if (e.type === 'over') {
-        this.pt.setGeometry(new ol.geom.Point(e.coord));
-        this.pt.setStyle([new ol.style.Style({
-          image: new ol.style.Circle({
-            radius: 7,
-            fill: new ol.style.Fill({
-              color: '#ff0000',
-            }),
-          }),
-        })]);
-      } else {
-        this.pt.setStyle([]);
-      }
-    };
-
     profil.setGeometry(feature);
-    this.pt.setStyle([]);
-    this.source_.addFeature(this.pt);
-    profil.on(['over', 'out'], (e) => {
-      if (e.type === 'over') profil.popup(`${e.coord[2]} m`);
-      drawPoint(e);
-    });
-
     profil.show();
     IDEE.utils.loadSvgByUrl('icn_cruzPeq', document.querySelector('.profile-close-button'));
     IDEE.utils.loadSvgByUrl('icn_descarga', document.querySelector('.profile-download-button'));
@@ -1624,48 +1597,5 @@ export default class IncicartoControl extends IDEE.impl.Control {
     } else {
       this.facadeControl.renderLayers();
     }
-  }
-
-  readAltitudeFromElevationProfileProcess(coordinates, srcMapa) {
-    let features = '';
-    coordinates.forEach((element) => {
-      features += `,{"geometry": { "type": "Point", "coordinates": [${element[0]},${element[1]}] } }`;
-    });
-    features = features.substring(1);
-    return new Promise((resolve) => {
-      fetch(ELEVATION_PROFILE_PROCESS_URL, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          'inputs': {
-            'crs': parseInt(srcMapa, 10),
-            'distance': 9999999,
-            'geom': `{ "type": "FeatureCollection", "features": [${features}] }`,
-            'withCoord': true,
-          },
-        }),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            IDEE.toast.error(getValue('exception.query_profile'), 6000);
-            return undefined;
-          }
-          return response.json();
-        })
-        .then((response) => {
-          if (!response) {
-            resolve(undefined);
-          } else {
-            resolve(response.values);
-          }
-        })
-        .catch(() => {
-          IDEE.toast.error(getValue('exception.query_profile'), 6000);
-          resolve(undefined);
-        });
-    });
   }
 }

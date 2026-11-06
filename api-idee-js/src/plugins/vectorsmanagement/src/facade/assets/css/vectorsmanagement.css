@@ -697,37 +697,7 @@ table#attribute-table>tr>th>button {
     position: absolute;
     text-align: right;
     overflow: hidden;
-    top: 50%;
-    left: 74%;
     z-index: 99999999999 !important;
-}
-
-@media only screen and (max-width: 1670px) {
-    .ol-control-vector.ol-profil {
-        top: 43%;
-        left: 65%;
-    }
-}
-
-@media only screen and (max-width: 1228px) {
-    .ol-control-vector.ol-profil {
-        top: 30%;
-        left: 35%;
-    }
-}
-
-@media only screen and (max-width: 1000px) {
-    .ol-control-vector.ol-profil {
-        top: 30%;
-        left: 30%;
-    }
-}
-
-@media only screen and (max-width: 660px) {
-    .ol-control-vector.ol-profil {
-        top: 30%;
-        left: 20%;
-    }
 }
 
 .ol-profil button {

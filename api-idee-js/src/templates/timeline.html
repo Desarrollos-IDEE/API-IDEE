@@ -1,21 +1,28 @@
-<div id="div-contenedor" class="m-timeline-container">
-    <div id="m-timeline-title">{{translations.title}}</div>
+<div class="m-timeline-container">
+    <div class="m-timeline-title">{{translations.title}}</div>
+    <div class="m-timeline-notice" role="status" hidden></div>
     <div class="div-m-timeline-panel">
         <div class="div-m-timeline-slider">
-            <input type="range" min="0" max="100" value="0" step="{{inputRange.step}}" id="input-slider"></input>
+            <input type="range" min="0" max="100" value="0" step="{{inputRange.step}}" class="m-timeline-slider-input" aria-label="{{translations.title}}"></input>
             <div class='slider-tags'></div>
         </div>
         <div class="m-timeline-controls">
             <div class="m-timeline-layer-selectors">
-                <select class="m-timeline-names" id="m-timeline-select-layer">
+                <select class="m-timeline-names" aria-label="{{translations.title}}">
                 </select>
-                <select class="m-timeline-names-next" id="m-timeline-select-layer-next">
+                <select class="m-timeline-names-next" aria-label="{{translations.title}}">
                 </select>
             </div>
-            <div class="m-timeline-button">
-                <div id="m-timeline-play" class="timeline-control-siguiente g-cartografia-control-siguiente"
-                    title="Iniciar paso del tiempo"></div>
+            <div class="m-timeline-button m-timeline-transport" role="group" aria-label="{{translations.playback}}">
+                <button type="button" data-timeline-action="back" class="m-timeline-back g-cartografia-flecha-izquierda"
+                    title="{{translations.previous}}" aria-label="{{translations.previous}}"></button>
+                <button type="button" data-timeline-action="play" class="m-timeline-play timeline-control-siguiente g-cartografia-control-siguiente"
+                    title="{{translations.play}}" aria-label="{{translations.play}}"></button>
+                <button type="button" data-timeline-action="forward" class="m-timeline-forward g-cartografia-flecha-derecha"
+                    title="{{translations.next}}" aria-label="{{translations.next}}"></button>
+                <select class="m-timeline-speed" title="{{translations.speed}}" aria-label="{{translations.speed}}"></select>
             </div>
         </div>
+        <div class="m-timeline-track-slot"></div>
     </div>
 </div>

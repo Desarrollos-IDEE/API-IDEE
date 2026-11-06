@@ -1,13 +1,31 @@
 /**
  * @module IDEE/control/EditionControl
  */
-import EditionImplControl from 'impl/editioncontrol';
 import template from '../../templates/edition';
 import removeLayerTemplate from '../../templates/clearlayer';
 import editiontableTemplate from '../../templates/editiontable';
 
 import { getValue } from './i18n/language';
 import { renderSnapOptions, getToolSnapOptions } from './snapoptions';
+import {
+  FEATURE_DATA,
+  HOLE_INTERACTION,
+  MODIFY_INTERACTION,
+  SNAPPING,
+  TRANSFORM_INTERACTIONS,
+  implementsContracts,
+  requireImplementation,
+} from './contracts';
+
+const TOOL_INTERACTION_REMOVERS = {
+  isHoleActive: 'removeDrawHoleInteraction',
+  isRotateActive: 'removeRotateInteraction',
+  isScaleActive: 'removeScaleInteraction',
+  isMoveActive: 'removeMoveInteraction',
+};
+
+const DISABLED_BUTTON_ID_POINT = ['holedrawing', 'rotatedrawing', 'scaledrawing'];
+const DISABLED_BUTTON_ID_LINE = ['holedrawing'];
 
 export default class EditionControl extends IDEE.Control {
   /**
@@ -17,19 +35,24 @@ export default class EditionControl extends IDEE.Control {
    *
    * @constructor
    * @extends {IDEE.Control}
+   * @param {IDEE.Map} map
+   * @param {VectorsManagementControl} managementControl
+   * @param {Object} impl platform implementation (MODIFY_INTERACTION, HOLE_INTERACTION,
+   * TRANSFORM_INTERACTIONS, FEATURE_DATA; SNAPPING optional)
    * @api stable
    */
-  constructor(map, managementControl) {
-    // 1. checks if the implementation can create PluginControl
-    if (IDEE.utils.isUndefined(EditionImplControl) || (IDEE.utils.isObject(EditionImplControl)
-      && IDEE.utils.isNullOrEmpty(Object.keys(EditionImplControl)))) {
-      IDEE.exception(getValue('exception.impl_editioncontrol'));
-    }
+  constructor(map, managementControl, impl) {
+    // 1. checks if the implementation fulfils the contracts of this control
+    requireImplementation(impl, [
+      MODIFY_INTERACTION,
+      HOLE_INTERACTION,
+      TRANSFORM_INTERACTIONS,
+      FEATURE_DATA,
+    ], 'exception.impl_editioncontrol');
 
     // 2. implementation of this control
-    const impl = new EditionImplControl(map);
     super('Edition', impl);
-    impl.facadeControl = this;
+    this.getImpl().facadeControl = this;
 
     this.map_ = map;
 
@@ -91,13 +114,6 @@ export default class EditionControl extends IDEE.Control {
      * @type {Boolean}
      */
     this.isEditAttributeActive = false;
-
-    /**
-     * api-idee layer where a square will be drawn around selected feature.
-     * @private
-     * @type {*}
-     */
-    this.selectionLayer = null;
   }
 
   /**
@@ -134,6 +150,7 @@ export default class EditionControl extends IDEE.Control {
     this.addEvents();
     this.managementControl_.accessibilityTab(this.template);
     this.managementControl_.updateEditingAvailability();
+    this.updateToolsAvailability_();
   }
 
   /**
@@ -144,20 +161,8 @@ export default class EditionControl extends IDEE.Control {
    * @api
    */
   initializeLayers() {
-    const layers = this.map_.getLayers().filter((l) => l.name === 'selectLayer');
-    if (layers.length > 0) {
-      this.selectionLayer = layers[0];
-      this.layer_.getImpl().extract = false;
-    } else {
-      this.selectionLayer = new IDEE.layer.Vector({
-        extract: false,
-        name: 'selectLayer',
-        source: this.layer_.getImpl().getLayer().getSource(),
-      }, { displayInLayerSwitcher: false });
-      this.layer_.getImpl().extract = false;
-      this.map_.addLayers(this.selectionLayer);
-      this.selectionLayer.setZIndex(1045);
-    }
+    this.managementControl_.getFeatureSelection().getLayer();
+    this.layer_.getImpl().extract = false;
   }
 
   /**
@@ -306,7 +311,7 @@ export default class EditionControl extends IDEE.Control {
     const container = this.template.querySelector('#m-vectorsmanagement-edition-snap');
     const { snapOptions } = this.managementControl_;
     renderSnapOptions(container, 'edition', tool, snapOptions, (options) => {
-      if (typeof this.getImpl().updateSnap === 'function') {
+      if (implementsContracts(this.getImpl(), SNAPPING)) {
         this.getImpl().updateSnap(options);
       }
     });
@@ -363,17 +368,13 @@ export default class EditionControl extends IDEE.Control {
       this.deactivateSelection();
       this.managementControl_.showSelectionLayer();
     } else if (this.isHoleActive) {
-      this.isHoleActive = false;
-      this.getImpl().removeDrawHoleInteraction();
+      this.deactivateTool('isHoleActive');
     } else if (this.isRotateActive) {
-      this.isRotateActive = false;
-      this.getImpl().removeRotateInteraction();
+      this.deactivateTool('isRotateActive');
     } else if (this.isScaleActive) {
-      this.isScaleActive = false;
-      this.getImpl().removeScaleInteraction();
+      this.deactivateTool('isScaleActive');
     } else if (this.isMoveActive) {
-      this.isMoveActive = false;
-      this.getImpl().removeMoveInteraction();
+      this.deactivateTool('isMoveActive');
     } else if (this.isEditAttributeActive) {
       this.isEditAttributeActive = false;
       this.removeModalEvents();
@@ -385,8 +386,22 @@ export default class EditionControl extends IDEE.Control {
   }
 
   /**
-   * Remove edition and selection interactions,
-   * hide edition template and remove selected features
+   * Deactivates an edition tool, removing its interaction.
+   * @public
+   * @function
+   * @param {String} tool tool flag (isHoleActive, isRotateActive, isScaleActive or isMoveActive)
+   * @api
+   */
+  deactivateTool(tool) {
+    if (this[tool]) {
+      this[tool] = false;
+      this.getImpl()[TOOL_INTERACTION_REMOVERS[tool]]();
+    }
+  }
+
+  /**
+   * Remove edition and selection interactions and
+   * hide edition template. Selected features remain selected.
    * @public
    * @function
    * @api
@@ -396,8 +411,6 @@ export default class EditionControl extends IDEE.Control {
     this.template.querySelector('#edition-container').classList.add('closed');
     this.getImpl().removeEditInteraction();
     this.getImpl().removeSelectInteraction();
-    this.managementControl_.removeSelectedFeatures();
-    this.selectionLayer.removeFeatures(this.selectionLayer.getFeatures());
   }
 
   /**
@@ -457,9 +470,7 @@ export default class EditionControl extends IDEE.Control {
    * @api
    */
   cleanGeometries() {
-    this.selectionLayer.removeFeatures(this.selectionLayer.getFeatures());
-    const features = this.layer_.getFeatures();
-    this.layer_.removeFeatures(features);
+    this.removeFeatures_(this.layer_.getFeatures());
 
     // remove buffer
     this.managementControl_.analysisControl?.removeBufferFeatures();
@@ -473,9 +484,25 @@ export default class EditionControl extends IDEE.Control {
    */
   deleteSingleFeature() {
     if (this.feature) {
-      this.layer_.removeFeatures(this.feature);
-      this.selectionLayer.removeFeatures(this.selectionLayer.getFeatures());
-      this.template.querySelector('#edition-container').classList.add('closed');
+      this.removeFeatures_([this.feature]);
+    }
+  }
+
+  /**
+   * Removes features from the layer and from the selection.
+   * @private
+   * @function
+   * @param {Array<IDEE.Feature>} features
+   */
+  removeFeatures_(features) {
+    this.layer_.removeFeatures(features);
+    this.managementControl_.getFeatureSelection().remove(features);
+    this.feature = undefined;
+    this.template.querySelector('#edition-container').classList.add('closed');
+    if (this.isEditActive) {
+      this.getImpl().removeEditInteraction();
+      this.getImpl().removeSelectInteraction();
+      this.getImpl().activateSelection(getToolSnapOptions('Modify', this.managementControl_.snapOptions));
     }
   }
 
@@ -536,8 +563,8 @@ export default class EditionControl extends IDEE.Control {
    * @api stable
    */
   activateRotate() {
-    const olFeatures = this.managementControl_.getSelectedOLFeatures();
-    this.getImpl().addRotateInteraction(olFeatures);
+    const features = this.managementControl_.getSelectedFeatures();
+    this.getImpl().addRotateInteraction(features);
   }
 
   /**
@@ -548,8 +575,8 @@ export default class EditionControl extends IDEE.Control {
    * @api stable
    */
   activateScale() {
-    const olFeatures = this.managementControl_.getSelectedOLFeatures();
-    this.getImpl().addScaleInteraction(olFeatures);
+    const features = this.managementControl_.getSelectedFeatures();
+    this.getImpl().addScaleInteraction(features);
   }
 
   /**
@@ -560,8 +587,8 @@ export default class EditionControl extends IDEE.Control {
    * @api stable
    */
   activateMove() {
-    const olFeatures = this.managementControl_.getSelectedOLFeatures();
-    this.getImpl().addMoveInteraction(olFeatures);
+    const features = this.managementControl_.getSelectedFeatures();
+    this.getImpl().addMoveInteraction(features);
   }
 
   /**
@@ -581,14 +608,12 @@ export default class EditionControl extends IDEE.Control {
    * @public
    * @function
    * @api
-   * @param {Event}
+   * @param {{features: Array<IDEE.Feature|undefined>}} e selection event of the implementation
    */
   onSelect(e) {
-    const MFeatures = this.layer_.getFeatures();
-    const olFeature = e.target.getFeatures().getArray()[0];
-
-    this.feature = MFeatures.filter((f) => f.getImpl().getFeature() === olFeature)[0]
-      || undefined;
+    const [feature] = e.features;
+    if (!feature) return;
+    this.feature = feature;
 
     this.geometry = this.feature.getGeometry().type;
     this.emphasizeSelectedFeature();
@@ -597,33 +622,34 @@ export default class EditionControl extends IDEE.Control {
   }
 
   /**
-   * Emphasizes selection and shows feature info after feature is modified.
+   * Keeps the modified features selected and emphasized after they are modified.
    * @public
    * @function
    * @api
+   * @param {{features: Array<IDEE.Feature|undefined>}} event modification event of the
+   * implementation
    */
   onModify(event) {
-    this.refreshEmphasizedFeatures();
+    const selection = this.managementControl_.getFeatureSelection();
+    const modified = (event?.features || []).filter(Boolean);
+    const selected = selection.getFeatures();
+    if (modified.length === 0
+      || (modified.length === selected.length && modified.every((f) => selected.includes(f)))) {
+      selection.refresh();
+    } else {
+      selection.select(modified);
+    }
     this.layer_.redraw();
   }
 
   /**
-   * Clears selection layer.
-   * Draws square around feature and adds it to selection layer.
-   * For points:
-   *    If feature doesn't have style, sets new style.
-   * For text:
-   *    Colours red text feature point.
+   * Selects the feature selected for edition, emphasizing it.
    * @public
    * @function
    * @api
    */
   emphasizeSelectedFeature() {
-    this.emphasis = null;
-    this.selectionLayer.removeFeatures(this.selectionLayer.getFeatures());
-    this.managementControl_.removeSelectedFeatures();
-
-    this.emphasizeFeature(this.feature, true);
+    this.managementControl_.getFeatureSelection().select([this.feature]);
   }
 
   /**
@@ -633,10 +659,7 @@ export default class EditionControl extends IDEE.Control {
    * @api
    */
   refreshEmphasizedFeatures() {
-    this.emphasis = null;
-    this.selectionLayer.removeFeatures(this.selectionLayer.getFeatures());
-    const selectedFeatures = this.managementControl_.getSelectedFeatures();
-    selectedFeatures.forEach((f) => this.emphasizeFeature(f, false));
+    this.managementControl_.getFeatureSelection().refresh();
   }
 
   /**
@@ -646,23 +669,81 @@ export default class EditionControl extends IDEE.Control {
    * @api
    */
   refreshSelection() {
+    this.updateToolsAvailability_();
     if (this.isEditAttributeActive) {
       const features = this.managementControl_.getSelectedFeatures();
-      this.refreshAttributeTable(features);
+      if (features.length > 0) {
+        this.refreshAttributeTable(features);
+      }
     } else if (this.isMoveActive) {
-      const olFeatures = this.managementControl_.getSelectedOLFeatures();
-      this.getImpl().refreshMoveSelection(olFeatures);
+      const features = this.managementControl_.getSelectedFeatures();
+      this.getImpl().refreshMoveSelection(features);
     } else if (this.isScaleActive) {
-      const olFeatures = this.managementControl_.getSelectedOLFeatures();
-      this.getImpl().refreshScaleSelection(olFeatures);
+      const features = this.managementControl_.getSelectedFeatures();
+      this.getImpl().refreshScaleSelection(features);
     } else if (this.isRotateActive) {
-      const olFeatures = this.managementControl_.getSelectedOLFeatures();
-      this.getImpl().refreshRotateSelection(olFeatures);
+      const features = this.managementControl_.getSelectedFeatures();
+      this.getImpl().refreshRotateSelection(features);
     }
   }
 
   /**
-   * Draws square around feature and adds it to selection layer.
+   * Enables edition tools according to the selected geometry
+   * and deactivates the tools that do not apply to it.
+   * @private
+   * @function
+   */
+  updateToolsAvailability_() {
+    const features = this.managementControl_.getSelectedFeatures();
+    const geometry = features.length === 1 ? features[0].getGeometry().type : null;
+    this.enabledButton([...DISABLED_BUTTON_ID_POINT, ...DISABLED_BUTTON_ID_LINE]);
+    if (geometry === 'Point') {
+      this.disabledButton(DISABLED_BUTTON_ID_POINT);
+      ['isHoleActive', 'isRotateActive', 'isScaleActive'].forEach((tool) => this.deactivateTool(tool));
+    } else if (geometry === 'LineString' || features.length > 1) {
+      this.disabledButton(DISABLED_BUTTON_ID_LINE);
+      this.deactivateTool('isHoleActive');
+    }
+  }
+
+  /**
+   * Disables buttons by id and removes the 'activated' class if present.
+   * @public
+   * @function
+   * @api
+   * @param {Array<String>} IdButtons List of button ids to disable
+   */
+  disabledButton(IdButtons) {
+    IdButtons.forEach((id) => {
+      const $button = this.template.querySelector(`#${id}`);
+      $button.setAttribute('disabled', 'disabled');
+      $button.classList.add('disabled');
+
+      if ($button.classList.contains('activated')) {
+        $button.classList.remove('activated');
+      }
+    });
+  }
+
+  /**
+   * Enables buttons by id and removes the 'disabled' attribute and class if present.
+   * @public
+   * @function
+   * @api
+   * @param {Array<String>} IdButtons List of button ids to enable
+   */
+  enabledButton(IdButtons) {
+    IdButtons.forEach((id) => {
+      const $button = this.template.querySelector(`#${id}`);
+      if ($button && $button.classList.contains('disabled')) {
+        $button.removeAttribute('disabled');
+        $button.classList.remove('disabled');
+      }
+    });
+  }
+
+  /**
+   * Adds feature to the selection or, otherwise, draws again the emphasis of the selection.
    * @public
    * @function
    * @param {IDEE.Feature} feature
@@ -670,35 +751,11 @@ export default class EditionControl extends IDEE.Control {
    * @api
    */
   emphasizeFeature(feature, addToSelection) {
-    if (feature) {
-      const geomType = feature.getGeometry().type;
-      let emphasis;
-      // if point vs text vs else
-      if (geomType === 'Point' || geomType === 'MultiPoint') {
-        emphasis = this.getImpl().getApiIdeeFeatureClone(feature);
-
-        emphasis.setStyle(new IDEE.style.Point({
-          radius: 20,
-          stroke: {
-            color: '#FF0000',
-            width: 2,
-          },
-        }));
-      } else {
-        // eslint-disable-next-line no-underscore-dangle
-        const extent = this.getImpl().getFeatureExtent(feature);
-        emphasis = IDEE.impl.Feature.feature2Facade(this.getImpl().newPolygonFeature(extent));
-        emphasis.setStyle(new IDEE.style.Line({
-          stroke: {
-            color: '#FF0000',
-            width: 2,
-          },
-        }));
-      }
-      if (addToSelection) {
-        this.managementControl_.addFeatureToSelection(feature);
-      }
-      this.selectionLayer.addFeatures([emphasis]);
+    const selection = this.managementControl_.getFeatureSelection();
+    if (addToSelection) {
+      selection.add(feature);
+    } else {
+      selection.refresh();
     }
   }
 
@@ -892,7 +949,7 @@ export default class EditionControl extends IDEE.Control {
       this.feature = this.getLayer().getFeatureById(featId);
       this.geometry = this.feature.getGeometry().type;
       // this.emphasizeSelectedFeature();
-      const extent = this.feature.getImpl().getFeature().getGeometry().getExtent();
+      const extent = this.getImpl().getFeatureExtent(this.feature);
       this.map_.setBbox(extent);
       if (this.map_.getZoom() > 17) {
         this.map_.setZoom(17);
@@ -942,7 +999,7 @@ export default class EditionControl extends IDEE.Control {
     const attributeName = evt.target.name;
     const features = this.layer_.getFeatures();
     features.forEach((f) => {
-      f.getImpl().getFeature().unset(attributeName);
+      this.getImpl().unsetAttribute(f, attributeName);
     });
     const table = document.querySelector('#attribute-table');
     table.parentNode.removeChild(table);
@@ -1038,7 +1095,7 @@ export default class EditionControl extends IDEE.Control {
       } else {
         nuevoObjeto[k] = attributes[k];
       }
-      feature.getImpl().getFeature().unset(k);
+      this.getImpl().unsetAttribute(feature, k);
     });
     feature.setAttributes(nuevoObjeto);
   }

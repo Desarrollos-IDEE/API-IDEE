@@ -1,7 +1,6 @@
 /**
  * @module IDEE/control/Help
  */
-import HelpImplControl from 'impl/helpcontrol';
 import template from '../../templates/help';
 import { getValue } from './i18n/language';
 
@@ -16,14 +15,7 @@ export default class HelpControl extends IDEE.Control {
    * @api stable
    */
   constructor(map, managementControl) {
-    // 1. checks if the implementation can create PluginControl
-    if (IDEE.utils.isUndefined(HelpImplControl) || (IDEE.utils.isObject(HelpImplControl)
-      && IDEE.utils.isNullOrEmpty(Object.keys(HelpImplControl)))) {
-      IDEE.exception(getValue('exception.impl_helpcontrol'));
-    }
-
-    // 2. implementation of this control
-    const impl = new HelpImplControl();
+    const impl = new IDEE.impl.Control();
     super('Help', impl);
 
     this.map_ = map;

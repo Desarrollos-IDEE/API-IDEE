@@ -52,7 +52,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 - **http**: Si es *true* se permite la carga de capas de servicios desplegados con http, si se le da valor *false* no se permitirá la carga de servicios http. Por defecto: true.
 - **https**: Si es *true* sólo se permite la carga de capas de servicios desplegados con https, si no se rellena o se le da valor *false* se permite la carga de cualquier servicio. Por defecto: true.
 - **showCatalog**: Si es *true* se habilitará una nueva funcionalidad que permitirá la carga de servicios del catálogo habilitando un listado con buscador de dichos servicios. Disponible al pulsar sobre el botón añadir del plugin, apareciendo unos prismáticos para realizar la búsqueda. Por defecto: false.
-- **precharged**: Aquí debemos definir la estructura de los servicios predefinidos que queremos que tenga el plugin (árbol de contenido, servicios sin nodo padre, etc.). También podremos definir un parámetro para cada servicio con el que restringiremos qué capas de cada servicio queremos que sea posible cargar (white_list). Se puede indicar como objeto, como cadena JSON o como cadena JSON codificada en base64.
+- **precharged**: Aquí debemos definir la estructura de los servicios predefinidos que queremos que tenga el plugin (árbol de contenido, servicios sin nodo padre, etc.). También podremos definir un parámetro para cada servicio con el que restringiremos qué capas de cada servicio queremos que sea posible cargar (white_list). Se puede indicar como objeto, como cadena JSON, como cadena JSON codificada en base64 o como **URL** (string) a un fichero JSON con esa misma estructura. Si no se informa, se usa el catálogo publicado en la URL `LIST_PRECHARGED_URL` de `configuration.js` (si no está configurada o no se puede cargar, se usa el catálogo por defecto del plugin).
 Cada servicio admite además un array `styles` con los estilos de las capas cargadas desde él: el primero se aplica al añadir la capa y, si hay más de uno, se podrán cambiar desde el selector de estilo (si no se define, se usan los estilos del servicio o los predefinidos de la capa):
   - WMS: nombres de los estilos, p. ej. `"styles": ["default", "gris"]`.
   - Vectoriales (WFS, OGCAPIFeatures, GeoJSON, MVT, KML...): opciones de `IDEE.style.Generic` (con `name` opcional como etiqueta) o estilos serializados con `style.serialize()`, p. ej. `"styles": [{"name": "Rojo", "polygon": {"fill": {"color": "red"}}}]`.
@@ -129,8 +129,8 @@ https://componentes.idee.es/api-idee/?layerswitcher=position*collapsed*collapsib
   <tr>
   <tr>
     <td>precharged</td>
-    <td>Objeto</td>
-    <td>Base64 ✔️ | Separador ❌</td>
+    <td>Objeto JSON o URL string</td>
+    <td>Base64 ✔️ | Separador ✔️ (solo URL)</td>
   </tr>
   <tr>
     <td>isMoveLayers</td>

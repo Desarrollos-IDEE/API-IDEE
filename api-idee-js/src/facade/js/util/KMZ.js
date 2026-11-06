@@ -18,6 +18,19 @@ const MIME = {
 };
 
 /**
+ * Decodifica un documento del archivo comprimido.
+ * @param {Uint8Array} bytes Contenido del documento.
+ * @returns {string} Documento decodificado.
+ */
+const decode = (bytes) => {
+  try {
+    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+  } catch (error) {
+    return new TextDecoder('windows-1252').decode(bytes);
+  }
+};
+
+/**
  * Lee un KMZ y resuelve recursos relativos al KML principal.
  * Las URI de datos pertenecen al resultado: no dejan URL de objetos vivas.
  * @param {ArrayBuffer|Uint8Array|Blob} source Archivo comprimido.
@@ -64,7 +77,7 @@ export const read = async (source, baseURL = document.baseURI) => {
       }
       return (await resources.get(resourcePath)) + location.hash;
     };
-    const text = await documentEntry.async('string');
+    const text = decode(await documentEntry.async('uint8array'));
     const xml = new DOMParser().parseFromString(text, 'application/xml');
     if (xml.querySelector('parsererror') || xml.documentElement.localName !== 'kml') {
       throw new Error(getValue('exception').kmz_invalid);

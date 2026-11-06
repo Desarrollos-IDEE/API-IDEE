@@ -75,6 +75,33 @@ export function formatTemplateLabel(name) {
   }).join(' ');
 }
 
+/**
+ * Selector de los canvas de capa: las capas Canvas dibujan dentro de un
+ * contenedor .ol-layer y las capas WebGL llevan la clase en el propio canvas.
+ */
+export const SELECTOR_LAYER_CANVAS = '.ol-layer canvas, canvas.ol-layer';
+
+/**
+ * Devuelve los canvas de las capas del mapa (Canvas 2D y WebGL), en orden de dibujo.
+ * Debe usarse dentro de 'rendercomplete' para que los canvas WebGL conserven su contenido.
+ * @param {ol.Map} olMap Mapa de OpenLayers.
+ * @returns {Array<HTMLCanvasElement>} Canvas de capa con contenido.
+ */
+export function getLayerCanvases(olMap) {
+  return Array.from(olMap.getViewport().querySelectorAll(SELECTOR_LAYER_CANVAS))
+    .filter((layerCanvas) => layerCanvas.width > 0);
+}
+
+/**
+ * Devuelve la opacidad CSS de un canvas de capa (del contenedor en capas Canvas
+ * o del propio canvas en capas WebGL).
+ * @param {HTMLCanvasElement} layerCanvas Canvas de capa.
+ * @returns {number} Opacidad.
+ */
+export function getLayerCanvasOpacity(layerCanvas) {
+  return Number(layerCanvas.parentNode.style.opacity || layerCanvas.style.opacity || '1');
+}
+
 // Get base64 image
 export function getBase64Image(imgUrl, format) {
   const formatType = format || 'jpeg';

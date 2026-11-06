@@ -8,11 +8,50 @@
     <meta name="idee" content="yes">
     <title>PRUEBA DESARROLLO</title>
     <link rel="stylesheet" href="./token-vars.css">
+    <style>
+        /* CP-014.js fija data-cp014 ("get" o "manual"); hasta entonces no se muestra ningún bloque. */
+        html:not([data-cp014]) .cp014-get,
+        html:not([data-cp014]) .cp014-manual,
+        html[data-cp014="get"] .cp014-manual,
+        html[data-cp014="manual"] .cp014-get {
+            display: none !important;
+        }
+
+        /* Selector de modo dentro de la fila de botones (m-test-buttons). */
+        .cp014-nav {
+            font-weight: 550;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: .5rem;
+            font-size: var(--idee-font-size-body-s);
+        }
+
+        .cp014-diagnostics {
+            margin: 0;
+            padding: .5rem;
+            max-height: 10rem;
+            overflow: auto;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            font-size: var(--idee-font-size-caption);
+            background-color: var(--idee-color-neutral-05);
+            border-radius: var(--idee-shape-border-radius);
+        }
+    </style>
 </head>
 
 <body>
     <div class="m-api-idee-test-form-frame">
-        <div class="m-test-form" style="min-height: 12.45rem;">
+        <div class="m-test-form cp014-manual" style="min-height: 12.45rem;">
+            <div>
+                <label for="selectLanguage">Idioma de la API</label>
+                <select name="language" id="selectLanguage">
+                    <option value="es">Español (es)</option>
+                    <option value="en">English (en)</option>
+                    <option value="ca">Català (ca)</option>
+                </select>
+            </div>
             <div>
                 <label for="selectPosicion">Posición del panel "position"</label>
                 <select name="position" id="selectPosicion">
@@ -38,6 +77,10 @@
                 <input type="text" name="tooltip" id="inputTooltip" list="tooltipSug" value="Series Temporales">
             </div>
             <div>
+                <label for="inputTitle" title="Título del panel; por defecto, el tooltip">Título del panel "title"</label>
+                <input type="text" name="title" id="inputTitle">
+            </div>
+            <div>
                 <label for="selectCollapsed">Panel colapsado "collapsed"</label>
                 <select name="collapsed" id="selectCollapsed">
                     <option value='' selected="selected"></option>
@@ -59,7 +102,25 @@
                     <option value="absoluteSimple" selected="selected">absoluteSimple</option>
                     <option value="absolute">absolute</option>
                     <option value="relative">relative</option>
+                    <option value="track">track</option>
                 </select>
+            </div>
+            <div>
+                <label for="selectTrack" title="Recorrido que se muestra al crear el control: en track es el principal; en el resto, complementario">Recorrido inicial "track"</label>
+                <select name="track" id="selectTrack">
+                    <option value="" selected="selected">(ninguno; en track, layerPosition o la primera capa)</option>
+                    <option value="guadarrama">GPX trk con fechas y 3 segmentos (ruta_guadarrama · trk-4)</option>
+                    <option value="variante">GPX trk sin fechas (ruta_guadarrama · trk-5)</option>
+                    <option value="waypoints">GPX wpt con fechas, unidos (ruta_guadarrama · wpt-0…3)</option>
+                    <option value="penalara">GPX trk con fechas (ruta_penalara · trk-4)</option>
+                    <option value="penalaraRte">GPX rte sin fechas (ruta_penalara · rte-3)</option>
+                    <option value="vectorPuntos">Vector: puntos sin tiempo, por orden (vector_sin_tiempo)</option>
+                    <option value="vectorLinea">Vector: LineString sin tiempos (vector_sin_tiempo · l1)</option>
+                </select>
+            </div>
+            <div>
+                <label for="inputLayerPosition">Capa por defecto por posición "layerPosition" (1 = superior)</label>
+                <input type="number" min="1" name="layerPosition" id="inputLayerPosition">
             </div>
             <div class="origin">
                 <label for="selectIntervals">Selección de intervalos "intervals"</label>
@@ -71,23 +132,26 @@
                     <option
                         value='[["NACIONAL 1981-1986","1986","WMS*NACIONAL_1981-1986*https://www.ign.es/wms/pnoa-historico*NACIONAL_1981-1986"],["OLISTAT","1998","WMS*OLISTAT*https://www.ign.es/wms/pnoa-historico*OLISTAT"],["SIGPAC","2003","WMS*SIGPAC*https://www.ign.es/wms/pnoa-historico*SIGPAC"],["PNOA 2004","2004","WMS*pnoa2004*https://www.ign.es/wms/pnoa-historico*pnoa2004"],["PNOA 2005","2005","WMS*pnoa2005*https://www.ign.es/wms/pnoa-historico*pnoa2005"],["PNOA 2006","2006","WMS*pnoa2006*https://www.ign.es/wms/pnoa-historico*pnoa2006"],["PNOA 2007","2007","WMS*pnoa2007*https://www.ign.es/wms/pnoa-historico*pnoa2007"],["PNOA 2008","2008","WMS*pnoa2008*https://www.ign.es/wms/pnoa-historico*pnoa2008"],["PNOA 2009","2009","WMS*pnoa2009*https://www.ign.es/wms/pnoa-historico*pnoa2009"],["PNOA 2010","2010","WMS*pnoa2010*https://www.ign.es/wms/pnoa-historico*pnoa2010"],["PNOA 2011","2011","WMS*pnoa2011*https://www.ign.es/wms/pnoa-historico*pnoa2011"],["PNOA 2012","2012","WMS*pnoa2012*https://www.ign.es/wms/pnoa-historico*pnoa2012"],["PNOA 2013","2013","WMS*pnoa2013*https://www.ign.es/wms/pnoa-historico*pnoa2013"],["PNOA 2014","2014","WMS*pnoa2014*https://www.ign.es/wms/pnoa-historico*pnoa2014"],["PNOA 2015","2015","WMS*pnoa2015*https://www.ign.es/wms/pnoa-historico*pnoa2015"],["PNOA 2016","2016","WMS*pnoa2016*https://www.ign.es/wms/pnoa-historico*pnoa2016"],["PNOA 2017","2017","WMS*pnoa2017*https://www.ign.es/wms/pnoa-historico*pnoa2017"],["PNOA 2018","2018","WMS*pnoa2018*https://www.ign.es/wms/pnoa-historico*pnoa2018"]]'>
                         Ej: 18 capas</option>
+                    <option
+                        value='[["PNOA 2004","2004","WMS*pnoa2004*https://www.ign.es/wms/pnoa-historico*pnoa2004"],["Ruta Guadarrama","2021","GPX*ruta_guadarrama*/test/development/CP-0003-controls/fixtures/ruta-guadarrama.gpx*true*true"],["Ruta Peñalara","2021","GPX*ruta_penalara*/test/development/CP-0003-controls/fixtures/ruta-penalara.gpx*true*true"]]'>
+                        Ej: WMS + rutas GPX</option>
                 </select>
             </div>
             <div class="origin">
                 <label for="inputIntervals">Intervalos "intervals"</label>
                 <input type="text" name="intervals" id="inputIntervals">
             </div>
-            <div class="origin">
-                <label for="selectAnimation">Seleccionar "animation"</label>
+            <div>
+                <label for="selectAnimation" title="Con false se ocultan play/pausa y la velocidad">Play/pausa y velocidad "animation"</label>
                 <select name="animation" id="selectAnimation">
                     <option value=""></option>
                     <option value="true" selected="selected">true</option>
                     <option value="false">false</option>
                 </select>
             </div>
-            <div class="origin">
-                <label for="inputSpeed">Velocidad de animacion (s) "speed"</label>
-                <input type="number" min="0.2" max="5" step="0.1" name="speed" step="any" id="inputSpeed">
+            <div class="origin trackmode">
+                <label for="inputSpeed">Segundos por paso "speed" (1 = ×1)</label>
+                <input type="number" min="0.1" step="0.1" name="speed" id="inputSpeed">
             </div>
             <div class="origin">
                 <label for="selectSnapMode">Modo de ajuste de acercamiento "snapMode"</label>
@@ -98,18 +162,28 @@
                 </select>
             </div>
             <div class="dynamic">
-                <label for="time">Capas disponibles "intervals"</label>
+                <label for="selectTime">Ejemplo de intervalos "intervals"</label>
+                <select name="selectTime" id="selectTime">
+                    <option value="wms" selected="selected">WMS eventos sísmicos (CQL por date)</option>
+                    <option value="gpx">GPX local CP-035 (filtro por time)</option>
+                    <option value="rutas">Rutas GPX (pasos de 10 min)</option>
+                </select>
+            </div>
+
+            <div class="dynamic">
+                <label for="time" title="JSON; si se rellena, sustituye al ejemplo">Intervalos propios "intervals" (JSON)</label>
                 <input type="text" name="time" id="time">
             </div>
 
             <div class="dynamic">
-                <label for="speedDate">Velocidad por segundo "speedDate"</label>
-                <input type="number" min="1" name="speedDate" id="speedDate">
+                <label for="speedDate">Segundos por paso "speedDate" (2 = ×1)</label>
+                <input type="number" min="0.1" step="0.1" name="speedDate" id="speedDate">
             </div>
 
             <div class="dynamic">
                 <label for="paramsDate">Unidad de tiempo del paso "paramsDate"</label>
                 <select name="paramsDate" id="paramsDate">
+                    <option value="" selected="selected">(por defecto, yr)</option>
                     <option value="yr">Años (yr)</option>
                     <option value="mos">Meses (mos)</option>
                     <option value="day">Días (day)</option>
@@ -124,7 +198,7 @@
                 <input type="number" min="1" name="stepValue" id="stepValue">
             </div>
 
-            <div class="dynamic">
+            <div class="dynamic trackmode">
                 <label for="sizeWidthDinamic">Tamaño plugin "sizeWidthDinamic"</label>
                 <select name="sizeWidthDinamic" id="sizeWidthDinamic">
                     <option value="">Pequeño ("")</option>
@@ -136,6 +210,7 @@
             <div class="dynamic">
                 <label for="formatValueDinamic">Representación de los datos "formatValue"</label>
                 <select name="formatValueDinamic" id="formatValueDinamic">
+                    <option value="" selected="selected">(por defecto, linear)</option>
                     <option value="logarithmic">Logarítmica ("logarithmic")</option>
                     <option value="exponential">Exponencial ("exponential")</option>
                     <option value="linear">Lineal ("linear")</option>
@@ -145,14 +220,28 @@
             <div class="dynamic">
                 <label for="formatMove">Movimiento en pasos "formatMove"</label>
                 <select name="formatMove" id="formatMove">
-                    <option value="continuous">continuous ("continuous")</option>
-                    <option value="discrete">discrete ("discrete")</option>
+                    <option value="" selected="selected">(por defecto según el tipo)</option>
+                    <option value="continuous">Ventana deslizante ("continuous")</option>
+                    <option value="discrete">Inicio fijo, fin móvil ("discrete")</option>
                 </select>
             </div>
         </div>
         <div class="m-test-buttons">
-            <button id="removeButton">Eliminar Control</button>
+            <select id="cp014-scenario">
+                <option value="manual">Manual (programático, sin GET)</option>
+                <option value="relative">GET · relative</option>
+                <option value="absolute">GET · absolute</option>
+                <option value="absoluteSimple">GET · absoluteSimple</option>
+                <option value="track">GET · track (recorrido y perfil)</option>
+                <option value="recorridos">GET · relative con recorrido sincronizado</option>
+            </select>
+            <button id="removeButton" type="button" class="cp014-manual">Eliminar control</button>
+            <button id="cp014-refresh" type="button" class="cp014-get">Refrescar diagnóstico</button>
+            <button id="cp014-next" type="button" class="secondary cp014-get">Seleccionar siguiente capa</button>
+            <button id="cp014-remove" type="button" class="secondary cp014-get">Retirar Timeline</button>
+            <button id="cp014-add" type="button" class="secondary cp014-get">Volver a añadir el mismo Timeline</button>
         </div>
+        <pre id="cp014-diagnostics" class="cp014-diagnostics cp014-get" aria-live="polite"></pre>
     </div>
     <div id="map" class="map"></div>
     <script src="/config.js" charset="utf-8"></script>

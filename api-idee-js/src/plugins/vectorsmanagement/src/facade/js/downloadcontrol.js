@@ -4,7 +4,6 @@
 import shpWrite from 'shp-write';
 import tokml from 'tokml';
 import togpx from 'togpx';
-import DownloadImplControl from 'impl/downloadcontrol';
 import template from '../../templates/download';
 import { getValue } from './i18n/language';
 
@@ -19,18 +18,8 @@ export default class DownloadControl extends IDEE.Control {
    * @api stable
    */
   constructor(map, managementControl) {
-    // 1. checks if the implementation can create PluginControl
-    if (IDEE.utils.isUndefined(DownloadImplControl) || (IDEE.utils.isObject(DownloadImplControl)
-      && IDEE.utils.isNullOrEmpty(Object.keys(DownloadImplControl)))) {
-      IDEE.exception(getValue('exception.impl_downloadcontrol'));
-    }
-
-    // 2. implementation of this control
-    const impl = new DownloadImplControl(map);
+    const impl = new IDEE.impl.Control();
     super('Download', impl);
-
-    // facade control goes to impl as reference param
-    impl.facadeControl = this;
 
     this.map_ = map;
 

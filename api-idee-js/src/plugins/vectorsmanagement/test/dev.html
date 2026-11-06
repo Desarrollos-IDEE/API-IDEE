@@ -126,6 +126,15 @@
                     <option value='{"vertex":true,"edge":false,"intersection":true,"allLayers":true,"guides":true,"pixelTolerance":15}' label="Configuración completa"></option>
                 </datalist>
             </div>
+            <div>
+                <label for="selectProfileGraphs" title="Gráficas del perfil topográfico de la herramienta de análisis. Por defecto: profile">Gráficas del perfil "profileGraphs"</label>
+                <select name="profileGraphs" id="selectProfileGraphs">
+                    <option value="" selected="selected"></option>
+                    <option value="profile">profile</option>
+                    <option value="elevationGain">elevationGain</option>
+                    <option value="profile,elevationGain">profile,elevationGain</option>
+                </select>
+            </div>
         </div>
         <div class="m-test-buttons">
             <button name="eliminar" class="m-test-button" id="removeButton">Eliminar Plugin</button>

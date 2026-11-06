@@ -161,6 +161,14 @@ export default class VectorsManagement extends IDEE.Plugin {
      */
     this.snapping = parseSnapping(options.snapping);
 
+    /**
+     * @private
+     * @type {Array<String>|String}
+     *
+     * Graphs of the topographic profile: 'profile' and/or 'elevationGain'
+     */
+    this.profileGraphs = options.profileGraphs || 'profile';
+
     // Tooltip
     this.tooltip = options.tooltip || getValue('tooltip');
   }
@@ -223,6 +231,7 @@ export default class VectorsManagement extends IDEE.Plugin {
       style: this.style,
       turf: this.turf,
       snapping: this.snapping,
+      profileGraphs: this.profileGraphs,
       order: this.order,
     }));
 
@@ -247,7 +256,7 @@ export default class VectorsManagement extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.selection}*${this.addlayer}*${this.analysis}*${this.creation}*${this.download}*${this.edition}*${this.help}*${this.style}*${typeof this.snapping === 'boolean' ? this.snapping : JSON.stringify(this.snapping)}*${this.turf}`;
+    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.selection}*${this.addlayer}*${this.analysis}*${this.creation}*${this.download}*${this.edition}*${this.help}*${this.style}*${typeof this.snapping === 'boolean' ? this.snapping : JSON.stringify(this.snapping)}*${this.turf}*${[].concat(this.profileGraphs).join(',')}`;
   }
 
   /**
@@ -271,6 +280,7 @@ export default class VectorsManagement extends IDEE.Plugin {
   destroy() {
     this.map.removeButton(this.button);
     this.map.removePanel(this.panel);
+    this.map.removeControls(this.controls);
   }
 
   /**

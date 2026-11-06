@@ -130,7 +130,7 @@ export default class GeorefimageControl extends IDEE.impl.Control {
       const features = olLayer.getSource().getFeatures();
       const layerName = layer.name;
       const layerOpacity = olLayer.getOpacity();
-      const layerStyle = olLayer.getStyle();
+      const layerStyle = layer.getImpl().getCanvasStyle?.() ?? olLayer.getStyle?.();
       const geoJSONFormat = new ol.format.GeoJSON();
       let bbox = this.facadeMap_.getBbox();
       bbox = [bbox.x.min, bbox.y.min, bbox.x.max, bbox.y.max];
