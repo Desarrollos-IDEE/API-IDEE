@@ -137,7 +137,6 @@
     "track_position": "Posició {index} de {total}",
     "track_time": "{time} ({elapsed} de {duration})",
     "track_segment": "Segment {index} de {total}",
-    "track_percent": "{percent} %",
     "track_synced": "Sincronitzat amb la línia de temps.",
     "track_complementary": "Sense temps compatibles amb la línia de temps: el recorregut es mostra com a informació complementària.",
     "track_before": "El recorregut comença el {date}.",

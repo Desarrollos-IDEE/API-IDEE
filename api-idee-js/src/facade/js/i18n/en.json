@@ -136,7 +136,6 @@
     "track_position": "Position {index} of {total}",
     "track_time": "{time} ({elapsed} of {duration})",
     "track_segment": "Segment {index} of {total}",
-    "track_percent": "{percent} %",
     "track_synced": "Synchronized with the timeline.",
     "track_complementary": "No times compatible with the timeline: the track is shown as complementary information.",
     "track_before": "The track starts on {date}.",

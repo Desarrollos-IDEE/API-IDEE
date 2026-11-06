@@ -3306,8 +3306,8 @@ const createOption = (text, value) => {
  * Interfaz del recorrido, igual en todos los modos: se carga desde una plantilla común
  * en el hueco .m-timeline-track-slot. Selector de capa (con "Sin recorrido" fuera del
  * modo "track"), selector del objeto (oculto si solo hay uno), elección en el mapa,
- * botón del perfil, barra de progreso, posición y avisos. Fuera del modo "track" se
- * oculta si el mapa no tiene capas con recorridos.
+ * botón del perfil, botón de avisos (ventana emergente), barra de progreso y posición.
+ * Fuera del modo "track" se oculta si el mapa no tiene capas con recorridos.
  *
  * @private
  */
@@ -3323,6 +3323,10 @@ class TrackTools {
     this.profile_ = profile;
     this.element_ = null;
     this.layers_ = [];
+    this.trackMessage_ = '';
+    this.profileMessage_ = '';
+    this.popover_ = false;
+    this.placeWarning_ = () => this.placeWarning();
   }
 
   /**
@@ -3365,6 +3369,20 @@ class TrackTools {
       pick.setAttribute('aria-pressed', String(picking));
     }));
     this.query('.m-timeline-profile-button').addEventListener('click', () => this.profile_.toggle());
+    const warning = this.query('.m-timeline-track-warning');
+    const message = this.query('.m-timeline-track-message');
+    this.popover_ = 'popoverTargetElement' in warning;
+    if (this.popover_) {
+      message.hidden = false;
+      message.popover = 'auto';
+      warning.popoverTargetElement = message;
+      message.addEventListener('beforetoggle', ({ newState }) => this.onWarningToggle(newState === 'open'));
+    } else {
+      warning.addEventListener('click', () => {
+        message.hidden = !message.hidden;
+        this.renderWarning();
+      });
+    }
     this.query('.m-timeline-track-progress').addEventListener('input', ({ target }) => {
       this.track_.seek(Number(target.value));
     });
@@ -3431,7 +3449,7 @@ class TrackTools {
   }
 
   /**
-   * Pinta la barra de progreso, la posición y los avisos.
+   * Pinta la barra de progreso, la posición y los avisos del recorrido.
    */
   renderPosition() {
     if (!this.element_) return;
@@ -3448,15 +3466,83 @@ class TrackTools {
       progress.disabled = this.track_.isSynchronized() || playback.steps === 0;
       this.query('.m-timeline-track-status').textContent = this.describePosition(path, position);
     }
-    const message = this.describeMessage(path, position);
-    const element = this.query('.m-timeline-track-message');
-    element.textContent = message;
-    element.hidden = message === '';
+    this.trackMessage_ = this.describeMessage(path, position);
+    this.renderWarning();
   }
 
   /**
-   * Texto de la posición: fecha y tiempo transcurrido o posición y total, porcentaje y
-   * segmento.
+   * Pinta el botón de avisos (recorrido y perfil): el texto es su título y se abre en
+   * una ventana emergente anclada al botón (popover) o, sin soporte de popover,
+   * desplegado debajo. Sin avisos, el botón se oculta y la ventana se cierra.
+   */
+  renderWarning() {
+    if (!this.element_) return;
+    const text = [this.trackMessage_, this.profileMessage_].filter(Boolean).join(' ');
+    const button = this.query('.m-timeline-track-warning');
+    const element = this.query('.m-timeline-track-message');
+    button.hidden = text === '';
+    button.title = text;
+    button.setAttribute('aria-label', text);
+    element.textContent = text;
+    if (this.popover_) {
+      if (!element.matches(':popover-open')) return;
+      if (text === '') element.hidePopover();
+      else this.placeWarning();
+    } else {
+      if (text === '') element.hidden = true;
+      button.setAttribute('aria-expanded', String(!element.hidden));
+    }
+  }
+
+  /**
+   * Apertura o cierre de la ventana de avisos: estado del botón y seguimiento del
+   * botón al redimensionar o desplazar mientras está abierta.
+   * @param {Boolean} open Si se abre.
+   */
+  onWarningToggle(open) {
+    const method = open ? 'addEventListener' : 'removeEventListener';
+    window[method]('resize', this.placeWarning_);
+    window[method]('scroll', this.placeWarning_, true);
+    this.query('.m-timeline-track-warning')?.setAttribute('aria-expanded', String(open));
+    if (open) this.placeWarning();
+  }
+
+  /**
+   * Coloca la ventana de avisos junto al botón, alineada a su derecha, por debajo o
+   * por encima según el espacio disponible en la ventana del navegador.
+   */
+  placeWarning() {
+    const button = this.query('.m-timeline-track-warning');
+    const element = this.query('.m-timeline-track-message');
+    if (!button || !element) return;
+    const gap = 4;
+    const rect = button.getBoundingClientRect();
+    const { clientWidth, clientHeight } = document.documentElement;
+    const below = clientHeight - rect.bottom;
+    const down = below >= rect.top;
+    const right = Math.max(gap, clientWidth - rect.right);
+    Object.assign(element.style, {
+      top: down ? `${rect.bottom + gap}px` : 'auto',
+      bottom: down ? 'auto' : `${clientHeight - rect.top + gap}px`,
+      right: `${right}px`,
+      left: 'auto',
+      maxWidth: `min(18rem, ${Math.max(clientWidth - right - gap, 0)}px)`,
+      maxHeight: `${Math.max((down ? below : rect.top) - 2 * gap, 0)}px`,
+    });
+  }
+
+  /**
+   * Cierra la ventana de avisos y deja de seguir el botón.
+   */
+  destroy() {
+    const element = this.query('.m-timeline-track-message');
+    if (this.popover_ && element?.matches(':popover-open')) element.hidePopover();
+    this.onWarningToggle(false);
+    this.element_ = null;
+  }
+
+  /**
+   * Texto de la posición: fecha y tiempo transcurrido o posición y total, y segmento.
    * @param {TrackPath} path Recorrido.
    * @param {Object|null} position Posición.
    * @returns {String} Texto.
@@ -3477,9 +3563,6 @@ class TrackTools {
         total: path.size,
       }));
     }
-    parts.push(formatText(translation.track_percent, {
-      percent: Math.round(position.fraction * 100),
-    }));
     if (path.segments.length > 1) {
       parts.push(formatText(translation.track_segment, {
         index: position.segment + 1,
@@ -3520,7 +3603,7 @@ class TrackTools {
   }
 
   /**
-   * Pinta el botón y el estado del perfil.
+   * Pinta el botón del perfil y lleva su estado al botón de avisos.
    */
   renderProfile() {
     if (!this.element_) return;
@@ -3530,10 +3613,8 @@ class TrackTools {
     button.setAttribute('aria-pressed', String(this.profile_.isActive()));
     button.setAttribute('aria-busy', String(status === 'loading'));
     const texts = getValue('profile');
-    const message = { loading: texts.loading, error: texts.error, no_data: texts.no_data }[status] ?? '';
-    const element = this.query('.m-timeline-profile-status');
-    element.textContent = message;
-    element.hidden = message === '';
+    this.profileMessage_ = { loading: texts.loading, error: texts.error, no_data: texts.no_data }[status] ?? '';
+    this.renderWarning();
   }
 }
 
@@ -5258,6 +5339,13 @@ class Timeline extends Control {
     this.profile_ = null;
 
     /**
+     * Interfaz del recorrido (se crea en createView).
+     * @private
+     * @type {TrackTools|null}
+     */
+    this.trackTools_ = null;
+
+    /**
      * Recorrido que se muestra al añadir el control: {layer, feature, attributeParam}.
      * @type {Object|null}
      */
@@ -5467,7 +5555,8 @@ class Timeline extends Control {
         this.mode_.build();
         this.transport_.bind();
         this.profile_.bind(this.track_);
-        new TrackTools(this, this.track_, this.profile_).bind();
+        this.trackTools_ = new TrackTools(this, this.track_, this.profile_);
+        this.trackTools_.bind();
         this.track_.subscribe((type) => {
           if (type === 'source') this.transport_?.refreshSpeedTitles();
         });
@@ -5832,6 +5921,7 @@ class Timeline extends Control {
    */
   destroy() {
     this.player_.stop();
+    this.trackTools_?.destroy();
     this.profile_?.destroy();
     this.track_?.destroy();
     this.picker_?.stop();
@@ -5839,6 +5929,7 @@ class Timeline extends Control {
     this.layers_.releaseAll();
     this.mode_ = null;
     this.transport_ = null;
+    this.trackTools_ = null;
     this.track_ = null;
     this.profile_ = null;
     const element = this.getElement();
