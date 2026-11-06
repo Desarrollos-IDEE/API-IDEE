@@ -136,6 +136,13 @@
                 </datalist>
             </div>
             <div>
+                <label for="inputQrImage" title="URL de la imagen que se muestra en el centro del código QR. Por defecto: el logo de IDEE">Imagen del QR "qrImage"</label>
+                <input type="text" id="inputQrImage" list="qrImageSug">
+                <datalist id="qrImageSug">
+                    <option value="https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg"></option>
+                </datalist>
+            </div>
+            <div>
                 <label for="selectOverwriteStyles" title="Controla si se aplican los colores personalizados definidos en styles (true) o se mantienen los estilos por defecto (false). Por defecto: false">Sobreescribir estilos "overwriteStyles"</label>
                 <select name="overwriteStyles" id="selectOverwriteStyles">
                     <option value=""></option>
@@ -220,6 +227,7 @@
         const inputCopyBtn = document.getElementById('inputCopyBtn');
         const inputCopyBtnHtml = document.getElementById('inputCopyBtnHtml');
         const inputTooltipCopy = document.getElementById('inputTooltipCopy');
+        const inputQrImage = document.getElementById('inputQrImage');
         const botonEliminar = document.getElementById('botonEliminar');
 
         const parseBool = (val) => {
@@ -246,6 +254,7 @@
             inputCopyBtn,
             inputCopyBtnHtml,
             inputTooltipCopy,
+            inputQrImage,
         ].forEach((ctrl) => ctrl.addEventListener('change', cambiarTest));
 
         botonEliminar.addEventListener('click', function () {
@@ -276,6 +285,7 @@
                 copyBtn: inputCopyBtn.value.trim(),
                 copyBtnHtml: inputCopyBtnHtml.value.trim(),
                 tooltipCopy: inputTooltipCopy.value.trim(),
+                qrImage: inputQrImage.value.trim(),
             });
         }
 

@@ -117,7 +117,9 @@ export default class BackImgLayerControl extends IDEE.Control {
       const restKey = (layers) => IDEE.utils
         .getRestLayerResourceKey(layers.map((layer) => layer.getRestLayer()));
       const key = restKey(requested);
-      let index = this.layers.findIndex(({ layers }) => layers.length > 0 && restKey(layers) === key);
+      let index = this.layers.findIndex(({ layers }) => {
+        return layers.length > 0 && restKey(layers) === key;
+      });
       if (index < 0) {
         const title = requested.map((layer) => layer.legend || layer.name).join(' + ');
         index = this.layers.length;

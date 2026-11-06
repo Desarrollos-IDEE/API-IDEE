@@ -1,9 +1,27 @@
 /**
  * @module IDEE/control/ShareMapControl
  */
+import QRCode from 'qrcode';
 import template from '../../templates/sharemap';
 import modal from '../../templates/modal';
 import { getValue } from './i18n/language';
+
+/**
+ * Implementation used by the REST API when the url does not define one.
+ *
+ * @const
+ * @private
+ */
+const DEFAULT_IMPLEMENTATION = 'ol';
+
+/**
+ * Quiet zone of the QR code, in modules.
+ *
+ * @const
+ * @private
+ */
+const QR_MARGIN = 4;
+
 /**
  * This function adds the animation shade class.
  *
@@ -45,6 +63,42 @@ const copyURL = (input) => {
  */
 const encodeParam = (value) => encodeURIComponent(value)
   .replace(/%(3A|2F|3F|3D|2C|3B|40|24)/gi, (match) => decodeURIComponent(match));
+
+/**
+ * This function draws the QR code of a text as SVG markup.
+ *
+ * @function
+ * @private
+ * @param {string} text Text to encode.
+ * @param {string} errorCorrectionLevel Error correction level.
+ * @returns {Promise<string>} SVG markup.
+ */
+const toQRSvg = (text, errorCorrectionLevel) => QRCode.toString(text, {
+  type: 'svg', errorCorrectionLevel, margin: QR_MARGIN,
+});
+
+/**
+ * This function creates the QR code of a text: its SVG and, over its center, the image.
+ *
+ * @function
+ * @private
+ * @param {string} text Text to encode.
+ * @param {string} title Accessible title of the QR code.
+ * @param {string} [image] Url of the image.
+ * @returns {Promise<Array<Element>|null>} SVG of the QR code and image; null if the text
+ * does not fit in a QR code.
+ */
+const createQR = (text, title, image) => toQRSvg(text, 'H')
+  .then((svg) => ({ svg, withImage: !IDEE.utils.isNullOrEmpty(image) }))
+  .catch(() => toQRSvg(text, 'L').then((svg) => ({ svg, withImage: false })))
+  .then(({ svg, withImage }) => {
+    const element = IDEE.utils.stringToHtml(svg);
+    element.setAttribute('role', 'img');
+    element.insertAdjacentHTML('afterbegin', `<title>${IDEE.utils.escapeXSS(title)}</title>`);
+    return withImage
+      ? [element, IDEE.utils.stringToHtml(`<img src="${IDEE.utils.escapeXSS(image)}" alt="">`)]
+      : [element];
+  }, () => null);
 
 /**
  * @classdesc
@@ -221,6 +275,14 @@ export default class ShareMapControl extends IDEE.Control {
     this.shareLayer = options.shareLayer;
 
     /**
+     * Url of the image over the center of the QR code
+     *
+     * @private
+     * @type {string}
+     */
+    this.qrImage_ = options.qrImage;
+
+    /**
      * Layers already warned as not shareable
      *
      * @private
@@ -290,6 +352,7 @@ export default class ShareMapControl extends IDEE.Control {
         copyBtn: this.copyBtn_,
         copyBtnHtml: this.copyBtnHtml_,
         tooltip: this.tooltip_,
+        qrTitle: getValue('qr.title'),
       },
     });
 
@@ -341,28 +404,27 @@ export default class ShareMapControl extends IDEE.Control {
       beginShade(title.querySelector('#m-plugin-sharemap-tooltip'));
     });
 
-    this.buildURL(dialogContainer);
-    this.buildHtml(dialogContainer).then(() => { title.focus(); title.click(); });
+    const shareURL = this.getShareURL();
+    this.buildURL(dialogContainer, shareURL);
+    this.buildQR(dialogContainer, shareURL);
+    this.buildHtml(dialogContainer, shareURL).then(() => { title.focus(); title.click(); });
   }
 
   /**
-   * This method builds the url to sharing.
+   * This method builds the url to share the current view of the map.
    *
    * @public
    * @function
+   * @returns {Promise<string>} Url to share.
    */
-  buildURL(html) {
-    const input = html.querySelector('input');
-    const twitter = html.querySelector('#twitter');
-    const facebook = html.querySelector('#facebook');
-    const pinterest = html.querySelector('#pinterest');
+  getShareURL() {
     return this.getControls().then((controls) => {
+      const { x, y } = this.map_.getCenter();
+      const bgColorContainer = this.map_.getBGColorContainer();
+      const stringBgColor = bgColorContainer !== '' ? `&bgcolorcontainer=${encodeURIComponent(bgColorContainer)}` : '';
       let shareURL;
       if (this.urlAPI_) {
-        const { x, y } = this.map_.getCenter();
         const { code, units } = this.map_.getProjection();
-        const bgColorContainer = this.map_.getBGColorContainer();
-        const stringBgColor = bgColorContainer !== '' ? `&bgcolorcontainer=${encodeURIComponent(bgColorContainer)}` : '';
         shareURL = `${this.baseUrl_}?center=${x},${y}&zoom=${this.map_.getZoom()}${stringBgColor}`;
         if (!this.minimize_) {
           shareURL = shareURL.concat(`&controls=${controls}`).concat(`&${this.getPlugins()}`);
@@ -385,11 +447,7 @@ export default class ShareMapControl extends IDEE.Control {
         shareURL = layerParam.length > 0 ? shareURL.concat(`&layers=${layerParam.map(encodeParam)}`) : shareURL.concat('');
         shareURL = shareURL.concat(this.getBaseLayerParam_());
         shareURL = shareURL.concat(`&projection=${code}*${units}`);
-        input.value = shareURL;
       } else {
-        const { x, y } = this.map_.getCenter();
-        const bgColorContainer = this.map_.getBGColorContainer();
-        const stringBgColor = bgColorContainer !== '' ? `&bgcolorcontainer=${encodeURIComponent(bgColorContainer)}` : '';
         const urlBaseVisor = (window.location.search) ? window.location.href.replace(window.location.search, '') : window.location.href;
         shareURL = `${urlBaseVisor}?center=${x},${y}&zoom=${this.map_.getZoom()}&srs=${this.map_.getProjection().code}${stringBgColor}`;
         let layers = [];
@@ -417,10 +475,31 @@ export default class ShareMapControl extends IDEE.Control {
           }
         }
         shareURL = shareURL.concat(this.getBaseLayerParam_());
-        input.value = shareURL;
       }
-      shareURL = encodeURI(shareURL);
-      IDEE.remote.get(`http://tinyurl.com/api-create.php?url=${shareURL}`).then((response) => {
+      const implementation = this.map_.getImplementation();
+      if (implementation !== DEFAULT_IMPLEMENTATION) {
+        shareURL = shareURL.concat(`&implementation=${implementation}`);
+      }
+      return shareURL;
+    });
+  }
+
+  /**
+   * This method builds the url to sharing.
+   *
+   * @public
+   * @function
+   * @param {HTMLElement} html Dialog.
+   * @param {Promise<string>} [shareURL] Url to share.
+   */
+  buildURL(html, shareURL = this.getShareURL()) {
+    const input = html.querySelector('input');
+    const twitter = html.querySelector('#twitter');
+    const facebook = html.querySelector('#facebook');
+    const pinterest = html.querySelector('#pinterest');
+    return shareURL.then((url) => {
+      input.value = url;
+      IDEE.remote.get(`http://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`).then((response) => {
         facebook.addEventListener('click', () => window.open(`http://www.facebook.com/sharer.php?u=${response.text}`, '_blank'));
         twitter.addEventListener('click', () => window.open(`https://twitter.com/intent/tweet?url=${response.text}`, '_blank'));
         pinterest.addEventListener('click', () => window.open(`https://www.pinterest.es/pin/create/button/?url=${response.text}`, '_blank'));
@@ -433,75 +512,29 @@ export default class ShareMapControl extends IDEE.Control {
    *
    * @public
    * @function
+   * @param {HTMLElement} dialog Dialog.
+   * @param {Promise<string>} [shareURL] Url to share.
    */
-  buildHtml(dialog) {
-    const html = dialog.querySelector('#m-plugin-sharemap-html');
-    const input = html.querySelector('input');
-    return this.getControls().then((controls) => {
-      let shareURL;
-      if (this.urlAPI_) {
-        const { x, y } = this.map_.getCenter();
-        const { code, units } = this.map_.getProjection();
-        const bgColorContainer = this.map_.getBGColorContainer();
-        const stringBgColor = bgColorContainer !== '' ? `&bgcolorcontainer=${encodeURIComponent(bgColorContainer)}` : '';
-        shareURL = `${this.baseUrl_}?center=${x},${y}&zoom=${this.map_.getZoom()}${stringBgColor}`;
-        if (!this.minimize_) {
-          shareURL = shareURL.concat(`&controls=${controls}`).concat(`&${this.getPlugins()}`);
-        } else {
-          let newControls = controls.filter((c) => {
-            return c !== undefined && c.indexOf('backgroundlayers') === -1;
-          }).join(',');
-
-          if (newControls.endsWith(',')) {
-            newControls = newControls.slice(0, -1);
-          }
-
-          if (newControls.indexOf('scale') === -1 || (newControls.indexOf('scale') === newControls.indexOf('scaleline'))) {
-            newControls = newControls.concat(',scale*true');
-          }
-
-          shareURL = shareURL.concat(`&controls=${newControls}`).concat('&plugins=layerswitcher,mousesrs');
-        }
-        const layerParam = this.getLayers();
-        shareURL = layerParam.length > 0 ? shareURL.concat(`&layers=${layerParam.map(encodeParam)}`) : shareURL.concat('');
-        shareURL = shareURL.concat(this.getBaseLayerParam_());
-        shareURL = shareURL.concat(`&projection=${code}*${units}`);
-      } else {
-        const { x, y } = this.map_.getCenter();
-        const bgColorContainer = this.map_.getBGColorContainer();
-        const stringBgColor = bgColorContainer !== '' ? `&bgcolorcontainer=${encodeURIComponent(bgColorContainer)}` : '';
-        const urlBaseVisor = (window.location.search) ? window.location.href.replace(window.location.search, '') : window.location.href;
-        shareURL = `${urlBaseVisor}?center=${x},${y}&zoom=${this.map_.getZoom()}${stringBgColor}`;
-        let layers = [];
-
-        if (this.shareLayer === true) {
-          layers = this.getLayersInLayerswitcher();
-        } else if (this.shareLayer === false) {
-          layers = this.getLayersInfilterLayers();
-        }
-
-        shareURL = layers.length > 0 ? shareURL.concat(`&layers=${layers.map(encodeParam)}`) : shareURL.concat('');
-        if (!IDEE.utils.isNullOrEmpty(IDEE.config.MAP_VIEWER_LAYERS)) {
-          if (layers.length > 0) {
-            let includes = '';
-            IDEE.config.MAP_VIEWER_LAYERS.forEach((elm) => {
-              if (layers.indexOf(elm) === -1) {
-                includes = includes.concat(`,${elm}`);
-              }
-            });
-            if (IDEE.utils.isNullOrEmpty(includes)) {
-              shareURL = `${shareURL},${IDEE.config.MAP_VIEWER_LAYERS.map(encodeParam)}`;
-            }
-          } else {
-            shareURL = `${shareURL}&layers=${IDEE.config.MAP_VIEWER_LAYERS.map(encodeParam)}`;
-          }
-        }
-        shareURL = shareURL.concat(this.getBaseLayerParam_());
-        input.value = shareURL;
-      }
-      const embeddedHtml = `<iframe width="800" height="600" frameborder="0" style="border:0" src="${shareURL}"></iframe>`;
-      input.value = embeddedHtml;
+  buildHtml(dialog, shareURL = this.getShareURL()) {
+    const input = dialog.querySelector('#m-plugin-sharemap-html input');
+    return shareURL.then((url) => {
+      input.value = `<iframe width="800" height="600" frameborder="0" style="border:0" src="${url}"></iframe>`;
     });
+  }
+
+  /**
+   * This method builds the QR code of the url to share, with the image of the
+   * "qrImage" option.
+   *
+   * @public
+   * @function
+   * @param {HTMLElement} dialog Dialog.
+   * @param {Promise<string>} [shareURL] Url to share.
+   */
+  buildQR(dialog, shareURL = this.getShareURL()) {
+    const container = dialog.querySelector('#m-plugin-sharemap-qr');
+    return shareURL.then((url) => createQR(url, getValue('qr.alt'), this.qrImage_))
+      .then((qr) => container.replaceChildren(...(qr || [IDEE.utils.stringToHtml(`<p role="status">${IDEE.utils.escapeXSS(getValue('exception.tooLong'))}</p>`)])));
   }
 
   /**

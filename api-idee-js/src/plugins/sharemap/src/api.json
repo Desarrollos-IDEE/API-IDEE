@@ -77,6 +77,11 @@
         "type": "object",
         "name": "overwritestyles",
         "position": 13
+      },
+      {
+        "type": "simple",
+        "name": "qrImage",
+        "position": 14
       }
    ]
   }],
