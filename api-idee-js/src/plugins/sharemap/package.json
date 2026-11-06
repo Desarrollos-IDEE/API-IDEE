@@ -54,7 +54,8 @@
   },
   "dependencies": {
     "jss": "^9.8.7",
-    "jss-preset-default": "^4.5.0"
+    "jss-preset-default": "^4.5.0",
+    "qrcode": "1.5.4"
   },
   "overrides": {
     "webpack": "5.88.2",
