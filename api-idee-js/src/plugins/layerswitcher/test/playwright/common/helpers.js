@@ -29,13 +29,56 @@ const PNG_1PX = Buffer.from(
   'base64',
 );
 
+const DIAGNOSIS_TIMEOUT = 5000;
+
+const readCesiumState = (page) => page.evaluate(() => new Promise((resolve) => {
+  const scene = window.mapjs?.getMapImpl()?.scene;
+  let frames = 0;
+  const countFrame = () => { frames += 1; };
+  scene?.postRender.addEventListener(countFrame);
+  setTimeout(() => {
+    scene?.postRender.removeEventListener(countFrame);
+    const requests = window.Cesium?.RequestScheduler?.statistics;
+    resolve({
+      fotogramasEn2s: scene ? frames : 'sin mapa',
+      teselasCargadas: scene?.globe?.tilesLoaded,
+      peticionesCesiumActivas: requests?.numberOfActiveRequests,
+      animacionesCSS: document.getAnimations().length,
+      hardwareConcurrency: window.navigator.hardwareConcurrency,
+      userAgent: window.navigator.userAgent,
+    });
+  }, 2000);
+}));
+
+const logCesiumState = async ({ page }, testInfo) => {
+  if (testInfo.status === testInfo.expectedStatus) return;
+  let timer;
+  let state;
+  try {
+    state = await Promise.race([
+      readCesiumState(page),
+      new Promise((resolve) => {
+        timer = setTimeout(() => resolve('la página no responde en 5 s'), DIAGNOSIS_TIMEOUT);
+      }),
+    ]);
+  } catch (err) {
+    state = `no disponible: ${err.message.split('\n')[0]}`;
+  } finally {
+    clearTimeout(timer);
+  }
+  // eslint-disable-next-line no-console
+  console.log(`[diagnóstico Cesium] ${testInfo.titlePath.join(' › ')} (intento ${testInfo.retry}): ${JSON.stringify(state)}`);
+};
+
 /**
- * Ajusta el tiempo de los tests a la implementación.
+ * Ajusta el tiempo de los tests a la implementación y, en Cesium, escribe en el
+ * log el estado del visor cuando un test falla.
  *
  * @param {String} impl 'ol' o 'cesium'.
  */
 export const configureEngine = (impl) => {
   test.describe.configure({ timeout: impl === 'cesium' ? 120000 : 45000 });
+  if (impl === 'cesium') test.afterEach(logCesiumState);
 };
 
 /**
@@ -105,13 +148,15 @@ export const openMap = async (page, impl, pluginOptions = {}) => {
 };
 
 /**
- * Añade al mapa una capa vectorial con datos en línea ("puntos") y una capa
- * ráster XYZ con teselas simuladas ("teselas").
+ * Añade al mapa una capa vectorial con datos en línea ("puntos") y, salvo que se
+ * indique lo contrario, una capa ráster XYZ con teselas simuladas ("teselas").
  *
  * @param {Page} page Página de Playwright.
+ * @param {Object} options Opciones.
+ * @param {Boolean} options.raster Añade la capa XYZ (por defecto, verdadero).
  */
-export const addSampleLayers = async (page) => {
-  await page.evaluate((tilesUrl) => {
+export const addSampleLayers = async (page, { raster = true } = {}) => {
+  await page.evaluate(({ tilesUrl, withRaster }) => {
     window.puntos = new IDEE.layer.GeoJSON({
       name: 'puntos',
       legend: 'Puntos',
@@ -127,6 +172,10 @@ export const addSampleLayers = async (page) => {
         ],
       },
     });
+    if (!withRaster) {
+      window.mapjs.addLayers(window.puntos);
+      return;
+    }
     window.teselas = new IDEE.layer.XYZ({
       url: `${tilesUrl}/{z}/{x}/{y}.png`,
       name: 'teselas',
@@ -134,7 +183,7 @@ export const addSampleLayers = async (page) => {
       transparent: true,
     });
     window.mapjs.addLayers([window.puntos, window.teselas]);
-  }, TILES_URL);
+  }, { tilesUrl: TILES_URL, withRaster: raster });
 };
 
 /**
