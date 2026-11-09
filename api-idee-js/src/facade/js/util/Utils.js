@@ -2130,7 +2130,7 @@ const parseValueByType = (rawValue, paramKey, objectName) => {
   if (value.startsWith('base64~') || value.startsWith('deflate~')) {
     try {
       const compressed = value.startsWith('deflate~');
-      const encoded = value.substring(compressed ? 8 : 7);
+      const encoded = value.substring(compressed ? 8 : 7).replace(/ /g, '+');
       const decoded = compressed
         ? inflate(Uint8Array.from(window.atob(encoded), (char) => char.charCodeAt(0)), { to: 'string' })
         : decodeBase64Utf8(encoded);
@@ -2248,7 +2248,17 @@ const serializeValueByType = (value) => {
     }
   } else if (isArray(value)
     || (isObject(value) && Object.getPrototypeOf(value) === Object.prototype)) {
-    serialized = toBase64(JSON.stringify(value));
+    try {
+      serialized = toBase64(JSON.stringify(value, (key, nested) => {
+        const prototype = isObject(nested) && !isArray(nested) && Object.getPrototypeOf(nested);
+        if (prototype && prototype !== Object.prototype) {
+          throw new TypeError(`${key} is not serializable`);
+        }
+        return nested;
+      }));
+    } catch (e) {
+      serialized = undefined;
+    }
   }
   return serialized;
 };
@@ -2265,7 +2275,7 @@ const serializeValueByType = (value) => {
  * @api
  */
 export const serializeUrlParams = (params, fieldSeparator = ';', keyValueSeparator = '=') => {
-  return Object.keys(params)
+  return Object.keys(params || {})
     .filter((key) => !isNullOrEmpty(params[key]))
     .map((key) => [key, serializeValueByType(params[key])])
     .filter(([, value]) => !isUndefined(value))
