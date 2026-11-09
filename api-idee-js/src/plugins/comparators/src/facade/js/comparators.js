@@ -7,6 +7,7 @@ import ComparatorsControl from './comparatorscontrol';
 import es from './i18n/es';
 import en from './i18n/en';
 import { getValue } from './i18n/language';
+import { transformToStringLayers } from './utils';
 import myhelp from '../../templates/myhelp';
 
 export default class Comparators extends IDEE.Plugin {
@@ -124,7 +125,14 @@ export default class Comparators extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.tooltip}*${this.options.listLayers}*${this.options.defaultCompareMode}*${this.options.enabledKeyFunctions}*${!!this.options.transparencyParams}*${!!this.options.lyrcompareParams}*${!!this.options.mirrorpanelParams}*${!!this.options.windowsyncParams}`;
+    let { listLayers } = this.options;
+    if (IDEE.utils.isArray(listLayers)) {
+      listLayers = listLayers
+        .map((layer) => (IDEE.utils.isString(layer)
+          ? layer : transformToStringLayers(layer, this.map, false)))
+        .filter((layer) => layer);
+    }
+    return `${this.name}=${IDEE.utils.serializeUrlParams({ ...this.options, listLayers })}`;
   }
 
   /**
