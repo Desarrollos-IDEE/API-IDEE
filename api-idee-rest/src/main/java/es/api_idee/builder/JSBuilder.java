@@ -1,13 +1,19 @@
 package es.api_idee.builder;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.DataFormatException;
+import java.util.zip.Inflater;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import es.api_idee.parameter.Parameters;
@@ -15,6 +21,16 @@ import es.api_idee.parameter.PluginAPI;
 import es.api_idee.parameter.PluginAPIParam;
 
 public class JSBuilder {
+
+	private static final Logger log = Logger.getLogger(JSBuilder.class);
+
+	private static final String LEGACY_BASE64 = "base64=";
+
+	private static final String BASE64_PREFIX = "base64~";
+
+	private static final String DEFLATE_PREFIX = "deflate~";
+
+	private static final int MAX_INFLATED_SIZE = 1024 * 1024;
 
 	/**
 	 * Generates the code to create a map with the specified parameters
@@ -214,8 +230,8 @@ public class JSBuilder {
 	}
 
 	public static String createPlugin(PluginAPI plugin, String paramValue) {
-		// New star format: value is "key=val;key=val" — delegate to Map-based approach
-		if (!StringUtils.isEmpty(paramValue) && paramValue.matches("\\w+=.*")) {
+		if (!StringUtils.isEmpty(paramValue) && paramValue.matches("(?s)\\w+=.*")
+				&& !paramValue.startsWith(LEGACY_BASE64)) {
 			Map<String, String> params = new java.util.LinkedHashMap<>();
 			for (String pair : paramValue.split(";")) {
 				int eqIdx = pair.indexOf('=');
@@ -254,11 +270,13 @@ public class JSBuilder {
 		}
 
 		if (founded) {
-			String base64 = paramValues[index].replace("base64=", "");
-			byte[] decodedBytes = Base64.getDecoder().decode(base64);
-			String decoded = new String(decodedBytes);
-			JSONObject decodedJSON = new JSONObject(decoded); 
-			pluginBuilder.append(decodedJSON);
+			String base64 = paramValues[index].replace(LEGACY_BASE64, "").replace(' ', '+');
+			try {
+				byte[] decodedBytes = Base64.getDecoder().decode(base64);
+				pluginBuilder.append(new JSONObject(new String(decodedBytes, StandardCharsets.UTF_8)));
+			} catch (IllegalArgumentException | JSONException e) {
+				log.warn("Invalid base64 parameters of plugin '" + plugin.getName() + "'", e);
+			}
 		} else {
 			List<PluginAPIParam> pluginAPIParams = plugin.getParameters();
 			if (pluginAPIParams != null) {
@@ -293,9 +311,10 @@ public class JSBuilder {
 					if (propertyValue != null) {
 						if (property.getType().equals(PluginAPIParam.NUMBER)) {
 							String val = propertyValue.toString();
-							if(!val.equals("")) {
-							((JSONObject) pluginParam).put(property.getName(),
-									Double.parseDouble(val));
+							try {
+								((JSONObject) pluginParam).put(property.getName(),
+										Double.parseDouble(val));
+							} catch (NumberFormatException e) {
 							}
 						} else if (property.getType().equals(PluginAPIParam.BOOLEAN)) {
 							((JSONObject) pluginParam).put(property.getName(),
@@ -359,22 +378,11 @@ public class JSBuilder {
 
 			for (Map.Entry<String, String> entry : keyValueParams.entrySet()) {
 				String paramName = entry.getKey();
-				String paramValue = entry.getValue();
 				String paramType = paramTypes.containsKey(paramName) ? paramTypes.get(paramName) : null;
-
-				if (paramType != null && paramType.equalsIgnoreCase(PluginAPIParam.BOOLEAN)) {
-					paramsObj.put(paramName, Boolean.parseBoolean(paramValue));
-				} else if (paramType != null && paramType.equalsIgnoreCase(PluginAPIParam.NUMBER)) {
-					try {
-						paramsObj.put(paramName, Double.parseDouble(paramValue));
-					} catch (NumberFormatException e) {
-						paramsObj.put(paramName, paramValue);
-					}
-				} else if (paramType != null && paramType.equalsIgnoreCase(PluginAPIParam.ARRAY)) {
-					paramsObj.put(paramName, parseArrayValue(paramValue));
-				} else {
-					// Type unknown from API definition: use heuristic inference
-					inferAndPutValue(paramsObj, paramName, paramValue);
+				try {
+					paramsObj.put(paramName, toParamValue(entry.getValue(), paramType));
+				} catch (IllegalArgumentException | JSONException e) {
+					log.warn("Invalid parameter '" + paramName + "' of plugin '" + plugin.getName() + "'", e);
 				}
 			}
 
@@ -392,7 +400,7 @@ public class JSBuilder {
 	 * @return quoted JS string for client-side buildLayer()
 	 */
 	public static String createLayerWithParams(String layerEntry) {
-		return "\"" + layerEntry.trim().replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+		return "\"" + layerEntry.trim() + "\"";
 	}
 
 	/**
@@ -408,40 +416,136 @@ public class JSBuilder {
 	 * @return quoted JS string for client-side buildControl()
 	 */
 	public static String createControlWithParams(String controlEntry) {
-		return "\"" + controlEntry.trim().replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+		return "\"" + controlEntry.trim() + "\"";
 	}
 
 	/**
-	 * Puts a value into a JSONObject using heuristic type inference:
-	 *   "true"/"false"       → boolean
-	 *   numeric string       → double
-	 *   "[a, b, c]"          → JSONArray  (brackets optional)
-	 *   "{\"k\":\"v\"}"      → JSONObject (inline JSON)
-	 *   anything else        → string
+	 * Converts a key=value parameter of a plugin to the type of its API definition
+	 * (boolean, number or array) or, if the type is unknown, to the type that the
+	 * value itself indicates (see parseRestValue).
+	 *
+	 * @param rawValue value of the URL
+	 * @param paramType type of the API definition, or null
+	 * @return value for the plugin options
+	 * @throws IllegalArgumentException if an encoded value cannot be decoded
 	 */
-	private static void inferAndPutValue(JSONObject obj, String key, String value) {
-		String trimmed = value.trim();
-		if ("true".equalsIgnoreCase(trimmed) || "false".equalsIgnoreCase(trimmed)) {
-			obj.put(key, Boolean.parseBoolean(trimmed));
+	private static Object toParamValue(String rawValue, String paramType) {
+		Object value = parseRestValue(rawValue);
+		if (PluginAPIParam.BOOLEAN.equalsIgnoreCase(paramType)
+				&& !(value instanceof Boolean || value instanceof JSONObject || value instanceof JSONArray)) {
+			value = Boolean.parseBoolean(value.toString());
+		} else if (PluginAPIParam.NUMBER.equalsIgnoreCase(paramType) && !(value instanceof Number)) {
+			try {
+				value = Double.parseDouble(value.toString());
+			} catch (NumberFormatException e) {
+			}
+		} else if (PluginAPIParam.ARRAY.equalsIgnoreCase(paramType) && !(value instanceof JSONArray)) {
+			value = parseArrayValue(value.toString());
+		}
+		return value;
+	}
+
+	/**
+	 * Parses a REST value with the same grammar as the client (parseValueByType of
+	 * IDEE.utils), so that the values written by IDEE.utils.serializeUrlParams are
+	 * restored with their type:
+	 *   "base64~..."         → base64 (UTF-8) of a value, parsed again
+	 *   "deflate~..."        → base64 of a deflate (zlib) compressed value, parsed again
+	 *   "'text'"             → string (a quoted value is never a boolean or a number)
+	 *   "true"/"false"       → boolean
+	 *   "{\"k\":\"v\"}"      → JSONObject (inline JSON)
+	 *   "[a, b, c]"          → JSONArray (JSON when it comes encoded, otherwise a plain list)
+	 *   numeric string       → number
+	 *   anything else        → string
+	 *
+	 * @param rawValue value of the URL
+	 * @return parsed value
+	 * @throws IllegalArgumentException if an encoded value cannot be decoded
+	 */
+	private static Object parseRestValue(String rawValue) {
+		String trimmed = rawValue.trim();
+		Object value = rawValue;
+		if (trimmed.startsWith(BASE64_PREFIX) || trimmed.startsWith(DEFLATE_PREFIX)) {
+			String decoded = decodeRestValue(trimmed);
+			value = null;
+			if (decoded.trim().startsWith("[")) {
+				try {
+					value = new JSONArray(decoded.trim());
+				} catch (JSONException e) {
+				}
+			}
+			if (value == null) {
+				value = parseRestValue(decoded);
+			}
+		} else if (trimmed.length() >= 2 && trimmed.startsWith("'") && trimmed.endsWith("'")) {
+			value = trimmed.substring(1, trimmed.length() - 1);
+		} else if ("true".equalsIgnoreCase(trimmed) || "false".equalsIgnoreCase(trimmed)) {
+			value = Boolean.parseBoolean(trimmed);
 		} else if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
 			try {
-				obj.put(key, new JSONObject(trimmed));
-			} catch (Exception e) {
-				obj.put(key, value);
+				value = new JSONObject(trimmed);
+			} catch (JSONException e) {
 			}
 		} else if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
-			obj.put(key, parseArrayValue(trimmed));
+			value = parseArrayValue(trimmed);
 		} else {
 			try {
 				if (trimmed.matches("-?\\d+")) {
-					obj.put(key, Integer.parseInt(trimmed));
-				} else {
-					obj.put(key, Double.parseDouble(trimmed));
+					value = Integer.parseInt(trimmed);
+				} else if (Double.isFinite(Double.parseDouble(trimmed))) {
+					value = Double.parseDouble(trimmed);
 				}
 			} catch (NumberFormatException e) {
-				obj.put(key, value);
 			}
 		}
+		return value;
+	}
+
+	/**
+	 * Decodes a 'base64~' or 'deflate~' REST value. A '+' of the base64 that arrives as
+	 * a space (not encoded in the URL) is restored.
+	 *
+	 * @param value encoded value, with its prefix
+	 * @return decoded text
+	 * @throws IllegalArgumentException if the value cannot be decoded
+	 */
+	private static String decodeRestValue(String value) {
+		boolean compressed = value.startsWith(DEFLATE_PREFIX);
+		String encoded = value.substring((compressed ? DEFLATE_PREFIX : BASE64_PREFIX).length())
+				.replace(' ', '+');
+		byte[] bytes = Base64.getDecoder().decode(encoded);
+		return compressed ? inflate(bytes) : new String(bytes, StandardCharsets.UTF_8);
+	}
+
+	/**
+	 * Decompresses a deflate (zlib) value, up to MAX_INFLATED_SIZE bytes.
+	 *
+	 * @param compressed compressed bytes
+	 * @return decompressed UTF-8 text
+	 * @throws IllegalArgumentException if the value is not valid or too large
+	 */
+	private static String inflate(byte[] compressed) {
+		Inflater inflater = new Inflater();
+		inflater.setInput(compressed);
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		byte[] buffer = new byte[4096];
+		try {
+			while (!inflater.finished()) {
+				int count = inflater.inflate(buffer);
+				if (count == 0 && (inflater.needsInput() || inflater.needsDictionary())) {
+					throw new IllegalArgumentException("Truncated deflate~ value");
+				}
+				output.write(buffer, 0, count);
+				if (output.size() > MAX_INFLATED_SIZE) {
+					throw new IllegalArgumentException("Too large deflate~ value");
+				}
+			}
+		} catch (DataFormatException e) {
+			throw new IllegalArgumentException("Invalid deflate~ value", e);
+		} finally {
+			inflater.end();
+		}
+		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
 	/**

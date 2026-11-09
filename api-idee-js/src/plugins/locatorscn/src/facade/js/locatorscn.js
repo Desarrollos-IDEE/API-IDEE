@@ -173,7 +173,7 @@ export default class Locatorscn extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.tooltip}*${this.zoom}*${this.pointStyle}*${this.searchOptions}*${this.useProxy}`;
+    return `${this.name}=${IDEE.utils.serializeUrlParams(this.options)}`;
   }
 
   /**

@@ -267,7 +267,7 @@ export default class Locator extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.tooltip}*${this.zoom}*${this.pointStyle}*${!!this.byParcelCadastre}*${!!this.byCoordinates}*${!!this.byPlaceAddressPostal}*${this.useProxy}`;
+    return `${this.name}=${IDEE.utils.serializeUrlParams(this.options)}`;
   }
 
   /**

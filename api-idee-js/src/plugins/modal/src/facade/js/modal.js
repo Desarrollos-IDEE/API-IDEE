@@ -182,10 +182,7 @@ export default class Modal extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    const URL = (this.options.helpLink && Object.keys(this.options.helpLink).length > 0)
-      ? [this.options.helpLink.es, this.options.helpLink.en, this.options.helpLink.ca]
-      : [this.url_en, this.url_es, this.url_ca];
-    return `${this.name}=${this.position_}*${this.collapsed}*${this.collapsible}*${URL[0]}*${URL[1]}*${URL[2]}`;
+    return `${this.name}=${IDEE.utils.serializeUrlParams(this.options)}`;
   }
 
   /**

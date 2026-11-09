@@ -213,8 +213,7 @@ export default class PrintViewManagement extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.tooltip}`
-      + `*${this.defaultOpenControl}*${!!this.georefImageEpsg}*${!!this.georefImage}*${!!this.printermap}`;
+    return `${this.name}=${IDEE.utils.serializeUrlParams(this.options)}`;
   }
 
   /**

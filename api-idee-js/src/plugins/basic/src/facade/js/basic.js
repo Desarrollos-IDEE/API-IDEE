@@ -123,7 +123,7 @@ export default class Basic extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.tooltip}*${this.svgPath}*${this.minPanelWidth}*${this.maxPanelWidth}*${this.content}`;
+    return `${this.name}=${IDEE.utils.serializeUrlParams(this.options)}`;
   }
 
   /**

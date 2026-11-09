@@ -70,7 +70,7 @@ styles: {
   secondaryColor: 'green'
 }
 ```
-- **qrImage**: URL de la imagen que se muestra en el centro del código QR. La imagen se ajusta, sin deformarse, a un cuadrado central del 20 % del ancho del QR, y solo lleva fondo blanco la zona que ocupa. Por defecto: el logo de IDEE de los recursos estáticos (`imagenes/logos/IDEE-logo.png`).
+- **qrImage**: URL de la imagen que se muestra en el centro del código QR. La imagen se ajusta, sin deformarse, a un cuadrado central del 25 % del ancho del QR, y solo lleva fondo blanco la zona que ocupa. Por defecto: el logo de IDEE de los recursos estáticos (`imagenes/logos/IDEE-logo.png`).
 
 # API-REST
 
@@ -179,6 +179,10 @@ Los parámetros con separador son posicionales: para indicar uno hay que rellena
 </table>
 
 ### Ejemplos de uso API-REST
+```
+https://componentes.idee.es/api-idee/?sharemap=position=left;tooltip=Compartir%20mapa;urlAPI=true;filterLayers=base64~WyJPSS5PcnRob2ltYWdlQ292ZXJhZ2UiXQ==;styles=base64~eyJwcmltYXJ5Q29sb3IiOiIjNzFhN2QzIiwic2Vjb25kYXJ5Q29sb3IiOiIjZmZmIn0=
+```
+
 ```
 https://componentes.idee.es/api-idee/?sharemap=right*1*Compartir*https://componentes.idee.es/api-idee/*true*false*Compartir%20URL*HTML%20embebido*true*Aceptar*Copiar*Copiar*Copiado*false*https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg
 ```

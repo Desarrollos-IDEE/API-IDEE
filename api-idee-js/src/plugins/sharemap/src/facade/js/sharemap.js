@@ -305,7 +305,7 @@ export default class ShareMap extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.order}*${this.tooltip}*${this.baseUrl_}*${this.urlAPI_}*${this.minimize_}*${this.title_}*${this.text_}*${this.shareLayer}*${this.btn_}*${this.copyBtn_}*${this.copyBtnHtml_}*${this.tooltipCopy_}*${this.overwriteStyles_}*${this.qrImage_}`;
+    return `${this.name}=${IDEE.utils.serializeUrlParams({ ...this.options, filterLayers: this.filterLayers })}`;
   }
 
   /**

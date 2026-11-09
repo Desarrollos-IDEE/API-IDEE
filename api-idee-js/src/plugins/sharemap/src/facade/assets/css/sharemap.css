@@ -52,7 +52,7 @@ CONTENT
 .m-plugin-sharemap-qr svg {
     display: block;
     width: 260px;
-    max-width: 75vw;
+    max-width: min(400px, 75vw);
     height: auto;
 }
 

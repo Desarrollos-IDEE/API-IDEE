@@ -453,8 +453,7 @@ export default class Layerswitcher extends IDEE.Plugin {
 
   // Devuelve la cadena API-REST del plugin
   getAPIRest() {
-    const precharged = this.prechargedUrl_ || JSON.stringify(this.precharged);
-    return `${this.name}=${this.position}*${this.collapsed_}*${this.order}*${this.tooltip}*${this.isMoveLayers}*${this.modeSelectLayers}*${this.tools}*${this.http}*${this.https}*${this.showCatalog}*${this.useProxy}*${this.addLayers}*${this.statusLayers}*${this.displayLabel}*${this.useAttributions}*${precharged}`;
+    return `${this.name}=${IDEE.utils.serializeUrlParams(this.options)}`;
   }
 
   // Devuelve la cadena API-REST del plugin en base64

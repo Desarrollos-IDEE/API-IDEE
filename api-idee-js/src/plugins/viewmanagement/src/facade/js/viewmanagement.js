@@ -170,7 +170,7 @@ export default class ViewManagement extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed}*${this.order}*${this.tooltip}*${!!this.predefinedzoom}*${this.zoomextent}*${this.viewhistory}*${this.zoompanel}`;
+    return `${this.name}=${IDEE.utils.serializeUrlParams(this.options)}`;
   }
 
   /**
