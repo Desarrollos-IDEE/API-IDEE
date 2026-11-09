@@ -54,6 +54,9 @@
                 <input type="text" id="inputBaseUrl" list="baseUrlSug">
                 <datalist id="baseUrlSug">
                     <option value="https://componentes.idee.es/api-idee/"></option>
+                    <option value="https://componentes-desarrollo.idee.es/api-idee/"></option>
+                    <option value="https://componentes-beta.idee.es/api-idee/"></option>
+                    <option value="http://localhost:8080/api-idee/"></option>
                 </datalist>
             </div>
             <div>
@@ -191,17 +194,17 @@
             minZoom: 4,
             maxZoom: 20,
             center: [144112, 4839064],
-            controls: ['scale*true', 'location', 'backgroundlayers'],
+            controls: ['scale*exactScale=true', 'location', 'backgroundlayers'],
         });
 
         const layerinicial = new IDEE.layer.WMS({
-            url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
+            url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
             name: 'AU.AdministrativeBoundary',
             legend: 'Limite administrativo',
         }, {});
 
         const layerUA = new IDEE.layer.WMS({
-            url: 'http://www.ign.es/wms-inspire/unidades-administrativas?',
+            url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
             name: 'AU.AdministrativeUnit',
             legend: 'Unidad administrativa'
         }, {});

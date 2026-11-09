@@ -23,6 +23,14 @@ const DEFAULT_IMPLEMENTATION = 'ol';
 const QR_MARGIN = 4;
 
 /**
+ * Size of each module of the QR code.
+ *
+ * @const
+ * @private
+ */
+const QR_MODULE_SIZE = 3;
+
+/**
  * This function adds the animation shade class.
  *
  * @function
@@ -65,6 +73,19 @@ const encodeParam = (value) => encodeURIComponent(value)
   .replace(/%(3A|2F|3F|3D|2C|3B|40|24)/gi, (match) => decodeURIComponent(match));
 
 /**
+ * This function builds the query of a url from its parameters.
+ *
+ * @function
+ * @private
+ * @param {Array<Array>} params Parameters: [key] or [key, value|Array<value>].
+ * @returns {string} Query.
+ */
+const toQuery = (params) => params
+  .filter((param) => param.length === 1 || !IDEE.utils.isNullOrEmpty(param[1]))
+  .map(([key, value]) => (value === undefined ? key : `${key}=${[].concat(value).map(encodeParam).join(',')}`))
+  .join('&');
+
+/**
  * This function draws the QR code of a text as SVG markup.
  *
  * @function
@@ -88,12 +109,14 @@ const toQRSvg = (text, errorCorrectionLevel) => QRCode.toString(text, {
  * @returns {Promise<Array<Element>|null>} SVG of the QR code and image; null if the text
  * does not fit in a QR code.
  */
-const createQR = (text, title, image) => toQRSvg(text, 'H')
+const createQR = (text, title, image) => ['H', 'Q', 'M']
+  .reduce((svg, level) => svg.catch(() => toQRSvg(text, level)), Promise.reject())
   .then((svg) => ({ svg, withImage: !IDEE.utils.isNullOrEmpty(image) }))
   .catch(() => toQRSvg(text, 'L').then((svg) => ({ svg, withImage: false })))
   .then(({ svg, withImage }) => {
     const element = IDEE.utils.stringToHtml(svg);
     element.setAttribute('role', 'img');
+    element.style.width = `max(260px, ${element.viewBox.baseVal.width * QR_MODULE_SIZE}px)`;
     element.insertAdjacentHTML('afterbegin', `<title>${IDEE.utils.escapeXSS(title)}</title>`);
     return withImage
       ? [element, IDEE.utils.stringToHtml(`<img src="${IDEE.utils.escapeXSS(image)}" alt="">`)]
@@ -420,67 +443,41 @@ export default class ShareMapControl extends IDEE.Control {
   getShareURL() {
     return this.getControls().then((controls) => {
       const { x, y } = this.map_.getCenter();
-      const bgColorContainer = this.map_.getBGColorContainer();
-      const stringBgColor = bgColorContainer !== '' ? `&bgcolorcontainer=${encodeURIComponent(bgColorContainer)}` : '';
-      let shareURL;
+      const params = [['center', `${x},${y}`], ['zoom', this.map_.getZoom()]];
+      let url;
       if (this.urlAPI_) {
-        const { code, units } = this.map_.getProjection();
-        shareURL = `${this.baseUrl_}?center=${x},${y}&zoom=${this.map_.getZoom()}${stringBgColor}`;
+        url = this.baseUrl_;
+        params.push(['bgcolorcontainer', this.map_.getBGColorContainer()]);
         if (!this.minimize_) {
-          shareURL = shareURL.concat(`&controls=${controls}`).concat(`&${this.getPlugins()}`);
+          params.push(['controls', controls], ...this.getPlugins());
         } else {
-          let newControls = controls.filter((c) => {
-            return c !== undefined && c.indexOf('backgroundlayers') === -1;
-          }).join(',');
-
-          if (newControls.endsWith(',')) {
-            newControls = newControls.slice(0, -1);
+          const minimized = controls.filter((control) => !control.startsWith('backgroundlayers'));
+          if (!minimized.some((control) => control.split('*')[0] === 'scale')) {
+            minimized.push('scale*exactScale=true');
           }
-
-          if (newControls.indexOf('scale') === -1 || (newControls.indexOf('scale') === newControls.indexOf('scaleline'))) {
-            newControls = newControls.concat(',scale*true');
-          }
-          shareURL = shareURL.concat(`&controls=${newControls}`).concat('&plugins=layerswitcher,mousesrs');
+          params.push(['controls', minimized], ['plugins', ['layerswitcher', 'mousesrs']]);
         }
-
-        const layerParam = this.getLayers();
-        shareURL = layerParam.length > 0 ? shareURL.concat(`&layers=${layerParam.map(encodeParam)}`) : shareURL.concat('');
-        shareURL = shareURL.concat(this.getBaseLayerParam_());
-        shareURL = shareURL.concat(`&projection=${code}*${units}`);
+        const { code, units } = this.map_.getProjection();
+        params.push(['layers', this.getLayers()], this.getBaseLayerParam_(), ['projection', `${code}*${units}`]);
       } else {
-        const urlBaseVisor = (window.location.search) ? window.location.href.replace(window.location.search, '') : window.location.href;
-        shareURL = `${urlBaseVisor}?center=${x},${y}&zoom=${this.map_.getZoom()}&srs=${this.map_.getProjection().code}${stringBgColor}`;
+        url = (window.location.search) ? window.location.href.replace(window.location.search, '') : window.location.href;
+        params.push(['srs', this.map_.getProjection().code], ['bgcolorcontainer', this.map_.getBGColorContainer()]);
         let layers = [];
-
         if (this.shareLayer === true) {
           layers = this.getLayersInLayerswitcher();
         } else if (this.shareLayer === false) {
           layers = this.getLayersInfilterLayers();
         }
-
-        shareURL = layers.length > 0 ? shareURL.concat(`&layers=${layers.map(encodeParam)}`) : shareURL.concat('');
-        if (!IDEE.utils.isNullOrEmpty(IDEE.config.MAP_VIEWER_LAYERS)) {
-          if (layers.length > 0) {
-            let includes = '';
-            IDEE.config.MAP_VIEWER_LAYERS.forEach((elm) => {
-              if (layers.indexOf(elm) === -1) {
-                includes = includes.concat(`,${elm}`);
-              }
-            });
-            if (IDEE.utils.isNullOrEmpty(includes)) {
-              shareURL = `${shareURL},${IDEE.config.MAP_VIEWER_LAYERS.map(encodeParam)}`;
-            }
-          } else {
-            shareURL = `${shareURL}&layers=${IDEE.config.MAP_VIEWER_LAYERS.map(encodeParam)}`;
-          }
+        if (layers.length === 0 && !IDEE.utils.isNullOrEmpty(IDEE.config.MAP_VIEWER_LAYERS)) {
+          layers = IDEE.config.MAP_VIEWER_LAYERS;
         }
-        shareURL = shareURL.concat(this.getBaseLayerParam_());
+        params.push(['layers', layers], this.getBaseLayerParam_());
       }
       const implementation = this.map_.getImplementation();
       if (implementation !== DEFAULT_IMPLEMENTATION) {
-        shareURL = shareURL.concat(`&implementation=${implementation}`);
+        params.push(['implementation', implementation]);
       }
-      return shareURL;
+      return `${url}?${toQuery(params)}`;
     });
   }
 
@@ -499,11 +496,10 @@ export default class ShareMapControl extends IDEE.Control {
     const pinterest = html.querySelector('#pinterest');
     return shareURL.then((url) => {
       input.value = url;
-      IDEE.remote.get(`http://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`).then((response) => {
-        facebook.addEventListener('click', () => window.open(`http://www.facebook.com/sharer.php?u=${response.text}`, '_blank'));
-        twitter.addEventListener('click', () => window.open(`https://twitter.com/intent/tweet?url=${response.text}`, '_blank'));
-        pinterest.addEventListener('click', () => window.open(`https://www.pinterest.es/pin/create/button/?url=${response.text}`, '_blank'));
-      });
+      const encodedURL = encodeURIComponent(url);
+      facebook.addEventListener('click', () => window.open(`http://www.facebook.com/sharer.php?u=${encodedURL}`, '_blank'));
+      twitter.addEventListener('click', () => window.open(`https://twitter.com/intent/tweet?url=${encodedURL}`, '_blank'));
+      pinterest.addEventListener('click', () => window.open(`https://www.pinterest.es/pin/create/button/?url=${encodedURL}`, '_blank'));
     });
   }
 
@@ -542,6 +538,7 @@ export default class ShareMapControl extends IDEE.Control {
    *
    * @public
    * @function
+   * @returns {Promise<Array<string>>} REST parameters of the controls.
    */
   getControls() {
     if (!this.allowedControlsPromise_) {
@@ -557,32 +554,17 @@ export default class ShareMapControl extends IDEE.Control {
       if (allowedControls === null) {
         return [];
       }
-      const controls = this.map_.getControls().map((control) => control.name);
-      const resolvedControls = controls.filter((control) => allowedControls.includes(control))
-        .filter((c) => c !== 'backgroundlayers');
-      if (resolvedControls.includes('mouse')) {
-        const mouseControl = this.map_.getControls().find((c) => c.name === 'mouse');
-        const { showProj } = mouseControl.getImpl();
-        const index = resolvedControls.indexOf('mouse');
-        resolvedControls[index] = showProj === true ? 'mouse*true' : 'mouse';
-      }
-      if (resolvedControls.includes('scale')) {
-        const scaleControl = this.map_.getControls().find((c) => c.name === 'scale');
-        const { exactScale } = scaleControl.getImpl();
-        const index = resolvedControls.indexOf('scale');
-        resolvedControls[index] = exactScale === true ? 'scale*true' : 'scale';
-      }
-      const backgroundlayers = this.map_.getControls().find((c) => c.name === 'backgroundlayers');
-      let backgroundlayersAPI;
+      const controls = this.map_.getControls();
+      const resolvedControls = controls
+        .filter(({ name }) => name !== 'backgroundlayers' && allowedControls.includes(name))
+        .map(({ name, options }) => (name === 'scale' && options.exactScale === true ? 'scale*exactScale=true' : name));
+      const backgroundlayers = controls.find(({ name }) => name === 'backgroundlayers');
       if (!IDEE.utils.isNullOrEmpty(backgroundlayers)) {
         const { visible, activeLayer } = backgroundlayers;
-        if (typeof visible === 'boolean' && typeof activeLayer === 'number') {
-          backgroundlayersAPI = `backgroundlayers*layerIndex=${activeLayer};visible=${visible}`;
-        } else {
-          backgroundlayersAPI = 'backgroundlayers';
-        }
+        resolvedControls.push(typeof visible === 'boolean' && typeof activeLayer === 'number'
+          ? `backgroundlayers*layerIndex=${activeLayer};visible=${visible}`
+          : 'backgroundlayers');
       }
-      resolvedControls.push(backgroundlayersAPI);
       return resolvedControls;
     });
   }
@@ -669,28 +651,32 @@ export default class ShareMapControl extends IDEE.Control {
   }
 
   /**
-   * This method gets the base layer url parameter (the active background of the map),
-   * or an empty string if the background cannot be shared through REST.
+   * This method gets the base layer url parameter (the active background of the map);
+   * its value is empty if the background cannot be shared through REST.
    *
    * @private
    * @function
+   * @returns {Array<string>} Parameter [key, value].
    */
   getBaseLayerParam_() {
-    const baseLayer = this.map_.getRestBaseLayer();
-    return IDEE.utils.isNullOrEmpty(baseLayer) ? '' : `&baselayer=${encodeParam(baseLayer)}`;
+    return ['baselayer', this.map_.getRestBaseLayer()];
   }
 
   /**
-   * This method gets the plugins url parameter
+   * This method gets the url parameters of the plugins from their API REST.
+   *
+   * @public
+   * @function
+   * @returns {Array<Array<string>>} Parameters [name, params] or [name].
    */
   getPlugins() {
-    return this.map_.getPlugins().map((plugin) => {
-      let newCurrent = '';
-      if (IDEE.utils.isFunction(plugin.getAPIRest)) {
-        newCurrent = plugin.getAPIRest();
-      }
-      return newCurrent;
-    }).join('&');
+    return this.map_.getPlugins()
+      .filter((plugin) => IDEE.utils.isFunction(plugin.getAPIRest))
+      .map((plugin) => {
+        const [name, ...params] = plugin.getAPIRest().split('=');
+        const value = params.join('=');
+        return value === '' ? [name] : [name, value];
+      });
   }
 
   /**

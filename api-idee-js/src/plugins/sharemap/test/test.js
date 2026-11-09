@@ -10,7 +10,7 @@ const map = IDEE.map({
   minZoom: 4,
   maxZoom: 20,
   center: [144112, 4839064],
-  controls: ['scale*true', 'location', 'backgroundlayers'],
+  controls: ['scale*exactScale=true', 'location', 'backgroundlayers'],
 });
 window.map = map;
 
