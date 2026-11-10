@@ -171,6 +171,26 @@ const PRECHARGED = {
  */
 const isPrechargedUrl = (value) => typeof value === 'string' && /^(https?:)?\/\/\S+$/i.test(value.trim());
 
+const ABSOLUTE_URL = /^([a-z][a-z0-9+.-]*:|\/\/)/i;
+
+const resolveServiceUrls = (node, base) => {
+  if (Array.isArray(node)) {
+    node.forEach((item) => resolveServiceUrls(item, base));
+  } else if (node !== null && typeof node === 'object') {
+    Object.keys(node).forEach((key) => {
+      const value = node[key];
+      if (key === 'url' && typeof value === 'string' && value.trim() !== ''
+        && !ABSOLUTE_URL.test(value.trim())) {
+        // eslint-disable-next-line no-param-reassign
+        node[key] = new URL(value.trim(), base).href.replace(/%7B/gi, '{').replace(/%7D/gi, '}');
+      } else {
+        resolveServiceUrls(value, base);
+      }
+    });
+  }
+  return node;
+};
+
 export default class Layerswitcher extends IDEE.Plugin {
   constructor(options = {}) {
     super('layerswitcher', {
@@ -219,7 +239,7 @@ export default class Layerswitcher extends IDEE.Plugin {
      * @public
      * @type {Array}
      */
-    this.tools = IDEE.utils.isUndefined(options.tools) ? ['transparency', 'legend', 'zoom', 'information', 'style', 'delete'] : options.tools;
+    this.tools = IDEE.utils.isUndefined(options.tools) ? ['transparency', 'legend', 'zoom', 'information', 'style', 'sld', 'delete'] : options.tools;
 
     /**
      * Option to allow the ability add layers from the catalog of the plugin
@@ -415,18 +435,20 @@ export default class Layerswitcher extends IDEE.Plugin {
    * (solo entonces se avisa del error).
    */
   loadPrecharged_(url, userDefined) {
+    let base = url;
     window.fetch(url)
       .then((response) => {
         if (!response.ok) {
           throw new Error(String(response.status));
         }
+        base = response.url || url;
         return response.json();
       })
       .then((data) => {
         if (!IDEE.utils.isObject(data)) {
           throw new Error('invalid json');
         }
-        this.setPrecharged_(data);
+        this.setPrecharged_(resolveServiceUrls(data, new URL(base, window.location.href).href));
       })
       .catch(() => {
         this.setPrecharged_(PRECHARGED);

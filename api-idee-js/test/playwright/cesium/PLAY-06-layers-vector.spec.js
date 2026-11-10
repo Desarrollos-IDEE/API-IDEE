@@ -237,4 +237,68 @@ test.describe('Capas vectoriales y 3D en Cesium', () => {
       expect(await page.locator('div.m-dialog.error').count()).toBe(0);
     });
   });
+  const POLYGON_SOURCE = {
+    type: 'FeatureCollection',
+    features: [{
+      type: 'Feature',
+      id: 'z1',
+      properties: { nombre: 'Uno' },
+      geometry: {
+        type: 'Polygon',
+        coordinates: [[[-3.8, 40.3], [-3.6, 40.3], [-3.6, 40.5], [-3.8, 40.5], [-3.8, 40.3]]],
+      },
+    }],
+  };
+
+  test('Polígonos: el contorno se dibuja como línea pegada al terreno y se quita con un estilo sin contorno', async ({ page }) => {
+    await page.evaluate((source) => {
+      window.layer = new IDEE.layer.GeoJSON({ name: 'poligonos', source });
+      window.map.addLayers(window.layer);
+      window.layer.setStyle(new IDEE.style.Generic({
+        polygon: { fill: { color: '#00ff00', opacity: 0.5 }, stroke: { color: '#ff0000', width: 3 } },
+      }));
+    }, POLYGON_SOURCE);
+    const outline = () => page.evaluate(() => {
+      const entity = window.layer.getFeatures()[0]?.getImpl().getFeature();
+      if (!entity) return null;
+      const time = window.Cesium.JulianDate.now();
+      const line = entity.polyline;
+      return {
+        line: !!line,
+        ground: line ? line.clampToGround.getValue(time) : null,
+        width: line ? line.width.getValue(time) : null,
+        color: line ? line.material.color.getValue(time).toCssHexString() : null,
+        polygonOutline: entity.polygon.outline ? entity.polygon.outline.getValue(time) : null,
+        type: window.layer.getFeatures()[0].getGeometry().type,
+      };
+    });
+    await expect.poll(outline, WAIT).toEqual({
+      line: true, ground: true, width: 3, color: '#ff0000', polygonOutline: false, type: 'Polygon',
+    });
+    await page.evaluate(() => window.layer.setStyle(new IDEE.style.Generic({
+      polygon: { fill: { color: '#00ff00', opacity: 0.5 } },
+    })));
+    await expect.poll(async () => (await outline())?.line, WAIT).toBe(false);
+  });
+
+  test('Estilos con funciones: se vuelven a calcular al terminar de mover la cámara', async ({ page }) => {
+    await page.evaluate((source) => {
+      window.layer = new IDEE.layer.GeoJSON({ name: 'escala', source });
+      window.map.addLayers(window.layer);
+      window.layer.setStyle(new IDEE.style.Generic({
+        polygon: { fill: { color: (feature, map) => (map.getScale() < 500000 ? '#ff0000' : '#0000ff'), opacity: 1 } },
+      }));
+    }, POLYGON_SOURCE);
+    const fill = () => page.evaluate(() => {
+      const entity = window.layer.getFeatures()[0]?.getImpl().getFeature();
+      return entity
+        ? entity.polygon.material.color.getValue(window.Cesium.JulianDate.now()).toCssHexString()
+        : null;
+    });
+    await expect.poll(fill, WAIT).not.toBeNull();
+    await page.evaluate(() => window.map.setZoom(6));
+    await expect.poll(fill, WAIT).toBe('#0000ff');
+    await page.evaluate(() => window.map.setZoom(13));
+    await expect.poll(fill, WAIT).toBe('#ff0000');
+  });
 });

@@ -1,0 +1,108 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "ruta-atlantica",
+      "properties": {
+        "nombre": "Ruta Atlántica",
+        "tipo": "ruta"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -8.4,
+            43.3
+          ],
+          [
+            -6.8,
+            43.5
+          ],
+          [
+            -5.0,
+            43.5
+          ],
+          [
+            -3.8,
+            43.4
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ruta-mediterranea",
+      "properties": {
+        "nombre": "Ruta Mediterránea",
+        "tipo": "ruta"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -0.4,
+            39.5
+          ],
+          [
+            0.3,
+            40.4
+          ],
+          [
+            1.2,
+            41.1
+          ],
+          [
+            2.1,
+            41.4
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "punto-madrid",
+      "properties": {
+        "nombre": "Madrid",
+        "tipo": "ciudad"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -3.7,
+          40.4
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "punto-sevilla",
+      "properties": {
+        "nombre": "Sevilla",
+        "tipo": "ciudad"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -5.98,
+          37.39
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "punto-zaragoza",
+      "properties": {
+        "nombre": "Zaragoza",
+        "tipo": "ciudad"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.88,
+          41.65
+        ]
+      }
+    }
+  ]
+}

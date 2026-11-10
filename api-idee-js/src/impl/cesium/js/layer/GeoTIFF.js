@@ -65,8 +65,8 @@ const resolveBlob = (blobParam) => {
  * @classdesc
  * Implementación para Cesium de la capa GeoTIFF (también COG). Las teselas se
  * generan en el navegador a partir del GeoTIFF con
- * {@link GeoTIFFImageryProvider}. El estilo ráster de IDEE no está disponible
- * en Cesium: el GeoTIFF se pinta en RGB o con sus bandas normalizadas.
+ * {@link GeoTIFFImageryProvider}: en RGB, con sus bandas normalizadas o con el
+ * estilo ráster de IDEE ({@link IDEE.style.Raster}) aplicado a cada píxel.
  *
  * @api
  * @extends {IDEE.impl.layer.Layer}
@@ -128,6 +128,10 @@ class GeoTIFF extends LayerBase {
     this.loadPromise_ = null;
 
     this.loaded_ = false;
+
+    this.renderer_ = null;
+
+    this.styleRequest_ = 0;
   }
 
   /**
@@ -178,7 +182,45 @@ class GeoTIFF extends LayerBase {
       convertToRGB: this.convertToRGB_,
       cacheSize: this.cacheSize_,
       blockSize: this.blockSize_,
+      renderer: this.renderer_,
     });
+  }
+
+  /**
+   * Aplica (o quita, con null) el estilo ráster: vuelve a pintar las teselas con
+   * el mismo GeoTIFF ya abierto.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @public
+   * @function
+   * @param {Object|null} renderer Pintado del estilo, ver
+   * {@link IDEE.impl.style.Raster#createRenderer}.
+   * @returns {Promise} Se resuelve cuando la capa se pinta con el estilo.
+   * @api
+   */
+  setRasterStyle(renderer) {
+    this.renderer_ = renderer || null;
+    this.styleRequest_ += 1;
+    const request = this.styleRequest_;
+    const current = this.provider_;
+    if (isNullOrEmpty(current) || isNullOrEmpty(this.cesiumLayer) || isNullOrEmpty(this.map)) {
+      return Promise.resolve();
+    }
+    return current.withRenderer(this.renderer_)
+      .then((provider) => {
+        if (request !== this.styleRequest_ || this.provider_ !== current
+          || isNullOrEmpty(this.cesiumLayer)) {
+          provider.dispose();
+          return;
+        }
+        current.handOverTiff(provider);
+        this.provider_ = provider;
+        this.replaceAutoRefreshProvider(provider);
+      })
+      .catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error(error);
+      });
   }
 
   /**

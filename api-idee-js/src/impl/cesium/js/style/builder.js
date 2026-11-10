@@ -834,6 +834,57 @@ export const getPolygonStyle = (options, featureVariable, layer) => {
   return [style];
 };
 
+const STYLE_GEOMETRIES = ['point', 'line', 'polygon'];
+
+const readPath = (object, path) => path.split('.')
+  .reduce((value, key) => (value === null || value === undefined ? undefined : value[key]), object);
+
+const collectStyleOptions = (style, seen = new Set()) => {
+  if (isNullOrEmpty(style) || seen.has(style)) return [];
+  seen.add(style);
+  const collected = [];
+  const options = typeof style.getOptions === 'function' ? style.getOptions() : null;
+  if (options && STYLE_GEOMETRIES.some((geometry) => !isNullOrEmpty(options[geometry]))) {
+    collected.push(options);
+  }
+  if (typeof style.getCategories === 'function') {
+    Object.values(style.getCategories() || {})
+      .forEach((categoryStyle) => collected.push(...collectStyleOptions(categoryStyle, seen)));
+  }
+  return collected;
+};
+
+/**
+ * Esta función devuelve las propiedades de un estilo que cumplen alguna de las
+ * reglas indicadas (p. ej., las que no se pueden representar en Cesium).
+ *
+ * @public
+ * @function
+ *
+ * @param {IDEE.Style} style Estilo.
+ * @param {Array<Object>} rules Reglas ({ path, geometries, when }).
+ *
+ * @return {Array<String>} Propiedades encontradas ("geometría.propiedad").
+ * @api stable
+ */
+export const findStyleProperties = (style, rules) => {
+  const found = new Set();
+  collectStyleOptions(style).forEach((options) => {
+    STYLE_GEOMETRIES.forEach((geometry) => {
+      const geometryOptions = options[geometry];
+      if (isNullOrEmpty(geometryOptions)) return;
+      rules.forEach(({ path, geometries = STYLE_GEOMETRIES, when }) => {
+        if (!geometries.includes(geometry)) return;
+        const value = readPath(geometryOptions, path);
+        if (value === undefined || value === null) return;
+        if (typeof when === 'function' && !when(value, geometryOptions)) return;
+        found.add(`${geometry}.${path}`);
+      });
+    });
+  });
+  return [...found].sort();
+};
+
 /**
  * Este comentario no se verá, es necesario incluir
  * una exportación por defecto para que el compilador

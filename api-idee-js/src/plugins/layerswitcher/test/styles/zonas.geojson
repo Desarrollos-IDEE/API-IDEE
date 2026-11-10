@@ -1,0 +1,113 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "zona-norte",
+      "properties": {
+        "nombre": "Zona Norte",
+        "tipo": "bosque",
+        "area": 3
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -6.5,
+              42.2
+            ],
+            [
+              -3.0,
+              42.2
+            ],
+            [
+              -3.0,
+              43.4
+            ],
+            [
+              -6.5,
+              43.4
+            ],
+            [
+              -6.5,
+              42.2
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "zona-centro",
+      "properties": {
+        "nombre": "Zona Centro",
+        "tipo": "cultivo",
+        "area": 6
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -5.0,
+              39.4
+            ],
+            [
+              -2.0,
+              39.4
+            ],
+            [
+              -2.0,
+              41.2
+            ],
+            [
+              -5.0,
+              41.2
+            ],
+            [
+              -5.0,
+              39.4
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "zona-sur",
+      "properties": {
+        "nombre": "Zona Sur",
+        "tipo": "agua",
+        "area": 4
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -6.2,
+              36.9
+            ],
+            [
+              -3.2,
+              36.9
+            ],
+            [
+              -3.2,
+              38.3
+            ],
+            [
+              -6.2,
+              38.3
+            ],
+            [
+              -6.2,
+              36.9
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

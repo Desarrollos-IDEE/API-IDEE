@@ -60,9 +60,10 @@
                 </select>
             </div>
             <div>
-                <label for="inputTools" title="Lista de herramientas disponibles para cada capa separadas por coma. Valores: transparency, zoom, legend, information, style, delete">Herramientas "tools"</label>
-                <input type="text" name="tools" id="inputTools" list="toolsSug" value="transparency, zoom, legend, information, style, delete">
+                <label for="inputTools" title="Lista de herramientas disponibles para cada capa separadas por coma. Valores: transparency, zoom, legend, information, style, sld, delete">Herramientas "tools"</label>
+                <input type="text" name="tools" id="inputTools" list="toolsSug" value="transparency, zoom, legend, information, style, sld, delete">
                 <datalist id="toolsSug">
+                    <option value="transparency, zoom, legend, information, style, sld, delete"></option>
                     <option value="transparency, zoom, legend, information, style, delete"></option>
                     <option value="transparency, zoom, legend, information"></option>
                     <option value="transparency, zoom"></option>
@@ -89,6 +90,8 @@
                 <input type="text" name="precharged" id="inputPrecharged" list="prechargedSug">
                 <datalist id="prechargedSug">
                     <option value='Catálogo desde URL a un JSON (catálogo CNIG)' data-precharged='https://componentes.idee.es/estaticos/Datos/json/precharged_layerswitcher_cnig.json'></option>
+                    <option value='Estilos por capa: ejemplo local (zonas y rutas, 2D/3D)' data-precharged='styles/precharged-styles.json' data-relative='true'></option>
+                    <option value='Estilos por capa: WMS IGN (AU.AdministrativeUnit y AU.AdministrativeBoundary)' data-precharged='{"services":[{"type":"WMS","name":"Unidades administrativas (estilos por capa)","url":"https://www.ign.es/wms-inspire/unidades-administrativas?","white_list":["AU.AdministrativeUnit","AU.AdministrativeBoundary"],"layers":[{"name":"AU.AdministrativeUnit","styles":["ua-comparador","ua-EscalaGris","provincias-gris"]},{"name":"AU.AdministrativeBoundary","styles":["LimitesRojo","LimitesGris","LimitesCruz"]}]}]}'></option>
                     <option value='Un grupo de servicios y un servicio individual' data-precharged='{"services": [{"type":"WMS","name":"Camino de Santiago","url":"https://www.ign.es/wms-inspire/camino-santiago"}],"groups":[{"name":"Cartografía","services":{"type":"WMTS","name": "Mapas","url":"https://www.ign.es/wmts/mapa-raster?"}}]}'></option>
                     <option value='Dos servicios con estilos únicos sin serializar' data-precharged='{"services":[{"type":"WMS","name":"Unidades administrativas","url":"https://www.ign.es/wms-inspire/unidades-administrativas?","styles":["ua-comparador"]},{"type":"GeoJSON","name":"Estaciones GNSS","url":"https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json","styles":[{"name":"Rojo","point":{"radius":6,"fill":{"color":"red"},"stroke":{"color":"white","width":1}}}]}]}'></option>
                     <option value='Dos servicios con estilos únicos serializados' data-precharged='{"services":[{"type":"WMS","name":"Unidades administrativas","url":"https://www.ign.es/wms-inspire/unidades-administrativas?","styles":["ua-EscalaGris"]},{"type":"GeoJSON","name":"Estaciones GNSS","url":"https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json","styles":["eyJwYXJhbWV0ZXJzIjpbeyJuYW1lIjoiQXp1bCBzZXJpYWxpemFkbyIsInBvaW50Ijp7InJhZGl1cyI6NiwiZmlsbCI6eyJjb2xvciI6ImJsdWUifSwic3Ryb2tlIjp7ImNvbG9yIjoid2hpdGUiLCJ3aWR0aCI6MX19fV0sImRlc2VyaWFsaXplZE1ldGhvZCI6Iigoc2VyaWFsaXplZFBhcmFtZXRlcnMpID0+IElERUUuc3R5bGUuU2ltcGxlLmRlc2VyaWFsaXplKHNlcmlhbGl6ZWRQYXJhbWV0ZXJzLCAnSURFRS5zdHlsZS5HZW5lcmljJykpIn0="]}]}'></option>
@@ -155,6 +158,9 @@
             <button name="eliminar" class="m-test-button" id="removeButton">Eliminar Plugin</button>
             <select name="sampleLayer" id="selectSampleLayer" title="Capas de ejemplo para probar el plugin en 2D y 3D">
                 <option value="" selected="selected">Añadir capa de ejemplo…</option>
+            </select>
+            <select name="sampleSld" id="selectSampleSld" aria-label="Descargar un .sld" title="SLD de ejemplo de IDEE y del IGN (GetStyles): al elegir uno se descarga como .sld para cargarlo con el botón SLD de una capa vectorial">
+                <option value="" selected="selected">Descargar un .sld</option>
             </select>
         </div>
     </div>

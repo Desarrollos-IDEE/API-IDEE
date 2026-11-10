@@ -34,7 +34,37 @@ const createMap = (is3D = IDEE.impl.Map.prototype.getImplementation() === 'cesiu
 };
 
 const FIXTURES = `${window.location.origin}/api-idee-test`;
+const STYLE_EXAMPLES = new URL('styles/', window.location.href).href;
 const SAMPLE_LAYERS = [
+  {
+    label: 'Masas de agua (GeoJSON local, para el SLD de IDEE)',
+    create: () => new IDEE.layer.GeoJSON({
+      url: `${STYLE_EXAMPLES}masas-agua.geojson`,
+      name: 'masas_agua',
+      legend: 'Masas de agua de ejemplo',
+      extract: true,
+    }),
+  },
+  {
+    label: 'Municipios del IGN (OGC API Features, para el SLD del IGN)',
+    create: () => new IDEE.layer.OGCAPIFeatures({
+      url: 'https://api-features.ign.es/collections/',
+      name: 'administrativeunit',
+      legend: 'Municipios (OGC API IGN)',
+      limit: 200,
+      bbox: [-4.0, 40.2, -3.4, 40.7],
+      conditional: { nationallevelname: 'Municipio' },
+    }),
+  },
+  {
+    label: 'Zonas (GeoJSON local, estilos y SLD)',
+    create: () => new IDEE.layer.GeoJSON({
+      url: `${STYLE_EXAMPLES}zonas.geojson`,
+      name: 'zonas',
+      legend: 'Zonas de ejemplo',
+      extract: true,
+    }),
+  },
   {
     label: 'WMS',
     create: () => new IDEE.layer.WMS({
@@ -176,6 +206,66 @@ selectSampleLayer.addEventListener('change', () => {
   }
 });
 
+const SAMPLE_SLDS = [
+  {
+    label: 'IDEE: masas de agua (hidrografía)',
+    file: 'idee-masas-de-agua.sld',
+    url: 'https://servicios.idee.es/wms-inspire/hidrografia?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetStyles&LAYERS=HY.PhysicalWaters.Waterbodies',
+  },
+  {
+    label: 'IGN: unidades administrativas',
+    file: 'ign-unidades-administrativas.sld',
+    url: 'https://www.ign.es/wms-inspire/unidades-administrativas?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetStyles&LAYERS=AU.AdministrativeUnit',
+  },
+];
+
+const SLD_DOWNLOAD_TIMEOUT = 20000;
+
+const selectSampleSld = document.getElementById('selectSampleSld');
+SAMPLE_SLDS.forEach((sample) => {
+  const option = document.createElement('option');
+  option.value = sample.label;
+  option.textContent = sample.label;
+  selectSampleSld.appendChild(option);
+});
+selectSampleSld.addEventListener('change', () => {
+  const sample = SAMPLE_SLDS.find((s) => s.label === selectSampleSld.value);
+  selectSampleSld.value = '';
+  if (!sample) return;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), SLD_DOWNLOAD_TIMEOUT);
+  window.fetch(sample.url, { signal: controller.signal })
+    .then((response) => {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.text();
+    })
+    .catch((error) => {
+      if (error.name === 'AbortError') {
+        throw new Error(`el servicio no ha respondido en ${SLD_DOWNLOAD_TIMEOUT / 1000} s`);
+      }
+      throw error;
+    })
+    .finally(() => clearTimeout(timeout))
+    .then((text) => {
+      if (!text.includes('StyledLayerDescriptor')) {
+        throw new Error('el servicio no ha devuelto un documento SLD');
+      }
+      const href = URL.createObjectURL(new Blob([text], { type: 'application/vnd.ogc.sld+xml' }));
+      const link = document.createElement('a');
+      link.href = href;
+      link.download = sample.file;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(href), 1000);
+    })
+    .catch((error) => {
+      // eslint-disable-next-line no-console
+      console.error(`No se pudo descargar el SLD ${sample.label}`, error);
+      IDEE.dialog.error(`No se pudo descargar el SLD ${sample.label}: ${error.message || error}`);
+    });
+});
+
 let mp = null;
 
 const createPlugin = (options) => {
@@ -235,7 +325,11 @@ const updatePlugin = () => {
   options.modeSelectLayers = selectModeSelectLayers.options[selectModeSelectLayers.selectedIndex].value || 'eyes';
   const prechargedOption = [...document.querySelectorAll('#prechargedSug option')]
     .find((option) => option.value === inputPrecharged.value);
-  if (prechargedOption) inputPrecharged.value = prechargedOption.dataset.precharged;
+  if (prechargedOption) {
+    inputPrecharged.value = prechargedOption.dataset.relative
+      ? new URL(prechargedOption.dataset.precharged, window.location.href).href
+      : prechargedOption.dataset.precharged;
+  }
   options.precharged = inputPrecharged.value.trim() || undefined;
   options.http = boolVal(selectHttp, true);
   options.https = boolVal(selectHttps, true);

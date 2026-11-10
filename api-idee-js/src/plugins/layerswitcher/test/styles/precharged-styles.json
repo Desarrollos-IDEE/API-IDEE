@@ -1,0 +1,103 @@
+{
+  "services": [
+    {
+      "type": "GeoJSON",
+      "name": "Zonas de ejemplo (estilos por capa)",
+      "url": "zonas.geojson",
+      "styles": [
+        {
+          "name": "Verde",
+          "polygon": {
+            "fill": {
+              "color": "#2e7d32",
+              "opacity": 0.6
+            },
+            "stroke": {
+              "color": "#1b5e20",
+              "width": 1
+            }
+          }
+        },
+        {
+          "name": "Naranja",
+          "polygon": {
+            "fill": {
+              "color": "#ef6c00",
+              "opacity": 0.6
+            },
+            "stroke": {
+              "color": "#bf360c",
+              "width": 1
+            }
+          }
+        },
+        "eyJwYXJhbWV0ZXJzIjpbeyJuYW1lIjoiQXp1bCBzZXJpYWxpemFkbyIsInBvbHlnb24iOnsiZmlsbCI6eyJjb2xvciI6IiMxNTY1YzAiLCJvcGFjaXR5IjowLjV9LCJzdHJva2UiOnsiY29sb3IiOiIjMGQ0N2ExIiwid2lkdGgiOjF9fSwicG9pbnQiOnsicmFkaXVzIjo1fX1dLCJkZXNlcmlhbGl6ZWRNZXRob2QiOiIoKHNlcmlhbGl6ZWRQYXJhbWV0ZXJzKSA9PiBJREVFLnN0eWxlLlNpbXBsZS5kZXNlcmlhbGl6ZShzZXJpYWxpemVkUGFyYW1ldGVycywgJ0lERUUuc3R5bGUuR2VuZXJpYycpKSJ9",
+        {
+          "name": "Rojo discontinuo",
+          "polygon": {
+            "fill": {
+              "color": "#c62828",
+              "opacity": 0.2
+            },
+            "stroke": {
+              "color": "#c62828",
+              "width": 1,
+              "linedash": [
+                8,
+                6
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "GeoJSON",
+      "name": "Rutas de ejemplo (estilos por capa)",
+      "url": "rutas.geojson",
+      "styles": [
+        {
+          "name": "Rutas moradas",
+          "line": {
+            "stroke": {
+              "color": "#6a1b9a",
+              "width": 3
+            }
+          },
+          "point": {
+            "radius": 6,
+            "fill": {
+              "color": "#6a1b9a",
+              "opacity": 1
+            },
+            "stroke": {
+              "color": "#ffffff",
+              "width": 1
+            }
+          }
+        },
+        {
+          "name": "Rutas amarillas",
+          "line": {
+            "stroke": {
+              "color": "#f9a825",
+              "width": 5
+            }
+          },
+          "point": {
+            "radius": 9,
+            "fill": {
+              "color": "#f9a825",
+              "opacity": 1
+            },
+            "stroke": {
+              "color": "#000000",
+              "width": 1
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "groups": []
+}
