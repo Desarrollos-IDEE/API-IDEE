@@ -572,6 +572,27 @@ class Vector extends LayerBase {
   }
 
   /**
+   * Este método devuelve las propiedades de un estilo que la implementación
+   * actual no puede representar en esta capa (p. ej., el trazo discontinuo en
+   * Cesium). El estilo se puede aplicar igualmente: esas propiedades se omiten.
+   *
+   * @function
+   * @public
+   * @param {IDEE.Style} style Estilo que se quiere comprobar.
+   * @returns {Array<String>} Propiedades no representables
+   * ("geometría.propiedad", p. ej. "line.stroke.linedash"). Vacío si todas
+   * se pueden representar.
+   * @api
+   */
+  getUnsupportedStyleProperties(style) {
+    const impl = this.getImpl();
+    if (isNullOrEmpty(style) || typeof impl.getUnsupportedStyleProperties !== 'function') {
+      return [];
+    }
+    return impl.getUnsupportedStyleProperties(style) || [];
+  }
+
+  /**
    * Devuelve el legendURL.
    *
    * @function

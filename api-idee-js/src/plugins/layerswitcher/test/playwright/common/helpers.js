@@ -220,3 +220,144 @@ export const getBbox = (page) => page.evaluate(() => {
   const bbox = window.mapjs.getBbox();
   return [bbox.x.min, bbox.y.min, bbox.x.max, bbox.y.max];
 });
+
+/**
+ * Colores, grosor y etiqueta con los que la implementación pinta un objeto
+ * geográfico: en OpenLayers, la función de estilo de la capa (o del objeto); en
+ * Cesium, la entidad. Los colores se normalizan con un canvas para compararlos.
+ *
+ * @param {Page} page Página de Playwright.
+ * @param {String} impl 'ol' o 'cesium'.
+ * @param {String} legend Leyenda de la capa.
+ * @param {String} name Atributo "nombre" (o "name") del objeto geográfico.
+ * @returns {Promise<Object|null>} { fill, stroke, width, label } o null si aún no está.
+ */
+export const renderedStyle = (page, impl, legend, name) => page.evaluate(
+  ({ engine, layerLegend, featureName }) => {
+    const layer = window.mapjs.getLayers().find((l) => l.legend === layerLegend);
+    const feature = layer?.getFeatures().find((f) => f.getAttribute('nombre') === featureName
+      || f.getAttribute('name') === featureName);
+    if (!feature) return null;
+    const context = document.createElement('canvas').getContext('2d');
+    const css = (color) => {
+      if (color === null || color === undefined) return null;
+      context.fillStyle = '#010203';
+      context.fillStyle = Array.isArray(color) ? `rgba(${color.join(',')})` : String(color);
+      return context.fillStyle;
+    };
+    const native = feature.getImpl().getFeature();
+    if (engine === 'ol') {
+      const olLayer = layer.getImpl().getLayer();
+      const styleFn = native.getStyleFunction() || olLayer.getStyleFunction();
+      const resolution = window.mapjs.getMapImpl().getView().getResolution();
+      const styles = [].concat(styleFn ? styleFn(native, resolution) : []).filter(Boolean);
+      return styles.reduce((result, style) => {
+        const image = style.getImage?.();
+        const fill = style.getFill?.() || image?.getFill?.();
+        const stroke = style.getStroke?.() || image?.getStroke?.();
+        return {
+          fill: result.fill ?? css(fill?.getColor?.()),
+          stroke: result.stroke ?? css(stroke?.getColor?.()),
+          width: result.width ?? stroke?.getWidth?.() ?? null,
+          label: result.label ?? style.getText?.()?.getText?.() ?? null,
+        };
+      }, {
+        fill: null, stroke: null, width: null, label: null,
+      });
+    }
+    const time = window.Cesium.JulianDate.now();
+    const value = (property) => (property && typeof property.getValue === 'function'
+      ? property.getValue(time) : property);
+    const color = (cesiumColor) => (cesiumColor ? css(cesiumColor.toCssColorString()) : null);
+    const label = value(native.label?.text) ?? null;
+    if (native.polygon && native.polyline) {
+      return {
+        fill: color(value(native.polygon.material?.color)),
+        stroke: color(value(native.polyline.material?.color)),
+        width: value(native.polyline.width) ?? null,
+        label,
+      };
+    }
+    if (native.polygon) {
+      return {
+        fill: color(value(native.polygon.material?.color)),
+        stroke: native.polygon.outline && value(native.polygon.outline) === false
+          ? null : color(value(native.polygon.outlineColor)),
+        width: value(native.polygon.outlineWidth) ?? null,
+        label,
+      };
+    }
+    if (native.polyline) {
+      return {
+        fill: null,
+        stroke: color(value(native.polyline.material?.color)),
+        width: value(native.polyline.width) ?? null,
+        label,
+      };
+    }
+    if (native.point) {
+      return {
+        fill: color(value(native.point.color)),
+        stroke: color(value(native.point.outlineColor)),
+        width: value(native.point.outlineWidth) ?? null,
+        label,
+      };
+    }
+    return {
+      fill: null, stroke: null, width: null, label,
+    };
+  },
+  { engine: impl, layerLegend: legend, featureName: name },
+);
+
+/**
+ * Abre el selector de estilos de una capa y devuelve sus opciones y la seleccionada.
+ *
+ * @param {Page} page Página de Playwright.
+ * @param {String|Locator} target Nombre de la capa o fila del panel.
+ * @returns {Promise<Object>} { options: [{ value, label, unsupported }], selected }.
+ */
+export const openStyleSelector = async (page, target) => {
+  const row = typeof target === 'string' ? layerRow(page, target) : target;
+  await row.locator('.m-layerswitcher-icons-style').click();
+  const select = page.locator('#m-layerswitcher-style-select');
+  await expect(select).toHaveCount(1);
+  return select.evaluate((element) => ({
+    options: Array.from(element.options).filter((option) => !option.disabled).map((option) => ({
+      value: option.value,
+      label: option.textContent.trim(),
+      unsupported: option.dataset.unsupported || '',
+    })),
+    selected: element.value,
+  }));
+};
+
+/**
+ * Elige un estilo en el selector abierto y lo aplica.
+ *
+ * @param {Page} page Página de Playwright.
+ * @param {String} value Valor de la opción.
+ */
+export const chooseStyle = async (page, value) => {
+  await page.selectOption('#m-layerswitcher-style-select', value);
+  await page.locator('#m-layerswitcher-style button').click();
+  await expect(page.locator('#m-layerswitcher-style')).toHaveCount(0);
+};
+
+/**
+ * Añade una capa desde el listado de servicios precargados del diálogo de añadir
+ * capas (GeoJSON, KML, GeoTIFF...: servicios de una sola capa con modal de leyenda).
+ *
+ * @param {Page} page Página de Playwright.
+ * @param {String} service Nombre del servicio en el listado.
+ * @param {String} legend Leyenda de la capa.
+ * @param {Number} timeout Tiempo máximo de espera.
+ */
+export const addFromCatalog = async (page, service, legend, timeout) => {
+  await page.locator('#layerswitcher-add-layer').click();
+  await page.locator('#m-layerswitcher-addservices-list-btn').click();
+  await page.locator('#m-layerswitcher-addservices-suggestions .m-layerswitcher-suggestion', { hasText: service }).click();
+  await expect(page.locator('#m-layerswitcher-layer-legend')).toHaveCount(1, { timeout });
+  await page.fill('#m-layerswitcher-layer-legend', legend);
+  await page.locator('#m-layerswitcher-layer-button').click();
+};

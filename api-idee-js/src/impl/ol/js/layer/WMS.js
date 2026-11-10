@@ -582,6 +582,7 @@ class WMS extends LayerBase {
    * @api stable
    */
   refreshLegendUrlByCapabilities_(capabilites) {
+    if (isNullOrEmpty(capabilites)) return;
     const styles = isArray(this.styles) ? this.styles : [this.styles];
     let style;
     if (isNullOrEmpty(this.styles)) {

@@ -65,6 +65,11 @@
                 </button>
             {{/if}}
         {{/if}}
+        {{#if isSLD}}{{#if sldSupported}}
+            <button tabindex="0" title="{{translations.load_sld}}" aria-label="{{translations.load_sld}}" data-layer-id="{{idLayer}}"
+                class="secondary m-layerswitcher-icons-sld g-cartografia-btn-layerswitcher-upload" {{#unless visible}} disabled {{/unless}}>
+            </button>
+        {{/if}}{{/if}}
         {{#if isDelete}}
             <button tabindex="0" title="{{translations.remove_layer}}" data-layer-id="{{idLayer}}"
                aria-label="{{translations.remove_layer}}" class="secondary g-cartografia-btn-layerswitcher-delete">

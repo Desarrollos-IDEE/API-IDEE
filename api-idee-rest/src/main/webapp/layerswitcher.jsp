@@ -88,9 +88,10 @@
                 </select>
             </div>
             <div>
-                <label for="inputTools" title="Lista de herramientas disponibles para cada capa separadas por coma. Valores: transparency, zoom, legend, information, style, delete">Herramientas "tools"</label>
-                <input type="text" name="tools" id="inputTools" list="toolsSug" value="transparency, zoom, legend, information, style, delete">
+                <label for="inputTools" title="Lista de herramientas disponibles para cada capa separadas por coma. Valores: transparency, zoom, legend, information, style, sld, delete">Herramientas "tools"</label>
+                <input type="text" name="tools" id="inputTools" list="toolsSug" value="transparency, zoom, legend, information, style, sld, delete">
                 <datalist id="toolsSug">
+                    <option value="transparency, zoom, legend, information, style, sld, delete"></option>
                     <option value="transparency, zoom, legend, information, style, delete"></option>
                     <option value="transparency, zoom, legend, information"></option>
                     <option value="transparency, zoom"></option>
@@ -117,6 +118,7 @@
                 <input type="text" name="precharged" id="inputPrecharged" list="prechargedSug">
                 <datalist id="prechargedSug">
                     <option value='Catálogo desde URL a un JSON (catálogo CNIG)' data-precharged='https://componentes.idee.es/estaticos/Datos/json/precharged_layerswitcher_cnig.json'></option>
+                    <option value='Estilos por capa: WMS IGN (AU.AdministrativeUnit y AU.AdministrativeBoundary)' data-precharged='{"services":[{"type":"WMS","name":"Unidades administrativas (estilos por capa)","url":"https://www.ign.es/wms-inspire/unidades-administrativas?","white_list":["AU.AdministrativeUnit","AU.AdministrativeBoundary"],"layers":[{"name":"AU.AdministrativeUnit","styles":["ua-comparador","ua-EscalaGris","provincias-gris"]},{"name":"AU.AdministrativeBoundary","styles":["LimitesRojo","LimitesGris","LimitesCruz"]}]}]}'></option>
                     <option value='Un grupo de servicios y un servicio individual' data-precharged='{"services": [{"type":"WMS","name":"Camino de Santiago","url":"https://www.ign.es/wms-inspire/camino-santiago"}],"groups":[{"name":"Cartografía","services":{"type":"WMTS","name": "Mapas","url":"https://www.ign.es/wmts/mapa-raster?"}}]}'></option>
                     <!-- <option value='Dos servicios con estilos únicos sin serializar' data-precharged='{"services":[{"type":"WMS","name":"Unidades administrativas","url":"https://www.ign.es/wms-inspire/unidades-administrativas?","styles":["ua-comparador"]},{"type":"GeoJSON","name":"Estaciones GNSS","url":"https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json","styles":[{"name":"Rojo","point":{"radius":6,"fill":{"color":"red"},"stroke":{"color":"white","width":1}}}]}]}'></option>
                     <option value='Dos servicios con estilos únicos serializados' data-precharged='{"services":[{"type":"WMS","name":"Unidades administrativas","url":"https://www.ign.es/wms-inspire/unidades-administrativas?","styles":["ua-EscalaGris"]},{"type":"GeoJSON","name":"Estaciones GNSS","url":"https://www.ign.es/resources/geodesia/GNSS/SPTR_geo.json","styles":["eyJwYXJhbWV0ZXJzIjpbeyJuYW1lIjoiQXp1bCBzZXJpYWxpemFkbyIsInBvaW50Ijp7InJhZGl1cyI6NiwiZmlsbCI6eyJjb2xvciI6ImJsdWUifSwic3Ryb2tlIjp7ImNvbG9yIjoid2hpdGUiLCJ3aWR0aCI6MX19fV0sImRlc2VyaWFsaXplZE1ldGhvZCI6Iigoc2VyaWFsaXplZFBhcmFtZXRlcnMpID0+IElERUUuc3R5bGUuU2ltcGxlLmRlc2VyaWFsaXplKHNlcmlhbGl6ZWRQYXJhbWV0ZXJzLCAnSURFRS5zdHlsZS5HZW5lcmljJykpIn0="]}]}'></option>
@@ -184,6 +186,9 @@
             <select name="sampleLayer" id="selectSampleLayer" title="Capas de ejemplo para probar el plugin en 2D y 3D">
                 <option value="" selected="selected">Añadir capa de ejemplo…</option>
             </select>
+            <select name="sampleSld" id="selectSampleSld" aria-label="Descargar un .sld" title="SLD de ejemplo de IDEE y del IGN (GetStyles): al elegir uno se descarga como .sld para cargarlo con el botón SLD de una capa vectorial">
+                <option value="" selected="selected">Descargar un .sld</option>
+            </select>
         </div>
     </div>
 
@@ -238,7 +243,37 @@
         map.addPlugin(stylemanager);
 
         // Capas de ejemplo de cada tipo; "only" limita las que solo admite una implementación
+        const SAMPLE_WATER_BODIES = {
+            type: 'FeatureCollection',
+            features: [
+                {"type":"Feature","id":"embalse-norte","properties":{"nombre":"Embalse de ejemplo Norte","area":85.4},"geometry":{"type":"Polygon","coordinates":[[[-5.1006,41.9],[-5.1511,41.9909],[-5.2642,42.0642],[-5.4589,42.0665],[-5.6,42.0786],[-5.8025,42.139],[-5.9853,42.0883],[-5.9875,41.9785],[-6.0006,41.9],[-5.9826,41.8225],[-5.9006,41.7531],[-5.8033,41.66],[-5.6,41.6386],[-5.4581,41.7325],[-5.3489,41.7772],[-5.156,41.8101],[-5.1006,41.9]]]}},
+                {"type":"Feature","id":"embalse-centro","properties":{"nombre":"Embalse de ejemplo Centro","area":121.7},"geometry":{"type":"Polygon","coordinates":[[[-2.5959,40.0],[-2.647,40.1166],[-2.8795,40.1631],[-3.0341,40.2039],[-3.2,40.3222],[-3.455,40.3133],[-3.5745,40.1907],[-3.664,40.0978],[-3.6959,40.0],[-3.6632,39.9023],[-3.6574,39.7672],[-3.4551,39.6865],[-3.2,39.7622],[-3.034,39.796],[-2.7967,39.7947],[-2.6477,39.8835],[-2.5959,40.0]]]}},
+                {"type":"Feature","id":"laguna-sur","properties":{"nombre":"Laguna de ejemplo Sur","area":31.2},"geometry":{"type":"Polygon","coordinates":[[[-6.0636,38.6],[-6.1688,38.6575],[-6.237,38.6978],[-6.2711,38.7867],[-6.4,38.8171],[-6.5139,38.765],[-6.5994,38.7197],[-6.6462,38.6612],[-6.6636,38.6],[-6.7231,38.5197],[-6.6613,38.4432],[-6.5007,38.4541],[-6.4,38.4571],[-6.2843,38.4324],[-6.1752,38.4651],[-6.0919,38.5234],[-6.0636,38.6]]]}},
+                {"type":"Feature","id":"lago-este","properties":{"nombre":"Lago de ejemplo Este","area":58.9},"geometry":{"type":"Polygon","coordinates":[[[-0.5773,39.4],[-0.6355,39.4721],[-0.6062,39.5933],[-0.7262,39.6761],[-0.9,39.6547],[-1.0411,39.6242],[-1.1365,39.5556],[-1.1972,39.481],[-1.3373,39.4],[-1.3377,39.2807],[-1.1436,39.2397],[-1.017,39.2141],[-0.9,39.1547],[-0.7503,39.1622],[-0.5991,39.202],[-0.495,39.2896],[-0.5773,39.4]]]}},
+            ],
+        };
+
         const SAMPLE_LAYERS = [
+            {
+                label: 'Masas de agua (GeoJSON de ejemplo, para el SLD de IDEE)',
+                create: () => new IDEE.layer.GeoJSON({
+                    source: SAMPLE_WATER_BODIES,
+                    name: 'masas_agua',
+                    legend: 'Masas de agua de ejemplo',
+                    extract: true,
+                }),
+            },
+            {
+                label: 'Municipios del IGN (OGC API Features, para el SLD del IGN)',
+                create: () => new IDEE.layer.OGCAPIFeatures({
+                    url: 'https://api-features.ign.es/collections/',
+                    name: 'administrativeunit',
+                    legend: 'Municipios (OGC API IGN)',
+                    limit: 200,
+                    bbox: [-4.0, 40.2, -3.4, 40.7],
+                    conditional: { nationallevelname: 'Municipio' },
+                }),
+            },
             {
                 label: 'WMS',
                 create: () => new IDEE.layer.WMS({
@@ -344,9 +379,67 @@
                     map.addLayers(sample.create());
                 }
             } catch (error) {
-                console.error(`No se pudo añadir la capa ${sample.label}`, error);
-                IDEE.dialog.error(`No se pudo añadir la capa ${sample.label}: ${error.message || error}`);
+                console.error('No se pudo añadir la capa ' + sample.label, error);
+                IDEE.dialog.error('No se pudo añadir la capa ' + sample.label + ': ' + (error.message || error));
             }
+        });
+
+        const SAMPLE_SLDS = [
+            {
+                label: 'IDEE: masas de agua (hidrografía)',
+                file: 'idee-masas-de-agua.sld',
+                url: 'https://servicios.idee.es/wms-inspire/hidrografia?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetStyles&LAYERS=HY.PhysicalWaters.Waterbodies',
+            },
+            {
+                label: 'IGN: unidades administrativas',
+                file: 'ign-unidades-administrativas.sld',
+                url: 'https://www.ign.es/wms-inspire/unidades-administrativas?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetStyles&LAYERS=AU.AdministrativeUnit',
+            },
+        ];
+        const SLD_DOWNLOAD_TIMEOUT = 20000;
+
+        const selectSampleSld = document.getElementById('selectSampleSld');
+        SAMPLE_SLDS.forEach((sample) => {
+            const option = document.createElement('option');
+            option.value = sample.label;
+            option.textContent = sample.label;
+            selectSampleSld.appendChild(option);
+        });
+        selectSampleSld.addEventListener('change', () => {
+            const sample = SAMPLE_SLDS.find((s) => s.label === selectSampleSld.value);
+            selectSampleSld.value = '';
+            if (!sample) return;
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), SLD_DOWNLOAD_TIMEOUT);
+            window.fetch(sample.url, { signal: controller.signal })
+                .then((response) => {
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    return response.text();
+                })
+                .catch((error) => {
+                    if (error.name === 'AbortError') {
+                        throw new Error('el servicio no ha respondido en ' + (SLD_DOWNLOAD_TIMEOUT / 1000) + ' s');
+                    }
+                    throw error;
+                })
+                .finally(() => clearTimeout(timeout))
+                .then((text) => {
+                    if (!text.includes('StyledLayerDescriptor')) {
+                        throw new Error('el servicio no ha devuelto un documento SLD');
+                    }
+                    const href = URL.createObjectURL(new Blob([text], { type: 'application/vnd.ogc.sld+xml' }));
+                    const link = document.createElement('a');
+                    link.href = href;
+                    link.download = sample.file;
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    setTimeout(() => URL.revokeObjectURL(href), 1000);
+                })
+                .catch((error) => {
+                    console.error('No se pudo descargar el SLD ' + sample.label, error);
+                    IDEE.dialog.error('No se pudo descargar el SLD ' + sample.label + ': ' + (error.message || error));
+                });
         });
 
         let mp = null;

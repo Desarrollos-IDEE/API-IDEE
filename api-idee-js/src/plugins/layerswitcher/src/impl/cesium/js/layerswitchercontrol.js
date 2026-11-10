@@ -44,11 +44,15 @@ export default class LayerswitcherControl extends IDEE.impl.Control {
       dataSources.dataSourceRemoved.addEventListener(schedule),
       dataSources.dataSourceMoved.addEventListener(schedule),
     ];
+    schedule();
   }
 
   // Renderiza el control
   renderControl() {
-    if (!IDEE.utils.isNullOrEmpty(this.fnRender)) this.facadeControl.render();
+    // eslint-disable-next-line no-underscore-dangle
+    const template = this.facadeControl.template_;
+    if (IDEE.utils.isNullOrEmpty(this.fnRender) || IDEE.utils.isNullOrEmpty(template)) return;
+    this.facadeControl.render();
   }
 
   // Elimina las suscripciones al visor
@@ -96,8 +100,6 @@ export default class LayerswitcherControl extends IDEE.impl.Control {
    */
   getLayerToolsSupport(layer) {
     if (layer.type === 'Terrain') return { transparency: false, style: false, zoom: false };
-    // El estilo ráster de IDEE no está implementado en Cesium
-    if (layer.type === 'GeoTIFF') return { style: false };
     return {};
   }
 

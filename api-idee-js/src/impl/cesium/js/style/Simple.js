@@ -3,7 +3,7 @@
  */
 import { isNullOrEmpty, isFunction, extendsObj } from 'IDEE/util/Utils';
 import {
-  Entity, HeadingPitchRoll, ModelGraphics, Transforms,
+  Entity, HeadingPitchRoll, JulianDate, ModelGraphics, PolylineGraphics, Transforms,
 } from 'cesium';
 import * as EventType from 'IDEE/event/eventtype';
 import ImplUtils from '../util/Utils';
@@ -11,6 +11,42 @@ import Style from './Style';
 import Feature from '../feature/Feature';
 
 const templateRegexp = /^\{\{([^}]+)\}\}$/;
+
+const groundOutlines = new WeakSet();
+
+const valueOf = (property) => (property && typeof property.getValue === 'function'
+  ? property.getValue(JulianDate.now()) : property);
+
+const hasFunctionValues = (value) => {
+  if (isFunction(value)) return true;
+  if (value === null || typeof value !== 'object') return false;
+  return Object.keys(value).some((key) => hasFunctionValues(value[key]));
+};
+
+const syncGroundOutline = (entity) => {
+  const { polygon } = entity;
+  const color = valueOf(polygon.outlineColor);
+  const onGround = isNullOrEmpty(valueOf(polygon.height))
+    && isNullOrEmpty(valueOf(polygon.extrudedHeight)) && !valueOf(polygon.perPositionHeight);
+  const hierarchy = valueOf(polygon.hierarchy);
+  const positions = Array.isArray(hierarchy) ? hierarchy : hierarchy?.positions;
+  if (onGround && valueOf(polygon.outline) === true && color && color.alpha > 0
+    && Array.isArray(positions) && positions.length > 1) {
+    // eslint-disable-next-line no-param-reassign
+    entity.polyline = new PolylineGraphics({
+      positions: positions.concat([positions[0]]),
+      clampToGround: true,
+      width: valueOf(polygon.outlineWidth) || 1,
+      material: color,
+    });
+    polygon.outline = false;
+    groundOutlines.add(entity);
+  } else if (groundOutlines.has(entity)) {
+    // eslint-disable-next-line no-param-reassign
+    entity.polyline = undefined;
+    groundOutlines.delete(entity);
+  }
+};
 
 /**
  * @classdesc
@@ -56,11 +92,35 @@ class Simple extends Style {
       if (layer.type === 'KML' || layer.type === 'KMZ') {
         if (!isNullOrEmpty(layer.options) && layer.options.extractStyles === false) {
           layer.getFeatures().forEach(this.applyToFeature, this);
+          this.watchView_(layer);
         }
       } else {
         layer.getFeatures().forEach(this.applyToFeature, this);
+        this.watchView_(layer);
       }
     }
+  }
+
+  /**
+   * Vuelve a aplicar el estilo al mover la cámara si tiene valores calculados con funciones.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @function
+   * @param {IDEE.layer.Vector} layer Capa.
+   */
+  watchView_(layer) {
+    if (this.removeViewListener_ || !hasFunctionValues(this.options_)) return;
+    const viewer = layer.getImpl?.()?.getMap?.()?.getMapImpl?.();
+    if (!viewer?.camera?.moveEnd) return;
+    const remove = viewer.camera.moveEnd.addEventListener(() => {
+      if (layer.getStyle?.()?.getImpl?.() !== this || isNullOrEmpty(layer.getImpl().getMap())) {
+        remove();
+        this.removeViewListener_ = null;
+        return;
+      }
+      this.applyToLayer(layer);
+    });
+    this.removeViewListener_ = remove;
   }
 
   /**
@@ -119,6 +179,7 @@ class Simple extends Style {
               cesiumFeature.model = undefined;
             }
             cesiumFeature[cesiumType] = Object.assign(cesiumFeature[cesiumType], props);
+            if (cesiumType === 'polygon') syncGroundOutline(cesiumFeature);
             // eslint-disable-next-line no-underscore-dangle, no-param-reassign
             feature.getImpl().hasPropertyIcon_ = false;
             feature.fire(EventType.COMPLETED_CHANGE_STYLE_FEATURE);

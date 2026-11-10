@@ -144,7 +144,7 @@ test.describe('Layerswitcher: submenús de añadir capas (cesium)', () => {
     }), { timeout }).toBe(true);
   });
 
-  test('GeoTIFF por URL: se añade sin herramienta de estilo', async ({ page }) => {
+  test('GeoTIFF por URL: sin estilos ráster configurados no tiene herramienta de estilo', async ({ page }) => {
     // Servido por el servidor de pruebas: geotiff lee el fichero por rangos de bytes (206)
     await searchService(page, 'http://localhost:8081/test/playwright/fixtures/refresh/raster.tif');
     await addFromModal(page, 'Ráster');
@@ -155,7 +155,7 @@ test.describe('Layerswitcher: submenús de añadir capas (cesium)', () => {
     await expect(layerRow(page, name)).toHaveCount(1, { timeout });
     await expect(layerRow(page, name).locator('.m-layerswitcher-icons-style')).toHaveCount(0);
     expect(await page.evaluate(() => window.mp.controls[0].getImpl()
-      .getLayerToolsSupport(window.mapjs.getGeoTIFF()[0]))).toEqual({ style: false });
+      .getLayerToolsSupport(window.mapjs.getGeoTIFF()[0]))).toEqual({});
   });
 
   test('GeoJSON por URL', async ({ page }) => {

@@ -6,6 +6,16 @@ import * as EventType from 'IDEE/event/eventtype';
 import { ImageryLayer, Rectangle } from 'cesium';
 import VectorTileImageryProvider from '../provider/VectorTileImageryProvider';
 import Layer from './Layer';
+import { findStyleProperties } from '../style/builder';
+
+const UNSUPPORTED_STYLE_PROPERTIES = [
+  { path: 'icon' },
+  { path: 'label' },
+  { path: 'fill.pattern' },
+  { path: 'stroke.pattern' },
+  { path: 'stroke.miterlimit' },
+  { path: 'fill', geometries: ['line'] },
+];
 
 /**
  * @classdesc
@@ -277,6 +287,21 @@ class MVT extends Layer {
    */
   isLoaded() {
     return this.loaded_;
+  }
+
+  /**
+   * Devuelve las propiedades del estilo que no se pueden representar en las
+   * teselas vectoriales dibujadas por Cesium.
+   *
+   * @public
+   * @function
+   * @param {IDEE.Style} style Estilo.
+   * @returns {Array<String>} Propiedades no representables.
+   * @api
+   */
+  getUnsupportedStyleProperties(style) {
+    const found = findStyleProperties(style, UNSUPPORTED_STYLE_PROPERTIES);
+    return typeof style?.getCategories === 'function' ? ['categories', ...found] : found;
   }
 
   /**

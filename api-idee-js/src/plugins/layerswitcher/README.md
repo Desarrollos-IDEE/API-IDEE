@@ -53,9 +53,7 @@ El constructor se inicializa con un JSON con los siguientes atributos:
 - **https**: Si es *true* sólo se permite la carga de capas de servicios desplegados con https, si no se rellena o se le da valor *false* se permite la carga de cualquier servicio. Por defecto: true.
 - **showCatalog**: Si es *true* se habilitará una nueva funcionalidad que permitirá la carga de servicios del catálogo habilitando un listado con buscador de dichos servicios. Disponible al pulsar sobre el botón añadir del plugin, apareciendo unos prismáticos para realizar la búsqueda. Por defecto: false.
 - **precharged**: Aquí debemos definir la estructura de los servicios predefinidos que queremos que tenga el plugin (árbol de contenido, servicios sin nodo padre, etc.). También podremos definir un parámetro para cada servicio con el que restringiremos qué capas de cada servicio queremos que sea posible cargar (white_list). Se puede indicar como objeto, como cadena JSON, como cadena JSON codificada en base64 o como **URL** (string) a un fichero JSON con esa misma estructura. Si no se informa, se usa el catálogo publicado en la URL `LIST_PRECHARGED_URL` de `configuration.js` (si no está configurada o no se puede cargar, se usa el catálogo por defecto del plugin).
-Cada servicio admite además un array `styles` con los estilos de las capas cargadas desde él: el primero se aplica al añadir la capa y, si hay más de uno, se podrán cambiar desde el selector de estilo (si no se define, se usan los estilos del servicio o los predefinidos de la capa):
-  - WMS: nombres de los estilos, p. ej. `"styles": ["default", "gris"]`.
-  - Vectoriales (WFS, OGCAPIFeatures, GeoJSON, MVT, KML...): opciones de `IDEE.style.Generic` (con `name` opcional como etiqueta) o estilos serializados con `style.serialize()`, p. ej. `"styles": [{"name": "Rojo", "polygon": {"fill": {"color": "red"}}}]`.
+Cada servicio admite además estilos predefinidos para las capas que se cargan desde él: un array `styles` para todo el servicio y, dentro de `layers`, un array `styles` propio de cada capa (ver [Estilos predefinidos por capa](#estilos-predefinidos-por-capa)). Cuando `precharged` es la URL de un fichero JSON, las URL relativas de sus servicios se resuelven respecto a la del fichero.
 El listado de capas aparece al pulsar sobre el botón añadir (Listado de algunas capas disponibles).
 - **isMoveLayers**: Permite mover las capas en el árbol de contenidos para cambiar el orden de visualización. Por defecto: false.
 - **modeSelectLayers**: Permite cambiar el modo de selección de las capas para su visualización.
@@ -67,6 +65,7 @@ El listado de capas aparece al pulsar sobre el botón añadir (Listado de alguna
   - 'zoom': permite hacer zoom a la capa.
   - 'information': permite consultar la información de la capa.
   - 'style': permite cambiar el estilo a la capa (si lo permite).
+  - 'sld': permite cargar un fichero de estilos SLD en las capas vectoriales (ver [Carga de estilos SLD](#carga-de-estilos-sld)).
   - 'delete': permite eliminar la capa del mapa.
   Por defecto añade todas las herramientas.
 - **useProxy**: Determina si se desea que las peticiones de red que se realizan en la extensión se realicen con el proxy o no. Por defecto: true.
@@ -83,6 +82,134 @@ Al introducir la URL de un servicio OGC API Features (raíz, `/collections` o `/
 
 Se recuerda el último modo usado con cada servicio. Los servicios precargados con `type: 'DataIDEE'` se abren en modo DataIDEE.
 El servicio debe permitir CORS (cabeceras `Authorization` y `Content-Type`) para iniciar sesión y para consultar capas con token sin proxy.
+
+## Estilos predefinidos por capa
+
+Cada servicio de `precharged` puede declarar los estilos que tendrán las capas que se carguen desde él. El primero se aplica al añadir la capa y, si hay más de uno, se pueden alternar desde el selector de estilo de la capa (herramienta `style`). El selector muestra el estilo activo seleccionado y permite volver a cualquiera de ellos, incluido el primero.
+
+```json
+{
+  "services": [{
+    "type": "WMS",
+    "name": "Unidades administrativas",
+    "url": "https://www.ign.es/wms-inspire/unidades-administrativas?",
+    "white_list": ["AU.AdministrativeUnit", "AU.AdministrativeBoundary"],
+    "layers": [
+      { "name": "AU.AdministrativeUnit", "styles": ["ua-comparador", "ua-EscalaGris", "provincias-gris"] },
+      { "name": "AU.AdministrativeBoundary", "styles": ["LimitesRojo", "LimitesGris", "LimitesCruz"] }
+    ]
+  }],
+  "groups": []
+}
+```
+
+- **`layers`**: lista de capas del servicio con sus estilos. `name` es el identificador que publica el servicio, el mismo que se usa en `white_list`:
+  - WMS: `Name` de la capa.
+  - WFS: nombre del tipo de objeto, con o sin prefijo (`"puntos"` o `"prueba:puntos"`).
+  - OGC API Features y DataIDEE: identificador de la colección.
+- **`styles`** (del servicio): estilos de todas las capas del servicio que no tengan los suyos en `layers`. Es el formato anterior y se sigue admitiendo. Es la forma de indicar los estilos de los servicios de una sola capa (GeoJSON, KML/KMZ, MVT, GeoTIFF), cuya capa no tiene identificador propio.
+- `white_list` mantiene su función: una capa que esté en `layers` pero no en `white_list` no se puede cargar.
+
+Formato de cada estilo, según el tipo de capa:
+
+| Capa | Estilos admitidos | Ejemplo |
+|---|---|---|
+| WMS | Nombre de un estilo publicado por el servicio para esa capa | `"ua-comparador"` |
+| Vectoriales (GeoJSON, KML/KMZ, WFS, OGC API Features, DataIDEE, MVT, MBTilesVector) | Opciones de `IDEE.style.Generic` (`name` es la etiqueta) o un estilo serializado con `style.serialize()` (de cualquier clase de estilo vectorial: `Generic`, `Category`, `Choropleth`...) | `{"name": "Verde", "polygon": {"fill": {"color": "#2e7d32", "opacity": 0.6}}}` |
+| GeoTIFF | Opciones de `IDEE.style.Raster` (`name` es la etiqueta) o un estilo serializado | `{"name": "Solo rojo", "bands": [1, 0, 0]}` |
+
+```json
+{
+  "type": "GeoJSON",
+  "name": "Zonas de ejemplo",
+  "url": "zonas.geojson",
+  "styles": [
+    { "name": "Verde", "polygon": { "fill": { "color": "#2e7d32", "opacity": 0.6 }, "stroke": { "color": "#1b5e20", "width": 1 } } },
+    { "name": "Naranja", "polygon": { "fill": { "color": "#ef6c00", "opacity": 0.6 }, "stroke": { "color": "#bf360c", "width": 1 } } },
+    "eyJwYXJhbWV0ZXJzIjpbeyJuYW1lIjoiQXp1bCBzZXJpYWxpemFkbyIsInBvbHlnb24iOnsiZmlsbCI6eyJjb2xvciI6IiMxNTY1YzAiLCJvcGFjaXR5IjowLjV9LCJzdHJva2UiOnsiY29sb3IiOiIjMGQ0N2ExIiwid2lkdGgiOjF9fSwicG9pbnQiOnsicmFkaXVzIjo1fX1dLCJkZXNlcmlhbGl6ZWRNZXRob2QiOiIoKHNlcmlhbGl6ZWRQYXJhbWV0ZXJzKSA9PiBJREVFLnN0eWxlLlNpbXBsZS5kZXNlcmlhbGl6ZShzZXJpYWxpemVkUGFyYW1ldGVycywgJ0lERUUuc3R5bGUuR2VuZXJpYycpKSJ9"
+  ]
+}
+```
+
+El estilo serializado del ejemplo se ha generado con `new IDEE.style.Generic({ name: 'Azul serializado', polygon: { ... } }).serialize()` y se puede recuperar con `IDEE.Style.deserialize(texto)`.
+
+**Prioridad.** Se usa la primera fuente que tenga algún estilo válido para la capa (no se mezclan):
+
+1. Los estilos de la capa en `layers`.
+2. Los estilos del servicio (`styles`).
+3. Los estilos que publica el propio servicio (estilos WMS de las capacidades). Los KML/KMZ conservan sus propios estilos, salvo que el servicio precargado tenga estilos: entonces se cargan sin ellos (`extractStyles: false`).
+4. Los estilos predefinidos de la capa (`predefinedStyles`, empezando por su estilo por defecto).
+
+Los estilos que no son compatibles con la capa se descartan con un aviso en la consola: nombres de estilo que el servicio WMS no publica para esa capa, estilos ráster en capas vectoriales (y al revés) o estilos que la implementación del mapa no puede crear. Las capas sin estilos configurados se comportan como antes. Los estilos configurados no se modifican al aplicarse, así que se puede cambiar de estilo tantas veces como se quiera.
+
+**Etiquetas del selector.** Se usa el `name` del estilo (o el título del estilo WMS). Si no tiene, se muestra «Estilo N» según su posición; «Estilo predeterminado» se reserva para el estilo por defecto de la propia capa.
+
+## Carga de estilos SLD
+
+La herramienta `sld` añade un botón en cada capa vectorial (GeoJSON, KML/KMZ con `extractStyles: false`, WFS, OGC API Features, DataIDEE, MVT, ficheros cargados...) para elegir un fichero `.sld` o `.xml` (máximo 5 MB). El estilo se convierte a estilos de IDEE y se aplica en el momento; cada `UserStyle` del fichero se añade al selector de estilo de la capa con el sufijo «(SLD)», se aplica el marcado como `IsDefault` (o el primero) y se puede volver a los estilos anteriores.
+
+- Formatos: SLD 1.0.0 (`CssParameter`) y SE 1.1.0 (`SvgParameter`), que es el que exporta QGIS (*Propiedades de la capa → Simbología → Estilo → Guardar estilo… → Archivo SLD*).
+- Se usa la `NamedLayer` cuyo nombre coincide con el de la capa, sin distinguir mayúsculas y comparando también la última parte del nombre (`AU.AdministrativeUnit` coincide con la colección `administrativeunit`). Si el SLD describe varias capas y ninguna coincide, se usa la primera y se avisa.
+- Simbolizadores: `PolygonSymbolizer` (relleno y trazo), `LineSymbolizer` (trazo, incluido `stroke-dasharray`, `stroke-linecap` y `stroke-linejoin`), `PointSymbolizer` (`Mark` circular con su tamaño, relleno y trazo; `ExternalGraphic` como icono) y `TextSymbolizer` (etiqueta con un atributo o un texto, fuente, color, halo, anclaje y desplazamiento).
+- Reglas:
+  - Las reglas sin filtro (y `ElseFilter`) forman un `IDEE.style.Generic`.
+  - Si todas las reglas filtradas usan `PropertyIsEqualTo` sobre un mismo atributo, forman un `IDEE.style.Category` (`ElseFilter` se usa para el resto de valores).
+  - Con cualquier otro filtro admitido (`PropertyIsEqualTo` sobre varios atributos, `PropertyIsNotEqualTo`, `PropertyIsLessThan`, `PropertyIsLessThanOrEqualTo`, `PropertyIsGreaterThan`, `PropertyIsGreaterThanOrEqualTo`, `PropertyIsLike` con sus comodines, `PropertyIsBetween`, `PropertyIsNull`, `And`, `Or` y `Not`), cada propiedad del estilo se calcula objeto a objeto con las reglas que cumple. Se aplican en orden y `ElseFilter` solo cuando no se cumple ninguna. El estilo resultante se puede serializar, así que se conserva al pasar de 2D a 3D.
+  - Los rangos de escala (`MinScaleDenominator`/`MaxScaleDenominator`) se respetan: cada regla solo se dibuja en su rango, como en GeoServer. En 2D se recalcula en cada repintado y en 3D al terminar de mover la cámara.
+- Lo que no se puede aplicar se omite y se avisa: filtros espaciales, de identificador o con funciones, `VendorOption`, `Priority`, `LinePlacement`, rellenos y trazos con gráficos, marcas no circulares (se dibujan como círculos), etiquetas compuestas y valores calculados con atributos.
+- Errores (se muestran en un diálogo y la capa conserva su estilo): fichero vacío, ilegible o mayor de 5 MB, XML no válido, documento que no es un SLD, SLD solo con simbolización ráster (`RasterSymbolizer`) y SLD sin reglas compatibles.
+- Las capas WMS no tienen el botón: su estilo lo dibuja el servidor y los servicios de IDEE no aplican el parámetro `SLD_BODY` (se usan sus estilos publicados desde el selector de estilo).
+
+Los servicios WMS del IGN y de IDEE publican el SLD de cada capa con la petición `GetStyles`, por ejemplo:
+
+- [Masas de agua (IDEE)](https://servicios.idee.es/wms-inspire/hidrografia?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetStyles&LAYERS=HY.PhysicalWaters.Waterbodies): relleno `#AED1FF` y etiqueta con el atributo `nombre`.
+- [Unidades administrativas (IGN)](https://www.ign.es/wms-inspire/unidades-administrativas?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetStyles&LAYERS=AU.AdministrativeUnit): reglas con `PropertyIsLike`, `And` y `Not` sobre los atributos `nationallevel` y `nameunit` (contorno y etiqueta de comunidades autónomas, provincias y municipios). Es compatible con la colección `administrativeunit` de la [OGC API Features del IGN](https://api-features.ign.es/collections/administrativeunit). Los municipios solo se dibujan por debajo de 1:600.000 y sus etiquetas por debajo de 1:800.000, así que hay que acercarse para verlos. Su estilo por defecto (contorno amarillo claro de 0,3 px) está pensado para ortofotos; sobre un mapa base claro se ven mejor sus estilos `ua-comparador` o `municipios-gris`, que se pueden elegir en el selector de estilo de la capa.
+
+GeoServer sirve estas respuestas con el nombre `geoserver-GetStyles.application` (`Content-Disposition`). El contenido es un SLD válido, pero si se descarga desde la URL hay que renombrar el fichero con la extensión `.sld` para elegirlo con el botón SLD. El selector «Descargar un .sld» del entorno de pruebas ya los descarga con ese nombre.
+
+## Estilos de QGIS (.qml)
+
+No se cargan ficheros `.qml` (formato propio de QGIS). Los estilos de QGIS se pueden usar exportándolos como SLD desde QGIS y cargándolos con la herramienta `sld`. Para admitir `.qml` haría falta un lector de su XML (`renderer-v2` de tipo `singleSymbol`, `categorizedSymbol`, `graduatedSymbol` y `RuleRenderer`, capas de símbolo `SimpleFill`, `SimpleLine`, `SimpleMarker`, `SvgMarker`..., etiquetado y unidades en milímetros) que genere los mismos estilos de IDEE (`Generic`, `Category`, `Choropleth`); se añadiría como otra fuente de estilos de la capa, igual que los SLD, sin cambiar el selector ni la aplicación de los estilos.
+
+## Compatibilidad 2D (OpenLayers) y 3D (Cesium)
+
+La configuración es la misma en las dos implementaciones: el plugin solo usa la fachada de IDEE y cada implementación aplica los estilos con sus propios mecanismos.
+
+| Estilo | 2D | 3D |
+|---|---|---|
+| Estilos WMS | ✔️ | ✔️ |
+| `Generic` en capas vectoriales y estilos de SLD | ✔️ | ✔️ con las limitaciones de abajo |
+| `Category`, `Choropleth` y demás estilos vectoriales serializados | ✔️ | ✔️ (`Heatmap`, `FlowLine` y `Chart` no existen en Cesium y se descartan con un aviso) |
+| `IDEE.style.Raster` en GeoTIFF | ✔️ | ✔️ (rampa, paradas, fórmulas, bandas, valor sin datos y filtros de color calculados píxel a píxel) |
+
+En 3D, el selector y el aviso de la carga de SLD indican las propiedades del estilo que el mapa no puede representar (método `IDEE.layer.Vector#getUnsupportedStyleProperties(style)`); el estilo se aplica igualmente con el resto de propiedades y se ve completo al volver a 2D:
+
+- Entidades (GeoJSON, KML, WFS, OGC API Features...): `stroke.linedash`, `stroke.linecap`, `stroke.linejoin`, `stroke.miterlimit`, `stroke.pattern`, `label.rotate`, `label.rotation`, `label.overflow`, `label.path`, `label.smooth`, trazos de etiqueta discontinuos y líneas con `stroke` y `fill` a la vez (Cesium dibuja solo una).
+- El contorno de los polígonos pegados al terreno, que Cesium no dibuja, se dibuja como una línea pegada al terreno con el color y el grosor del estilo (solo el anillo exterior, no los huecos).
+- Los estilos con valores calculados por funciones (como los de los SLD con filtros o escalas) se vuelven a calcular al terminar de mover la cámara.
+- Teselas vectoriales (MVT, MBTilesVector): iconos, etiquetas, patrones, `stroke.miterlimit`, `line.fill` y estilos por categorías.
+- El radio de los puntos se aplica como tamaño en píxeles (`pixelSize`), por lo que en 3D se ven más pequeños que en 2D.
+
+## Ejemplos locales
+
+En `test/styles/` hay un ejemplo propio sin dependencias externas:
+
+- `zonas.geojson` (polígonos con los atributos `nombre`, `tipo` y `area`) y `rutas.geojson` (líneas y puntos).
+- `masas-agua.geojson`: masas de agua de ejemplo con los atributos `nombre` y `area`, los que usa el SLD de masas de agua de IDEE.
+- `precharged-styles.json`: dos servicios GeoJSON con URL relativas, cada uno con sus estilos (las zonas incluyen un estilo serializado y otro con trazo discontinuo, que en 3D muestra el aviso de propiedades no representables).
+
+Para probarlo en `test/dev.html` (`npm start` para 2D o `npm run start:cesium` para 3D):
+
+1. En «Servicios precargados», elegir «Estilos por capa: ejemplo local (zonas y rutas, 2D/3D)».
+2. Abrir el plugin, pulsar «Añadir», abrir el listado de servicios y elegir «Zonas de ejemplo» (y «Rutas de ejemplo» para comprobar que los estilos de cada capa son independientes).
+3. Pulsar el botón de estilo de la capa, elegir otro estilo y pulsar «Cambiar»; se puede volver a cualquiera de ellos.
+4. Para el SLD, descargar un SLD con el selector «Descargar un .sld» (se guarda como `idee-masas-de-agua.sld` o `ign-unidades-administrativas.sld`) y cargarlo con el botón SLD de una capa de «Añadir capa de ejemplo…»:
+   - «Masas de agua (GeoJSON local, para el SLD de IDEE)» con `idee-masas-de-agua.sld`: relleno `#AED1FF` y nombre de cada masa de agua.
+   - «Municipios del IGN (OGC API Features, para el SLD del IGN)» con `ign-unidades-administrativas.sld`: municipios reales del entorno de Madrid con el contorno y la etiqueta del estilo del IGN.
+   - «Zonas (GeoJSON local, estilos y SLD)» admite cualquiera de los dos para probar los avisos.
+
+La opción «Estilos por capa: WMS IGN» carga el contrato `layers` con el servicio real de unidades administrativas del IGN. Las pruebas automáticas están en `test/playwright/common/layerswitcher-styles.js` y `layerswitcher-sld.js` (se ejecutan en 2D y 3D).
+
 
 # API-REST
 
@@ -144,7 +271,7 @@ https://componentes.idee.es/api-idee/?layerswitcher=position*collapsed*collapsib
   </tr>
   <tr>
     <td>tools</td>
-    <td>['transparency', 'legend', 'zoom', 'information', 'style', 'delete']</td>
+    <td>['transparency', 'legend', 'zoom', 'information', 'style', 'sld', 'delete']</td>
     <td>Base64 ✔️ | Separador ✔️</td>
   </tr>
   <tr>
@@ -207,7 +334,7 @@ Ejemplo de constructor del plugin:
            collapsible: true,
            isDraggable: true,
            modeSelectLayers: 'eyes',
-           tools: ['transparency', 'legend', 'zoom', 'information', 'style', 'delete'],
+           tools: ['transparency', 'legend', 'zoom', 'information', 'style', 'sld', 'delete'],
            isMoveLayers: true,
            https: true,
            http: true,
@@ -234,7 +361,7 @@ const mp = new IDEE.plugin.Layerswitcher({
   collapsible: true,
   isDraggable: true,
   modeSelectLayers: 'eyes',
-  tools: ['transparency', 'legend', 'zoom', 'information', 'style', 'delete'],
+  tools: ['transparency', 'legend', 'zoom', 'information', 'style', 'sld', 'delete'],
   isMoveLayers: true,
   https: true,
   http: true,

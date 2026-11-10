@@ -322,6 +322,24 @@ class WMS extends LayerBase {
     this.setVisible(this.visibility);
   }
 
+  /**
+   * Toma la leyenda del estilo activo de la capa en sus capacidades (o la del
+   * primer estilo si no tiene ninguno), como en OpenLayers.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @param {Object} capabilitiesLayer Capa de las capacidades.
+   */
+  refreshLegendUrlByStyle_(capabilitiesLayer) {
+    const styles = capabilitiesLayer?.Style || capabilitiesLayer?.style || [];
+    const [current] = isArray(this.styles) ? this.styles : String(this.styles || '').split(',');
+    const style = (isNullOrEmpty(current) ? null : styles.find((s) => s.Name === current))
+      || styles[0];
+    const legend = style?.LegendURL?.[0]?.OnlineResource;
+    if (!isNullOrEmpty(legend)) {
+      this.legendUrl_ = legend;
+    }
+  }
+
   // Devuelve un capabilities formateado en el caso
   // de que sea un array
   formatCapabilities_(capabilites, selff) {
@@ -331,11 +349,7 @@ class WMS extends LayerBase {
         // eslint-disable-next-line no-underscore-dangle
         && capabilitiesLayer[i].Name === selff.facadeLayer_.name) {
         capabilitiesLayer = capabilitiesLayer[i];
-
-        try {
-          this.legendUrl_ = capabilitiesLayer.Style[0].LegendURL[0].OnlineResource;
-          /* eslint-disable no-empty */
-        } catch (err) {}
+        this.refreshLegendUrlByStyle_(capabilitiesLayer);
       } else if (capabilitiesLayer[i] !== undefined && capabilitiesLayer[i].Layer !== undefined) {
         if (capabilitiesLayer[i].Layer
           // eslint-disable-next-line no-underscore-dangle
@@ -343,10 +357,7 @@ class WMS extends LayerBase {
           capabilitiesLayer = capabilitiesLayer[i].Layer
             // eslint-disable-next-line no-underscore-dangle
             .filter((l) => l.Name === selff.facadeLayer_.name)[0];
-          try {
-            this.legendUrl_ = capabilitiesLayer.Style[0].LegendURL[0].OnlineResource;
-            /* eslint-disable no-empty */
-          } catch (err) {}
+          this.refreshLegendUrlByStyle_(capabilitiesLayer);
         }
       }
     }

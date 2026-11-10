@@ -199,8 +199,8 @@
           "tools": {
             "type": "array",
             "description": "Herramientas disponibles en cada capa del panel.",
-            "items": { "type": "string", "enum": ["transparency","legend","zoom","information","style","delete"] },
-            "default": ["transparency","legend","zoom","information","style","delete"],
+            "items": { "type": "string", "enum": ["transparency","legend","zoom","information","style","sld","delete"] },
+            "default": ["transparency","legend","zoom","information","style","sld","delete"],
             "example": ["transparency","legend","zoom","information","style","delete"]
           },
           "http":            { "type": "boolean", "description": "Permite añadir servicios HTTP al catálogo.",           "default": true  },
@@ -258,7 +258,32 @@
           "name": { "type": "string", "description": "Nombre visible del servicio.", "example": "Mapas" },
           "type": { "type": "string", "description": "Tipo de servicio OGC.", "example": "WMTS" },
           "url": { "type": "string", "description": "URL base del servicio.", "example": "https://www.ign.es/wmts/mapa-raster?" },
-          "white_list": { "type": "array",  "description": "Capas permitidas. Si se omite, se muestran todas las capas del servicio.", "items": { "type": "string" } }
+          "white_list": { "type": "array",  "description": "Capas permitidas. Si se omite, se muestran todas las capas del servicio.", "items": { "type": "string" } },
+          "styles": {
+            "type": "array",
+            "description": "Estilos de las capas del servicio que no tengan los suyos en layers: nombres de estilos WMS, opciones de IDEE.style.Generic o IDEE.style.Raster, o estilos serializados con style.serialize(). El primero se aplica al añadir la capa.",
+            "items": { "oneOf": [{ "type": "string" }, { "type": "object" }] },
+            "example": [{ "name": "Verde", "polygon": { "fill": { "color": "#2e7d32", "opacity": 0.6 } } }]
+          },
+          "layers": {
+            "type": "array",
+            "description": "Estilos propios de cada capa del servicio.",
+            "items": { "$ref": "#/components/schemas/PrechargedLayerDto" }
+          }
+        }
+      },
+      "PrechargedLayerDto": {
+        "type": "object",
+        "description": "Capa de un servicio precargado con sus estilos.",
+        "required": ["name", "styles"],
+        "properties": {
+          "name": { "type": "string", "description": "Identificador de la capa en el servicio (Name WMS, tipo WFS o colección OGC API), el mismo que en white_list.", "example": "AU.AdministrativeUnit" },
+          "styles": {
+            "type": "array",
+            "description": "Estilos de la capa, con el mismo formato que styles del servicio. El primero se aplica al añadir la capa.",
+            "items": { "oneOf": [{ "type": "string" }, { "type": "object" }] },
+            "example": ["ua-comparador", "ua-EscalaGris"]
+          }
         }
       }
     }

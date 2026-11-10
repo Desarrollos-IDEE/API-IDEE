@@ -152,6 +152,8 @@ class GeoTIFFImageryProvider extends UrlTemplateImageryProvider {
    * @param {Boolean|String} [options.convertToRGB='auto'] Convertir a RGB.
    * @param {Number} [options.cacheSize] Tamaño de caché de bloques.
    * @param {Number} [options.blockSize] Tamaño de bloque de las peticiones.
+   * @param {Object} [options.renderer] Pintado de cada píxel de un estilo ráster
+   * ({ bands, writePixel }), ver {@link IDEE.impl.style.Raster#createRenderer}.
    * @returns {Promise<GeoTIFFImageryProvider>} Proveedor.
    * @api
    */
@@ -219,6 +221,19 @@ class GeoTIFFImageryProvider extends UrlTemplateImageryProvider {
      */
     this.tiff = options.tiff;
 
+    this.ownsTiff_ = options.ownsTiff !== false;
+
+    this.sourceOptions_ = {
+      bands: options.bands,
+      min: options.min,
+      max: options.max,
+      nodata: options.nodata,
+      normalize: options.normalize,
+      convertToRGB: options.convertToRGB,
+    };
+
+    this.renderer_ = options.renderer || null;
+
     /**
      * Imagen principal y vistas generales (sin máscaras), de más a menos detalle.
      * @private
@@ -257,7 +272,7 @@ class GeoTIFFImageryProvider extends UrlTemplateImageryProvider {
       : (coord) => proj4('EPSG:4326', sourceProjection, coord);
 
     const samplesPerPixel = base.getSamplesPerPixel();
-    const useRGB = isEmpty(options.bands) && (options.convertToRGB === true
+    const useRGB = !this.renderer_ && isEmpty(options.bands) && (options.convertToRGB === true
       || (options.convertToRGB !== false && samplesPerPixel === 3
         && AUTO_RGB_PHOTOMETRICS.includes(base.fileDirectory.PhotometricInterpretation)));
 
@@ -268,14 +283,25 @@ class GeoTIFFImageryProvider extends UrlTemplateImageryProvider {
      */
     this.useRGB_ = useRGB;
 
+    let samples = isEmpty(options.bands)
+      ? [...Array(Math.min(samplesPerPixel, 4)).keys()]
+      : options.bands.slice(0, 4).map((band) => band - 1);
+    if (this.renderer_) {
+      samples = this.renderer_.bands
+        .map((band) => band - 1)
+        .filter((sample) => sample >= 0 && sample < samplesPerPixel);
+      if (samples.length === 0) samples = [0];
+    }
     /**
      * Índices (desde 0) de las bandas que se pintan (máximo 4).
      * @private
      * @type {Array<Number>}
      */
-    this.samples_ = isEmpty(options.bands)
-      ? [...Array(Math.min(samplesPerPixel, 4)).keys()]
-      : options.bands.slice(0, 4).map((band) => band - 1);
+    this.samples_ = samples;
+
+    this.rendererSamples_ = this.renderer_
+      ? this.renderer_.bands.map((band) => samples.indexOf(band - 1))
+      : [];
 
     /**
      * Valor sin datos.
@@ -290,6 +316,9 @@ class GeoTIFFImageryProvider extends UrlTemplateImageryProvider {
      * @type {Boolean}
      */
     this.normalize_ = options.normalize !== false && !useRGB;
+
+    this.pixelValues_ = [new Float64Array(this.rendererSamples_.length),
+      new Float64Array(this.rendererSamples_.length)];
 
     this.userMin_ = options.min;
     this.userMax_ = options.max;
@@ -482,8 +511,10 @@ class GeoTIFFImageryProvider extends UrlTemplateImageryProvider {
    */
   writePixel_(data, offset, bands, index) {
     const out = data;
+    if (bands.length === 0) return;
     const first = bands[0][index];
     if ((this.nodata_ !== null && first === this.nodata_) || Number.isNaN(first)) return;
+    if (this.renderer_ && this.writeStyledPixel_(out, offset, bands, index)) return;
     const value = (b) => {
       const raw = bands[b][index];
       if (!this.normalize_) return raw;
@@ -502,6 +533,74 @@ class GeoTIFFImageryProvider extends UrlTemplateImageryProvider {
       out[offset + 2] = gray;
       out[offset + 3] = bands.length === 2 ? value(1) : 255;
     }
+  }
+
+  /**
+   * Escribe un píxel con el estilo ráster aplicado.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @param {Uint8ClampedArray} data Píxeles de salida.
+   * @param {Number} offset Posición del píxel de salida.
+   * @param {Array<TypedArray>} bands Bandas leídas.
+   * @param {Number} index Posición del píxel en la ventana.
+   * @returns {Boolean} Verdadero si el estilo ha resuelto el píxel.
+   */
+  writeStyledPixel_(data, offset, bands, index) {
+    const [raw, values] = this.pixelValues_;
+    for (let k = 0; k < this.rendererSamples_.length; k += 1) {
+      const position = this.rendererSamples_[k];
+      if (position < 0) {
+        raw[k] = 0;
+        values[k] = 0;
+      } else {
+        const value = bands[position][index];
+        raw[k] = value;
+        if (this.normalize_) {
+          const [gain, bias] = this.scales_[position];
+          values[k] = (gain * value + bias) / 255;
+        } else {
+          values[k] = value;
+        }
+      }
+    }
+    return this.renderer_.writePixel(data, offset, raw, values);
+  }
+
+  /**
+   * Crea un proveedor del mismo GeoTIFF (ya abierto) con otro estilo ráster.
+   *
+   * @public
+   * @function
+   * @param {Object|null} renderer Pintado del estilo ráster o null para quitarlo.
+   * @returns {Promise<GeoTIFFImageryProvider>} Proveedor.
+   * @api
+   */
+  async withRenderer(renderer) {
+    const provider = new GeoTIFFImageryProvider({
+      ...this.sourceOptions_,
+      tiff: this.tiff,
+      images: this.images_,
+      projection: this.projection,
+      renderer,
+      ownsTiff: false,
+    });
+    await provider.initNormalization();
+    return provider;
+  }
+
+  /**
+   * Pasa a otro proveedor la responsabilidad de cerrar el GeoTIFF compartido.
+   *
+   * @public
+   * @function
+   * @param {GeoTIFFImageryProvider} provider Proveedor que lo cerrará.
+   * @api
+   */
+  handOverTiff(provider) {
+    if (!this.ownsTiff_ || provider.tiff !== this.tiff) return;
+    this.ownsTiff_ = false;
+    // eslint-disable-next-line no-param-reassign, no-underscore-dangle
+    provider.ownsTiff_ = true;
   }
 
   /**
@@ -537,7 +636,7 @@ class GeoTIFFImageryProvider extends UrlTemplateImageryProvider {
    * @api
    */
   dispose() {
-    if (this.tiff && typeof this.tiff.close === 'function') this.tiff.close();
+    if (this.ownsTiff_ && this.tiff && typeof this.tiff.close === 'function') this.tiff.close();
     this.tiff = null;
   }
 }

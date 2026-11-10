@@ -577,6 +577,13 @@ input[type=range].layerswitcher-transparency {
     width: 100%;
 }
 
+.m-layerswitcher-style-notice {
+    margin: 8px 0 0;
+    max-width: 320px;
+    font-size: var(--idee-font-size-caption);
+    color: var(--idee-color-neutral-70);
+}
+
 
 /**************************
     OGCMODAL.HTML
