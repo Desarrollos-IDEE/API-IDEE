@@ -52,6 +52,19 @@ test('orígenes: una URL se descarga con la función inyectada y se lee la respu
   expect(requested).toEqual(['/data.gpkg']);
 });
 
+test('orígenes: una URL bloqueada por CORS o por la red da un mensaje i18n', async () => {
+  const failing = (error) => [
+    new UrlSourceReader({ fetch: () => Promise.reject(error) }),
+    new ResponseSourceReader(),
+    new FileSourceReader(),
+  ];
+  const other = new Error('otro');
+
+  await expect(readSource({ url: 'https://a/b.gpkg' }, failing(new TypeError('Failed to fetch'))))
+    .rejects.toBe(getValue('exception').geopackage_network);
+  await expect(readSource({ url: 'https://a/b.gpkg' }, failing(other))).rejects.toBe(other);
+});
+
 test('orígenes: parámetros y valores no válidos se rechazan', async () => {
   const invalid = [
     {}, { url: '/a.gpkg', source: new ArrayBuffer(1) }, { url: '' }, { url: '  ' }, { url: 5 },

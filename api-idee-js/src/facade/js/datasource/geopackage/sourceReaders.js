@@ -41,11 +41,18 @@ export class UrlSourceReader extends SourceReader {
     return input instanceof UrlRequest;
   }
 
-  read({ url }) {
+  async read({ url }) {
     if (typeof url !== 'string' || url.trim().length === 0) {
       invalidSource();
     }
-    return this.fetch_(url);
+    try {
+      return await this.fetch_(url);
+    } catch (error) {
+      if (error instanceof TypeError) {
+        Exception(getValue('exception').geopackage_network);
+      }
+      throw error;
+    }
   }
 }
 

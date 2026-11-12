@@ -95,6 +95,21 @@ Los errores HTTP (por ejemplo, 404) no se ocultan con la descarga.
 - Sin `Content-Encoding` (gzip) en las respuestas por rangos.
 - Que el `.gpkg` tenga índice R*Tree. Sin él, la tabla se recorre por rangos entera, aunque solo sus páginas.
 
+### Servidores sin CORS o que no responden
+
+- La API no usa ningún proxy para los GeoPackage. Si el servidor de otro origen no envía `Access-Control-Allow-Origin` (o, en `range`, no admite la cabecera `Range` en la petición previa), o no responde, el navegador bloquea la petición y `fetch` falla con `TypeError`.
+- En ese caso `whenReady()` rechaza con el mensaje i18n `geopackage_network` («No se ha podido descargar el GeoPackage: el servidor no responde o no permite el acceso desde este dominio (CORS).»), en lugar de `TypeError: Failed to fetch`. Al añadir la capa al mapa, y en LayerSwitcher, se muestra en un diálogo de error.
+- En `range`, el bloqueo de la primera petición pasa a la descarga completa, como cualquier fallo de red; si también se bloquea, el mensaje es el mismo.
+- Los errores HTTP (404, 500…) conservan su propio mensaje con el código.
+- Lo resuelve quien publica el fichero, habilitando CORS en su servidor.
+
+## Límite de tamaño de los ficheros subidos
+
+- El tamaño máximo de los ficheros que se cargan arrastrándolos al mapa o desde LayerSwitcher > Subir fichero se define **una sola vez**, en `configuration.js`: `IDEE.config('MAX_FILE_SIZE_MB', 20)`. El integrador lo cambia con `IDEE.config('MAX_FILE_SIZE_MB', 50)`.
+- `IDEE.loadFiles.getMaxFileSize()` devuelve el límite en bytes e `IDEE.loadFiles.getFileSizeMessage()` el aviso con los MB configurados (`file_size`, con `{size}`). Si una configuración antigua no define la variable, no se aplica límite y se avisa una vez por consola (`file_size_missing`).
+- `IDEE.loadFiles.addFileToMap` devuelve `true` si acepta el fichero y `false` si lo rechaza por tamaño o formato. LayerSwitcher usa ese valor para no cerrar el aviso.
+- El límite no afecta a `IDEE.layer.GeoPackage` creado por URL ni a los plugins IncidenciaCarto y VectorsManagement, que tienen su propio límite.
+
 ## API del contenedor
 
 `GeoPackage` sigue extendiendo `IDEE.Object` y solo implementa estas interfaces:
@@ -145,6 +160,7 @@ Los valores asignados antes de crear las capas se aplican al crearlas.
 - **Unitarias en Node** (specs Playwright sin navegador, `test/playwright/ol/PLAY-14-GeoPackage-unit-*.spec.js`): contratos, parámetros, serializador, factoría, recargas, orígenes, lectura, estrategias, rangos, SQLite, R*Tree, paquete por rangos y acceso por rangos. Los paquetes con R*Tree real se generan con gdal3.js en Node durante la prueba (`createGdalGeoPackage` en `test/playwright/ol/fixtures/geopackage.js`); no hay binarios en el repositorio.
 - **Comunes a OL y Cesium** (`test/playwright/common/geopackage-*.js`, registradas en `ol/PLAY-14-GeoPackage-*.spec.js` y `cesium/PLAY-13-GeoPackage.spec.js`): API del contenedor, carga por extensión, lectura por rangos con recuento de peticiones y bytes, estilos en la configuración JSON y API-REST.
 - **Plugins**: ShareMap (`PLAY-02`), StyleManager (`PLAY-02`), VectorsManagement (`PLAY-03`) y LayerSwitcher (`PLAY-14-GeoPackage-layerswitcher*.spec.js`).
+- **Red y tamaño**: `common/geopackage-network.js` (OL y Cesium; servidor de otro origen bloqueado con `page.route`, mensaje `geopackage_network` en `full` y `range`, diálogo de error y errores HTTP), `ol/PLAY-14-GeoPackage-unit-sources.spec.js` (`TypeError` → mensaje i18n) y `ol/PLAY-14-GeoPackage-filesize.spec.js` (aviso con los MB configurados en el core y en LayerSwitcher).
 - **api-idee-rest**: `src/test/java/es/api_idee/parameter/parser/ParametersParserGeoPackageTest.java`.
 
 ## Métricas de estabilidad (SAP)

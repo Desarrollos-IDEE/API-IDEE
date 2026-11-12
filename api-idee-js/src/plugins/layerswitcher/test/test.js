@@ -126,10 +126,12 @@ const SAMPLE_LAYERS = [
     }),
   },
   {
-    label: 'GeoPackage',
+    label: 'GeoPackage (ríos, con CORS)',
     create: () => new IDEE.layer.GeoPackage({
-      url: `${FIXTURES}/development/CP-0002-layers/data/geopackage-mixed.gpkg`,
-      name: 'GeoPackage de prueba',
+      url: 'https://raw.githubusercontent.com/ngageoint/geopackage-js/master/test/fixtures/rivers.gpkg',
+      name: 'rivers',
+      legend: 'Ríos (GeoPackage)',
+      tables: { TILESosmds: { visibility: false } },
     }),
   },
   {

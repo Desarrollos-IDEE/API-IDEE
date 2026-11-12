@@ -1732,13 +1732,21 @@ export default class LayerswitcherControl extends IDEE.Control {
     /** @type {File} */
     const file = inputFile.files[0];
     if (!file || inputFile.disabled) return;
-    if (/\.gpkg$/i.test(file.name) && file.size <= 20971520) {
-      return this.loadGeoPackage_({ source: file, name: file.name.slice(0, -5) });
+    if (/\.gpkg$/i.test(file.name)) {
+      const maxSize = IDEE.loadFiles.getMaxFileSize?.() ?? Number.POSITIVE_INFINITY;
+      if (file.size <= maxSize) {
+        return this.loadGeoPackage_({ source: file, name: file.name.slice(0, -5) });
+      }
+      inputFile.value = '';
+      IDEE.dialog.info(IDEE.loadFiles.getFileSizeMessage(), undefined, this.order);
+      return undefined;
     }
-    IDEE.loadFiles.addFileToMap(this.map_, file);
+    const added = IDEE.loadFiles.addFileToMap(this.map_, file);
     inputFile.value = '';
-    const buttonClose = IDEE.dialog.getCloseButton(INFO_DIALOG);
-    buttonClose.click();
+    if (added !== false) {
+      const buttonClose = IDEE.dialog.getCloseButton(INFO_DIALOG);
+      buttonClose?.click();
+    }
   }
 
   openFileFromUrl(url, extension) {

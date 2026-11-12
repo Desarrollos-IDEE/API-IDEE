@@ -312,6 +312,15 @@
                 }),
             },
             {
+                label: 'GeoPackage (ríos, con CORS)',
+                create: () => new IDEE.layer.GeoPackage({
+                    url: 'https://raw.githubusercontent.com/ngageoint/geopackage-js/master/test/fixtures/rivers.gpkg',
+                    name: 'rivers',
+                    legend: 'Ríos (GeoPackage)',
+                    tables: { TILESosmds: { visibility: false } },
+                }),
+            },
+            {
                 label: 'Grupo de capas',
                 create: () => new IDEE.layer.LayerGroup({
                     name: 'grupo_ejemplo',
