@@ -990,9 +990,9 @@ class WMS extends LayerBase {
    */
   set cql(newCql) {
     this.cql_ = newCql;
-    const olLayer = this.getLayer();
-    if (!isNullOrEmpty(olLayer)) {
-      olLayer.getSource().updateParams({ CQL_FILTER: newCql });
+    const olSource = this.getLayer()?.getSource();
+    if (!isNullOrEmpty(olSource)) {
+      olSource.updateParams({ CQL_FILTER: newCql });
     }
   }
 
