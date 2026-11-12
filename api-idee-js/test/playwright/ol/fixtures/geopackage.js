@@ -1,6 +1,41 @@
 import initSqlJs from 'sql.js';
 import path from 'path';
-import { readFileSync } from 'fs';
+import os from 'os';
+import {
+  readFileSync, writeFileSync, mkdtempSync, rmSync,
+} from 'fs';
+
+let gdal;
+
+/**
+ * Genera con GDAL (gdal3.js en Node) un GeoPackage real, con índice espacial RTree,
+ * a partir de entidades GeoJSON. No se guarda ningún fichero en el repositorio.
+ * @param {Array<Object>} features Entidades GeoJSON en EPSG:4326.
+ * @param {Object} [options] Opciones.
+ * @param {String} [options.layer='places'] Nombre de la tabla.
+ * @param {Array<String>} [options.args=[]] Argumentos adicionales de ogr2ogr.
+ * @returns {Promise<Buffer>} Bytes del GeoPackage.
+ */
+export const createGdalGeoPackage = async (features, { layer = 'places', args = [] } = {}) => {
+  if (!gdal) {
+    // eslint-disable-next-line global-require
+    const initGdalJs = require('gdal3.js/node.js');
+    gdal = initGdalJs({ useWorker: false });
+  }
+  const Gdal = await gdal;
+  const directory = mkdtempSync(path.join(os.tmpdir(), 'idee-gpkg-'));
+  try {
+    const input = path.join(directory, `${layer}.geojson`);
+    writeFileSync(input, JSON.stringify({ type: 'FeatureCollection', features }));
+    const opened = await Gdal.open(input);
+    const output = await Gdal.ogr2ogr(opened.datasets[0], ['-f', 'GPKG', '-nln', layer, ...args], layer);
+    const bytes = await Gdal.getFileBytes(output);
+    await Gdal.close(opened);
+    return Buffer.from(bytes);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+};
 
 /** Crea ficheros pequeños y deterministas sin depender de servicios externos. */
 export const createGeoPackage = async (kind = 'mixed') => {
@@ -40,7 +75,7 @@ export const createGeoPackage = async (kind = 'mixed') => {
       PRIMARY KEY (table_name, zoom_level)
     );
   `);
-  if (['mixed', 'vector', 'curves', 'metadata', 'bbox'].includes(kind)) {
+  if (['mixed', 'vector', 'curves', 'metadata', 'bbox', 'multivector', 'multibbox'].includes(kind)) {
     db.run(`
       CREATE TABLE places (id INTEGER PRIMARY KEY, geom BLOB, title TEXT);
       INSERT INTO gpkg_contents VALUES
@@ -50,7 +85,7 @@ export const createGeoPackage = async (kind = 'mixed') => {
         (1, X'47500001E6100000010100000000000000000000000000000000000000', 'Origen');
     `);
   }
-  if (kind === 'bbox') {
+  if (['bbox', 'multibbox'].includes(kind)) {
     const createPoint = (x, y) => {
       const geometry = Buffer.alloc(8 + 1 + 4 + 16);
       Buffer.from('47500001E6100000', 'hex').copy(geometry);
@@ -65,6 +100,24 @@ export const createGeoPackage = async (kind = 'mixed') => {
       WHERE table_name = 'places'`);
     db.run('INSERT INTO places VALUES (2, ?, ?)', [createPoint(100, 0), 'Este']);
     db.run('INSERT INTO places VALUES (3, ?, ?)', [createPoint(-100, 0), 'Oeste']);
+  }
+  if (['multivector', 'multibbox'].includes(kind)) {
+    const line = Buffer.alloc(8 + 1 + 4 + 4 + 2 * 16);
+    Buffer.from('47500001E6100000', 'hex').copy(line);
+    line.writeUInt8(1, 8);
+    line.writeUInt32LE(2, 9);
+    line.writeUInt32LE(2, 13);
+    [[0, 0], [1, 1]].forEach(([x, y], index) => {
+      line.writeDoubleLE(x, 17 + index * 16);
+      line.writeDoubleLE(y, 25 + index * 16);
+    });
+    db.run(`
+      CREATE TABLE routes (id INTEGER PRIMARY KEY, geom BLOB, title TEXT);
+      INSERT INTO gpkg_contents VALUES
+        ('routes', 'features', 'routes', '', '2020-01-01T00:00:00.000Z', 0, 0, 1, 1, 4326);
+      INSERT INTO gpkg_geometry_columns VALUES ('routes', 'geom', 'LINESTRING', 4326, 0, 0);
+    `);
+    db.run('INSERT INTO routes VALUES (1, ?, ?)', [line, 'Ruta']);
   }
   if (['mixed', 'raster', 'curves', 'metadata'].includes(kind)) {
     db.run(`
@@ -151,10 +204,10 @@ export const createGeoPackage = async (kind = 'mixed') => {
 };
 
 /** Usa el bundle de verificación, si se indica, sin modificar dist. */
-export const prepareGeoPackagePage = async (page) => {
+export const prepareGeoPackagePage = async (page, { engine = 'ol' } = {}) => {
   if (process.env.API_IDEE_TEST_BUILD) {
-    await page.route('**/dist/js/apiidee.ol.min.js', (route) => route.fulfill({
-      path: path.join(process.env.API_IDEE_TEST_BUILD, 'js/apiidee.ol.min.js'),
+    await page.route(`**/dist/js/apiidee.${engine}.min.js`, (route) => route.fulfill({
+      path: path.join(process.env.API_IDEE_TEST_BUILD, `js/apiidee.${engine}.min.js`),
       contentType: 'application/javascript',
     }));
   }
@@ -166,5 +219,11 @@ export const prepareGeoPackagePage = async (page) => {
     const kind = path.basename(new URL(route.request().url()).pathname, '.gpkg');
     await route.fulfill({ body: await createGeoPackage(kind), contentType: 'application/geopackage+sqlite3' });
   });
-  await page.goto('/test/playwright/ol/basic-ol.html');
+  await page.goto(`/test/playwright/${engine}/basic-${engine}.html`);
+  if (engine === 'cesium') {
+    await page.evaluate(() => {
+      IDEE.config.baseLayer = [];
+      IDEE.config.terrain.default = [];
+    });
+  }
 };

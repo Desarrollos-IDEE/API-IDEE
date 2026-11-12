@@ -627,17 +627,30 @@ export default class ShareMapControl extends IDEE.Control {
    */
   layerToParam(layer) {
     const param = IDEE.utils.isFunction(layer.getRestLayer) ? layer.getRestLayer() : null;
-    if (IDEE.utils.isNullOrEmpty(param) && !this.unsharedLayers_.has(layer)) {
-      this.unsharedLayers_.add(layer);
-      const name = IDEE.utils.escapeXSS(String(layer.legend || layer.name || layer.type));
-      IDEE.toast.warning(getValue('exception.unsharedLayer').replace('{layer}', name));
+    if (IDEE.utils.isNullOrEmpty(param)) {
+      this.warnUnshared_(layer);
     }
     return param;
   }
 
   /**
+   * This function warns once that a layer cannot be shared through REST.
+   *
+   * @private
+   * @function
+   */
+  warnUnshared_(layer) {
+    if (!this.unsharedLayers_.has(layer)) {
+      this.unsharedLayers_.add(layer);
+      const name = IDEE.utils.escapeXSS(String(layer.legend || layer.name || layer.type));
+      IDEE.toast.warning(getValue('exception.unsharedLayer').replace('{layer}', name));
+    }
+  }
+
+  /**
    * This function gets the url params from layers, without repeated params
-   * (e.g. the WMS layers of a WMC share the WMC param).
+   * (e.g. the WMS layers of a WMC share the WMC param and the tables of a
+   * GeoPackage share one GeoPackage param).
    *
    * @private
    * @function
@@ -645,8 +658,18 @@ export default class ShareMapControl extends IDEE.Control {
   layersToParams_(layers) {
     const baseLayer = this.map_.getRestBaseLayer();
     const background = IDEE.utils.isNullOrEmpty(baseLayer) ? [] : this.map_.getActiveBaseLayers();
-    const params = layers.filter((layer) => !background.includes(layer))
-      .map((layer) => this.layerToParam(layer)).filter((param) => param != null);
+    const shared = layers.filter((layer) => !background.includes(layer));
+    if (!IDEE.utils.isFunction(IDEE.Layer?.getRestLayers)) {
+      return [...new Set(shared.map((layer) => this.layerToParam(layer))
+        .filter((param) => param != null))];
+    }
+    const params = IDEE.Layer.getRestLayers(shared).flatMap(({ layers: group, rest }) => {
+      if (rest === null) {
+        group.forEach((layer) => this.warnUnshared_(layer));
+        return [];
+      }
+      return [rest];
+    });
     return [...new Set(params)];
   }
 

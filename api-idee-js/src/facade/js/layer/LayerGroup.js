@@ -246,8 +246,8 @@ class LayerGroup extends LayerBase {
     const { userParameters } = this.constructorParameters;
     const layers = this.getLayers().length > 0 || !isObject(userParameters)
       ? this.getLayers() : [].concat(userParameters.layers || []);
-    const restLayers = layers
-      .map((layer) => (isString(layer) ? layer : layer.getRestLayer()))
+    const restLayers = LayerBase.getRestLayers(layers)
+      .map(({ rest }) => rest)
       .filter((restLayer) => !isNullOrEmpty(restLayer));
     return this.formatRestLayer_({ url: undefined, layers: restLayers });
   }

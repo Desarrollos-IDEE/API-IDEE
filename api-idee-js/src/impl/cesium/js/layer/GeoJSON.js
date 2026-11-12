@@ -8,10 +8,11 @@ import Popup from 'IDEE/Popup';
 import { compileSync as compileTemplate } from 'IDEE/util/Template';
 import geojsonPopupTemplate from 'templates/geojson_popup';
 import GeoJSONFormat from 'IDEE/format/GeoJSON';
-import { GeoJsonDataSource } from 'cesium';
+import { GeoJsonDataSource, Math as CesiumMath } from 'cesium';
 import Vector from './Vector';
 import JSONPLoader from '../loader/JSONP';
 import ImplUtils from '../util/Utils';
+import dataIDEEBbox from '../../../common/DataIDEEBbox';
 
 /**
  * @classdesc
@@ -88,6 +89,41 @@ class GeoJSON extends Vector {
     this.fullLoader_ = parameters.fullLoader;
 
     /**
+     * Carga por extensión visible (en grados) de las fuentes que la admiten, como GeoPackage.
+     * @private
+     * @type {Function}
+     */
+    this.bboxLoader_ = parameters.bboxLoader;
+
+    /**
+     * Identificadores de las entidades ya cargadas por extensión.
+     * @private
+     * @type {Set<String>}
+     */
+    this.loadedFeatureIds_ = new Set();
+
+    /**
+     * Extensiones ya pedidas; las contenidas en ellas no se vuelven a pedir.
+     * @private
+     * @type {Array<Array<Number>>}
+     */
+    this.loadedExtents_ = [];
+
+    /**
+     * Revisión de la carga por extensión; cambia al recargar o quitar la capa.
+     * @private
+     * @type {Number}
+     */
+    this.viewportRevision_ = 0;
+
+    /**
+     * Elimina los escuchadores de la cámara.
+     * @private
+     * @type {Function|null}
+     */
+    this.removeViewportListeners_ = null;
+
+    /**
      * GeoJSON hiddenAttributes_. Atributos de la capa ocultos.
      */
     this.hiddenAttributes_ = [];
@@ -131,10 +167,106 @@ class GeoJSON extends Vector {
     this.fireAddedToMap_();
     map.on(EventType.CHANGE_PROJ, this.setProjection_.bind(this), this);
     this.cesiumLayer = new GeoJsonDataSource(this.name);
-    this.updateSource_();
+    if (isFunction(this.bboxLoader_)) {
+      this.listenViewport_(map);
+    } else {
+      this.updateSource_();
+    }
     this.setVisible(this.visibility);
     const cesiumMap = this.map.getMapImpl();
     cesiumMap.dataSources.add(this.cesiumLayer);
+    if (isFunction(this.bboxLoader_)) {
+      this.loadViewport_();
+    }
+  }
+
+  /**
+   * Carga la extensión visible cada vez que la cámara se detiene o cambia el tamaño.
+   * @private
+   * @param {IDEE.Map} map Mapa.
+   */
+  listenViewport_(map) {
+    this.removeViewportListeners_?.();
+    this.viewportRevision_ += 1;
+    this.loadedFeatureIds_ = new Set();
+    this.loadedExtents_ = [];
+    const native = map.getMapImpl();
+    const removeMove = native.camera.moveEnd.addEventListener(() => this.loadViewport_());
+    let size = `${native.canvas.clientWidth},${native.canvas.clientHeight}`;
+    const removeResize = native.scene.postRender.addEventListener(() => {
+      const nextSize = `${native.canvas.clientWidth},${native.canvas.clientHeight}`;
+      if (nextSize !== size) {
+        size = nextSize;
+        this.loadViewport_();
+      }
+    });
+    this.removeViewportListeners_ = () => {
+      removeMove();
+      removeResize();
+    };
+  }
+
+  /**
+   * Devuelve la extensión visible en grados; si cruza el antimeridiano, en dos partes.
+   * @private
+   * @returns {Array<Array<Number>>} Extensiones [oeste, sur, este, norte].
+   */
+  getVisibleExtents_() {
+    if (!this.map) return [];
+    const native = this.map.getMapImpl();
+    if (!native.canvas.clientWidth || !native.canvas.clientHeight) return [];
+    const rectangle = native.camera.computeViewRectangle(native.scene.globe.ellipsoid);
+    if (!rectangle) return [];
+    const bbox = dataIDEEBbox([
+      rectangle.west, rectangle.south, rectangle.east, rectangle.north,
+    ].map((angle) => CesiumMath.toDegrees(angle)));
+    if (!bbox) return [];
+    const [west, south, east, north] = bbox;
+    return west > east ? [[west, south, 180, north], [-180, south, east, north]] : [bbox];
+  }
+
+  /**
+   * Pide las entidades de las extensiones visibles que aún no se han pedido y añade
+   * las que no estaban cargadas.
+   * @private
+   * @returns {Promise<void>} Finalización de la carga.
+   */
+  loadViewport_() {
+    const contains = (outer, inner) => outer[0] <= inner[0] && outer[1] <= inner[1]
+      && outer[2] >= inner[2] && outer[3] >= inner[3];
+    const extents = this.getVisibleExtents_()
+      .filter((extent) => !this.loadedExtents_.some((loaded) => contains(loaded, extent)));
+    if (extents.length === 0) return Promise.resolve();
+    this.loadedExtents_.push(...extents);
+    const revision = this.viewportRevision_;
+    const layer = this.cesiumLayer;
+    const isCurrent = () => revision === this.viewportRevision_ && this.cesiumLayer === layer
+      && !isNullOrEmpty(this.map);
+    return Promise.all(extents.map((extent) => Promise.resolve()
+      .then(() => this.bboxLoader_(extent, 'EPSG:4326'))
+      .catch(() => {
+        this.loadedExtents_ = this.loadedExtents_.filter((loaded) => loaded !== extent);
+        return null;
+      }))).then(async (sources) => {
+      if (!isCurrent()) return;
+      const read = sources.filter((source) => !isNullOrEmpty(source))
+        .flatMap((source) => this.formater_.read(source, this.map.getProjection()));
+      // eslint-disable-next-line no-underscore-dangle
+      await Promise.all(read.map((feature) => feature.getImpl().isLoadCesiumFeature_));
+      if (!isCurrent()) return;
+      const features = read.filter((feature) => {
+        const id = feature.getId();
+        if (this.loadedFeatureIds_.has(id)) return false;
+        this.loadedFeatureIds_.add(id);
+        return true;
+      });
+      this.loaded_ = true;
+      if (features.length > 0) {
+        await this.addFeatures_(features, true, true);
+      }
+      if (!this.facadeVector_.isAutoRefreshPaused()) this.facadeVector_.resumeAutoRefresh();
+      this.map?.getMapImpl().scene.requestRender();
+    });
   }
 
   /** Recarga interna de GeoPackage; los GeoJSON habituales usan el refresco vectorial. */
@@ -143,6 +275,14 @@ class GeoJSON extends Vector {
     const layer = this.cesiumLayer;
     const facade = this.facadeVector_;
     if (!layer || !this.loaded_ || facade.isAutoRefreshPaused()) return undefined;
+    const bbox = isFunction(this.bboxLoader_);
+    const extents = bbox ? this.getVisibleExtents_() : [];
+    let extent;
+    if (extents.length === 1) {
+      [extent] = extents;
+    } else if (extents.length === 2) {
+      extent = [-180, extents[0][1], 180, extents[0][3]];
+    }
     return this.refreshLoader_(isCurrent, async (source) => {
       const features = this.formater_.read(source, this.map.getProjection());
       // eslint-disable-next-line no-underscore-dangle
@@ -150,11 +290,16 @@ class GeoJSON extends Vector {
       if (!isCurrent() || this.cesiumLayer !== layer || facade.isAutoRefreshPaused()) return false;
       facade.removeFeatures(facade.getFeatures(true));
       this.source = source;
+      if (bbox) {
+        this.viewportRevision_ += 1;
+        this.loadedFeatureIds_ = new Set(features.map((feature) => feature.getId()));
+        this.loadedExtents_ = extent ? [extent] : [[-180, -90, 180, 90]];
+      }
       await this.addFeatures_(features, true, true);
       if (isCurrent()) facade.resumeAutoRefresh();
       this.map?.getMapImpl().scene.requestRender();
       return true;
-    });
+    }, extent, extent ? 'EPSG:4326' : undefined);
   }
 
   /**
@@ -212,10 +357,13 @@ class GeoJSON extends Vector {
    */
   requestFeatures_() {
     if (isNullOrEmpty(this.loadFeaturesPromise_)) {
-      this.loadFeaturesPromise_ = new Promise((resolve) => {
-        if (isFunction(this.fullLoader_)) {
-          const features = this.formater_.read(this.fullLoader_(), this.map.getProjection());
-          resolve(features);
+      this.loadFeaturesPromise_ = new Promise((resolve, reject) => {
+        if (isFunction(this.bboxLoader_)) {
+          resolve([]);
+        } else if (isFunction(this.fullLoader_)) {
+          Promise.resolve().then(() => this.fullLoader_()).then((source) => {
+            resolve(this.formater_.read(source, this.map.getProjection()));
+          }).catch(reject);
         } else if (this.source) {
           const features = this.formater_.read(this.source, this.map.getProjection());
           resolve(features);
@@ -317,6 +465,21 @@ class GeoJSON extends Vector {
         }
       }
     }
+  }
+
+  /**
+   * Este método destruye la capa y deja de escuchar la cámara.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @public
+   * @function
+   * @api
+   */
+  destroy() {
+    this.removeViewportListeners_?.();
+    this.removeViewportListeners_ = null;
+    this.viewportRevision_ += 1;
+    super.destroy();
   }
 
   /**

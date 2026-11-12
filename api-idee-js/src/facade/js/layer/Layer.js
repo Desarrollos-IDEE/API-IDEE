@@ -1078,6 +1078,58 @@ class LayerBase extends Base {
   }
 
   /**
+   * Este método devuelve las cadenas REST de un conjunto de capas. Las capas de un mismo
+   * contenedor (p. ej. las tablas de un IDEE.layer.GeoPackage) se representan con una única
+   * cadena del contenedor que las incluye a todas; si el contenedor no es representable,
+   * cada capa aporta la suya.
+   *
+   * @function
+   * @param {Array<IDEE.Layer|String>} layers Capas o cadenas REST.
+   * @returns {Array<{layers: Array<IDEE.Layer|String>, rest: (String|null)}>} Cadena de cada
+   * grupo de capas, en el orden de su primera capa; null si no es representable.
+   * @public
+   * @api
+   */
+  static getRestLayers(layers = []) {
+    const own = (layer) => {
+      let rest = null;
+      if (isString(layer)) {
+        rest = layer;
+      } else if (isFunction(layer?.getRestLayer)) {
+        rest = layer.getRestLayer();
+      }
+      return { layers: [layer], rest: isNullOrEmpty(rest) ? null : rest };
+    };
+    const entries = [];
+    const groups = new Map();
+    /* eslint-disable no-underscore-dangle */
+    layers.forEach((layer) => {
+      const container = layer?.restContainer_?.container;
+      if (!container) {
+        entries.push({ layer });
+        return;
+      }
+      if (!groups.has(container)) {
+        const group = { container, layers: [], keys: [] };
+        groups.set(container, group);
+        entries.push({ group });
+      }
+      groups.get(container).layers.push(layer);
+      groups.get(container).keys.push(layer.restContainer_.key);
+    });
+    /* eslint-enable no-underscore-dangle */
+    return entries.flatMap(({ layer, group }) => {
+      if (!group) return [own(layer)];
+      const { container, keys } = group;
+      const complete = isFunction(container.getLayers)
+        && container.getLayers().every((child) => group.layers.includes(child));
+      const rest = complete ? container.getRestLayer() : container.getRestLayer(keys);
+      return isNullOrEmpty(rest)
+        ? group.layers.map(own) : [{ layers: group.layers, rest }];
+    });
+  }
+
+  /**
    * Este método actualiza el estado de este capa.
    *
    * @function

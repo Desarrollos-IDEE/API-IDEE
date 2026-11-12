@@ -3,6 +3,7 @@
  */
 import { BoundingBox } from '@ngageoint/geopackage';
 import AbstractProvider from './AbstractProvider';
+import RTreeIndex from '../datasource/sqlite/RTreeIndex';
 import Exception from '../exception/exception';
 import { getValue } from '../i18n/language';
 
@@ -24,8 +25,39 @@ class GeoPackageVector extends AbstractProvider {
   }
 
   /**
+   * Devuelve el índice R*Tree de la tabla (extensión gpkg_rtree_index), leído desde sus
+   * tablas de nodos porque sql.js no incluye el módulo rtree; null si no lo tiene.
+   * @private
+   * @returns {RTreeIndex|null} Índice.
+   */
+  getRTreeIndex_() {
+    if (this.rtreeIndex_ === undefined) {
+      this.rtreeIndex_ = null;
+      const tableName = this.getTableName();
+      const { connection } = this.connector_;
+      const column = this.connector_.getFeatureDao(tableName).geometryColumns.column_name;
+      const nodeTable = `rtree_${tableName}_${column}_node`;
+      const exists = (name) => !!connection.get(
+        'SELECT 1 FROM sqlite_master WHERE type = \'table\' AND name = ?',
+        [name],
+      );
+      if (exists('gpkg_extensions') && exists(nodeTable) && connection.get(
+        'SELECT 1 FROM gpkg_extensions WHERE table_name = ? AND column_name = ? AND extension_name = ?',
+        [tableName, column, 'gpkg_rtree_index'],
+      )) {
+        const quoted = `"${nodeTable.replace(/"/g, '""')}"`;
+        this.rtreeIndex_ = new RTreeIndex((numbers) => new Map(connection.all(
+          `SELECT nodeno, data FROM ${quoted} WHERE nodeno IN (${numbers.map(() => '?').join(',')})`,
+          numbers,
+        ).map(({ nodeno, data }) => [nodeno, data])), { sync: true });
+      }
+    }
+    return this.rtreeIndex_;
+  }
+
+  /**
    * Prepara el índice espacial utilizado por las consultas por extensión.
-   * Si el GeoPackage ya contiene un índice compatible, se reutiliza.
+   * Si el GeoPackage ya contiene un índice compatible (R*Tree o NGA), se reutiliza.
    *
    * @function
    * @public
@@ -33,6 +65,7 @@ class GeoPackageVector extends AbstractProvider {
    * @api
    */
   async prepareForBoundingBox() {
+    if (this.getRTreeIndex_()) return true;
     const { featureTableIndex } = this.connector_.getFeatureDao(this.getTableName());
     if (featureTableIndex.isIndexed(true)) return true;
     featureTableIndex.getOrCreateExtension();
@@ -150,7 +183,17 @@ class GeoPackageVector extends AbstractProvider {
   getGeoJSONByBoundingBox(extent, projection) {
     const featureDao = this.connector_.getFeatureDao(this.getTableName());
     const boundingBox = new BoundingBox(extent[0], extent[2], extent[1], extent[3]);
-    const rows = featureDao.fastQueryBoundingBox(boundingBox, projection);
+    const index = this.getRTreeIndex_();
+    if (!index) {
+      const rows = featureDao.fastQueryBoundingBox(boundingBox, projection);
+      return this.createGeoJSON_(featureDao, rows, true);
+    }
+    const projected = boundingBox.projectBoundingBox(projection, featureDao.projection);
+    const ids = index.search([
+      projected.minLongitude, projected.minLatitude, projected.maxLongitude, projected.maxLatitude,
+    ]);
+    const rows = ids.map((id) => featureDao.queryForId(id)).filter((row) => !!row)
+      .map((row) => featureDao.getRow(row));
     return this.createGeoJSON_(featureDao, rows, true);
   }
 }
