@@ -281,6 +281,50 @@ test.describe('Capas vectoriales y 3D en Cesium', () => {
     await expect.poll(async () => (await outline())?.line, WAIT).toBe(false);
   });
 
+  test('Líneas en EPSG:3857: LineString y MultiLineString se reproyectan a grados', async ({ page }) => {
+    const toMercator = ([lon, lat]) => [
+      (lon * 20037508.342789244) / 180,
+      (Math.log(Math.tan(((90 + lat) * Math.PI) / 360)) * 20037508.342789244) / Math.PI,
+    ];
+    const line = [[-3.7, 40.4], [-3.6, 40.5]];
+    const source = {
+      type: 'FeatureCollection',
+      crs: { type: 'name', properties: { name: 'EPSG:3857' } },
+      features: [
+        {
+          type: 'Feature', id: 'l1', properties: {}, geometry: { type: 'LineString', coordinates: line.map(toMercator) },
+        },
+        {
+          type: 'Feature',
+          id: 'm1',
+          properties: {},
+          geometry: { type: 'MultiLineString', coordinates: [line.map(toMercator), line.map(toMercator)] },
+        },
+      ],
+    };
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+
+    await page.evaluate((data) => {
+      window.layer = new IDEE.layer.GeoJSON({ name: 'lineas3857', source: data });
+      window.map.addLayers(window.layer);
+    }, source);
+    await expect.poll(() => page.evaluate(() => window.layer.getFeatures().length), WAIT).toBe(3);
+
+    const features = await page.evaluate(() => window.layer.getFeatures()
+      .map((feature) => [feature.getId(), feature.getGeometry()]));
+    expect(features.map(([id]) => id)).toEqual(['l1', 'm1', 'm1_2']);
+    features.forEach(([, geometry]) => {
+      expect(geometry.type).toBe('LineString');
+      expect(geometry.coordinates).toHaveLength(2);
+      geometry.coordinates.forEach(([lon, lat], index) => {
+        expect(lon).toBeCloseTo(line[index][0], 5);
+        expect(lat).toBeCloseTo(line[index][1], 5);
+      });
+    });
+    expect(errors).toEqual([]);
+  });
+
   test('Estilos con funciones: se vuelven a calcular al terminar de mover la cámara', async ({ page }) => {
     await page.evaluate((source) => {
       window.layer = new IDEE.layer.GeoJSON({ name: 'escala', source });

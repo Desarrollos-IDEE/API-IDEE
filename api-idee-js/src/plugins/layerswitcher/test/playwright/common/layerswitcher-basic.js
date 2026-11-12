@@ -42,9 +42,10 @@ export const registerBasicTests = (impl) => {
 
     test('la opacidad se aplica a la capa', async ({ page }) => {
       await expect(layerRow(page, 'teselas')).toHaveCount(1, { timeout });
-      await setOpacitySlider(page, 'teselas', 0.3);
-      await expect.poll(() => page.evaluate(() => window.teselas.getOpacity()), { timeout })
-        .toBeCloseTo(0.3, 5);
+      await expect(async () => {
+        await setOpacitySlider(page, 'teselas', 0.3);
+        expect(await page.evaluate(() => window.teselas.getOpacity())).toBeCloseTo(0.3, 5);
+      }).toPass({ timeout, intervals: [500, 1000, 2000] });
     });
 
     test('renombra la capa', async ({ page }) => {

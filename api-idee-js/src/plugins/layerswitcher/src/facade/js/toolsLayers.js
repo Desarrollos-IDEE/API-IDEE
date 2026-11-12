@@ -218,7 +218,7 @@ export const eventIconTarget = (layer, map, order, evt, impl) => {
     if (impl && impl.zoomToLayer(map, layer)) return;
     const mapView = map;
     const layerType = layer.type;
-    if (layerType === 'WMS') {
+    if (layerType === 'WMS' || layerType === 'GeoPackageTile') {
       layer.getMaxExtent((me) => {
         mapView.setBbox(me);
       });

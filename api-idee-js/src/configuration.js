@@ -378,6 +378,15 @@
   IDEE.config('DPI', 72);
 
   /**
+   * Tamaño máximo, en MB, de los ficheros que se cargan en el mapa (arrastrar y soltar,
+   * LayerSwitcher > Subir fichero). Es el único lugar donde se define este límite.
+   *
+   * @public
+   * @type {Number}
+   */
+  IDEE.config('MAX_FILE_SIZE_MB', 20);
+
+  /**
    * MAP Viewer - DPI OGC (Dots per inch for OGC services)
    *
    * @private
