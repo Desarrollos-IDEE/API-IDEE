@@ -29,6 +29,8 @@ import { getValue } from './i18n/language';
 import ogcModeTemplate from '../../templates/ogcmode';
 import generateSortable from './sortable';
 import LayerStyles from './layerStyles';
+import SLDFileLoader from './sldFileLoader';
+import StyleDialog from './styleDialog';
 import { parseOGCAPIUrl, isCollectionsPath, isSameService } from './ogcapi/ogcapiurl';
 import detectOGCAPIFeatures from './ogcapi/ogcapidetector';
 import {
@@ -47,7 +49,6 @@ import {
   showHideLayersRadio,
   showModalChangeName,
   styleLayers,
-  loadSLDStyle,
 } from './toolsLayers';
 import {
   addAttributions, focusModal,
@@ -227,6 +228,11 @@ export default class LayerswitcherControl extends IDEE.Control {
       matchesUrl: (serviceUrl, layerUrl) => this.checkUrls(serviceUrl, layerUrl),
       getToolsSupport: (layer) => this.getImpl().getLayerToolsSupport(layer),
     });
+
+    this.styleDialog_ = new StyleDialog({
+      layerStyles: this.layerStyles_,
+      loader: new SLDFileLoader({ layerStyles: this.layerStyles_ }),
+    });
   }
 
   // Esta función crea la vista
@@ -402,7 +408,6 @@ export default class LayerswitcherControl extends IDEE.Control {
         info_metadata: getValue('info_metadata'),
         remove_layer: getValue('remove_layer'),
         change_style: getValue('change_style'),
-        load_sld: getValue('load_sld'),
         add: getValue('add'),
         add_service: getValue('add_service'),
         load_layers: getValue('load_layers'),
@@ -424,6 +429,11 @@ export default class LayerswitcherControl extends IDEE.Control {
     };
   }
 
+  // Indica si el diálogo de estilos de la capa ofrece la carga de estilos SLD
+  canUploadSLD_(layer) {
+    return this.isSLD && this.layerStyles_.supportsClientStyles(layer);
+  }
+
   // Esta función monta objeto con propiedades de la capa para la plantilla
   parseLayerForTemplate_(layer) {
     const layerTitle = layer.legend || layer.name;
@@ -431,7 +441,8 @@ export default class LayerswitcherControl extends IDEE.Control {
       && !IDEE.utils.isNullOrEmpty(layer.capabilitiesMetadata?.abstract);
 
     return new Promise((success) => {
-      const hasStyles = this.layerStyles_.hasAlternatives(layer);
+      const styleTool = (this.isStyle && this.layerStyles_.hasAlternatives(layer))
+        || this.canUploadSLD_(layer);
       // Herramientas que la implementación no admite para esta capa
       const toolsSupport = this.getImpl().getLayerToolsSupport(layer) || {};
       const layerVarTemplate = {
@@ -448,8 +459,7 @@ export default class LayerswitcherControl extends IDEE.Control {
         checkedLayer: layer.checkedLayer || 'false',
         opacity: layer.getOpacity(),
         metadata: hasMetadata,
-        hasStyles,
-        sldSupported: this.layerStyles_.supportsClientStyles(layer),
+        styleTool,
       };
       success(layerVarTemplate);
     });
@@ -474,7 +484,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       checkedLayer: visible ? 'true' : 'false',
       opacity: 1,
       metadata: false,
-      hasStyles: false,
+      styleTool: false,
     });
   }
 
@@ -706,11 +716,9 @@ export default class LayerswitcherControl extends IDEE.Control {
         // ? Zoom a la capa
         eventIconTarget(layer, this.map_, this.order, evt, this.getImpl());
         // ? Cambiar estilo de la capa
-        styleLayers(layer, this.order, evt, this.layerStyles_);
-        loadSLDStyle(layer, evt, {
+        styleLayers(layer, evt, this.styleDialog_, {
           order: this.order,
-          layerStyles: this.layerStyles_,
-          onChange: () => this.render(),
+          canUpload: this.canUploadSLD_(layer),
         });
 
         // ? Información de la capa

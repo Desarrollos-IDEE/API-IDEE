@@ -140,8 +140,9 @@
   "style_unsupported": "The current map cannot draw some properties of this style and they will be ignored: [props]",
   "load_sld": "Load SLD style",
   "sld_entry": "[style] (SLD)",
-  "sld_applied": "The style \"[style]\" has been applied to the layer \"[layer]\".",
-  "sld_ignored": "The rest of the style has been applied; ignored: [items].",
+  "sld_added": "The styles of \"[file]\" have been added to the selector of the layer \"[layer]\". Press \"Change\" to apply \"[style]\".",
+  "sld_ignored": "Ignored from the SLD: [items].",
+  "sld_hint": ".sld or .xml file of up to [size] MB. Its styles are added to the selector.",
   "sld_named_layer": "The SLD does not describe the layer \"[layer]\": the style of \"[name]\" has been used.",
   "sld_items": {
     "attribute_value": "values computed from attributes ([name])",

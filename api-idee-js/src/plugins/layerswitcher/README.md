@@ -64,8 +64,8 @@ El listado de capas aparece al pulsar sobre el botón añadir (Listado de alguna
   - 'legend': permite consultar la leyenda de la capa.
   - 'zoom': permite hacer zoom a la capa.
   - 'information': permite consultar la información de la capa.
-  - 'style': permite cambiar el estilo a la capa (si lo permite).
-  - 'sld': permite cargar un fichero de estilos SLD en las capas vectoriales (ver [Carga de estilos SLD](#carga-de-estilos-sld)).
+  - 'style': permite cambiar el estilo a la capa (si tiene más de un estilo).
+  - 'sld': añade al diálogo de estilo de las capas vectoriales la carga de un fichero de estilos SLD (ver [Carga de estilos SLD](#carga-de-estilos-sld)). Con esta herramienta el botón de estilo aparece en las capas vectoriales aunque solo tengan un estilo.
   - 'delete': permite eliminar la capa del mapa.
   Por defecto añade todas las herramientas.
 - **useProxy**: Determina si se desea que las peticiones de red que se realizan en la extensión se realicen con el proxy o no. Por defecto: true.
@@ -146,7 +146,7 @@ Los estilos que no son compatibles con la capa se descartan con un aviso en la c
 
 ## Carga de estilos SLD
 
-La herramienta `sld` añade un botón en cada capa vectorial (GeoJSON, KML/KMZ con `extractStyles: false`, WFS, OGC API Features, DataIDEE, MVT, ficheros cargados...) para elegir un fichero `.sld` o `.xml` (máximo 5 MB). El estilo se convierte a estilos de IDEE y se aplica en el momento; cada `UserStyle` del fichero se añade al selector de estilo de la capa con el sufijo «(SLD)», se aplica el marcado como `IsDefault` (o el primero) y se puede volver a los estilos anteriores.
+La herramienta `sld` añade, dentro del diálogo que abre el botón de estilo de cada capa vectorial (GeoJSON, KML/KMZ con `extractStyles: false`, WFS, OGC API Features, DataIDEE, MVT, ficheros cargados...), el botón «Cargar estilo SLD» para elegir un fichero `.sld` o `.xml` (máximo 5 MB). El fichero se valida y se convierte a estilos de IDEE; cada `UserStyle` se añade al selector del diálogo con el sufijo «(SLD)» y queda seleccionado el marcado como `IsDefault` (o el primero). El estilo no se aplica hasta pulsar «Cambiar», y se puede volver a los estilos anteriores desde el mismo selector.
 
 - Formatos: SLD 1.0.0 (`CssParameter`) y SE 1.1.0 (`SvgParameter`), que es el que exporta QGIS (*Propiedades de la capa → Simbología → Estilo → Guardar estilo… → Archivo SLD*).
 - Se usa la `NamedLayer` cuyo nombre coincide con el de la capa, sin distinguir mayúsculas y comparando también la última parte del nombre (`AU.AdministrativeUnit` coincide con la colección `administrativeunit`). Si el SLD describe varias capas y ninguna coincide, se usa la primera y se avisa.

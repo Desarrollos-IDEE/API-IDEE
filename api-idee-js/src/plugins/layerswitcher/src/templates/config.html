@@ -11,4 +11,13 @@
     <div class="m-layerswitcher-style-btn-container">
         <button tabindex="0" class="m-layerswitcher-style-change-button">{{translations.change}}</button>
     </div>
+    {{#if canUpload}}
+    <div class="m-layerswitcher-style-sld">
+        <button tabindex="0" type="button" class="secondary m-layerswitcher-style-sld-button">
+            <span class="g-cartografia-btn-layerswitcher-upload" aria-hidden="true"></span>
+            <span>{{translations.load_sld}}</span>
+        </button>
+        <small class="m-layerswitcher-style-sld-hint">{{translations.sld_hint}}</small>
+    </div>
+    {{/if}}
 </div>

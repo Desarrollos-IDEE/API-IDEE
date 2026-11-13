@@ -140,8 +140,9 @@
   "style_unsupported": "El mapa actual no puede representar algunas propiedades de este estilo y se omitirán: [props]",
   "load_sld": "Cargar estilo SLD",
   "sld_entry": "[style] (SLD)",
-  "sld_applied": "Se ha aplicado el estilo «[style]» a la capa «[layer]».",
-  "sld_ignored": "El resto del estilo se ha aplicado; se han omitido: [items].",
+  "sld_added": "Se han añadido al selector los estilos de «[file]» para la capa «[layer]». Pulsa «Cambiar» para aplicar «[style]».",
+  "sld_ignored": "Del SLD se han omitido: [items].",
+  "sld_hint": "Fichero .sld o .xml de [size] MB como máximo. Sus estilos se añaden al selector.",
   "sld_named_layer": "El SLD no describe la capa «[layer]»: se ha usado el estilo de «[name]».",
   "sld_items": {
     "attribute_value": "valores calculados a partir de atributos ([name])",

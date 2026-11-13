@@ -311,15 +311,12 @@ export const renderedStyle = (page, impl, legend, name) => page.evaluate(
 );
 
 /**
- * Abre el selector de estilos de una capa y devuelve sus opciones y la seleccionada.
+ * Devuelve las opciones y la seleccionada del selector de estilos abierto.
  *
  * @param {Page} page Página de Playwright.
- * @param {String|Locator} target Nombre de la capa o fila del panel.
  * @returns {Promise<Object>} { options: [{ value, label, unsupported }], selected }.
  */
-export const openStyleSelector = async (page, target) => {
-  const row = typeof target === 'string' ? layerRow(page, target) : target;
-  await row.locator('.m-layerswitcher-icons-style').click();
+export const readStyleSelector = async (page) => {
   const select = page.locator('#m-layerswitcher-style-select');
   await expect(select).toHaveCount(1);
   return select.evaluate((element) => ({
@@ -333,6 +330,29 @@ export const openStyleSelector = async (page, target) => {
 };
 
 /**
+ * Abre el selector de estilos de una capa y devuelve sus opciones y la seleccionada.
+ *
+ * @param {Page} page Página de Playwright.
+ * @param {String|Locator} target Nombre de la capa o fila del panel.
+ * @returns {Promise<Object>} { options: [{ value, label, unsupported }], selected }.
+ */
+export const openStyleSelector = async (page, target) => {
+  const row = typeof target === 'string' ? layerRow(page, target) : target;
+  await row.locator('.m-layerswitcher-icons-style').click();
+  return readStyleSelector(page);
+};
+
+/**
+ * Aplica el estilo elegido en el selector abierto con el botón «Cambiar».
+ *
+ * @param {Page} page Página de Playwright.
+ */
+export const applySelectedStyle = async (page) => {
+  await page.locator('#m-layerswitcher-style .m-layerswitcher-style-change-button').click();
+  await expect(page.locator('#m-layerswitcher-style')).toHaveCount(0);
+};
+
+/**
  * Elige un estilo en el selector abierto y lo aplica.
  *
  * @param {Page} page Página de Playwright.
@@ -340,8 +360,7 @@ export const openStyleSelector = async (page, target) => {
  */
 export const chooseStyle = async (page, value) => {
   await page.selectOption('#m-layerswitcher-style-select', value);
-  await page.locator('#m-layerswitcher-style button').click();
-  await expect(page.locator('#m-layerswitcher-style')).toHaveCount(0);
+  await applySelectedStyle(page);
 };
 
 /**
