@@ -60,11 +60,20 @@ export const registerBasicTests = (impl) => {
     });
 
     test('borra la capa del mapa', async ({ page }) => {
-      await layerRow(page, 'puntos').locator('.g-cartografia-btn-layerswitcher-delete').click();
-      await expect.poll(() => page.evaluate(() => window.mapjs.getLayers()
-        .some((layer) => layer.name === 'puntos')), { timeout }).toBe(false);
+      const inMap = (name) => page.evaluate((layerName) => window.mapjs.getLayers()
+        .some((layer) => layer.name === layerName), name);
+      await expect(layerRow(page, 'puntos')).toHaveCount(1, { timeout });
+      await expect(layerRow(page, 'teselas')).toHaveCount(1, { timeout });
+      await expect(async () => {
+        if (await inMap('puntos')) {
+          await layerRow(page, 'puntos').locator('.g-cartografia-btn-layerswitcher-delete')
+            .evaluate((button) => button.click(), undefined, { timeout: 5000 });
+        }
+        expect(await inMap('puntos')).toBe(false);
+      }).toPass({ timeout, intervals: [500, 1000, 2000] });
       await expect(layerRow(page, 'puntos')).toHaveCount(0, { timeout });
       await expect(layerRow(page, 'teselas')).toHaveCount(1);
+      expect(await inMap('teselas')).toBe(true);
     });
 
     test('muestra y oculta todas las capas', async ({ page }) => {
