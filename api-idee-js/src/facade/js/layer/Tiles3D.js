@@ -295,6 +295,21 @@ class Tiles3D extends LayerBase {
     }
     return equals;
   }
+
+  /**
+   * Devuelve la cadena de carga REST de la capa.
+   *
+   * @function
+   * @returns {String|null} Cadena REST de la capa.
+   * @api
+   */
+  getRestLayer() {
+    return this.formatRestLayer_({
+      extract: this.extract === false ? false : undefined,
+      template: isString(this.template) ? this.template : undefined,
+      infoEventType: this.infoEventType !== 'click' ? this.infoEventType : undefined,
+    });
+  }
 }
 
 export default Tiles3D;

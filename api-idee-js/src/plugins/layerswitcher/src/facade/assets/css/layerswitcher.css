@@ -10,7 +10,7 @@
 .g-cartografia-btn-layerswitcher-delete,
 .g-cartografia-flecha-izquierda,
 .g-cartografia-flecha-derecha,
-.m-layerswitcher-input-container-buttons > * {
+.m-layerswitcher-input-container-buttons>* {
     border: none !important;
     background-color: transparent !important;
     color: var(--idee-color-neutral-70) !important;
@@ -34,7 +34,7 @@
 .g-cartografia-btn-layerswitcher-delete:hover,
 .g-cartografia-flecha-izquierda:hover,
 .g-cartografia-flecha-derecha:hover,
-.m-layerswitcher-input-container-buttons > *:hover {
+.m-layerswitcher-input-container-buttons>*:hover {
     border: none;
     color: var(--idee-color-links) !important;
     background-color: transparent;
@@ -173,26 +173,26 @@ input[type=range].layerswitcher-transparency {
     flex-shrink: 0;
 }
 
-.m-layerswitcher-actions > * {
+.m-layerswitcher-actions>* {
     border: none !important;
     background-color: transparent !important;
     color: var(--idee-color-neutral-70) !important;
 }
 
-.m-layerswitcher-actions > *,
+.m-layerswitcher-actions>*,
 .m-layerswitcher-check {
     width: 16px;
     height: 16px !important;
     padding: 0;
 }
 
-.m-layerswitcher-actions > *::before,
+.m-layerswitcher-actions>*::before,
 .m-layerswitcher-check::before {
     width: 16px;
     height: 16px !important;
 }
 
-.m-layerswitcher-actions > *:hover::before,
+.m-layerswitcher-actions>*:hover::before,
 .m-layerswitcher-check:hover::before {
     color: var(--idee-color-links) !important;
 }
@@ -216,7 +216,7 @@ input[type=range].layerswitcher-transparency {
     margin-bottom: 0;
 }
 
-.m-layerswitcher-icons-cancel{
+.m-layerswitcher-icons-cancel {
     color: var(--idee-color-danger);
 }
 
@@ -305,7 +305,7 @@ input[type=range].layerswitcher-transparency {
     border: 2px solid transparent;
 }
 
-.m-layerswitcher-sectionPanel-header > div {
+.m-layerswitcher-sectionPanel-header>div {
     display: flex;
     align-items: center;
     gap: 16px;
@@ -317,13 +317,13 @@ input[type=range].layerswitcher-transparency {
     height: 24px !important;
 }
 
-.m-layerswitcher-sectionPanel-header > div > .g-cartografia-btn-layerswitcher-delete,
-.m-layerswitcher-sectionPanel-header > div > .g-cartografia-btn-layerswitcher-delete::before {
+.m-layerswitcher-sectionPanel-header>div>.g-cartografia-btn-layerswitcher-delete,
+.m-layerswitcher-sectionPanel-header>div>.g-cartografia-btn-layerswitcher-delete::before {
     width: 24px;
     height: 24px;
 }
 
-.m-layerswitcher-sectionPanel-header > div > .m-layerswitcher-groupDisplay {
+.m-layerswitcher-sectionPanel-header>div>.m-layerswitcher-groupDisplay {
     border: none !important;
     background-color: transparent !important;
     color: var(--idee-color-black);
@@ -344,7 +344,7 @@ input[type=range].layerswitcher-transparency {
     color: var(--idee-color-black);
 }
 
-.m-layerswitcher-sectionPanel-header > div button:hover,
+.m-layerswitcher-sectionPanel-header>div button:hover,
 .m-layerswitcher-layergroup-name:hover {
     color: var(--idee-color-links);
 }
@@ -454,7 +454,7 @@ input[type=range].layerswitcher-transparency {
     gap: 8px;
 }
 
-.m-layerswitcher-catalog-results > tr {
+.m-layerswitcher-catalog-results>tr {
     display: flex;
     align-items: center;
     height: 40px;
@@ -465,7 +465,7 @@ input[type=range].layerswitcher-transparency {
     cursor: pointer;
 }
 
-.m-layerswitcher-catalog-results > tr:hover {
+.m-layerswitcher-catalog-results>tr:hover {
     color: var(--idee-color-white);
     background-color: var(--idee-color-links);
 }
@@ -486,7 +486,7 @@ input[type=range].layerswitcher-transparency {
     font-size: 20px;
 }
 
-.m-layerswitcher-catalog-results > tr:hover .m-layerswitcher-codsi-result::before {
+.m-layerswitcher-catalog-results>tr:hover .m-layerswitcher-codsi-result::before {
     color: var(--idee-color-white);
     transition: all 0.3s ease;
 }
@@ -575,6 +575,34 @@ input[type=range].layerswitcher-transparency {
 **************************/
 .m-layerswitcher-style-container select {
     width: 100%;
+}
+
+.m-layerswitcher-style-notice {
+    margin: 8px 0 0;
+    max-width: 320px;
+    font-size: var(--idee-font-size-caption);
+    color: var(--idee-color-neutral-70);
+}
+
+.m-layerswitcher-style-sld {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.15rem;
+    margin-top: 16px;
+    max-width: 320px;
+}
+
+.m-layerswitcher-style-sld-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.m-layerswitcher-style-sld-hint {
+    font-size: var(--idee-font-size-caption);
+    color: var(--idee-color-neutral-70);
 }
 
 

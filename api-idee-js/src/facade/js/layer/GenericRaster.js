@@ -256,6 +256,27 @@ class GenericRaster extends LayerBase {
 
     return equals;
   }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa. Si se creó desde REST
+   *
+   * @function
+   * @returns {String|null} Cadena REST; null si la fuente no tiene equivalente REST.
+   * @api
+   */
+  getRestLayer() {
+    const { userParameters } = this.constructorParameters;
+    if (isString(userParameters)) {
+      return parameter.genericRestLayer(this, userParameters);
+    }
+    const impl = this.getImpl();
+    const source = isFunction(impl.getRestParameters) ? impl.getRestParameters() : null;
+    if (isNullOrEmpty(source)) {
+      return null;
+    }
+    const { type, ...fields } = source;
+    return this.formatRestLayer_(fields, type);
+  }
 }
 
 export default GenericRaster;

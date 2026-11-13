@@ -29,6 +29,7 @@ import { getValue } from 'IDEE/i18n/language';
 import Layer from './Layer';
 import ImplUtils from '../util/Utils';
 import Feature from '../feature/Feature';
+import { findStyleProperties } from '../style/builder';
 
 /**
  * @classdesc
@@ -46,6 +47,23 @@ import Feature from '../feature/Feature';
 const valueOf = (property) => {
   return property && typeof property.getValue === 'function' ? property.getValue() : property;
 };
+
+const UNSUPPORTED_STYLE_PROPERTIES = [
+  { path: 'stroke.linecap' },
+  { path: 'stroke.linedash' },
+  { path: 'stroke.linejoin' },
+  { path: 'stroke.miterlimit' },
+  { path: 'stroke.pattern' },
+  { path: 'label.overflow' },
+  { path: 'label.rotate' },
+  { path: 'label.rotation' },
+  { path: 'label.path' },
+  { path: 'label.smooth' },
+  { path: 'label.stroke.linecap' },
+  { path: 'label.stroke.linedash' },
+  { path: 'label.stroke.linejoin' },
+  { path: 'stroke', geometries: ['line'], when: (stroke, line) => !isNullOrEmpty(line.fill) },
+];
 
 class Vector extends Layer {
   /**
@@ -167,10 +185,9 @@ class Vector extends Layer {
     * @expose
     */
   getOpacity() {
-    const features = this.getFeatures(true);
-    if (features.length > 0) {
-      const feature = features[0];
-      this.opacity_ = feature.getImpl().getFeatureOpacity();
+    if (isNullOrEmpty(this.opacity_)) {
+      const [feature] = this.getFeatures(true);
+      return feature?.getImpl().getFeatureOpacity() || 1;
     }
     return this.opacity_ || 1;
   }
@@ -212,6 +229,13 @@ class Vector extends Layer {
           }
           const { material } = geometry;
           const currentColor = valueOf(material)?.color || Color.WHITE;
+          if (geometry === feature.polygon && feature.polyline) {
+            const outline = valueOf(feature.polyline.material)?.color;
+            if (outline) {
+              // eslint-disable-next-line no-param-reassign
+              feature.polyline.material = Color.fromAlpha(outline, opacityParsed);
+            }
+          }
           if (isNullOrEmpty(material)) {
             geometry.material = Color.fromAlpha(currentColor, opacityParsed);
           } else {
@@ -876,6 +900,19 @@ class Vector extends Layer {
    */
   isLoaded() {
     return this.loaded_;
+  }
+
+  /**
+   * Devuelve las propiedades del estilo que no se pueden representar con las
+   * entidades de Cesium.
+   *
+   * @function
+   * @param {IDEE.Style} style Estilo.
+   * @returns {Array<String>} Propiedades no representables.
+   * @api stable
+   */
+  getUnsupportedStyleProperties(style) {
+    return findStyleProperties(style, UNSUPPORTED_STYLE_PROPERTIES);
   }
 
   /**

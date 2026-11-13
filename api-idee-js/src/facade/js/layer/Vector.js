@@ -5,7 +5,7 @@ import VectorImpl from 'impl/layer/Vector';
 import { geojsonTo4326 } from 'impl/util/Utils';
 import projAPI from 'impl/projections';
 import {
-  isUndefined, isArray, isNullOrEmpty, isString, normalize, modifySVG, isObject,
+  isUndefined, isArray, isNullOrEmpty, isString, normalize, modifySVG, isObject, isBoolean,
 } from '../util/Utils';
 import Exception from '../exception/exception';
 import LayerBase from './Layer';
@@ -572,6 +572,27 @@ class Vector extends LayerBase {
   }
 
   /**
+   * Este método devuelve las propiedades de un estilo que la implementación
+   * actual no puede representar en esta capa (p. ej., el trazo discontinuo en
+   * Cesium). El estilo se puede aplicar igualmente: esas propiedades se omiten.
+   *
+   * @function
+   * @public
+   * @param {IDEE.Style} style Estilo que se quiere comprobar.
+   * @returns {Array<String>} Propiedades no representables
+   * ("geometría.propiedad", p. ej. "line.stroke.linedash"). Vacío si todas
+   * se pueden representar.
+   * @api
+   */
+  getUnsupportedStyleProperties(style) {
+    const impl = this.getImpl();
+    if (isNullOrEmpty(style) || typeof impl.getUnsupportedStyleProperties !== 'function') {
+      return [];
+    }
+    return impl.getUnsupportedStyleProperties(style) || [];
+  }
+
+  /**
    * Devuelve el legendURL.
    *
    * @function
@@ -704,6 +725,61 @@ class Vector extends LayerBase {
         },
       },
       features: geojsonTo4326(featuresAsJSON, code),
+    };
+  }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa. Las capas vectoriales
+   * sin origen remoto se comparten como una capa GeoJSON con sus objetos geográficos.
+   *
+   * @function
+   * @returns {String|null} Cadena REST; null si la capa no está en un mapa.
+   * @api
+   */
+  getRestLayer() {
+    const containerRestLayer = this.getContainerRestLayer_();
+    if (!isNullOrEmpty(containerRestLayer)) {
+      return containerRestLayer;
+    }
+    if (isNullOrEmpty(this.map_)) {
+      return null;
+    }
+    const source = this.toGeoJSON();
+    source.crs = { type: 'name', properties: { name: 'EPSG:4326' } };
+    return this.formatRestLayer_({
+      ...this.getRestVectorParameters_(null),
+      url: undefined,
+      source,
+    }, LayerType.GeoJSON);
+  }
+
+  /**
+   * Este método devuelve los parámetros REST comunes a las capas vectoriales.
+   * El estilo predeterminado del tipo no se comparte: la capa lo aplica al reconstruirse.
+   * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+   *
+   * @function
+   * @param {Object|null} defaultStyle Estilo predeterminado; null lo comparte siempre.
+   * @returns {Object} Parámetros vectoriales de la capa.
+   * @public
+   */
+  getRestVectorParameters_(
+    defaultStyle = this.constructor.DEFAULT_OPTS_STYLE || this.constructor.DEFAULT_OPTIONS_STYLE,
+  ) {
+    let style;
+    try {
+      style = this.getStyle()?.serialize();
+      if (!isNullOrEmpty(defaultStyle) && style === new Generic(defaultStyle).serialize()) {
+        style = undefined;
+      }
+    } catch (error) {
+      style = undefined;
+    }
+    return {
+      extract: isBoolean(this.extract) ? this.extract : undefined,
+      template: isString(this.template) ? this.template : undefined,
+      infoEventType: this.infoEventType !== 'click' ? this.infoEventType : undefined,
+      style,
     };
   }
 }

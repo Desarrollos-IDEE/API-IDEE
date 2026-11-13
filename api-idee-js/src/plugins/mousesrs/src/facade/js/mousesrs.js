@@ -223,7 +223,7 @@ export default class MouseSRS extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.order}*${this.tooltip}*${this.srs}*${this.label}*${this.precision}*${this.geoDecimalDigits}*${this.utmDecimalDigits}*${this.activeZ}*${this.helpUrl}*${this.epsgFormat}*${this.mode}*${this.coveragePrecissions}`;
+    return `${this.name}=${IDEE.utils.serializeUrlParams(this.options)}`;
   }
 
   /**

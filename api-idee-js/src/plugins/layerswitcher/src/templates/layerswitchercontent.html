@@ -56,12 +56,10 @@
                 class="secondary m-layerswitcher-icons-info g-cartografia-btn-layerswitcher-info" {{#unless visible}} disabled {{/unless}}>
             </button>
             {{/if}}
-            {{#if ../isStyle}}
-                {{#if hasStyles}}
-                <button tabindex="0" title="{{../translations.change_style}}" data-layer-id="{{idLayer}}"
-                    class="secondary m-layerswitcher-icons-style g-cartografia-btn-layerswitcher-style" {{#unless visible}} disabled {{/unless}}>
-                </button>
-                {{/if}}
+            {{#if styleTool}}
+            <button tabindex="0" title="{{../translations.change_style}}" data-layer-id="{{idLayer}}"
+                class="secondary m-layerswitcher-icons-style g-cartografia-btn-layerswitcher-style" {{#unless visible}} disabled {{/unless}}>
+            </button>
             {{/if}}
             {{#if ../isDelete}}
             <button title="{{../translations.remove_layer}}" data-layer-id="{{idLayer}}" tabindex="0"

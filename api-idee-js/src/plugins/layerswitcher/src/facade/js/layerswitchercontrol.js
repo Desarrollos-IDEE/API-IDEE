@@ -28,7 +28,12 @@ import {
 import { getValue } from './i18n/language';
 import ogcModeTemplate from '../../templates/ogcmode';
 import generateSortable from './sortable';
-import { parseOGCAPIUrl, isCollectionsPath, isSameService } from './ogcapi/ogcapiurl';
+import LayerStyles from './layerStyles';
+import SLDFileLoader from './sldFileLoader';
+import StyleDialog from './styleDialog';
+import {
+  parseOGCAPIUrl, isCollectionsPath, isSameService, isDataFileUrl,
+} from './ogcapi/ogcapiurl';
 import detectOGCAPIFeatures from './ogcapi/ogcapidetector';
 import {
   createOGCAPIModes, getModeByLayerType, MODE_STANDARD, MODE_DATAIDEE,
@@ -155,6 +160,8 @@ export default class LayerswitcherControl extends IDEE.Control {
     // Añadir control de estilos
     this.isStyle = false;
 
+    this.isSLD = false;
+
     // Añadir control eliminar
     this.isDelete = false;
 
@@ -217,6 +224,19 @@ export default class LayerswitcherControl extends IDEE.Control {
 
     // Identificador de la última petición de colecciones
     this.ogcRequestId_ = 0;
+
+    this.renderRevision_ = 0;
+
+    this.layerStyles_ = new LayerStyles({
+      getServices: () => this.getPrechargedServices(),
+      matchesUrl: (serviceUrl, layerUrl) => this.checkUrls(serviceUrl, layerUrl),
+      getToolsSupport: (layer) => this.getImpl().getLayerToolsSupport(layer),
+    });
+
+    this.styleDialog_ = new StyleDialog({
+      layerStyles: this.layerStyles_,
+      loader: new SLDFileLoader({ layerStyles: this.layerStyles_ }),
+    });
   }
 
   // Esta función crea la vista
@@ -240,6 +260,9 @@ export default class LayerswitcherControl extends IDEE.Control {
       }
       if (tool === 'style') {
         this.isStyle = true;
+      }
+      if (tool === 'sld') {
+        this.isSLD = true;
       }
       if (tool === 'delete') {
         this.isDelete = true;
@@ -402,11 +425,17 @@ export default class LayerswitcherControl extends IDEE.Control {
       isZoom: this.isZoom,
       isInformation: this.isInformation,
       isStyle: this.isStyle,
+      isSLD: this.isSLD,
       isDelete: this.isDelete,
       displayLabel: !this.displayLabel,
       isAddLayers: !this.isAddLayers,
       isStatusLayers: !this.isStatusLayers,
     };
+  }
+
+  // Indica si el diálogo de estilos de la capa ofrece la carga de estilos SLD
+  canUploadSLD_(layer) {
+    return this.isSLD && this.layerStyles_.supportsClientStyles(layer);
   }
 
   // Esta función monta objeto con propiedades de la capa para la plantilla
@@ -416,22 +445,10 @@ export default class LayerswitcherControl extends IDEE.Control {
       && !IDEE.utils.isNullOrEmpty(layer.capabilitiesMetadata?.abstract);
 
     return new Promise((success) => {
-      let hasStyles = (Array.isArray(layer.capabilitiesMetadata?.style)
-        && layer.capabilitiesMetadata.style.length > 1)
-        || ((layer instanceof IDEE.layer.Vector || layer instanceof IDEE.layer.GeoTIFF)
-          && !IDEE.utils.isNullOrEmpty(layer.predefinedStyles)
-          && layer.predefinedStyles.length > 1);
-      if (layer.type === 'KML' || layer.type === 'KMZ') {
-        if (layer.options === null) {
-          hasStyles = false;
-        } else if (layer.options.extractStyles
-          || IDEE.utils.isUndefined(layer.options.extractStyles)) {
-          hasStyles = false;
-        }
-      }
+      const styleTool = (this.isStyle && this.layerStyles_.hasAlternatives(layer))
+        || this.canUploadSLD_(layer);
       // Herramientas que la implementación no admite para esta capa
       const toolsSupport = this.getImpl().getLayerToolsSupport(layer) || {};
-      if (toolsSupport.style === false) hasStyles = false;
       const layerVarTemplate = {
         transparencySupported: toolsSupport.transparency !== false,
         zoomSupported: toolsSupport.zoom !== false,
@@ -446,7 +463,7 @@ export default class LayerswitcherControl extends IDEE.Control {
         checkedLayer: layer.checkedLayer || 'false',
         opacity: layer.getOpacity(),
         metadata: hasMetadata,
-        hasStyles,
+        styleTool,
       };
       success(layerVarTemplate);
     });
@@ -471,7 +488,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       checkedLayer: visible ? 'true' : 'false',
       opacity: 1,
       metadata: false,
-      hasStyles: false,
+      styleTool: false,
     });
   }
 
@@ -609,12 +626,16 @@ export default class LayerswitcherControl extends IDEE.Control {
 
   // Esta función renderiza la plantilla
   async render() {
+    this.renderRevision_ += 1;
+    const revision = this.renderRevision_;
+    const isLatest = () => revision === this.renderRevision_;
     const showLayers = this.map_.getLayers().findIndex((layer) => {
       return layer.isBase === false && layer.displayInLayerSwitcher;
     }) > -1 || this.map_.getSections().length > 0;
 
     if (showLayers) {
       const templateVars = await this.getTemplateVariables(this.map_);
+      if (!isLatest()) return;
 
       const html = IDEE.template.compileSync(templateAux, {
         vars: templateVars,
@@ -626,6 +647,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       content.innerHTML = html.innerHTML;
       await this.generateTemplateLayerGroup(content);
       await this.generateTemplateSection(content);
+      if (!isLatest()) return;
       const ulContainer = content.querySelector('.layerswitcher-ul-layers');
       if (ulContainer !== null) this.orderLayers(ulContainer);
 
@@ -703,7 +725,10 @@ export default class LayerswitcherControl extends IDEE.Control {
         // ? Zoom a la capa
         eventIconTarget(layer, this.map_, this.order, evt, this.getImpl());
         // ? Cambiar estilo de la capa
-        styleLayers(layer, this.order, evt);
+        styleLayers(layer, evt, this.styleDialog_, {
+          order: this.order,
+          canUpload: this.canUploadSLD_(layer),
+        });
 
         // ? Información de la capa
         if (evt.target.className.indexOf('g-cartografia-btn-layerswitcher-info') > -1) {
@@ -1476,7 +1501,10 @@ export default class LayerswitcherControl extends IDEE.Control {
                       this.removeLoading();
                     }
                   } else {
-                    this.openOGCAPIService_(url).catch(() => false).then((isOGC) => {
+                    const ogcProbe = isDataFileUrl(url)
+                      ? Promise.resolve(false)
+                      : this.openOGCAPIService_(url).catch(() => false);
+                    ogcProbe.then((isOGC) => {
                       if (!isOGC) {
                         // IDEE.proxy(this.useProxy);
                         const extension = url.includes('.') ? url.substring(url.lastIndexOf('.') + 1, url.length) : '';
@@ -1597,25 +1625,23 @@ export default class LayerswitcherControl extends IDEE.Control {
     });
     IDEE.dialog.info(addServices, getValue('load_ext_services'), this.order);
 
-    setTimeout(() => {
-      // Se modifica texto bt cerrar modal
-      this.changeClodeButtonModal();
+    // Se modifica texto bt cerrar modal
+    this.changeClodeButtonModal();
 
-      // Eventos lista sugerencias
-      this.addEventSuggestions();
+    // Eventos lista sugerencias
+    this.addEventSuggestions();
 
-      // Eventos Servicios CODSI
-      this.addEventCODSI();
+    // Eventos Servicios CODSI
+    this.addEventCODSI();
 
-      // Eventos Buscador
-      this.addEventSearch();
+    // Eventos Buscador
+    this.addEventSearch();
 
-      // Eventos carga de ficheros
-      this.addEventFileUpload();
+    // Eventos carga de ficheros
+    this.addEventFileUpload();
 
-      // Evento para añadir capas de grupo
-      this.addGroupLayersEvent();
-    }, 10);
+    // Evento para añadir capas de grupo
+    this.addGroupLayersEvent();
 
     focusModal('#m-layerswitcher-addservices-search-input');
   }
@@ -1651,6 +1677,7 @@ export default class LayerswitcherControl extends IDEE.Control {
               url: item.url,
               white_list: item.white_list,
               styles: item.styles,
+              layers: item.layers,
             });
           } else if (item && typeof item === 'object') {
             processNode(item);
@@ -1723,13 +1750,21 @@ export default class LayerswitcherControl extends IDEE.Control {
     /** @type {File} */
     const file = inputFile.files[0];
     if (!file || inputFile.disabled) return;
-    if (/\.gpkg$/i.test(file.name) && file.size <= 20971520) {
-      return this.loadGeoPackage_({ source: file, name: file.name.slice(0, -5) });
+    if (/\.gpkg$/i.test(file.name)) {
+      const maxSize = IDEE.loadFiles.getMaxFileSize?.() ?? Number.POSITIVE_INFINITY;
+      if (file.size <= maxSize) {
+        return this.loadGeoPackage_({ source: file, name: file.name.slice(0, -5) });
+      }
+      inputFile.value = '';
+      IDEE.dialog.info(IDEE.loadFiles.getFileSizeMessage(), undefined, this.order);
+      return undefined;
     }
-    IDEE.loadFiles.addFileToMap(this.map_, file);
+    const added = IDEE.loadFiles.addFileToMap(this.map_, file);
     inputFile.value = '';
-    const buttonClose = IDEE.dialog.getCloseButton(INFO_DIALOG);
-    buttonClose.click();
+    if (added !== false) {
+      const buttonClose = IDEE.dialog.getCloseButton(INFO_DIALOG);
+      buttonClose?.click();
+    }
   }
 
   openFileFromUrl(url, extension) {
@@ -2061,35 +2096,12 @@ export default class LayerswitcherControl extends IDEE.Control {
   }
 
   getPrechargedServices() {
-    const { services = [], groups = [] } = this.precharged || {};
-    return services.concat(...groups.map((group) => group.services || []));
-  }
-
-  getPrechargedService(type, url) {
-    return this.getPrechargedServices().find((s) => s.type === type
-      && !IDEE.utils.isNullOrEmpty(url) && this.checkUrls(s.url, url));
-  }
-
-  applyPrechargedStyles(layer) {
-    const service = this.getPrechargedService(layer.type, layer.url);
-    if (!service || IDEE.utils.isNullOrEmpty(service.styles)) {
-      return;
-    }
-
-    if (layer instanceof IDEE.layer.Vector) {
-      // eslint-disable-next-line no-param-reassign
-      layer.predefinedStyles = service.styles.map((s) => (typeof s === 'string'
-        ? IDEE.Style.deserialize(s) : new IDEE.style.Generic(s)));
-      layer.setStyle(layer.predefinedStyles[0]);
-    } else if (layer instanceof IDEE.layer.WMS) {
-      const metadata = layer.capabilitiesMetadata || {};
-      const capStyles = Array.isArray(metadata.style) ? metadata.style : [];
-      metadata.style = service.styles.map((name) => capStyles.find((s) => s.Name === name)
-        || { Name: name, Title: name });
-      // eslint-disable-next-line no-param-reassign
-      layer.capabilitiesMetadata = metadata;
-      layer.setStyles(service.styles[0]);
-    }
+    const precharged = this.precharged || {};
+    const groupsReady = !precharged.groups || (Array.isArray(precharged.groups)
+      && precharged.groups.every((group) => group && Array.isArray(group.services)));
+    const { services = [], groups = [] } = groupsReady
+      ? precharged : this.normalizePrecharged(precharged);
+    return [].concat(services, ...groups.map((group) => group.services || []));
   }
 
   // Muesta el resueltado de las capas encontradas
@@ -2491,14 +2503,9 @@ export default class LayerswitcherControl extends IDEE.Control {
 
   loadSuggestion(evt) {
     const url = evt.target.getAttribute('data-link');
-    try {
-      const group = evt.target.parentElement.parentElement.parentElement;
-      const nameGroup = group.querySelector('.m-layerswitcher-suggestion-caret').innerText;
-      this.filterName = nameGroup;
-      if (group.localName === 'tbody') {
-        this.filterName = 'none';
-      }
-    } catch (err) { /* Continue */ }
+    const groupList = evt.target.closest('.m-layerswitcher-suggestion-group');
+    const caret = groupList?.parentElement?.querySelector('.m-layerswitcher-suggestion-caret');
+    this.filterName = caret ? caret.innerText : 'none';
     document.querySelector(SEARCH_INPUT).value = url;
 
     this.readCapabilities(evt);
@@ -2669,8 +2676,8 @@ export default class LayerswitcherControl extends IDEE.Control {
         obj.layers = layersSelected;
       }
       // Si el servicio precargado define estilos, no se usan los propios del KML/KMZ
-      const prechargedStyles = this.getPrechargedService(type.toUpperCase(), url)?.styles;
-      const kmlOptions = IDEE.utils.isNullOrEmpty(prechargedStyles) ? {} : { extractStyles: false };
+      const kmlOptions = this.layerStyles_.hasConfiguredStyles(type, url)
+        ? { extractStyles: false } : {};
       layer = type === 'kmz' ? new IDEE.layer.KMZ(obj, kmlOptions) : new IDEE.layer.KML(obj, kmlOptions);
     } else if (type === 'geotiff') {
       layer = new IDEE.layer.GeoTIFF({
@@ -2724,7 +2731,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       layer = existingLayer;
     }
 
-    this.applyPrechargedStyles(layer);
+    this.layerStyles_.applyInitial(layer);
     const inGroup = getLayerSelectGroup(this.map_);
 
     if (inGroup) {

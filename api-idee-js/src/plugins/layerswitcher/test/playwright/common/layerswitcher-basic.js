@@ -42,9 +42,10 @@ export const registerBasicTests = (impl) => {
 
     test('la opacidad se aplica a la capa', async ({ page }) => {
       await expect(layerRow(page, 'teselas')).toHaveCount(1, { timeout });
-      await setOpacitySlider(page, 'teselas', 0.3);
-      await expect.poll(() => page.evaluate(() => window.teselas.getOpacity()), { timeout })
-        .toBeCloseTo(0.3, 5);
+      await expect(async () => {
+        await setOpacitySlider(page, 'teselas', 0.3);
+        expect(await page.evaluate(() => window.teselas.getOpacity())).toBeCloseTo(0.3, 5);
+      }).toPass({ timeout, intervals: [500, 1000, 2000] });
     });
 
     test('renombra la capa', async ({ page }) => {
@@ -59,10 +60,45 @@ export const registerBasicTests = (impl) => {
     });
 
     test('borra la capa del mapa', async ({ page }) => {
-      await layerRow(page, 'puntos').locator('.g-cartografia-btn-layerswitcher-delete').click();
-      await expect.poll(() => page.evaluate(() => window.mapjs.getLayers()
-        .some((layer) => layer.name === 'puntos')), { timeout }).toBe(false);
+      const inMap = (name) => page.evaluate((layerName) => window.mapjs.getLayers()
+        .some((layer) => layer.name === layerName), name);
+      await expect(layerRow(page, 'puntos')).toHaveCount(1, { timeout });
+      await expect(layerRow(page, 'teselas')).toHaveCount(1, { timeout });
+      await expect(async () => {
+        if (await inMap('puntos')) {
+          await layerRow(page, 'puntos').locator('.g-cartografia-btn-layerswitcher-delete')
+            .evaluate((button) => button.click(), undefined, { timeout: 5000 });
+        }
+        expect(await inMap('puntos')).toBe(false);
+      }).toPass({ timeout, intervals: [500, 1000, 2000] });
       await expect(layerRow(page, 'puntos')).toHaveCount(0, { timeout });
+      await expect(layerRow(page, 'teselas')).toHaveCount(1);
+      expect(await inMap('teselas')).toBe(true);
+    });
+
+    test('un repintado que empezó antes de borrar una capa no vuelve a pintar su fila', async ({ page }) => {
+      await expect(layerRow(page, 'puntos')).toHaveCount(1, { timeout });
+      await expect(layerRow(page, 'teselas')).toHaveCount(1, { timeout });
+      await page.evaluate(async () => {
+        const control = window.mp.controls[0];
+        const original = control.getTemplateVariables.bind(control);
+        let delayed = false;
+        control.getTemplateVariables = (map) => {
+          const vars = original(map);
+          if (delayed) return vars;
+          delayed = true;
+          return vars.then((value) => new Promise((resolve) => {
+            setTimeout(() => resolve(value), 1500);
+          }));
+        };
+        const slow = control.render();
+        window.mapjs.removeLayers(window.puntos);
+        const fast = control.render();
+        await Promise.all([slow, fast]);
+      });
+      expect(await page.evaluate(() => window.mapjs.getLayers()
+        .some((layer) => layer.name === 'puntos'))).toBe(false);
+      await expect(layerRow(page, 'puntos')).toHaveCount(0);
       await expect(layerRow(page, 'teselas')).toHaveCount(1);
     });
 

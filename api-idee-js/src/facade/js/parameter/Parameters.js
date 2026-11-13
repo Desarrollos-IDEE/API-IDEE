@@ -588,6 +588,30 @@ export const parseViewExtent = (parameter) => {
 };
 
 /**
+ * Esta función analiza el parámetro "baseLayer".
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {string|Mx.parameters.Map} parameter Parámetros.
+ * @returns {String|IDEE.Layer} Capa base.
+ * @api
+ */
+export const parseBaseLayer = (parameter) => {
+  let baseLayer;
+
+  if (isString(parameter)) {
+    baseLayer = getParameterValue('baseLayer', parameter) || getParameterValue('baselayer', parameter);
+  } else if (isObject(parameter)) {
+    baseLayer = parameter.baseLayer;
+  } else {
+    Exception(`El tipo del parámetro baseLayer no es válido: ${typeof parameter}`);
+  }
+
+  return baseLayer;
+};
+
+/**
  * Esta función analiza un parámetro de "bgColorContainer" en un formato legible.
  * parámetro a API-IDEE y chequea posibles errores.
  * @param {String|Mx.parameters.Map} parameter Parámetros.
@@ -647,6 +671,7 @@ export const parseRefreshInterval = (userParameters) => {
  * @property {Object} ticket Ticket de autenticación.
  * @property {Object} zoomConstrains Valor para la constrain de zoom.
  * @property {Object} viewExtent Extent restringido de navegación para el mapa.
+ * @property {String|IDEE.Layer} baseLayer Capa base del mapa.
  * @api
  */
 class Parameters {
@@ -675,6 +700,7 @@ class Parameters {
    * - ticket: Ticket de autenticación.
    * - zoomConstrains: Valor para la constrain de zoom.
    * - viewExtent Extent restringido de navegación para el mapa.
+   * - baseLayer: Capa base del mapa (cadena REST, capa rápida, capa o "none").
    * @api
    */
   constructor(userParameters) {
@@ -850,6 +876,13 @@ class Parameters {
      * @api
      */
     this.bgColorContainer = parseBGColorContainer(userParameters);
+
+    /**
+     * @public
+     * @type {String|IDEE.Layer}
+     * @api
+     */
+    this.baseLayer = parseBaseLayer(userParameters);
   }
 }
 

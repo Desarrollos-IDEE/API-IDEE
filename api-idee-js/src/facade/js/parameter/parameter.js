@@ -3859,6 +3859,38 @@ export const getTileSizeMBTiles = (parameter) => {
 };
 
 /**
+ * Analiza los parámetros de una capa GeoPackage.
+ * Formato REST posicional: GeoPackage*leyenda*url*nombre*loadStrategy, en el mismo orden
+ * que MBTiles; los valores vacíos se omiten. Las opciones por tabla solo se pueden indicar
+ * con el formato con nombre (GeoPackage*url=...;name=...;options=...), que, igual que los
+ * objetos de configuración, se devuelve sin cambios.
+ *
+ * @param {string|Object|Array<string|Object>} userParameters Parámetros de la capa.
+ * @returns {Object|Array<Object>} Parámetros de la capa GeoPackage.
+ * @public
+ * @function
+ * @api
+ * @throws {IDEE.exception} Si el parámetro no es especificado.
+ */
+export const geopackage = (userParameters) => {
+  if (isNullOrEmpty(userParameters)) {
+    Exception(getValue('exception').no_param);
+  }
+  const parse = (userParam) => {
+    if (!isString(userParam)) return userParam;
+    const params = userParam.split('*').slice(1);
+    if (/^\w+=/.test(params.join('*'))) return userParam;
+    const layerObj = { type: LayerType.GeoPackage };
+    ['legend', 'url', 'name', 'loadStrategy'].forEach((key, index) => {
+      const value = isString(params[index]) ? params[index].trim() : '';
+      if (value !== '') layerObj[key] = value;
+    });
+    return layerObj;
+  };
+  return isArray(userParameters) ? userParameters.map(parse) : parse(userParameters);
+};
+
+/**
  * Analiza los parámetros especificados por el usuario para la capa MBTiles.
  *
  * @param {string|Mx.parameters.MBTiles} userParameters Parámetros para la capa
@@ -4719,6 +4751,39 @@ const generic = (userParameters, type) => {
   };
 };
 
+/**
+ * Genera la cadena REST posicional que interpreta "generic" para una capa genérica
+ * creada a partir de otra cadena REST.
+ * - ⚠️ Advertencia: Este método no debe ser llamado por el usuario.
+ *
+ * @public
+ * @function
+ * @param {IDEE.layer.GenericRaster|IDEE.layer.GenericVector} layer Capa genérica.
+ * @param {String} restLayer Cadena REST con la que se creó la capa.
+ * @returns {String} Cadena REST de la capa.
+ */
+export const genericRestLayer = (layer, restLayer) => {
+  const text = (value) => (isNullOrEmpty(value) ? '' : String(value).replace(/[*,]/g, ''));
+  const zoomLevel = (value) => (Number.isFinite(value) ? value : '');
+  let visibility = '';
+  try {
+    visibility = layer.isVisible();
+  } catch (error) {
+    visibility = '';
+  }
+  return [
+    layer.type,
+    restLayer.split('*')[1],
+    text(layer.name),
+    text(layer.legend),
+    !layer.isBase,
+    zoomLevel(layer.minZoom),
+    zoomLevel(layer.maxZoom),
+    layer.displayInLayerSwitcher !== false,
+    visibility,
+  ].join('*');
+};
+
 const genericvector = (userParameters) => {
   return generic(userParameters, 'GenericVector');
 };
@@ -5361,6 +5426,7 @@ const parameterFunction = {
   xyz,
   tms,
   mbtiles,
+  geopackage,
   mbtilesvector,
   ogcapifeatures,
   dataidee,

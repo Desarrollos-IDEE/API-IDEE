@@ -1112,6 +1112,9 @@ class Raster extends Style {
       contrast: options.contrast,
       brightness: options.brightness,
     };
+    if (!isNullOrEmpty(options.name)) {
+      serializedOptions.name = options.name;
+    }
     if (!isNullOrEmpty(options.nodata) || options.nodata === 0) {
       serializedOptions.nodata = options.nodata;
     }

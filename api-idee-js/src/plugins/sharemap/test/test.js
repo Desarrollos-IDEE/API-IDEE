@@ -10,7 +10,7 @@ const map = IDEE.map({
   minZoom: 4,
   maxZoom: 20,
   center: [144112, 4839064],
-  controls: ['scale*true', 'location', 'backgroundlayers'],
+  controls: ['scale*exactScale=true', 'location', 'backgroundlayers'],
 });
 window.map = map;
 
@@ -65,6 +65,7 @@ const inputBtn = document.getElementById('inputBtn');
 const inputCopyBtn = document.getElementById('inputCopyBtn');
 const inputCopyBtnHtml = document.getElementById('inputCopyBtnHtml');
 const inputTooltipCopy = document.getElementById('inputTooltipCopy');
+const inputQrImage = document.getElementById('inputQrImage');
 
 const parseBool = (val) => {
   if (val === 'true') return true;
@@ -93,6 +94,7 @@ const updatePlugin = () => {
   options.copyBtn = inputCopyBtn.value.trim();
   options.copyBtnHtml = inputCopyBtnHtml.value.trim();
   options.tooltipCopy = inputTooltipCopy.value.trim();
+  options.qrImage = inputQrImage.value.trim();
 
   removePlugin();
   createPlugin(options);
@@ -116,6 +118,7 @@ const updatePlugin = () => {
   inputCopyBtn,
   inputCopyBtnHtml,
   inputTooltipCopy,
+  inputQrImage,
 ].forEach((ctrl) => {
   ctrl.addEventListener('change', updatePlugin);
 });

@@ -1,8 +1,6 @@
 import changeNameTemplate from 'templates/changename';
-import configTemplate from '../../templates/config';
 import { fiendLayerInGroup } from './groupLayers';
 import { getValue } from './i18n/language';
-import { focusModal } from './utils';
 
 // I18N - Traducciones INFO LAYER
 export const TRANSLATIONS_OGCAPIFEATURES_WMS_WMTS = {
@@ -217,7 +215,7 @@ export const eventIconTarget = (layer, map, order, evt, impl) => {
     if (impl && impl.zoomToLayer(map, layer)) return;
     const mapView = map;
     const layerType = layer.type;
-    if (layerType === 'WMS') {
+    if (layerType === 'WMS' || layerType === 'GeoPackageTile') {
       layer.getMaxExtent((me) => {
         mapView.setBbox(me);
       });
@@ -350,86 +348,15 @@ export const selectDefaultRange = (radioButtons, map) => {
   });
 };
 
-// Cambia estilo a la capa
-const changeLayerConfig = (layer, otherStyles) => {
-  const styleSelected = document.querySelector('#m-layerswitcher-style-select').value;
-  if (styleSelected !== '') {
-    const usesPredefinedStyles = !IDEE.utils.isNullOrEmpty(layer.predefinedStyles)
-      && (layer instanceof IDEE.layer.Vector || layer instanceof IDEE.layer.GeoTIFF);
-    if (usesPredefinedStyles) {
-      if (!IDEE.utils.isNullOrEmpty(otherStyles)) {
-        const filtered = otherStyles[styleSelected];
-        layer.clearStyle();
-        if (layer instanceof IDEE.layer.Vector && styleSelected === '0') {
-          layer.setStyle();
-        } else {
-          layer.setStyle(filtered);
-        }
-      }
-    } else {
-      // Cada implementación aplica el estilo WMS a su manera (parámetro STYLES)
-      if (typeof layer.setStyles === 'function') {
-        layer.setStyles(styleSelected);
-      }
-      const cm = layer.capabilitiesMetadata;
-      if (!IDEE.utils.isNullOrEmpty(cm) && !IDEE.utils.isNullOrEmpty(cm.style)) {
-        const filtered = layer.capabilitiesMetadata.style.filter((style) => {
-          return style.Name === styleSelected;
-        });
-
-        if (filtered.length > 0 && filtered[0].LegendURL?.length > 0) {
-          const newURL = filtered[0].LegendURL[0].OnlineResource;
-          layer.setLegendURL(newURL);
-        }
-      }
-    }
-    document.querySelector('div.m-api-idee-container div.m-dialog').remove();
-  }
-};
-
-export const styleLayers = (layer, order, evt) => {
+/**
+ * Abre el diálogo de estilos de la capa al pulsar su botón de estilo.
+ * @param {IDEE.Layer} layer Capa.
+ * @param {Event} evt Evento de clic.
+ * @param {Object} styleDialog Diálogo de estilos (open).
+ * @param {Object} options Opciones del diálogo ({ order, canUpload }).
+ */
+export const styleLayers = (layer, evt, styleDialog, options) => {
   if (evt.target.className.indexOf('m-layerswitcher-icons-style') > -1) {
-    let otherStyles = [];
-    let isVectorLayer = false;
-    if (!IDEE.utils.isUndefined(layer.capabilitiesMetadata)
-              && !IDEE.utils.isUndefined(layer.capabilitiesMetadata.style)) {
-      otherStyles = layer.capabilitiesMetadata.style;
-    }
-
-    if (!IDEE.utils.isNullOrEmpty(layer.predefinedStyles)
-      && (layer instanceof IDEE.layer.Vector || layer instanceof IDEE.layer.GeoTIFF)) {
-      otherStyles = layer.predefinedStyles;
-      isVectorLayer = true;
-    }
-
-    const config = IDEE.template.compileSync(configTemplate, {
-      jsonp: true,
-      parseToHtml: false,
-      vars: {
-        styles: otherStyles,
-        isVectorLayer,
-        translations: {
-          select_style: getValue('select_style'),
-          change: getValue('change'),
-          style: getValue('style'),
-          default_style: getValue('default_style'),
-          selected: getValue('selected'),
-        },
-      },
-    });
-
-    IDEE.dialog.info(config, getValue('configure_layer'), order);
-    focusModal('.m-title span');
-    setTimeout(() => {
-      const selector = '#m-layerswitcher-style button';
-      document.querySelector(selector).addEventListener('click', () => {
-        changeLayerConfig(layer, otherStyles);
-      });
-      const button = IDEE.dialog.getCloseButton(INFO_DIALOG);
-      button.innerHTML = getValue('close');
-      setTimeout(() => {
-        document.querySelector('.m-layerswitcher-style-container').focus();
-      }, 500);
-    }, 10);
+    styleDialog.open(layer, options);
   }
 };

@@ -1,7 +1,9 @@
 {
   "exception": {
     "impl": "The implementation used cannot create Attributions controls.",
-    "baseUrl": "The implementation used cannot obtain the base URL of the application."
+    "baseUrl": "The implementation used cannot obtain the base URL of the application.",
+    "unsharedLayer": "The layer «{layer}» cannot be shared through a URL (for example, because it comes from a local file).",
+    "tooLong": "The URL is too long to generate a QR code. Use the link instead."
   },
   "textHelp": {
     "help1": "Allows you to share the map view with the loaded information layers through a Web link. It also provides the HTML code in case you want to embed the viewer in another Web portal.",
@@ -10,7 +12,8 @@
     "help4": "3. Generate the HTML code necessary to embed the current view in a web page.",
     "help5": "Press 'OK' to close the panel.",
     "help6": "The information relevant to the extension and its possible parameterization is documented in",
-    "help7": "The example of use of its parameters can be checked in"
+    "help7": "The example of use of its parameters can be checked in",
+    "help8": "4. Scan the QR code with the camera of a mobile device to open the current view on it."
   },
   "modalTitle": "Share map",
   "title": "Share URL",
@@ -18,5 +21,9 @@
   "accept": "Accept",
   "copy": "Copy",
   "tooltip": "Share",
-  "tooltipCopy": "Copied!"
+  "tooltipCopy": "Copied!",
+  "qr": {
+    "title": "QR code",
+    "alt": "QR code with the map URL"
+  }
 }

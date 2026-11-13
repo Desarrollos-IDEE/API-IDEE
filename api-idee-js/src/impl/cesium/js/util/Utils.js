@@ -969,7 +969,7 @@ class Utils {
    * transformadas.
    */
   static transformCoordinatesLineString(coordinates, srcProj, dstProj) {
-    return coordinates.map((coord) => proj4(srcProj, dstProj, coordinates));
+    return coordinates.map((coord) => proj4(srcProj, dstProj, coord));
   }
 
   /**

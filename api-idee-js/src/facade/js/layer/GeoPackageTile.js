@@ -143,6 +143,19 @@ class GeoPackageTile extends LayerBase {
     }
     return equals;
   }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa: la del GeoPackage del
+   * que procede, limitada a esta tabla. Las teselas de un fichero local no pueden
+   * cargarse desde otra sesión.
+   *
+   * @function
+   * @returns {String|null} Cadena REST; null si el GeoPackage no tiene URL remota.
+   * @api
+   */
+  getRestLayer() {
+    return this.getContainerRestLayer_();
+  }
 }
 
 export default GeoPackageTile;

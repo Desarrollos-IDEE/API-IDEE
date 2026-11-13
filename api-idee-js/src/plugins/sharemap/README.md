@@ -8,6 +8,10 @@
 
 Plugin que permite copiar la url del mapa actual visualizado. Exporta la información de todas las capas cargadas en el mapa.
 
+La url incluye siempre la capa base (fondo) que se está visualizando en el parámetro `baselayer`, tanto si se ha elegido con el control BackgroundLayers como con el plugin BackImgLayer, con independencia de `shareLayer` y `filterLayers`. Si el mapa no tiene fondo, se comparte `baselayer=none`. Las capas del fondo no se repiten en el parámetro `layers`.
+
+El diálogo muestra también un código QR con la misma url y una imagen en el centro: la indicada en `qrImage` o, por defecto, el logo de IDEE. El código se genera en el navegador con la librería [qrcode](https://www.npmjs.com/package/qrcode). Si la url es demasiado larga para mostrar la imagen, el QR se genera sin ella; si no cabe en un código QR, se muestra un aviso y debe usarse el enlace.
+
 # Dependencias
 
 Para que el plugin funcione correctamente es necesario importar las siguientes dependencias en el documento html:
@@ -38,21 +42,27 @@ Ejemplo:
 
 El constructor se inicializa con un JSON con los siguientes atributos:
 
-- **position**: Indica la posición donde se mostrará el plugin.
-  - 'TL': (top left) - Arriba a la izquierda.
-  - 'TR': (top right) - Arriba a la derecha.
-  - 'BL': (bottom left) - Abajo a la izquierda.
-  - 'BR': (bottom right) - Abajo a la derecha (por defecto).
-- **tooltip**: Texto para el mensaje cuando se copia la cadena (por defecto '¡Copiado!').
-- **baseUrl**: Url sobre la que está montada la instancia. Por defecto: https://componentes.idee.es/api-idee/
-- **minimize**: Genera URL minificada. (por defecto: false).
-- **title**: Título para la cabecera de la ventana (por defecto: 'Compartir Mapa').
-- **btn**: Título para el botón Aceptar (por defecto: 'OK').
-- **copyBtn**: Título para el botón copiar (por defecto: 'Copiar').
-- **overwriteStyles**: Parámetro para sobreescribir los estilos. Si su valor es *true*, se aplicarán los estilos del parámetro *styles*. Si su valor es *false*, se aplicarán los estilos por defecto. Valor por defecto del parámetro: false. Colores por defecto:
-  - primaryColor: '#71a7d3'
-  - secondaryColor: '#ffffff'
-- **styles**: Estilo a aplicar para sobreescribir. (por defecto: {}).
+- **position**: Ubicación del plugin sobre el mapa.
+  - 'left' (LEFT) - A la izquierda.
+  - 'right' (RIGHT) - A la derecha (por defecto).
+- **order**: Determina la prioridad visual dentro del contenedor. Un valor más alto desplaza el botón hacia el final del flujo.
+- **tooltip**: Texto que se muestra al dejar el ratón encima del botón del plugin. Por defecto: 'Compartir'.
+- **svgPath**: URL al SVG que se usará como icono del botón del plugin. Por defecto: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_share.svg'.
+- **baseUrl**: URL de la instancia de API-IDEE sobre la que se genera la URL compartida cuando urlAPI es true. Por defecto: 'https://componentes.idee.es/api-idee/'.
+- **urlAPI**: Tipo de URL compartida. Si es true, se genera una URL de la API REST sobre baseUrl; si es false, una URL del visor actual. Por defecto: false.
+- **minimize**: Genera una URL simplificada cuando urlAPI es true: los plugins del mapa se sustituyen por layerswitcher y mousesrs, y se añade la escala. Por defecto: false.
+- **title**: Título de la sección de la URL compartida. Por defecto: 'Compartir URL'.
+- **text**: Título de la sección del HTML embebido. Por defecto: 'HTML embebido'.
+- **shareLayer**: Indica si se comparten todas las capas del mapa (true) o solo las de filterLayers (false o sin definir). La capa base que se visualiza se comparte siempre en el parámetro `baselayer`. Por defecto: false.
+- **filterLayers**: Nombres de las capas que se comparten cuando shareLayer es false o no está definido, valor de tipo _Array<String>_. Por defecto: [ ].
+- **btn**: Texto del botón que cierra la ventana. Por defecto: 'Aceptar'.
+- **copyBtn**: Texto del botón que copia la URL. Por defecto: 'Copiar'.
+- **copyBtnHtml**: Texto del botón que copia el HTML embebido. Por defecto: 'Copiar'.
+- **tooltipCopy**: Mensaje que se muestra al copiar la URL o el HTML. Por defecto: '¡Copiado!'.
+- **overwriteStyles**: Si es true, se aplican los colores del parámetro styles; si es false, los estilos por defecto. Por defecto: false.
+- **styles**: Colores que se aplican cuando overwriteStyles es true. Por defecto:
+  - primaryColor: '#71a7d3' (botones, bordes y textos).
+  - secondaryColor: '#fff' (fondo de la ventana y texto de los botones).
   - **Ejemplo:**
 ```javascript
 styles: {
@@ -60,19 +70,15 @@ styles: {
   secondaryColor: 'green'
 }
 ```
-- **text**: Texto del segundo título. (por defecto: 'HTML embebido').
-- **copyBtnHtml**: Título para el segundo botón. (por defecto: 'Copiar').
-- **urlAPI**: URL API o URL Visor (API verdadero o predeterminado, visor falso). Por defecto: false.
-- **shareLayer**: Define si se comparten todas las capas o ninguna, valor de tipo _Boolean_. Para que tenga efecto filterLayers, shareLayer debe estar como false o no definido. Por defecto: false.
-- **filterLayers**: Selecciona la capa a compartir por el nombre, valor de tipo _Array_.
-  - Por defecto: [ ].
-  - ```Array<String>```: Los valores serán los nombres de la capa.
+- **qrImage**: URL de la imagen que se muestra en el centro del código QR. La imagen se ajusta, sin deformarse, a un cuadrado central del 25 % del ancho del QR, y solo lleva fondo blanco la zona que ocupa. Por defecto: el logo de IDEE de los recursos estáticos (`imagenes/logos/IDEE-logo.png`).
 
 # API-REST
 
 ```javascript
-URL_API?sharemap=position*tooltip*baseUrl*minimize*title*btn*copyBtn*text*copyBtnHtml*urlAPI*shareLayer
+URL_API?sharemap=position*order*tooltip*baseUrl*urlAPI*minimize*title*text*shareLayer*btn*copyBtn*copyBtnHtml*tooltipCopy*overwriteStyles*qrImage
 ```
+
+Los parámetros con separador son posicionales: para indicar uno hay que rellenar las posiciones anteriores. overwriteStyles ocupa su posición, pero solo tiene efecto en base64, junto con styles.
 
 <table>
   <tr>
@@ -82,17 +88,27 @@ URL_API?sharemap=position*tooltip*baseUrl*minimize*title*btn*copyBtn*text*copyBt
   </tr>
   <tr>
     <td>position</td>
-    <td>TR/TL/BR/BL</td>
+    <td>left/right</td>
+    <td>Base64 ✔️ | Separador ✔️ </td>
+  </tr>
+  <tr>
+    <td>order</td>
+    <td>Número entero positivo</td>
     <td>Base64 ✔️ | Separador ✔️ </td>
   </tr>
   <tr>
     <td>tooltip</td>
-    <td>Texto para el mensaje cuando se copia la cadena</td>
+    <td>Texto del tooltip del botón del plugin</td>
     <td>Base64 ✔️ | Separador ✔️ </td>
   </tr>
   <tr>
     <td>baseUrl</td>
-    <td>URL instancia de api-idee</td>
+    <td>URL de la instancia de API-IDEE</td>
+    <td>Base64 ✔️ | Separador ✔️ </td>
+  </tr>
+  <tr>
+    <td>urlAPI</td>
+    <td>true/false</td>
     <td>Base64 ✔️ | Separador ✔️ </td>
   </tr>
   <tr>
@@ -102,42 +118,12 @@ URL_API?sharemap=position*tooltip*baseUrl*minimize*title*btn*copyBtn*text*copyBt
   </tr>
   <tr>
     <td>title</td>
-    <td>Título para la cabecera de la ventana</td>
+    <td>Título de la sección de la URL compartida</td>
     <td>Base64 ✔️ | Separador ✔️ </td>
-  </tr>
-  <tr>
-    <td>btn</td>
-    <td>Título para el botón Aceptar</td>
-    <td>Base64 ✔️ | Separador ✔️ </td>
-  </tr>
-  <tr>
-    <td>copyBtn</td>
-    <td>Título para el botón copiar</td>
-    <td>Base64 ✔️ | Separador ✔️ </td>
-  </tr>
-  <tr>
-    <td>overwriteStyles</td>
-    <td>true/false</td>
-    <td>Base64 ✔️ | Separador ❌</td>
-  </tr>
-  <tr>
-    <td>styles</td>
-    <td>Estilos para color primario y secundario</td>
-    <td>Base64 ✔️ | Separador ❌</td>
   </tr>
   <tr>
     <td>text</td>
-    <td>Texto del segundo título</td>
-    <td>Base64 ✔️ | Separador ✔️ </td>
-  </tr>
-  <tr>
-    <td>copyBtnHtml</td>
-    <td>Título para el segundo botón</td>
-    <td>Base64 ✔️ | Separador ✔️ </td>
-  </tr>
-  <tr>
-    <td>urlAPI</td>
-    <td>true/false</td>
+    <td>Título de la sección del HTML embebido</td>
     <td>Base64 ✔️ | Separador ✔️ </td>
   </tr>
   <tr>
@@ -146,19 +132,63 @@ URL_API?sharemap=position*tooltip*baseUrl*minimize*title*btn*copyBtn*text*copyBt
     <td>Base64 ✔️ | Separador ✔️ </td>
   </tr>
   <tr>
+    <td>btn</td>
+    <td>Texto del botón que cierra la ventana</td>
+    <td>Base64 ✔️ | Separador ✔️ </td>
+  </tr>
+  <tr>
+    <td>copyBtn</td>
+    <td>Texto del botón que copia la URL</td>
+    <td>Base64 ✔️ | Separador ✔️ </td>
+  </tr>
+  <tr>
+    <td>copyBtnHtml</td>
+    <td>Texto del botón que copia el HTML embebido</td>
+    <td>Base64 ✔️ | Separador ✔️ </td>
+  </tr>
+  <tr>
+    <td>tooltipCopy</td>
+    <td>Mensaje que se muestra al copiar</td>
+    <td>Base64 ✔️ | Separador ✔️ </td>
+  </tr>
+  <tr>
+    <td>overwriteStyles</td>
+    <td>true/false</td>
+    <td>Base64 ✔️ | Separador ❌</td>
+  </tr>
+  <tr>
+    <td>qrImage</td>
+    <td>URL de la imagen del centro del código QR</td>
+    <td>Base64 ✔️ | Separador ✔️ </td>
+  </tr>
+  <tr>
+    <td>styles</td>
+    <td>Colores primario y secundario</td>
+    <td>Base64 ✔️ | Separador ❌</td>
+  </tr>
+  <tr>
     <td>filterLayers</td>
     <td>Array con los nombres de las capas</td>
+    <td>Base64 ✔️ | Separador ❌ </td>
+  </tr>
+  <tr>
+    <td>svgPath</td>
+    <td>URL del icono SVG del botón del plugin</td>
     <td>Base64 ✔️ | Separador ❌ </td>
   </tr>
 </table>
 
 ### Ejemplos de uso API-REST
 ```
-https://componentes.idee.es/api-idee/?sharemap=TR*Copiado%20al%20portapapeles*https://componentes.idee.es/api-idee/*true*Compartir%20mapa%20title*OK*copyBtn*Compartir%20mapa%20text*copyBtnHtml*false*true
+https://componentes.idee.es/api-idee/?sharemap=position=left;tooltip=Compartir%20mapa;urlAPI=true;filterLayers=base64~WyJPSS5PcnRob2ltYWdlQ292ZXJhZ2UiXQ==;styles=base64~eyJwcmltYXJ5Q29sb3IiOiIjNzFhN2QzIiwic2Vjb25kYXJ5Q29sb3IiOiIjZmZmIn0=
 ```
 
 ```
-https://componentes.idee.es/api-idee/?sharemap=TL
+https://componentes.idee.es/api-idee/?sharemap=right*1*Compartir*https://componentes.idee.es/api-idee/*true*false*Compartir%20URL*HTML%20embebido*true*Aceptar*Copiar*Copiar*Copiado*false*https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg
+```
+
+```
+https://componentes.idee.es/api-idee/?sharemap=left
 ```
 
 ### Ejemplos de uso API-REST en base64
@@ -175,20 +205,21 @@ Ejemplo de constructor del plugin:
 ```javascript
 {
   baseUrl: "https://componentes.idee.es/api-idee/",
-  position: "TR",
-  tooltip: "Copiado al portapapeles",
+  position: "right",
+  tooltipCopy: "Copiado al portapapeles",
   minimize: true,
-  title: "Compartir mapa title",
-  btn: "OK",
-  copyBtn: "copyBtn",
-  text: "Compartir mapa text",
-  copyBtnHtml: "copyBtnHtml",
-  urlAPI: false,
+  title: "Compartir mapa",
+  btn: "Aceptar",
+  copyBtn: "Copiar URL",
+  text: "HTML embebido",
+  copyBtnHtml: "Copiar HTML",
+  urlAPI: true,
   shareLayer: true,
+  qrImage: "https://componentes.idee.es/estaticos/imagenes/logos/API_IDEE/API_2/API_2.svg",
 }
 ```
 ```
-https://componentes.idee.es/api-idee/?sharemap=base64=eyJiYXNlVXJsIjoiaHR0cHM6Ly9jb21wb25lbnRlcy5jbmlnLmVzL2FwaS1jb3JlLyIsInBvc2l0aW9uIjoiVFIiLCJ0b29sdGlwIjoiQ29waWFkbyBhbCBwb3J0YXBhcGVsZXMiLCJtaW5pbWl6ZSI6dHJ1ZSwidGl0bGUiOiJDb21wYXJ0aXIgbWFwYSB0aXRsZSIsImJ0biI6Ik9LIiwiY29weUJ0biI6ImNvcHlCdG4iLCJ0ZXh0IjoiQ29tcGFydGlyIG1hcGEgdGV4dCIsImNvcHlCdG5IdG1sIjoiY29weUJ0bkh0bWwiLCJ1cmxBUEkiOmZhbHNlLCJzaGFyZUxheWVyIjp0cnVlfQ==
+https://componentes.idee.es/api-idee/?sharemap=base64=eyJiYXNlVXJsIjoiaHR0cHM6Ly9jb21wb25lbnRlcy5pZGVlLmVzL2FwaS1pZGVlLyIsInBvc2l0aW9uIjoicmlnaHQiLCJ0b29sdGlwQ29weSI6IkNvcGlhZG8gYWwgcG9ydGFwYXBlbGVzIiwibWluaW1pemUiOnRydWUsInRpdGxlIjoiQ29tcGFydGlyIG1hcGEiLCJidG4iOiJBY2VwdGFyIiwiY29weUJ0biI6IkNvcGlhciBVUkwiLCJ0ZXh0IjoiSFRNTCBlbWJlYmlkbyIsImNvcHlCdG5IdG1sIjoiQ29waWFyIEhUTUwiLCJ1cmxBUEkiOnRydWUsInNoYXJlTGF5ZXIiOnRydWUsInFySW1hZ2UiOiJodHRwczovL2NvbXBvbmVudGVzLmlkZWUuZXMvZXN0YXRpY29zL2ltYWdlbmVzL2xvZ29zL0FQSV9JREVFL0FQSV8yL0FQSV8yLnN2ZyJ9
 ```
 #### Ejemplo filtrando las capas
 En este ejemplo, le pasamos por url dos capas y especificamos en el parámetro filterLayers el nombre de la capa que queremos compartir (shareLayer tiene que estar como false o no definido).
@@ -196,14 +227,14 @@ En este ejemplo, le pasamos por url dos capas y especificamos en el parámetro f
 Ejemplo de constructor del plugin:
 ```javascript
 {
-  position: "TL",
+  position: "left",
   shareLayer: false,
   filterLayers: ["OI.OrthoimageCoverage"],
 }
 ```
 (*) En este ejemplo, le pasamos por url dos capas y especificamos en el parámetro filterLayers el nombre de la capa que queremos compartir.
 ```
-https://componentes.idee.es/api-idee/?sharemap=base64=eyJwb3NpdGlvbiI6IlRMIiwic2hhcmVMYXllciI6ZmFsc2UsImZpbHRlckxheWVycyI6WyJPSS5PcnRob2ltYWdlQ292ZXJhZ2UiXX0=&layers=WMTS*http://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*imagen*true*image/jpeg*true*true*true,WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**1.3.0*true*true*true
+https://componentes.idee.es/api-idee/?sharemap=base64=eyJwb3NpdGlvbiI6ImxlZnQiLCJzaGFyZUxheWVyIjpmYWxzZSwiZmlsdGVyTGF5ZXJzIjpbIk9JLk9ydGhvaW1hZ2VDb3ZlcmFnZSJdfQ==&layers=WMTS*http://www.ign.es/wmts/pnoa-ma?*OI.OrthoimageCoverage*GoogleMapsCompatible*imagen*true*image/jpeg*true*true*true,WMS*Unidad%20administrativa*http://www.ign.es/wms-inspire/unidades-administrativas?*AU.AdministrativeUnit*true*true**1.3.0*true*true*true
 ```
 
 # Ejemplo de uso
@@ -213,23 +244,26 @@ const map = IDEE.map({
   container: 'map'
 });
 
-const mp = new ShareMap({
+const mp = new IDEE.plugin.ShareMap({
+  position: 'right',
+  order: 1,
+  tooltip: 'Compartir',
   baseUrl: 'https://componentes.idee.es/api-idee/',
-  position: 'TR',
-  tooltip: '¡Copiado!',
-  minimize: true,
-  title: 'Compartir mapa',
-  btn: 'OK',
-  copyBtn: 'Copiar',
-  text: 'Compartir mapa',
-  copyBtnHtml: 'Copiar',
   urlAPI: false,
-  shareLayer: true,
+  title: 'Compartir URL',
+  text: 'HTML embebido',
+  shareLayer: false,
   filterLayers: ['cosas1_poligono'],
-  overwriteStyles: false,
+  btn: 'Aceptar',
+  copyBtn: 'Copiar',
+  copyBtnHtml: 'Copiar',
+  tooltipCopy: '¡Copiado!',
+  overwriteStyles: true,
   styles: {
+    primaryColor: '#71a7d3',
     secondaryColor: '#272727',
   },
+  qrImage: 'https://componentes.idee.es/estaticos/imagenes/logos/IDEE-logo.png',
 });
 
 map.addPlugin(mp);

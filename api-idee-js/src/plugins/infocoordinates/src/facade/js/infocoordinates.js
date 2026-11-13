@@ -202,7 +202,7 @@ export default class Infocoordinates extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.collapsed_}*${this.order}*${this.tooltip}*${this.decimalGEOcoord_}*${this.decimalUTMcoord_}*${this.helpUrl_}*${this.outputDownloadFormat_}*${this.epsgResults_}`;
+    return `${this.name}=${IDEE.utils.serializeUrlParams(this.options)}`;
   }
 
   /**

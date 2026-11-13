@@ -429,6 +429,26 @@ class MapLibre extends LayerBase {
 
     return equals;
   }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa.
+   *
+   * @function
+   * @returns {String|null} Cadena REST de la capa.
+   * @api
+   */
+  getRestLayer() {
+    const { parameters } = this.constructorParameters;
+    return this.formatRestLayer_({
+      extract: this.extract === false ? false : undefined,
+      template: isString(this.template) ? this.template : undefined,
+      infoEventType: this.infoEventType !== 'click' ? this.infoEventType : undefined,
+      options: isUndefined(this.disableBackgroundColor)
+        ? undefined : { disableBackgroundColor: this.disableBackgroundColor },
+      maplibrestyle: isNullOrEmpty(this.url) ? this.maplibrestyle : undefined,
+      style: isString(parameters) ? parameter.maplibre(parameters).style : parameters?.style,
+    });
+  }
 }
 
 /**

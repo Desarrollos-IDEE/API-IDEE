@@ -185,9 +185,7 @@ export default class Incicarto extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    // eslint-disable-next-line max-len
-    // *${JSON.stringify(this.buzones_)}*${JSON.stringify(this.controllist_)}*${JSON.stringify(this.themes_)}*${JSON.stringify(this.errors_)}*${JSON.stringify(this.products_)}
-    return `${this.name}=${this.position}*${this.collapsed_}*${this.order}*${this.tooltip}*${this.prefixSubject_}*${this.interfazmode_}*${[].concat(this.profileGraphs_).join(',')}`;
+    return `${this.name}=${IDEE.utils.serializeUrlParams(this.options)}`;
   }
 
   /**

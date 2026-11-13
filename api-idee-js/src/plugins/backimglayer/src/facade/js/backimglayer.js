@@ -176,7 +176,7 @@ export default class BackImgLayer extends IDEE.Plugin {
       map,
       visible: this.visible,
       layerOpts: this.layerOpts,
-      layerId: this.layerId,
+      layerId: this.options.layerId === undefined ? null : this.layerId,
       layerVisibility: this.layerVisibility,
       ids: this.ids,
       titles: this.titles,
@@ -205,10 +205,14 @@ export default class BackImgLayer extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    const layers = this.layerOpts === undefined
-      ? `${this.ids}*!${this.titles}*!${this.previews}*!${this.layers}`
-      : this.turnLayerOptsIntoUrl();
-    return `${this.name}=${this.position}*!${this.collapsed}*!${this.order}*!${this.tooltip}*!${this.layerVisibility}*!${this.layerId}*!${this.columnsNumber}*!${this.empty}*!${layers}`;
+    const { layerOpts, ...options } = this.options;
+    if (layerOpts !== undefined) {
+      const [ids, titles, previews, layers] = this.turnLayerOptsIntoUrl().split('*!');
+      Object.assign(options, {
+        ids, titles, previews, layers,
+      });
+    }
+    return `${this.name}=${IDEE.utils.serializeUrlParams(options)}`;
   }
 
   /**

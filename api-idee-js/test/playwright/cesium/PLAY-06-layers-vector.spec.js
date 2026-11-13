@@ -237,4 +237,112 @@ test.describe('Capas vectoriales y 3D en Cesium', () => {
       expect(await page.locator('div.m-dialog.error').count()).toBe(0);
     });
   });
+  const POLYGON_SOURCE = {
+    type: 'FeatureCollection',
+    features: [{
+      type: 'Feature',
+      id: 'z1',
+      properties: { nombre: 'Uno' },
+      geometry: {
+        type: 'Polygon',
+        coordinates: [[[-3.8, 40.3], [-3.6, 40.3], [-3.6, 40.5], [-3.8, 40.5], [-3.8, 40.3]]],
+      },
+    }],
+  };
+
+  test('Polígonos: el contorno se dibuja como línea pegada al terreno y se quita con un estilo sin contorno', async ({ page }) => {
+    await page.evaluate((source) => {
+      window.layer = new IDEE.layer.GeoJSON({ name: 'poligonos', source });
+      window.map.addLayers(window.layer);
+      window.layer.setStyle(new IDEE.style.Generic({
+        polygon: { fill: { color: '#00ff00', opacity: 0.5 }, stroke: { color: '#ff0000', width: 3 } },
+      }));
+    }, POLYGON_SOURCE);
+    const outline = () => page.evaluate(() => {
+      const entity = window.layer.getFeatures()[0]?.getImpl().getFeature();
+      if (!entity) return null;
+      const time = window.Cesium.JulianDate.now();
+      const line = entity.polyline;
+      return {
+        line: !!line,
+        ground: line ? line.clampToGround.getValue(time) : null,
+        width: line ? line.width.getValue(time) : null,
+        color: line ? line.material.color.getValue(time).toCssHexString() : null,
+        polygonOutline: entity.polygon.outline ? entity.polygon.outline.getValue(time) : null,
+        type: window.layer.getFeatures()[0].getGeometry().type,
+      };
+    });
+    await expect.poll(outline, WAIT).toEqual({
+      line: true, ground: true, width: 3, color: '#ff0000', polygonOutline: false, type: 'Polygon',
+    });
+    await page.evaluate(() => window.layer.setStyle(new IDEE.style.Generic({
+      polygon: { fill: { color: '#00ff00', opacity: 0.5 } },
+    })));
+    await expect.poll(async () => (await outline())?.line, WAIT).toBe(false);
+  });
+
+  test('Líneas en EPSG:3857: LineString y MultiLineString se reproyectan a grados', async ({ page }) => {
+    const toMercator = ([lon, lat]) => [
+      (lon * 20037508.342789244) / 180,
+      (Math.log(Math.tan(((90 + lat) * Math.PI) / 360)) * 20037508.342789244) / Math.PI,
+    ];
+    const line = [[-3.7, 40.4], [-3.6, 40.5]];
+    const source = {
+      type: 'FeatureCollection',
+      crs: { type: 'name', properties: { name: 'EPSG:3857' } },
+      features: [
+        {
+          type: 'Feature', id: 'l1', properties: {}, geometry: { type: 'LineString', coordinates: line.map(toMercator) },
+        },
+        {
+          type: 'Feature',
+          id: 'm1',
+          properties: {},
+          geometry: { type: 'MultiLineString', coordinates: [line.map(toMercator), line.map(toMercator)] },
+        },
+      ],
+    };
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+
+    await page.evaluate((data) => {
+      window.layer = new IDEE.layer.GeoJSON({ name: 'lineas3857', source: data });
+      window.map.addLayers(window.layer);
+    }, source);
+    await expect.poll(() => page.evaluate(() => window.layer.getFeatures().length), WAIT).toBe(3);
+
+    const features = await page.evaluate(() => window.layer.getFeatures()
+      .map((feature) => [feature.getId(), feature.getGeometry()]));
+    expect(features.map(([id]) => id)).toEqual(['l1', 'm1', 'm1_2']);
+    features.forEach(([, geometry]) => {
+      expect(geometry.type).toBe('LineString');
+      expect(geometry.coordinates).toHaveLength(2);
+      geometry.coordinates.forEach(([lon, lat], index) => {
+        expect(lon).toBeCloseTo(line[index][0], 5);
+        expect(lat).toBeCloseTo(line[index][1], 5);
+      });
+    });
+    expect(errors).toEqual([]);
+  });
+
+  test('Estilos con funciones: se vuelven a calcular al terminar de mover la cámara', async ({ page }) => {
+    await page.evaluate((source) => {
+      window.layer = new IDEE.layer.GeoJSON({ name: 'escala', source });
+      window.map.addLayers(window.layer);
+      window.layer.setStyle(new IDEE.style.Generic({
+        polygon: { fill: { color: (feature, map) => (map.getScale() < 500000 ? '#ff0000' : '#0000ff'), opacity: 1 } },
+      }));
+    }, POLYGON_SOURCE);
+    const fill = () => page.evaluate(() => {
+      const entity = window.layer.getFeatures()[0]?.getImpl().getFeature();
+      return entity
+        ? entity.polygon.material.color.getValue(window.Cesium.JulianDate.now()).toCssHexString()
+        : null;
+    });
+    await expect.poll(fill, WAIT).not.toBeNull();
+    await page.evaluate(() => window.map.setZoom(6));
+    await expect.poll(fill, WAIT).toBe('#0000ff');
+    await page.evaluate(() => window.map.setZoom(13));
+    await expect.poll(fill, WAIT).toBe('#ff0000');
+  });
 });

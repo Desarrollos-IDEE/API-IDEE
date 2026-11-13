@@ -1,29 +1,23 @@
 <div id="m-layerswitcher-style">
     <div tabindex="0" class="m-layerswitcher-style-container">
         <select tabindex="0" id="m-layerswitcher-style-select">
-            <option disabled="disabled" value="">{{translations.select_style}}</option>
-            {{#if isVectorLayer}}
-                {{#each styles}}
-                    {{#if this.options_.name}}
-                        <option value="{{@index}}">{{this.options_.name}}</option>
-                    {{else}}
-                        {{#eq @index 0}}
-                            <option value="{{@index}}">{{../translations.default_style}} </option>
-                        {{/eq}}
-                        {{#gt @index 0}}
-                            <option value="{{@index}}">{{../translations.style}} {{@index}}
-                        {{/gt}}
-                    {{/if}}
-
-                {{/each}}
-            {{else}}
-                {{#each styles}}
-                    <option value="{{Name}}">{{Title}}</option>
-                {{/each}}
-            {{/if}}
+            <option disabled="disabled" value="" {{#unless hasActive}}selected="selected"{{/unless}}>{{translations.select_style}}</option>
+            {{#each options}}
+                <option value="{{value}}" data-unsupported="{{unsupported}}" {{#if selected}}selected="selected"{{/if}}>{{label}}</option>
+            {{/each}}
         </select>
     </div>
+    <p class="m-layerswitcher-style-notice" aria-live="polite" hidden></p>
     <div class="m-layerswitcher-style-btn-container">
         <button tabindex="0" class="m-layerswitcher-style-change-button">{{translations.change}}</button>
     </div>
+    {{#if canUpload}}
+    <div class="m-layerswitcher-style-sld">
+        <button tabindex="0" type="button" class="secondary m-layerswitcher-style-sld-button">
+            <span class="g-cartografia-btn-layerswitcher-upload" aria-hidden="true"></span>
+            <span>{{translations.load_sld}}</span>
+        </button>
+        <small class="m-layerswitcher-style-sld-hint">{{translations.sld_hint}}</small>
+    </div>
+    {{/if}}
 </div>

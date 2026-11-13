@@ -23,6 +23,8 @@ import en from './i18n/en';
  * with a custom css.
  * @property {string} [tooltip='¡Copiado!']? The text what is shown when the shared map url
  * is copied.
+ * @property {string} [qrImage]? Url of the image shown over the center of the QR code. By default,
+ * the IDEE logo of the static resources ('imagenes/logos/IDEE-logo.png').
  *
  * Note: The character '?' indicates that the parameter is optional.
  */
@@ -200,6 +202,14 @@ export default class ShareMap extends IDEE.Plugin {
     this.shareLayer = options.shareLayer || false;
 
     /**
+     * Url of the image shown over the center of the QR code
+     *
+     * @private
+     * @type {String}
+     */
+    this.qrImage_ = options.qrImage || `${IDEE.config.STATIC_RESOURCES_URL}/imagenes/logos/IDEE-logo.png`;
+
+    /**
      * Plugin parameters
      *
      * @public
@@ -257,6 +267,7 @@ export default class ShareMap extends IDEE.Plugin {
       order: this.order,
       filterLayers: this.filterLayers,
       shareLayer: this.shareLayer,
+      qrImage: this.qrImage_,
     }));
     // eslint-disable-next-line no-underscore-dangle
     this.controls[0].map_ = map;
@@ -294,7 +305,7 @@ export default class ShareMap extends IDEE.Plugin {
    * @api
    */
   getAPIRest() {
-    return `${this.name}=${this.position}*${this.order}*${this.tooltip}*${this.baseUrl_}*${this.urlAPI_}*${this.minimize_}*${this.title_}*${this.text_}*${this.shareLayer}*${this.btn_}*${this.copyBtn_}*${this.copyBtnHtml_}*${this.tooltipCopy_}*${this.overwriteStyles_}`;
+    return `${this.name}=${IDEE.utils.serializeUrlParams({ ...this.options, filterLayers: this.filterLayers })}`;
   }
 
   /**
@@ -330,6 +341,7 @@ export default class ShareMap extends IDEE.Plugin {
               help5: getValue('textHelp.help5'),
               help6: getValue('textHelp.help6'),
               help7: getValue('textHelp.help7'),
+              help8: getValue('textHelp.help8'),
             },
           },
         });

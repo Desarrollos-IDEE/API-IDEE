@@ -113,6 +113,21 @@ class GPX extends Vector {
   equals(other) {
     return other instanceof GPX && this.idLayer === other.idLayer;
   }
+
+  /**
+   * Este método devuelve la cadena de carga REST de la capa. Con URL remota se
+   * comparte la referencia al fichero; en otro caso, sus objetos geográficos.
+   *
+   * @function
+   * @returns {String|null} Cadena REST de la capa.
+   * @api
+   */
+  getRestLayer() {
+    if (!Vector.isAutoRefreshRemoteURL(this.url)) {
+      return super.getRestLayer();
+    }
+    return this.formatRestLayer_(this.getRestVectorParameters_());
+  }
 }
 
 export default GPX;

@@ -185,10 +185,51 @@ export const loadFeaturesFromSource = async (map, source, layerName, fileExt) =>
 };
 
 /**
+ * Indica si ya se ha avisado de que no hay límite de tamaño configurado.
+ * @type {Boolean}
+ */
+let missingLimitWarned = false;
+
+/**
+ * Esta función devuelve el tamaño máximo, en bytes, de los ficheros que se cargan en el
+ * mapa. Se define en la configuración con IDEE.config('MAX_FILE_SIZE_MB', megas); si no
+ * está configurado, no se limita el tamaño.
+ *
+ * @function
+ * @returns {Number} Tamaño máximo en bytes; Infinity si no hay límite configurado.
+ * @api
+ */
+export const getMaxFileSize = () => {
+  const megabytes = Number(IDEE.config.MAX_FILE_SIZE_MB);
+  if (!Number.isFinite(megabytes) || megabytes <= 0) {
+    if (!missingLimitWarned) {
+      missingLimitWarned = true;
+      // eslint-disable-next-line no-console
+      console.warn(getValue('exception').file_size_missing);
+    }
+    return Number.POSITIVE_INFINITY;
+  }
+  return megabytes * 1024 * 1024;
+};
+
+/**
+ * Esta función devuelve el aviso de fichero demasiado grande con el tamaño máximo
+ * configurado en IDEE.config.MAX_FILE_SIZE_MB.
+ *
+ * @function
+ * @returns {String} Mensaje.
+ * @api
+ */
+export const getFileSizeMessage = () => getValue('exception').file_size
+  .replace('{size}', String(IDEE.config.MAX_FILE_SIZE_MB));
+
+/**
  * Esta función añade al mapa una capa vector con los features
  * de un fichero
  * @param {IDEE.map} map objeto mapa
  * @param {Object} file fichero del que se obtienen los features
+ * @returns {Boolean} Verdadero si el fichero se acepta para cargarlo; falso si se rechaza
+ * por tamaño o formato.
  * @function
  * @api
  */
@@ -228,8 +269,9 @@ export const addFileToMap = (map, file) => {
 
     if (rasterFormats.includes(fileExt)) {
       loadGeotiffLayer(map, file, layerName);
-    } else if (file.size > 20971520) {
-      Dialog.info(getValue('exception').file_size);
+    } else if (file.size > getMaxFileSize()) {
+      Dialog.info(getFileSizeMessage());
+      return false;
     } else {
       const fileReader = new window.FileReader();
       fileReader.addEventListener('load', (e) => {
@@ -244,12 +286,15 @@ export const addFileToMap = (map, file) => {
         loadFeaturesFromSource(map, file, layerName, fileExt);
       } else {
         Dialog.error(getValue('exception').file_extension);
+        return false;
       }
     }
+    return true;
   }
   // else {
   //   Dialog.error(getValue('exception').file_empty);
   // }
+  return false;
 };
 
 export default {};

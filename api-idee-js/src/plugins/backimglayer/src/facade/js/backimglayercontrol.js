@@ -92,6 +92,56 @@ export default class BackImgLayerControl extends IDEE.Control {
     this.empty = empty;
     this.columnsNumber = columnsNumber;
     this.order = order;
+
+    if (idLayer === null) {
+      this.selectRequestedBaseLayers_(map);
+    }
+  }
+
+  /**
+   * This function prepares the initial option from the layers received in the map
+   * "baseLayer" option.
+   *
+   * @private
+   * @function
+   * @param {IDEE.Map} map
+   */
+  selectRequestedBaseLayers_(map) {
+    const requested = map.getRequestedBaseLayers();
+    if (!IDEE.utils.isNull(requested)) {
+      if (requested.length === 0) {
+        this.idLayer = -1;
+        this.visible = false;
+        return;
+      }
+      const restKey = (layers) => IDEE.utils
+        .getRestLayerResourceKey(layers.map((layer) => layer.getRestLayer()));
+      const key = restKey(requested);
+      let index = this.layers.findIndex(({ layers }) => {
+        return layers.length > 0 && restKey(layers) === key;
+      });
+      if (index < 0) {
+        const title = requested.map((layer) => layer.legend || layer.name).join(' + ');
+        index = this.layers.length;
+        this.layers.push({
+          id: 'baselayer', title, preview: '', layers: requested,
+        });
+        this.flattedLayers = this.flattedLayers.concat(requested);
+      }
+      this.idLayer = index;
+    }
+  }
+
+  /**
+   * This function returns the layers of the active option
+   *
+   * @public
+   * @function
+   * @returns {Array<IDEE.Layer>} Layers of the active option; empty if there is none
+   * @api
+   */
+  getSelectedBaseLayers() {
+    return this.visible && this.activeLayer > -1 ? this.layers[this.activeLayer].layers : [];
   }
 
   /**
@@ -132,7 +182,12 @@ export default class BackImgLayerControl extends IDEE.Control {
 
         if (visible === false) {
           this.map.removeLayers(this.map.getBaseLayers());
-          this.html.querySelector('.m-backimglayer-active').classList.remove('m-backimglayer-active');
+          this.html.querySelector('.m-backimglayer-active')?.classList.remove('m-backimglayer-active');
+          this.visible = false;
+        }
+
+        if (this.idLayer < 0) {
+          this.fire('backimglayer:activeChanges', [{ activeLayerId: -1 }]);
         }
       });
 
