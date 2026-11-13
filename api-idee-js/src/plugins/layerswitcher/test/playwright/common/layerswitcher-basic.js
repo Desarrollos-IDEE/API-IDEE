@@ -76,6 +76,32 @@ export const registerBasicTests = (impl) => {
       expect(await inMap('teselas')).toBe(true);
     });
 
+    test('un repintado que empezó antes de borrar una capa no vuelve a pintar su fila', async ({ page }) => {
+      await expect(layerRow(page, 'puntos')).toHaveCount(1, { timeout });
+      await expect(layerRow(page, 'teselas')).toHaveCount(1, { timeout });
+      await page.evaluate(async () => {
+        const control = window.mp.controls[0];
+        const original = control.getTemplateVariables.bind(control);
+        let delayed = false;
+        control.getTemplateVariables = (map) => {
+          const vars = original(map);
+          if (delayed) return vars;
+          delayed = true;
+          return vars.then((value) => new Promise((resolve) => {
+            setTimeout(() => resolve(value), 1500);
+          }));
+        };
+        const slow = control.render();
+        window.mapjs.removeLayers(window.puntos);
+        const fast = control.render();
+        await Promise.all([slow, fast]);
+      });
+      expect(await page.evaluate(() => window.mapjs.getLayers()
+        .some((layer) => layer.name === 'puntos'))).toBe(false);
+      await expect(layerRow(page, 'puntos')).toHaveCount(0);
+      await expect(layerRow(page, 'teselas')).toHaveCount(1);
+    });
+
     test('muestra y oculta todas las capas', async ({ page }) => {
       await expect(layerRow(page, 'puntos')).toHaveCount(1, { timeout });
       const toggleAll = page.locator('#layerswitcher-hide-show-all-layers');

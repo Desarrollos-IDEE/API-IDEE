@@ -225,6 +225,8 @@ export default class LayerswitcherControl extends IDEE.Control {
     // Identificador de la última petición de colecciones
     this.ogcRequestId_ = 0;
 
+    this.renderRevision_ = 0;
+
     this.layerStyles_ = new LayerStyles({
       getServices: () => this.getPrechargedServices(),
       matchesUrl: (serviceUrl, layerUrl) => this.checkUrls(serviceUrl, layerUrl),
@@ -624,12 +626,16 @@ export default class LayerswitcherControl extends IDEE.Control {
 
   // Esta función renderiza la plantilla
   async render() {
+    this.renderRevision_ += 1;
+    const revision = this.renderRevision_;
+    const isLatest = () => revision === this.renderRevision_;
     const showLayers = this.map_.getLayers().findIndex((layer) => {
       return layer.isBase === false && layer.displayInLayerSwitcher;
     }) > -1 || this.map_.getSections().length > 0;
 
     if (showLayers) {
       const templateVars = await this.getTemplateVariables(this.map_);
+      if (!isLatest()) return;
 
       const html = IDEE.template.compileSync(templateAux, {
         vars: templateVars,
@@ -641,6 +647,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       content.innerHTML = html.innerHTML;
       await this.generateTemplateLayerGroup(content);
       await this.generateTemplateSection(content);
+      if (!isLatest()) return;
       const ulContainer = content.querySelector('.layerswitcher-ul-layers');
       if (ulContainer !== null) this.orderLayers(ulContainer);
 
