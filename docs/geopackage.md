@@ -137,6 +137,7 @@ Los valores asignados antes de crear las capas se aplican al crearlas.
 
 - En Cesium, `IDEE.layer.GeoJSON` descarta el `maxExtent` del usuario al añadirse al mapa (`impl/cesium/js/layer/GeoJSON.js`). El paquete devuelve lo que devuelven sus hijas.
 - `IDEE.style.Proportional` no tiene implementación específica en ningún motor. Se aplica desde la fachada en ambos.
+- En los dos motores las tablas de teselas de un paquete se dibujan debajo de sus tablas vectoriales. En Cesium siempre ocurre (las imágenes van bajo las entidades); en OpenLayers lo garantiza el paquete al añadir sus capas al mapa o a un grupo (primero las teselas) y al repartir el z-index del paquete. El orden de `getLayers()` no cambia.
 
 ## Limitaciones conocidas
 

@@ -128,9 +128,38 @@ export default function registerGeoPackageContainerTests(engine) {
       });
 
       expect(result.before).toBe(100);
-      expect(result.added).toEqual([['m:places', 100], ['m:imagery', 101]]);
+      expect(result.added).toEqual([['m:imagery', 100], ['m:places', 101]]);
       expect(result.reordered).toEqual([['m:imagery', 10], ['m:places', 11]]);
       expect(result.zIndex).toBe(10);
+    });
+
+    test('orden de dibujo: las teselas quedan debajo de las capas vectoriales', async ({ page }) => {
+      await page.evaluate(async () => {
+        window.alone = await window.addPackage(new IDEE.layer.GeoPackage({
+          url: '/fixtures/geopackage/mixed.gpkg', name: 'suelto',
+        }));
+        window.grouped = new IDEE.layer.GeoPackage({
+          url: '/fixtures/geopackage/mixed.gpkg', name: 'agrupado',
+        });
+        window.group = new IDEE.layer.LayerGroup({ name: 'grupo', legend: 'Grupo', layers: [] });
+        window.map.addLayers(window.group);
+        window.group.addLayers(window.grouped);
+      });
+      await expect.poll(() => page.evaluate(() => window.group.getLayers().length)).toBe(2);
+
+      const result = await page.evaluate(() => {
+        const zIndexes = (gpkg) => Object.fromEntries(gpkg.getLayers()
+          .map((layer) => [layer.name, layer.getZIndex()]));
+        return {
+          names: window.alone.getLayers().map((layer) => layer.name),
+          alone: zIndexes(window.alone),
+          grouped: zIndexes(window.grouped),
+        };
+      });
+
+      expect(result.names).toEqual(['suelto:places', 'suelto:imagery']);
+      expect(result.alone['suelto:imagery']).toBeLessThan(result.alone['suelto:places']);
+      expect(result.grouped['agrupado:imagery']).toBeLessThan(result.grouped['agrupado:places']);
     });
 
     test('extensión: une las extensiones de sus capas y respeta la del usuario', async ({ page }) => {

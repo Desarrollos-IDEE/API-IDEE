@@ -284,7 +284,11 @@ class LayerGroup extends Layer {
 
       if (layer.type === 'GeoPackage') {
         return layer.addTo(this.map, false).then(() => {
-          const layerPromises = layer.getLayers().map((value) => {
+          const children = layer.getLayers().map((value, index) => ({ value, index }))
+            .sort((a, b) => (a.value.type === 'GeoPackageTile' ? 0 : 1)
+              - (b.value.type === 'GeoPackageTile' ? 0 : 1) || a.index - b.index)
+            .map(({ value }) => value);
+          const layerPromises = children.map((value) => {
             const parentOrder = this.layerOrder_.get(layer);
             this.layerOrder_.set(value, parentOrder);
             const child = this.addLayer(value);

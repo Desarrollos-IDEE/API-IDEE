@@ -1,3 +1,18 @@
+Versión 2.0.0
+- Se refactoriza IDEE.layer.GeoPackage: la fuente de datos pasa a datasource/ con contratos, estrategias de carga y lectores, manteniendo la API pública, la firma histórica, el formato REST y toJSON.
+- GeoPackage: nuevo parámetro loadStrategy (full, bbox, range); tiled: true equivale a bbox. Con range se leen por rangos HTTP solo las partes necesarias del fichero, con descarga completa como reserva.
+- GeoPackage: el contenedor ofrece la API común de capa (visibilidad, opacidad, z-index, extensión, zoom mínimo y máximo, refresh y refreshInterval).
+- GeoPackage: Cesium carga por extensión visible como OpenLayers y, en modo descarga, se reutiliza el índice R*Tree del fichero.
+- GeoPackage: se muestra un mensaje claro cuando el servidor no permite CORS o no responde.
+- GeoPackage: las tablas de teselas se dibujan debajo de las vectoriales también en OpenLayers, igual que en Cesium.
+- API-REST: se añade el formato posicional GeoPackage*leyenda*url*nombre*loadStrategy.
+- Se añade IDEE.Layer.getRestLayers; ShareMap y LayerGroup comparten un GeoPackage con una sola cadena REST.
+- Se añade la variable de configuración MAX_FILE_SIZE_MB (20 por defecto); el aviso de fichero demasiado grande muestra el límite configurado y el plugin Layerswitcher ya no lo cierra al instante.
+- Se soluciona toGeoJSON de GeoPackage con tableNames y el zoom de Layerswitcher a capas GeoPackageTile.
+- Se soluciona en Cesium la reproyección de líneas de capas GeoJSON con un sistema de referencia distinto de EPSG:4326.
+- Se soluciona el error al asignar cql a una capa WMS antes de recibir su GetCapabilities.
+
+
 21/10/26 - Versión 1.2.0
 - Se soluciona el problema de añadir capas WMTS mediante Layerswitcher.
 - Layerswitcher: se eliminan servicios repetidos o en desuso (ie: Copernicus Land Monitoring).
