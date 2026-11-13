@@ -330,7 +330,7 @@ export default class LayerStyles {
     return entry;
   }
 
-  addEntries(layer, styles, selectIndex = 0) {
+  addEntries(layer, styles) {
     const state = this.getState_(layer);
     if (!state || state.adapter !== vectorAdapter || isEmpty(styles)) return undefined;
     const added = styles.map((item) => {
@@ -346,6 +346,6 @@ export default class LayerStyles {
     state.configured = true;
     state.adapter.mirror(layer, state.entries);
     this.states_.set(layer, state);
-    return this.select(layer, added[Math.min(selectIndex, added.length - 1)].id);
+    return added;
   }
 }

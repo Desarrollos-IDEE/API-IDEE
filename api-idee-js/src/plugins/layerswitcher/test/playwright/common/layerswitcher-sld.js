@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import {
   TIMEOUT, configureEngine, mockTiles, openMap, layerRow,
-  renderedStyle,
+  renderedStyle, readStyleSelector, applySelectedStyle,
   // openStyleSelector, chooseStyle,
 } from './helpers';
 
@@ -97,11 +97,23 @@ const sldFile = (name, content) => ({
   name, mimeType: 'application/xml', buffer: Buffer.isBuffer(content) ? content : Buffer.from(content),
 });
 
-/** Pulsa el botón SLD de una capa y elige el fichero. */
-const uploadSLD = async (page, name, file) => {
+/**
+ * Abre el diálogo de estilos de la capa si no lo está. Si el panel se vuelve a pintar
+ * mientras se pulsa el botón (Cesium con poca CPU), el clic se repite.
+ */
+const openStyleDialog = (page, name, timeout) => expect(async () => {
+  if (await page.locator('#m-layerswitcher-style').count() === 0) {
+    await layerRow(page, name).locator('.m-layerswitcher-icons-style').click({ timeout: 2000 });
+  }
+  await expect(page.locator('#m-layerswitcher-style')).toHaveCount(1, { timeout: 2000 });
+}).toPass({ timeout, intervals: [500, 1000, 2000] });
+
+/** Abre el diálogo de estilos de la capa si no lo está, pulsa la carga SLD y elige el fichero. */
+const uploadSLD = async (page, name, file, timeout = 40000) => {
+  await openStyleDialog(page, name, timeout);
   const [chooser] = await Promise.all([
     page.waitForEvent('filechooser'),
-    layerRow(page, name).locator('.m-layerswitcher-icons-sld').click(),
+    page.locator('#m-layerswitcher-style .m-layerswitcher-style-sld-button').click(),
   ]);
   await chooser.setFiles(file);
 };
@@ -163,7 +175,7 @@ export const registerSLDTests = (impl) => {
       });
       await openMap(page, impl);
       await addZonas(page);
-      await expect(layerRow(page, 'zonas').locator('.m-layerswitcher-icons-sld')).toHaveCount(1, { timeout });
+      await expect(layerRow(page, 'zonas').locator('.m-layerswitcher-icons-style')).toHaveCount(1, { timeout });
       await expect.poll(() => renderedStyle(page, impl, 'Zonas', 'Zona Centro'), { timeout }).not.toBeNull();
     });
 
@@ -172,12 +184,14 @@ export const registerSLDTests = (impl) => {
     //   const sld = await downloadSLD(page, IDEE_SLD);
     //   const before = await renderedStyle(page, impl, 'Zonas', 'Zona Centro');
     //   await uploadSLD(page, 'zonas', sldFile('masas-de-agua.sld', sld));
+    //   await expect(page.locator('.m-toast', { hasText: 'Pulsa «Cambiar» para aplicar «Estilo de masas de agua para WMS HI (SLD)»' }))
+    //     .toHaveCount(1);
+    //   expect((await renderedStyle(page, impl, 'Zonas', 'Zona Centro')).fill).toBe(before.fill);
+    //   await applySelectedStyle(page);
     //
     //   await expect.poll(() => renderedStyle(page, impl, 'Zonas', 'Zona Centro'), { timeout })
     //     .toMatchObject({ fill: '#aed1ff', label: null });
-    //   await expect(page.locator('.m-toast', { hasText: 'Se ha aplicado el estilo «Estilo de masas de agua para WMS HI (SLD)» a la capa «Zonas»' }))
-    //     .toHaveCount(1);
-    //   const warning = page.locator('.m-toast', { hasText: 'El resto del estilo se ha aplicado' });
+    //   const warning = page.locator('.m-toast', { hasText: 'Del SLD se han omitido' });
     //   await expect(warning).toContainText('VendorOption');
     //   await expect(warning).not.toContainText('rangos de escala');
     //   await expect(page.locator('.m-toast', { hasText: 'no describe la capa' })).toHaveCount(0);
@@ -209,20 +223,39 @@ export const registerSLDTests = (impl) => {
     // });
 
     test('SLD exportado desde QGIS (SE 1.1.0) con categorías por atributo', async ({ page }) => {
+      const before = await renderedStyle(page, impl, 'Zonas', 'Zona Norte');
       await uploadSLD(page, 'zonas', sldFile('zonas-qgis.sld', QGIS_SLD));
+      await expect(page.locator('.m-toast', { hasText: '«zonas (SLD)»' })).toHaveCount(1);
+      await expect(page.locator('.m-toast', { hasText: 'polygon.stroke.linejoin' }))
+        .toHaveCount(impl === 'cesium' ? 1 : 0);
+      const selector = await readStyleSelector(page);
+      expect(selector.options.map((option) => option.label))
+        .toEqual(['Estilo predeterminado', 'zonas (SLD)']);
+      expect(selector.selected).toBe(selector.options[1].value);
+      const dialogNotice = page.locator('#m-layerswitcher-style .m-layerswitcher-style-notice');
+      if (impl === 'cesium') {
+        await expect(dialogNotice).toContainText('polygon.stroke.linejoin');
+      } else {
+        await expect(dialogNotice).toBeHidden();
+      }
+      expect(await renderedStyle(page, impl, 'Zonas', 'Zona Norte')).toEqual(before);
+      expect(await page.evaluate(() => window.zonas.getStyle() instanceof IDEE.style.Category))
+        .toBe(false);
+
+      await applySelectedStyle(page);
       await expect.poll(async () => (await renderedStyle(page, impl, 'Zonas', 'Zona Norte'))?.fill, { timeout })
         .toBe('#1b9e77');
       expect((await renderedStyle(page, impl, 'Zonas', 'Zona Centro')).fill).toBe('#d95f02');
       expect((await renderedStyle(page, impl, 'Zonas', 'Zona Sur')).fill).toBe('#7570b3');
       expect(await page.evaluate(() => window.zonas.getStyle() instanceof IDEE.style.Category))
         .toBe(true);
-      await expect(page.locator('.m-toast', { hasText: '«zonas (SLD)»' })).toHaveCount(1);
-      const notice = page.locator('.m-toast', { hasText: 'polygon.stroke.linejoin' });
-      await expect(notice).toHaveCount(impl === 'cesium' ? 1 : 0);
     });
 
     test('SLD con reglas filtradas (PropertyIsLike, And, Not, comparaciones) y ElseFilter', async ({ page }) => {
       await uploadSLD(page, 'zonas', sldFile('reglas.sld', RULES_SLD));
+      expect((await readStyleSelector(page)).options.map((option) => option.label))
+        .toContain('reglas (SLD)');
+      await applySelectedStyle(page);
       const expected = {
         'Zona Norte': {
           fill: '#2e7d32', stroke: '#333333', label: 'Zona Norte',
@@ -280,26 +313,38 @@ export const registerSLDTests = (impl) => {
         expect(await page.evaluate(() => window.zonas.getStyle() === window.initialStyle))
           .toBe(true);
       }
-      await expect(layerRow(page, 'zonas').locator('.m-layerswitcher-icons-style')).toHaveCount(0);
+      expect((await readStyleSelector(page)).options.map((option) => option.label))
+        .toEqual(['Estilo predeterminado']);
     });
 
-    test('el botón solo aparece en capas vectoriales y si se pide la herramienta sld', async ({ page }) => {
+    test('la carga SLD está en el diálogo de estilos de las capas vectoriales con la herramienta sld', async ({ page }) => {
+      const closeDialog = () => page.locator('div.m-dialog.info div.m-button > button').last().click();
+      const replacePlugin = (tools) => page.evaluate((list) => {
+        window.mapjs.removePlugins(window.mp);
+        window.mp = new IDEE.plugin.Layerswitcher({
+          collapsed: false, precharged: { services: [] }, tools: list,
+        });
+        window.mapjs.addPlugin(window.mp);
+      }, tools);
       await page.evaluate((url) => {
         window.mapjs.addLayers(new IDEE.layer.WMS({ url: `${url}?`, name: 'rios', legend: 'Ríos' }));
       }, WMS_URL);
       await expect(layerRow(page, 'rios')).toHaveCount(1, { timeout });
-      await expect(layerRow(page, 'rios').locator('.m-layerswitcher-icons-sld')).toHaveCount(0);
-      await expect(layerRow(page, 'zonas').locator('.m-layerswitcher-icons-sld')).toHaveCount(1);
+      await expect(page.locator('.m-layerswitcher-icons-sld')).toHaveCount(0);
+      await expect(layerRow(page, 'rios').locator('.m-layerswitcher-icons-style')).toHaveCount(0);
+      await openStyleDialog(page, 'zonas', timeout);
+      await expect(page.locator('#m-layerswitcher-style .m-layerswitcher-style-sld-button')).toHaveCount(1);
+      await closeDialog();
 
-      await page.evaluate(() => {
-        window.mapjs.removePlugins(window.mp);
-        window.mp = new IDEE.plugin.Layerswitcher({
-          collapsed: false, precharged: { services: [] }, tools: ['transparency', 'style'],
-        });
-        window.mapjs.addPlugin(window.mp);
-      });
+      await replacePlugin(['transparency', 'style']);
       await expect(layerRow(page, 'zonas')).toHaveCount(1, { timeout });
-      await expect(layerRow(page, 'zonas').locator('.m-layerswitcher-icons-sld')).toHaveCount(0);
+      await expect(layerRow(page, 'zonas').locator('.m-layerswitcher-icons-style')).toHaveCount(0);
+
+      await replacePlugin(['sld']);
+      await expect(layerRow(page, 'zonas')).toHaveCount(1, { timeout });
+      await openStyleDialog(page, 'zonas', timeout);
+      await expect(page.locator('#m-layerswitcher-style .m-layerswitcher-style-sld-button')).toHaveCount(1);
+      await closeDialog();
     });
   });
 };

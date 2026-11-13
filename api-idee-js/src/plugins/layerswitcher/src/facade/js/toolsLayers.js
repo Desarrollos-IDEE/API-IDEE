@@ -1,9 +1,6 @@
 import changeNameTemplate from 'templates/changename';
-import configTemplate from '../../templates/config';
 import { fiendLayerInGroup } from './groupLayers';
 import { getValue } from './i18n/language';
-import { focusModal } from './utils';
-import { parseSLD, SLDError } from './sld';
 
 // I18N - Traducciones INFO LAYER
 export const TRANSLATIONS_OGCAPIFEATURES_WMS_WMTS = {
@@ -351,165 +348,15 @@ export const selectDefaultRange = (radioButtons, map) => {
   });
 };
 
-const STYLE_SELECT = '#m-layerswitcher-style-select';
-const STYLE_NOTICE = '#m-layerswitcher-style .m-layerswitcher-style-notice';
-
-const unsupportedNotice = (properties) => getValue('style_unsupported').replace('[props]', properties);
-
-const changeLayerStyle = (layer, layerStyles) => {
-  const styleSelected = document.querySelector(STYLE_SELECT).value;
-  if (styleSelected !== '') {
-    layerStyles.select(layer, styleSelected);
-    document.querySelector('div.m-api-idee-container div.m-dialog').remove();
-  }
-};
-
-const updateStyleNotice = () => {
-  const select = document.querySelector(STYLE_SELECT);
-  const notice = document.querySelector(STYLE_NOTICE);
-  if (!select || !notice) return;
-  const properties = select.selectedOptions[0]?.dataset.unsupported || '';
-  notice.textContent = properties === '' ? '' : unsupportedNotice(properties);
-  notice.hidden = properties === '';
-};
-
-export const styleLayers = (layer, order, evt, layerStyles) => {
+/**
+ * Abre el diálogo de estilos de la capa al pulsar su botón de estilo.
+ * @param {IDEE.Layer} layer Capa.
+ * @param {Event} evt Evento de clic.
+ * @param {Object} styleDialog Diálogo de estilos (open).
+ * @param {Object} options Opciones del diálogo ({ order, canUpload }).
+ */
+export const styleLayers = (layer, evt, styleDialog, options) => {
   if (evt.target.className.indexOf('m-layerswitcher-icons-style') > -1) {
-    const activeId = layerStyles.getActiveId(layer);
-    const options = layerStyles.getEntries(layer).map((entry) => ({
-      value: entry.id,
-      label: entry.label,
-      selected: entry.id === activeId,
-      unsupported: layerStyles.getUnsupported(layer, entry).join(', '),
-    }));
-
-    const config = IDEE.template.compileSync(configTemplate, {
-      jsonp: true,
-      parseToHtml: false,
-      vars: {
-        options,
-        hasActive: options.some((option) => option.selected),
-        translations: {
-          select_style: getValue('select_style'),
-          change: getValue('change'),
-        },
-      },
-    });
-
-    IDEE.dialog.info(config, getValue('configure_layer'), order);
-    focusModal('.m-title span');
-    setTimeout(() => {
-      document.querySelector(STYLE_SELECT).addEventListener('change', updateStyleNotice);
-      updateStyleNotice();
-      const selector = '#m-layerswitcher-style button';
-      document.querySelector(selector).addEventListener('click', () => {
-        changeLayerStyle(layer, layerStyles);
-      });
-      const button = IDEE.dialog.getCloseButton(INFO_DIALOG);
-      button.innerHTML = getValue('close');
-      setTimeout(() => {
-        document.querySelector('.m-layerswitcher-style-container').focus();
-      }, 500);
-    }, 10);
+    styleDialog.open(layer, options);
   }
-};
-
-const SLD_MAX_SIZE_MB = 5;
-
-const fillMessage = (text, vars) => Object.keys(vars)
-  .reduce((message, name) => message.split(`[${name}]`).join(vars[name]), text);
-
-const describeIgnored = (ignored) => ignored
-  .map(({ key, name }) => fillMessage(getValue(`sld_items.${key}`), { name }))
-  .join('; ');
-
-const showSLDError = (key, vars, order) => {
-  IDEE.dialog.error(fillMessage(getValue(key), vars), getValue('load_sld'), order);
-};
-
-const applySLD = (layer, file, text, { order, layerStyles, onChange }) => {
-  const vars = { file: file.name, layer: layer.legend || layer.name, reason: '' };
-  let result;
-  try {
-    result = parseSLD(text, {
-      layerNames: [layer.name, layer.legend],
-      fileName: file.name.replace(/\.[^.]+$/, ''),
-    });
-  } catch (error) {
-    if (error instanceof SLDError) {
-      showSLDError(`exception.${error.code}`, vars, order);
-    } else {
-      showSLDError('exception.sld_apply', { ...vars, reason: error?.message || String(error) }, order);
-    }
-    return;
-  }
-
-  const selectIndex = Math.max(0, result.styles.findIndex((item) => item.isDefault));
-  let entry;
-  try {
-    entry = layerStyles.addEntries(layer, result.styles.map(({ label, style }) => ({
-      label: fillMessage(getValue('sld_entry'), { style: label }),
-      style,
-    })), selectIndex);
-  } catch (error) {
-    showSLDError('exception.sld_apply', { ...vars, reason: error?.message || String(error) }, order);
-    return;
-  }
-  if (!entry) {
-    showSLDError('exception.sld_layer', vars, order);
-    return;
-  }
-  if (typeof onChange === 'function') onChange();
-
-  const notices = [];
-  if (result.fallbackLayer) {
-    notices.push(fillMessage(getValue('sld_named_layer'), { ...vars, name: result.fallbackLayer }));
-  }
-  if (result.ignored.length > 0) {
-    notices.push(fillMessage(getValue('sld_ignored'), { items: describeIgnored(result.ignored) }));
-  }
-  const unsupported = layerStyles.getUnsupported(layer, entry);
-  if (unsupported.length > 0) {
-    notices.push(unsupportedNotice(unsupported.join(', ')));
-  }
-  IDEE.toast.success(fillMessage(getValue('sld_applied'), { style: entry.label, layer: vars.layer }), order, 6000);
-  if (notices.length > 0) {
-    // eslint-disable-next-line no-console
-    console.warn(notices.join('\n'));
-    IDEE.toast.warning(notices.join(' '), order, 12000);
-  }
-};
-
-export const loadSLDStyle = (layer, evt, { order, layerStyles, onChange }) => {
-  if (evt.target.className.indexOf('m-layerswitcher-icons-sld') === -1) return;
-  const vars = { file: '', layer: layer.legend || layer.name, size: SLD_MAX_SIZE_MB };
-  if (!layerStyles.supportsClientStyles(layer)) {
-    showSLDError('exception.sld_layer', vars, order);
-    return;
-  }
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '.sld,.xml,application/xml,text/xml';
-  input.className = 'm-layerswitcher-sld-input';
-  input.hidden = true;
-  input.addEventListener('cancel', () => input.remove());
-  input.addEventListener('change', () => {
-    const [file] = input.files;
-    input.remove();
-    if (!file) return;
-    const fileVars = { ...vars, file: file.name };
-    if (file.size > SLD_MAX_SIZE_MB * 1024 * 1024) {
-      showSLDError('exception.sld_too_large', fileVars, order);
-      return;
-    }
-    if (file.size === 0) {
-      showSLDError('exception.sld_read', fileVars, order);
-      return;
-    }
-    file.text()
-      .then((text) => applySLD(layer, file, text, { order, layerStyles, onChange }))
-      .catch(() => showSLDError('exception.sld_read', fileVars, order));
-  });
-  document.body.appendChild(input);
-  input.click();
 };

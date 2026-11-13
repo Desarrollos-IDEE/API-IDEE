@@ -140,8 +140,9 @@
   "style_unsupported": "El mapa actual no pot representar algunes propietats d'aquest estil i s'ometran: [props]",
   "load_sld": "Carregar estil SLD",
   "sld_entry": "[style] (SLD)",
-  "sld_applied": "S'ha aplicat l'estil «[style]» a la capa «[layer]».",
-  "sld_ignored": "La resta de l'estil s'ha aplicat; s'han omès: [items].",
+  "sld_added": "S'han afegit al selector els estils de «[file]» per a la capa «[layer]». Premeu «Canviar» per aplicar «[style]».",
+  "sld_ignored": "De l'SLD s'han omès: [items].",
+  "sld_hint": "Fitxer .sld o .xml de [size] MB com a màxim. Els seus estils s'afegeixen al selector.",
   "sld_named_layer": "L'SLD no descriu la capa «[layer]»: s'ha usat l'estil de «[name]».",
   "sld_items": {
     "attribute_value": "valors calculats a partir d'atributs ([name])",

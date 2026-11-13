@@ -167,7 +167,7 @@ export const registerToolsTests = (impl) => {
       // Herramienta de estilo: los estilos vienen de las capacidades
       await layerRow(page, 'rios').locator('.m-layerswitcher-icons-style').click();
       await page.selectOption('#m-layerswitcher-style-select', 'estilo2');
-      await page.locator('#m-layerswitcher-style button').click();
+      await page.locator('#m-layerswitcher-style .m-layerswitcher-style-change-button').click();
       await expect.poll(() => page
         .evaluate(() => window.mapjs.getWMS()[0].getLegendURL()), { timeout })
         .toBe(`${WMS_URL}/estilo2.png`);
