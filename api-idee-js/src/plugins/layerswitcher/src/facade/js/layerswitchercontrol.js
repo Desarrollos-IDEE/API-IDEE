@@ -31,7 +31,9 @@ import generateSortable from './sortable';
 import LayerStyles from './layerStyles';
 import SLDFileLoader from './sldFileLoader';
 import StyleDialog from './styleDialog';
-import { parseOGCAPIUrl, isCollectionsPath, isSameService } from './ogcapi/ogcapiurl';
+import {
+  parseOGCAPIUrl, isCollectionsPath, isSameService, isDataFileUrl,
+} from './ogcapi/ogcapiurl';
 import detectOGCAPIFeatures from './ogcapi/ogcapidetector';
 import {
   createOGCAPIModes, getModeByLayerType, MODE_STANDARD, MODE_DATAIDEE,
@@ -1492,7 +1494,10 @@ export default class LayerswitcherControl extends IDEE.Control {
                       this.removeLoading();
                     }
                   } else {
-                    this.openOGCAPIService_(url).catch(() => false).then((isOGC) => {
+                    const ogcProbe = isDataFileUrl(url)
+                      ? Promise.resolve(false)
+                      : this.openOGCAPIService_(url).catch(() => false);
+                    ogcProbe.then((isOGC) => {
                       if (!isOGC) {
                         // IDEE.proxy(this.useProxy);
                         const extension = url.includes('.') ? url.substring(url.lastIndexOf('.') + 1, url.length) : '';
