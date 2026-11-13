@@ -1618,25 +1618,23 @@ export default class LayerswitcherControl extends IDEE.Control {
     });
     IDEE.dialog.info(addServices, getValue('load_ext_services'), this.order);
 
-    setTimeout(() => {
-      // Se modifica texto bt cerrar modal
-      this.changeClodeButtonModal();
+    // Se modifica texto bt cerrar modal
+    this.changeClodeButtonModal();
 
-      // Eventos lista sugerencias
-      this.addEventSuggestions();
+    // Eventos lista sugerencias
+    this.addEventSuggestions();
 
-      // Eventos Servicios CODSI
-      this.addEventCODSI();
+    // Eventos Servicios CODSI
+    this.addEventCODSI();
 
-      // Eventos Buscador
-      this.addEventSearch();
+    // Eventos Buscador
+    this.addEventSearch();
 
-      // Eventos carga de ficheros
-      this.addEventFileUpload();
+    // Eventos carga de ficheros
+    this.addEventFileUpload();
 
-      // Evento para añadir capas de grupo
-      this.addGroupLayersEvent();
-    }, 10);
+    // Evento para añadir capas de grupo
+    this.addGroupLayersEvent();
 
     focusModal('#m-layerswitcher-addservices-search-input');
   }
