@@ -345,9 +345,9 @@
                     title: 'Sección de ejemplo',
                     children: [
                         new IDEE.layer.WMS({
-                            url: 'https://www.ign.es/wms-inspire/hidrografia?',
-                            name: 'HY.PhysicalWaters.Waterbodies',
-                            legend: 'Hidrografía (sección)',
+                            url: 'https://www.ign.es/wms-inspire/camino-santiago?',
+                            name: 'caminos_norte',
+                            legend: 'Caminos del Norte (sección)',
                         }),
                     ],
                 })),
