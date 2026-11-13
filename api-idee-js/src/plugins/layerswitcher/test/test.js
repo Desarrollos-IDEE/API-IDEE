@@ -70,8 +70,8 @@ const SAMPLE_LAYERS = [
     label: 'WMS',
     create: () => new IDEE.layer.WMS({
       url: 'https://www.ign.es/wms-inspire/camino-santiago?',
-      name: 'PS.ProtectedSite',
-      legend: 'Camino de Santiago (WMS)',
+      name: 'camino_frances',
+      legend: 'Camino Francés (WMS)',
     }),
   },
   {
