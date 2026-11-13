@@ -98,14 +98,16 @@ const sldFile = (name, content) => ({
 });
 
 /**
- * Abre el diálogo de estilos de la capa si no lo está. Si el panel se vuelve a pintar
- * mientras se pulsa el botón (Cesium con poca CPU), el clic se repite.
+ * Abre el diálogo de estilos de la capa si no lo está. El clic se lanza desde la página,
+ * sin esperar a que el botón esté «estable» (en Cesium con poca CPU tarda varios
+ * segundos), y se repite si el panel se vuelve a pintar y el botón pulsado ya no está.
  */
 const openStyleDialog = (page, name, timeout) => expect(async () => {
   if (await page.locator('#m-layerswitcher-style').count() === 0) {
-    await layerRow(page, name).locator('.m-layerswitcher-icons-style').click({ timeout: 2000 });
+    await layerRow(page, name).locator('.m-layerswitcher-icons-style')
+      .evaluate((button) => button.click(), undefined, { timeout: 5000 });
   }
-  await expect(page.locator('#m-layerswitcher-style')).toHaveCount(1, { timeout: 2000 });
+  await expect(page.locator('#m-layerswitcher-style')).toHaveCount(1, { timeout: 5000 });
 }).toPass({ timeout, intervals: [500, 1000, 2000] });
 
 /** Abre el diálogo de estilos de la capa si no lo está, pulsa la carga SLD y elige el fichero. */
