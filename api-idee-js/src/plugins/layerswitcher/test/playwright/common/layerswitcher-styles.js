@@ -157,11 +157,16 @@ export const registerStylesTests = (impl) => {
     });
 
     test('ejemplo local: aplica el primer estilo configurado, lista todos y recupera cualquiera', async ({ page }) => {
+      const collectionsRequests = [];
+      page.on('request', (request) => {
+        if (/\/collections(?:[/?#]|$)/.test(request.url())) collectionsRequests.push(request.url());
+      });
       await openMap(page, impl, { precharged: EXAMPLE });
       await waitPrecharged(page, 2, timeout);
       expect(await page.evaluate(() => window.mp.precharged.services.map((s) => s.url)))
         .toEqual([`${EXAMPLES}/zonas.geojson`, `${EXAMPLES}/rutas.geojson`]);
       await addFromCatalog(page, 'Zonas de ejemplo', 'Zonas', timeout);
+      expect(collectionsRequests).toEqual([]);
 
       await expect.poll(() => renderedStyle(page, impl, 'Zonas', 'Zona Centro'), { timeout })
         .toEqual({

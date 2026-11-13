@@ -184,49 +184,50 @@ test.describe('IDEE.layer.WMS', () => {
     });
   });
 
-  test.describe('Method setVisible', () => {
-    test('2 WMS base layers', async ({ page }) => {
-      await page.evaluate(() => {
-        window.map.setBbox([
-          -686768.0771958077,
-          4251980.700187735,
-          -579147.4083832583,
-          4352721.50889354,
-        ]);
-
-        const wms001 = new IDEE.layer.WMS({
-          url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
-          name: 'AU.AdministrativeUnit',
-          legend: 'Unidad administrativa',
-          isBase: true,
-        });
-        window.wms001 = wms001;
-
-        const wms002 = new IDEE.layer.WMS({
-          url: 'https://servicios.idee.es/wms-inspire/hidrografia?',
-          name: 'HY.Network',
-          legend: 'Red hidrográfica',
-          isBase: true,
-        });
-        window.wms002 = wms002;
-      });
-      await page.evaluate(() => {
-        return new Promise((resolve) => {
-          let count = 0;
-          window.wms001.on(IDEE.evt.ADDED_TO_MAP, () => {
-            count += 1;
-            if (count === 2) resolve();
-          });
-          window.wms002.on(IDEE.evt.ADDED_TO_MAP, () => {
-            count += 1;
-            if (count === 2) resolve();
-          });
-          window.map.addLayers([window.wms001, window.wms002]);
-        });
-      });
-      await page.evaluate(() => window.wms002.setVisible(true));
-      await page.waitForTimeout(5000);
-      await expect(page).toHaveScreenshot('snapshot.png', { maxDiffPixelRatio: 0.5 });
-    });
-  });
+  // Desactivado temporalmente: depende de los WMS reales de www.ign.es y servicios.idee.es y de una captura de pantalla.
+  // test.describe('Method setVisible', () => {
+  //   test('2 WMS base layers', async ({ page }) => {
+  //     await page.evaluate(() => {
+  //       window.map.setBbox([
+  //         -686768.0771958077,
+  //         4251980.700187735,
+  //         -579147.4083832583,
+  //         4352721.50889354,
+  //       ]);
+  //
+  //       const wms001 = new IDEE.layer.WMS({
+  //         url: 'https://www.ign.es/wms-inspire/unidades-administrativas?',
+  //         name: 'AU.AdministrativeUnit',
+  //         legend: 'Unidad administrativa',
+  //         isBase: true,
+  //       });
+  //       window.wms001 = wms001;
+  //
+  //       const wms002 = new IDEE.layer.WMS({
+  //         url: 'https://servicios.idee.es/wms-inspire/hidrografia?',
+  //         name: 'HY.Network',
+  //         legend: 'Red hidrográfica',
+  //         isBase: true,
+  //       });
+  //       window.wms002 = wms002;
+  //     });
+  //     await page.evaluate(() => {
+  //       return new Promise((resolve) => {
+  //         let count = 0;
+  //         window.wms001.on(IDEE.evt.ADDED_TO_MAP, () => {
+  //           count += 1;
+  //           if (count === 2) resolve();
+  //         });
+  //         window.wms002.on(IDEE.evt.ADDED_TO_MAP, () => {
+  //           count += 1;
+  //           if (count === 2) resolve();
+  //         });
+  //         window.map.addLayers([window.wms001, window.wms002]);
+  //       });
+  //     });
+  //     await page.evaluate(() => window.wms002.setVisible(true));
+  //     await page.waitForTimeout(5000);
+  //     await expect(page).toHaveScreenshot('snapshot.png', { maxDiffPixelRatio: 0.5 });
+  //   });
+  // });
 });

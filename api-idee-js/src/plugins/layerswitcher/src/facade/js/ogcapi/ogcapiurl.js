@@ -4,6 +4,8 @@
 
 const COLLECTIONS_REGEX = /\/collections(?:\/([^/]+))?(?:\/items)?\/?$/i;
 
+const DATA_FILE_REGEX = /\.(geojson|json|kml|kmz|gpx|gml|zip|gpkg|tiff?)$/i;
+
 /**
  * Elimina la consulta, el fragmento y las barras finales de una URL.
  *
@@ -19,6 +21,16 @@ const cleanUrl = (url) => url.trim().split(/[?#]/)[0].replace(/\/+$/, '');
  * @returns {Boolean} Verdadero si contiene la ruta de colecciones.
  */
 export const isCollectionsPath = (url) => COLLECTIONS_REGEX.test(cleanUrl(url));
+
+/**
+ * Indica si la URL apunta a un fichero de datos (GeoJSON, KML, GPX, GML, ZIP, GeoPackage,
+ * GeoTIFF...) y no a la raíz de un servicio, por lo que no tiene sentido buscar en ella
+ * un servicio OGC API Features.
+ *
+ * @param {String} url URL introducida por el usuario.
+ * @returns {Boolean} Verdadero si la ruta termina en una extensión de fichero de datos.
+ */
+export const isDataFileUrl = (url) => DATA_FILE_REGEX.test(cleanUrl(url || ''));
 
 /**
  * Obtiene la raíz del servicio y, si existe, la colección indicada en la URL.

@@ -31,7 +31,9 @@ import generateSortable from './sortable';
 import LayerStyles from './layerStyles';
 import SLDFileLoader from './sldFileLoader';
 import StyleDialog from './styleDialog';
-import { parseOGCAPIUrl, isCollectionsPath, isSameService } from './ogcapi/ogcapiurl';
+import {
+  parseOGCAPIUrl, isCollectionsPath, isSameService, isDataFileUrl,
+} from './ogcapi/ogcapiurl';
 import detectOGCAPIFeatures from './ogcapi/ogcapidetector';
 import {
   createOGCAPIModes, getModeByLayerType, MODE_STANDARD, MODE_DATAIDEE,
@@ -222,6 +224,8 @@ export default class LayerswitcherControl extends IDEE.Control {
 
     // Identificador de la última petición de colecciones
     this.ogcRequestId_ = 0;
+
+    this.renderRevision_ = 0;
 
     this.layerStyles_ = new LayerStyles({
       getServices: () => this.getPrechargedServices(),
@@ -622,12 +626,16 @@ export default class LayerswitcherControl extends IDEE.Control {
 
   // Esta función renderiza la plantilla
   async render() {
+    this.renderRevision_ += 1;
+    const revision = this.renderRevision_;
+    const isLatest = () => revision === this.renderRevision_;
     const showLayers = this.map_.getLayers().findIndex((layer) => {
       return layer.isBase === false && layer.displayInLayerSwitcher;
     }) > -1 || this.map_.getSections().length > 0;
 
     if (showLayers) {
       const templateVars = await this.getTemplateVariables(this.map_);
+      if (!isLatest()) return;
 
       const html = IDEE.template.compileSync(templateAux, {
         vars: templateVars,
@@ -639,6 +647,7 @@ export default class LayerswitcherControl extends IDEE.Control {
       content.innerHTML = html.innerHTML;
       await this.generateTemplateLayerGroup(content);
       await this.generateTemplateSection(content);
+      if (!isLatest()) return;
       const ulContainer = content.querySelector('.layerswitcher-ul-layers');
       if (ulContainer !== null) this.orderLayers(ulContainer);
 
@@ -1492,7 +1501,10 @@ export default class LayerswitcherControl extends IDEE.Control {
                       this.removeLoading();
                     }
                   } else {
-                    this.openOGCAPIService_(url).catch(() => false).then((isOGC) => {
+                    const ogcProbe = isDataFileUrl(url)
+                      ? Promise.resolve(false)
+                      : this.openOGCAPIService_(url).catch(() => false);
+                    ogcProbe.then((isOGC) => {
                       if (!isOGC) {
                         // IDEE.proxy(this.useProxy);
                         const extension = url.includes('.') ? url.substring(url.lastIndexOf('.') + 1, url.length) : '';
@@ -1613,25 +1625,23 @@ export default class LayerswitcherControl extends IDEE.Control {
     });
     IDEE.dialog.info(addServices, getValue('load_ext_services'), this.order);
 
-    setTimeout(() => {
-      // Se modifica texto bt cerrar modal
-      this.changeClodeButtonModal();
+    // Se modifica texto bt cerrar modal
+    this.changeClodeButtonModal();
 
-      // Eventos lista sugerencias
-      this.addEventSuggestions();
+    // Eventos lista sugerencias
+    this.addEventSuggestions();
 
-      // Eventos Servicios CODSI
-      this.addEventCODSI();
+    // Eventos Servicios CODSI
+    this.addEventCODSI();
 
-      // Eventos Buscador
-      this.addEventSearch();
+    // Eventos Buscador
+    this.addEventSearch();
 
-      // Eventos carga de ficheros
-      this.addEventFileUpload();
+    // Eventos carga de ficheros
+    this.addEventFileUpload();
 
-      // Evento para añadir capas de grupo
-      this.addGroupLayersEvent();
-    }, 10);
+    // Evento para añadir capas de grupo
+    this.addGroupLayersEvent();
 
     focusModal('#m-layerswitcher-addservices-search-input');
   }
