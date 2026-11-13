@@ -45,6 +45,13 @@ const unionExtents = (extents) => {
 };
 
 /**
+ * Posición de dibujo de una capa hija: las teselas van debajo de las vectoriales.
+ * @param {IDEE.layer.GeoJSON|IDEE.layer.GeoPackageTile} layer Capa.
+ * @returns {Number} 0 para teselas y 1 para el resto.
+ */
+const drawRank = (layer) => (layer.type === LayerType.GeoPackageTile ? 0 : 1);
+
+/**
  * @classdesc
  *
  * El formato Geopackage permite agrupar múltiples capas, tanto vectoriales como raster,
@@ -626,7 +633,7 @@ class GeoPackage extends MObject {
     const loading = this.whenReady().then(() => {
       if (this.pendingAddition_ !== addition) return this;
       if (addLayer) {
-        this.getLayers().forEach((layer) => map.addLayers(layer));
+        this.getLayersInDrawOrder_().forEach((layer) => map.addLayers(layer));
       }
       this.fire(EventType.LOAD_LAYERS, [this.layers_]);
       return this;
@@ -650,6 +657,18 @@ class GeoPackage extends MObject {
    */
   getLayers() {
     return Object.values(this.layers_);
+  }
+
+  /**
+   * Devuelve las capas en el orden en que se añaden al mapa: las teselas primero, para
+   * que queden debajo de las vectoriales, como en Cesium.
+   * @private
+   * @returns {Array<IDEE.layer.GeoPackageTile|IDEE.layer.GeoJSON>} Capas.
+   */
+  getLayersInDrawOrder_() {
+    return this.getLayers().map((layer, index) => ({ layer, index }))
+      .sort((a, b) => drawRank(a.layer) - drawRank(b.layer) || a.index - b.index)
+      .map(({ layer }) => layer);
   }
 
   /**
@@ -719,9 +738,10 @@ class GeoPackage extends MObject {
     const { zIndex } = this.display_;
     if (isNullOrEmpty(zIndex)) return;
     const position = (layer, index) => [isNullOrEmpty(layer.getZIndex())
-      ? Number.POSITIVE_INFINITY : layer.getZIndex(), index];
+      ? Number.POSITIVE_INFINITY : layer.getZIndex(), drawRank(layer), index];
     layers.map((layer, index) => ({ layer, order: position(layer, index) }))
-      .sort((a, b) => a.order[0] - b.order[0] || a.order[1] - b.order[1])
+      .sort((a, b) => a.order[0] - b.order[0] || a.order[1] - b.order[1]
+        || a.order[2] - b.order[2])
       .forEach(({ layer }, index) => layer.setZIndex(zIndex + index));
   }
 

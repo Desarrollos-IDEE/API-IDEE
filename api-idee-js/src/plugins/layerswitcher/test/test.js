@@ -1,6 +1,7 @@
 import Layerswitcher from 'facade/layerswitcher';
 
 IDEE.language.setLang('es');
+IDEE.config('MAX_FILE_SIZE_MB', 40);
 
 window.IDEE.plugin.Layerswitcher = Layerswitcher;
 
