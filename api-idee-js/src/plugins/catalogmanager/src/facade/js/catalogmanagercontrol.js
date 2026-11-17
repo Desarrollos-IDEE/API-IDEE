@@ -18,6 +18,7 @@ import advancedFilterTemplate from 'templates/advancedFilter';
 import fieldsTableTemplate from 'templates/fieldstable';
 import typeTableTemplate from 'templates/typetable';
 import cloudCoverSliderTemplate from 'templates/cloudCoverSlider';
+import { fromUrl } from 'geotiff';
 import { getValue } from './i18n/language';
 
 // - Modal
@@ -2949,10 +2950,10 @@ export default class CatalogmanagerControl extends IDEE.Control {
    * @param {Object} cat Objeto catálogo interno
    * @param {Object} coll Objeto colección interno
    */
-  drawImageTiff(image, cat, coll, item) {
+  async drawImageTiff(image, cat, coll, item) {
     // const catalog = cat;
     const collection = coll;
-    const styleSpec = this.resolveStyleSpec(image, item.properties);
+    const styleSpec = await this.resolveStyleSpec(image, item.properties);
     const style = this.buildRasterStyle(styleSpec);
     const normalize = IDEE.utils.isNullOrEmpty(styleSpec.indice);
     const convertToRGB = styleSpec.convertToRGB;
@@ -3410,8 +3411,8 @@ export default class CatalogmanagerControl extends IDEE.Control {
    * @param {Array<Object>} bands Bandas unificadas del asset
    * @returns {{min: number[], max: number[]}|null} Rangos por banda o null si no hay modo válido
    */
-  getAssetRanges(asset, properties, bands) {
-    const ranges = {
+  async getAssetRanges(asset, properties, bands) {
+    let ranges = {
       min: [],
       max: [],
     };
@@ -3446,10 +3447,9 @@ export default class CatalogmanagerControl extends IDEE.Control {
         }
       });
     }
-    /* asset.band_statistics.forEach((range) => {
-      ranges.min.push(range.min);
-      ranges.max.push(range.max);
-    }); */
+    if (mode === 'header') {
+      ranges = await this.getAssetRangesFromCOGHeader(asset.href);
+    }
     return ranges;
   }
 
@@ -3472,7 +3472,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
     if (asset?.ranges?.length) {
       return 'ranges';
     }
-    return null;
+    return 'header';
   }
 
   /**
@@ -3517,6 +3517,39 @@ export default class CatalogmanagerControl extends IDEE.Control {
   getAssetRangesFromRanges(asset, band) {
     const r = asset?.ranges?.[band - 1];
     return this.absFrom(r, 'asset.ranges');
+  }
+
+  async getAssetRangesFromCOGHeader(url) {
+    const tiff = await fromUrl(url);
+    const image = await tiff.getImage();
+    const bandCount = image.getSamplesPerPixel();
+
+    if (!bandCount || bandCount < 1) {
+      throw new Error('No se han detectado bandas en el TIFF.');
+    }
+
+    const results = {
+      min: [],
+      max: [],
+    };
+
+    for (let i = 0; i < bandCount; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      const metadata = await image.getGDALMetadata(i);
+      if (!metadata) {
+        throw new Error(`No existen metadatos GDAL para la banda ${i + 1}.`);
+      }
+
+      const mean = Number(metadata.STATISTICS_MEAN);
+      const stddev = Number(metadata.STATISTICS_STDDEV);
+      if (!Number.isFinite(mean) || !Number.isFinite(stddev) || stddev <= 0) {
+        throw new Error(`La banda ${i + 1} no contiene STATISTICS_MEAN y STATISTICS_STDDEV válidos.`);
+      }
+      results.min.push(mean - 2 * stddev);
+      results.max.push(mean + 2 * stddev);
+    }
+
+    return results;
   }
 
   /**
@@ -3569,7 +3602,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
    * @param {Object} asset Asset STAC con metadatos eo:bands
    * @returns {{bands: {r: number, g: number, b: number}}|null} Índices de banda o null
    */
-  resolveStyleSpec(asset, properties) {
+  async resolveStyleSpec(asset, properties) {
     const spec = {
       bands: [1, 1, 1],
       convertToRGB: false,
@@ -3589,7 +3622,7 @@ export default class CatalogmanagerControl extends IDEE.Control {
       spec.convertToRGB = true;
     }
     const eoBands = this.getAssetBands(asset);
-    const ranges = this.getAssetRanges(asset, properties, eoBands);
+    const ranges = await this.getAssetRanges(asset, properties, eoBands);
     if (ranges) {
       spec.ranges = ranges;
     }
