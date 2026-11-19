@@ -114,9 +114,17 @@ export function getHistogramChartSeries(bandHistogram) {
   if (!bandHistogram || !IDEE.utils.isArray(bandHistogram.counts)) {
     return null;
   }
+  const { counts } = bandHistogram;
+  const isObjectFormat = counts.length > 0 && IDEE.utils.isObject(counts[0]);
+  if (isObjectFormat) {
+    return {
+      labels: counts.map((bucket) => bucket.value),
+      counts: counts.map((bucket) => bucket.count),
+    };
+  }
   return {
     labels: getHistogramCenters(bandHistogram),
-    counts: bandHistogram.counts,
+    counts,
   };
 }
 
