@@ -407,7 +407,10 @@ class WMS extends LayerBase {
 
     if (!isNullOrEmpty(this.options.params)) {
       Object.keys(this.options.params).forEach((key) => {
-        layerParams[key.toUpperCase()] = this.options.params[key];
+        const value = this.options.params[key];
+        if (value !== undefined && value !== null) {
+          layerParams[key.toUpperCase()] = value;
+        }
       });
     }
 
