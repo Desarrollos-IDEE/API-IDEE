@@ -6,17 +6,22 @@
   "constructor": "IDEE.plugin.Help",
   "parameters": [
     {
-      "type": "simple",
-      "name": "position",
-      "position": 0,
-      "possibleValues": [
-        "left",
-        "right",
-        "center-bottom-left",
-        "center-bottom-right",
-        "center-top-left",
-        "center-top-right",
-        "down"
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "position": 0,
+          "possibleValues": [
+            "left",
+            "right",
+            "center-bottom-left",
+            "center-bottom-right",
+            "center-top-left",
+            "center-top-right",
+            "down"
+          ]
+        }
       ]
     }
   ],
