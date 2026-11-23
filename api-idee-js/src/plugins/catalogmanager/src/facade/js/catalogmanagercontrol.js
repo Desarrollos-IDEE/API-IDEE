@@ -3525,7 +3525,8 @@ export default class CatalogmanagerControl extends IDEE.Control {
     const bandCount = image.getSamplesPerPixel();
 
     if (!bandCount || bandCount < 1) {
-      throw new Error('No se han detectado bandas en el TIFF.');
+      console.log('No se han detectado bandas en el TIFF.');
+      return null;
     }
 
     const results = {
@@ -3537,13 +3538,15 @@ export default class CatalogmanagerControl extends IDEE.Control {
       // eslint-disable-next-line no-await-in-loop
       const metadata = await image.getGDALMetadata(i);
       if (!metadata) {
-        throw new Error(`No existen metadatos GDAL para la banda ${i + 1}.`);
+        console.log(`No existen metadatos GDAL para la banda ${i + 1}.`);
+        return null;
       }
 
       const mean = Number(metadata.STATISTICS_MEAN);
       const stddev = Number(metadata.STATISTICS_STDDEV);
       if (!Number.isFinite(mean) || !Number.isFinite(stddev) || stddev <= 0) {
-        throw new Error(`La banda ${i + 1} no contiene STATISTICS_MEAN y STATISTICS_STDDEV válidos.`);
+        console.log(`La banda ${i + 1} no contiene STATISTICS_MEAN y STATISTICS_STDDEV válidos.`);
+        return null;
       }
       results.min.push(mean - 2 * stddev);
       results.max.push(mean + 2 * stddev);
