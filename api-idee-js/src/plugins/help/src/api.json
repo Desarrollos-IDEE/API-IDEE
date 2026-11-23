@@ -18,21 +18,6 @@
         "center-top-right",
         "down"
       ]
-    },
-    {
-      "type": "number",
-      "name": "order",
-      "position": 1
-    },
-    {
-      "type": "string",
-      "name": "tooltip",
-      "position": 2
-    },
-    {
-      "type": "boolean",
-      "name": "extendInitialExtraContents",
-      "position": 3
     }
   ],
   "files": {
