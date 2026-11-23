@@ -10,7 +10,7 @@ import en from './i18n/en';
 import es from './i18n/es';
 import { getValue } from './i18n/language';
 
-const ICON_SVG = 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lupa.svg';
+const ICON_SVG = 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_embudo.svg';
 
 const POSITION_LEGACY = {
   TL: 'left',

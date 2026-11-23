@@ -153,7 +153,7 @@ export default class Help extends IDEE.Plugin {
       this.button = new IDEE.ui.buttons.OverviewMapButton(this.name, {
         position: this.position,
         tooltip: this.tooltip,
-        svgPath: 'https://api-idee.juntadeandalucia.es/estaticos/Simbologia/svg/icons_cota/icn_ayuda.svg',
+        svgPath: 'https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ayuda.svg',
         order: this.order,
       });
       this.panel = null;

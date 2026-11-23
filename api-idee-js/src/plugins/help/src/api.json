@@ -25,7 +25,7 @@
       "position": 1
     },
     {
-      "type": "string",
+      "type": "simple",
       "name": "tooltip",
       "position": 2
     },

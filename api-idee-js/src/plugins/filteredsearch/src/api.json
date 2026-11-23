@@ -33,21 +33,6 @@
           "position": 3
         }
       ]
-    },
-    {
-      "type": "boolean",
-      "name": "collapsed",
-      "position": 1
-    },
-    {
-      "type": "number",
-      "name": "order",
-      "position": 2
-    },
-    {
-      "type": "string",
-      "name": "tooltip",
-      "position": 3
     }
   ],
   "files": {
@@ -77,7 +62,7 @@
     "author": "API-IDEE",
     "org": "Instituto Geográfico Nacional",
     "tags": "api-idee,IDEE,plugin",
-    "icon": "https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_lupa.svg",
+    "icon": "https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_embudo.svg",
     "centralized": true,
     "compatibility": [
       "2"
