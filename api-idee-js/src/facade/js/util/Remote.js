@@ -210,6 +210,47 @@ const ajax = (urlVar, dataVar, methodType, useProxy, headers) => {
     } else if (window.ActiveXObject) {
       xhr = new ActiveXObject('Microsoft.XMLHTTP');
     }
+    // Reintento con proxy (modo condicional). Una ruta CORS dispara tanto
+    // onreadystatechange como onerror, así que solo se permite una vez.
+    let retried = false;
+    const retryWithProxy = () => {
+      if (retried) {
+        return;
+      }
+      retried = true;
+
+      let proxyUrl = urlVar;
+      if (isObject(dataVar)) {
+        if (methodType === method.GET) {
+          proxyUrl = addParameters(proxyUrl, dataVar);
+        }
+      }
+      proxyUrl = manageProxy(proxyUrl, methodType);
+
+      let proxyXhr;
+      if (window.XMLHttpRequest) {
+        proxyXhr = new XMLHttpRequest();
+      } else if (window.ActiveXObject) {
+        proxyXhr = new ActiveXObject('Microsoft.XMLHTTP');
+      }
+      proxyXhr.onreadystatechange = () => {
+        if (proxyXhr.readyState === 4) {
+          const proxyResponse = new Response();
+          proxyResponse.parseXmlHttp(proxyXhr);
+          success(proxyResponse);
+        }
+      };
+      proxyXhr.onerror = () => {
+        fail(new Error('Request failed even with proxy'));
+      };
+      proxyXhr.open(methodType, proxyUrl, true);
+      if (methodType === method.POST && isObject(dataVar)) {
+        proxyXhr.send(JSON.stringify(dataVar));
+      } else {
+        proxyXhr.send(dataVar);
+      }
+    };
+
     xhr.onreadystatechange = () => {
       if (xhr.readyState === 4) {
         const response = new Response();
@@ -217,33 +258,7 @@ const ajax = (urlVar, dataVar, methodType, useProxy, headers) => {
 
         // Si es modo condicional y hay error CORS, reintentar con proxy
         if (useProxy === 'conditional' && !shouldUseProxy && isCorsError(xhr)) {
-          let proxyUrl = urlVar;
-          if (isObject(dataVar)) {
-            if (methodType === method.GET) {
-              proxyUrl = addParameters(proxyUrl, dataVar);
-            }
-          }
-          proxyUrl = manageProxy(proxyUrl, methodType);
-
-          let proxyXhr;
-          if (window.XMLHttpRequest) {
-            proxyXhr = new XMLHttpRequest();
-          } else if (window.ActiveXObject) {
-            proxyXhr = new ActiveXObject('Microsoft.XMLHTTP');
-          }
-          proxyXhr.onreadystatechange = () => {
-            if (proxyXhr.readyState === 4) {
-              const proxyResponse = new Response();
-              proxyResponse.parseXmlHttp(proxyXhr);
-              success(proxyResponse);
-            }
-          };
-          proxyXhr.open(methodType, proxyUrl, true);
-          if (methodType === method.POST && isObject(dataVar)) {
-            proxyXhr.send(JSON.stringify(dataVar));
-          } else {
-            proxyXhr.send(dataVar);
-          }
+          retryWithProxy();
         } else {
           success(response);
         }
@@ -252,36 +267,7 @@ const ajax = (urlVar, dataVar, methodType, useProxy, headers) => {
     xhr.onerror = () => {
       // Si es modo condicional y hay error de red, reintentar con proxy
       if (useProxy === 'conditional' && !shouldUseProxy) {
-        let proxyUrl = urlVar;
-        if (isObject(dataVar)) {
-          if (methodType === method.GET) {
-            proxyUrl = addParameters(proxyUrl, dataVar);
-          }
-        }
-        proxyUrl = manageProxy(proxyUrl, methodType);
-
-        let proxyXhr;
-        if (window.XMLHttpRequest) {
-          proxyXhr = new XMLHttpRequest();
-        } else if (window.ActiveXObject) {
-          proxyXhr = new ActiveXObject('Microsoft.XMLHTTP');
-        }
-        proxyXhr.onreadystatechange = () => {
-          if (proxyXhr.readyState === 4) {
-            const proxyResponse = new Response();
-            proxyResponse.parseXmlHttp(proxyXhr);
-            success(proxyResponse);
-          }
-        };
-        proxyXhr.onerror = () => {
-          fail(new Error('Request failed even with proxy'));
-        };
-        proxyXhr.open(methodType, proxyUrl, true);
-        if (methodType === method.POST && isObject(dataVar)) {
-          proxyXhr.send(JSON.stringify(dataVar));
-        } else {
-          proxyXhr.send(dataVar);
-        }
+        retryWithProxy();
       } else {
         fail(new Error('Request failed'));
       }

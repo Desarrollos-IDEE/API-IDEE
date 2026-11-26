@@ -99,7 +99,7 @@ export let useproxy = false;
  * @api
  */
 export const proxy = (enable) => {
-  if (typeof enable === 'boolean') {
+  if (typeof enable === 'boolean' || enable === 'conditional') {
     IDEE.useproxy = enable;
     useproxy = enable;
   }
