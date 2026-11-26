@@ -6,33 +6,38 @@
   "constructor": "IDEE.plugin.Help",
   "parameters": [
     {
-      "type": "simple",
-      "name": "position",
-      "position": 0,
-      "possibleValues": [
-        "left",
-        "right",
-        "center-bottom-left",
-        "center-bottom-right",
-        "center-top-left",
-        "center-top-right",
-        "down"
+      "type": "object",
+      "properties": [
+        {
+          "type": "simple",
+          "name": "position",
+          "position": 0,
+          "possibleValues": [
+            "left",
+            "right",
+            "center-bottom-left",
+            "center-bottom-right",
+            "center-top-left",
+            "center-top-right",
+            "down"
+          ]
+        },
+        {
+          "type": "number",
+          "name": "order",
+          "position": 1
+        },
+        {
+          "type": "simple",
+          "name": "tooltip",
+          "position": 2
+        },
+        {
+          "type": "boolean",
+          "name": "extendInitialExtraContents",
+          "position": 3
+        }
       ]
-    },
-    {
-      "type": "number",
-      "name": "order",
-      "position": 1
-    },
-    {
-      "type": "string",
-      "name": "tooltip",
-      "position": 2
-    },
-    {
-      "type": "boolean",
-      "name": "extendInitialExtraContents",
-      "position": 3
     }
   ],
   "files": {
@@ -59,10 +64,10 @@
     "text": "Abre una página HTML con la ayuda de los plugins y controles del visor.",
     "version": "2.0.0",
     "date": "Septiembre, 2026",
-    "author": "Guadaltel",
-    "org": "CNIG",
+    "author": "API-IDEE",
+    "org": "Instituto Geográfico Nacional",
+    "tags": "api-idee,IDEE,plugin",
     "icon": "https://componentes.idee.es/estaticos/Simbologia/svg/icons_cota/icn_ayuda.svg",
-    "tags": "plugin",
     "compatibility": [
       "2"
     ]
