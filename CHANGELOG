@@ -1,4 +1,4 @@
-21/10/26 - Versión 1.2.0
+16/12/26 - Versión 1.2.0
 - Se soluciona el problema de añadir capas WMTS mediante Layerswitcher.
 - Layerswitcher: se eliminan servicios repetidos o en desuso (ie: Copernicus Land Monitoring).
 - Se soluciona el problema de la medición en el plugin VectorsManagement.
@@ -20,6 +20,8 @@
 - Se genera una nueva configuración de listado de capas precargadas en IDEE.config.LIST_PRECHARGED_URL. Layerswitcher hace uso de esta configuración que antes la tenía incluida dentro del código.
 - Se solucionan problemas con plugin PrintViewManagement: inconsistencia entre la escala y el mapa, coordenadas en las esquinas del mapa impreso, error de impresión cuando de utiliza el plugin Locator y enlaces rotos de los logos en la plantilla “Mapa completo”.
 - En el plugin printviewmanagement se le añade un margen de seguridad a las plantillas.
+- Se amplía el control getfeatureinfo para la consulta de capas XYZ, TMS y GeoTIFF con la parametrización "extract".
+- Se corrige el orden en parámetros al compartir capas GeoTIFF en plugin sharemap.
 
 
 01/07/26 - Versión 1.1.0
